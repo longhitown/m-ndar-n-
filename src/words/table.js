@@ -56,6 +56,8 @@
      - fix: cambia py, it o note di una parola (target = chiave), di una frase (phr:<gruppo>:<riga>) o di una battuta (dlg:<id>:<riga>).
        Mai hz: è la chiave dei progressi in cp-srs-v1. Per un carattere sbagliato si usa flag.
      - add: una parola nuova (section, py, hz, it).   - flag: una segnalazione (target, why).
+     - tr: la traduzione giusta di una frase del laboratorio (target = i caratteri della frase, new = l'italiano, old = quello
+       che diceva il laboratorio): vale subito nel laboratorio di chi la scrive, con l'etichetta «✏️ tua traduzione».
      Le correzioni dell'utente si applicano subito alla sua copia, con l'etichetta «✏️ tua correzione», e si possono annullare. ---- */
   var CKEY = "cp-community-contribs", CJKONLY = /^[㐀-鿿]+$/;
   function clean(py) { var c = String(py).replace(/[!?,;:…"“”«»()（），。？！、]/g, " ").replace(/\.(?=\s|$)/g, " ").trim(); return c ? syllables(c.replace(/\s+/g, " ")) : []; }
@@ -94,6 +96,11 @@
       else if (WORDS[it.hz]) e.push(it.hz + " è già nel dizionario: usa «Correggi»");
       var m2 = pyOk(it.py || "", it.hz || ""); if (m2) e.push(m2);
       if (!String(it.it || "").trim()) e.push("manca l'italiano");
+    } else if (it.op === "tr") {
+      var z = String(it.target || "").replace(/[\s，。？！、,.!?]/g, "");
+      if (!CJKONLY.test(z) || Array.from(z).length > 40) e.push("la frase deve essere in caratteri cinesi (al massimo 40)");
+      if (!String(it.new || "").trim()) e.push("scrivi la traduzione italiana");
+      else if (String(it.new).trim() === String(it.old || "").trim()) e.push("la traduzione è uguale a quella di adesso");
     } else if (it.op === "flag") {
       if (!it.target || (!WORDS[it.target] && !lineOf(it.target))) e.push("non trovo «" + (it.target || "") + "»");
       if (String(it.why || "").trim().length < 3) e.push("scrivi in breve che cosa non va");

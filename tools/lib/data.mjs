@@ -29,7 +29,8 @@ export function load(srcDir) {
   return {
     files: files.map((s) => s.src),
     SECTIONS: ctx.SECTIONS, DIALOGS: ctx.DIALOGS, PHRASES: g("PHRASES"), DIALOG_CATS: g("DIALOG_CATS"), THINK: g("THINK"), THINK_CATS: g("THINK_CATS"),
-    EX: g("EX"), PATTERNS: g("PATTERNS"), SLOTS: g("SLOTS"), SITUATIONS: g("SITUATIONS"), PATH: g("PATH")
+    EX: g("EX"), PATTERNS: g("PATTERNS"), SLOTS: g("SLOTS"), SITUATIONS: g("SITUATIONS"), PATH: g("PATH"),
+    GRAM: g("GRAM"), VERIFIED: g("VERIFIED"), LESSONS: g("LESSONS")
   };
 }
 
@@ -56,6 +57,12 @@ export function thinkFile(T, C) {
   return "/* Ordine del Pensiero: la frase italiana, i blocchi [ruolo, pinyin, caratteri, italiano] nell'ordine cinese, order = ordine italiano. */\n" +
     "var THINK_CATS = [\n" + C.map((c) => "  " + j(c)).join(",\n") + "\n];\n" +
     "var THINK = [\n" + T.map((t) => "  " + j(t)).join(",\n") + "\n];\n";
+}
+
+/* src/data/verified.js: tiene il commento iniziale del file com'è, riscrive una frase per riga */
+export function verifiedFile(V, old) {
+  const head = old && old.indexOf("var VERIFIED") > 0 ? old.slice(0, old.indexOf("var VERIFIED")) : "/* Frasi verificate: [cinese, italiano corretto] (+ \"memoria\" se le regole non ci arrivano ancora). */\n";
+  return head + "var VERIFIED = [\n" + V.map((v) => "  " + j(v)).join(",\n") + "\n];\n";
 }
 
 /* ---------- controlli (gli stessi della revisione e di #selftest) ---------- */
@@ -85,6 +92,13 @@ export function check(D) {
     d.lines.forEach((l, i) => { if (syllables(l[1]).length !== cjkCount(l[2])) err.push(`dlg:${d.id}:${i} ${l[2]}: sillabe e caratteri non tornano`); });
   });
   (D.THINK || []).forEach((t, i) => t.blocks.forEach((b) => { if (syllables(b[1]).length !== cjkCount(b[2])) err.push(`think ${i} ${b[2]}: sillabe e caratteri non tornano`); }));
+  const vz = new Set();
+  (D.VERIFIED || []).forEach((v, i) => {
+    if (!Array.isArray(v) || v.length < 2 || v.length > 3 || typeof v[0] !== "string" || typeof v[1] !== "string" || (v[2] !== undefined && v[2] !== "memoria")) err.push(`verified[${i}]: deve essere [cinese, italiano] o [cinese, italiano, "memoria"]`);
+    else if (/[<>]/.test(v[0] + v[1])) err.push(`verified[${i}]: niente < o >`);
+    else if (vz.has(v[0])) err.push(`verified[${i}] ${v[0]}: frase doppia`);
+    vz.add(v[0]);
+  });
   const n = D.SECTIONS.reduce((a, s) => a + s.words.length, 0);
   return { err, warn, words: n, sections: D.SECTIONS.length, dialogs: D.DIALOGS.length };
 }

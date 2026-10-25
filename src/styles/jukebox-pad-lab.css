@@ -45,6 +45,11 @@ input[type="range"]{accent-color:var(--accent)}
 .lab-view{margin:0 0 10px}
 .fluid{margin:8px 0 4px}
 .fl-it{font-size:1.25rem;font-weight:600;line-height:1.35;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));border:1px solid var(--line);border-bottom-width:3px}
+.fluid .tag{display:inline-block;margin-top:6px}
+.ok-tag{color:var(--accent);font-weight:600}
+.fluid.unsure .fl-it{font-size:1.05rem;font-weight:600;background:var(--surface);border-style:dashed;border-bottom-width:1px;color:var(--muted)}
+.fl-words{margin-top:8px;line-height:1.7}
+.fl-words .flw{white-space:nowrap}
 .fixbox{margin:12px 0;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--warn) 55%,var(--line));background:color-mix(in srgb,var(--warn) 10%,var(--surface));display:grid;gap:8px}
 .fixbox .han{font-size:1.15rem}
 .fixbox .fx-ok{color:var(--ink)}

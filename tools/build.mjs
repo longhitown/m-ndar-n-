@@ -6,7 +6,8 @@
      → dist/sw.js        il service worker, con APP_VERSION = impronta di index.html (ogni modifica = avviso «Aggiorna»)
      → dist/manifest.json, _headers, icone
 
-   Prima di scrivere controlla i dati (chiavi uniche, sillabe = caratteri, niente HTML) e che ogni file di
+   Prima di scrivere controlla i dati (chiavi uniche, sillabe = caratteri, niente HTML), prova le frasi verificate
+   della grammatica (src/data/verified.js, vedi tools/grammar.mjs) e che ogni file di
    src/data/vocab, src/data/dialogs e src/audio/tracks sia elencato in src/index.html: se qualcosa non va, si ferma.
 
    Uso:  node tools/build.mjs            costruisce dist/
@@ -16,6 +17,7 @@ import path from "path";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import { assets, load, check } from "./lib/data.mjs";
+import { lab, verify } from "./lib/lab.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src"), OUT = path.join(ROOT, "dist");
@@ -25,6 +27,10 @@ const fail = (m) => { console.error("✗ " + m); process.exit(1); };
 /* 1. dati */
 const D = load(SRC), c = check(D);
 if (c.err.length) fail("dati non validi:\n  " + c.err.slice(0, 30).join("\n  ") + (c.err.length > 30 ? "\n  … e altri " + (c.err.length - 30) : ""));
+
+/* 1b. grammatica: le frasi verificate (src/data/verified.js) devono uscire identiche dalle regole */
+const gv = verify(lab(SRC));
+if (gv.bad.length) fail("frasi verificate che le regole non traducono più così (dettagli: node tools/grammar.mjs):\n  " + gv.bad.slice(0, 10).map((b) => b.zh + " → «" + b.got + "», attesa «" + b.want + "»").join("\n  "));
 
 /* 2. ogni file è elencato */
 const { html, scripts, styles } = assets(SRC);
@@ -63,4 +69,4 @@ if (onlyCheck) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 for (const [f, data] of Object.entries(files)) fs.writeFileSync(path.join(OUT, f), data);
-console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);
+console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);

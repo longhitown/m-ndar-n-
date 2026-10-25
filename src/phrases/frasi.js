@@ -183,9 +183,9 @@
   }
   function fixBox(chk, p) {
     if (!chk || chk.ok) return "";
-    var bad = hzOf(lab.t, p), good = hzOf(chk.fixed, p), fl = CP.lab.fluid(chk.fixed, p === "?" ? "?" : p === "!" ? "!" : "."), why = chk.issues[0] === "Ordine non valido." ? "Ordine non valido in cinese" : chk.issues[0].replace(/\.$/, "");
+    var bad = hzOf(lab.t, p), good = hzOf(chk.fixed, p), fl = CP.lab.translate(chk.fixed, p === "?" ? "?" : p === "!" ? "!" : "."), why = chk.issues[0] === "Ordine non valido." ? "Ordine non valido in cinese" : chk.issues[0].replace(/\.$/, "");
     return '<div class="fixbox" role="group" aria-label="Correzione della frase"><div class="fx-bad">⚠️ <b>Come l\'hai scritta:</b> <span class="han">' + esc(bad) + '</span> <span class="muted small">(' + esc(why) + ")</span></div>" +
-      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.it ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
+      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.sure ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
       '<button type="button" class="btn-main" data-labfix>✨ Correggi automaticamente la mia frase</button></div>';
   }
   function fixLogBox() {
@@ -197,9 +197,15 @@
     var p = labPunct(), w = lint(lab.t).map(function (m) { return '<div class="warn">' + esc(m) + "</div>"; }).join("");
     var chk = CP.lab ? CP.lab.check(lab.t) : null, body;
     if (lab.view === "fluid" && CP.lab) {
-      var src = chk && !chk.ok ? chk.fixed : lab.t, fl = CP.lab.fluid(src, p === "?" ? "?" : p === "!" ? "!" : "."), ct = "";
-      ct = '<div class="fluid"><div class="fl-it" lang="it">' + esc(fl.it) + "</div>" + (chk && !chk.ok ? '<div class="small muted">Traduzione della versione corretta.</div>' : "") +
+      var src = chk && !chk.ok ? chk.fixed : lab.t, fl = CP.lab.translate(src, p === "?" ? "?" : p === "!" ? "!" : "."), ct = "";
+      lab.tr = { zh: src.map(hz).join(""), it: fl.sure ? fl.it : "", id: fl.contribId || "" };
+      var badge = fl.src === "mine" ? '<span class="tag mine-tag">✏️ tua traduzione</span>' : fl.src === "verified" || fl.src === "data" ? '<span class="tag ok-tag">✓ frase verificata</span>' : "";
+      if (fl.sure) ct = '<div class="fluid"><div class="fl-it" lang="it">' + esc(fl.it) + "</div>" + badge + (chk && !chk.ok ? '<div class="small muted">Traduzione della versione corretta.</div>' : "") +
         fl.notes.map(function (n) { return '<div class="snote">' + esc(n) + "</div>"; }).join("") + "</div>";
+      else ct = '<div class="fluid unsure"><div class="fl-it" lang="it">' + esc(CP.lab.NOPE) + "</div>" +
+        '<div class="fl-words"><span class="small muted">Parola per parola:</span> ' + fl.words.map(function (w) { return '<span class="flw"><span class="han">' + esc(w[0]) + "</span> " + esc(w[1]) + "</span>"; }).join(" · ") + "</div>" +
+        (fl.reason ? '<div class="snote">Perché: ' + esc(fl.reason) + ".</div>" : "") + "</div>";
+      ct += CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-labtr>' + (fl.sure ? "✏️ La traduzione è sbagliata?" : "✏️ Proponi la traduzione giusta") + "</button></div>" : "";
       body = full(lab.t, p, true) + ct;
     } else body = full(lab.t, p);
     return labToggle() + body + fixBox(chk, p) + fixLogBox() + spokenBlock(lab.t, p) + w + '<div class="acts">' + CP.audioBtns(hzOf(lab.t, p)) +
@@ -304,6 +310,7 @@
     if (t.id === "ex-check") { checkEx(); CP.sfx(ex.state === "ok" ? "ok" : "ko"); render(); return; }
     if (t.id === "ex-show") { ex.state = "show"; render(); return; }
     if (t.id === "ex-next") { ex = null; render(); return; }
+    if (a("data-labtr") !== null && lab.tr) { CP.contribOpen({ op: "tr", target: lab.tr.zh, old: lab.tr.it, fromId: lab.tr.id }); return; }
     if (a("data-labview")) { lab.view = a("data-labview"); CP.sfx("tap"); updLab(); return; }
     if (a("data-labfix") !== null) {
       var ck = CP.lab.check(lab.t); if (!ck.ok) { lab.fixLog = ck.steps.slice(); lab.t = ck.fixed.slice(); CP.sfx("ok"); updLab(); var fb = document.querySelector(".fixlog"); if (fb && fb.scrollIntoView) fb.scrollIntoView({ block: "nearest" }); }
@@ -342,6 +349,7 @@
     else if (id === "opt-it") { showIt = ev.target.checked; render(); }
   });
   CP.lint = lint; CP.spoken = spokenPinyin; CP._lab = lab;
+  CP.labRefresh = function () { if (sub === "lab" && labMode !== "slot") updLab(); };
   CP.build = {
     render: function () { render(); },
     setSub: function (s) { sub = s; render(); },
