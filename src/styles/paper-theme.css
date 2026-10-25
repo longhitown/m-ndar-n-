@@ -1,0 +1,72 @@
+/* ===== V6.6 · Neo-Calligraphic Elegance: carta di riso, inchiostro, tessere tattili ===== */
+/* --- tema seppia "Carta di Riso" --- */
+:root[data-theme="sepia"] {
+  --bg: #F4EFE6; --surface: #FAF6EE; --ink: #231F1B; --muted: #675E55; --line: #DFD6C7; --accent: #14594A; --chip: #EAE2D3;
+  --shadow: 0 2px 4px rgba(45, 35, 20, 0.06), 0 8px 24px rgba(45, 35, 20, 0.08);
+  --seal: #C8312B;
+  /* toni tarati sulla carta: contrasto >= 4.5:1 su --bg, --surface e --chip */
+  --t1: #B42A24; --t2: #1C6B37; --t3: #2357A8; --t4: #7A33AD; --t5: #655F57;
+  --tg-chi: var(--t3); --tg-when: var(--t4); --tg-with: var(--t2); --tg-where: var(--t1);
+  color-scheme: light;
+}
+/* --- micro-texture di carta (SVG tassellato: costa una sola volta) --- */
+:root {
+  --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .30 0 0 0 0 .24 0 0 0 0 .14 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) { --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .75 0 0 0 0 .85 0 0 0 0 .8 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+}
+:root[data-theme="dark"] { --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .75 0 0 0 0 .85 0 0 0 0 .8 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+body { background-color: var(--bg); background-image: var(--paper); background-size: 200px 200px; }
+@media print { body { background-image: none; } }
+
+/* --- pannelli con bordo "inchiostro" (filo + base piu' spessa) --- */
+.panel, .sbox, .stat { border: 1px solid var(--line); border-bottom-width: 3px; }
+.hero, .fc, .sbox { position: relative; overflow: hidden; }
+.hero > *, .fc > *, .sbox > * { position: relative; z-index: 1; }
+/* sigillo di fondo: un carattere grande e quasi invisibile */
+.hero::before, .fc::before, .sbox::before { position: absolute; z-index: 0; pointer-events: none; font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", var(--f-han); font-weight: 400; color: var(--accent); opacity: 0.06; line-height: 1; content: "学"; content: "学" / ""; }
+.hero::before { right: -8px; bottom: -30px; font-size: 168px; }
+.fc::before { content: "字"; content: "字" / ""; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 200px; opacity: 0.04; }
+.sbox::before { content: "言"; content: "言" / ""; right: -4px; bottom: -14px; font-size: 84px; }
+.fc { background-image: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%); }
+
+/* --- tessere tattili --- */
+.tile { border: 1px solid var(--line); border-bottom: 4px solid color-mix(in srgb, var(--line) 75%, var(--ink)); background: var(--surface); transition: transform 0.08s ease, border-bottom-width 0.08s ease; }
+.tile:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+.tile.used { border-bottom-width: 2px; transform: translateY(2px); }
+.tile .tp, .tile .th { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
+
+/* --- tema: pulsante nella barra --- */
+#theme-btn { font-size: 20px; line-height: 1; }
+
+/* --- intestazione compatta nelle schede diverse dal Percorso: piu' schermo per lo studio --- */
+body.compact .hd .lede { display: none; }
+body.compact .brand svg { width: min(100%, 150px); margin: 0; }
+body.compact .hd { margin-bottom: 0; }
+body.compact { padding-top: 10px; }
+
+/* --- filtro per livello (Parole) --- */
+.tiers { display: flex; gap: 8px; overflow-x: auto; margin: 12px -2px 0; padding: 2px 2px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tiers::-webkit-scrollbar { display: none; }
+.tiers button { flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.tiers button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* --- Percorso: capitoli --- */
+.chap-nav button { padding: 0 12px; }
+.chap-nav button b { font-weight: 800; margin-right: 2px; }
+.chap-nav button small { font-size: 13px; font-weight: 600; margin-left: 4px; color: var(--muted); }
+.chap-nav button.on small { color: inherit; }
+.chap-head { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: end; margin: 22px 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.chap-head small { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.chap-head h3 { margin: 2px 0 0; font: 700 22px/1.15 var(--f-display); }
+.chap-pc { text-align: right; font-variant-numeric: tabular-nums; }
+.chap-pc b { display: block; font-size: 20px; line-height: 1; }
+.chap-pc span { font-size: 13px; color: var(--muted); }
+.chap-head .mini { grid-column: 1 / -1; display: block; height: 4px; border-radius: 3px; background: var(--chip); overflow: hidden; }
+.chap-head .mini i { display: block; height: 100%; background: var(--accent); }
+
+/* --- carte: suggerimento di trascinamento --- */
+.swipe-hint { text-align: center; margin: 8px 0 0; }
+@media (hover: hover) and (pointer: fine) { .swipe-hint { display: none; } }

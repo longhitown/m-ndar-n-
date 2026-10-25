@@ -1,0 +1,40 @@
+/* 28. Studio, ufficio e progetti · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "lavoro2",
+  "title": "28. Studio, ufficio e progetti",
+  "words": [
+    ["shàng.bān","上班","andare al lavoro, iniziare il turno"],
+    ["xià.bān","下班","uscire dal lavoro"],
+    ["jiā.bān","加班","fare gli straordinari"],
+    ["fàng.jià","放假","essere in vacanza / ferie"],
+    ["qǐng.jià","请假","chiedere un permesso"],
+    ["kāi.huì","开会","fare una riunione"],
+    ["huì.yì","会议","riunione, conferenza"],
+    ["bàn.gōng.shì","办公室","ufficio"],
+    ["kè.hù","客户","cliente"],
+    ["hé.tong","合同","contratto"],
+    ["gōng.zī","工资","stipendio"],
+    ["jīng.yàn","经验","esperienza"],
+    ["jī.huì","机会","opportunità, occasione"],
+    ["chéng.gōng","成功","avere successo; successo"],
+    ["shī.bài","失败","fallire; fallimento"],
+    ["jì.huà","计划","piano, progetto; pianificare"],
+    ["mù.biāo","目标","obiettivo, traguardo"],
+    ["jiě.jué","解决","risolvere (un problema)"],
+    ["liàn.xí","练习","esercitarsi; esercizio"],
+    ["fù.xí","复习","ripassare"],
+    ["yù.xí","预习","studiare in anticipo"],
+    ["fān.yì","翻译","tradurre; traduttore"],
+    ["cí.diǎn","词典","dizionario"],
+    ["yǔ.fǎ","语法","grammatica"],
+    ["fā.yīn","发音","pronuncia"],
+    ["shēng.diào","声调","tono (della voce)"],
+    ["hàn.zì","汉字","carattere cinese"],
+    ["pīn.yīn","拼音","pinyin"],
+    ["jù.zi","句子","frase"],
+    ["chéng.jì","成绩","voto, risultato"],
+    ["jìn.bù","进步","fare progressi, migliorare"],
+    ["shuǐ.píng","水平","livello"]
+  ]
+});

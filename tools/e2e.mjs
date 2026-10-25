@@ -10,7 +10,7 @@
    Restano da fare a mano, su un telefono vero: tap udibile a volume 50% e 10 tap di fila non fastidiosi, la musica
    che si abbassa quando parla la voce, Lighthouse «Installable» su https, il microfono in modalità standalone su iPhone.
 
-   Uso: node tools/e2e.mjs [index.html] */
+   Uso: node tools/e2e.mjs [dist/index.html]   (prima: node tools/build.mjs) */
 import { createRequire } from "module";
 import http from "http";
 import fs from "fs";
@@ -19,7 +19,7 @@ import { pathToFileURL } from "url";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
-const file = path.resolve(process.argv[2] || "index.html"), dir = path.dirname(file);
+const file = path.resolve(process.argv[2] || "dist/index.html"), dir = path.dirname(file);
 const results = [];
 const check = (name, ok, detail) => { results.push({ name, ok: !!ok, detail: detail || "" }); console.log((ok ? "✓ " : "✗ ") + name + (detail ? " — " + detail : "")); };
 

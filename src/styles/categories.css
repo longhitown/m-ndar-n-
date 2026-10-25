@@ -1,0 +1,19 @@
+/* ===== V6.5: categorie (pills), Pensiero esteso, Puzzle ===== */
+:root { --tg-mod: color-mix(in srgb, var(--t5) 75%, var(--ink)); --tg-qty: var(--muted); --tg-ba: var(--t1); --tg-ask: var(--t4); --tg-how: var(--t2); --tg-dur: var(--t3); --tg-cause: var(--t1); --tg-cond: var(--t4); --tg-res: var(--accent); }
+.tg.mod { background: var(--tg-mod); } .tg.qty { background: var(--tg-qty); } .tg.ba { background: var(--tg-ba); } .tg.ask { background: var(--tg-ask); } .tg.how { background: var(--tg-how); } .tg.dur { background: var(--tg-dur); } .tg.cause { background: var(--tg-cause); } .tg.cond { background: var(--tg-cond); } .tg.res { background: var(--tg-res); }
+.tb.mod { border-color: var(--tg-mod); } .tb.qty { border-color: var(--tg-qty); } .tb.ba { border-color: var(--tg-ba); } .tb.ask { border-color: var(--tg-ask); } .tb.how { border-color: var(--tg-how); } .tb.dur { border-color: var(--tg-dur); } .tb.cause { border-color: var(--tg-cause); } .tb.cond { border-color: var(--tg-cond); } .tb.res { border-color: var(--tg-res); }
+.cpills { display: flex; gap: 8px; overflow-x: auto; margin: 12px -2px 0; padding: 2px 2px 4px; scrollbar-width: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+.cpills::-webkit-scrollbar { display: none; }
+.cpills button { flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px; font-size: 15px; font-weight: 600; white-space: nowrap; scroll-snap-align: start; }
+.cpills button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.tk-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.tk-nav button { min-height: 48px; }
+.pzb { text-align: left; font: inherit; cursor: pointer; color: var(--ink); }
+.pzb:active { transform: translateY(2px); }
+.pzb.wrong { border-color: var(--t1); background: color-mix(in srgb, var(--t1) 10%, var(--surface)); animation: pzshake .35s; }
+.pzb.right { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+@keyframes pzshake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .pzb.wrong { animation: none; } }
+.pz-ans { border: 2px dashed var(--line); background: transparent; }
+.pz-slot { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 64px; border-radius: 12px; border: 2px dashed var(--line); color: var(--muted); font-weight: 700; }
+.pz-pool { background: var(--chip); }

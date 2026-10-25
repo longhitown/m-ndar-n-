@@ -1,0 +1,62 @@
+/* ===== V5: componenti nuovi ===== */
+.brand { margin: 0; line-height: 0; }
+.brand svg { display: block; width: min(100%, 360px); height: auto; }
+.brand .brand-fallback { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.brand:not(:has(svg)) .brand-fallback { position: static; width: auto; height: auto; clip: auto; font-family: var(--f-display); font-size: 34px; line-height: 1.1; }
+table.cm { border-collapse: collapse; margin: 6px 0 4px; font-variant-numeric: tabular-nums; }
+table.cm th, table.cm td { width: 46px; height: 40px; text-align: center; font-weight: 700; border: 1px solid var(--line); padding: 0; }
+table.cm th { background: var(--chip); font-size: 14px; }
+table.cm td.d { background: color-mix(in srgb, var(--accent) calc(var(--a) * 70%), transparent); }
+table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), transparent); }
+#mem select, #bk .acts button { min-height: 44px; }
+.notice[role="alert"] { border-color: var(--t1); }
+
+/* ===== Logo màndarínō ===== */
+.logo-svg { overflow: visible; }
+.logo-svg .cls-text, .mini-logo .cls-text { fill: var(--ink); }
+.logo-svg .cls-tone-4 { fill: var(--t4); }
+.logo-svg .cls-tone-2 { fill: var(--t2); }
+.logo-svg .cls-tone-1 { fill: var(--t1); }
+.logo-svg .font-brand { font-family: var(--f-display); font-size: 72px; font-weight: 700; letter-spacing: -0.5px; }
+.logo-svg .font-sub { font-family: var(--f-body); font-size: 14px; font-weight: 700; letter-spacing: 7px; text-transform: uppercase; fill: var(--muted); }
+.lg-shadow { fill: #000; opacity: 0.22; }
+#pores { opacity: calc(var(--pores, 1) * 0.32); }
+.pores2 { opacity: calc(var(--pores, 1) * 0.28); }
+.brand { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.brand .lg-t { cursor: pointer; }
+.brand .lg-t:hover { filter: brightness(1.15); }
+@keyframes tone-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08) rotate(3deg); } }
+.leaf-v { transform-box: fill-box; transform-origin: center bottom; }
+#mandarin-symbol:hover .leaf-v, .brand.pulse .leaf-v { animation: tone-pulse 0.6s ease-in-out; }
+@media (prefers-reduced-motion: reduce) { #mandarin-symbol:hover .leaf-v, .brand.pulse .leaf-v { animation: none; } }
+/* timbro: il frutto al posto del quadrato rosso */
+.seal.stamp { position: relative; background: none; border-radius: 0; transform: none; --pores: 0.4; }
+.seal.stamp svg { position: absolute; inset: -6% -6% 0 -6%; width: 112%; height: 112%; }
+.seal.stamp b { position: relative; z-index: 1; color: #FFF6E5; font: 700 17px/1 var(--f-han); text-shadow: 0 1px 2px rgba(80, 20, 0, 0.7); margin-top: 6px; }
+.seal.stamp.lg b { font-size: 30px; margin-top: 10px; }
+.seal.stamp.max svg { filter: sepia(1) saturate(2.2) hue-rotate(-12deg) brightness(1.15); }
+.seal.stamp.max b { color: #FFF3C4; }
+@media print { .mini-logo { display: none !important; } }
+.brand svg.logo-svg { width: min(100%, 250px); margin-inline: auto; }
+@media (min-width: 700px) { .brand svg.logo-svg { width: 300px; } }
+.gpill { white-space: nowrap; flex: 0 1 auto; }
+
+/* ===== audio ===== */
+.iconbtn.emo { font-size: 20px; line-height: 1; position: relative; }
+#vol-btn.pending::after { content: ""; position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--t1); box-shadow: 0 0 0 2px var(--surface); }
+#music-btn { opacity: 0.55; }
+#music-btn.on { opacity: 1; background: color-mix(in srgb, var(--accent) 16%, var(--surface)); border-color: var(--accent); }
+.vab { display: grid; gap: 6px; padding: 10px 0 2px; border-top: 1px solid var(--line); margin-top: 8px; }
+.vab .ab { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vab .ab label { display: grid; gap: 3px; font-size: 13px; font-weight: 600; min-width: 0; }
+.vab .ab select { width: 100%; min-width: 0; }
+.vab .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.vab button { min-height: 44px; }
+
+/* ===== autodiagnosi ===== */
+#selftest { position: fixed; inset: 0; z-index: 50; background: var(--bg); overflow: auto; padding: 16px; }
+#selftest .st-in { max-width: 640px; margin: 0 auto; }
+#selftest ul { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+#selftest li { padding: 8px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+#selftest li.ok b { color: var(--t2); } #selftest li.ko b { color: var(--t1); } #selftest li.wa b { color: var(--warn); }
+#selftest .acts { display: flex; gap: 8px; margin-top: 12px; } #selftest .acts button { min-height: 44px; }

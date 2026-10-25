@@ -1,0 +1,43 @@
+/* 16. Casa, oggetti e tecnologia · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "casa",
+  "title": "16. Casa, oggetti e tecnologia",
+  "words": [
+    ["fáng.zi","房子","casa, edificio"],
+    ["fáng.jiān","房间","stanza, camera"],
+    ["kè.tīng","客厅","soggiorno, salotto"],
+    ["wò.shì","卧室","camera da letto"],
+    ["chú.fáng","厨房","cucina"],
+    ["mén","门","porta"],
+    ["chuāng.hu","窗户","finestra"],
+    ["zhuō.zi","桌子","tavolo, scrivania"],
+    ["yǐ.zi","椅子","sedia"],
+    ["chuáng","床","letto"],
+    ["dēng","灯","luce, lampada"],
+    ["kōng.tiáo","空调","aria condizionata"],
+    ["dōng.xi","东西","cosa, oggetto"],
+    ["qián","钱","soldi, denaro"],
+    ["xiàn.jīn","现金","contanti"],
+    ["xìn.yòng.kǎ","信用卡","carta di credito"],
+    ["shǒu.jī","手机","telefono cellulare"],
+    ["diàn.huà","电话","telefono, telefonata"],
+    ["diàn.nǎo","电脑","computer"],
+    ["diàn.shì","电视","televisione"],
+    ["wǎng.luò","网络","internet, rete"],
+    ["wēi.xìn","微信","WeChat"],
+    ["mì.mǎ","密码","password, codice PIN"],
+    ["zhào.piàn","照片","fotografia"],
+    ["shū","书","libro"],
+    ["zì","字","carattere, parola scritta"],
+    ["bǐ","笔","penna"],
+    ["zhǐ","纸","carta"],
+    ["bāo","包","borsa, zaino"],
+    ["yào.shi","钥匙","chiave"],
+    ["yǔ.sǎn","雨伞","ombrello"],
+    ["lǐ.wù","礼物","regalo"],
+    ["wèn.tí","问题","domanda; problema"],
+    ["shì.qing","事情","faccenda, questione"],
+    ["bàn.fǎ","办法","modo, soluzione"]
+  ]
+});

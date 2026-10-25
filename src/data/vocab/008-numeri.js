@@ -1,0 +1,43 @@
+/* 8. Numeri e classificatori · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "numeri",
+  "title": "8. Numeri e classificatori",
+  "words": [
+    ["líng","零","zero"],
+    ["yī","一","uno"],
+    ["èr","二","due (nei numeri)"],
+    ["liǎng","两","due (con i classificatori)","两个人 = due persone"],
+    ["sān","三","tre"],
+    ["sì","四","quattro"],
+    ["wǔ","五","cinque"],
+    ["liù","六","sei"],
+    ["qī","七","sette"],
+    ["bā","八","otto"],
+    ["jiǔ","九","nove"],
+    ["shí","十","dieci"],
+    ["bǎi","百","cento","一百 = 100"],
+    ["qiān","千","mille","一千 = 1000"],
+    ["wàn","万","diecimila","一万 = 10.000"],
+    ["dì.yī","第一","primo"],
+    ["yí.bàn","一半","metà"],
+    ["gè","个","classificatore universale","一个人, 这个"],
+    ["běn","本","class. per libri e quaderni","一本书 = un libro"],
+    ["bēi","杯","tazza, bicchiere","一杯茶 = una tazza di tè"],
+    ["píng","瓶","bottiglia","一瓶水 = una bottiglia d'acqua"],
+    ["wǎn","碗","ciotola","一碗米饭 = una ciotola di riso"],
+    ["pán","盘","piatto (portata)"],
+    ["zhāng","张","class. oggetti piatti (biglietti, tavoli)"],
+    ["jiàn","件","class. vestiti e faccende","一件衣服 = un vestito"],
+    ["tiáo","条","class. cose lunghe (strade, pantaloni, pesci)"],
+    ["shuāng","双","paio (scarpe, bacchette)"],
+    ["kuài","块","pezzo; Yuan (soldi parlati)","十块钱 = 10 yuan"],
+    ["yuán","元","Yuan (valuta formale)"],
+    ["cì","次","volta (frequenza)","一次 = una volta"],
+    ["wèi","位","class. cortese per persone","两位客人 = due ospiti"],
+    ["zhī","只","class. per animali piccoli"],
+    ["liàng","辆","class. per auto e bici"],
+    ["suì","岁","anni di età","二十岁 = 20 anni"],
+    ["xiē","些","alcuni, un po' di"]
+  ]
+});

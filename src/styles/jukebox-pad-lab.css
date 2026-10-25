@@ -1,0 +1,53 @@
+/* ===== V6: jukebox ===== */
+#jk-pop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.42);display:flex;align-items:flex-end;justify-content:center}
+#jk-pop[hidden]{display:none}
+.jk-card{background:var(--surface);color:var(--ink);width:100%;max-width:520px;max-height:86vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+.jk-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:1.1rem}
+.jk-list{display:grid;gap:8px}
+.jk-it{display:flex;gap:12px;align-items:center;text-align:left;background:var(--chip);color:var(--ink);border:1px solid var(--line);border-bottom-width:3px;border-radius:14px;padding:10px 12px;min-height:56px;font:inherit;cursor:pointer}
+.jk-it .ico{font-size:1.5rem;flex:0 0 auto}
+.jk-it b{display:block;font-size:.95rem}
+.jk-it i{display:block;font-style:normal;font-size:13px;color:var(--muted)}
+.jk-it.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.jk-it:active{transform:translateY(2px);border-bottom-width:1px}
+.jk-list.compact .jk-it{min-height:48px;padding:7px 10px}
+.jk-vol{display:flex;gap:10px;align-items:center;margin-bottom:6px;min-height:44px}
+.jk-vol input{flex:1;min-height:44px}
+input[type="range"]{accent-color:var(--accent)}
+.jk-moods{margin:4px 0 10px}
+#music-btn.on{box-shadow:inset 0 0 0 2px var(--accent)}
+
+/* ===== V6: lavagna a dito ===== */
+.pad2{gap:10px}
+.pad2 .pad-stage{position:relative;width:min(86vw,340px);aspect-ratio:1/1;border:2px solid var(--line);box-shadow:0 3px 0 var(--line);border-radius:14px;background:var(--surface);overflow:hidden;touch-action:none}
+.pad2 .pad-stage canvas{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;background:transparent}
+.pad2 canvas.pad-ink{touch-action:none;cursor:crosshair}
+.pad2 canvas.pad-bg{pointer-events:none}
+.pad-dot{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:var(--t2);box-shadow:0 0 0 4px color-mix(in srgb,var(--t2) 28%,transparent);pointer-events:none;animation:padpulse 1.3s ease-in-out infinite}
+@keyframes padpulse{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--t2) 35%,transparent)}50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--t2) 8%,transparent)}}
+.pad-chars{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pad-chars button{min-width:52px;min-height:48px;font-size:1.5rem;border:1px solid var(--line);border-bottom-width:3px;border-radius:12px;background:var(--chip);color:var(--ink)}
+.pad-chars button[data-pc="all"]{font-size:.95rem;font-weight:600}
+.pad-chars button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.pad2 .padbtns button{min-height:46px;padding:0 12px}
+.pad2 .padbtns button.on{background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent)}
+.pad2 .padbtns button:disabled{opacity:.45}
+.pad2 .pad-eval{width:min(86vw,340px)}
+.pad-info{margin:0;text-align:center;max-width:min(92vw,360px)}
+.pad-res{width:min(92vw,360px);text-align:left;background:var(--chip);border-radius:12px;padding:10px 12px}
+.pad-score{font-size:1.05rem;padding:6px 10px;border-radius:10px;margin-bottom:6px}
+.pad-score.ok{background:color-mix(in srgb,var(--t2) 18%,var(--surface))}
+.pad-score.ko{background:color-mix(in srgb,var(--t1) 14%,var(--surface))}
+.pad-tips{margin:6px 0;padding-left:18px;font-size:.92rem;line-height:1.45}
+.pad-tips li{margin:4px 0}
+
+/* ===== V6: laboratorio ===== */
+.lab-view{margin:0 0 10px}
+.fluid{margin:8px 0 4px}
+.fl-it{font-size:1.25rem;font-weight:600;line-height:1.35;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));border:1px solid var(--line);border-bottom-width:3px}
+.fixbox{margin:12px 0;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--warn) 55%,var(--line));background:color-mix(in srgb,var(--warn) 10%,var(--surface));display:grid;gap:8px}
+.fixbox .han{font-size:1.15rem}
+.fixbox .fx-ok{color:var(--ink)}
+.fixlog{margin:10px 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--t2) 12%,var(--surface));border:1px solid var(--line)}
+.fixlog ol{margin:6px 0 0;padding-left:20px}
+.fixlog li{margin:4px 0;line-height:1.4}

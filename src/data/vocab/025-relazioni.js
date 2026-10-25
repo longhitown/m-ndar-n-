@@ -1,0 +1,40 @@
+/* 25. Amicizia, amore e vita sociale · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "relazioni",
+  "title": "25. Amicizia, amore e vita sociale",
+  "words": [
+    ["jiāo péng.you","交朋友","fare amicizia"],
+    ["yuē.huì","约会","appuntamento (romantico o tra amici)"],
+    ["liàn.ài","恋爱","innamorarsi, fidanzarsi"],
+    ["fēn.shǒu","分手","lasciarsi"],
+    ["dān.shēn","单身","single"],
+    ["qíng.lǚ","情侣","coppia"],
+    ["liáo.tiān","聊天","chiacchierare"],
+    ["jù.huì","聚会","festa, ritrovo tra amici"],
+    ["qǐng.kè","请客","offrire (pagare per gli altri)"],
+    ["gǎn.qíng","感情","sentimento, affetto"],
+    ["guān.xi","关系","relazione, rapporto"],
+    ["hù.xiāng","互相","a vicenda, reciprocamente"],
+    ["guān.xīn","关心","prendersi cura di, interessarsi"],
+    ["zhào.gù","照顾","badare a, accudire"],
+    ["xiǎng.niàn","想念","sentire la mancanza di"],
+    ["yōng.bào","拥抱","abbracciare, abbraccio"],
+    ["qīn.wěn","亲吻","baciare"],
+    ["dào.qiàn","道歉","chiedere scusa"],
+    ["yuán.liàng","原谅","perdonare"],
+    ["gǎn.dòng","感动","commosso, commuoversi"],
+    ["xiàn.mù","羡慕","invidiare (in senso buono)"],
+    ["jí.dù","嫉妒","essere geloso"],
+    ["chǎo.jià","吵架","litigare"],
+    ["mì.mì","秘密","segreto"],
+    ["chéng.shí","诚实","onesto, sincero"],
+    ["shàn.liáng","善良","buono d'animo, gentile"],
+    ["rè.qíng","热情","caloroso, cordiale"],
+    ["yōu.mò","幽默","spiritoso, divertente"],
+    ["cōng.ming","聪明","intelligente, sveglio"],
+    ["nǔ.lì","努力","impegnarsi a fondo, diligente"],
+    ["lǎn","懒","pigro"],
+    ["rèn.zhēn","认真","serio, scrupoloso"]
+  ]
+});
