@@ -920,7 +920,7 @@ body.compact { padding-top: 10px; }
 :root { --fs-s: 13px; --fs-m: 16px; --fs-l: 20px; --fs-xl: 28px; --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; }
 
 /* U1 · sessione a schermo pieno: restano intestazione della sessione, carta e barra delle azioni */
-body.in-session .hd, body.in-session .bar, body.in-session .vset, body.in-session .dock, body.in-session #totop { display: none; }
+body.in-session header.hd, body.in-session .bar, body.in-session .vset, body.in-session .dock, body.in-session #totop { display: none; }
 body.in-session { padding-block: max(12px, env(safe-area-inset-top, 0px)) 0; }
 body.in-session #study-root { min-height: calc(100dvh - 12px); display: flex; flex-direction: column; }
 body.in-session #study-root.is-card { height: calc(100dvh - max(12px, env(safe-area-inset-top, 0px))); min-height: 0; }
@@ -993,6 +993,37 @@ body.in-session .actbar { flex: none; }
 .done .btn-main { margin-top: 0; }
 .done .stats { margin-top: 0; }
 .done-seal { justify-self: center; }
+
+/* §4.3 · barra in alto: mini-logo, cammino, 🎙️ (solo col microfono aperto), 🎧, 🎵, ⚙️. Tutti i bersagli da 44 px */
+.bar .grp button, .bar .grp .iconbtn { flex: none; width: 44px; min-width: 44px; }
+.mini-logo { width: 44px; min-width: 44px; }
+@media (max-width: 340px) { .bar { flex-wrap: nowrap; justify-content: space-between; } .bar .grp button, .bar .grp .iconbtn { min-width: 44px; } }
+#settings-btn svg { width: 22px; height: 22px; }
+
+/* fogli dal basso (⚙️, filtri, legenda) */
+.sheet { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, 0.42); }
+.sheet[hidden] { display: none; }
+.set-card { max-height: 88vh; display: grid; gap: var(--sp-3); align-content: start; }
+.set-sec { border-top: 1px solid var(--line); padding-top: var(--sp-3); display: grid; gap: var(--sp-2); }
+.set-sec h3 { margin: 0; font: 700 var(--fs-m) var(--f-body); }
+.set-sec > summary { min-height: 44px; font-weight: 700; }
+.set-sec .vbody { display: grid; gap: 10px; padding-bottom: var(--sp-2); }
+.set-sec .seg { margin-top: 0; }
+.set-sec .seg button { min-height: 44px; }
+.set-sec select { width: 100%; }
+.set-sec label.chk input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); flex: none; }
+.hzrow { display: flex; align-items: center; gap: var(--sp-2); }
+.hzrow > span:first-child { flex: 1; font-weight: 600; }
+.hzrow button { width: 48px; }
+
+/* U2 · intestazione compatta come stato normale */
+.hd .lede { display: none; }
+body.compact .brand svg.logo-svg { width: 104px; margin: 0; }
+@media (max-width: 699px) { .brand svg.logo-svg { width: min(100%, 200px); } }
+.resume { margin-top: var(--sp-4); display: grid; gap: var(--sp-2); }
+.resume .btn-main { margin-top: 0; }
+.hero .btn-s { justify-self: start; }
+body.compact .hd { display: flex; align-items: center; justify-content: flex-start; }
 /* U9 · toast: una riga, mai sopra la dock */
 #toast { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 32px); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
@@ -1007,27 +1038,19 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 <main>
   <header class="hd">
     <h1 class="brand" aria-label="màndarínō, il cinese per italiani"><svg xmlns="http://www.w3.org/2000/svg" viewBox="212 24 376 340" class="logo-svg" role="img" aria-hidden="true" focusable="false"><defs><filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter><radialGradient id="mandarin-grad" cx="36%" cy="32%" r="68%"><stop offset="0%" stop-color="#FFA41C" /><stop offset="45%" stop-color="#F37905" /><stop offset="80%" stop-color="#D95000" /><stop offset="100%" stop-color="#9C3200" /></radialGradient><radialGradient id="inner-ambient" cx="40%" cy="40%" r="60%"><stop offset="70%" stop-color="#000000" stop-opacity="0" /><stop offset="100%" stop-color="#5C1600" stop-opacity="0.45" /></radialGradient><linearGradient id="highlight-grad" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55" /><stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" /></linearGradient><linearGradient id="leaf-left-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2D7DD2" /><stop offset="40%" stop-color="#229874" /><stop offset="100%" stop-color="#14594A" /></linearGradient><linearGradient id="leaf-right-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#14594A" /><stop offset="60%" stop-color="#2EB88A" /><stop offset="100%" stop-color="#3AD8A3" /></linearGradient></defs><g id="mandarin-symbol" transform="translate(400, 118)"><ellipse cx="0" cy="88" rx="82" ry="11" class="lg-shadow" filter="url(#soft-shadow)" /><path fill="url(#mandarin-grad)" d="M 0, -68 C 58, -68  96, -34  96, 12 C 96,  58  54,  84   0, 84 C -54, 84 -96,  58 -96, 12 C -96, -34 -58, -68   0, -68 Z" /><path fill="url(#inner-ambient)" d="M 0, -68 C 58, -68  96, -34  96, 12 C 96,  58  54,  84   0, 84 C -54, 84 -96,  58 -96, 12 C -96, -34 -58, -68   0, -68 Z" /><path fill="url(#highlight-grad)" d="M -48, -48 C -16, -62  24, -62  52, -44 C 18, -48 -22, -44 -48, -48 Z" /><g id="pores" fill="#FFFFFF" opacity="0.32"><circle cx="-32" cy="-28" r="2.2" /><circle cx="-12" cy="-38" r="1.8" /><circle cx="16" cy="-32" r="2.0" /><circle cx="-52" cy="-6" r="2.2" /><circle cx="-28" cy="-8" r="2.5" /><circle cx="4" cy="-14" r="2.4" /><circle cx="36" cy="-12" r="1.8" /><circle cx="-62" cy="18" r="1.8" /><circle cx="-36" cy="18" r="2.2" /><circle cx="-6" cy="14" r="2.6" /><circle cx="24" cy="16" r="2.4" /><circle cx="58" cy="12" r="1.8" /><circle cx="-42" cy="42" r="1.8" /><circle cx="-14" cy="44" r="2.2" /><circle cx="18" cy="46" r="2.0" /><circle cx="48" cy="38" r="1.6" /><circle cx="-8" cy="66" r="1.8" /><circle cx="16" cy="64" r="1.6" /></g><g class="pores2" fill="#6E1E00" opacity="0.28"><circle cx="-31" cy="-27" r="1.6" /><circle cx="-27" cy="-7" r="1.8" /><circle cx="-5" cy="15" r="1.9" /><circle cx="25" cy="17" r="1.7" /><circle cx="-13" cy="45" r="1.6" /></g><ellipse cx="0" cy="-66" rx="9" ry="3.5" fill="#752200" opacity="0.75" /><path d="M -2, -66 C -4, -76 -1, -82 3, -86 C 4, -86 5, -83 4, -81 C 1, -77 2, -73 2, -66 Z" fill="#293A2C" /><path class="leaf-v" fill="url(#leaf-left-grad)" d="M -1, -67  C -14, -84 -38, -98 -62, -92  C -58, -74 -36, -64 -1, -67 Z" /><path d="M -54, -88 C -36, -82 -18, -74 -4, -68" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4" /><path class="leaf-v" fill="url(#leaf-right-grad)" d="M 1, -68  C 22, -88  52, -102  78, -94  C 66, -72  38, -62   1, -68 Z" /><path d="M 2, -69 C 28, -75 52, -84 70, -92" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.45" /><circle class="leaf-v" cx="0" cy="-67.5" r="2.8" fill="#14594A" /></g><g id="logo-text"><text class="font-brand" text-anchor="middle" x="400" y="308"><tspan class="cls-text">m</tspan><tspan class="cls-tone-4 lg-t" data-tone="4">à</tspan><tspan class="cls-text">ndar</tspan><tspan class="cls-tone-2 lg-t" data-tone="2">í</tspan><tspan class="cls-text">n</tspan><tspan class="cls-tone-1 lg-t" data-tone="1">ō</tspan></text><text class="font-sub" text-anchor="middle" x="404" y="348">il cinese per italiani</text></g></svg><span class="brand-fallback">màndarínō</span></h1>
-    <p class="lede"><b><span id="count">3500</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p>
   </header>
 
   <div class="notice" id="frame-notice" hidden></div>
   <div class="notice" id="mic-notice" role="alert" hidden></div>
   <div class="notice" id="sw-notice" role="status" hidden></div>
 
-  <details class="panel vset" id="vset">
-    <summary>Voce e audio <span class="muted small" id="vsum" style="margin-left:8px;font-weight:400"></span></summary>
-    <div class="vbody" id="vset-body"></div>
-  </details>
 
   <div class="bar" role="toolbar" aria-label="Strumenti">
     <button type="button" id="mini-logo" class="mini-logo" aria-label="Torna in cima" hidden><svg viewBox="300 30 200 200" aria-hidden="true" focusable="false"><use href="#mandarin-symbol"/></svg></button>
     <button type="button" class="gpill" id="game-pill" aria-label="Il tuo cammino"></button>
     <div class="grp" role="group" aria-label="Strumenti">
-      <button type="button" id="theme-btn" class="iconbtn" aria-label="Cambia tema: chiaro, carta di riso, notte" title="Tema">☀️</button>
-      <button type="button" id="guide-btn" class="iconbtn" aria-label="Modalità guida: ascolta camminando"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 15h-3v5h2a1 1 0 0 0 1-1z"/></svg></button>
-      <button id="hz-minus" type="button" aria-label="Caratteri più piccoli">A−</button>
-      <span id="hz-val" class="val" hidden></span>
-      <button id="hz-plus" type="button" aria-label="Caratteri più grandi">A+</button>
+      <button type="button" id="guide-btn" class="iconbtn" aria-label="Modalità guida: ascolta camminando" title="Modalità guida"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 15h-3v5h2a1 1 0 0 0 1-1z"/></svg></button>
+      <button type="button" id="settings-btn" class="iconbtn" aria-label="Impostazioni: tema, caratteri, audio, voce, backup" title="Impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
   </div>
 
@@ -1110,6 +1133,27 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="fam" hidden role="dialog" aria-modal="true" aria-label="Dettagli"><div class="fam-card" id="fam-card"></div></div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-label="Modalità guida"></div>
+<div id="settings" class="sheet" hidden role="dialog" aria-labelledby="set-title">
+  <div class="fam-card set-card">
+    <div class="fam-head"><h2 id="set-title" style="margin:0">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close>Chiudi</button></div>
+    <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look">Aspetto</h3>
+      <div class="seg" id="set-theme" role="group" aria-label="Tema"><button type="button" data-theme-set="light">☀️ Chiaro</button><button type="button" data-theme-set="sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark">🌙 Notte</button></div>
+      <div class="hzrow"><span>Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi">A+</button></div>
+      <label class="chk"><input type="checkbox" id="opt-toneshapes"> Toni anche con un segno, non solo col colore</label>
+    </section>
+    <section class="set-sec" aria-labelledby="set-h-audio"><h3 id="set-h-audio">Audio</h3>
+      <div class="seg" id="set-audio" role="group" aria-label="Audio"><button type="button" data-audio-set="all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute">🔇 Muto</button></div>
+      <label class="jk-vol small muted">🔔 Volume effetti <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
+      <button type="button" class="btn-s" id="set-music">🎵 Musica per studiare…</button>
+    </section>
+    <details class="set-sec" id="vset"><summary>Voce</summary><div class="vbody" id="vset-body"></div></details>
+    <details class="set-sec" id="set-mic-box"><summary>Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close">Chiudi il microfono adesso</button></div></details>
+    <details class="set-sec" id="set-data"><summary>Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
+    <div id="set-extra"></div>
+    <details class="set-sec" id="set-about"><summary>Come funziona</summary><div class="vbody"><p class="lede" style="margin:0"><b><span id="count">3500</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest">Autodiagnosi</button></div></div></details>
+  </div>
+</div>
+
 
 
 <script id="data">
@@ -1531,7 +1575,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   var secsEl = document.getElementById("sections");
   document.getElementById("chips").innerHTML = chips;
   secsEl.innerHTML = html + ph;
-  document.getElementById("count").textContent = total;
+  var countEl = document.getElementById("count"); if (countEl) countEl.textContent = total;
   document.title = "màndarínō · " + total + " parole di cinese";
   SEC.forEach(function (S) { S.el = document.getElementById(S.id); S.tw = S.el.querySelector(".tw"); S.tb = S.el.querySelector("tbody"); S.nEl = S.el.querySelector("h2 .n"); });
   secsEl.style.overflowAnchor = "none";
@@ -3722,7 +3766,14 @@ const PATH = {
       '<div class="gst"><div class="ring-w" aria-hidden="true"><div class="ring" style="--p:' + p + '"></div><span class="tx">' + wt + "</span></div><div><b>" + wt + "/" + goal + "</b><span>Oggi " + wt + "/" + goal + " parole</span></div></div></div>" +
       '<div class="week" aria-label="Questa settimana">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.td ? "td" : "") + '">' + days[i] + "<i></i></span>"; }).join("") + "</div>" +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">Obiettivo<select id="goal-sel">' + goalOpts + "</select></label>" +
-      '<button type="button" class="btn-main" style="margin-top:0" id="path-go">Continua dalla tappa ' + (cur + 1) + "</button></div>";
+      '<button type="button" class="btn-s" id="path-go">📍 Vai alla tappa ' + (cur + 1) + " sulla mappa</button></div>";
+  }
+  /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
+  function resumeHTML(cur) {
+    var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur];
+    return '<div class="panel resume"><div class="small muted">Tappa ' + (cur + 1) + " · " + esc(title(s)) + "</div>" +
+      '<button type="button" class="btn-main" id="path-continue">' + (n ? "Continua da dove eri · ≈ " + Math.max(1, Math.round(n * 20 / 60)) + " min" : "Esplora la tappa " + (cur + 1)) + "</button>" +
+      '<div class="small muted">' + (n ? c.due + " da ripassare · " + c.nw + " " + (c.nw === 1 ? "nuova" : "nuove") : "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.") + "</div></div>";
   }
   function stopHTML(s, i, cur) {
     var st = stats(s.id), P = PATH[s.id] || { o: "Leggi le " + KEYS[s.id].length + " parole di questo argomento, poi mettile alla prova con le carte e le frasi.", g: -1 }, d = dlgFor(s.id), isOpen = open[s.id];
@@ -3778,7 +3829,7 @@ const PATH = {
       list += chapHead(k);
       for (var i = CHAPTERS[k].a; i < CHAPTERS[k].b; i++) list += stopHTML(SECTIONS[i], i, cur);
     });
-    root.innerHTML = heroHTML(cur) +
+    root.innerHTML = resumeHTML(cur) + heroHTML(cur) +
       '<div class="path-head"><h2>Il percorso</h2><span class="muted small">' + done + " / " + SECTIONS.length + " tappe</span></div>" +
       '<p class="muted" style="margin:0">' + SECTIONS.length + " tappe in " + CHAPTERS.length + ' capitoli, dal primo giorno in Cina ai temi più specifici. Ogni tappa ti porta da «ho visto le parole» a «le uso in una frase». Apri il capitolo che ti serve: non sei obbligato a seguire l\'ordine.</p>' +
       chapNav(sel) + '<div class="path">' + list + "</div>";
@@ -3794,6 +3845,11 @@ const PATH = {
   root.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
     if (t.hasAttribute("data-chap")) { chap = parseInt(t.getAttribute("data-chap"), 10); CP.sfx("tap"); render(); var ch = root.querySelector(".chap-head"); if (ch && ch.scrollIntoView) ch.scrollIntoView({ block: "nearest" }); return; }
+    if (t.id === "path-continue") {
+      var cc = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 };
+      if (cc.due + cc.nw) { CP.show("study"); CP.studyStart(); return; }
+      t = { id: "path-go" };
+    }
     if (t.id === "path-go") {
       var cur = SECTIONS[currentIdx()].id; open[cur] = true; chap = chapOf(currentIdx()); render();
       var el = document.getElementById("stop-" + cur); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -5070,9 +5126,12 @@ const PATH = {
   CP.homeBackup = backupHTML;
   root.addEventListener("change", function (e) {
     if (e.target.id === "ret-sel") { CP.srs.setRetention(parseInt(e.target.value, 10) / 100); fillMem(); }
-    if (e.target.id === "bk-file") {
-      var f = e.target.files && e.target.files[0]; if (!f) return;
-      var msg = document.getElementById("bk-msg");
+    if (e.target.id === "bk-file") { var f0 = e.target.files && e.target.files[0]; if (f0) CP.restoreFile(f0, document.getElementById("bk-msg")); }
+  });
+  /* ripristino da file (anche dal foglio ⚙️): backup V5+ con unione, oppure il vecchio testo v:2 */
+  CP.restoreFile = function (f, msg) {
+    msg = msg || { set textContent(v) { CP.toast(v); } };
+    {
       var rd = new FileReader();
       rd.onload = function () {
         var o; try { o = JSON.parse(rd.result); } catch (x) { msg.textContent = "Il file non è un backup valido."; return; }
@@ -5089,7 +5148,7 @@ const PATH = {
       };
       rd.readAsText(f);
     }
-  });
+  };
   root.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
     if (t.id === "bk-down" || t.id === "bk-down2") { var msg = document.getElementById("bk-msg"); Store.backup().then(function (n) { if (msg) msg.textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; CP.toast("Backup creato: " + n); }); }
@@ -5143,16 +5202,26 @@ const PATH = {
 
   /* ---- 1. pulsanti nella barra ---- */
   var grp = document.querySelector(".bar .grp"), first = document.getElementById("guide-btn");
+  /* V6.7: nella barra resta solo 🎵; i tre stati dell'audio stanno in ⚙️ (CP.audioMode / CP.setAudioMode) */
   var vol = document.createElement("button"); vol.type = "button"; vol.id = "vol-btn"; vol.className = "iconbtn emo";
   var mus = document.createElement("button"); mus.type = "button"; mus.id = "music-btn"; mus.className = "iconbtn emo";
-  grp.insertBefore(mus, first); grp.insertBefore(vol, mus);
+  grp.insertBefore(mus, document.getElementById("settings-btn"));
   function mode() { return !pref.sfx ? "mute" : (pref.auto ? "all" : "fx"); }
   var MODES = { all: ["🔊", "Audio: voce ed effetti", "Voce ed effetti attivi."], fx: ["🔉", "Audio: solo effetti", "Solo effetti: la voce parte solo se tocchi 🔊 sulla parola."], mute: ["🔇", "Audio: muto", "Muto: nessun effetto né musica. La voce parte solo se tocchi 🔊 sulla parola."] };
   function paintVol() {
     var m = mode(), st = CP.audioState(), pend = m !== "mute" && (st === "suspended" || st === "interrupted");
     vol.textContent = MODES[m][0]; vol.setAttribute("aria-label", MODES[m][1] + (pend ? ". L'audio è in pausa: tocca per sbloccarlo" : ". Tocca per cambiare"));
     vol.classList.toggle("pending", pend); vol.title = MODES[m][1];
+    Array.prototype.forEach.call(document.querySelectorAll("[data-audio-set]"), function (b) { var on = b.getAttribute("data-audio-set") === m; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
   }
+  CP.audioMode = mode;
+  CP.setAudioMode = function (next) {
+    if (!MODES[next]) return;
+    CP.audioUnlock();
+    CP.setPref("sfx", next !== "mute"); CP.setPref("auto", next === "all");
+    paintVol(); applyMusic();
+    CP.toast(MODES[next][2]); if (next !== "mute") CP.sfx("tap");
+  };
   vol.addEventListener("click", function () {
     var st = CP.audioState();
     if (mode() !== "mute" && (st === "suspended" || st === "interrupted")) {
@@ -6112,6 +6181,7 @@ const PATH = {
     if (!J.want) { J.want = true; lset("cp-music", "1"); if (!CP.pref.sfx) CP.setPref("sfx", true); CP.musicApply(); }
     openPop();
   });
+  CP.jukeboxOpen = openPop;
   CP.jukeboxUI = function () {
     return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">🎵 Musica per studiare</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">Otto ambienti generati al momento, senza file. Si fermano da soli quando usi il microfono.</p><details class="jk-det"><summary>Scegli la musica</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? "⏸ Spegni" : "▶ Accendi") + "</button></div></div>";
   };
@@ -7107,6 +7177,7 @@ const PATH = {
   function paint() {
     var t = current(), b = document.getElementById("theme-btn");
     if (b) { b.textContent = ICON[t]; b.setAttribute("aria-label", "Tema: " + NAME[t] + ". Tocca per cambiare."); b.title = "Tema: " + NAME[t]; }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-theme-set]"), function (x) { var on = x.getAttribute("data-theme-set") === t; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
     var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", META[t]);
   }
   CP.theme = function () { return current(); };
@@ -7124,6 +7195,7 @@ const PATH = {
   };
   var tb = document.getElementById("theme-btn");
   if (tb) tb.addEventListener("click", CP.cycleTheme);
+  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-theme-set]") : null; if (b) { CP.setTheme(b.getAttribute("data-theme-set")); if (CP.sfx) CP.sfx("tap"); } });
   paint();
 
   /* ---- filtro per livello (scheda Parole) ---- */
@@ -7169,13 +7241,73 @@ const PATH = {
     if (rf) CP.resetFilters = function () { tier = "all"; paintTiers(); return rf.apply(this, arguments); };
   }
 
-  /* ---- intestazione compatta fuori dal Percorso ---- */
-  var vp = document.getElementById("view-path");
-  function compact() { document.body.classList.toggle("compact", !!(vp && vp.hidden)); }
+  /* ---- U2: intestazione compatta come stato normale. Il logo grande compare solo sul Percorso, alla prima apertura del giorno ---- */
+  var vp = document.getElementById("view-path"), bigShown = false;
+  function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function compact() {
+    var big = false;
+    if (vp && !vp.hidden && (bigShown || CP.ux.get("bigLogoDay") !== today())) { big = true; if (!bigShown) { bigShown = true; CP.ux.set("bigLogoDay", today()); } }
+    else if (bigShown && vp && vp.hidden) bigShown = false;
+    document.body.classList.toggle("compact", !big);
+  }
   if (vp && window.MutationObserver) new MutationObserver(compact).observe(vp, { attributes: true, attributeFilter: ["hidden"] });
   compact();
 })();
 
+</script>
+<script id="m81">
+/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso). Tema, caratteri, audio, voce, microfono, backup, e i riquadri
+   che altri moduli aggiungono in #set-extra (lingua, contributi). ===== */
+(function () {
+  var CP = window.CP, el = document.getElementById("settings"), btn = document.getElementById("settings-btn");
+  if (!el || !btn) return;
+  function paintMic() {
+    var p = document.getElementById("set-mic"), b = document.getElementById("set-mic-close"); if (!p) return;
+    var info = CP.micInfo ? CP.micInfo() : { live: false };
+    CP.micState().then(function (st) {
+      var perm = { granted: "permesso dato", denied: "bloccato: consentilo dalle impostazioni del browser", prompt: "lo chiedo la prima volta che serve" }[st] || "stato del permesso sconosciuto";
+      p.textContent = "Microfono: " + perm + ". " + (info.live ? "Adesso è aperto (si chiude da solo dopo 45 secondi di inattività)." : "Adesso è chiuso.") +
+        (CP.canListen() ? " Riconoscimento vocale presente (serve internet)." : " Riconoscimento vocale assente: il 🎤 registra e confronta.");
+      if (b) b.disabled = !info.live;
+    });
+  }
+  function paint() {
+    var v = document.getElementById("set-sfxvol"); if (v && CP.bus) v.value = CP.bus.sfxVol();
+    var ts = document.getElementById("opt-toneshapes"); if (ts) ts.checked = document.body.classList.contains("tone-shapes");
+    if (CP.audioMode) Array.prototype.forEach.call(el.querySelectorAll("[data-audio-set]"), function (b) { var on = b.getAttribute("data-audio-set") === CP.audioMode(); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+    if (CP.settingsExtra) CP.settingsExtra(document.getElementById("set-extra"));
+    paintMic();
+  }
+  function close() { CP.untrap(el); }
+  CP.openSettings = function (sec) {
+    paint(); CP.trap(el, close);
+    var x = el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
+    if (sec) { var d = document.getElementById(sec); if (d) { if (d.tagName === "DETAILS") d.open = true; d.scrollIntoView({ block: "start" }); } }
+    CP.sfx("tap");
+  };
+  btn.addEventListener("click", function () { CP.openSettings(); });
+  el.addEventListener("click", function (e) {
+    if (e.target === el) { close(); return; }
+    var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+    if (b.hasAttribute("data-set-close")) close();
+    else if (b.hasAttribute("data-audio-set")) { CP.setAudioMode(b.getAttribute("data-audio-set")); paint(); }
+    else if (b.id === "set-music") { close(); if (CP.jukeboxOpen) CP.jukeboxOpen(); }
+    else if (b.id === "set-mic-close") { if (CP.micClose) CP.micClose(); CP.toast("Microfono chiuso."); paintMic(); }
+    else if (b.id === "set-bk-down") { Store.backup().then(function (n) { document.getElementById("set-bk-msg").textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; }); }
+    else if (b.id === "set-bk-up") document.getElementById("set-bk-file").click();
+    else if (b.id === "set-welcome") { close(); if (CP.welcome) CP.welcome(true); }
+    else if (b.id === "set-selftest") { close(); location.hash = "#selftest"; }
+  });
+  el.addEventListener("input", function (e) { if (e.target.id === "set-sfxvol" && CP.bus) CP.bus.setSfxVol(parseFloat(e.target.value)); });
+  el.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.id === "set-sfxvol") CP.sfx("tap");
+    else if (t.id === "set-bk-file" && t.files && t.files[0]) CP.restoreFile(t.files[0], document.getElementById("set-bk-msg"));
+    else if (t.id === "opt-toneshapes") { document.body.classList.toggle("tone-shapes", t.checked); try { localStorage.setItem("cp-toneshapes", t.checked ? "1" : "0"); } catch (er) {} }
+  });
+  /* U7: toni anche con la forma (per chi non distingue il rosso dal verde) */
+  try { if (localStorage.getItem("cp-toneshapes") === "1") document.body.classList.add("tone-shapes"); } catch (e) {}
+})();
 </script>
 </body>
 </html>
