@@ -1,0 +1,93 @@
+# màndarínō · APK Android, costruito gratis da GitHub a ogni modifica dell'app.
+# - Controlla che dist/ sia aggiornato (node tools/build.mjs --check) e che le prove della grammatica passino.
+# - Costruisce l'APK (android/), lo controlla con Android lint e lo allega alla corsa («Artifacts»).
+# - Sul ramo principale, se ci sono i segreti della chiave di firma, pubblica una Release: il link
+#   https://github.com/<utente>/<repository>/releases/latest/download/mandarino.apk scarica sempre l'ultima versione.
+# Segreti (Settings → Secrets and variables → Actions): MD_KEYSTORE_B64 (la chiave, in base64) e MD_KEYSTORE_PASSWORD.
+# Senza segreti l'APK è firmato con una chiave di prova: si installa, ma la versione dopo non si installerà sopra.
+name: APK Android
+
+on:
+  push:
+    paths: ["dist/**", "android/**", "src/**", "tools/**", ".github/workflows/apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # il numero di commit è il numero di versione dell'APK
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: dist/ aggiornato e frasi verificate
+        run: node tools/build.mjs --check && node tools/grammar.mjs
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Chiave di firma
+        env:
+          MD_KEYSTORE_B64: ${{ secrets.MD_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$MD_KEYSTORE_B64" ]; then
+            echo "$MD_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/mandarino.jks"
+            echo "MD_KEYSTORE=$RUNNER_TEMP/mandarino.jks" >> "$GITHUB_ENV"
+            echo "SIGNED=1" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Nessuna chiave di firma nei segreti: APK di prova, non pubblicato come Release."
+          fi
+
+      - name: Costruisci e controlla l'APK
+        env:
+          MD_KEYSTORE_PASSWORD: ${{ secrets.MD_KEYSTORE_PASSWORD }}
+        run: gradle -p android --no-daemon assembleRelease lintRelease
+
+      - name: Verifica firma e contenuto
+        run: |
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --print-certs "$APK" | grep -E "Signer|SHA-256" || true
+          "$BT/apksigner" verify "$APK"
+          unzip -l "$APK" | grep -q "assets/www/index.html"
+          VERSION=$("$BT/aapt2" dump badging "$APK" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")
+          cp "$APK" mandarino.apk
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "SHA=$(sha256sum mandarino.apk | cut -d' ' -f1)" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mandarino-${{ env.VERSION }}
+          path: mandarino.apk
+
+      - name: Pubblica la Release
+        if: env.SIGNED == '1' && github.ref_name == github.event.repository.default_branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v$VERSION"
+          printf 'màndarínō %s per Android (8.0 o più recente).\n\nScarica **mandarino.apk**, aprilo e consenti l’installazione da questa fonte. Gli aggiornamenti si installano sopra la versione precedente senza perdere i progressi.\n\nSHA-256: `%s`\n' "$VERSION" "$SHA" > notes.md
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" mandarino.apk --clobber
+          else
+            gh release create "$TAG" mandarino.apk --title "màndarínō $VERSION" --notes-file notes.md --target "$GITHUB_SHA" --latest
+          fi
+          echo "Scarica: https://github.com/${{ github.repository }}/releases/latest/download/mandarino.apk" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Backup automatico di Android (Android 6-11): i progressi stanno nei dati della WebView (localStorage e IndexedDB) -->
+<full-backup-content>
+    <include domain="root" path="app_webview/" />
+</full-backup-content>

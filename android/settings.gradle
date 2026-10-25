@@ -1,0 +1,11 @@
+// màndarínō · app Android: una WebView che apre dist/index.html dal pacchetto, più un piccolo ponte nativo
+// (voce, riconoscimento vocale, salvataggio dei backup, condivisione). Nessuna libreria di terze parti.
+pluginManagement {
+    repositories { google(); mavenCentral(); gradlePluginPortal() }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories { google(); mavenCentral() }
+}
+rootProject.name = "mandarino"
+include ":app"
