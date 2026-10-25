@@ -35,7 +35,7 @@
   --hz: 26px;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) {
     --bg: #0F1412;
     --surface: #171E1B;
     --ink: #E9EFEB;
@@ -407,7 +407,7 @@ td.hz .m-hz, .cd-hz, .fam-card .lh { -webkit-touch-callout: none; -webkit-user-s
   --tg-chi: var(--t3); --tg-when: var(--t4); --tg-with: var(--t2); --tg-where: var(--t1); --tg-do: var(--accent); --tg-what: var(--t5);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --seal: #D9544B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) { --seal: #D9544B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
 }
 :root[data-theme="dark"] { --seal: #D9544B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
 
@@ -842,9 +842,12 @@ body.scrolled .gpill { padding-left: 12px; }
 /* ===== V6.6 · Neo-Calligraphic Elegance: carta di riso, inchiostro, tessere tattili ===== */
 /* --- tema seppia "Carta di Riso" --- */
 :root[data-theme="sepia"] {
-  --bg: #F4EFE6; --surface: #FAF6EE; --ink: #231F1B; --muted: #6E655C; --line: #DFD6C7; --accent: #14594A; --chip: #EAE2D3;
+  --bg: #F4EFE6; --surface: #FAF6EE; --ink: #231F1B; --muted: #675E55; --line: #DFD6C7; --accent: #14594A; --chip: #EAE2D3;
   --shadow: 0 2px 4px rgba(45, 35, 20, 0.06), 0 8px 24px rgba(45, 35, 20, 0.08);
   --seal: #C8312B;
+  /* toni tarati sulla carta: contrasto >= 4.5:1 su --bg, --surface e --chip */
+  --t1: #B42A24; --t2: #1C6B37; --t3: #2357A8; --t4: #7A33AD; --t5: #655F57;
+  --tg-chi: var(--t3); --tg-when: var(--t4); --tg-with: var(--t2); --tg-where: var(--t1);
   color-scheme: light;
 }
 /* --- micro-texture di carta (SVG tassellato: costa una sola volta) --- */
@@ -5109,6 +5112,14 @@ const PATH = {
     add("Sezioni", (CP.SEC || []).length === 155, (CP.SEC || []).length + " (attese 155)");
     var rows = document.querySelectorAll("#sections tbody tr").length;
     add("Tabella virtualizzata", rows < 700, rows + " righe nel documento ora (non 3500)");
+    /* V6.7: tema Carta di Riso indipendente dal tema del sistema */
+    try {
+      var de = document.documentElement, prevT = de.getAttribute("data-theme");
+      de.setAttribute("data-theme", "sepia");
+      var t1 = getComputedStyle(de).getPropertyValue("--t1").trim().toUpperCase();
+      if (prevT) de.setAttribute("data-theme", prevT); else de.removeAttribute("data-theme");
+      add("Tema Carta di Riso: toni tarati sulla carta (anche col sistema scuro)", t1 === "#B42A24", "--t1 = " + t1);
+    } catch (e) { add("Tema Carta di Riso", false, String(e)); }
     /* memoria */
     try {
       var sch = new FSRS.Scheduler({ retention: 0.9, fuzz: false }), c = sch.review(sch.newCard(0), 3, 0);
