@@ -167,6 +167,22 @@ async function auditView(browser, file, vw, vh, theme) {
   /* Frasi */
   await tab(page, "build");
   await screen("Frasi");
+  /* ogni sotto-scheda di Frasi (se c'è la navigazione a gruppi della V6.7) */
+  const SUBS = { lab: "build", slot: "build", dlg: "talk", thought: "talk", reader: "read", pat: "read" };
+  for (const sub of Object.keys(SUBS)) {
+    if (!(await page.$(`[data-sub="${sub}"]`)) && (await page.$(`[data-group="${SUBS[sub]}"]`))) { await page.click(`[data-group="${SUBS[sub]}"]`); await page.waitForTimeout(80); }
+    if (!(await page.$(`[data-sub="${sub}"]`))) continue;
+    await page.click(`[data-sub="${sub}"]`); await page.waitForTimeout(150); await page.evaluate(PAGE_LIB);
+    await screen("Frasi · " + sub);
+  }
+  /* i fogli */
+  for (const [btn, lbl, pre] of [["#settings-btn", "⚙️", null], ["#flt-btn", "Filtri", "words"], ["#legend-btn", "Legenda", "words"]]) {
+    if (pre) await tab(page, pre);
+    if (!(await page.$(btn))) continue;
+    await page.click(btn); await page.waitForTimeout(150); await page.evaluate(PAGE_LIB);
+    await screen("Foglio " + lbl);
+    await page.keyboard.press("Escape"); await page.waitForTimeout(80);
+  }
   /* sessione */
   await tab(page, "study");
   const go = await page.$("#go");
