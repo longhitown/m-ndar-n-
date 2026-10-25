@@ -916,6 +916,89 @@ body.compact { padding-top: 10px; }
 @media (hover: hover) and (pointer: fine) { .swipe-hint { display: none; } }
 
 
+/* ===== V6.7 · UX (prompt §4 e §4-bis) ===== */
+:root { --fs-s: 13px; --fs-m: 16px; --fs-l: 20px; --fs-xl: 28px; --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; }
+
+/* U1 · sessione a schermo pieno: restano intestazione della sessione, carta e barra delle azioni */
+body.in-session .hd, body.in-session .bar, body.in-session .vset, body.in-session .dock, body.in-session #totop { display: none; }
+body.in-session { padding-block: max(12px, env(safe-area-inset-top, 0px)) 0; }
+body.in-session #study-root { min-height: calc(100dvh - 12px); display: flex; flex-direction: column; }
+body.in-session #study-root.is-card { height: calc(100dvh - max(12px, env(safe-area-inset-top, 0px))); min-height: 0; }
+body.in-session #study-root > .sess { margin-top: 0; flex: none; }
+body.in-session #study-root.is-card > .fc { flex: 1 1 auto; min-height: 0; overflow-y: auto; align-content: center; overscroll-behavior: contain; margin-top: var(--sp-3); }
+.actbar { position: sticky; bottom: 0; z-index: 2; display: grid; gap: var(--sp-2); padding: 10px 0 max(12px, env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 72%, transparent); }
+body.in-session .actbar { flex: none; }
+.actbar .btn-main { margin-top: 0; }
+.actbar .swipe-hint, .actbar .kbd-hint { margin: 0; }
+
+/* U4 · la carta: due controlli principali, la stella in alto, il resto nel foglio «⋯» */
+.fc { position: relative; padding-inline: var(--sp-3); }
+.fc > .tag { min-height: 36px; display: flex; align-items: center; justify-content: center; padding-inline: 44px; text-align: center; }
+.fc .tag, .fc .cd-ex .tag, .spoken .tag { font-size: var(--fs-s); }
+.fc .cd-py { font-size: 28px; }
+.fc .cd-hz { font-size: clamp(64px, 22vw, 96px); line-height: 1.1; }
+.fc .cd-it { font-size: 22px; }
+.fc::before { content: none; }
+.fc.is-new::before { content: "字"; content: "字" / ""; top: 32%; opacity: 0.04; }
+.fav-c { position: absolute; top: 4px; right: 4px; z-index: 2; width: 44px; min-width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; }
+.fav-c svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.fav-c.on { color: var(--seal); }
+.fav-c.on svg { fill: currentColor; }
+.new-seal { position: absolute; top: 8px; left: 8px; z-index: 2; width: 36px; height: 36px; font-size: 20px; }
+.card-acts { display: flex; gap: var(--sp-4); justify-content: center; align-items: center; margin-top: var(--sp-1); }
+.card-acts .say.big, .card-acts .mic.big { width: 56px; height: 56px; border-radius: 50%; }
+.card-acts .say.big { background: var(--accent); color: var(--bg); }
+.card-acts .say.big.speaking svg { fill: var(--bg); }
+.card-acts .mic.big { border: 2px solid var(--accent); color: var(--accent); background: transparent; }
+.card-acts .mic.big.listening { border-color: var(--seal); color: var(--seal); }
+.card-acts svg { width: 26px; height: 26px; }
+.card-more { width: 44px; height: 44px; min-width: 44px; padding: 0; border-radius: 50%; font-size: 22px; line-height: 1; }
+.sheet-rows { display: grid; gap: var(--sp-2); margin-top: var(--sp-3); }
+.sheet-row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 52px; padding: 8px 14px; text-align: left; font-weight: 400; }
+.sheet-row .ico { flex: none; width: 28px; font-size: 22px; text-align: center; }
+.sheet-row b { display: block; font-size: var(--fs-m); }
+.sheet-row small { display: block; font-size: 14px; color: var(--muted); }
+
+/* U5 · voti: gerarchia, non i colori dei toni */
+.grades { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 0; }
+.grades button { min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1.2; font-size: var(--fs-m); }
+.grades .sub { font-size: var(--fs-s); font-weight: 600; color: var(--muted); }
+.grades .g-good { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.grades .g-good .sub { color: color-mix(in srgb, var(--bg) 85%, var(--accent)); }
+.grades .g-again { color: var(--seal); border-color: color-mix(in srgb, var(--seal) 45%, var(--line)); }
+@media (min-width: 560px) { .grades { grid-template-columns: repeat(4, 1fr); } }
+.fc[data-label]::after { content: attr(data-label); position: absolute; top: 14px; left: 14px; z-index: 3; padding: 4px 10px; border: 2px solid currentColor; border-radius: 8px; background: var(--surface); color: var(--accent); font: 700 14px var(--f-body); opacity: var(--swipe, 0); transform: rotate(-6deg); pointer-events: none; }
+.fc.swipe-ko[data-label]::after { color: var(--seal); left: auto; right: 14px; transform: rotate(6deg); }
+@media (prefers-reduced-motion: reduce) { .fc[data-label]::after { transition: none; } }
+/* U9 · passaggio da una carta all'altra: 160 ms */
+@keyframes cp-card-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) { .fc.enter { animation: cp-card-in 0.16s ease-out; } }
+
+/* U3 · Studia: una scheda «Oggi» con un solo pulsante */
+.today { margin-top: var(--sp-4); display: grid; gap: var(--sp-3); }
+.today-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.today-h h2 { margin: 0; }
+.today-n { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.today-n div { background: var(--chip); border-radius: 14px; padding: 10px 12px; }
+.today-n b { display: block; font: 700 var(--fs-xl)/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.today-n span { font-size: 14px; color: var(--muted); }
+.today .btn-main { margin-top: 0; }
+.today-cfg summary { color: var(--muted); }
+.today-cfg .btn-s { margin-top: var(--sp-2); }
+.progress .stats { margin-top: var(--sp-3); }
+
+/* U8 · fine sessione: un solo gesto del sigillo */
+.done { margin-top: var(--sp-4); display: grid; gap: var(--sp-3); }
+.done h2 { margin: 0; }
+.done .btn-main { margin-top: 0; }
+.done .stats { margin-top: 0; }
+.done-seal { justify-self: center; }
+/* U9 · toast: una riga, mai sopra la dock */
+#toast { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 32px); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
+@keyframes cp-stamp { from { opacity: 0; transform: scale(1.5) rotate(-12deg); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) { .done-seal { animation: cp-stamp 0.25s ease-out both; } }
+
 </style>
 </head>
 <body>
@@ -1996,7 +2079,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (!pref.sfx) return;
     try {
       if (type === "tap") { var tn = Date.now(); if (tn - lastTap < 60) return; lastTap = tn; }   /* al massimo un tap ogni 60 ms */
-      if (pref.haptics && navigator.vibrate) navigator.vibrate(type === "ok" ? [8, 40, 12] : type === "ko" ? 35 : type === "level" ? [10, 50, 10, 50, 20] : 5);
+      CP.haptic(type === "ok" ? [8, 40, 12] : type === "ko" ? 35 : type === "level" ? [10, 50, 10, 50, 20] : 5);
       var c = getCtx(); if (!c) return;
       var play = function () {
         var now = c.currentTime + 0.005, out = CP.bus.sfx() || CP.master();
@@ -2157,6 +2240,23 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       segs: function () { return segs.slice(); }
     };
   };
+
+  /* ---- V6.7: preferenze dell'interfaccia (cp-ux-v1: benvenuto, legenda, suggerimenti, logo grande) ---- */
+  CP.ux = (function () {
+    var K = "cp-ux-v1", o = {};
+    try { o = JSON.parse(lsGet(K) || "{}") || {}; } catch (e) { o = {}; }
+    function save() { lsSet(K, JSON.stringify(o)); }
+    return { get: function (k) { return o[k]; }, set: function (k, v) { o[k] = v; save(); }, bump: function (k) { o[k] = (o[k] || 0) + 1; save(); return o[k]; } };
+  })();
+  CP.haptic = function (p) { if (pref.haptics && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } };
+  /* U1: modalità sessione a schermo pieno. Restano solo intestazione della sessione, carta e barra delle azioni. */
+  CP.focusMode = function (on) {
+    var was = document.body.classList.contains("in-session");
+    document.body.classList.toggle("in-session", !!on);
+    if (on && !was) window.scrollTo(0, 0);
+  };
+  window.addEventListener("pagehide", function () { CP.focusMode(false); });
+  document.addEventListener("visibilitychange", function () { if (CP.studyActive && !CP.studyActive() && !(CP.mode && CP.mode.active())) CP.focusMode(false); });
 
   /* ---- fogli e finestre modali (V6.7): il focus resta dentro (Tab / Maiusc+Tab ciclano), Esc chiude,
      alla chiusura il focus torna all'elemento da cui si era partiti. Vale per #fam, #guide, #jk-pop, #selftest e i fogli nuovi. ---- */
@@ -2355,6 +2455,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   var TABS = ["path", "words", "study", "build"];
   function show(name, instant) {
     var run = function () {
+      if (name !== "study") CP.focusMode(false);
       TABS.forEach(function (t) {
         var on = t === name;
         document.getElementById("view-" + t).hidden = !on;
@@ -2434,10 +2535,13 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
 </script>
 <script id="study">
 
-/* Scheda "Studia": ripasso a intervalli con sessioni brevi. */
+/* Scheda "Studia": ripasso a intervalli con sessioni brevi.
+   V6.7: una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
+   controlli principali (Ascolta, Parla) e il resto in «⋯»; voti con l'intervallo vero calcolato da FSRS;
+   limite giornaliero di parole nuove; fine sessione con un solo gesto. */
 (function () {
   var CP = window.CP, root = document.getElementById("study-root"), esc = CP.esc;
-  var cfg = { n: 10, sec: "" }, sess = null, resetArm = false, padObj = null;
+  var cfg = { n: 10, sec: "" }, sess = null, padObj = null;
   try { var c = JSON.parse(localStorage.getItem("cp-study-cfg") || "null"); if (c) cfg = { n: c.n || 10, sec: c.sec || "" }; } catch (e) {}
   function saveCfg() { try { localStorage.setItem("cp-study-cfg", JSON.stringify(cfg)); } catch (e) {} }
 
@@ -2448,7 +2552,10 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   function dueKeys() {
     return CP.dueList(keysOf(), Date.now()).slice(0, 25);   /* prima le carte con la probabilita' di ricordo piu' bassa */
   }
-  function newKeys() { var S = CP.S(); return keysOf().filter(function (k) { return !S[k] || !S[k].n; }).slice(0, cfg.n); }
+  /* §4.2: cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
+  function newSeen() { return CP.game && CP.game.newToday ? CP.game.newToday() : 0; }
+  function newRoom() { return Math.max(0, cfg.n + (CP.game && CP.game.newExtra ? CP.game.newExtra() : 0) - newSeen()); }
+  function newKeys() { var S = CP.S(), room = newRoom(); return room ? keysOf().filter(function (k) { return !S[k] || !S[k].n; }).slice(0, room) : []; }
   function pickType(k, prev) {
     var b = (CP.S()[k] || {}).b || 0, pool = b >= 2 ? ["pi", "ip", "hp"] : ["pi", "ip"], t;
     do { t = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && t === prev);
@@ -2460,38 +2567,47 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     }
     return null;
   }
+  function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
+
+  /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
+  function fmt(ms) { var d = ms / 86400000; return ms < 3600000 ? Math.max(1, Math.round(ms / 60000)) + " min" : d < 1 ? Math.round(ms / 3600000) + " h" : d < 30 ? Math.round(d) + " g" : d < 365 ? Math.round(d / 30) + " mesi" : (Math.round(d / 36.5) / 10) + " anni"; }
+  function previewIntervals(k) {
+    var S = CP.S(), r = S[k], now = Date.now(), sch = CP.srs.scheduler;
+    var card = r && r.st != null ? { state: r.sd, step: r.sp, st: r.st, df: r.df, due: r.d, last: r.lr } : sch.newCard(now);
+    return [1, 2, 3, 4].map(function (g) {
+      var fz = sch.fuzz; sch.fuzz = false;
+      var nc; try { nc = sch.review(card, g, now); } finally { sch.fuzz = fz; }
+      return fmt(nc.due - now);
+    });
+  }
+  CP.previewIntervals = previewIntervals;
 
   /* ---- home ---- */
   function home() {
-    sess = null;
-    var c = CP.counts(), tot = c[0] + c[1] + c[2], due = dueKeys().length, nw = newKeys().length;
+    sess = null; CP.focusMode(false); root.classList.remove("is-card");
+    var c = CP.counts(), tot = c[0] + c[1] + c[2], due = dueKeys().length, nw = newKeys().length, seen = newSeen(), n = due + nw;
     var opts = '<option value="">Tutti gli argomenti</option><option value="__fav"' + (cfg.sec === "__fav" ? " selected" : "") + ">★ Solo le parole segnate</option>" + SECTIONS.map(function (s) {
       return '<option value="' + s.id + '"' + (cfg.sec === s.id ? " selected" : "") + ">" + esc(s.title) + "</option>";
     }).join("");
-    var ns = [5, 10, 15, 20].map(function (n) { return '<option value="' + n + '"' + (cfg.n === n ? " selected" : "") + ">" + n + "</option>"; }).join("");
-    var plan = due + nw === 0
-      ? '<p class="muted">Per ora non c\'è niente da ripassare. Torna più tardi, oppure aumenta le parole nuove.</p>'
-      : '<p class="muted">Oggi: <b>' + nw + "</b> parole nuove e <b>" + due + "</b> da ripassare. Dieci minuti bastano.</p>";
+    var ns = [5, 10, 15, 20].map(function (x) { return '<option value="' + x + '"' + (cfg.n === x ? " selected" : "") + ">" + x + " al giorno</option>"; }).join("");
+    var secName = cfg.sec === "__fav" ? "★ Parole segnate" : cfg.sec ? (SECTIONS.filter(function (s) { return s.id === cfg.sec; })[0] || { title: "" }).title.replace(/^\d+\.\s*/, "") : "";
     root.innerHTML =
-      '<h2 style="margin-top:20px">Studia</h2>' +
-      '<p class="lede" style="margin-bottom:0">Ogni parola passa prima sotto gli occhi, poi ti viene chiesta. Se la sbagli torna subito; se la sai, torna quando sta per sfuggirti (obiettivo: ricordarne il ' + Math.round(CP.srs.retention() * 100) + '%).</p>' +
-      '<div class="stats"><div class="stat"><b>' + c[0] + '</b><span>da imparare</span></div><div class="stat"><b>' + c[1] + '</b><span>in corso</span></div><div class="stat"><b>' + c[2] + '</b><span>le so già</span></div></div>' +
-      '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
-      '<div class="panel"><h3>Sessione di oggi</h3>' + plan +
-      '<div class="row2"><label for="cfg-n">Parole nuove<select id="cfg-n">' + ns + '</select></label>' +
+      '<div class="panel today"><div class="today-h"><h2>Oggi</h2>' + (secName ? '<span class="gpl">' + esc(secName) + "</span>" : "") + "</div>" +
+      '<div class="today-n"><div><b>' + due + "</b><span>da ripassare</span></div><div><b>" + nw + "</b><span>" + (nw === 1 ? "nuova" : "nuove") + "</span></div></div>" +
+      '<p class="small muted" style="margin:0">Oggi: ' + Math.min(seen, cfg.n) + "/" + cfg.n + " parole nuove già viste" + (seen > cfg.n ? " (+" + (seen - cfg.n) + " in più)" : "") + ".</p>" +
+      '<button type="button" class="btn-main" id="go"' + (n ? "" : " disabled") + ">" + (n ? "Inizia · ≈ " + minutes(n) + " min" : "Niente da fare: torna più tardi") + "</button>" +
+      '<details class="today-cfg"><summary>Personalizza</summary><div class="row2" style="margin-top:0"><label for="cfg-n">Parole nuove<select id="cfg-n">' + ns + "</select></label>" +
       '<label for="cfg-sec">Argomento<select id="cfg-sec">' + opts + "</select></label></div>" +
-      '<label class="chk"><input type="checkbox" id="cfg-auto"' + (CP.pref.auto ? " checked" : "") + '> Audio automatico: la parola viene letta da sola</label>' +
-      '<button type="button" class="btn-main" id="go"' + (due + nw === 0 ? " disabled" : "") + ">Inizia</button></div>" +
-      '<div class="modes"><button type="button" id="ear-open">🎧 Allena l\'orecchio<small>Indovina il tono</small></button><button type="button" id="sprint-open">⚡ Sfida 60 secondi<small>' + ((CP.game && CP.game.best()) ? "Record: " + CP.game.best() : "Più veloce che puoi") + '</small></button></div>' +
-      (CP.homeExtra ? CP.homeExtra() : "") +
-      '<details class="panel"><summary>Salva o sposta i progressi</summary>' +
-      '<p class="muted small">I progressi restano in questo browser. Copiali qui sotto per tenerli al sicuro o portarli su un altro dispositivo.</p>' +
-      '<label for="exp" class="sr">Progressi</label><textarea id="exp" readonly></textarea>' +
-      '<div class="acts"><button type="button" id="copy">Copia</button><button type="button" id="imp">Importa il testo</button><button type="button" id="reset" class="btn-quiet">Azzera tutto</button></div>' +
-      '<p class="small muted" id="stmsg" aria-live="polite"></p></details>';
-    var ex = document.getElementById("exp");
-    ex.value = JSON.stringify({ v: 2, s: CP.S(), g: CP.game ? CP.game.dump() : null, f: CP.favs ? CP.favs.dump() : null });
-    ex.addEventListener("focus", function () { ex.removeAttribute("readonly"); });
+      '<label class="chk"><input type="checkbox" id="cfg-auto"' + (CP.pref.auto ? " checked" : "") + "> Audio automatico: la parola viene letta da sola</label>" +
+      (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">Ancora 5 parole nuove oggi</button>' : "") + "</details></div>" +
+      '<div class="modes"><button type="button" id="ear-open">🎧 Allena l\'orecchio<small>Indovina il tono</small></button><button type="button" id="sprint-open">⚡ Sfida 60 secondi<small>' + ((CP.game && CP.game.best()) ? "Record: " + CP.game.best() : "Più veloce che puoi") + "</small></button></div>" +
+      (CP.homeNotice ? CP.homeNotice() : "") +
+      '<details class="panel progress"><summary>I miei progressi</summary>' +
+      '<p class="muted small" style="margin:0">Ogni parola passa prima sotto gli occhi, poi ti viene chiesta. Se la sbagli torna subito; se la sai, torna quando sta per sfuggirti (obiettivo: ricordarne il ' + Math.round(CP.srs.retention() * 100) + "%).</p>" +
+      '<div class="stats"><div class="stat"><b>' + c[0] + '</b><span>da imparare</span></div><div class="stat"><b>' + c[1] + '</b><span>in corso</span></div><div class="stat"><b>' + c[2] + "</b><span>le so già</span></div></div>" +
+      '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
+      (CP.homeProgress ? CP.homeProgress() : "") + "</details>" +
+      (CP.homeBackup ? CP.homeBackup() : "");
   }
 
   /* ---- sessione ---- */
@@ -2499,8 +2615,10 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var q = [];
     dueKeys().forEach(function (k) { q.push({ k: k, kind: "test", type: pickType(k), retry: false }); });
     newKeys().forEach(function (k) { q.push({ k: k, kind: "intro", retry: false }); });
-    sess = { q: q, words: q.length, finished: 0, revealed: false, miss: {}, first: 0 };
+    if (!q.length) { home(); return; }
+    sess = { q: q, words: q.length, finished: 0, revealed: false, miss: {}, first: 0, good: 0, seen: {}, hint: CP.ux.bump("swipeHints") <= 3 };
     if (CP.musicMood) CP.musicMood("focus");
+    CP.focusMode(true);
     render();
   }
   function parts(w, set) {
@@ -2512,19 +2630,33 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   }
   var TAGS = { pi: "Che cosa significa?", ip: "Come si dice?", hp: "Leggi il carattere" };
   var PROMPT = { pi: { py: 1, hz: 1 }, ip: { it: 1 }, hp: { hz: 1 } };
+  var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 17l-5.4 3 1.2-6L3.3 9.8l6.1-.7z"/></svg>';
   function head() {
     var pct = sess.words ? Math.round(sess.finished / sess.words * 100) : 100;
     return '<div class="sess"><button type="button" id="quit" class="btn-quiet" aria-label="Esci dalla sessione">Esci</button>' +
-      '<div class="meter" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i class="k" style="width:' + pct + '%"></i></div>' +
+      '<div class="meter" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="Avanzamento"><i class="k" style="width:' + pct + '%"></i></div>' +
       '<span class="cnt">' + sess.finished + " / " + sess.words + "</span>" +
       '<button type="button" id="auto-t" class="btn-quiet" aria-pressed="' + (CP.pref.auto ? "true" : "false") + '" aria-label="Audio automatico">' + (CP.pref.auto ? "🔊" : "🔇") + "</button></div>";
   }
-  function cardTools(w, full) {
+  /* U4: in cima a destra la stella; sotto il carattere solo Ascolta e Parla; Traccia, Famiglia e Tono nel foglio «⋯» */
+  function star(w) {
     var fv = CP.favs && CP.favs.has(w.key);
-    return (full ? '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + CP.micBtn(w.hz) + "</div>" : "") +
-      '<div class="acts cardacts"><button type="button" id="pad-open">✍️ Traccia</button>' + (full ? '<button type="button" data-fam="' + CP.attr(w.hz) + '">🔍 Famiglia</button>' : "") +
-      (full && CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + CP.attr(w.key) + '">〰️ Tono</button>' : "") +
-      '<button type="button" class="favb' + (fv ? " on" : "") + '" data-fav-k="' + CP.attr(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '">' + (fv ? "★ Segnata" : "☆ Segna") + "</button></div>";
+    return '<button type="button" class="fav-c favb' + (fv ? " on" : "") + '" data-fav-k="' + CP.attr(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '" aria-label="Segna come preferita o difficile">' + STAR + "</button>";
+  }
+  function cardTools(w, full) {
+    var more = '<button type="button" class="card-more" data-more aria-label="Altro: traccia, famiglia, tono">⋯</button>';
+    if (!full) return '<div class="card-acts">' + more + "</div>";
+    var mic = CP.micBtn(w.hz).replace('class="mic"', 'class="mic big"');
+    return '<div class="card-acts">' + CP.sayBtn(CP.sayHz(w)).replace('class="say"', 'class="say big"') + mic + more + "</div>";
+  }
+  function moreSheet() {
+    if (!sess || !sess.q.length) return;
+    var e = sess.q[0], w = CP.WORDS[e.k], full = e.kind === "intro" || sess.revealed;
+    var row = function (act, ico, t, d) { return '<button type="button" class="sheet-row" data-card-act="' + act + '"><span class="ico" aria-hidden="true">' + ico + "</span><span><b>" + t + "</b><small>" + d + "</small></span></button>"; };
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>Altro</b><div class="small muted">' + (full ? esc(w.hz) + " · " + esc(w.py) : "per questa carta") + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
+      '<div class="sheet-rows">' + row("pad", "✍️", "Traccia", full ? "Scrivi il carattere col dito, con la guida" : "Prova a scriverlo a memoria, poi controlla") +
+      (full ? row("fam", "🔍", "Famiglia", "Le altre parole che contengono questi caratteri") : "") +
+      (full && CP.canScope && CP.canScope() ? row("scope", "〰️", "Tono", "Parla e guarda la curva della tua voce, anche senza rete") : "") + "</div>");
   }
   var KBD = '<p class="kbd-hint">Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti</p>';
   function togglePad(keep) {
@@ -2539,25 +2671,33 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (!keep && padObj.el.scrollIntoView) padObj.el.scrollIntoView({ block: "nearest" });
   }
   function next() {
-    var e = sess.q.shift(); e.kind = "test"; e.type = "pi";
+    var e = sess.q.shift();
+    if (e.kind === "intro" && !sess.seen[e.k]) { sess.seen[e.k] = 1; if (CP.game && CP.game.addNew) CP.game.addNew(1); }
+    e.kind = "test"; e.type = "pi";
     sess.q.splice(Math.min(sess.q.length, 3), 0, e); render();
   }
   /* Carta trascinabile: tocco = mostra; trascina a destra = «La so», a sinistra = «Non la so». */
   CP.bindCardSwipe = function (cardEl, onReveal, onGrade, isRevealed) {
     if (!cardEl || cardEl._swipe) return; cardEl._swipe = true;
     cardEl.style.touchAction = "pan-y"; cardEl.style.cursor = "grab"; cardEl.style.userSelect = "none";
-    var sx = 0, sy = 0, dx = 0, drag = false, down = false, pid = null, base = "";
+    var sx = 0, sy = 0, dx = 0, drag = false, down = false, pid = null;
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     function ignore(t) { return !!(t && t.closest && t.closest("button, canvas, .pad, .scope, .rec, a, input, select, textarea, .say, .wd, [role=\"button\"], [data-fam]")); }
+    /* l'esito si vede prima del rilascio: etichetta «La so» / «Non la so» che compare con il trascinamento */
     function paint(x) {
-      var k = Math.max(-1, Math.min(1, x / 140));
+      var k = Math.max(-1, Math.min(1, x / 140)), col = x > 0 ? "var(--accent)" : "var(--seal)";
       cardEl.style.transform = "translateX(" + x + "px) rotate(" + (x / 22) + "deg)";
-      cardEl.style.borderColor = Math.abs(x) < 12 ? "" : (x > 0 ? "var(--t2)" : "var(--t1)");
-      cardEl.style.boxShadow = Math.abs(x) < 12 ? "" : "0 0 0 " + Math.round(2 + 3 * Math.abs(k)) + "px color-mix(in srgb, " + (x > 0 ? "var(--t2)" : "var(--t1)") + " " + Math.round(18 + 20 * Math.abs(k)) + "%, transparent)";
+      cardEl.style.borderColor = Math.abs(x) < 12 ? "" : col;
+      cardEl.style.boxShadow = Math.abs(x) < 12 ? "" : "0 0 0 " + Math.round(2 + 3 * Math.abs(k)) + "px color-mix(in srgb, " + col + " " + Math.round(18 + 20 * Math.abs(k)) + "%, transparent)";
+      cardEl.style.setProperty("--swipe", Math.min(1, Math.abs(x) / 75).toFixed(2));
+      cardEl.style.color = "";
+      cardEl.dataset.label = x > 0 ? "La so" : "Non la so";
+      cardEl.classList.toggle("swipe-ko", x < 0);
     }
     function reset(animate) {
       if (animate && !reduce) { cardEl.style.transition = "transform .22s ease, box-shadow .22s ease, border-color .22s ease"; setTimeout(function () { cardEl.style.transition = ""; }, 260); }
       cardEl.style.transform = ""; cardEl.style.borderColor = ""; cardEl.style.boxShadow = ""; cardEl.style.willChange = "";
+      cardEl.style.removeProperty("--swipe"); delete cardEl.dataset.label; cardEl.classList.remove("swipe-ko");
     }
     cardEl.addEventListener("pointerdown", function (e) {
       if (e.button > 0 || ignore(e.target)) return;
@@ -2589,41 +2729,46 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       if (e && e.type === "pointerup" && !isRevealed() && Math.abs((e.clientX || 0) - sx) < 8 && Math.abs((e.clientY || 0) - sy) < 8) onReveal();
     }
     cardEl.addEventListener("pointerup", end);
-    cardEl.addEventListener("pointercancel", function (e) { if (drag) reset(true); drag = false; down = false; });
-    cardEl.addEventListener("lostpointercapture", function () { /* il rilascio e' gestito da pointerup */ });
+    cardEl.addEventListener("pointercancel", function () { if (drag) reset(true); drag = false; down = false; });
   };
+  function gradesHTML(e) {
+    var iv = previewIntervals(e.k), soon = "tra poco";
+    /* con retry i voti 0-1 non vengono applicati: la carta torna nella sessione */
+    var sub = function (g) { return e.retry && g < 2 ? soon : iv[g]; };
+    return '<div class="grades">' +
+      '<button type="button" data-g="0" class="g-again">Non la so<span class="sub">' + sub(0) + "</span></button>" +
+      '<button type="button" data-g="1">Quasi<span class="sub">' + sub(1) + "</span></button>" +
+      '<button type="button" data-g="2" class="g-good">La so<span class="sub">' + sub(2) + "</span></button>" +
+      '<button type="button" data-g="3">Facile<span class="sub">' + sub(3) + "</span></button></div>";
+  }
   function render() {
     if (!sess.q.length) return done();
-    var e = sess.q[0], w = CP.WORDS[e.k], h = head();
+    var e = sess.q[0], w = CP.WORDS[e.k], h = head(), hint = sess.hint ? '<p class="swipe-hint small muted">Oppure trascina la carta: a destra «La so», a sinistra «Non la so».</p>' : "";
+    var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
       var ex = example(w.hz);
-      h += '<div class="panel fc" data-k="' + CP.attr(w.key) + '"><span class="tag">Nuova parola · ' + esc(w.secTitle) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
+      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">Nuova parola · ' + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
         (ex ? '<div class="cd-ex"><span class="tag">Esempio</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
-        '</div><button type="button" class="btn-main" id="next">Avanti</button>' + KBD;
+        '</div><div class="actbar"><button type="button" class="btn-main" id="next">Avanti</button>' + KBD + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
-      h += '<div class="panel fc" data-k="' + CP.attr(w.key) + '"><span class="tag">' + TAGS[e.type] + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
-        '<button type="button" class="btn-main" id="reveal">Mostra la risposta</button>' + KBD;
+      h += open + '<span class="tag">' + TAGS[e.type] + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
+        '<div class="actbar"><button type="button" class="btn-main" id="reveal">Mostra la risposta</button>' + KBD + "</div>";
     } else {
-      h += '<div class="panel fc" data-k="' + CP.attr(w.key) + '"><span class="tag">' + TAGS[e.type] + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
-        '<div class="grades">' +
-        '<button type="button" data-g="0">Non la so<span class="sub">torna tra poco</span></button>' +
-        '<button type="button" data-g="1">Quasi<span class="sub">torna tra poco</span></button>' +
-        '<button type="button" data-g="2">La so<span class="sub">domani o più avanti</span></button>' +
-        '<button type="button" data-g="3">Facile<span class="sub">tra qualche giorno</span></button></div>' +
-        '<p class="swipe-hint small muted">Oppure trascina la carta: a destra «La so», a sinistra «Non la so».</p>' + KBD;
+      h += open + '<span class="tag">' + TAGS[e.type] + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
+        '<div class="actbar">' + gradesHTML(e) + hint + KBD + "</div>";
     }
-    root.innerHTML = h;
+    root.innerHTML = h; root.classList.add("is-card");
     padObj = null;
     var fcEl = root.querySelector(".fc");
     if (fcEl && e.kind === "test") CP.bindCardSwipe(fcEl, function () { var rv = document.getElementById("reveal"); if (rv) rv.click(); }, function (g) { answer(g); }, function () { return !!sess.revealed; });
-    window.scrollTo(0, 0);
     if (CP.pref.auto && (e.kind === "intro" || sess.revealed)) CP.say(CP.sayHz(w), root.querySelector(".say"));
   }
   function answer(g) {
-    CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko");
+    if (CP.pref.sfx) CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko"); else CP.haptic(8);
     var e = sess.q.shift();
     CP.grade(e.k, g, e.retry, { ms: Math.min(60000, Date.now() - (sess.t0 || Date.now())), type: e.type });
+    if (g >= 2) sess.good++;
     if (g < 2) {
       sess.miss[e.k] = 1;
       e.retry = true; e.type = pickType(e.k, e.type);
@@ -2635,17 +2780,24 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     sess.revealed = false;
     render();
   }
+  /* U8: fine sessione. Cosa è successo, cosa torna domani, la serie; un pulsante pieno e uno secondario. */
   function done() {
-    var miss = Object.keys(sess.miss), s = sess;
-    var list = miss.map(function (k) {
+    var s = sess; sess = null; CP.focusMode(false); root.classList.remove("is-card");
+    var S = CP.S(), d = new Date(), endTomorrow = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 2).getTime();
+    var tomorrow = CP.ORDER.filter(function (k) { return S[k] && S[k].n && S[k].d > Date.now() && S[k].d < endTomorrow; }).length;
+    var streak = CP.game ? CP.game.streak() : 0, miss = Object.keys(s.miss);
+    var moreNew = keysOf().some(function (k) { return !S[k] || !S[k].n; }), moreDue = dueKeys().length > 0;
+    var list = miss.slice(0, 12).map(function (k) {
       var w = CP.WORDS[k];
       return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="muted small">' + esc(w.it) + "</div></div></div>";
     }).join("");
-    var more = dueKeys().length + newKeys().length;
-    root.innerHTML = '<h2 style="margin-top:20px">Fatto</h2><div class="stats"><div class="stat"><b>' + s.words + '</b><span>parole</span></div><div class="stat"><b>' + s.first + '</b><span>al primo colpo</span></div><div class="stat"><b>' + miss.length + "</b><span>da rivedere</span></div></div>" +
-      (miss.length ? '<div class="panel mine"><h3>Da rivedere</h3>' + list + "</div>" : '<p class="muted">Nessun errore. Ottimo.</p>') +
-      (more ? '<button type="button" class="btn-main" id="go">Un\'altra sessione</button>' : "") +
-      '<button type="button" class="btn-main btn-quiet" id="home" style="margin-top:10px">Torna alla home</button>';
+    root.innerHTML = '<div class="panel done">' + (CP.stamp && CP.game ? CP.stamp(CP.game.rank(), true).replace('class="seal stamp', 'class="seal stamp done-seal') : "") +
+      "<h2>Fatto</h2>" +
+      '<div class="stats"><div class="stat"><b>' + s.words + '</b><span>parole viste</span></div><div class="stat"><b>' + s.good + '</b><span>risposte giuste</span></div><div class="stat"><b>🔥 ' + streak + "</b><span>" + (streak === 1 ? "giorno di fila" : "giorni di fila") + "</span></div></div>" +
+      '<p style="margin:0">' + (tomorrow ? "Domani " + (tomorrow === 1 ? "torna 1 parola." : "torneranno " + tomorrow + " parole.") : "Domani non torna nessuna parola: è il momento giusto per qualcuna nuova.") + "</p>" +
+      (moreNew ? '<button type="button" class="btn-main" id="more5">Ancora 5 parole</button>' : moreDue ? '<button type="button" class="btn-main" id="go">Un altro ripasso</button>' : "") +
+      '<button type="button" class="btn-main btn-quiet" id="home">Ho finito</button></div>' +
+      (miss.length ? '<details class="panel mine"><summary>Da rivedere (' + miss.length + ")</summary>" + list + "</details>" : "");
     window.scrollTo(0, 0);
   }
 
@@ -2653,44 +2805,36 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   root.addEventListener("click", function (ev) {
     var t = ev.target.closest ? ev.target.closest("button") : null;
     if (!t) return;
-    var id = t.id, msg = document.getElementById("stmsg");
+    var id = t.id;
     if (id === "go") start();
     else if (id === "home" || id === "quit") home();
+    else if (id === "more5") { if (CP.game && CP.game.addExtra) CP.game.addExtra(5); start(); }
     else if (id === "next") { CP.sfx("tap"); next(); }
     else if (id === "reveal") { CP.sfx("tap"); var keep = padObj ? padObj.state() : null; sess.revealed = true; render(); if (keep) togglePad(keep); }
-    else if (id === "pad-open") togglePad();
+    else if (t.hasAttribute("data-more")) moreSheet();
     else if (id === "auto-t") {
       CP.setPref("auto", !CP.pref.auto);
       t.textContent = CP.pref.auto ? "🔊" : "🔇"; t.setAttribute("aria-pressed", CP.pref.auto ? "true" : "false");
     }
     else if (t.hasAttribute("data-g")) answer(parseInt(t.getAttribute("data-g"), 10));
-    else if (id === "copy") {
-      var ta = document.getElementById("exp"); ta.removeAttribute("readonly"); ta.select();
-      var ok = function () { msg.textContent = "Copiato."; };
-      var bad = function () { msg.textContent = "Seleziona il testo e copialo a mano."; };
-      try { navigator.clipboard.writeText(ta.value).then(ok, bad); } catch (x) { bad(); }
-    }
-    else if (id === "imp") {
-      try {
-        var o = JSON.parse(document.getElementById("exp").value);
-        if (!o || typeof o.s !== "object") throw 0;
-        CP.setS(o.s); if (o.g && CP.game) CP.game.load(o.g); if (o.f && CP.favs) CP.favs.load(o.f);
-        msg.textContent = "Importato."; home();
-      } catch (x) { msg.textContent = "Testo non valido. Incolla il testo copiato in precedenza."; }
-    }
-    else if (id === "reset") {
-      if (!resetArm) { resetArm = true; t.textContent = "Tocca ancora per confermare"; setTimeout(function () { resetArm = false; if (t) t.textContent = "Azzera tutto"; }, 4000); }
-      else { resetArm = false; CP.setS({}); home(); }
-    }
+  });
+  /* le righe del foglio «⋯» */
+  document.getElementById("fam").addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("[data-card-act]") : null; if (!b || !sess || !sess.q.length) return;
+    var act = b.getAttribute("data-card-act"), w = CP.WORDS[sess.q[0].k], fc = root.querySelector(".fc");
+    CP.closeSheet();
+    if (act === "pad") togglePad();
+    else if (act === "fam") CP.openFamily(w.hz);
+    else if (act === "scope" && fc && CP.scopePanel) CP.scopePanel(fc, w);
   });
   root.addEventListener("change", function (ev) {
-    if (ev.target.id === "cfg-n") { cfg.n = parseInt(ev.target.value, 10); saveCfg(); home(); }
-    if (ev.target.id === "cfg-sec") { cfg.sec = ev.target.value; saveCfg(); home(); }
+    if (ev.target.id === "cfg-n") { cfg.n = parseInt(ev.target.value, 10); saveCfg(); home(); var d = root.querySelector(".today-cfg"); if (d) d.open = true; }
+    if (ev.target.id === "cfg-sec") { cfg.sec = ev.target.value; saveCfg(); home(); var d2 = root.querySelector(".today-cfg"); if (d2) d2.open = true; }
     if (ev.target.id === "cfg-auto") CP.setPref("auto", ev.target.checked);
   });
   document.addEventListener("keydown", function (ev) {
     if (!sess || !sess.q.length || document.getElementById("view-study").hidden) return;
-    if (ev.ctrlKey || ev.metaKey || ev.altKey || !document.getElementById("fam").hidden) return;
+    if (ev.ctrlKey || ev.metaKey || ev.altKey || CP.topSheet()) return;
     var a = document.activeElement, tag = a ? a.tagName : "";
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
     /* un pulsante fuori dalla scheda tiene il suo comportamento; quelli della scheda cedono il passo alle scorciatoie */
@@ -2708,12 +2852,17 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     else if (act === "next") { CP.sfx("tap"); next(); }
     else answer(parseInt(ev.key, 10) - 1);
   });
-  CP.onStudy = function () { if (!sess) home(); };
+  /* tornando sulla scheda con una sessione aperta si torna a schermo pieno */
+  CP.onStudy = function () { if (!sess) home(); else CP.focusMode(true); };
   CP.studyHome = function () { sess = null; home(); };
+  CP.studyActive = function () { return !!sess; };
+  CP.studyStart = function () { sess = null; home(); start(); };
+  CP.studyCounts = function () { return { due: dueKeys().length, nw: newKeys().length, n: cfg.n, seen: newSeen() }; };
   CP.studySection = function (id) {
     cfg.sec = id; saveCfg(); sess = null; home();
     if (dueKeys().length + newKeys().length) start();
   };
+  CP.studyCfg = function (o) { if (o) { if (o.n) cfg.n = o.n; if (o.sec !== undefined) cfg.sec = o.sec; saveCfg(); if (!sess) home(); } return { n: cfg.n, sec: cfg.sec }; };
   CP.studyRoot = root;
   home();
 })();
@@ -3311,8 +3460,8 @@ const PATH = {
   /* ---- avviso breve ---- */
   var toastEl = document.getElementById("toast"), toastT = 0;
   CP.toast = function (msg) {
-    toastEl.textContent = msg; toastEl.classList.add("on");
-    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 3400);
+    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 2000);   /* U9: una riga, al massimo 2 s */
   };
 
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
@@ -3375,6 +3524,11 @@ const PATH = {
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
     ear: function (ok) { var r = rec(true); r.e = (r.e || 0) + 1; if (ok) award(3); save(); ui(); },
     xp: function (n) { var r = rec(true); r.e = (r.e || 0) + 1; award(n); save(); ui(); },
+    /* §4.2: parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
+    newToday: function () { var r = rec(false); return r && r.nw ? r.nw : 0; },
+    addNew: function (n) { var r = rec(true); r.nw = (r.nw || 0) + n; save(); },
+    newExtra: function () { var r = rec(false); return r && r.nx ? r.nx : 0; },
+    addExtra: function (n) { var r = rec(true); r.nx = (r.nx || 0) + n; save(); },
     best: function () { return G.best; },
     setBest: function (v) { if (v > G.best) { G.best = v; save(); return true; } return false; },
     setGoal: function (n) { G.goal = n; save(); ui(); },
@@ -3428,7 +3582,8 @@ const PATH = {
     var c = t.closest("[data-fav-k]");
     if (c) {
       var kk = c.getAttribute("data-fav-k"), on2 = CP.favs.toggle(kk);
-      c.classList.toggle("on", on2); c.setAttribute("aria-pressed", on2 ? "true" : "false"); c.textContent = on2 ? "★ Segnata" : "☆ Segna";
+      c.classList.toggle("on", on2); c.setAttribute("aria-pressed", on2 ? "true" : "false"); if (!c.classList.contains("fav-c")) c.textContent = on2 ? "★ Segnata" : "☆ Segna";
+      if (c.classList.contains("fav-c")) CP.toast(on2 ? "Parola segnata." : "Parola tolta dai preferiti.");
       CP.sfx("tap"); paintAll();
     }
   });
@@ -3682,7 +3837,7 @@ const PATH = {
     pool.forEach(function (w) { (groups[baseOf(w)] = groups[baseOf(w)] || []).push(w); });
     var paired = pool.filter(function (w) { return groups[baseOf(w)].some(function (o) { return CP.tone(o.py) !== CP.tone(w.py); }); });
     ear = { n: 0, ok: 0, groups: groups, paired: paired, pool: pool, q: null, answered: false, used: {} };
-    mode = "ear"; earNext();
+    mode = "ear"; root.classList.remove("is-card"); CP.focusMode(true); earNext();
   }
   function earNext() {
     if (ear.n >= ROUNDS) return earDone();
@@ -3733,7 +3888,7 @@ const PATH = {
     earRender();
   }
   function earDone() {
-    mode = null;
+    mode = null; CP.focusMode(false);
     root.innerHTML = '<h2 style="margin-top:20px">Orecchio ai toni</h2><div class="stats"><div class="stat"><b>' + ear.ok + "/" + ROUNDS + "</b><span>toni giusti</span></div></div>" +
       '<p class="muted">' + (ear.ok >= 9 ? "Ottimo orecchio." : ear.ok >= 6 ? "Buon inizio: i toni 2 e 3 sono i più facili da confondere." : "Normale all'inizio. Ripeti ogni giorno: bastano due minuti.") + "</p>" +
       '<button type="button" class="btn-main" id="ear-open">Un altro giro</button><button type="button" class="btn-main btn-quiet" id="m-quit" style="margin-top:10px">Torna a Studia</button>';
@@ -3750,7 +3905,7 @@ const PATH = {
   function sprintStart() {
     CP.stopSpeak();
     SP = { pool: sprintPool(), pts: 0, ok: 0, ko: 0, streak: 0, bestStreak: 0, t0: Date.now(), dur: 60000, q: null, lock: false, last: null };
-    mode = "sprint"; sprintQ();
+    mode = "sprint"; root.classList.remove("is-card"); CP.focusMode(true); sprintQ();
     if (CP.musicMood) CP.musicMood("energy");
     clearInterval(sprintTimer); sprintTimer = setInterval(sprintTick, 100);
   }
@@ -3805,7 +3960,7 @@ const PATH = {
   }
   function sprintDone() {
     clearInterval(sprintTimer); if (!SP || mode !== "sprint") return;
-    mode = null; var s = SP; CP.stopSpeak();
+    mode = null; CP.focusMode(false); var s = SP; CP.stopSpeak();
     var rec = CP.game.setBest(s.pts); CP.game.xp(s.ok * 2);
     root.innerHTML = '<h2 style="margin-top:20px">Tempo</h2><div class="stats"><div class="stat"><b>' + s.pts + "</b><span>punti</span></div><div class=\"stat\"><b>" + s.ok + "</b><span>giuste</span></div><div class=\"stat\"><b>" + s.bestStreak + "</b><span>serie migliore</span></div></div>" +
       '<p class="' + (rec ? "verdict ok" : "muted") + '">' + (rec ? "Nuovo record: " + s.pts + " punti." : "Il tuo record è " + CP.game.best() + " punti.") + " Hai guadagnato " + (s.ok * 2) + " XP.</p>" +
@@ -3831,7 +3986,7 @@ const PATH = {
     else if (mode === "ear" && ear && !ear.answered && /^[1-4]$/.test(e.key)) { e.preventDefault(); earAnswer(parseInt(e.key, 10)); }
     else if (mode === "ear" && ear && ear.answered && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); if (a && a.blur) a.blur(); earNext(); }
   });
-  function cancelMode() { clearInterval(sprintTimer); mode = null; SP = null; ear = null; }
+  function cancelMode() { clearInterval(sprintTimer); mode = null; SP = null; ear = null; CP.focusMode(false); }
   var oldOnStudy = CP.onStudy;
   CP.onStudy = function () { if (mode) { cancelMode(); CP.studyHome(); return; } if (oldOnStudy) oldOnStudy(); };
   CP.mode = { sprint: sprintStart, ear: earStart, active: function () { return mode; } };
@@ -4892,22 +5047,27 @@ const PATH = {
   }
 
   /* ---- backup ---- */
-  function backupHTML() {
-    var st = window.Store ? Store.status() : { ls: true }, warn = "";
-    if (!st.ls) warn += '<div class="notice" role="alert"><b>Il browser non permette di salvare i progressi.</b> Quando chiudi la pagina li perdi. Apri il file direttamente nel browser del telefono (non da un\'anteprima) e fai spesso «Scarica backup».</div>';
-    else if (window.Store && Store.backupDue(totalReviews())) warn += '<div class="notice" role="status"><b>Backup settimanale.</b> Hai studiato e l\'ultimo backup è vecchio: scarica il file e conservalo (Drive, email a te stesso).</div>';
-    var ts = parseInt(lget("cp-backup-ts"), 10);
-    return warn + '<details class="panel" id="bk"><summary>Backup e ripristino (file)</summary>' +
-      '<p class="muted small">Il file contiene progressi, preferiti, gioco e registro dei ripassi. «Ripristina» li unisce a quelli di questo dispositivo, tenendo per ogni parola il dato più recente.</p>' +
-      '<div class="acts"><button type="button" id="bk-down">⬇ Scarica backup</button><button type="button" id="bk-up">⬆ Ripristina da file</button></div>' +
-      '<input type="file" id="bk-file" accept="application/json,.json" hidden>' +
-      '<p class="small muted" id="bk-msg" aria-live="polite">' + (ts ? "Ultimo backup: " + new Date(ts).toLocaleDateString("it-IT") + "." : "Nessun backup ancora.") +
-      (st.idb ? " Copia di sicurezza interna attiva." : "") + "</p></details>";
-  }
-  CP.homeExtra = function () {
-    setTimeout(fillMem, 30);
-    return memHTML() + doctorHTML() + backupHTML();
+  /* avvisi in evidenza nella home di Studia (il browser non salva; backup settimanale) */
+  CP.homeNotice = function () {
+    var st = window.Store ? Store.status() : { ls: true };
+    if (!st.ls) return '<div class="notice" role="alert"><b>Il browser non permette di salvare i progressi.</b> Quando chiudi la pagina li perdi. Apri il file direttamente nel browser del telefono (non da un\'anteprima) e fai spesso «Scarica backup».</div>';
+    if (window.Store && Store.backupDue(totalReviews())) return '<div class="notice" role="status"><p><b>Backup settimanale.</b> Hai studiato e l\'ultimo backup è vecchio: scarica il file e conservalo (Drive, email a te stesso).</p><button type="button" class="btn-s" id="bk-down2">⬇ Scarica backup</button></div>';
+    return "";
   };
+  /* il backup su file sostituisce il vecchio «Salva o sposta»; il ripristino accetta anche quel formato (v:2) */
+  function backupHTML() {
+    var st = window.Store ? Store.status() : { ls: true };
+    var ts = parseInt(lget("cp-backup-ts"), 10);
+    return '<details class="panel" id="bk"><summary>Backup e ripristino</summary>' +
+      '<p class="muted small">Il file contiene progressi, preferiti, gioco e registro dei ripassi. «Ripristina» li unisce a quelli di questo dispositivo, tenendo per ogni parola il dato più recente. Accetta anche il testo salvato dalle versioni vecchie.</p>' +
+      '<div class="acts"><button type="button" id="bk-down">⬇ Scarica backup</button><button type="button" id="bk-up">⬆ Ripristina da file</button></div>' +
+      '<input type="file" id="bk-file" accept="application/json,.json,.txt" hidden>' +
+      '<p class="small muted" id="bk-msg" aria-live="polite">' + (ts ? "Ultimo backup: " + new Date(ts).toLocaleDateString("it-IT") + "." : "Nessun backup ancora.") +
+      (st.idb ? " Copia di sicurezza interna attiva." : "") + "</p>" +
+      '<div class="acts"><button type="button" id="bk-reset" class="btn-quiet">Azzera tutti i progressi</button></div></details>';
+  }
+  CP.homeProgress = function () { setTimeout(fillMem, 30); return memHTML() + doctorHTML(); };
+  CP.homeBackup = backupHTML;
   root.addEventListener("change", function (e) {
     if (e.target.id === "ret-sel") { CP.srs.setRetention(parseInt(e.target.value, 10) / 100); fillMem(); }
     if (e.target.id === "bk-file") {
@@ -4916,6 +5076,11 @@ const PATH = {
       var rd = new FileReader();
       rd.onload = function () {
         var o; try { o = JSON.parse(rd.result); } catch (x) { msg.textContent = "Il file non è un backup valido."; return; }
+        if (o && o.v === 2 && o.s && typeof o.s === "object" && !o.app) {
+          /* formato del vecchio «Salva o sposta»: unione, come per il backup nuovo */
+          CP.setS(Store.mergeSrs(CP.S(), o.s)); if (o.f && CP.favs) CP.favs.load(CP.favs.dump().concat(o.f)); if (o.g && CP.game && !CP.game.dump().xp) CP.game.load(o.g);
+          msg.textContent = "Progressi del vecchio formato uniti. Ricarico…"; setTimeout(function () { location.reload(); }, 700); return;
+        }
         var r = Store.importObj(o, "merge");
         Promise.resolve(r).then(function (res) {
           if (!res.ok) { msg.textContent = res.msg; return; }
@@ -4927,9 +5092,15 @@ const PATH = {
   });
   root.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
-    if (t.id === "bk-down") { var msg = document.getElementById("bk-msg"); Store.backup().then(function (n) { if (msg) msg.textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; }); }
+    if (t.id === "bk-down" || t.id === "bk-down2") { var msg = document.getElementById("bk-msg"); Store.backup().then(function (n) { if (msg) msg.textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; CP.toast("Backup creato: " + n); }); }
+    if (t.id === "bk-reset") {
+      if (!t._arm) { t._arm = true; t.textContent = "Tocca ancora per confermare: si perdono tutti i progressi"; setTimeout(function () { t._arm = false; t.textContent = "Azzera tutti i progressi"; }, 4000); }
+      else { t._arm = false; CP.setS({}); CP.studyHome(); CP.toast("Progressi azzerati."); }
+    }
     if (t.id === "bk-up") { var fi = document.getElementById("bk-file"); if (fi) fi.click(); }
   });
+  /* la home di Studia era già stata disegnata prima che questo modulo esistesse */
+  if (CP.studyActive && !CP.studyActive()) CP.studyHome();
 })();
 
 </script>
