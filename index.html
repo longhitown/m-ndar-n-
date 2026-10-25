@@ -4297,16 +4297,19 @@ const PATH = {
 
   var ZP = { ",": "，", ".": "。", "?": "？", "!": "！" };
   function opt(i) { return M().cols[i].o[pick[i]]; }
-  function compose() {
-    var m = M(), py = [], hz = "", it = [], last = m.cols.length - 1;
-    m.cols.forEach(function (c, i) {
-      var o = c.o[pick[i]], sep = c.sep || "";
-      if (i === last) sep = (o[3] !== undefined ? o[3] : c.end) || "";
-      py.push(o[0] + sep); hz += o[1] + (ZP[sep] || ""); it.push(o[2]);
+  /* le opzioni vuote (["", "", ""]) si saltano; il segno finale si attacca all'ultima colonna non vuota */
+  function compose(mx, pk) {
+    var m = mx || M(), pk2 = pk || pick, py = [], hz = "", it = [];
+    var cols = m.cols.map(function (c, i) { return { c: c, o: c.o[pk2[i]], i: i }; }).filter(function (x) { return x.o[1]; });
+    cols.forEach(function (x, j) {
+      var last = j === cols.length - 1, sep = x.c.sep || "";
+      if (last) { var fin = m.cols[m.cols.length - 1], fo = fin.o[pk2[m.cols.length - 1]]; sep = (fo[3] !== undefined ? fo[3] : fin.end) || ""; }
+      py.push(x.o[0] + sep); hz += x.o[1] + (ZP[sep] || ""); it.push(x.o[2]);
     });
     var p = py.join(" ");
     return { py: p.charAt(0).toUpperCase() + p.slice(1), hz: hz, it: it.join(" · ") };
   }
+  CP.slotCompose = compose;
   /* tre toni 3 di fila: tutti tranne l'ultimo diventano 2° (semplificato) */
   function sandhi(py) {
     var words = py.split(" "), flat = [];
@@ -5124,6 +5127,19 @@ const PATH = {
       var zn = CP.lab.zhNum, zc = [[["二", "十"], 20], [["三", "十", "五"], 35], [["十", "二"], 12], [["一", "百", "零", "五"], 105], [["三", "百", "五"], 350]], zbad = zc.filter(function (x) { return zn(x[0]) !== x[1]; });
       add("Laboratorio: numeri composti (二十 = 20, 三十五 = 35, 十二 = 12…)", !zbad.length, zbad.length ? zbad.map(function (x) { return x[0].join("") + "→" + zn(x[0]); }).join(", ") : zc.length + " casi");
     } catch (e) { add("Laboratorio: numeri composti", false, String(e)); }
+    try {
+      var sbad = [], scount = 0;
+      SLOTS.forEach(function (m) {
+        var idx = m.cols.map(function () { return 0; });
+        for (;;) {
+          var c = CP.slotCompose(m, idx); scount++;
+          if (/^[,，]/.test(c.py) || /^[,，]/.test(c.hz) || /,\s*[.?!]/.test(c.py) || /，[。？！]/.test(c.hz) || /[.?!,]\s*[,.?!]/.test(c.py)) sbad.push(c.py);
+          var k = 0; while (k < idx.length && ++idx[k] >= m.cols[k].o.length) { idx[k] = 0; k++; }
+          if (k === idx.length) break;
+        }
+      });
+      add("Slot machine: nessuna frase con punteggiatura orfana", !sbad.length, sbad.length ? sbad.slice(0, 2).join(" | ") : scount + " combinazioni");
+    } catch (e) { add("Slot machine", false, String(e)); }
     /* memoria */
     try {
       var sch = new FSRS.Scheduler({ retention: 0.9, fuzz: false }), c = sch.review(sch.newCard(0), 3, 0);
