@@ -17,7 +17,7 @@ import path from "path";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import { assets, load, check } from "./lib/data.mjs";
-import { lab, verify } from "./lib/lab.mjs";
+import { lab, verify, checkLessons } from "./lib/lab.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src"), OUT = path.join(ROOT, "dist");
@@ -28,14 +28,16 @@ const fail = (m) => { console.error("✗ " + m); process.exit(1); };
 const D = load(SRC), c = check(D);
 if (c.err.length) fail("dati non validi:\n  " + c.err.slice(0, 30).join("\n  ") + (c.err.length > 30 ? "\n  … e altri " + (c.err.length - 30) : ""));
 
-/* 1b. grammatica: le frasi verificate (src/data/verified.js) devono uscire identiche dalle regole */
-const gv = verify(lab(SRC));
+/* 1b. grammatica: le frasi verificate (src/data/verified.js) devono uscire identiche dalle regole;
+       le lezioni (src/data/lessons) devono usare solo parole del vocabolario e avere esercizi ben fatti */
+const LAB = lab(SRC), gv = verify(LAB), le = checkLessons(LAB);
+if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
 if (gv.bad.length) fail("frasi verificate che le regole non traducono più così (dettagli: node tools/grammar.mjs):\n  " + gv.bad.slice(0, 10).map((b) => b.zh + " → «" + b.got + "», attesa «" + b.want + "»").join("\n  "));
 
 /* 2. ogni file è elencato */
 const { html, scripts, styles } = assets(SRC);
 const listed = new Set(scripts.map((s) => s.src));
-for (const dir of ["data/vocab", "data/dialogs", "audio/tracks"]) {
+for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "audio/tracks"]) {
   for (const f of fs.readdirSync(path.join(SRC, dir)).filter((x) => x.endsWith(".js"))) {
     if (!listed.has(dir + "/" + f)) fail(`src/${dir}/${f} non è elencato in src/index.html (aggiungi <script src="${dir}/${f}"></script>)`);
   }
@@ -69,4 +71,4 @@ if (onlyCheck) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 for (const [f, data] of Object.entries(files)) fs.writeFileSync(path.join(OUT, f), data);
-console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);
+console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate, ${(D.LESSONS || []).length} lezioni · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);

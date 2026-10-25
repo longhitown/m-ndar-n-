@@ -20,7 +20,7 @@ SECTIONS.push({
     ["xìn.xī","信息","informazione"],
     ["ruǎn.jiàn","软件","software"],
     ["yì.gōng","义工","volontario"],
-    ["diàn.zi","电子","elettronico, elettrone"],
+    ["diàn.zǐ","电子","elettronico, elettrone"],
     ["rén.gōng zhì.néng","人工智能","intelligenza artificiale","IA"],
     ["nà.mǐ.jì.shù","纳米技术","nanotecnologia"],
     ["tài.kōng","太空","spazio cosmico"]

@@ -10,7 +10,7 @@ SECTIONS.push({
     ["miàn.liào","面料","tessuto, stoffa"],
     ["fǎng.zhī","纺织","tessile, filatura"],
     ["cái.jiǎn","裁剪","tagliare; sartoria"],
-    ["chuān.zhe","穿着","modo di vestire"],
+    ["chuān.zhuó","穿着","modo di vestire"],
     ["pèi.dài","佩戴","indossare"],
     ["dā.pèi","搭配","abbinare"],
     ["chǐ.cùn","尺寸","taglia, misura"],

@@ -50,3 +50,28 @@ export function verify(L) {
   }
   return { bad, memo, fixable, total: (L.D.VERIFIED || []).length };
 }
+
+/* lezioni: id unici, ogni frase cinese fatta di parole del vocabolario, esercizi coerenti */
+export function checkLessons(L) {
+  const err = [], ids = new Set(), CJK = /[㐀-鿿]/;
+  const zhOk = (where, z) => { const u = L.unknown(z); if (u.length) err.push(`${where}: «${z}» usa caratteri fuori dal vocabolario (${u.join("")})`); };
+  (L.D.LESSONS || []).forEach((l, i) => {
+    const w = "lezione " + (l.id || i);
+    if (!l.id || ids.has(l.id)) err.push(w + ": id mancante o doppio"); ids.add(l.id);
+    ["title", "goal"].forEach((f) => { if (!l[f]) err.push(w + ": manca " + f); });
+    if (!Array.isArray(l.body) || !l.body.length) err.push(w + ": manca la spiegazione (body)");
+    if (l.path && !L.D.SECTIONS.some((s) => s.id === l.path)) err.push(w + ": la tappa «" + l.path + "» non esiste");
+    (l.ex || []).forEach((e, j) => { if (!Array.isArray(e) || e.length < 2) err.push(w + ` ex[${j}]: deve essere [cinese, italiano]`); else zhOk(w + ` ex[${j}]`, e[0]); });
+    (l.traps || []).forEach((t, j) => { if (!Array.isArray(t) || t.length !== 3) err.push(w + ` traps[${j}]: deve essere [sbagliata, giusta, perché]`); else { zhOk(w + ` traps[${j}]`, t[0]); zhOk(w + ` traps[${j}]`, t[1]); } });
+    (l.quiz || []).forEach((q, j) => {
+      const at = w + ` quiz[${j}]`;
+      if (q.k === "order") { zhOk(at, q.zh); if (L.tokens(q.zh).length < 2) err.push(at + ": servono almeno due tessere"); if (!q.it) err.push(at + ": manca l'italiano"); }
+      else if (q.k === "pick") {
+        if (!q.q || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length)) err.push(at + ": servono q, opts (almeno 2) e a (l'indice giusto)");
+        else q.opts.forEach((o) => { if (CJK.test(o) && !/[a-zàèéìòù]{3}/i.test(o)) zhOk(at, o); });
+        if (q.zh) zhOk(at, q.zh);
+      } else err.push(at + ": tipo «" + q.k + "» sconosciuto (order o pick)");
+    });
+  });
+  return err;
+}

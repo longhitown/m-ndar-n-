@@ -118,6 +118,17 @@
     });
     return Object.keys(by).map(function (k) { return by[k]; }).sort(function (x, y) { return (x.t || 0) - (y.t || 0); });
   }
+  function mergeLessons(a, b) {
+    var out = {}; a = a || {}; b = b || {};
+    Object.keys(a).concat(Object.keys(b)).forEach(function (id) {
+      var x = a[id] || {}, y = b[id] || {}, o = {};
+      if (x.best != null || y.best != null) o.best = Math.max(x.best || 0, y.best || 0);
+      if (x.done || y.done) o.done = Math.min(x.done || Infinity, y.done || Infinity);
+      if (x.seen || y.seen) o.seen = Math.max(x.seen || 0, y.seen || 0);
+      out[id] = o;
+    });
+    return out;
+  }
   function importObj(o, mode) {
     if (!o || o.app !== "mandarino" || !o.kv) return { ok: false, msg: "File non riconosciuto." };
     var n = 0;
@@ -129,6 +140,8 @@
           if (k === "cp-srs-v1") inc = JSON.stringify(mergeSrs(JSON.parse(cur), JSON.parse(inc)));
           else if (k === "cp-fav-v1") { var u = JSON.parse(cur); var v = JSON.parse(inc); if (Array.isArray(u)) { var t = {}; u.forEach(function (x) { t[x] = 1; }); u = t; } if (Array.isArray(v)) { var t2 = {}; v.forEach(function (x) { t2[x] = 1; }); v = t2; } inc = JSON.stringify(Object.assign({}, v, u)); }
           else if (k === "cp-community-contribs") inc = JSON.stringify(mergeContribs(JSON.parse(cur), JSON.parse(inc)));
+          /* lezioni di grammatica: per ogni lezione il punteggio migliore, la prima volta superata, l'ultima letta */
+          else if (k === "cp-lessons-v1") inc = JSON.stringify(mergeLessons(JSON.parse(cur), JSON.parse(inc)));
           /* V6.7: preferenze dell'interfaccia; si aggiungono le voci mancanti, a parità vince questo dispositivo */
           else if (k === "cp-ux-v1") inc = JSON.stringify(Object.assign({}, JSON.parse(inc) || {}, JSON.parse(cur) || {}));
           /* V6.7: preferenze del dispositivo (vibrazione, volumi, musica, toni con segno, nickname): vince il dispositivo corrente */

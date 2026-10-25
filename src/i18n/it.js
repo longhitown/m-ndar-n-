@@ -28,7 +28,7 @@ I18N.it = {
   "more.title": "Altro", "more.card": "per questa carta", "more.pad": "Traccia", "more.padFull": "Scrivi il carattere col dito, con la guida", "more.padBlind": "Prova a scriverlo a memoria, poi controlla",
   "more.fam": "Famiglia", "more.famSub": "Le altre parole che contengono questi caratteri", "more.tone": "Tono", "more.toneSub": "Parla e guarda la curva della tua voce, anche senza rete",
   "more.contrib": "Correggi o segnala", "more.contribSub": "Pinyin o traduzione sbagliati? Correggili nella tua copia e mandali all'autore",
-  "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi",
+  "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi", "grp.learn": "📘 Impara", "sub.lessons": "Lezioni",
   "sub.ex": "Esercizi", "sub.lab": "Laboratorio", "sub.slot": "Slot", "sub.dlg": "Dialoghi", "sub.thought": "Pensiero", "sub.reader": "Lettore", "sub.pat": "Modelli",
   "path.stage": "Tappa {n}", "path.continue": "Continua · ≈ {min} min", "path.explore": "Esplora la tappa {n}", "path.counts": "{due} da ripassare · {nw} {new}",
   "path.doneToday": "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.", "path.goto": "📍 Vai alla tappa {n} sulla mappa",

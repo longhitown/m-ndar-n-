@@ -777,6 +777,7 @@
     (typeof PATTERNS !== "undefined" ? PATTERNS : []).forEach(function (p) { p.ex.forEach(function (e) { add(typeof e[0] === "string" ? e[0] : e[0].join(""), e[2], "data"); }); });
     (typeof PHRASES !== "undefined" ? PHRASES : []).forEach(function (g) { g.items.forEach(function (x) { add(x[1], x[2], "data"); }); });
     (typeof DIALOGS !== "undefined" ? DIALOGS : []).forEach(function (d) { d.lines.forEach(function (l) { add(l[2], l[3], "data"); }); });
+    (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (e) { add(e[0], e[1], "data"); }); (l.quiz || []).forEach(function (q) { if (q.k === "order") add(q.zh, q.it, "data"); }); });
     return MEM;
   }
   /* correzioni dell'utente (contributi «tr»): vincono su tutto, solo nella sua copia */

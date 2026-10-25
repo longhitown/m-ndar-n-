@@ -13,6 +13,9 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   main.js                  ultimo script: avvio finale
   data/vocab/NNN-<id>.js   il vocabolario, una sezione per file, una parola per riga
   data/dialogs/<id>.js     un dialogo per file (+ _categorie.js)
+  data/lessons/NN-<id>.js  le lezioni di grammatica, una per file (spiegazione, esempi, errori tipici, esercizi)
+  data/grammar.js          le schede grammaticali del traduttore (nomi, luoghi, nazionalità, verbi, aggettivi…)
+  data/verified.js         le frasi verificate: traduzioni sicure e, insieme, prove per le regole
   data/*.js                frasi, Pensiero, esercizi, modelli, slot, percorso
   i18n/                    i18n.js (t, applyI18n) + it.js + zh.js
   core/                    fsrs.js (ripasso), store.js (salvataggi e backup), core.js (stato condiviso, voce, fogli), game.js
@@ -25,7 +28,8 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
-tools/                     build.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, lib/data.mjs (Node puro, zero dipendenze)
+  phrases/translate.js     il traduttore del laboratorio (regole); phrases/italian.js = coniugazioni e articoli
+tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, lib/ (Node puro, zero dipendenze)
 ```
 
 **Dopo ogni modifica in `src/`:** `node tools/build.mjs`, poi committa anche `dist/`.
@@ -36,10 +40,38 @@ vocabolario, dialogo o traccia non è elencato in `src/index.html`. `node tools/
 Una sezione nuova: un file nuovo `NNN-<id>.js` (copia la forma di uno esistente) e una riga `<script src="data/vocab/…">` in `src/index.html`.
 I caratteri sono la chiave dei progressi: una parola esistente non cambia mai i suoi caratteri.
 
+**Aggiungere una lezione:** un file nuovo in `src/data/lessons/` (il formato è spiegato in cima a `01-essere.js`) e una riga
+`<script src="data/lessons/…">` in `src/index.html`. La build controlla che ogni frase cinese sia fatta di parole del
+vocabolario e che gli esercizi siano ben formati. Il campo `path` la fa comparire nella tappa giusta del Percorso.
+
 **Aggiungere o sostituire una traccia:** `src/audio/tracks/<id>.js` chiama
 `CP.audioTracks.add({ id, ico, name, desc, mood: "calm" | "focus" | "energy", make(c, bus) })`; `make` restituisce
 `{ step(until, now), stop() }`. Gli attrezzi (pluck, partials, flute, groove…) arrivano da `CP.synth`. Poi l'id va in
 `audio/tracks/index.js` e il file in `src/index.html`.
+
+## La grammatica del laboratorio: come si migliora
+
+Il traduttore (cinese → italiano) è prudente: traduce solo quando conosce tutte le parole e la costruzione.
+Altrimenti dice **«Non so ancora tradurre questa frase.»**, mostra la frase parola per parola e spiega che cosa gli manca.
+Una traduzione può venire da tre posti, in quest'ordine:
+1. la correzione dell'utente sul suo telefono (`✏️ tua traduzione`);
+2. una frase verificata: `src/data/verified.js`, più le frasi già tradotte a mano negli esercizi, nei modelli, nelle frasi, nei dialoghi e nelle lezioni (`✓ frase verificata`);
+3. le regole (`src/phrases/translate.js`) con le schede di `src/data/grammar.js`.
+
+**Senza community:**
+- `node tools/grammar.mjs 你喜欢什么` traduce una frase e, se non sa, dice perché;
+- `node tools/grammar.mjs --copertura` dice quante frasi dell'app le regole sanno fare da sole e quali parole mancano più spesso: aggiungere quelle schede in `grammar.js` sblocca più frasi;
+- `node tools/grammar.mjs --nuove frasi.txt` traduce una frase per riga e prepara le righe per `verified.js`, da rileggere una per una;
+- ogni frase in `verified.js` è anche una prova: build e `#selftest` falliscono se una regola nuova cambia una traduzione verificata. Le frasi che le regole non sanno ancora fare si segnano `"memoria"` e il laboratorio usa la traduzione scritta a mano.
+
+**Con la community:** sotto ogni traduzione c'è «✏️ La traduzione è sbagliata?» (o «Proponi la traduzione giusta»).
+La proposta vale subito sul telefono di chi la scrive e si manda come gli altri contributi.
+`node tools/merge-contrib.mjs arrivati/*.json --apply` la porta in `verified.js` come `"memoria"`: rileggila prima di applicarla.
+
+**CC-CEDICT (solo durante lo sviluppo):** `node tools/cedict-check.mjs cedict_ts.u8.gz --out rapporto.md` confronta il nostro
+pinyin con CC-CEDICT e mette accanto all'italiano il significato inglese, per rileggere. Il file non entra né nell'app né nel
+repository: la sua licenza (CC BY-SA 4.0) obbligherebbe a ridistribuire i nostri dati con la stessa licenza. Nessuna
+correzione è automatica: il primo giro ha trovato 7 pinyin sbagliati (es. 答应 dā.ying, 接种 jiē.zhòng), corretti a mano.
 
 ## Pubblicare (Cloudflare Pages, il più semplice)
 
@@ -57,11 +89,12 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 ## Prove
 
 ```
-node tools/build.mjs        # costruisce dist/ e controlla i dati
+node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
+node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/e2e.mjs          # 17 prove su dist/, ~1 minuto
 node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
 ```
-In più, dentro l'app: aggiungi `#selftest` all'indirizzo (24 controlli, tutti verdi).
+In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi).
 Per il controllo «nessun attributo senza CP.attr», in revisione: `grep -rnP "[a-z-]+=\"' \+ (?!CP\.attr)" src`
 deve mostrare solo numeri, id interni e classi.
 
@@ -85,7 +118,8 @@ node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ so
 
 ## Chiavi salvate (tutte `cp-*`, tutte con una regola nel ripristino «unisci»)
 
-Nuove in V6.7: `cp-community-contribs` (unione per id, vince la voce più recente), `cp-ux-v1` (benvenuto, legenda,
+Nuove in V6.7: `cp-community-contribs` (unione per id, vince la voce più recente; contiene anche le traduzioni proposte, tipo `tr`),
+`cp-lessons-v1` (lezioni: per ognuna il punteggio migliore, la prima volta superata, l'ultima letta), `cp-ux-v1` (benvenuto, legenda,
 suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-toneshapes`, `cp-contrib-nick`,
 `cp-lang` (preferenze del dispositivo: vince quello corrente). `cp-game-v1.days[giorno]` ha due campi nuovi:
 `nw` (parole nuove introdotte) e `nx` (permesso extra «Ancora 5 parole»). Il formato del backup resta `{app:"mandarino", v:5, kv, log}`.

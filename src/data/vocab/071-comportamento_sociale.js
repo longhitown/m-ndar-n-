@@ -19,7 +19,7 @@ SECTIONS.push({
     ["zàn.měi","赞美","lodare"],
     ["chēng.zàn","称赞","elogiare"],
     ["wǎn.jù","婉拒","declinare gentilmente"],
-    ["dá.yìng","答应","acconsentire, promettere"],
+    ["dā.ying","答应","acconsentire, promettere"],
     ["bǎo.shǒu","保守","conservatore"],
     ["kāi.fàng","开放","aperto"],
     ["qiān.ràng","谦让","cedere per cortesia"],

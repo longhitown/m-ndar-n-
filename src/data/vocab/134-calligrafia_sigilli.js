@@ -12,7 +12,7 @@ SECTIONS.push({
     ["wén.fáng sì.bǎo","文房四宝","i quattro tesori dello studio"],
     ["mò.zhī","墨汁","inchiostro"],
     ["mò.tiáo","墨条","stecca d'inchiostro"],
-    ["yàn.tāi","砚台","pietra per l'inchiostro"],
+    ["yàn.tái","砚台","pietra per l'inchiostro"],
     ["xuān.zhǐ","宣纸","carta di riso"],
     ["máo.bǐ","毛笔","pennello"],
     ["bǐ.fēng","笔锋","punta del pennello"],

@@ -273,7 +273,7 @@
 
   /* ---- struttura ---- */
   /* §4.3: tre gruppi invece di sei pillole scorrevoli */
-  var GROUPS = [["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["reader", "sub.reader"], ["pat", "sub.pat"]]]];
+  var GROUPS = [["learn", "grp.learn", [["lessons", "sub.lessons"], ["pat", "sub.pat"]]], ["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["reader", "sub.reader"]]]];
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
   function groupOf(x) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].some(function (s) { return s[0] === x; })) return GROUPS[i]; return GROUPS[0]; }
@@ -364,7 +364,9 @@
       var d = document.getElementById("pat-" + i);
       if (d) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: "center" }); }, 30); }
     },
-    labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); }
+    labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); },
+    labLoad: function (t, p) { lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
+    openLesson: function (id) { sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); }
   };
   CP.subs = CP.subs || {};
   CP.onBuild = function () { if (!root.innerHTML) render(); };
