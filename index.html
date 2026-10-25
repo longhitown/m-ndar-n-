@@ -1024,6 +1024,39 @@ body.compact .brand svg.logo-svg { width: 104px; margin: 0; }
 .resume .btn-main { margin-top: 0; }
 .hero .btn-s { justify-self: start; }
 body.compact .hd { display: flex; align-items: center; justify-content: flex-start; }
+
+/* U6 · Parole: ricerca, filtri e legenda appiccicati sotto la barra */
+.wbar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--bar-h, 61px)); z-index: 4; display: grid; gap: var(--sp-2); grid-template-columns: none; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: var(--sp-2) max(16px, env(safe-area-inset-left, 0px)); background: var(--bg) var(--paper); background-size: 200px 200px; border-bottom: 1px solid var(--line); }
+.wrow { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.wrow input[type="search"] { flex: 1; min-width: 0; }
+.wrow .btn-s { min-height: 44px; flex: none; }
+#legend-btn { flex: none; width: 44px; min-height: 44px; font-weight: 800; font-size: 18px; border-radius: 50%; }
+@keyframes cp-ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+@media (prefers-reduced-motion: no-preference) { #legend-btn.pulse { animation: cp-ping 1.1s ease-out 1; } }
+.nbadge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: var(--fs-s); }
+.nbadge[hidden] { display: none; }
+.cur-sec { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: var(--muted); font-size: 14px; }
+section { scroll-margin-top: calc(var(--bar-h, 61px) + 120px); }
+.tags button, .tiers button { min-height: 44px; }
+.tags, .tiers { flex-wrap: wrap; overflow: visible; }
+.goto-list { display: grid; gap: 6px; margin-top: 10px; }
+.goto-row { display: grid; grid-template-columns: 1fr 88px; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 6px 12px; text-align: left; font-weight: 600; font-size: 15px; }
+.goto-pc { position: relative; height: 22px; border-radius: 6px; background: var(--chip); overflow: hidden; }
+.goto-pc i { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.goto-pc b { position: relative; display: block; text-align: center; font-size: var(--fs-s); line-height: 22px; }
+#flt .tones, #legend .tones { margin: 0; }
+.fav { width: 44px; min-width: 44px; margin-right: -8px; }
+th { font-size: var(--fs-s); }
+@media (max-width: 420px) {
+  .tw thead { display: none; }
+  .tw tr { display: grid; grid-template-columns: 1fr auto; align-items: center; border-bottom: 1px solid var(--line); }
+  .tw td { border: 0; padding: 6px 12px; width: auto; }
+  .tw td.hz { grid-column: 1; grid-row: 1; }
+  .tw td.py { grid-column: 2; grid-row: 1; text-align: right; }
+  .tw td.it { grid-column: 1 / -1; padding-top: 0; }
+  tr.st-1 td:first-child, tr.st-2 td:first-child { box-shadow: none; }
+  tr.st-1 { box-shadow: inset 3px 0 0 var(--muted); } tr.st-2 { box-shadow: inset 3px 0 0 var(--accent); }
+}
 /* U9 · toast: una riga, mai sopra la dock */
 #toast { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 32px); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
@@ -1059,60 +1092,21 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
   </div>
 
   <div id="view-words" role="tabpanel" aria-labelledby="tab-words" hidden>
-  <div class="tools">
-    <div class="search">
+  <div class="wbar tools">
+    <div class="wrow search">
       <label for="q" class="sr">Cerca una parola</label>
       <input id="q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <button type="button" id="flt-btn" class="btn-s" aria-haspopup="dialog">Filtri<span class="nbadge" id="flt-n" hidden></span></button>
+      <button type="button" id="legend-btn" class="iconbtn" aria-haspopup="dialog" aria-label="Legenda dei toni e regole" title="Legenda e regole">?</button>
     </div>
-    <div>
-      <label for="state" class="sr">Mostra</label>
-      <select id="state">
-        <option value="">Tutte le parole</option>
-        <option value="0">Da imparare</option>
-        <option value="1">In corso</option>
-        <option value="2">Le so già</option>
-        <option value="fav">★ Preferite / difficili</option>
-      </select>
-    </div>
-    <div>
-      <label for="mode" class="sr">Modalità ripasso</label>
-      <select id="mode">
-        <option value="">Mostra tutto</option>
-        <option value="it">Copri l'italiano</option>
-        <option value="py">Copri il pinyin</option>
-        <option value="hz">Copri i caratteri</option>
-      </select>
+    <div class="wrow">
+      <button type="button" id="goto-btn" class="btn-s" aria-haspopup="dialog">☰ Vai a…</button>
+      <span class="cur-sec" id="cur-sec" aria-live="off"></span>
     </div>
   </div>
-  <div class="tiers" id="tiers" role="group" aria-label="Filtra per livello"></div>
-  <div class="tags" id="tags" role="group" aria-label="Argomenti rapidi"></div>
-  <p class="hint" id="hint" hidden>Tocca una parola sfocata per scoprirla.</p>
-  <p class="hint" id="sayhint" hidden>Tocca un carattere per ascoltarlo. Tienilo premuto (o clic destro) per vedere le altre parole che lo contengono. Tocca il pinyin per vedere come si pronuncia.</p>
-  <p class="legend-st"><span><i style="background:var(--muted)"></i>in corso</span><span><i style="background:var(--accent)"></i>la so già</span></p>
-
-  <div class="tones" aria-label="I colori dei toni">
-    <span class="tone"><strong class="t1">mā</strong> 1° alto, piatto</span>
-    <span class="tone"><strong class="t2">má</strong> 2° sale</span>
-    <span class="tone"><strong class="t3">mǎ</strong> 3° scende e risale</span>
-    <span class="tone"><strong class="t4">mà</strong> 4° cade secco</span>
-    <span class="tone"><strong class="t5">ma</strong> neutro, leggero</span>
-  </div>
-
-  <details>
-    <summary>Tre regole che cambiano i toni</summary>
-    <ul>
-      <li><b>3° + 3°:</b> il primo sale. <span class="han">你好</span> si scrive <i>nǐ hǎo</i> ma si dice <i>ní hǎo</i>.</li>
-      <li><b><span class="han">不</span> diventa bú</b> davanti a un 4° tono: <span class="han">不是</span> bú shì, <span class="han">不客气</span> bú kèqi.</li>
-      <li><b><span class="han">一</span> cambia:</b> yí davanti a un 4° tono (<span class="han">一次</span> yí cì), yì davanti a 1°, 2° e 3° (<span class="han">一点</span> yìdiǎn).</li>
-    </ul>
-  </details>
-
-  <div class="chiprow"><span class="muted small" id="chipinfo"></span><span style="display:flex;gap:8px"><button type="button" id="print-btn" class="btn-s">Stampa</button><button type="button" id="toggle-all" class="btn-s">Chiudi tutte</button></span></div>
-  <nav class="chips" id="chips" aria-label="Argomenti"></nav>
   <p class="hint" id="qinfo" hidden></p>
   <div id="sections"></div>
   </div>
-
   <div id="view-study" role="tabpanel" aria-labelledby="tab-study" hidden>
     <div id="study-root"></div>
   </div>
@@ -1133,6 +1127,62 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="fam" hidden role="dialog" aria-modal="true" aria-label="Dettagli"><div class="fam-card" id="fam-card"></div></div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-label="Modalità guida"></div>
+<div id="flt" class="sheet" hidden role="dialog" aria-labelledby="flt-title">
+  <div class="fam-card set-card">
+    <div class="fam-head"><h2 id="flt-title" style="margin:0">Filtri</h2><button type="button" class="fam-x btn-s" data-sheet-close>Chiudi</button></div>
+    <section class="set-sec"><h3>Mostra</h3>
+      <label for="state" class="sr">Mostra</label>
+      <select id="state">
+        <option value="">Tutte le parole</option>
+        <option value="0">Da imparare</option>
+        <option value="1">In corso</option>
+        <option value="2">Le so già</option>
+        <option value="fav">★ Preferite / difficili</option>
+      </select>
+      <label for="mode" class="sr">Modalità ripasso</label>
+      <select id="mode">
+        <option value="">Mostra tutto</option>
+        <option value="it">Copri l'italiano</option>
+        <option value="py">Copri il pinyin</option>
+        <option value="hz">Copri i caratteri</option>
+      </select>
+    </section>
+    <section class="set-sec"><h3>Livello</h3><div class="tiers" id="tiers" role="group" aria-label="Filtra per livello"></div></section>
+    <section class="set-sec"><h3>Argomenti rapidi</h3><div class="tags" id="tags" role="group" aria-label="Argomenti rapidi"></div></section>
+    <section class="set-sec chiprow"><h3>Sezioni <span class="muted small" id="chipinfo"></span></h3><div class="acts" style="margin:0"><button type="button" id="toggle-all" class="btn-s">Chiudi tutte</button><button type="button" id="print-btn" class="btn-s">Stampa</button><button type="button" id="flt-reset" class="btn-s">Azzera i filtri</button></div></section>
+    <button type="button" class="btn-main" data-sheet-close id="flt-done">Mostra le parole</button>
+    <nav class="chips" id="chips" aria-label="Argomenti" hidden></nav>
+  </div>
+</div>
+<div id="legend" class="sheet" hidden role="dialog" aria-labelledby="legend-title">
+  <div class="fam-card set-card">
+    <div class="fam-head"><h2 id="legend-title" style="margin:0">Legenda e regole</h2><button type="button" class="fam-x btn-s" data-sheet-close>Chiudi</button></div>
+    <section class="set-sec"><h3>I colori dei toni</h3>
+  <div class="tones" aria-label="I colori dei toni">
+    <span class="tone"><strong class="t1">mā</strong> 1° alto, piatto</span>
+    <span class="tone"><strong class="t2">má</strong> 2° sale</span>
+    <span class="tone"><strong class="t3">mǎ</strong> 3° scende e risale</span>
+    <span class="tone"><strong class="t4">mà</strong> 4° cade secco</span>
+    <span class="tone"><strong class="t5">ma</strong> neutro, leggero</span>
+  </div>
+    </section>
+    <section class="set-sec"><h3>Come si usa la tabella</h3>
+  <p class="hint" id="hint" hidden>Tocca una parola sfocata per scoprirla.</p>
+  <p class="hint" id="sayhint" hidden>Tocca un carattere per ascoltarlo. Tienilo premuto (o clic destro) per vedere le altre parole che lo contengono. Tocca il pinyin per vedere come si pronuncia.</p>
+  <p class="legend-st"><span><i style="background:var(--muted)"></i>in corso</span><span><i style="background:var(--accent)"></i>la so già</span></p>
+    </section>
+    <section class="set-sec">
+  <details>
+    <summary>Tre regole che cambiano i toni</summary>
+    <ul>
+      <li><b>3° + 3°:</b> il primo sale. <span class="han">你好</span> si scrive <i>nǐ hǎo</i> ma si dice <i>ní hǎo</i>.</li>
+      <li><b><span class="han">不</span> diventa bú</b> davanti a un 4° tono: <span class="han">不是</span> bú shì, <span class="han">不客气</span> bú kèqi.</li>
+      <li><b><span class="han">一</span> cambia:</b> yí davanti a un 4° tono (<span class="han">一次</span> yí cì), yì davanti a 1°, 2° e 3° (<span class="han">一点</span> yìdiǎn).</li>
+    </ul>
+  </details>
+    </section>
+  </div>
+</div>
 <div id="settings" class="sheet" hidden role="dialog" aria-labelledby="set-title">
   <div class="fam-card set-card">
     <div class="fam-head"><h2 id="set-title" style="margin:0">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close>Chiudi</button></div>
@@ -1553,6 +1603,9 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
 
   /* ---- scheletro delle sezioni ---- */
   var THEAD = 41, ROWH = 56, MARG = 1500, FAR = 4500;
+  /* sotto i 420 px la riga va su due righe (carattere e pinyin sopra, italiano sotto): la stima iniziale decide i salti di scorrimento */
+  function narrow() { return window.matchMedia && window.matchMedia("(max-width: 420px)").matches; }
+  if (narrow()) { THEAD = 0; ROWH = 84; }
   var chips = "", html = "", total = N;
   SEC.forEach(function (S, si) {
     chips += '<a href="#' + S.id + '">' + esc(S.title) + "</a>";
@@ -1664,7 +1717,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   function applySize() {
     root.style.setProperty("--hz", size + "px");
     valEl.innerHTML = '<span class="han">字</span> ' + size;
-    if (CP.invalidateHeights) { SEC.forEach(function (S) { if (S.m) S.h = 0; }); setTimeout(function () { ROWH = 40 + size * 0.6; CP.invalidateHeights(); }, 60); }
+    if (CP.invalidateHeights) { SEC.forEach(function (S) { if (S.m) S.h = 0; }); setTimeout(function () { ROWH = narrow() ? 60 + size * 0.95 : 40 + size * 0.6; CP.invalidateHeights(); }, 60); }
   }
   function applyMode() {
     document.body.classList.remove("hide-it", "hide-py", "hide-hz");
@@ -2549,7 +2602,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var open = anyOpen();
     Array.prototype.forEach.call(secsEl.querySelectorAll("section"), function (s) { s.classList.toggle("closed", open); var b = s.querySelector(".sech"); if (b) b.setAttribute("aria-expanded", open ? "false" : "true"); });
     syncAll(); CP.kick();
-    if (open) document.querySelector(".chiprow").scrollIntoView({ block: "start" });
+    if (open) window.scrollTo(0, 0);
   });
   document.getElementById("chips").addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest("a") : null;
@@ -7308,6 +7361,70 @@ const PATH = {
   /* U7: toni anche con la forma (per chi non distingue il rosso dal verde) */
   try { if (localStorage.getItem("cp-toneshapes") === "1") document.body.classList.add("tone-shapes"); } catch (e) {}
 })();
+/* ===== V6.7 · U6: scheda Parole. Prima le parole, poi gli strumenti ===== */
+(function () {
+  var CP = window.CP, flt = document.getElementById("flt"), leg = document.getElementById("legend");
+  var fb = document.getElementById("flt-btn"), lb = document.getElementById("legend-btn"), gb = document.getElementById("goto-btn"), cur = document.getElementById("cur-sec");
+  if (!flt || !fb) return;
+  [flt, leg].forEach(function (sh) {
+    sh.addEventListener("click", function (e) { if (e.target === sh || (e.target.closest && e.target.closest("[data-sheet-close]"))) CP.untrap(sh); });
+  });
+  function openSheetEl(sh) { CP.trap(sh, function () { CP.untrap(sh); }); var x = sh.querySelector("[data-sheet-close]"); if (x) x.focus({ preventScroll: true }); CP.sfx("tap"); }
+  fb.addEventListener("click", function () { openSheetEl(flt); });
+  lb.addEventListener("click", function () { CP.ux.set("legendSeen", 1); lb.classList.remove("pulse"); openSheetEl(leg); });
+  document.getElementById("flt-reset").addEventListener("click", function () {
+    CP.resetFilters(); var m = document.getElementById("mode"); if (m.value) { m.value = ""; m.dispatchEvent(new Event("change")); } badge(); CP.sfx("tap");
+  });
+  /* quanti filtri sono attivi: il numero sta sul pulsante */
+  function badge() {
+    var n = (document.getElementById("state").value ? 1 : 0) + (document.getElementById("mode").value ? 1 : 0) + (CP.topic ? 1 : 0), el = document.getElementById("flt-n");
+    el.hidden = !n; el.textContent = n; fb.setAttribute("aria-label", "Filtri" + (n ? ", " + n + " attivi" : ""));
+  }
+  var rf = CP.refilter; CP.refilter = function () { var r = rf.apply(this, arguments); badge(); return r; };
+  document.getElementById("mode").addEventListener("change", badge);
+  badge();
+  /* «Vai a…»: elenco con ricerca e percentuale di parole già iniziate per sezione (155 chip in riga non si navigano) */
+  function pct(S) { var n = 0; for (var i = S.i0; i < S.i1; i++) if (CP.state(CP.ORDER[i]) >= 1) n++; return Math.round(n / Math.max(1, S.i1 - S.i0) * 100); }
+  function gotoList(q) {
+    q = CP.norm(q || "");
+    return CP.SEC.filter(function (S) { return !q || CP.norm(S.title).indexOf(q) >= 0; }).map(function (S) {
+      var p = pct(S);
+      return '<button type="button" class="goto-row" data-goto="' + CP.attr(S.id) + '"><span>' + CP.esc(S.title) + '</span><span class="goto-pc"><i style="width:' + p + '%"></i><b>' + p + "%</b></span></button>";
+    }).join("") || '<p class="muted">Nessuna sezione con questo nome.</p>';
+  }
+  gb.addEventListener("click", function () {
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>Vai a…</b><div class="small muted">' + CP.SEC.length + ' sezioni · % di parole già iniziate</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
+      '<label for="goto-q" class="sr">Cerca una sezione</label><input id="goto-q" type="search" placeholder="Cerca una sezione" autocomplete="off" style="margin-top:10px"><div class="goto-list" id="goto-list">' + gotoList("") + "</div>");
+    var gq = document.getElementById("goto-q"); if (gq) gq.focus({ preventScroll: true });
+  });
+  var fam = document.getElementById("fam");
+  fam.addEventListener("input", function (e) { if (e.target.id === "goto-q") document.getElementById("goto-list").innerHTML = gotoList(e.target.value); });
+  fam.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-goto]") : null; if (!b) return;
+    var id = b.getAttribute("data-goto"), sec = document.getElementById(id);
+    CP.closeSheet();
+    if (sec && sec.hidden) CP.resetFilters();
+    setTimeout(function () { CP.gotoSection(id, false); }, 30);
+  });
+  /* la barra di ricerca resta appiccicata sotto la barra in alto; accanto, il nome della sezione che stai guardando */
+  var bar = document.querySelector(".bar"), root = document.documentElement;
+  function barH() { if (bar) root.style.setProperty("--bar-h", bar.offsetHeight + "px"); }
+  barH(); window.addEventListener("resize", barH);
+  var wbar = document.querySelector(".wbar"), tick = 0, last = "";
+  function spy() {
+    tick = 0; if (document.getElementById("view-words").hidden) return;
+    var y = (wbar ? wbar.getBoundingClientRect().bottom : 120) + 8, name = "";
+    for (var i = 0; i < CP.SEC.length; i++) { var S = CP.SEC[i]; if (S.el.hidden) continue; if (S.el.getBoundingClientRect().top <= y) name = S.title; else break; }
+    if (name !== last) { last = name; cur.textContent = name; }
+  }
+  window.addEventListener("scroll", function () { if (!tick) tick = requestAnimationFrame(spy); }, { passive: true });
+  /* al primo ingresso nella scheda il «?» pulsa una volta */
+  document.getElementById("tab-words").addEventListener("click", function () {
+    barH(); setTimeout(spy, 60);
+    if (!CP.ux.get("legendSeen")) { lb.classList.remove("pulse"); void lb.offsetWidth; lb.classList.add("pulse"); }
+  });
+})();
+
 </script>
 </body>
 </html>
