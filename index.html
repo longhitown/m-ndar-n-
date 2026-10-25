@@ -30,9 +30,10 @@
   --t3: #2563BE;
   --t4: #8438BC;
   --t5: #6C7771;
-  --f-display: "Bricolage Grotesque", "Source Sans 3", system-ui, sans-serif;
-  --f-body: "Source Sans 3", "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-han: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  /* solo font di sistema: niente richieste di rete e niente font promessi ma mai caricati */
+  --f-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-han: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
   --hz: 26px;
 }
 @media (prefers-color-scheme: dark) {
@@ -110,21 +111,32 @@ details li { margin-bottom: 6px; }
 details li b { color: var(--ink); font-weight: 600; }
 .han { font-family: var(--f-han); }
 
+/* barra in alto: una regola per selettore (prima ridefinita in V2, V4, V5 e V6.6) */
 .bar {
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 5;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 14px;
-  background: var(--bg);
-  padding-block: 10px;
-  margin-top: 8px;
+  gap: 6px;
+  background: var(--bg) var(--paper);
+  background-size: 200px 200px;
+  padding-block: 8px;
+  margin-top: 10px;
   border-bottom: 1px solid var(--line);
 }
-.grp { display: flex; align-items: center; gap: 8px; }
+.grp { display: flex; align-items: center; gap: 2px; flex: 0 1 auto; min-width: 0; }
+.bar .grp button, .bar .grp .iconbtn { flex: 0 1 44px; width: 44px; min-width: 38px; min-height: 44px; padding-inline: 0; }
+.bar .gpill { padding: 0 10px 0 6px; gap: 6px; min-width: 0; flex: 0 0 auto; }
+.mini-logo { --pores: 0; flex: none; width: 30px; min-width: 30px; height: 44px; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; }
+.mini-logo[hidden] { display: none; }
+.mini-logo svg { width: 28px; height: 28px; }
+body.scrolled .gpill .seal { display: none; }
+body.scrolled .gpill { padding-left: 12px; }
+@media (max-width: 420px) { .gpill .muted, .bar .gpill .seal { display: none; } .bar .gpill { padding-left: 12px; } }
+@media (max-width: 340px) { .bar { flex-wrap: wrap; justify-content: center; } .bar .grp button, .bar .grp .iconbtn { min-width: 32px; } .bar .gpill { padding: 0 8px; } }
 .val { min-width: 4.2em; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
 button, select {
   font: 700 17px var(--f-body);
@@ -219,10 +231,6 @@ body.hide-hz .m-hz:not(.shown) {
   .m { transition: filter 0.15s ease, opacity 0.15s ease; }
 }
 /* ---- v2: schede, ricerca, ripasso, laboratorio ---- */
-.bar { flex-wrap: nowrap; }
-.tabs { display: flex; gap: 4px; background: var(--chip); border-radius: 12px; padding: 4px; min-width: 0; }
-.tab { border: 0; background: transparent; min-height: 40px; min-width: 0; padding: 0 14px; border-radius: 9px; font-weight: 600; font-size: 16px; color: var(--muted); }
-.tab.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14); }
 
 .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 .tools .search { grid-column: 1 / -1; }
@@ -403,14 +411,15 @@ td.hz .m-hz, .cd-hz, .fam-card .lh { -webkit-touch-callout: none; -webkit-user-s
 :root {
   --seal: #C23A31;
   --seal-ink: #FFFFFF;
+  --warn: #9A6200;
   --shadow: 0 1px 2px rgba(20, 30, 25, 0.06), 0 6px 18px rgba(20, 30, 25, 0.07);
   --r: 16px;
   --tg-chi: var(--t3); --tg-when: var(--t4); --tg-with: var(--t2); --tg-where: var(--t1); --tg-do: var(--accent); --tg-what: var(--t5);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="sepia"]) { --seal: #D9544B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) { --seal: #D9544B; --warn: #E9B44C; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
 }
-:root[data-theme="dark"] { --seal: #D9544B; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
+:root[data-theme="dark"] { --seal: #D9544B; --warn: #E9B44C; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35); }
 
 body { padding-block: 20px calc(112px + env(safe-area-inset-bottom, 0px)); }
 .hd { margin-bottom: 4px; }
@@ -419,9 +428,6 @@ h1 { letter-spacing: -0.01em; }
 .panel, .ph, .tw, .pat, .stat { border-radius: var(--r); }
 
 /* barra in alto */
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-block: 8px; margin-top: 10px; }
-.bar .grp { gap: 6px; }
-.bar .grp button { min-height: 44px; }
 .gpill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 6px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-weight: 700; font-size: 15px; box-shadow: var(--shadow); }
 .gpill b { font-variant-numeric: tabular-nums; }
 .seal { flex: none; width: 32px; height: 32px; border-radius: 9px; background: var(--seal); color: var(--seal-ink); display: inline-flex; align-items: center; justify-content: center; font: 700 18px/1 var(--f-han); transform: rotate(-4deg); }
@@ -721,9 +727,6 @@ table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), t
 .leaf-v { transform-box: fill-box; transform-origin: center bottom; }
 #mandarin-symbol:hover .leaf-v, .brand.pulse .leaf-v { animation: tone-pulse 0.6s ease-in-out; }
 @media (prefers-reduced-motion: reduce) { #mandarin-symbol:hover .leaf-v, .brand.pulse .leaf-v { animation: none; } }
-.mini-logo { --pores: 0; flex: none; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; }
-.mini-logo[hidden] { display: none; }
-.mini-logo svg { width: 30px; height: 30px; }
 /* timbro: il frutto al posto del quadrato rosso */
 .seal.stamp { position: relative; background: none; border-radius: 0; transform: none; --pores: 0.4; }
 .seal.stamp svg { position: absolute; inset: -6% -6% 0 -6%; width: 112%; height: 112%; }
@@ -734,15 +737,10 @@ table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), t
 @media print { .mini-logo { display: none !important; } }
 .brand svg.logo-svg { width: min(100%, 250px); margin-inline: auto; }
 @media (min-width: 700px) { .brand svg.logo-svg { width: 300px; } }
-.mini-logo { width: 36px; }
 .gpill { white-space: nowrap; flex: 0 1 auto; }
-@media (max-width: 420px) { .gpill .muted { display: none; } }
 
 /* ===== audio ===== */
 .iconbtn.emo { font-size: 20px; line-height: 1; position: relative; }
-.bar .grp .iconbtn { width: 40px; padding: 0; }
-.bar .grp button { min-width: 40px; }
-.bar .grp #hz-minus, .bar .grp #hz-plus { padding: 0 8px; }
 #vol-btn.pending::after { content: ""; position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--t1); box-shadow: 0 0 0 2px var(--surface); }
 #music-btn { opacity: 0.55; }
 #music-btn.on { opacity: 1; background: color-mix(in srgb, var(--accent) 16%, var(--surface)); border-color: var(--accent); }
@@ -758,17 +756,8 @@ table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), t
 #selftest .st-in { max-width: 640px; margin: 0 auto; }
 #selftest ul { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
 #selftest li { padding: 8px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
-#selftest li.ok b { color: var(--t2); } #selftest li.ko b { color: var(--t1); } #selftest li.wa b { color: #B7791F; }
+#selftest li.ok b { color: var(--t2); } #selftest li.ko b { color: var(--t1); } #selftest li.wa b { color: var(--warn); }
 #selftest .acts { display: flex; gap: 8px; margin-top: 12px; } #selftest .acts button { min-height: 44px; }
-/* barra stretta: quando compare il mini-logo, il timbro del grado nel riquadro lascia il posto */
-.mini-logo { width: 30px; min-width: 30px; }
-.mini-logo svg { width: 28px; height: 28px; }
-.bar .grp #hz-minus, .bar .grp #hz-plus { min-width: 38px; padding: 0 5px; }
-.bar { gap: 6px; }
-.bar .grp { gap: 4px; }
-body.scrolled .gpill .seal { display: none; }
-body.scrolled .gpill { padding-left: 12px; }
-@media (max-width: 340px) { .bar { flex-wrap: wrap; justify-content: center; } }
 
 /* ===== V6: jukebox ===== */
 #jk-pop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.42);display:flex;align-items:flex-end;justify-content:center}
@@ -791,12 +780,12 @@ body.scrolled .gpill { padding-left: 12px; }
 .pad2 .pad-stage canvas{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;background:transparent}
 .pad2 canvas.pad-ink{touch-action:none;cursor:crosshair}
 .pad2 canvas.pad-bg{pointer-events:none}
-.pad-dot{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#2fae5a;box-shadow:0 0 0 4px rgba(47,174,90,.28);pointer-events:none;animation:padpulse 1.3s ease-in-out infinite}
-@keyframes padpulse{0%,100%{box-shadow:0 0 0 3px rgba(47,174,90,.35)}50%{box-shadow:0 0 0 9px rgba(47,174,90,.08)}}
+.pad-dot{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:var(--t2);box-shadow:0 0 0 4px color-mix(in srgb,var(--t2) 28%,transparent);pointer-events:none;animation:padpulse 1.3s ease-in-out infinite}
+@keyframes padpulse{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--t2) 35%,transparent)}50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--t2) 8%,transparent)}}
 .pad-chars{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .pad-chars button{min-width:52px;min-height:48px;font-size:1.5rem;border:1px solid var(--line);border-bottom-width:3px;border-radius:12px;background:var(--chip);color:var(--ink)}
 .pad-chars button[data-pc="all"]{font-size:.95rem;font-weight:600}
-.pad-chars button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pad-chars button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .pad2 .padbtns button{min-height:46px;padding:0 12px}
 .pad2 .padbtns button.on{background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent)}
 .pad2 .padbtns button:disabled{opacity:.45}
@@ -804,8 +793,8 @@ body.scrolled .gpill { padding-left: 12px; }
 .pad-info{margin:0;text-align:center;max-width:min(92vw,360px)}
 .pad-res{width:min(92vw,360px);text-align:left;background:var(--chip);border-radius:12px;padding:10px 12px}
 .pad-score{font-size:1.05rem;padding:6px 10px;border-radius:10px;margin-bottom:6px}
-.pad-score.ok{background:color-mix(in srgb,#2fae5a 18%,var(--surface))}
-.pad-score.ko{background:color-mix(in srgb,var(--t1,#D3544A) 14%,var(--surface))}
+.pad-score.ok{background:color-mix(in srgb,var(--t2) 18%,var(--surface))}
+.pad-score.ko{background:color-mix(in srgb,var(--t1) 14%,var(--surface))}
 .pad-tips{margin:6px 0;padding-left:18px;font-size:.92rem;line-height:1.45}
 .pad-tips li{margin:4px 0}
 
@@ -813,10 +802,10 @@ body.scrolled .gpill { padding-left: 12px; }
 .lab-view{margin:0 0 10px}
 .fluid{margin:8px 0 4px}
 .fl-it{font-size:1.25rem;font-weight:600;line-height:1.35;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));border:1px solid var(--line);border-bottom-width:3px}
-.fixbox{margin:12px 0;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,#e0a000 55%,var(--line));background:color-mix(in srgb,#e0a000 10%,var(--surface));display:grid;gap:8px}
+.fixbox{margin:12px 0;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--warn) 55%,var(--line));background:color-mix(in srgb,var(--warn) 10%,var(--surface));display:grid;gap:8px}
 .fixbox .han{font-size:1.15rem}
 .fixbox .fx-ok{color:var(--ink)}
-.fixlog{margin:10px 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#2fae5a 12%,var(--surface));border:1px solid var(--line)}
+.fixlog{margin:10px 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--t2) 12%,var(--surface));border:1px solid var(--line)}
 .fixlog ol{margin:6px 0 0;padding-left:20px}
 .fixlog li{margin:4px 0;line-height:1.4}
 
@@ -871,7 +860,7 @@ body { background-color: var(--bg); background-image: var(--paper); background-s
 .hero::before { right: -8px; bottom: -30px; font-size: 168px; }
 .fc::before { content: "字"; content: "字" / ""; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 200px; opacity: 0.04; }
 .sbox::before { content: "言"; content: "言" / ""; right: -4px; bottom: -14px; font-size: 84px; }
-.fc { background-image: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%); will-change: transform; }
+.fc { background-image: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%); }
 
 /* --- tessere tattili --- */
 .tile { border: 1px solid var(--line); border-bottom: 4px solid color-mix(in srgb, var(--line) 75%, var(--ink)); background: var(--surface); transition: transform 0.08s ease, border-bottom-width 0.08s ease; }
@@ -912,14 +901,6 @@ body.compact { padding-top: 10px; }
 .swipe-hint { text-align: center; margin: 8px 0 0; }
 @media (hover: hover) and (pointer: fine) { .swipe-hint { display: none; } }
 
-/* --- barra strumenti: sette controlli in una riga; bersagli da 44 px dove c'e' spazio, mai sotto i 38 --- */
-.bar { gap: 6px; }
-.bar .grp { gap: 2px; flex: 0 1 auto; min-width: 0; }
-.bar .grp button, .bar .grp .iconbtn, .bar .grp #hz-minus, .bar .grp #hz-plus { flex: 0 1 44px; width: 44px; min-width: 38px; padding-inline: 0; }
-.bar .gpill { padding: 0 10px 0 6px; gap: 6px; min-width: 0; flex: 0 0 auto; }
-@media (max-width: 420px) { .bar .gpill .seal { display: none; } .bar .gpill { padding-left: 12px; } }
-@media (max-width: 340px) { .bar .grp button, .bar .grp .iconbtn, .bar .grp #hz-minus, .bar .grp #hz-plus { min-width: 32px; } .bar .gpill { padding: 0 8px; } }
-.bar { background-image: var(--paper); background-size: 200px 200px; }
 
 </style>
 </head>
@@ -1541,7 +1522,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   function applySize() {
     root.style.setProperty("--hz", size + "px");
     valEl.innerHTML = '<span class="han">字</span> ' + size;
-    if (CP.invalidateHeights) { SEC.forEach(function (S) { if (S.m) S.h = 0; }); setTimeout(function () { ROWH = Math.round(ROWH * (size / 26) * 0 + 40 + size * 0.6); CP.invalidateHeights(); }, 60); }
+    if (CP.invalidateHeights) { SEC.forEach(function (S) { if (S.m) S.h = 0; }); setTimeout(function () { ROWH = 40 + size * 0.6; CP.invalidateHeights(); }, 60); }
   }
   function applyMode() {
     document.body.classList.remove("hide-it", "hide-py", "hide-hz");
@@ -1595,7 +1576,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   CP.inFrame = (function () { try { return window.self !== window.top; } catch (e) { return true; } })();
   CP.snapshot = "";
   CP.openOutside = function () {
-    var html = "<!doctype html>\n" + (CP.snapshot || document.documentElement.outerHTML), name = "Cinese_V6.html";
+    var html = "<!doctype html>\n" + (CP.snapshot || document.documentElement.outerHTML), name = "mandarino.html";
     var fallback = function () {
       try {
         var url = URL.createObjectURL(new Blob([html], { type: "text/html" })), a = document.createElement("a");
@@ -1738,7 +1719,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       '<button type="button" data-rate="1"' + (pref.rate === 1 ? ' class="on"' : "") + ">🐇 Normale</button></div>";
     if (voices.length > 1) {
       h += '<label class="small muted" for="voice-sel" style="display:grid;gap:4px;font-weight:600">Voce<select id="voice-sel">' + voices.map(function (v) {
-        return '<option value="' + CP.esc(v.voiceURI) + '"' + (voice && v.voiceURI === voice.voiceURI ? " selected" : "") + ">" + (vscore(v) >= 10 ? "★ " : "") + CP.esc(v.name) + " (" + CP.esc(v.lang) + ")</option>";
+        return '<option value="' + CP.attr(v.voiceURI) + '"' + (voice && v.voiceURI === voice.voiceURI ? " selected" : "") + ">" + (vscore(v) >= 10 ? "★ " : "") + CP.esc(v.name) + " (" + CP.esc(v.lang) + ")</option>";
       }).join("") + "</select></label>";
     } else {
       h += '<p class="small muted" style="margin:0">' + (voice ? "Voce: " + CP.esc(voice.name) + "." : "Il dispositivo non elenca voci cinesi: provo comunque con quella predefinita (zh-CN).") + "</p>";
@@ -1906,7 +1887,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
   };
   CP.sayBtn = function (text) {
-    return '<button class="say" type="button" data-say="' + CP.esc(text) + '" aria-label="Ascolta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
+    return '<button class="say" type="button" data-say="' + CP.attr(text) + '" aria-label="Ascolta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
   };
   document.body.classList.add("can-say");
   var sh = document.getElementById("sayhint"); if (sh) sh.hidden = false;
@@ -2029,7 +2010,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   };
   CP.micBtn = function (hz) {
     if (!SR) return "";
-    return '<button class="mic" type="button" data-mic="' + CP.esc(hz) + '" aria-label="Parla e verifica"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>';
+    return '<button class="mic" type="button" data-mic="' + CP.attr(hz) + '" aria-label="Parla e verifica"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>';
   };
   CP.audioBtns = function (hz, noMic) { return '<span class="btns">' + CP.sayBtn(hz) + (noMic ? "" : CP.micBtn(hz)) + "</span>"; };
   var MIC_ERR = {
@@ -2092,7 +2073,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       ctx.setLineDash([]);
       if (ghost) {
         var n = Array.from(ghost).length, fs = Math.max(48, Math.min(130, Math.floor(200 / n)));
-        ctx.font = "500 " + fs + "px 'Noto Sans SC', sans-serif";
+        ctx.font = "500 " + fs + "px 'PingFang SC', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif";
         ctx.fillStyle = "rgba(128,128,128,0.16)";
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(ghost, S / 2, S / 2 + 5);
@@ -2144,7 +2125,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "");
     if (fam.chars.length > 1) {
       h += '<div class="fam-chars" role="group" aria-label="Caratteri">' + fam.chars.map(function (c) {
-        return '<button type="button" data-fc="' + CP.esc(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
+        return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
       }).join("") + "</div>";
     }
     if (selfW && CP.phonBlock) h += CP.phonBlock(selfW.py);
@@ -2470,9 +2451,9 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   function cardTools(w, full) {
     var fv = CP.favs && CP.favs.has(w.key);
     return (full ? '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + CP.micBtn(w.hz) + "</div>" : "") +
-      '<div class="acts cardacts"><button type="button" id="pad-open">✍️ Traccia</button>' + (full ? '<button type="button" data-fam="' + esc(w.hz) + '">🔍 Famiglia</button>' : "") +
-      (full && CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + esc(w.key) + '">〰️ Tono</button>' : "") +
-      '<button type="button" class="favb' + (fv ? " on" : "") + '" data-fav-k="' + esc(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '">' + (fv ? "★ Segnata" : "☆ Segna") + "</button></div>";
+      '<div class="acts cardacts"><button type="button" id="pad-open">✍️ Traccia</button>' + (full ? '<button type="button" data-fam="' + CP.attr(w.hz) + '">🔍 Famiglia</button>' : "") +
+      (full && CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + CP.attr(w.key) + '">〰️ Tono</button>' : "") +
+      '<button type="button" class="favb' + (fv ? " on" : "") + '" data-fav-k="' + CP.attr(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '">' + (fv ? "★ Segnata" : "☆ Segna") + "</button></div>";
   }
   var KBD = '<p class="kbd-hint">Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti</p>';
   function togglePad(keep) {
@@ -2505,7 +2486,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     }
     function reset(animate) {
       if (animate && !reduce) { cardEl.style.transition = "transform .22s ease, box-shadow .22s ease, border-color .22s ease"; setTimeout(function () { cardEl.style.transition = ""; }, 260); }
-      cardEl.style.transform = ""; cardEl.style.borderColor = ""; cardEl.style.boxShadow = "";
+      cardEl.style.transform = ""; cardEl.style.borderColor = ""; cardEl.style.boxShadow = ""; cardEl.style.willChange = "";
     }
     cardEl.addEventListener("pointerdown", function (e) {
       if (e.button > 0 || ignore(e.target)) return;
@@ -2518,7 +2499,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
         if (Math.abs(mx) < 8) return;
         if (Math.abs(my) > Math.abs(mx) * 1.2) { down = false; return; }       /* e' uno scroll verticale */
         if (!isRevealed()) return;                                               /* si trascina solo dopo aver visto la risposta */
-        drag = true; try { cardEl.setPointerCapture(pid); } catch (er) {}
+        drag = true; cardEl.style.willChange = "transform"; try { cardEl.setPointerCapture(pid); } catch (er) {}
       }
       dx = mx; paint(dx);
     });
@@ -2820,7 +2801,8 @@ const PATTERNS = [
       var c = sy[i], n = sy[i + 1], nt = (n.t === 5 && n.ch === "个") ? 4 : n.t;
       if (c.one && c.hz === "不" && c.s === "bù" && nt === 4) {
         c.s = "bú"; note("不 (bù) diventa «bú» davanti al 4° tono di " + n.hz + ".");
-      } else if (c.one && c.hz === "一" && c.s === "yī") {
+      } else if (c.one && c.hz === "一" && c.s === "yī" && !(i > 0 && "零一二两三四五六七八九十百千万第".indexOf(sy[i - 1].ch) >= 0) && "月号日点".indexOf(n.ch) < 0) {
+        /* 一 resta yī nei numeri e nelle date: 十一, 第一, 一月, 一号 */
         if (nt === 4) { c.s = "yí"; note("一 (yī) diventa «yí» davanti al 4° tono di " + n.hz + "."); }
         else if (nt >= 1 && nt <= 3) { c.s = "yì"; note("一 (yī) diventa «yì» davanti a " + n.hz + "."); }
       } else if (c.t === 3 && n.t === 3) {
@@ -3000,7 +2982,7 @@ const PATTERNS = [
         .sort(function (a, b) { return a.r - b.r || a.i - b.i; }).map(function (o) { return o.k; });
     }
     var shown = list.slice(0, 36);
-    return (shown.length ? '<div class="bank">' + shown.map(function (k) { return tile(k, 'data-add="' + esc(k) + '"'); }).join("") + "</div>" : '<p class="muted">Nessuna parola trovata.</p>') +
+    return (shown.length ? '<div class="bank">' + shown.map(function (k) { return tile(k, 'data-add="' + CP.attr(k) + '"'); }).join("") + "</div>" : '<p class="muted">Nessuna parola trovata.</p>') +
       (list.length > shown.length ? '<p class="small muted">Altre ' + (list.length - shown.length) + " parole: scrivi per cercarle.</p>" : "");
   }
   function labSlot() { return lab.t.map(function (k, i) { return tile(k, 'data-rm="' + i + '"'); }).join(""); }
@@ -3020,7 +3002,7 @@ const PATTERNS = [
       '<div id="lab-out" style="margin-top:12px">' + labOut() + "</div>" +
       '<div class="row2"><label for="lab-p">Segno finale<select id="lab-p">' + ps + "</select></label></div></div>" +
       '<div class="panel"><h3>Parole</h3><div class="tools" style="margin-top:0"><div class="search"><label for="lab-q" class="sr">Cerca una parola</label>' +
-      '<input id="lab-q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" autocomplete="off" autocapitalize="off" spellcheck="false" value="' + esc(lab.q) + '"></div>' +
+      '<input id="lab-q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" autocomplete="off" autocapitalize="off" spellcheck="false" value="' + CP.attr(lab.q) + '"></div>' +
       '<div style="grid-column:1/-1"><label for="lab-sec" class="sr">Argomento</label><select id="lab-sec">' + secs + "</select></div></div>" +
       '<div id="lab-res">' + labResults() + "</div></div>" + '<div id="lab-mine">' + mineHTML() + "</div>";
   }
@@ -3665,7 +3647,7 @@ const PATH = {
     }
     h += '<div class="tonebtns">' + toneBtns() + "</div>";
     if (ear.answered) {
-      h += '<div class="acts cardacts">' + (CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + esc(w.key) + '">〰️ Ripeti e guarda la curva</button>' : "") + "</div>" +
+      h += '<div class="acts cardacts">' + (CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + CP.attr(w.key) + '">〰️ Ripeti e guarda la curva</button>' : "") + "</div>" +
         '<button type="button" class="btn-main" id="e-next" style="margin-top:0">' + (ear.n >= ROUNDS ? "Vedi il risultato" : "Avanti") + "</button>";
     }
     h += "</div>";
@@ -4010,7 +3992,7 @@ const PATH = {
           if (CJK.test(ch)) { var t = tones[k] || 5; k++; return '<span class="t' + t + '">' + ch + "</span>"; }
           return '<span class="p">' + esc(ch) + "</span>";
         }).join("");
-        out += s.w ? '<span class="wd" role="button" tabindex="0" data-fam="' + esc(s.w.hz) + '">' + inner + "</span>" : inner;
+        out += s.w ? '<span class="wd" role="button" tabindex="0" data-fam="' + CP.attr(s.w.hz) + '">' + inner + "</span>" : inner;
       });
       return out;
     }
@@ -4265,7 +4247,7 @@ const PATH = {
     var e = ex(), n = e.blocks.length, z = zhLine(e);
     var ans = pz.ans.map(function (b, pos) {
       var cls = pz.state === "ko" && pz.bad.indexOf(pos) >= 0 ? " wrong" : (pz.state === "ok" ? " right" : "");
-      return '<button type="button" class="tb pzb' + cls + '" data-pzun="' + pos + '"' + (pz.state === "ok" ? " disabled" : "") + ' aria-label="Togli ' + esc(e.blocks[b][2]) + '">' + inner(b, pz.hint || pz.state !== "play") + "</button>";
+      return '<button type="button" class="tb pzb' + cls + '" data-pzun="' + pos + '"' + (pz.state === "ok" ? " disabled" : "") + ' aria-label="Togli ' + CP.attr(e.blocks[b][2]) + '">' + inner(b, pz.hint || pz.state !== "play") + "</button>";
     }).join("");
     var slots = ""; for (var k = pz.ans.length; k < n; k++) slots += '<span class="pz-slot" aria-hidden="true">' + (k + 1) + "</span>";
     var pool = pz.pool.filter(function (b) { return pz.ans.indexOf(b) < 0; }).map(function (b) {
@@ -4404,8 +4386,8 @@ const PATH = {
     var c = M().cols[ci], o = c.o[pick[ci]];
     var okc = sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci]);
     return '<div class="reel' + (okc ? " ok" : "") + '" data-col="' + ci + '"><span class="rl">' + esc(c.label) + ' <span class="hintc">· ' + (pick[ci] + 1) + "/" + c.o.length + '</span></span>' +
-      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + esc(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
-      '<button type="button" data-spin="' + ci + '" aria-label="Sorteggia ' + esc(c.label) + '">🎲</button></div>';
+      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
+      '<button type="button" data-spin="' + ci + '" aria-label="Sorteggia ' + CP.attr(c.label) + '">🎲</button></div>';
   }
   function outHTML() {
     var cmp = compose(), sd = sandhi(cmp.py);
@@ -4539,7 +4521,7 @@ const PATH = {
     var a = analyse(raw), h = "";
     a.segs.forEach(function (s) {
       if (s.w) {
-        h += '<button type="button" class="xw" data-fam="' + esc(s.w.hz) + '"><span class="xp">' + CP.pinyinHTML(s.w.py) + '</span><span class="xh">' + CP.hanziHTML(s.w.hz, s.w.py) + '</span><span class="xi">' + esc(CP.gloss(s.w)) + "</span></button>";
+        h += '<button type="button" class="xw" data-fam="' + CP.attr(s.w.hz) + '"><span class="xp">' + CP.pinyinHTML(s.w.py) + '</span><span class="xh">' + CP.hanziHTML(s.w.hz, s.w.py) + '</span><span class="xi">' + esc(CP.gloss(s.w)) + "</span></button>";
       } else if (s.p) {
         s.raw.split(/(\n)/).forEach(function (part) {
           if (part === "\n") h += '<span class="xr-break"></span>';
@@ -4980,7 +4962,7 @@ const PATH = {
     if (vs.length >= 2) {
       if (!AB.a || !vs.some(function (v) { return v.voiceURI === AB.a; })) AB.a = vs[0].voiceURI;
       if (!AB.b || !vs.some(function (v) { return v.voiceURI === AB.b; }) || AB.b === AB.a) AB.b = (vs.filter(function (v) { return v.voiceURI !== AB.a; })[0] || vs[1]).voiceURI;
-      var opt = function (cur) { return vs.map(function (v) { return '<option value="' + esc(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join(""); };
+      var opt = function (cur) { return vs.map(function (v) { return '<option value="' + CP.attr(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join(""); };
       h += '<div class="small" style="font-weight:700;margin-top:12px">Confronta due voci</div>' +
         '<div class="ab"><label>A<select id="ab-a">' + opt(AB.a) + '</select></label><label>B<select id="ab-b">' + opt(AB.b) + "</select></label></div>" +
         '<div class="acts"><button type="button" class="btn-s" data-ab="a">▶ Ascolta A</button><button type="button" class="btn-s" data-ab="b">▶ Ascolta B</button></div>' +
@@ -5604,7 +5586,7 @@ const PATH = {
   var CP = window.CP, esc = CP.esc;
   var L = 260;              /* coordinate logiche della lavagna */
   var SC = 220;             /* risoluzione di confronto (CP.scorePad) */
-  var FONT = "'Noto Sans SC','PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif";
+  var FONT = "'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Noto Sans SC','Microsoft YaHei',sans-serif";
   function css(v, fb) { return (getComputedStyle(document.documentElement).getPropertyValue(v) || fb).trim() || fb; }
 
   /* ---------- maschere bitmap del carattere e dell'inchiostro ---------- */
@@ -5729,7 +5711,7 @@ const PATH = {
     var el = document.createElement("div"); el.className = "pad pad2";
     var h = "";
     if (n > 1) {
-      h += '<div class="pad-chars" role="group" aria-label="Scegli il carattere da scrivere">' + chars.map(function (c, i) { return '<button type="button" class="han" data-pc="' + i + '" aria-label="Carattere ' + (i + 1) + ': ' + esc(c) + '">' + esc(c) + "</button>"; }).join("") + '<button type="button" data-pc="all">Tutti</button></div>';
+      h += '<div class="pad-chars" role="group" aria-label="Scegli il carattere da scrivere">' + chars.map(function (c, i) { return '<button type="button" class="han" data-pc="' + i + '" aria-label="Carattere ' + (i + 1) + ': ' + CP.attr(c) + '">' + esc(c) + "</button>"; }).join("") + '<button type="button" data-pc="all">Tutti</button></div>';
     }
     h += '<div class="pad-stage"><canvas class="pad-bg" aria-hidden="true"></canvas><canvas class="pad-ink" role="img" aria-label="Lavagna per scrivere il carattere con il dito"></canvas><i class="pad-dot" hidden></i></div>' +
       '<p class="pad-info small muted" aria-live="polite"></p>' +
@@ -6065,8 +6047,6 @@ const PATH = {
         if (!before && !out.some(function (x) { return x.slot === 1; }) && (i === 0 || out.every(function (x) { return x.slot === 2 || x.slot === 3 || x.slot < 1; })) && verbAhead(i + 1)) { u.slot = 1; u.kind = "subj"; }
         else if (!before && i < n - 1 && hs[i + 1] === "的") { u.slot = u.slot; }
         else { u.slot = 9; u.kind = "np"; }
-        /* modificatore + 的 + nome */
-        if (hs[i + 1] === "de") { }
       }
       if (r === "pron" && out.some(function (x) { return x.slot >= 6; })) { u.slot = 9; u.kind = "np"; }   /* pronome oggetto */
       if (r === "q") { u.slot = (out.some(function (x) { return x.slot === 7; }) ? 9 : 9); }
@@ -6139,7 +6119,7 @@ const PATH = {
     var notes = [], approx = [], hs = tokens.map(hz);
     if (!tokens.length) return { it: "", notes: notes, approx: approx };
     /* espressioni fisse */
-    var hjoin = tokens.map(hz).join(""), FIX = { "你好": "Ciao", "你好吗": "Come stai?", "谢谢": "Grazie", "再见": "Arrivederci", "对不起": "Scusa", "不客气": "Prego", "没关系": "Non fa niente", "早上好": "Buongiorno", "晚上好": "Buonasera", "晚安": "Buonanotte", "请问": "Scusi, posso chiedere…", "干杯": "Cin cin!", "你好吗": "Come stai?" };
+    var hjoin = tokens.map(hz).join(""), FIX = { "你好": "Ciao", "你好吗": "Come stai?", "谢谢": "Grazie", "再见": "Arrivederci", "对不起": "Scusa", "不客气": "Prego", "没关系": "Non fa niente", "早上好": "Buongiorno", "晚上好": "Buonasera", "晚安": "Buonanotte", "请问": "Scusi, posso chiedere…", "干杯": "Cin cin!" };
     if (FIX[hjoin]) return { it: FIX[hjoin] + (/[?!]$/.test(FIX[hjoin]) || punct === "none" ? "" : (punct === "?" ? "?" : punct === "!" ? "!" : ".")).replace(/\.$/, ""), notes: [], approx: [], tense: "pres" };
     /* quanto costa (anche quando 这个多少钱 e' un gettone solo) */
     if (/多少钱$/.test(hjoin) && tokens.length === 1) {
@@ -6224,6 +6204,7 @@ const PATH = {
     /* avverbi */
     var advIt = adv.map(function (a) { return ADVS[a]; }).filter(Boolean);
     var anche = advIt.indexOf("anche") >= 0, insieme = advIt.indexOf("insieme") >= 0; advIt = advIt.filter(function (a) { return a !== "anche" && a !== "tutti" && a !== "insieme"; });
+    var advBefore = advIt.length ? advIt.join(" ") + " " : "";   /* dichiarata qui: il ramo di 喜欢 la azzera e il valore deve restare */
     var tutti = adv.indexOf("都") >= 0;
 
     /* composizione del verbo */
@@ -6401,7 +6382,6 @@ const PATH = {
       else if (w0) { var wn = nounInfo(w0); var art = withP.keys.length > 2 ? null : null; withIt = "con " + (["爸爸", "妈妈", "哥哥", "弟弟", "姐姐", "妹妹", "儿子", "女儿"].indexOf(wh) >= 0 ? "mio " + wn.s : withArt(indefArt(wn), wn.s)).replace("mio mamma", "mia mamma").replace("mio sorella", "mia sorella").replace("mio figlia", "mia figlia"); if (!wn.known) { if (approx.indexOf(wh) < 0) approx.push(wh); } }
     }
     /* assemblaggio */
-    var advBefore = advIt.length ? advIt.join(" ") + " " : "";
     var sentence = [];
     var subjIt = "";
     if (subjDem) { subjIt = subjDem; }
