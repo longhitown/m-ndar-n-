@@ -1138,8 +1138,8 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
     <button type="button" id="mini-logo" class="mini-logo" aria-label="Torna in cima" hidden><svg viewBox="300 30 200 200" aria-hidden="true" focusable="false"><use href="#mandarin-symbol"/></svg></button>
     <button type="button" class="gpill" id="game-pill" aria-label="Il tuo cammino"></button>
     <div class="grp" role="group" aria-label="Strumenti">
-      <button type="button" id="guide-btn" class="iconbtn" aria-label="Modalità guida: ascolta camminando" title="Modalità guida"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 15h-3v5h2a1 1 0 0 0 1-1z"/></svg></button>
-      <button type="button" id="settings-btn" class="iconbtn" aria-label="Impostazioni: tema, caratteri, audio, voce, backup" title="Impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button type="button" id="guide-btn" class="iconbtn" aria-label="Modalità guida: ascolta camminando" title="Modalità guida" data-i18n-aria="bar.guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 15h-3v5h2a1 1 0 0 0 1-1z"/></svg></button>
+      <button type="button" id="settings-btn" class="iconbtn" aria-label="Impostazioni: tema, caratteri, audio, voce, backup" title="Impostazioni" data-i18n-aria="bar.settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
   </div>
 
@@ -1150,13 +1150,13 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
   <div id="view-words" role="tabpanel" aria-labelledby="tab-words" hidden>
   <div class="wbar tools">
     <div class="wrow search">
-      <label for="q" class="sr">Cerca una parola</label>
-      <input id="q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-      <button type="button" id="flt-btn" class="btn-s" aria-haspopup="dialog">Filtri<span class="nbadge" id="flt-n" hidden></span></button>
-      <button type="button" id="legend-btn" class="iconbtn" aria-haspopup="dialog" aria-label="Legenda dei toni e regole" title="Legenda e regole">?</button>
+      <label for="q" class="sr" data-i18n="words.search">Cerca una parola</label>
+      <input id="q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" data-i18n-ph="words.searchPh" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <button type="button" id="flt-btn" class="btn-s" aria-haspopup="dialog"><span data-i18n="words.filters">Filtri</span><span class="nbadge" id="flt-n" hidden></span></button>
+      <button type="button" id="legend-btn" class="iconbtn" aria-haspopup="dialog" aria-label="Legenda dei toni e regole" title="Legenda e regole" data-i18n-aria="words.legend">?</button>
     </div>
     <div class="wrow">
-      <button type="button" id="goto-btn" class="btn-s" aria-haspopup="dialog">☰ Vai a…</button>
+      <button type="button" id="goto-btn" class="btn-s" aria-haspopup="dialog" data-i18n="words.goto">☰ Vai a…</button>
       <span class="cur-sec" id="cur-sec" aria-live="off"></span>
     </div>
   </div>
@@ -1172,11 +1172,11 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
   </div>
 </main>
 
-<nav class="dock" role="tablist" aria-label="Sezioni">
-  <button class="dtab on" role="tab" id="tab-path" aria-selected="true" aria-controls="view-path" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></svg>Percorso</button>
-  <button class="dtab" role="tab" id="tab-words" aria-selected="false" aria-controls="view-words" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 1h13v-3"/><path d="M9 8h6"/></svg>Parole</button>
-  <button class="dtab" role="tab" id="tab-study" aria-selected="false" aria-controls="view-study" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="13" height="12" rx="2"/><path d="M7.5 4.5H19a1.5 1.5 0 0 1 1.5 1.5v10"/></svg>Studia</button>
-  <button class="dtab" role="tab" id="tab-build" aria-selected="false" aria-controls="view-build" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M8 9.5h8"/></svg>Frasi</button>
+<nav class="dock" role="tablist" aria-label="Sezioni" data-i18n-aria="nav.tabs">
+  <button class="dtab on" role="tab" id="tab-path" aria-selected="true" aria-controls="view-path" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></svg><span data-i18n="nav.path">Percorso</span></button>
+  <button class="dtab" role="tab" id="tab-words" aria-selected="false" aria-controls="view-words" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 1h13v-3"/><path d="M9 8h6"/></svg><span data-i18n="nav.words">Parole</span></button>
+  <button class="dtab" role="tab" id="tab-study" aria-selected="false" aria-controls="view-study" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="13" height="12" rx="2"/><path d="M7.5 4.5H19a1.5 1.5 0 0 1 1.5 1.5v10"/></svg><span data-i18n="nav.study">Studia</span></button>
+  <button class="dtab" role="tab" id="tab-build" aria-selected="false" aria-controls="view-build" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M8 9.5h8"/></svg><span data-i18n="nav.build">Frasi</span></button>
 </nav>
 
 <button type="button" id="totop" hidden aria-label="Torna alla ricerca"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
@@ -1185,8 +1185,8 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 <div id="guide" hidden role="dialog" aria-modal="true" aria-label="Modalità guida"></div>
 <div id="flt" class="sheet" hidden role="dialog" aria-labelledby="flt-title">
   <div class="fam-card set-card">
-    <div class="fam-head"><h2 id="flt-title" style="margin:0">Filtri</h2><button type="button" class="fam-x btn-s" data-sheet-close>Chiudi</button></div>
-    <section class="set-sec"><h3>Mostra</h3>
+    <div class="fam-head"><h2 id="flt-title" style="margin:0" data-i18n="flt.title">Filtri</h2><button type="button" class="fam-x btn-s" data-sheet-close data-i18n="common.close">Chiudi</button></div>
+    <section class="set-sec"><h3 data-i18n="flt.show">Mostra</h3>
       <label for="state" class="sr">Mostra</label>
       <select id="state">
         <option value="">Tutte le parole</option>
@@ -1203,17 +1203,17 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
         <option value="hz">Copri i caratteri</option>
       </select>
     </section>
-    <section class="set-sec"><h3>Livello</h3><div class="tiers" id="tiers" role="group" aria-label="Filtra per livello"></div></section>
-    <section class="set-sec"><h3>Argomenti rapidi</h3><div class="tags" id="tags" role="group" aria-label="Argomenti rapidi"></div></section>
-    <section class="set-sec chiprow"><h3>Sezioni <span class="muted small" id="chipinfo"></span></h3><div class="acts" style="margin:0"><button type="button" id="toggle-all" class="btn-s">Chiudi tutte</button><button type="button" id="print-btn" class="btn-s">Stampa</button><button type="button" id="flt-reset" class="btn-s">Azzera i filtri</button></div></section>
-    <button type="button" class="btn-main" data-sheet-close id="flt-done">Mostra le parole</button>
+    <section class="set-sec"><h3 data-i18n="flt.level">Livello</h3><div class="tiers" id="tiers" role="group" aria-label="Filtra per livello"></div></section>
+    <section class="set-sec"><h3 data-i18n="flt.tags">Argomenti rapidi</h3><div class="tags" id="tags" role="group" aria-label="Argomenti rapidi"></div></section>
+    <section class="set-sec chiprow"><h3><span data-i18n="flt.sections">Sezioni</span> <span class="muted small" id="chipinfo"></span></h3><div class="acts" style="margin:0"><button type="button" id="toggle-all" class="btn-s">Chiudi tutte</button><button type="button" id="print-btn" class="btn-s" data-i18n="flt.print">Stampa</button><button type="button" id="flt-reset" class="btn-s" data-i18n="flt.reset">Azzera i filtri</button></div></section>
+    <button type="button" class="btn-main" data-sheet-close id="flt-done" data-i18n="flt.done">Mostra le parole</button>
     <nav class="chips" id="chips" aria-label="Argomenti" hidden></nav>
   </div>
 </div>
 <div id="legend" class="sheet" hidden role="dialog" aria-labelledby="legend-title">
   <div class="fam-card set-card">
-    <div class="fam-head"><h2 id="legend-title" style="margin:0">Legenda e regole</h2><button type="button" class="fam-x btn-s" data-sheet-close>Chiudi</button></div>
-    <section class="set-sec"><h3>I colori dei toni</h3>
+    <div class="fam-head"><h2 id="legend-title" style="margin:0" data-i18n="legend.title">Legenda e regole</h2><button type="button" class="fam-x btn-s" data-sheet-close data-i18n="common.close">Chiudi</button></div>
+    <section class="set-sec"><h3 data-i18n="legend.tones">I colori dei toni</h3>
   <div class="tones" aria-label="I colori dei toni">
     <span class="tone"><strong class="t1">mā</strong> <span class="m-hz han tshape"><span class="t1">妈</span></span> 1° alto, piatto</span>
     <span class="tone"><strong class="t2">má</strong> <span class="m-hz han tshape"><span class="t2">麻</span></span> 2° sale</span>
@@ -1222,7 +1222,7 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
     <span class="tone"><strong class="t5">ma</strong> <span class="m-hz han tshape"><span class="t5">吗</span></span> neutro, leggero</span>
   </div>
     </section>
-    <section class="set-sec"><h3>Come si usa la tabella</h3>
+    <section class="set-sec"><h3 data-i18n="legend.table">Come si usa la tabella</h3>
   <p class="hint" id="hint" hidden>Tocca una parola sfocata per scoprirla.</p>
   <p class="hint" id="sayhint" hidden>Tocca un carattere per ascoltarlo. Tienilo premuto (o clic destro) per vedere le altre parole che lo contengono. Tocca il pinyin per vedere come si pronuncia.</p>
   <p class="legend-st"><span><i style="background:var(--muted)"></i>in corso</span><span><i style="background:var(--accent)"></i>la so già</span></p>
@@ -1241,22 +1241,23 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 </div>
 <div id="settings" class="sheet" hidden role="dialog" aria-labelledby="set-title">
   <div class="fam-card set-card">
-    <div class="fam-head"><h2 id="set-title" style="margin:0">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close>Chiudi</button></div>
-    <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look">Aspetto</h3>
-      <div class="seg" id="set-theme" role="group" aria-label="Tema"><button type="button" data-theme-set="light">☀️ Chiaro</button><button type="button" data-theme-set="sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark">🌙 Notte</button></div>
-      <div class="hzrow"><span>Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi">A+</button></div>
-      <label class="chk"><input type="checkbox" id="opt-toneshapes"> Toni anche con un segno, non solo col colore</label>
+    <div class="fam-head"><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
+    <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look" data-i18n="set.look">Aspetto</h3>
+      <div class="seg" id="set-theme" role="group" aria-label="Tema"><button type="button" data-theme-set="light" data-i18n="theme.light">☀️ Chiaro</button><button type="button" data-theme-set="sepia" data-i18n="theme.sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark" data-i18n="theme.dark">🌙 Notte</button></div>
+      <div class="hzrow"><span data-i18n="set.hz">Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli" data-i18n-aria="set.hzMinus">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi" data-i18n-aria="set.hzPlus">A+</button></div>
+      <label class="chk"><input type="checkbox" id="opt-toneshapes"> <span data-i18n="set.toneshapes">Toni anche con un segno, non solo col colore</span></label>
     </section>
-    <section class="set-sec" aria-labelledby="set-h-audio"><h3 id="set-h-audio">Audio</h3>
-      <div class="seg" id="set-audio" role="group" aria-label="Audio"><button type="button" data-audio-set="all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute">🔇 Muto</button></div>
-      <label class="jk-vol small muted">🔔 Volume effetti <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
-      <button type="button" class="btn-s" id="set-music">🎵 Musica per studiare…</button>
+    <section class="set-sec" aria-labelledby="set-h-audio"><h3 id="set-h-audio" data-i18n="set.audio">Audio</h3>
+      <div class="seg" id="set-audio" role="group" aria-label="Audio"><button type="button" data-audio-set="all" data-i18n="audio.all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx" data-i18n="audio.fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute" data-i18n="audio.mute">🔇 Muto</button></div>
+      <label class="jk-vol small muted"><span data-i18n="set.sfxvol">🔔 Volume effetti</span> <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
+      <button type="button" class="btn-s" id="set-music" data-i18n="set.music">🎵 Musica per studiare…</button>
     </section>
-    <details class="set-sec" id="vset"><summary>Voce</summary><div class="vbody" id="vset-body"></div></details>
-    <details class="set-sec" id="set-mic-box"><summary>Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close">Chiudi il microfono adesso</button></div></details>
-    <details class="set-sec" id="set-data"><summary>Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
+    <details class="set-sec" id="vset"><summary data-i18n="set.voice">Voce</summary><div class="vbody" id="vset-body"></div></details>
+    <details class="set-sec" id="set-mic-box"><summary data-i18n="set.mic">Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></details>
+    <details class="set-sec" id="set-data"><summary data-i18n="set.data">Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
+    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua"><button type="button" data-lang-set="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
     <div id="set-extra"></div>
-    <details class="set-sec" id="set-about"><summary>Come funziona</summary><div class="vbody"><p class="lede" style="margin:0"><b><span id="count">3500</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest">Autodiagnosi</button></div></div></details>
+    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0"><b><span id="count">3500</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button></div></div></details>
   </div>
 </div>
 
@@ -1272,6 +1273,105 @@ const DIALOG_CATS=[["arrivo","✈️","Arrivo"],["hotel","🏨","Hotel"],["cibo"
 const THINK=[{"it":"Io bevo un caffè con un amico al bar, domani.","zh":"Domani prendo un caffè con un amico al bar.","blocks":[["chi","wǒ","我","io"],["when","míng.tiān","明天","domani"],["with","hé péng.you","和朋友","con un amico"],["where","zài kā.fēi.guǎn","在咖啡馆","al bar"],["do","hē","喝","bevo"],["what","kā.fēi","咖啡","un caffè"]],"order":[0,4,5,2,3,1],"cat":"tempo"},{"it":"Io studio cinese a casa, oggi.","zh":"Oggi studio cinese a casa.","blocks":[["chi","wǒ","我","io"],["when","jīn.tiān","今天","oggi"],["where","zài jiā","在家","a casa"],["do","xué","学","studio"],["what","Zhōng.wén","中文","cinese"]],"order":[0,3,4,2,1],"cat":"tempo"},{"it":"Ho mangiato i ravioli al ristorante con la famiglia, ieri.","zh":"Ieri ho mangiato i ravioli al ristorante con la famiglia.","blocks":[["chi","wǒ","我","(io)"],["when","zuó.tiān","昨天","ieri"],["with","hé jiā.rén","和家人","con la famiglia"],["where","zài fàn.diàn","在饭店","al ristorante"],["do","chī le","吃了","ho mangiato"],["what","jiǎo.zi","饺子","i ravioli"]],"order":[0,4,5,3,2,1],"note":"In italiano «io» sparisce dentro «ho mangiato». In cinese il soggetto c'è sempre, e 了 segnala che l'azione è finita.","cat":"tempo"},{"it":"Aspetto un amico alla stazione, stasera.","zh":"Stasera aspetto un amico alla stazione.","blocks":[["chi","wǒ","我","(io)"],["when","jīn.tiān wǎn.shang","今天晚上","stasera"],["where","zài chē.zhàn","在车站","alla stazione"],["do","děng","等","aspetto"],["what","péng.you","朋友","un amico"]],"order":[0,3,4,2,1],"cat":"tempo"},{"it":"Compro il pane al mercato con mia madre.","zh":"Compro il pane al mercato con mia madre.","blocks":[["chi","wǒ","我","io"],["with","hé mā.ma","和妈妈","con mia madre"],["where","zài shì.chǎng","在市场","al mercato"],["do","mǎi","买","compro"],["what","miàn.bāo","面包","il pane"]],"order":[0,3,4,2,1],"cat":"tempo"},{"cat":"tempo","it":"Mia madre cucina il pesce in cucina ogni sera.","zh":"Ogni sera mia madre cucina il pesce in cucina.","blocks":[["chi","wǒ mā.ma","我妈妈","mia madre"],["when","měi.tiān wǎn.shang","每天晚上","ogni sera"],["where","zài chú.fáng","在厨房","in cucina"],["do","zuò","做","cucina"],["what","yú","鱼","il pesce"]],"order":[0,3,4,2,1]},{"cat":"mod","it":"Questo è il caffè del mio amico.","zh":"Questo è il caffè del mio amico.","blocks":[["chi","zhè","这","questo"],["do","shì","是","è"],["mod","wǒ péng.you de","我朋友的","del mio amico"],["what","kā.fēi","咖啡","il caffè"]],"order":[0,1,3,2],"note":"Chi possiede o descrive viene PRIMA, e 的 lo lega al nome: «del-mio-amico 的 caffè». In italiano si fa il contrario: prima la cosa, poi chi la possiede."},{"cat":"mod","it":"Ho una grande valigia nera.","zh":"Ho una grande valigia nera.","blocks":[["chi","wǒ","我","io"],["do","yǒu","有","ho"],["qty","yí gè","一个","una"],["mod","hēi.sè de dà","黑色的大","grande nera"],["what","xiāng.zi","箱子","valigia"]],"order":[0,1,2,4,3],"note":"Prima la quantità (一个), poi come è fatta la cosa (黑色的大), per ultima la cosa. Le descrizioni stanno sempre davanti al nome."},{"cat":"mod","it":"Il ristorante vicino a casa mia è buonissimo.","zh":"Il ristorante vicino a casa mia è buonissimo.","blocks":[["mod","wǒ jiā fù.jìn de","我家附近的","vicino a casa mia"],["chi","fàn.guǎn","饭馆","il ristorante"],["do","hěn hǎo.chī","很好吃","è buonissimo"]],"order":[1,0,2],"note":"«Vicino a casa mia» non viene dopo il nome, come in italiano: si mette davanti, con 的."},{"cat":"mod","it":"L'uomo che beve il tè è mio padre.","zh":"L'uomo che beve il tè è mio padre.","blocks":[["mod","hē chá de","喝茶的","che beve il tè"],["chi","rén","人","l'uomo"],["do","shì","是","è"],["what","wǒ bà.ba","我爸爸","mio padre"]],"order":[1,0,2,3],"note":"Anche una frase intera può fare da descrizione: «bevente-tè 的 uomo». In cinese le frasi relative stanno SEMPRE prima del nome."},{"cat":"mod","it":"Mi piace la pizza che fa mia nonna.","zh":"Mi piace la pizza che fa mia nonna.","blocks":[["chi","wǒ","我","io"],["do","xǐ.huan","喜欢","mi piace"],["mod","nǎi.nai zuò de","奶奶做的","che fa mia nonna"],["what","bǐ.sà","比萨","la pizza"]],"order":[0,1,3,2]},{"cat":"ba","it":"Metto la valigia in camera.","zh":"Metto la valigia in camera.","blocks":[["chi","wǒ","我","io"],["ba","bǎ xíng.li","把行李","la valigia"],["do","fàng zài","放在","metto"],["where","fáng.jiān li","房间里","in camera"]],"order":[0,2,1,3],"note":"把 porta l'oggetto PRIMA del verbo e ci dice cosa ne facciamo: lo spostiamo, lo cambiamo, lo finiamo."},{"cat":"ba","it":"Ho mangiato tutta la torta.","zh":"Ho mangiato tutta la torta.","blocks":[["chi","wǒ","我","io"],["ba","bǎ dàn.gāo","把蛋糕","la torta"],["do","chī wán le","吃完了","ho finito di mangiare"]],"order":[0,2,1],"note":"Con 把 il verbo non resta mai nudo: qui c'è 完 (finito) e 了."},{"cat":"ba","it":"Per favore, apri la porta.","zh":"Per favore, apri la porta.","blocks":[["ask","qǐng","请","per favore"],["ba","bǎ mén","把门","la porta"],["do","dǎ kāi","打开","apri"]],"order":[0,2,1],"note":"È la frase più utile con 把: una richiesta cortese. Prima 请, poi l'oggetto, poi l'azione."},{"cat":"ba","it":"Gli ho dato il passaporto.","zh":"Gli ho dato il passaporto.","blocks":[["chi","wǒ","我","io"],["ba","bǎ hù.zhào","把护照","il passaporto"],["do","gěi le","给了","ho dato"],["what","tā","他","a lui"]],"order":[0,2,3,1]},{"cat":"ba","it":"Ho dimenticato il telefono nel taxi.","zh":"Ho dimenticato il telefono nel taxi.","blocks":[["chi","wǒ","我","io"],["ba","bǎ shǒu.jī","把手机","il telefono"],["do","wàng","忘","ho dimenticato"],["where","zài chū.zū.chē shàng le","在出租车上了","nel taxi"]],"order":[0,2,1,3]},{"it":"Vado in Cina con mia sorella, domani.","zh":"Domani vado in Cina con mia sorella.","blocks":[["chi","wǒ","我","io"],["when","míng.tiān","明天","domani"],["with","hé jiě.jie","和姐姐","con mia sorella"],["do","qù","去","vado"],["where","Zhōng.guó","中国","in Cina"]],"order":[0,3,4,2,1],"note":"Eccezione utile: con 去 («andare a») la destinazione viene DOPO il verbo. Il luogo dove si svolge l'azione, invece, viene prima.","cat":"stato"},{"it":"Dove lavori?","zh":"Dove lavori?","blocks":[["chi","nǐ","你","tu"],["where","zài nǎ.lǐ","在哪里","dove"],["do","gōng.zuò","工作","lavori"]],"order":[1,2,0],"note":"La parola interrogativa non cambia posto: sta dove starebbe la risposta (在家 → 在哪里).","q":true,"cat":"stato"},{"cat":"stato","it":"Lavoro a Pechino.","zh":"Lavoro a Pechino.","blocks":[["chi","wǒ","我","io"],["where","zài Běi.jīng","在北京","a Pechino"],["do","gōng.zuò","工作","lavoro"]],"order":[0,2,1],"note":"Dove FAI qualcosa: 在 + luogo, prima del verbo."},{"cat":"stato","it":"Oggi vado a scuola in bicicletta.","zh":"Oggi vado a scuola in bicicletta.","blocks":[["chi","wǒ","我","io"],["when","jīn.tiān","今天","oggi"],["how","qí.chē","骑车","in bicicletta"],["do","qù","去","vado"],["where","xué.xiào","学校","a scuola"]],"order":[0,1,3,4,2],"note":"Anche il MEZZO (骑车, 坐地铁, 走路) sta prima del verbo. Dopo 去 resta solo la destinazione."},{"cat":"stato","it":"Siamo arrivati a Pechino ieri.","zh":"Ieri siamo arrivati a Pechino.","blocks":[["chi","wǒ.men","我们","noi"],["when","zuó.tiān","昨天","ieri"],["do","dào le","到了","siamo arrivati"],["where","Běi.jīng","北京","a Pechino"]],"order":[0,2,3,1],"note":"Come 去, anche 到 (arrivare) vuole la destinazione DOPO il verbo. Regola: se ti MUOVI verso un luogo, il luogo viene dopo; se fai qualcosa IN un luogo, viene prima."},{"cat":"durata","it":"Studio cinese da due anni.","zh":"Studio cinese da due anni.","blocks":[["chi","wǒ","我","io"],["do","xué le","学了","studio"],["dur","liǎng nián","两年","da due anni"],["what","Zhōng.wén","中文","cinese"]],"order":[0,1,3,2],"note":"La durata viene subito dopo il verbo, PRIMA dell'oggetto: «ho studiato due-anni cinese»."},{"cat":"durata","it":"Dormo otto ore ogni notte.","zh":"Dormo otto ore ogni notte.","blocks":[["chi","wǒ","我","io"],["when","měi.tiān wǎn.shang","每天晚上","ogni notte"],["do","shuì","睡","dormo"],["dur","bā gè xiǎo.shí","八个小时","otto ore"]],"order":[0,2,3,1],"note":"«Ogni notte» (quando) va davanti al verbo; «otto ore» (quanto dura) va dopo."},{"cat":"durata","it":"Vado in palestra due volte a settimana.","zh":"Vado in palestra due volte a settimana.","blocks":[["chi","wǒ","我","io"],["when","měi gè xīng.qī","每个星期","a settimana"],["do","qù","去","vado"],["dur","liǎng cì","两次","due volte"],["where","jiàn.shēn.fáng","健身房","in palestra"]],"order":[0,2,4,3,1]},{"cat":"durata","it":"Studio per mezz'ora ogni mattina.","zh":"Studio per mezz'ora ogni mattina.","blocks":[["chi","wǒ","我","io"],["when","měi.tiān zǎo.shang","每天早上","ogni mattina"],["do","xué.xí","学习","studio"],["dur","bàn gè xiǎo.shí","半个小时","mezz'ora"]],"order":[0,2,3,1]},{"cat":"durata","it":"Ho abitato a Roma per cinque anni.","zh":"Ho abitato a Roma per cinque anni.","blocks":[["chi","wǒ","我","io"],["where","zài Luó.mǎ","在罗马","a Roma"],["do","zhù le","住了","ho abitato"],["dur","wǔ nián","五年","cinque anni"]],"order":[0,2,1,3]},{"cat":"causa","it":"Non esco perché piove.","zh":"Siccome piove, non esco.","blocks":[["cause","yīn.wèi xià.yǔ","因为下雨","siccome piove"],["chi","wǒ","我","io"],["do","bù chū.qù","不出去","non esco"]],"order":[1,2,0],"note":"La causa viene PRIMA: «perché piove, io non esco». Si può aggiungere 所以 (quindi) prima della conseguenza."},{"cat":"causa","it":"Andiamo al mare, se domani fa bel tempo.","zh":"Se domani fa bel tempo, andiamo al mare.","blocks":[["cond","rú.guǒ míng.tiān tiān.qì hǎo","如果明天天气好","se domani il tempo è bello"],["chi","wǒ.men","我们","noi"],["do","jiù qù","就去","allora andiamo"],["where","hǎi biān","海边","al mare"]],"order":[1,2,3,0],"note":"«Se» viene prima, come una cornice, e 就 apre la conseguenza (allora)."},{"cat":"causa","it":"Sono stanco perché ho lavorato tutto il giorno.","zh":"Sono stanco perché ho lavorato tutto il giorno.","blocks":[["cause","yīn.wèi wǒ gōng.zuò le yì zhěng tiān","因为我工作了一整天","perché ho lavorato tutto il giorno"],["res","suǒ.yǐ hěn lèi","所以很累","quindi sono stanco"]],"order":[1,0],"note":"In italiano di solito si dice prima l'effetto. In cinese si racconta in ordine: prima il motivo, poi il risultato."},{"cat":"causa","it":"Chiedimi se non capisci.","zh":"Se non capisci, chiedimi.","blocks":[["cond","rú.guǒ nǐ bù dǒng","如果你不懂","se non capisci"],["res","jiù wèn wǒ","就问我","chiedimi"]],"order":[1,0]}];
 const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 的"],["ba","🫳","Frase con 把"],["stato","📍","Stato e moto"],["durata","⏳","Durata e volte"],["causa","🔗","Causa e condizione"]];
 
+</script>
+<script id="i18n">
+/* V6.7 · §5 fase 1: livello di traduzione dell'interfaccia. Cambia la lingua dei menu, non la direzione di studio:
+   il corso resta «cinese per italiani». Ogni stringa nuova passa da qui: t("chiave", { variabile: valore }).
+   I testi dei moduli più vecchi (esercizi, dialoghi, lettore…) migrano un po' alla volta; le chiavi mancanti in zh
+   ricadono sull'italiano. Lingua scelta in ⚙️, salvata in cp-lang. */
+var I18N = {
+  it: {
+    "nav.path": "Percorso", "nav.words": "Parole", "nav.study": "Studia", "nav.build": "Frasi", "nav.tabs": "Sezioni",
+    "bar.tools": "Strumenti", "bar.guide": "Modalità guida: ascolta camminando", "bar.settings": "Impostazioni: tema, caratteri, audio, voce, backup", "bar.music": "Jukebox", "bar.top": "Torna in cima",
+    "common.close": "Chiudi", "common.later": "Più tardi",
+    "set.title": "Impostazioni", "set.look": "Aspetto", "set.theme": "Tema", "theme.light": "☀️ Chiaro", "theme.sepia": "📜 Carta di riso", "theme.dark": "🌙 Notte",
+    "set.hz": "Caratteri cinesi", "set.hzMinus": "Caratteri più piccoli", "set.hzPlus": "Caratteri più grandi", "set.toneshapes": "Toni anche con un segno, non solo col colore",
+    "set.audio": "Audio", "audio.all": "🔊 Voce ed effetti", "audio.fx": "🔉 Solo effetti", "audio.mute": "🔇 Muto", "set.sfxvol": "🔔 Volume effetti", "set.music": "🎵 Musica per studiare…",
+    "set.voice": "Voce", "set.mic": "Microfono", "set.micClose": "Chiudi il microfono adesso", "set.data": "Backup e ripristino",
+    "set.dataHint": "Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.",
+    "set.bkDown": "⬇ Scarica backup", "set.bkUp": "⬆ Ripristina da file", "set.about": "Come funziona", "set.welcome": "Rivedi il benvenuto", "set.selftest": "Autodiagnosi",
+    "set.lang": "Lingua dell'interfaccia", "set.langHint": "Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.",
+    "words.search": "Cerca una parola", "words.searchPh": "Cerca in pinyin, 汉字 o italiano", "words.filters": "Filtri", "words.filtersN": "Filtri, {n} attivi", "words.legend": "Legenda dei toni e regole", "words.goto": "☰ Vai a…",
+    "flt.title": "Filtri", "flt.show": "Mostra", "flt.level": "Livello", "flt.tags": "Argomenti rapidi", "flt.sections": "Sezioni", "flt.reset": "Azzera i filtri", "flt.done": "Mostra le parole", "flt.print": "Stampa",
+    "legend.title": "Legenda e regole", "legend.tones": "I colori dei toni", "legend.table": "Come si usa la tabella",
+    "study.today": "Oggi", "study.due": "da ripassare", "study.new1": "nuova", "study.newN": "nuove", "study.seen": "Oggi: {seen}/{n} parole nuove già viste.", "study.start": "Inizia · ≈ {min} min", "study.nothing": "Niente da fare: torna più tardi",
+    "study.customize": "Personalizza", "study.newPerDay": "Parole nuove", "study.perDay": "{n} al giorno", "study.topic": "Argomento", "study.allTopics": "Tutti gli argomenti", "study.favs": "★ Solo le parole segnate",
+    "study.auto": "Audio automatico: la parola viene letta da sola", "study.more5today": "Ancora 5 parole nuove oggi", "study.progress": "I miei progressi",
+    "study.ear": "🎧 Allena l'orecchio", "study.earSub": "Indovina il tono", "study.sprint": "⚡ Sfida 60 secondi", "study.sprintSub": "Più veloce che puoi", "study.record": "Record: {n}",
+    "sess.quit": "Esci", "sess.quitLabel": "Esci dalla sessione", "sess.next": "Avanti", "sess.reveal": "Mostra la risposta", "sess.auto": "Audio automatico", "sess.more": "Altro: traccia, famiglia, tono",
+    "sess.newWord": "Nuova parola", "sess.qPi": "Che cosa significa?", "sess.qIp": "Come si dice?", "sess.qHp": "Leggi il carattere", "sess.example": "Esempio",
+    "sess.swipe": "Oppure trascina la carta: a destra «La so», a sinistra «Non la so».", "sess.star": "Segna come preferita o difficile",
+    "grade.0": "Non la so", "grade.1": "Quasi", "grade.2": "La so", "grade.3": "Facile", "grade.soon": "tra poco",
+    "u.min": "{n} min", "u.h": "{n} h", "u.d": "{n} g", "u.mo": "{n} mesi", "u.y": "{n} anni",
+    "done.title": "Fatto", "done.words": "parole viste", "done.good": "risposte giuste", "done.streak1": "giorno di fila", "done.streakN": "giorni di fila",
+    "done.tomorrow1": "Domani torna 1 parola.", "done.tomorrowN": "Domani torneranno {n} parole.", "done.tomorrow0": "Domani non torna nessuna parola: è il momento giusto per qualcuna nuova.",
+    "done.more": "Ancora 5 parole", "done.again": "Un altro ripasso", "done.end": "Ho finito", "done.review": "Da rivedere ({n})",
+    "more.title": "Altro", "more.card": "per questa carta", "more.pad": "Traccia", "more.padFull": "Scrivi il carattere col dito, con la guida", "more.padBlind": "Prova a scriverlo a memoria, poi controlla",
+    "more.fam": "Famiglia", "more.famSub": "Le altre parole che contengono questi caratteri", "more.tone": "Tono", "more.toneSub": "Parla e guarda la curva della tua voce, anche senza rete",
+    "more.contrib": "Correggi o segnala", "more.contribSub": "Pinyin o traduzione sbagliati? Correggili nella tua copia e mandali all'autore",
+    "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi",
+    "sub.ex": "Esercizi", "sub.lab": "Laboratorio", "sub.slot": "Slot", "sub.dlg": "Dialoghi", "sub.thought": "Pensiero", "sub.reader": "Lettore", "sub.pat": "Modelli",
+    "path.stage": "Tappa {n}", "path.continue": "Continua · ≈ {min} min", "path.explore": "Esplora la tappa {n}", "path.counts": "{due} da ripassare · {nw} {new}",
+    "path.doneToday": "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.", "path.goto": "📍 Vai alla tappa {n} sulla mappa",
+    "tab.studyDue": "Studia, {n} da ripassare",
+    "sess.kbd": "Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti",
+    "wel.title": "Benvenuto in màndarínō", "wel.intro": "{n} parole per parlare, nell'ordine in cui servono. Ogni parola si impara in tre passi: come si legge, come si scrive, cosa vuol dire.",
+    "wel.read": "1 · si legge", "wel.write": "2 · si scrive", "wel.mean": "3 · significa", "wel.tones": "I colori sono i toni: rosso alto e piatto, verde sale, blu scende e risale, viola cade.",
+    "wel.goal": "Quante parole nuove al giorno?", "wel.goalHint": "Si cambia quando vuoi in Studia → Personalizza. Meglio poche ogni giorno che tante una volta.", "wel.start": "Inizia con {n} parole"
+  },
+  zh: {
+    "nav.path": "路线", "nav.words": "词汇", "nav.study": "学习", "nav.build": "句子", "nav.tabs": "栏目",
+    "bar.tools": "工具", "bar.guide": "导览模式：边走边听", "bar.settings": "设置：主题、字号、声音、语音、备份", "bar.music": "音乐", "bar.top": "回到顶部",
+    "common.close": "关闭", "common.later": "以后再说",
+    "set.title": "设置", "set.look": "外观", "set.theme": "主题", "theme.light": "☀️ 浅色", "theme.sepia": "📜 宣纸", "theme.dark": "🌙 夜间",
+    "set.hz": "汉字大小", "set.hzMinus": "字小一点", "set.hzPlus": "字大一点", "set.toneshapes": "声调除了颜色，也用下划线区分",
+    "set.audio": "声音", "audio.all": "🔊 语音和音效", "audio.fx": "🔉 仅音效", "audio.mute": "🔇 静音", "set.sfxvol": "🔔 音效音量", "set.music": "🎵 学习音乐…",
+    "set.voice": "语音", "set.mic": "麦克风", "set.micClose": "立即关闭麦克风", "set.data": "备份与恢复",
+    "set.dataHint": "进度、收藏、游戏和复习记录都在一个文件里。恢复时会合并，每个词保留最新的记录。",
+    "set.bkDown": "⬇ 下载备份", "set.bkUp": "⬆ 从文件恢复", "set.about": "使用说明", "set.welcome": "重看欢迎页", "set.selftest": "自检",
+    "set.lang": "界面语言", "set.langHint": "只改变菜单语言：学习内容仍是中文词语加意大利语翻译。",
+    "words.search": "搜索词语", "words.searchPh": "用拼音、汉字或意大利语搜索", "words.filters": "筛选", "words.filtersN": "筛选，已启用 {n} 项", "words.legend": "声调图例与规则", "words.goto": "☰ 跳到…",
+    "flt.title": "筛选", "flt.show": "显示", "flt.level": "级别", "flt.tags": "快速主题", "flt.sections": "章节", "flt.reset": "清除筛选", "flt.done": "查看词语", "flt.print": "打印",
+    "legend.title": "图例与规则", "legend.tones": "声调的颜色", "legend.table": "表格怎么用",
+    "study.today": "今天", "study.due": "待复习", "study.new1": "新词", "study.newN": "新词", "study.seen": "今天已学新词：{seen}/{n}。", "study.start": "开始 · 约 {min} 分钟", "study.nothing": "暂时没有任务，稍后再来",
+    "study.customize": "自定义", "study.newPerDay": "每日新词", "study.perDay": "每天 {n} 个", "study.topic": "主题", "study.allTopics": "全部主题", "study.favs": "★ 只看收藏的词",
+    "study.auto": "自动朗读：词语会自动读出来", "study.more5today": "今天再学 5 个新词", "study.progress": "我的进度",
+    "study.ear": "🎧 练耳朵", "study.earSub": "猜声调", "study.sprint": "⚡ 60 秒挑战", "study.sprintSub": "越快越好", "study.record": "纪录：{n}",
+    "sess.quit": "退出", "sess.quitLabel": "退出练习", "sess.next": "下一个", "sess.reveal": "显示答案", "sess.auto": "自动朗读", "sess.more": "更多：描红、词族、声调",
+    "sess.newWord": "新词", "sess.qPi": "这是什么意思？", "sess.qIp": "怎么说？", "sess.qHp": "读出这个字", "sess.example": "例句",
+    "sess.swipe": "也可以拖动卡片：向右「会」，向左「不会」。", "sess.star": "标记为收藏或难词",
+    "grade.0": "不会", "grade.1": "差一点", "grade.2": "会", "grade.3": "简单", "grade.soon": "很快",
+    "u.min": "{n} 分钟", "u.h": "{n} 小时", "u.d": "{n} 天", "u.mo": "{n} 个月", "u.y": "{n} 年",
+    "done.title": "完成", "done.words": "个词", "done.good": "答对", "done.streak1": "天连续", "done.streakN": "天连续",
+    "done.tomorrow1": "明天有 1 个词要复习。", "done.tomorrowN": "明天有 {n} 个词要复习。", "done.tomorrow0": "明天没有要复习的词，正好学点新的。",
+    "done.more": "再来 5 个", "done.again": "再复习一轮", "done.end": "结束", "done.review": "需要再看的词（{n}）",
+    "more.title": "更多", "more.card": "这张卡片", "more.pad": "描红", "more.padFull": "用手指写这个字，有提示", "more.padBlind": "先凭记忆写，再对照",
+    "more.fam": "词族", "more.famSub": "含有这些字的其他词", "more.tone": "声调", "more.toneSub": "说一遍，看看你的音高曲线（不需要网络）",
+    "more.contrib": "纠错或反馈", "more.contribSub": "拼音或翻译有错？在你的副本里改正，并发给作者",
+    "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读",
+    "sub.ex": "练习", "sub.lab": "实验室", "sub.slot": "老虎机", "sub.dlg": "对话", "sub.thought": "语序", "sub.reader": "阅读器", "sub.pat": "句型",
+    "path.stage": "第 {n} 站", "path.continue": "继续 · 约 {min} 分钟", "path.explore": "看看第 {n} 站", "path.counts": "待复习 {due} · 新词 {nw}",
+    "path.doneToday": "今天的复习做完了：可以看看这一站的词，或者练练句子。", "path.goto": "📍 在地图上找第 {n} 站",
+    "tab.studyDue": "学习，{n} 个待复习",
+    "sess.kbd": "键盘：<kbd>空格</kbd> 显示或朗读 · <kbd>1</kbd>–<kbd>4</kbd> 评分 · <kbd>回车</kbd> 下一个",
+    "wel.title": "欢迎使用 màndarínō", "wel.intro": "{n} 个常用词，按需要的顺序排列。每个词分三步学：怎么读，怎么写，是什么意思。",
+    "wel.read": "1 · 读音", "wel.write": "2 · 写法", "wel.mean": "3 · 意思", "wel.tones": "颜色代表声调：红色高平，绿色上升，蓝色降升，紫色下降。",
+    "wel.goal": "每天学几个新词？", "wel.goalHint": "随时可以在「学习 → 自定义」里修改。每天少学一点，比一次学很多更好。", "wel.start": "从 {n} 个词开始"
+  }
+};
+var LANG = (function () { try { var l = localStorage.getItem("cp-lang"); return l === "zh" ? "zh" : "it"; } catch (e) { return "it"; } })();
+function t(key, vars) {
+  var s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.it[key] != null ? I18N.it[key] : key);
+  return vars ? String(s).replace(/\{(\w+)\}/g, function (m, k) { return vars[k] != null ? vars[k] : m; }) : s;
+}
+/* gli elementi statici: data-i18n = testo, data-i18n-ph = placeholder, data-i18n-aria = aria-label (e title) */
+function applyI18n(root) {
+  root = root || document;
+  Array.prototype.forEach.call(root.querySelectorAll("[data-i18n]"), function (el) { el.textContent = t(el.getAttribute("data-i18n")); });
+  Array.prototype.forEach.call(root.querySelectorAll("[data-i18n-ph]"), function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph"))); });
+  Array.prototype.forEach.call(root.querySelectorAll("[data-i18n-aria]"), function (el) { var v = t(el.getAttribute("data-i18n-aria")); el.setAttribute("aria-label", v); if (el.hasAttribute("title")) el.title = v; });
+  document.documentElement.setAttribute("lang", LANG === "zh" ? "zh-CN" : "it");
+}
 </script>
 <script id="e10">
 /* FSRS in JavaScript puro. Porting fedele di py-fsrs (open-spaced-repetition/py-fsrs, HEAD) = FSRS-6, 21 parametri.
@@ -1642,7 +1742,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       return '<span class="p">' + esc(ch) + "</span>";
     }).join("");
   }
-  var CP = window.CP = { esc: esc, attr: attr, tone: tone, syllables: syllables, pinyinHTML: pinyinHTML, hanziHTML: hanziHTML };
+  var CP = window.CP = { esc: esc, attr: attr, tone: tone, syllables: syllables, pinyinHTML: pinyinHTML, hanziHTML: hanziHTML, t: t };
+  if (LANG !== "it") applyI18n();
 
   /* ---- modello dati: chiave = il carattere; doppioni -> carattere#pinyin ---- */
   var WORDS = {}, ORDER = [], SEC = [];
@@ -2016,7 +2117,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var b = tab.querySelector(".dbadge"); if (!b) { b = document.createElement("span"); b.className = "dbadge"; b.setAttribute("aria-hidden", "true"); tab.appendChild(b); }
     var now = Date.now(), n = 0; Object.keys(S).forEach(function (k) { var r = S[k]; if (r && r.n && r.d <= now && WORDS[k]) n++; });
     b.hidden = !n; b.textContent = n > 99 ? "99+" : n;
-    tab.setAttribute("aria-label", "Studia" + (n ? ", " + n + " da ripassare" : ""));
+    tab.setAttribute("aria-label", n ? CP.t("tab.studyDue", { n: n }) : CP.t("nav.study"));
   }
   CP.badge = badge;
   setInterval(badge, 60000);
@@ -2821,7 +2922,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
 
   /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
-  function fmt(ms) { var d = ms / 86400000; return ms < 3600000 ? Math.max(1, Math.round(ms / 60000)) + " min" : d < 1 ? Math.round(ms / 3600000) + " h" : d < 30 ? Math.round(d) + " g" : d < 365 ? Math.round(d / 30) + " mesi" : (Math.round(d / 36.5) / 10) + " anni"; }
+  function fmt(ms) { var d = ms / 86400000, T = CP.t; return ms < 3600000 ? T("u.min", { n: Math.max(1, Math.round(ms / 60000)) }) : d < 1 ? T("u.h", { n: Math.round(ms / 3600000) }) : d < 30 ? T("u.d", { n: Math.round(d) }) : d < 365 ? T("u.mo", { n: Math.round(d / 30) }) : T("u.y", { n: Math.round(d / 36.5) / 10 }); }
   function previewIntervals(k) {
     var S = CP.S(), r = S[k], now = Date.now(), sch = CP.srs.scheduler;
     var card = r && r.st != null ? { state: r.sd, step: r.sp, st: r.st, df: r.df, due: r.d, last: r.lr } : sch.newCard(now);
@@ -2837,23 +2938,23 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   function home() {
     sess = null; CP.focusMode(false); root.classList.remove("is-card");
     var c = CP.counts(), tot = c[0] + c[1] + c[2], due = dueKeys().length, nw = newKeys().length, seen = newSeen(), n = due + nw;
-    var opts = '<option value="">Tutti gli argomenti</option><option value="__fav"' + (cfg.sec === "__fav" ? " selected" : "") + ">★ Solo le parole segnate</option>" + SECTIONS.map(function (s) {
+    var T = CP.t, opts = '<option value="">' + T("study.allTopics") + '</option><option value="__fav"' + (cfg.sec === "__fav" ? " selected" : "") + ">" + T("study.favs") + "</option>" + SECTIONS.map(function (s) {
       return '<option value="' + s.id + '"' + (cfg.sec === s.id ? " selected" : "") + ">" + esc(s.title) + "</option>";
     }).join("");
-    var ns = [5, 10, 15, 20].map(function (x) { return '<option value="' + x + '"' + (cfg.n === x ? " selected" : "") + ">" + x + " al giorno</option>"; }).join("");
-    var secName = cfg.sec === "__fav" ? "★ Parole segnate" : cfg.sec ? (SECTIONS.filter(function (s) { return s.id === cfg.sec; })[0] || { title: "" }).title.replace(/^\d+\.\s*/, "") : "";
+    var ns = [5, 10, 15, 20].map(function (x) { return '<option value="' + x + '"' + (cfg.n === x ? " selected" : "") + ">" + T("study.perDay", { n: x }) + "</option>"; }).join("");
+    var secName = cfg.sec === "__fav" ? T("study.favs") : cfg.sec ? (SECTIONS.filter(function (s) { return s.id === cfg.sec; })[0] || { title: "" }).title.replace(/^\d+\.\s*/, "") : "";
     root.innerHTML =
-      '<div class="panel today"><div class="today-h"><h2>Oggi</h2>' + (secName ? '<span class="gpl">' + esc(secName) + "</span>" : "") + "</div>" +
-      '<div class="today-n"><div><b>' + due + "</b><span>da ripassare</span></div><div><b>" + nw + "</b><span>" + (nw === 1 ? "nuova" : "nuove") + "</span></div></div>" +
-      '<p class="small muted" style="margin:0">Oggi: ' + Math.min(seen, cfg.n) + "/" + cfg.n + " parole nuove già viste" + (seen > cfg.n ? " (+" + (seen - cfg.n) + " in più)" : "") + ".</p>" +
-      '<button type="button" class="btn-main" id="go"' + (n ? "" : " disabled") + ">" + (n ? "Inizia · ≈ " + minutes(n) + " min" : "Niente da fare: torna più tardi") + "</button>" +
-      '<details class="today-cfg"><summary>Personalizza</summary><div class="row2" style="margin-top:0"><label for="cfg-n">Parole nuove<select id="cfg-n">' + ns + "</select></label>" +
-      '<label for="cfg-sec">Argomento<select id="cfg-sec">' + opts + "</select></label></div>" +
-      '<label class="chk"><input type="checkbox" id="cfg-auto"' + (CP.pref.auto ? " checked" : "") + "> Audio automatico: la parola viene letta da sola</label>" +
-      (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">Ancora 5 parole nuove oggi</button>' : "") + "</details></div>" +
-      '<div class="modes"><button type="button" id="ear-open">🎧 Allena l\'orecchio<small>Indovina il tono</small></button><button type="button" id="sprint-open">⚡ Sfida 60 secondi<small>' + ((CP.game && CP.game.best()) ? "Record: " + CP.game.best() : "Più veloce che puoi") + "</small></button></div>" +
+      '<div class="panel today"><div class="today-h"><h2>' + T("study.today") + "</h2>" + (secName ? '<span class="gpl">' + esc(secName) + "</span>" : "") + "</div>" +
+      '<div class="today-n"><div><b>' + due + "</b><span>" + T("study.due") + "</span></div><div><b>" + nw + "</b><span>" + T(nw === 1 ? "study.new1" : "study.newN") + "</span></div></div>" +
+      '<p class="small muted" style="margin:0">' + T("study.seen", { seen: Math.min(seen, cfg.n) + (seen > cfg.n ? " (+" + (seen - cfg.n) + ")" : ""), n: cfg.n }) + "</p>" +
+      '<button type="button" class="btn-main" id="go"' + (n ? "" : " disabled") + ">" + (n ? T("study.start", { min: minutes(n) }) : T("study.nothing")) + "</button>" +
+      '<details class="today-cfg"><summary>' + T("study.customize") + '</summary><div class="row2" style="margin-top:0"><label for="cfg-n">' + T("study.newPerDay") + '<select id="cfg-n">' + ns + "</select></label>" +
+      '<label for="cfg-sec">' + T("study.topic") + '<select id="cfg-sec">' + opts + "</select></label></div>" +
+      '<label class="chk"><input type="checkbox" id="cfg-auto"' + (CP.pref.auto ? " checked" : "") + "> " + T("study.auto") + "</label>" +
+      (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">' + T("study.more5today") + "</button>" : "") + "</details></div>" +
+      '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
       (CP.homeNotice ? CP.homeNotice() : "") +
-      '<details class="panel progress"><summary>I miei progressi</summary>' +
+      '<details class="panel progress"><summary>' + T("study.progress") + "</summary>" +
       '<p class="muted small" style="margin:0">Ogni parola passa prima sotto gli occhi, poi ti viene chiesta. Se la sbagli torna subito; se la sai, torna quando sta per sfuggirti (obiettivo: ricordarne il ' + Math.round(CP.srs.retention() * 100) + "%).</p>" +
       '<div class="stats"><div class="stat"><b>' + c[0] + '</b><span>da imparare</span></div><div class="stat"><b>' + c[1] + '</b><span>in corso</span></div><div class="stat"><b>' + c[2] + "</b><span>le so già</span></div></div>" +
       '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
@@ -2879,23 +2980,23 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (w.mine ? '<div class="cd-note mine-tag">✏️ tua correzione</div>' : "") + (set.py ? CP.polyNote(w) : "");
     return h;
   }
-  var TAGS = { pi: "Che cosa significa?", ip: "Come si dice?", hp: "Leggi il carattere" };
+  var TAGS = { pi: "sess.qPi", ip: "sess.qIp", hp: "sess.qHp" };
   var PROMPT = { pi: { py: 1, hz: 1 }, ip: { it: 1 }, hp: { hz: 1 } };
   var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 17l-5.4 3 1.2-6L3.3 9.8l6.1-.7z"/></svg>';
   function head() {
     var pct = sess.words ? Math.round(sess.finished / sess.words * 100) : 100;
-    return '<div class="sess"><button type="button" id="quit" class="btn-quiet" aria-label="Esci dalla sessione">Esci</button>' +
+    return '<div class="sess"><button type="button" id="quit" class="btn-quiet" aria-label="' + CP.attr(CP.t("sess.quitLabel")) + '">' + CP.t("sess.quit") + "</button>" +
       '<div class="meter" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="Avanzamento"><i class="k" style="width:' + pct + '%"></i></div>' +
       '<span class="cnt">' + sess.finished + " / " + sess.words + "</span>" +
-      '<button type="button" id="auto-t" class="btn-quiet" aria-pressed="' + (CP.pref.auto ? "true" : "false") + '" aria-label="Audio automatico">' + (CP.pref.auto ? "🔊" : "🔇") + "</button></div>";
+      '<button type="button" id="auto-t" class="btn-quiet" aria-pressed="' + (CP.pref.auto ? "true" : "false") + '" aria-label="' + CP.attr(CP.t("sess.auto")) + '">' + (CP.pref.auto ? "🔊" : "🔇") + "</button></div>";
   }
   /* U4: in cima a destra la stella; sotto il carattere solo Ascolta e Parla; Traccia, Famiglia e Tono nel foglio «⋯» */
   function star(w) {
     var fv = CP.favs && CP.favs.has(w.key);
-    return '<button type="button" class="fav-c favb' + (fv ? " on" : "") + '" data-fav-k="' + CP.attr(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '" aria-label="Segna come preferita o difficile">' + STAR + "</button>";
+    return '<button type="button" class="fav-c favb' + (fv ? " on" : "") + '" data-fav-k="' + CP.attr(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '" aria-label="' + CP.attr(CP.t("sess.star")) + '">' + STAR + "</button>";
   }
   function cardTools(w, full) {
-    var more = '<button type="button" class="card-more" data-more aria-label="Altro: traccia, famiglia, tono">⋯</button>';
+    var more = '<button type="button" class="card-more" data-more aria-label="' + CP.attr(CP.t("sess.more")) + '">⋯</button>';
     if (!full) return '<div class="card-acts">' + more + "</div>";
     var mic = CP.micBtn(w.hz).replace('class="mic"', 'class="mic big"');
     return '<div class="card-acts">' + CP.sayBtn(CP.sayHz(w)).replace('class="say"', 'class="say big"') + mic + more + "</div>";
@@ -2904,13 +3005,14 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (!sess || !sess.q.length) return;
     var e = sess.q[0], w = CP.WORDS[e.k], full = e.kind === "intro" || sess.revealed;
     var row = function (act, ico, t, d) { return '<button type="button" class="sheet-row" data-card-act="' + act + '"><span class="ico" aria-hidden="true">' + ico + "</span><span><b>" + t + "</b><small>" + d + "</small></span></button>"; };
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>Altro</b><div class="small muted">' + (full ? esc(w.hz) + " · " + esc(w.py) : "per questa carta") + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
-      '<div class="sheet-rows">' + row("pad", "✍️", "Traccia", full ? "Scrivi il carattere col dito, con la guida" : "Prova a scriverlo a memoria, poi controlla") +
-      (full ? row("fam", "🔍", "Famiglia", "Le altre parole che contengono questi caratteri") : "") +
-      (full && CP.canScope && CP.canScope() ? row("scope", "〰️", "Tono", "Parla e guarda la curva della tua voce, anche senza rete") : "") +
-      (full && CP.contribOpen ? row("contrib", "✏️", "Correggi o segnala", "Pinyin o traduzione sbagliati? Correggili nella tua copia e mandali all'autore") : "") + "</div>");
+    var T = CP.t;
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + T("more.title") + '</b><div class="small muted">' + (full ? esc(w.hz) + " · " + esc(w.py) : T("more.card")) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + T("common.close") + "</button></div>" +
+      '<div class="sheet-rows">' + row("pad", "✍️", T("more.pad"), full ? T("more.padFull") : T("more.padBlind")) +
+      (full ? row("fam", "🔍", T("more.fam"), T("more.famSub")) : "") +
+      (full && CP.canScope && CP.canScope() ? row("scope", "〰️", T("more.tone"), T("more.toneSub")) : "") +
+      (full && CP.contribOpen ? row("contrib", "✏️", T("more.contrib"), T("more.contribSub")) : "") + "</div>");
   }
-  var KBD = '<p class="kbd-hint">Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti</p>';
+  function kbd() { return '<p class="kbd-hint">' + CP.t("sess.kbd") + "</p>"; }
   function togglePad(keep) {
     var fc = root.querySelector(".fc"), old = root.querySelector(".pad");
     if (old) { if (padObj) padObj.destroy(); old.parentNode.removeChild(old); padObj = null; return; }
@@ -2984,31 +3086,31 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     cardEl.addEventListener("pointercancel", function () { if (drag) reset(true); drag = false; down = false; });
   };
   function gradesHTML(e) {
-    var iv = previewIntervals(e.k), soon = "tra poco";
+    var iv = previewIntervals(e.k), soon = CP.t("grade.soon"), G = function (g) { return CP.t("grade." + g); };
     /* con retry i voti 0-1 non vengono applicati: la carta torna nella sessione */
     var sub = function (g) { return e.retry && g < 2 ? soon : iv[g]; };
     return '<div class="grades">' +
-      '<button type="button" data-g="0" class="g-again">Non la so<span class="sub">' + sub(0) + "</span></button>" +
-      '<button type="button" data-g="1">Quasi<span class="sub">' + sub(1) + "</span></button>" +
-      '<button type="button" data-g="2" class="g-good">La so<span class="sub">' + sub(2) + "</span></button>" +
-      '<button type="button" data-g="3">Facile<span class="sub">' + sub(3) + "</span></button></div>";
+      '<button type="button" data-g="0" class="g-again">' + G(0) + '<span class="sub">' + sub(0) + "</span></button>" +
+      '<button type="button" data-g="1">' + G(1) + '<span class="sub">' + sub(1) + "</span></button>" +
+      '<button type="button" data-g="2" class="g-good">' + G(2) + '<span class="sub">' + sub(2) + "</span></button>" +
+      '<button type="button" data-g="3">' + G(3) + '<span class="sub">' + sub(3) + "</span></button></div>";
   }
   function render() {
     if (!sess.q.length) return done();
-    var e = sess.q[0], w = CP.WORDS[e.k], h = head(), hint = sess.hint ? '<p class="swipe-hint small muted">Oppure trascina la carta: a destra «La so», a sinistra «Non la so».</p>' : "";
+    var e = sess.q[0], w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
       var ex = example(w.hz);
-      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">Nuova parola · ' + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
-        (ex ? '<div class="cd-ex"><span class="tag">Esempio</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
-        '</div><div class="actbar"><button type="button" class="btn-main" id="next">Avanti</button>' + KBD + "</div>";
+      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
+        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
+        '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
-      h += open + '<span class="tag">' + TAGS[e.type] + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
-        '<div class="actbar"><button type="button" class="btn-main" id="reveal">Mostra la risposta</button>' + KBD + "</div>";
+      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
+        '<div class="actbar"><button type="button" class="btn-main" id="reveal">' + T("sess.reveal") + "</button>" + kbd() + "</div>";
     } else {
-      h += open + '<span class="tag">' + TAGS[e.type] + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
-        '<div class="actbar">' + gradesHTML(e) + hint + KBD + "</div>";
+      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
+        '<div class="actbar">' + gradesHTML(e) + hint + kbd() + "</div>";
     }
     root.innerHTML = h; root.classList.add("is-card");
     padObj = null;
@@ -3037,19 +3139,19 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var s = sess; sess = null; CP.focusMode(false); root.classList.remove("is-card");
     var S = CP.S(), d = new Date(), endTomorrow = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 2).getTime();
     var tomorrow = CP.ORDER.filter(function (k) { return S[k] && S[k].n && S[k].d > Date.now() && S[k].d < endTomorrow; }).length;
-    var streak = CP.game ? CP.game.streak() : 0, miss = Object.keys(s.miss);
+    var streak = CP.game ? CP.game.streak() : 0, miss = Object.keys(s.miss), T = CP.t;
     var moreNew = keysOf().some(function (k) { return !S[k] || !S[k].n; }), moreDue = dueKeys().length > 0;
     var list = miss.slice(0, 12).map(function (k) {
       var w = CP.WORDS[k];
       return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="muted small">' + esc(w.it) + "</div></div></div>";
     }).join("");
     root.innerHTML = '<div class="panel done">' + (CP.stamp && CP.game ? CP.stamp(CP.game.rank(), true).replace('class="seal stamp', 'class="seal stamp done-seal') : "") +
-      "<h2>Fatto</h2>" +
-      '<div class="stats"><div class="stat"><b>' + s.words + '</b><span>parole viste</span></div><div class="stat"><b>' + s.good + '</b><span>risposte giuste</span></div><div class="stat"><b>🔥 ' + streak + "</b><span>" + (streak === 1 ? "giorno di fila" : "giorni di fila") + "</span></div></div>" +
-      '<p style="margin:0">' + (tomorrow ? "Domani " + (tomorrow === 1 ? "torna 1 parola." : "torneranno " + tomorrow + " parole.") : "Domani non torna nessuna parola: è il momento giusto per qualcuna nuova.") + "</p>" +
-      (moreNew ? '<button type="button" class="btn-main" id="more5">Ancora 5 parole</button>' : moreDue ? '<button type="button" class="btn-main" id="go">Un altro ripasso</button>' : "") +
-      '<button type="button" class="btn-main btn-quiet" id="home">Ho finito</button></div>' +
-      (miss.length ? '<details class="panel mine"><summary>Da rivedere (' + miss.length + ")</summary>" + list + "</details>" : "");
+      "<h2>" + T("done.title") + "</h2>" +
+      '<div class="stats"><div class="stat"><b>' + s.words + "</b><span>" + T("done.words") + '</span></div><div class="stat"><b>' + s.good + "</b><span>" + T("done.good") + '</span></div><div class="stat"><b>🔥 ' + streak + "</b><span>" + T(streak === 1 ? "done.streak1" : "done.streakN") + "</span></div></div>" +
+      '<p style="margin:0">' + (tomorrow ? T(tomorrow === 1 ? "done.tomorrow1" : "done.tomorrowN", { n: tomorrow }) : T("done.tomorrow0")) + "</p>" +
+      (moreNew ? '<button type="button" class="btn-main" id="more5">' + T("done.more") + "</button>" : moreDue ? '<button type="button" class="btn-main" id="go">' + T("done.again") + "</button>" : "") +
+      '<button type="button" class="btn-main btn-quiet" id="home">' + T("done.end") + "</button></div>" +
+      (miss.length ? '<details class="panel mine"><summary>' + T("done.review", { n: miss.length }) + "</summary>" + list + "</details>" : "");
     window.scrollTo(0, 0);
   }
 
@@ -3503,24 +3605,24 @@ const PATTERNS = [
 
   /* ---- struttura ---- */
   /* §4.3: tre gruppi invece di sei pillole scorrevoli */
-  var GROUPS = [["build", "🧩 Costruisci", [["ex", "Esercizi"], ["lab", "Laboratorio"], ["slot", "Slot"]]], ["talk", "💬 Parla", [["dlg", "Dialoghi"], ["thought", "Pensiero"]]], ["read", "📖 Leggi", [["reader", "Lettore"], ["pat", "Modelli"]]]];
+  var GROUPS = [["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["reader", "sub.reader"], ["pat", "sub.pat"]]]];
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
   function groupOf(x) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].some(function (s) { return s[0] === x; })) return GROUPS[i]; return GROUPS[0]; }
   function render() {
     var cs = curSub(), g = groupOf(cs);
     var segs = GROUPS.map(function (x) {
-      return '<button type="button" role="tab" data-group="' + x[0] + '"' + (x === g ? ' class="on" aria-selected="true"' : ' aria-selected="false"') + ">" + x[1] + "</button>";
+      return '<button type="button" role="tab" data-group="' + x[0] + '"' + (x === g ? ' class="on" aria-selected="true"' : ' aria-selected="false"') + ">" + CP.t(x[1]) + "</button>";
     }).join("");
-    var inner = '<div class="seg inner" role="group" aria-label="' + CP.attr(g[1]) + '">' + g[2].map(function (s) {
-      return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + s[1] + "</button>";
+    var inner = '<div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
+      return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.t(s[1]) + "</button>";
     }).join("") + "</div>";
     var body;
     if (sub === "ex") body = renderEx();
     else if (sub === "lab") body = labMode === "slot" && CP.subs && CP.subs.slot ? CP.subs.slot.render() : renderLab();
     else if (sub === "pat") body = renderPat();
     else body = (CP.subs && CP.subs[sub]) ? CP.subs[sub].render() : "";
-    root.innerHTML = '<h2 style="margin-top:20px">Frasi</h2><div class="pills groups" role="tablist" aria-label="Strumenti per le frasi">' + segs + "</div>" + inner + body;
+    root.innerHTML = '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><div class="pills groups" role="tablist" aria-label="' + CP.attr(CP.t("build.tools")) + '">' + segs + "</div>" + inner + body;
     if (CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
     if (sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
     var on = root.querySelector(".pills .on"); if (on && on.scrollIntoView) { try { on.scrollIntoView({ block: "nearest", inline: "center" }); } catch (e) {} }
@@ -3978,14 +4080,14 @@ const PATH = {
       '<div class="gst"><div class="ring-w" aria-hidden="true"><div class="ring" style="--p:' + p + '"></div><span class="tx">' + wt + "</span></div><div><b>" + wt + "/" + goal + "</b><span>Oggi " + wt + "/" + goal + " parole</span></div></div></div>" +
       '<div class="week" aria-label="Questa settimana">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.td ? "td" : "") + '">' + days[i] + "<i></i></span>"; }).join("") + "</div>" +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">Obiettivo<select id="goal-sel">' + goalOpts + "</select></label>" +
-      '<button type="button" class="btn-s" id="path-go">📍 Vai alla tappa ' + (cur + 1) + " sulla mappa</button></div>";
+      '<button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + "</button></div>";
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
-    var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur];
-    return '<div class="panel resume"><div class="small muted">Tappa ' + (cur + 1) + " · " + esc(title(s)) + "</div>" +
-      '<button type="button" class="btn-main" id="path-continue">' + (n ? "Continua · ≈ " + Math.max(1, Math.round(n * 20 / 60)) + " min" : "Esplora la tappa " + (cur + 1)) + "</button>" +
-      '<div class="small muted">' + (n ? c.due + " da ripassare · " + c.nw + " " + (c.nw === 1 ? "nuova" : "nuove") : "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.") + "</div></div>";
+    var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur], T = CP.t;
+    return '<div class="panel resume"><div class="small muted">' + T("path.stage", { n: cur + 1 }) + " · " + esc(title(s)) + "</div>" +
+      '<button type="button" class="btn-main" id="path-continue">' + (n ? T("path.continue", { min: Math.max(1, Math.round(n * 20 / 60)) }) : T("path.explore", { n: cur + 1 })) + "</button>" +
+      '<div class="small muted">' + (n ? T("path.counts", { due: c.due, nw: c.nw, "new": T(c.nw === 1 ? "study.new1" : "study.newN") }) : T("path.doneToday")) + "</div></div>";
   }
   function stopHTML(s, i, cur) {
     var st = stats(s.id), P = PATH[s.id] || { o: "Leggi le " + KEYS[s.id].length + " parole di questo argomento, poi mettile alla prova con le carte e le frasi.", g: -1 }, d = dlgFor(s.id), isOpen = open[s.id];
@@ -5874,6 +5976,10 @@ const PATH = {
       var mc = Store.mergeContribs([{ id: "a", t: 1, why: "vecchio" }, { id: "b", t: 5 }], [{ id: "a", t: 3, why: "nuovo" }, { id: "c", t: 2 }]);
       add("Contributi: validazione (mai hz, sillabe = caratteri, niente HTML) e unione per id", !!vok && mc.length === 3 && mc.filter(function (x) { return x.id === "a"; })[0].why === "nuovo", mc.map(function (x) { return x.id; }).join(""));
     } catch (e) { add("Contributi", false, String(e)); }
+    try {
+      var miss = Object.keys(I18N.it).filter(function (k) { return I18N.zh[k] == null; }), extra = Object.keys(I18N.zh).filter(function (k) { return I18N.it[k] == null; });
+      add("Interfaccia: ogni chiave I18N ha la traduzione cinese, e t() sostituisce le variabili", !miss.length && !extra.length && t("u.min", { n: 3 }) === (LANG === "zh" ? "3 分钟" : "3 min"), Object.keys(I18N.it).length + " chiavi" + (miss.length ? "; manca zh: " + miss.slice(0, 4).join(", ") : "") + (extra.length ? "; solo zh: " + extra.slice(0, 4).join(", ") : ""));
+    } catch (e) { add("Interfaccia I18N", false, String(e)); }
     var ml = document.querySelector('link[rel="manifest"]');
     add("PWA: manifest collegato dal <head>", !!ml && (location.protocol === "file:" ? /^blob:/.test(ml.href) : /manifest\.json$/.test(ml.getAttribute("href") || "")), ml ? (ml.getAttribute("href") || "").slice(0, 40) : "manca");
     /* memoria */
@@ -7500,6 +7606,16 @@ const PATH = {
   }
   function close() { CP.untrap(el); }
   CP.repaintSettings = paint;
+  /* §5 fase 1: lingua dei menu */
+  function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
+  CP.setLang = function (l) {
+    LANG = l === "zh" ? "zh" : "it"; try { localStorage.setItem("cp-lang", LANG); } catch (e) {}
+    applyI18n(); paintLang(); CP.sfx("tap");
+    if (CP.studyActive && CP.studyActive()) CP.studyRefresh(); else if (CP.studyHome) CP.studyHome();
+    if (CP.pathDirty) CP.pathDirty(); if (CP.onPath && !document.getElementById("view-path").hidden) CP.onPath();
+    if (CP.build) CP.build.render(); if (CP.badge) CP.badge(); if (CP.refilter) CP.refilter();
+  };
+  paintLang();
   CP.openSettings = function (sec) {
     paint(); CP.trap(el, close);
     var x = el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
@@ -7518,6 +7634,7 @@ const PATH = {
     else if (b.id === "set-bk-up") document.getElementById("set-bk-file").click();
     else if (b.id === "set-welcome") { close(); if (CP.welcome) CP.welcome(true); }
     else if (b.id === "set-selftest") { close(); location.hash = "#selftest"; }
+    else if (b.hasAttribute("data-lang-set")) CP.setLang(b.getAttribute("data-lang-set"));
   });
   el.addEventListener("input", function (e) { if (e.target.id === "set-sfxvol" && CP.bus) CP.bus.setSfxVol(parseFloat(e.target.value)); });
   el.addEventListener("change", function (e) {
@@ -7546,7 +7663,7 @@ const PATH = {
   /* quanti filtri sono attivi: il numero sta sul pulsante */
   function badge() {
     var n = (document.getElementById("state").value ? 1 : 0) + (document.getElementById("mode").value ? 1 : 0) + (CP.topic ? 1 : 0), el = document.getElementById("flt-n");
-    el.hidden = !n; el.textContent = n; fb.setAttribute("aria-label", "Filtri" + (n ? ", " + n + " attivi" : ""));
+    el.hidden = !n; el.textContent = n; fb.setAttribute("aria-label", n ? CP.t("words.filtersN", { n: n }) : CP.t("words.filters"));
   }
   var rf = CP.refilter; CP.refilter = function () { var r = rf.apply(this, arguments); badge(); return r; };
   document.getElementById("mode").addEventListener("change", badge);
@@ -7768,16 +7885,16 @@ const PATH = {
 (function () {
   var CP = window.CP, goal = 5;
   function html() {
-    var w = CP.WORDS["我"];
-    return '<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">Benvenuto in màndarínō</h2><button type="button" class="fam-x btn-s" data-famclose id="w-later">Più tardi</button></div>' +
-      '<p style="margin:0">' + CP.ORDER.length + " parole per parlare, nell'ordine in cui servono. Ogni parola si impara in tre passi: <b>come si legge</b>, <b>come si scrive</b>, <b>cosa vuol dire</b>.</p>" +
-      '<div class="fc"><div class="order"><span>1 · si legge</span><span>2 · si scrive</span><span>3 · significa</span></div>' +
+    var w = CP.WORDS["我"], T = CP.t;
+    return '<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">' + T("wel.title") + '</h2><button type="button" class="fam-x btn-s" data-famclose id="w-later">' + T("common.later") + "</button></div>" +
+      '<p style="margin:0">' + CP.esc(T("wel.intro", { n: CP.ORDER.length })) + "</p>" +
+      '<div class="fc"><div class="order"><span>' + T("wel.read") + "</span><span>" + T("wel.write") + "</span><span>" + T("wel.mean") + "</span></div>" +
       '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
-      '<p class="small muted" style="margin:0">I colori sono i toni: rosso alto e piatto, verde sale, blu scende e risale, viola cade.</p></div>' +
-      '<div><b>Quante parole nuove al giorno?</b><div class="welcome-goal" role="group" aria-label="Parole nuove al giorno" style="margin-top:8px">' +
+      '<p class="small muted" style="margin:0">' + T("wel.tones") + "</p></div>" +
+      "<div><b>" + T("wel.goal") + '</b><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("wel.goal")) + '" style="margin-top:8px">' +
       [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +
-      '<p class="small muted" style="margin:6px 0 0">Si cambia quando vuoi in Studia → Personalizza. Meglio poche ogni giorno che tante una volta.</p></div>' +
-      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">Inizia con ' + goal + " parole</button></div>";
+      '<p class="small muted" style="margin:6px 0 0">' + T("wel.goalHint") + "</p></div>" +
+      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">' + T("wel.start", { n: goal }) + "</button></div>";
   }
   CP.welcome = function (force) {
     if (!force && CP.ux.get("onboarded")) return;
