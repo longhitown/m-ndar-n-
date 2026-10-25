@@ -1,0 +1,241 @@
+
+/* ===== V4a: gioco, preferiti, tag, avvisi, fonetica ===== */
+(function () {
+  var CP = window.CP, esc = CP.esc;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---- avviso breve ---- */
+  var toastEl = document.getElementById("toast"), toastT = 0;
+  CP.toast = function (msg) {
+    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 2000);   /* U9: una riga, al massimo 2 s */
+  };
+
+  /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
+  var GK = "cp-game-v1";
+  var RANKS = [
+    { n: "Viaggiatore Curioso", x: 0, c: "游" }, { n: "Apprendista dei Toni", x: 200, c: "调" }, { n: "Custode di Caratteri", x: 600, c: "字" },
+    { n: "Mercante di Seta", x: 1500, c: "丝" }, { n: "Poeta del Bambù", x: 3000, c: "竹" }, { n: "Maestro di Giada", x: 6000, c: "玉" }, { n: "Saggio Mandarino", x: 10000, c: "贤" }
+  ];
+  var G = { xp: 0, goal: 10, days: {}, best: 0 };
+  function adopt(o) {
+    if (!o || typeof o !== "object") return;
+    G.xp = Math.max(0, o.xp | 0); G.goal = [5, 10, 15, 20].indexOf(o.goal) >= 0 ? o.goal : 10;
+    G.days = (o.days && typeof o.days === "object") ? o.days : {}; G.best = Math.max(0, o.best | 0);
+  }
+  try { adopt(JSON.parse(lsGet(GK) || "null")); } catch (e) {}
+  function save() { lsSet(GK, JSON.stringify(G)); }
+  function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+  function dkey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+  function rec(create) {
+    var t = dkey(new Date());
+    if (!G.days[t] && create) G.days[t] = { w: [], s: 0, e: 0 };
+    return G.days[t] || null;
+  }
+  function active(r) { return !!r && !!((r.w && r.w.length) || r.s || r.e); }
+  function rankIdx(xp) { var i = 0; RANKS.forEach(function (r, j) { if (xp >= r.x) i = j; }); return i; }
+  function streak() {
+    var d = new Date(), n = 0;
+    if (!active(G.days[dkey(d)])) d.setDate(d.getDate() - 1);
+    while (active(G.days[dkey(d)])) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function weekDots() {
+    var d = new Date(), dow = (d.getDay() + 6) % 7, out = [];
+    for (var i = 0; i < 7; i++) {
+      var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow + i);
+      out.push({ on: active(G.days[dkey(x)]), td: i === dow });
+    }
+    return out;
+  }
+  function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
+  function award(n) {
+    var b = rankIdx(G.xp); G.xp += n; var a = rankIdx(G.xp);
+    if (a > b) { CP.toast("Nuovo grado: " + RANKS[a].n); CP.sfx("level"); }
+  }
+  function rankInfo() {
+    var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null;
+    return { i: i, name: r.n, ch: r.c, xp: G.xp, next: nx ? nx.x : null, nextName: nx ? nx.n : null, pct: nx ? Math.round((G.xp - r.x) / (nx.x - r.x) * 100) : 100 };
+  }
+  CP.stamp = function (r, lg) {
+    return '<span class="seal stamp' + (lg ? " lg" : "") + (r.i === RANKS.length - 1 ? " max" : "") + '" aria-hidden="true"><svg viewBox="300 30 200 200" focusable="false"><use href="#mandarin-symbol"/></svg><b>' + r.ch + "</b></span>";
+  };
+  CP.game = {
+    RANKS: RANKS,
+    addWord: function (k) {
+      var r = rec(true); if (r.w.indexOf(k) >= 0) return;
+      var was = r.w.length; r.w.push(k); award(10); save();
+      if (was < G.goal && r.w.length >= G.goal) { CP.toast("Obiettivo di oggi raggiunto: " + G.goal + " parole."); CP.sfx("level"); }
+      ui();
+    },
+    sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
+    ear: function (ok) { var r = rec(true); r.e = (r.e || 0) + 1; if (ok) award(3); save(); ui(); },
+    xp: function (n) { var r = rec(true); r.e = (r.e || 0) + 1; award(n); save(); ui(); },
+    /* §4.2: parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
+    newToday: function () { var r = rec(false); return r && r.nw ? r.nw : 0; },
+    addNew: function (n) { var r = rec(true); r.nw = (r.nw || 0) + n; save(); },
+    newExtra: function () { var r = rec(false); return r && r.nx ? r.nx : 0; },
+    addExtra: function (n) { var r = rec(true); r.nx = (r.nx || 0) + n; save(); },
+    best: function () { return G.best; },
+    setBest: function (v) { if (v > G.best) { G.best = v; save(); return true; } return false; },
+    setGoal: function (n) { G.goal = n; save(); ui(); },
+    goal: function () { return G.goal; },
+    streak: streak, weekDots: weekDots, wordsToday: wordsToday, rank: rankInfo,
+    dump: function () { return JSON.parse(JSON.stringify(G)); },
+    load: function (o) { adopt(o); save(); ui(); }
+  };
+  CP.onGrade = function (k, g) { if (g >= 1) CP.game.addWord(k); };
+
+  var pill = document.getElementById("game-pill");
+  function ui() {
+    var r = rankInfo(), s = streak();
+    pill.innerHTML = CP.stamp(r) + "<span>🔥 <b>" + s + "</b></span><span class=\"muted\">" + r.xp + " XP</span>";
+    pill.setAttribute("aria-label", "Il tuo cammino: " + r.name + ", " + s + " giorni di fila, " + r.xp + " punti. Apri il percorso.");
+    if (CP.pathDirty) CP.pathDirty();
+  }
+  pill.addEventListener("click", function () { CP.show("path"); });
+  ui();
+
+  /* ---- parole preferite o difficili ---- */
+  var FK = "cp-fav-v1", F = {};
+  try { F = JSON.parse(lsGet(FK) || "{}") || {}; } catch (e) { F = {}; }
+  if (Array.isArray(F)) { var t0 = {}; F.forEach(function (k) { t0[k] = 1; }); F = t0; }
+  Object.keys(F).forEach(function (k) { if (!CP.WORDS[k]) delete F[k]; });
+  function saveF() { lsSet(FK, JSON.stringify(F)); }
+  function paintRow(tr) {
+    var b = tr.querySelector(".fav"); if (!b) return;
+    var on = !!F[tr.getAttribute("data-k")];
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  function paintAll() { Array.prototype.forEach.call(document.querySelectorAll("#sections tbody tr"), paintRow); }
+  CP.favs = {
+    has: function (k) { return !!F[k]; },
+    count: function () { return Object.keys(F).length; },
+    toggle: function (k) { if (F[k]) delete F[k]; else F[k] = 1; saveF(); return !!F[k]; },
+    dump: function () { return Object.keys(F); },
+    load: function (arr) { F = {}; (arr || []).forEach(function (k) { if (CP.WORDS[k]) F[k] = 1; }); saveF(); paintAll(); }
+  };
+  paintAll();
+  document.addEventListener("click", function (e) {
+    var t = e.target; if (!t.closest) return;
+    var b = t.closest(".fav");
+    if (b) {
+      var tr = b.closest("tr"), k = tr && tr.getAttribute("data-k"); if (!k) return;
+      var on = CP.favs.toggle(k); paintRow(tr); CP.sfx("tap");
+      if (document.getElementById("state").value === "fav") CP.refilter();
+      CP.toast(on ? "Parola segnata. La trovi in «Preferite / difficili»." : "Parola tolta dai preferiti.");
+      return;
+    }
+    var c = t.closest("[data-fav-k]");
+    if (c) {
+      var kk = c.getAttribute("data-fav-k"), on2 = CP.favs.toggle(kk);
+      c.classList.toggle("on", on2); c.setAttribute("aria-pressed", on2 ? "true" : "false"); if (!c.classList.contains("fav-c")) c.textContent = on2 ? "★ Segnata" : "☆ Segna";
+      if (c.classList.contains("fav-c")) CP.toast(on2 ? "Parola segnata." : "Parola tolta dai preferiti.");
+      CP.sfx("tap"); paintAll();
+    }
+  });
+
+  /* ---- tag rapidi per argomento ---- */
+  var TAGS = [
+    ["🍜 Cibo", ["cibo", "cucina"]], ["🚆 Viaggi", ["viaggi", "citta", "spazio", "luoghi"]], ["🛍️ Acquisti", ["acquisti", "vestiti", "numeri"]],
+    ["🏨 Hotel", ["hotel", "casa"]], ["💬 Conversazione", ["conversazione", "saluti", "risposte", "domande"]], ["📱 Digitale", ["social"]],
+    ["❤️ Persone", ["persone", "famiglia", "relazioni", "stati"]], ["🕒 Tempo e meteo", ["tempo", "natura"]], ["💼 Lavoro", ["lavoro", "lavoro2", "verbi2"]],
+    ["🏥 Salute", ["corpo"]], ["🎎 Cultura", ["cultura"]]
+  ];
+  var tagsEl = document.getElementById("tags"), tagOn = -1;
+  tagsEl.innerHTML = TAGS.map(function (t, i) { return '<button type="button" data-tag="' + i + '" aria-pressed="false">' + t[0] + "</button>"; }).join("");
+  function paintTags() {
+    Array.prototype.forEach.call(tagsEl.querySelectorAll("button"), function (b, i) { b.classList.toggle("on", i === tagOn); b.setAttribute("aria-pressed", i === tagOn ? "true" : "false"); });
+  }
+  tagsEl.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-tag]") : null; if (!b) return;
+    var i = parseInt(b.getAttribute("data-tag"), 10);
+    tagOn = (tagOn === i) ? -1 : i;
+    CP.topic = tagOn >= 0 ? TAGS[tagOn][1] : null;
+    paintTags(); CP.sfx("tap"); CP.refilter();
+  });
+  CP.resetFilters = function () {
+    var q = document.getElementById("q"), st = document.getElementById("state");
+    q.value = ""; st.value = ""; tagOn = -1; CP.topic = null; paintTags(); CP.refilter();
+  };
+
+  /* ---- stampa ---- */
+  document.getElementById("print-btn").addEventListener("click", function () {
+    try { window.print(); } catch (e) { CP.toast("La stampa non è disponibile qui: scarica la pagina e aprila a sé."); }
+  });
+
+  /* ---- radiologia fonetica: dove l'orecchio italiano sbaglia ---- */
+  var IT_PHONETICS = [
+    [/^q/, "«q» non è la q di «quadro»", "Si dice come «ci» di «ciao», ma con un soffio d'aria deciso e la punta della lingua dietro i denti in basso."],
+    [/^x/, "«x» non è la x di «taxi»", "Un «sc» di «sciarpa» più sottile: lingua bassa, labbra tese come in un sorriso. Nessun «ks»."],
+    [/^j/, "«j» non è la j inglese", "Tra «gi» di «giro» e «ci» di «ciao», senza soffio d'aria e con la punta della lingua dietro i denti in basso."],
+    [/^zh/, "«zh» non è «z»", "Come «g» di «giorno», ma con la punta della lingua piegata all'indietro verso il palato e nessun soffio d'aria."],
+    [/^ch/, "«ch» non è «c» di «ciao»", "Come «c» di «cena», con la punta della lingua piegata all'indietro e un forte soffio d'aria."],
+    [/^sh/, "«sh» è più scuro di «sc»", "Come «sc» di «scena», con la punta della lingua piegata all'indietro."],
+    [/^r/, "«r» non è vibrata", "Non è la r italiana: lingua piegata all'indietro, come la r morbida americana, a metà con una «j» francese."],
+    [/^c(?!h)/, "«c» non è «c» di «cane» né di «ciao»", "È la «zz» di «tazza» ([ts]) con un forte soffio d'aria."],
+    [/^z(?!h)/, "«z» non è la z di «zero»", "È la «zz» di «pizza» ([ts]), secca e senza soffio d'aria."],
+    [/^[ptk]/, "«p / t / k» soffiano", "Hanno un soffio d'aria esplosivo molto più forte dell'italiano: davanti alla bocca, un foglietto di carta deve muoversi."],
+    [/^[bdg]/, "«b / d / g» non vibrano", "Non sono sonore come in «bello», «dado», «gatto»: sono «p / t / k» leggere, senza soffio d'aria."],
+    [/^h/, "«h» non è muta", "Un soffio che sfrega in gola, come la «ch» tedesca di «Bach» o la «j» spagnola. L'italiano la salta, il cinese no."],
+    [/^(zh|ch|sh|r|z|c|s)i$/, "La «i» qui non si dice", "È solo il suono della consonante prolungato, come un ronzio: «shi» non è «sci-i»."],
+    [/ian$/, "«ian» si dice «ièn»", "La «a» è aperta come la «e» di «ieri»: «tiān» suona «tièn», non «tian»."],
+    [/(ü|^[jqxy]u)/, "Qui la «u» è una «ü»", "Labbra a bacio come per dire «u», ma con la lingua nella posizione della «i»."],
+    [/^[^aeiouüy]*e$/, "«e» non è la e italiana", "Suono scuro, tipo «uh»: bocca rilassata, labbra non arrotondate."],
+    [/ui$/, "«ui» si dice «uei»", "«guì» suona «guèi»."],
+    [/iu$/, "«iu» si dice «iou»", "«liú» suona «liòu»."],
+    [/[aeiouü]ng$/, "«ng» finale", "Come la «n» di «lungo»: la lingua non tocca i denti, il suono resta nel naso."],
+    [/[aeiouü]n$/, "«n» finale", "Come la «n» di «pane»: la punta della lingua tocca i denti dietro e chiude il suono."]
+  ];
+  var TONE_TXT = {
+    1: "1° tono: alto e piatto, come una nota tenuta.", 2: "2° tono: sale, come quando dici «eh?» sorpreso.",
+    3: "3° tono: scende e risale. Dentro una frase resta solo la discesa, bassa.", 4: "4° tono: cade secco, come un ordine («Basta!»).", 5: "Tono neutro: leggero e breve, senza accento."
+  };
+  function baseSyl(s) { return String(s).normalize("NFD").replace(/[̀́̄̌]/g, "").normalize("NFC").toLowerCase().replace(/[^a-zü]/g, ""); }
+  CP.baseSyl = baseSyl;
+  function matches(b) { return IT_PHONETICS.filter(function (r) { return r[0].test(b); }); }
+  function trapHTML(list) {
+    return list.map(function (r) { return '<div class="trap"><b>⚠️ ' + esc(r[1]) + "</b>" + esc(r[2]) + "</div>"; }).join("");
+  }
+  CP.phonBlock = function (py) {
+    var seen = {}, all = [];
+    CP.syllables(py).forEach(function (s) {
+      var b = baseSyl(s); if (seen[b]) return; seen[b] = 1;
+      matches(b).forEach(function (r) { if (all.indexOf(r) < 0) all.push(r); });
+    });
+    if (!all.length) return "";
+    return "<h4>Trappole di pronuncia</h4>" + trapHTML(all.slice(0, 4)) +
+      (all.length > 4 ? '<p class="small muted">Tocca le sillabe del pinyin nella tabella per vedere le altre.</p>' : "");
+  };
+  CP.openPhon = function (syl, ctxHz) {
+    var b = baseSyl(syl), t = CP.tone(syl), ms = matches(b);
+    var ini = (b.match(/^(zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?/) || ["", ""])[0], fin = b.slice(ini.length);
+    var h = '<div class="phon"><div class="fam-head"><div class="meta"><h3>' + CP.pinyinHTML(syl) + "</h3>" +
+      '<div class="small muted">' + (ini ? "iniziale <b>" + esc(ini) + "</b> + " : "") + "finale <b>" + esc(fin || "—") + "</b></div></div>" +
+      (ctxHz ? CP.audioBtns(ctxHz, true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
+      CP.toneCurveHTML(syl) + '<p style="margin:6px 0 0">' + esc(TONE_TXT[t]) + "</p>";
+    h += ms.length ? "<h4>Radiologia fonetica</h4>" + trapHTML(ms) : '<div class="trap soft"><b>Nessuna trappola particolare</b>Questa sillaba si pronuncia più o meno come si legge. Cura soprattutto il tono.</div>';
+    h += "</div>";
+    CP.openSheet(h);
+  };
+  document.addEventListener("click", function (e) {
+    var t = e.target; if (!t.closest) return;
+    var sp = t.closest(".t1, .t2, .t3, .t4, .t5");
+    if (!sp) return;
+    var host = sp.closest("td.py, .cd-py, .lp, .xp, .sp");
+    if (!host || sp.closest("button.tile, .tone, .tonebtns") || sp.closest(".lh, .bh, td.hz")) return;
+    var m = sp.closest(".m-py");
+    if (m && document.body.classList.contains("hide-py") && !m.classList.contains("shown")) return;
+    var syl = sp.textContent.replace(/['’]/g, "").replace(/[!?,.]/g, "");
+    if (!/[a-zA-Zü]/.test(syl)) return;
+    var ctx = "", par = host.closest("tr");
+    if (par) { var hh = par.querySelector(".m-hz"); ctx = hh ? hh.textContent : ""; }
+    else if (host.classList.contains("cd-py")) { var c = host.closest(".fc"); var cz = c && c.querySelector(".cd-hz"); ctx = cz ? cz.textContent : ""; }
+    else { var pp = host.parentNode, lh = pp && (pp.querySelector(".lh") || pp.querySelector(".bh") || pp.querySelector(".xh")); ctx = lh ? lh.textContent : ""; }
+    e.preventDefault(); e.stopPropagation();
+    CP.openPhon(syl, ctx.length <= 12 ? ctx : "");
+  }, true);
+})();
+
+

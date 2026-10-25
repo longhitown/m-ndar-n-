@@ -1,0 +1,43 @@
+/* 30. Cultura, feste, società e mondo · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "cultura",
+  "title": "30. Cultura, feste, società e mondo",
+  "words": [
+    ["chuán.tǒng","传统","tradizione; tradizionale"],
+    ["xí.guàn","习惯","abitudine; abituarsi"],
+    ["jié.rì","节日","festa, ricorrenza"],
+    ["chūn.jié","春节","Capodanno Cinese (Festa di Primavera)"],
+    ["zhōng.qiū.jié","中秋节","Festa di Metà Autunno"],
+    ["shèng.dàn.jié","圣诞节","Natale"],
+    ["hóng.bāo","红包","busta rossa (regalo in denaro)"],
+    ["gōng.fu","功夫","kung fu; abilità"],
+    ["tài.jí.quán","太极拳","Tai Chi"],
+    ["shū.fǎ","书法","calligrafia"],
+    ["chá.dào","茶道","cerimonia del tè"],
+    ["jīng.jù","京剧","Opera di Pechino"],
+    ["xióng.māo","熊猫","panda"],
+    ["lóng","龙","drago"],
+    ["cháng.chéng","长城","Grande Muraglia"],
+    ["gù.gōng","故宫","Città Proibita"],
+    ["zì.rán","自然","natura; naturale"],
+    ["huán.jìng","环境","ambiente"],
+    ["kōng.qì","空气","aria"],
+    ["wū.rǎn","污染","inquinamento"],
+    ["shè.huì","社会","società"],
+    ["jīng.jì","经济","economia"],
+    ["kē.jì","科技","scienza e tecnologia"],
+    ["yì.shù","艺术","arte"],
+    ["wén.xué","文学","letteratura"],
+    ["zōng.jiào","宗教","religione"],
+    ["zhèng.zhì","政治","politica"],
+    ["fǎ.lǜ","法律","legge"],
+    ["hé.píng","和平","pace"],
+    ["zì.yóu","自由","libertà"],
+    ["xìng.fú","幸福","felicità profonda, benessere"],
+    ["mèng.xiǎng","梦想","sogno, aspirazione"],
+    ["wèi.lái","未来","futuro"],
+    ["shì.jì","世纪","secolo"],
+    ["biàn.huà","变化","cambiamento, cambiare"]
+  ]
+});

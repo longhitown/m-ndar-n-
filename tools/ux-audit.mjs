@@ -15,7 +15,7 @@
      9. un profilo di prova perde o cambia chiavi in localStorage / IndexedDB, oppure #selftest non è tutto verde.
    Stampa anche la tabella delle misure (4-bis.0), per confrontare prima e dopo.
 
-   Uso:  node tools/ux-audit.mjs [file.html ...]      (senza argomenti: index.html)
+   Uso:  node tools/ux-audit.mjs [file.html ...]      (senza argomenti: dist/index.html; prima node tools/build.mjs)
          con più file stampa le misure di ciascuno; il codice d'uscita dipende dall'ultimo.  --quick: solo 360×740 e tema chiaro. */
 import { createRequire } from "module";
 import path from "path";
@@ -28,7 +28,7 @@ try { ({ chromium } = require("playwright")); } catch (e) { console.error("Serve
 const args = process.argv.slice(2);
 const quick = args.includes("--quick");
 const files = args.filter((a) => !a.startsWith("--")).map((f) => path.resolve(f));
-if (!files.length) files.push(path.resolve("index.html"));
+if (!files.length) files.push(path.resolve("dist/index.html"));
 const VIEWS = quick ? [[360, 740]] : [[320, 568], [360, 740], [390, 844]];
 const THEMES = quick ? ["light"] : ["light", "sepia", "dark"];
 

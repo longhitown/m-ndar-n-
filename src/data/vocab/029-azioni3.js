@@ -1,0 +1,40 @@
+/* 29. Azioni fisiche e vita in casa · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "azioni3",
+  "title": "29. Azioni fisiche e vita in casa",
+  "words": [
+    ["dǎ.sǎo","打扫","pulire, spazzare"],
+    ["shōu.shi","收拾","rassettare, preparare i bagagli"],
+    ["xǐ yī.fu","洗衣服","fare il bucato"],
+    ["guà","挂","appendere"],
+    ["diào","掉","cadere, venire giù"],
+    ["pò","破","rotto, strappato"],
+    ["lā","拉","tirare"],
+    ["tuī","推","spingere"],
+    ["bān","搬","spostare (mobili); traslocare"],
+    ["bān.jiā","搬家","traslocare"],
+    ["tái","抬","sollevare"],
+    ["rēng","扔","buttare via, lanciare"],
+    ["jiǎn","捡","raccogliere da terra"],
+    ["mō","摸","toccare, accarezzare"],
+    ["wén","闻","annusare, sentire un odore"],
+    ["cháng","尝","assaggiare"],
+    ["kān","看","sorvegliare, badare a","看孩子 = badare al bambino"],
+    ["jiè","借","prendere o dare in prestito"],
+    ["huán","还","restituire","还书 = restituire un libro"],
+    ["dài","戴","indossare (occhiali, cappello, orologio)"],
+    ["tuō","脱","togliersi (i vestiti o le scarpe)"],
+    ["huàn yī.fu","换衣服","cambiarsi d'abito"],
+    ["shuā.yá","刷牙","lavarsi i denti"],
+    ["xǐ.liǎn","洗脸","lavarsi la faccia"],
+    ["shū.tóu","梳头","pettinarsi"],
+    ["guā hú.zi","刮胡子","farsi la barba"],
+    ["huà.zhuāng","化妆","truccarsi"],
+    ["sàn.bù","散步","fare una passeggiata"],
+    ["pǎo.bù","跑步","fare jogging, correre"],
+    ["pá.shān","爬山","scalare una montagna, fare trekking"],
+    ["jiàn.shēn","健身","fare palestra, fitness"],
+    ["bǐ.sài","比赛","partita, gara"]
+  ]
+});

@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+/* màndarínō · build. Node puro, nessuna dipendenza, nessun «npm install».
+
+   src/  (la versione su cui si lavora, divisa in moduli: si apre anche così com'è, da file://)
+     → dist/index.html   un file unico con stili, script e dati dentro: funziona offline da file://, su https e nell'APK
+     → dist/sw.js        il service worker, con APP_VERSION = impronta di index.html (ogni modifica = avviso «Aggiorna»)
+     → dist/manifest.json, _headers, icone
+
+   Prima di scrivere controlla i dati (chiavi uniche, sillabe = caratteri, niente HTML) e che ogni file di
+   src/data/vocab, src/data/dialogs e src/audio/tracks sia elencato in src/index.html: se qualcosa non va, si ferma.
+
+   Uso:  node tools/build.mjs            costruisce dist/
+         node tools/build.mjs --check    costruisce in memoria e fallisce se dist/ non è aggiornato (per la CI) */
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import { fileURLToPath } from "url";
+import { assets, load, check } from "./lib/data.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const SRC = path.join(ROOT, "src"), OUT = path.join(ROOT, "dist");
+const onlyCheck = process.argv.includes("--check");
+const fail = (m) => { console.error("✗ " + m); process.exit(1); };
+
+/* 1. dati */
+const D = load(SRC), c = check(D);
+if (c.err.length) fail("dati non validi:\n  " + c.err.slice(0, 30).join("\n  ") + (c.err.length > 30 ? "\n  … e altri " + (c.err.length - 30) : ""));
+
+/* 2. ogni file è elencato */
+const { html, scripts, styles } = assets(SRC);
+const listed = new Set(scripts.map((s) => s.src));
+for (const dir of ["data/vocab", "data/dialogs", "audio/tracks"]) {
+  for (const f of fs.readdirSync(path.join(SRC, dir)).filter((x) => x.endsWith(".js"))) {
+    if (!listed.has(dir + "/" + f)) fail(`src/${dir}/${f} non è elencato in src/index.html (aggiungi <script src="${dir}/${f}"></script>)`);
+  }
+}
+for (const s of scripts) if (!fs.existsSync(path.join(SRC, s.src))) fail("src/index.html elenca un file che non c'è: " + s.src);
+
+/* 3. un file unico */
+let out = html;
+const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, "") + " ---- */\n" + fs.readFileSync(path.join(SRC, s.href), "utf8").trimEnd()).join("\n\n");
+styles.forEach((s, i) => { out = out.replace(s.tag + "\n", i ? "" : "<style>\n" + css + "\n</style>\n"); });
+out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
+for (const s of scripts) {
+  const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
+  out = out.replace(s.tag, "<script" + (s.id ? ' id="' + s.id + '"' : "") + ">\n/* ---- " + s.src + " ---- */\n" + code + "\n</script>");
+}
+out = out.replace(/<!-- =+\n[\s\S]*?=+ -->\n/, "<!-- màndarínō: file generato da tools/build.mjs a partire da src/. Per modificare l'app lavora in src/. -->\n");
+if (/<script\b[^>]*\bsrc=|<link\b[^>]*rel="stylesheet"/.test(out)) fail("è rimasto un riferimento esterno in dist/index.html");
+
+const version = crypto.createHash("sha256").update(out).digest("hex").slice(0, 12);
+const sw = fs.readFileSync(path.join(SRC, "pwa/sw.js"), "utf8");
+if (!sw.includes("'__APP_VERSION__'")) fail("src/pwa/sw.js deve contenere APP_VERSION = '__APP_VERSION__'");
+const files = { "index.html": out, "sw.js": sw.replace("'__APP_VERSION__'", "'" + version + "'") };
+for (const f of fs.readdirSync(path.join(SRC, "pwa"))) if (!/\.js$/.test(f)) files[f] = fs.readFileSync(path.join(SRC, "pwa", f));
+
+if (onlyCheck) {
+  const stale = Object.keys(files).filter((f) => { const p = path.join(OUT, f); return !fs.existsSync(p) || !Buffer.from(files[f]).equals(fs.readFileSync(p)); });
+  if (stale.length) fail("dist/ non è aggiornato (" + stale.join(", ") + "): lancia «node tools/build.mjs»");
+  console.log("✓ dist/ è aggiornato · versione " + version);
+  process.exit(0);
+}
+fs.rmSync(OUT, { recursive: true, force: true });
+fs.mkdirSync(OUT, { recursive: true });
+for (const [f, data] of Object.entries(files)) fs.writeFileSync(path.join(OUT, f), data);
+console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);

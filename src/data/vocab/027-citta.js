@@ -1,0 +1,40 @@
+/* 27. Indicazioni stradali e vita in città · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "citta",
+  "title": "27. Indicazioni stradali e vita in città",
+  "words": [
+    ["wèn.lù","问路","chiedere indicazioni"],
+    ["wǎng qián zǒu","往前走","andare dritto"],
+    ["yì.zhí zǒu","一直走","andare sempre dritto"],
+    ["wǎng zuǒ guǎi","往左拐","girare a sinistra"],
+    ["wǎng yòu guǎi","往右拐","girare a destra"],
+    ["guò mǎ.lù","过马路","attraversare la strada"],
+    ["hóng.lǜ.dēng","红绿灯","semaforo"],
+    ["lù.kǒu","路口","incrocio"],
+    ["guǎi.jiǎo","拐角","angolo della strada"],
+    ["qiáo","桥","ponte"],
+    ["guǎng.chǎng","广场","piazza"],
+    ["shì.zhōng.xīn","市中心","centro città"],
+    ["jiāo.qū","郊区","periferia"],
+    ["dì.zhǐ","地址","indirizzo"],
+    ["hào.mǎ","号码","numero (civico o telefonico)"],
+    ["gōng.lǐ","公里","chilometro"],
+    ["mǐ","米","metro"],
+    ["dǔ.chē","堵车","traffico bloccato, ingorgo"],
+    ["tíng.chē","停车","parcheggiare"],
+    ["shàng.chē","上车","salire sul mezzo"],
+    ["xià.chē","下车","scendere dal mezzo"],
+    ["huàn.chéng","换乘","cambiare linea (metro/bus)"],
+    ["zhōng.diǎn.zhàn","终点站","capolinea"],
+    ["bān.mǎ.xiàn","斑马线","strisce pedonali"],
+    ["rén.xíng.dào","人行道","marciapiede"],
+    ["yóu.jú","邮局","ufficio postale"],
+    ["dà.shǐ.guǎn","大使馆","ambasciata"],
+    ["jiào.táng","教堂","chiesa"],
+    ["sì.miào","寺庙","tempio"],
+    ["hǎi.tān","海滩","spiaggia"],
+    ["dǎo","岛","isola","西西里岛 = l'isola della Sicilia"],
+    ["huǒ.shān","火山","vulcano"]
+  ]
+});

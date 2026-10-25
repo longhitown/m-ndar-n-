@@ -1,0 +1,34 @@
+/* màndarínō · avvio finale: gira per ultimo, quando tutti i moduli esistono.
+   Copia pulita del file (CP.snapshot), avviso se la pagina sta in un riquadro, primo disegno di Frasi e Percorso. */
+/* ===== V4e: avvio finale, avviso per l'iframe, copia pulita del file ===== */
+(function () {
+  var CP = window.CP;
+  /* copia scaricabile: la pagina com'era prima che il codice la riempisse */
+  var P = window.__PRISTINE;
+  if (P) {
+    /* calcolata al momento dell'uso: i moduli successivi (V5/V6) non sono ancora nel DOM quando parte questo script */
+    Object.defineProperty(CP, "snapshot", { configurable: true, get: function () {
+      var scripts = [], seen = false;
+      Array.prototype.forEach.call(document.body.querySelectorAll("script"), function (s) {
+        if (s.id === "data") seen = true;
+        if (seen && !s.src) scripts.push(s.outerHTML);
+      });
+      return '<html lang="' + P.lang + '"><head>' + P.head.replace(/<script(?![^>]*id="theme-boot")[\s\S]*?<\/script>/gi, "") + "</head><body>" + P.body + scripts.join("\n") + "</body></html>";
+    } });
+  }
+  /* avviso in cima, solo se la pagina sta dentro un riquadro */
+  var n = document.getElementById("frame-notice");
+  if (n && CP.inFrame) {
+    var dismissed = false; try { dismissed = sessionStorage.getItem("cp-nf") === "1"; } catch (e) {}
+    if (!dismissed) {
+      n.innerHTML = '<p><b>Microfono e audio funzionano meglio fuori da questo riquadro.</b> Scarica il file e aprilo con il browser: è una pagina a sé, funziona anche senza internet.</p><div style="display:flex;gap:8px;flex-wrap:wrap">' + CP.frameBtn() + '<button type="button" class="btn-s" data-nf-hide>Più tardi</button></div>';
+      n.hidden = false;
+      n.addEventListener("click", function (e) {
+        if (e.target.closest && e.target.closest("[data-nf-hide]")) { n.hidden = true; try { sessionStorage.setItem("cp-nf", "1"); } catch (er) {} }
+      });
+    }
+  }
+  if (CP.build && CP.build.render) CP.build.render();
+  var vp = document.getElementById("view-path");
+  if (vp && !vp.hidden && CP.onPath) CP.onPath();
+})();

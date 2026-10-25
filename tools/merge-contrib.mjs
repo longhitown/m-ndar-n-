@@ -3,8 +3,8 @@
 
    Legge una o più patch «mandarino-contrib/1» (i file .json scaricati dall'app, o il testo arrivato via WeChat / email /
    Modulo Google salvato in un file), rifà la validazione dell'app, segnala doppioni e conflitti e stampa un riepilogo
-   leggibile. Solo con --apply modifica i dati (le righe `const SECTIONS=`, `const PHRASES=`, `const DIALOGS=` di index.html,
-   che oggi è la fonte dei dati; quando i dati passeranno in data/*.json basterà cambiare load()/store()).
+   leggibile. Solo con --apply modifica i dati in src/data/ (il file della sezione, phrases.js, il file del dialogo),
+   con lo stesso formato di tools/lib/data.mjs: un diff mostra solo le righe cambiate. Poi: node tools/build.mjs.
 
    Regole (le stesse di CP.contrib.validate nell'app):
      - fix cambia py, it o note di una parola (target = chiave), py o it di una frase (phr:<gruppo>:<riga>) o di una battuta
@@ -13,29 +13,33 @@
      - flag non cambia niente: finisce nel riepilogo, da guardare a mano.
      - pinyin: sillabe = caratteri, segni di tono presenti; niente < o >; al massimo 200 caratteri per campo.
 
-   Uso:  node tools/merge-contrib.mjs patch1.json [patch2.json …] [--html index.html] [--out riepilogo.md] [--apply]
+   Uso:  node tools/merge-contrib.mjs patch1.json [patch2.json …] [--src src] [--out riepilogo.md] [--apply]
    Codice d'uscita: 0 se tutto è valido, 1 se ci sono voci scartate o conflitti (con --apply quelle voci restano fuori). */
 import fs from "fs";
 import path from "path";
+import { assets, load as loadData, sectionFile, dialogFile, phrasesFile } from "./lib/data.mjs";
 
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : def; };
 const apply = args.includes("--apply");
-const htmlPath = path.resolve(opt("--html", "index.html"));
+const srcDir = path.resolve(opt("--src", "src"));
 const outPath = opt("--out", null);
-const files = args.filter((a, i) => !a.startsWith("--") && !["--html", "--out"].includes(args[i - 1]));
-if (!files.length) { console.error("Uso: node tools/merge-contrib.mjs patch.json [...] [--html index.html] [--out riepilogo.md] [--apply]"); process.exit(2); }
+const files = args.filter((a, i) => !a.startsWith("--") && !["--src", "--out"].includes(args[i - 1]));
+if (!files.length) { console.error("Uso: node tools/merge-contrib.mjs patch.json [...] [--src src] [--out riepilogo.md] [--apply]"); process.exit(2); }
 
-/* ---------- dati ---------- */
-const html = fs.readFileSync(htmlPath, "utf8");
-const lines = html.split("\n");
-function load(name) {
-  const i = lines.findIndex((l) => l.startsWith("const " + name + "="));
-  if (i < 0) throw new Error("Non trovo «const " + name + "=» in " + htmlPath);
-  return { i, data: JSON.parse(lines[i].slice(("const " + name + "=").length).replace(/;\s*$/, "")) };
+/* ---------- dati (da src/data, nell'ordine di src/index.html) ---------- */
+const DATA = loadData(srcDir), list = assets(srcDir).scripts.map((x) => x.src);
+const vocabFiles = list.filter((f) => f.startsWith("data/vocab/")), dialogFiles = list.filter((f) => f.startsWith("data/dialogs/") && !f.includes("/_"));
+const SEC = { data: DATA.SECTIONS }, PHR = { data: DATA.PHRASES }, DLG = { data: DATA.DIALOGS };
+const touched = new Set();
+function store() {
+  for (const t of touched) {
+    const [kind, i] = t.split(":"), n = +i;
+    if (kind === "sec") fs.writeFileSync(path.join(srcDir, vocabFiles[n]), sectionFile(SEC.data[n], n + 1));
+    else if (kind === "dlg") fs.writeFileSync(path.join(srcDir, dialogFiles[n]), dialogFile(DLG.data[n]));
+    else if (kind === "phr") fs.writeFileSync(path.join(srcDir, "data/phrases.js"), phrasesFile(PHR.data));
+  }
 }
-function store(name, ref) { lines[ref.i] = "const " + name + "=" + JSON.stringify(ref.data) + ";"; }
-const SEC = load("SECTIONS"), PHR = load("PHRASES"), DLG = load("DIALOGS");
 
 /* le stesse chiavi dell'app: il carattere, e per i doppioni carattere#pinyin */
 const WORDS = {};
@@ -135,13 +139,12 @@ if (apply && ok.length) {
   for (const { it } of ok) {
     if (it.op === "fix") {
       const w = WORDS[it.target];
-      if (w) { const idx = { py: 0, it: 2, note: 3 }[it.field]; if (idx === 3 && w.w.length < 4) w.w.push(""); w.w[idx] = it.new; if (idx === 3 && !it.new) w.w.length = 3; n++; }
-      else { const ln = lineOf(it.target); ln.row[ln[it.field]] = it.new; n++; }
-    } else if (it.op === "add") { SEC.data.find((s) => s.id === it.section).words.push([it.py, it.hz, it.it]); n++; }
+      if (w) { const idx = { py: 0, it: 2, note: 3 }[it.field]; if (idx === 3 && w.w.length < 4) w.w.push(""); w.w[idx] = it.new; if (idx === 3 && !it.new) w.w.length = 3; touched.add("sec:" + SEC.data.findIndex((s) => s.id === w.sec)); n++; }
+      else { const ln = lineOf(it.target); ln.row[ln[it.field]] = it.new; const m = /^(phr|dlg):([^:]+)/.exec(it.target); touched.add(m[1] === "phr" ? "phr:0" : "dlg:" + DLG.data.findIndex((d) => d.id === m[2])); n++; }
+    } else if (it.op === "add") { const si = SEC.data.findIndex((s) => s.id === it.section); SEC.data[si].words.push([it.py, it.hz, it.it]); touched.add("sec:" + si); n++; }
   }
-  store("SECTIONS", SEC); store("PHRASES", PHR); store("DIALOGS", DLG);
-  fs.writeFileSync(htmlPath, lines.join("\n"));
-  md += `\n**Applicati ${n} contributi a ${path.basename(htmlPath)}.** Ricorda: le parole aggiunte cambiano il conteggio atteso in #selftest (oggi 3500).\n`;
+  store();
+  md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso in #selftest (oggi 3500).\n`;
 } else if (apply) md += "\nNiente da applicare.\n";
 else if (ok.length) md += "\nProva a secco: rilancia con --apply per scrivere le modifiche.\n";
 

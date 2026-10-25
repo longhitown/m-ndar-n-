@@ -1,0 +1,40 @@
+/* 22. Fare acquisti, prezzi e pagamenti · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "acquisti",
+  "title": "22. Fare acquisti, prezzi e pagamenti",
+  "words": [
+    ["guàng.jiē","逛街","fare shopping, passeggiare per negozi"],
+    ["jià.gé","价格","prezzo"],
+    ["dǎ.zhé","打折","fare lo sconto"],
+    ["miǎn.fèi","免费","gratis, gratuito"],
+    ["shōu.jù","收据","ricevuta, scontrino"],
+    ["fā.piào","发票","fattura fiscale"],
+    ["zhǎo.qián","找钱","dare il resto"],
+    ["shuā.kǎ","刷卡","pagare con la carta"],
+    ["sǎo.mǎ","扫码","scansionare il codice QR (per pagare)"],
+    ["zhī.fù.bǎo","支付宝","Alipay"],
+    ["ōu.yuán","欧元","Euro (€)"],
+    ["rén.mín.bì","人民币","Renminbi (valuta cinese)"],
+    ["huàn.qián","换钱","cambiare i soldi"],
+    ["huì.lǜ","汇率","tasso di cambio"],
+    ["dà.xiǎo","大小","taglia, misura"],
+    ["hào","号","numero; taglia"],
+    ["shì.chuān","试穿","provare un vestito"],
+    ["hé.shì","合适","adatto, della misura giusta"],
+    ["zhì.liàng","质量","qualità"],
+    ["pái.zi","牌子","marca, brand"],
+    ["dài.zi","袋子","sacchetto, busta"],
+    ["tuì.huò","退货","restituire un acquisto (reso)"],
+    ["huàn","换","cambiare, sostituire"],
+    ["wǎng.gòu","网购","comprare online"],
+    ["kuài.dì","快递","corriere espresso, pacco"],
+    ["wài.mài","外卖","cibo a domicilio (delivery)"],
+    ["gòu.wù.chē","购物车","carrello della spesa"],
+    ["pái.duì","排队","fare la fila, mettersi in coda"],
+    ["cù.xiāo","促销","promozione, offerta"],
+    ["zhè.ge duō.shao qián","这个多少钱","quanto costa questo?"],
+    ["tài guì le","太贵了","è troppo caro!"],
+    ["pián.yi yì.diǎn","便宜一点","un po' più economico (sconto)"]
+  ]
+});
