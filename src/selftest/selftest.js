@@ -35,6 +35,17 @@
       add("Laboratorio: numeri composti (二十 = 20, 三十五 = 35, 十二 = 12…)", !zbad.length, zbad.length ? zbad.map(function (x) { return x[0].join("") + "→" + zn(x[0]); }).join(", ") : zc.length + " casi");
     } catch (e) { add("Laboratorio: numeri composti", false, String(e)); }
     try {
+      /* le frasi verificate devono uscire identiche dalle regole (come in tools/grammar.mjs, ma col vocabolario della pagina) */
+      var gbad = [], gn = 0;
+      VERIFIED.forEach(function (v) {
+        if (v[2] === "memoria") return; gn++;
+        var tk = CP.segment(v[0]).filter(function (x) { return x.w; }).map(function (x) { return x.w.key; }), r = CP.lab.translate(tk, ".", { rulesOnly: true });
+        if (!r.sure || r.it !== v[1]) gbad.push(v[0] + " → " + r.it);
+      });
+      var nope = CP.lab.translate(CP.segment("我学汉字书").filter(function (x) { return x.w; }).map(function (x) { return x.w.key; }), ".", { rulesOnly: true });
+      add("Grammatica: frasi verificate tradotte dalle regole; se non è sicuro non inventa", !gbad.length && !nope.sure && nope.it === "Non so ancora tradurre questa frase.", gbad.length ? gbad.slice(0, 3).join(" · ") : gn + " frasi · 我学汉字书 → «" + nope.it + "»");
+    } catch (e) { add("Grammatica: frasi verificate", false, String(e)); }
+    try {
       var sbad = [], scount = 0;
       SLOTS.forEach(function (m) {
         var idx = m.cols.map(function () { return 0; });

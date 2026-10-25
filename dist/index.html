@@ -823,6 +823,11 @@ input[type="range"]{accent-color:var(--accent)}
 .lab-view{margin:0 0 10px}
 .fluid{margin:8px 0 4px}
 .fl-it{font-size:1.25rem;font-weight:600;line-height:1.35;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));border:1px solid var(--line);border-bottom-width:3px}
+.fluid .tag{display:inline-block;margin-top:6px}
+.ok-tag{color:var(--accent);font-weight:600}
+.fluid.unsure .fl-it{font-size:1.05rem;font-weight:600;background:var(--surface);border-style:dashed;border-bottom-width:1px;color:var(--muted)}
+.fl-words{margin-top:8px;line-height:1.7}
+.fl-words .flw{white-space:nowrap}
 .fixbox{margin:12px 0;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--warn) 55%,var(--line));background:color-mix(in srgb,var(--warn) 10%,var(--surface));display:grid;gap:8px}
 .fixbox .han{font-size:1.15rem}
 .fixbox .fx-ok{color:var(--ink)}
@@ -7659,6 +7664,586 @@ var PATH = {
   cultura: { o: "Parlare di feste, tradizioni e abitudini, tue e dei cinesi.", g: 17 }
 };
 </script>
+<script>
+/* ---- data/grammar.js ---- */
+/* Grammatica del laboratorio: le schede che il traduttore usa per passare dal cinese a un italiano corretto.
+   Il traduttore traduce SOLO le parole che hanno una scheda qui: per le altre dice «Non so ancora tradurre
+   questa frase» e mostra la frase parola per parola. Per insegnargli una parola nuova basta aggiungere una riga
+   nella tabella giusta; poi «node tools/grammar.mjs» prova tutte le frasi verificate (src/data/verified.js).
+   Le chiavi sono i caratteri (o la chiave del vocabolario, es. "花#huā", quando due parole hanno gli stessi caratteri). */
+var GRAM = {
+  /* pronomi: [persona 1-3, numero "s"|"p", genere "m"|"f"|"x" (non si sa), possessivo] */
+  pron: {
+    "我": [1, "s", "x", "mio"], "你": [2, "s", "x", "tuo"], "您": [3, "s", "x", "Suo"], "他": [3, "s", "m", "suo"], "她": [3, "s", "f", "suo"],
+    "我们": [1, "p", "x", "nostro"], "咱们": [1, "p", "x", "nostro"], "你们": [2, "p", "x", "vostro"], "他们": [3, "p", "m", "loro"]
+  },
+
+  /* nomi: [singolare, genere, plurale, segni, femminile singolare, femminile plurale]
+     segni: m = massa (acqua, tè: «dell'acqua»)      p = di solito al plurale quando è da solo (vestiti, soldi)
+            l = lingua («parlo cinese»)            k = parente: col possessivo, al singolare, senza articolo («mio padre»)
+            r = relazione: si dice 我朋友 anche senza 的   u = «un mio amico» (uno dei tanti)
+            j = mestiere o ruolo: dopo «essere» senza articolo («sono studente»)     t = mezzo di trasporto
+            z = mai il partitivo («hai tempo?», non «hai del tempo?»)
+            1 = di solito uno solo (ragazzo, moglie): «ha un ragazzo?», non «ha ragazzi?»
+            N = il genere è solo grammaticale («questa persona è un mio amico») */
+  nouns: {
+    "人": ["persona", "f", "persone", "N"], "男人": ["uomo", "m", "uomini"], "女人": ["donna", "f", "donne"],
+    "孩子": ["bambino", "m", "bambini", "", "bambina", "bambine"], "男孩": ["ragazzo", "m", "ragazzi"], "女孩": ["ragazza", "f", "ragazze"],
+    "朋友": ["amico", "m", "amici", "ru", "amica", "amiche"], "男朋友": ["ragazzo", "m", "ragazzi", "r1"], "女朋友": ["ragazza", "f", "ragazze", "r1"],
+    "老人": ["anziano", "m", "anziani", "", "anziana", "anziane"], "客人": ["ospite", "m", "ospiti", "N"], "邻居": ["vicino di casa", "m", "vicini di casa", "ru", "vicina di casa", "vicine di casa"],
+    "家人": ["familiare", "m", "familiari", "p"], "父母": ["genitori", "m", "genitori", "pr"],
+    "爸爸": ["papà", "m", "papà", "r"], "妈妈": ["mamma", "f", "mamme", "r"],
+    "哥哥": ["fratello maggiore", "m", "fratelli maggiori", "k"], "弟弟": ["fratello minore", "m", "fratelli minori", "k"],
+    "姐姐": ["sorella maggiore", "f", "sorelle maggiori", "k"], "妹妹": ["sorella minore", "f", "sorelle minori", "k"],
+    "丈夫": ["marito", "m", "mariti", "k1"], "妻子": ["moglie", "f", "mogli", "k1"], "儿子": ["figlio", "m", "figli", "k"], "女儿": ["figlia", "f", "figlie", "k"],
+    "爷爷": ["nonno", "m", "nonni", "k"], "奶奶": ["nonna", "f", "nonne", "k"], "外公": ["nonno", "m", "nonni", "k"], "外婆": ["nonna", "f", "nonne", "k"],
+    "叔叔": ["zio", "m", "zii", "k"], "阿姨": ["zia", "f", "zie", "k"],
+    "老师": ["insegnante", "m", "insegnanti", "rj", "insegnante", "insegnanti"], "学生": ["studente", "m", "studenti", "j", "studentessa", "studentesse"],
+    "同学": ["compagno di classe", "m", "compagni di classe", "ru", "compagna di classe", "compagne di classe"],
+    "同事": ["collega", "m", "colleghi", "ru", "collega", "colleghe"], "老板": ["capo", "m", "capi", "r"],
+    "医生": ["medico", "m", "medici", "j", "medico", "medici"], "护士": ["infermiere", "m", "infermieri", "j", "infermiera", "infermiere"],
+    "司机": ["autista", "m", "autisti", "j", "autista", "autiste"], "警察": ["poliziotto", "m", "poliziotti", "j", "poliziotta", "poliziotte"],
+    "厨师": ["cuoco", "m", "cuochi", "j", "cuoca", "cuoche"], "服务员": ["cameriere", "m", "camerieri", "j", "cameriera", "cameriere"],
+    "水": ["acqua", "f", "acque", "m"], "热水": ["acqua calda", "f", "acque calde", "m"], "茶": ["tè", "m", "tè", "m"], "绿茶": ["tè verde", "m", "tè verdi", "m"],
+    "咖啡": ["caffè", "m", "caffè", "m"], "牛奶": ["latte", "m", "latte", "m"], "果汁": ["succo di frutta", "m", "succhi di frutta", "m"],
+    "啤酒": ["birra", "f", "birre", "m"], "葡萄酒": ["vino", "m", "vini", "m"],
+    "米饭": ["riso", "m", "riso", "m"], "早饭": ["colazione", "f", "colazioni"], "午饭": ["pranzo", "m", "pranzi"], "晚饭": ["cena", "f", "cene"],
+    "面条": ["noodles", "m", "noodles", "mp"], "饺子": ["raviolo", "m", "ravioli", "p"], "包子": ["panino al vapore", "m", "panini al vapore"],
+    "面包": ["pane", "m", "pani", "m"], "鸡蛋": ["uovo", "f", "uova"], "肉": ["carne", "f", "carni", "m"], "牛肉": ["manzo", "m", "manzo", "m"],
+    "猪肉": ["maiale", "m", "maiale", "m"], "鸡肉": ["pollo", "m", "pollo", "m"], "鱼": ["pesce", "m", "pesci", "m"], "海鲜": ["frutti di mare", "m", "frutti di mare", "mp"],
+    "蔬菜": ["verdura", "f", "verdure", "m"], "豆腐": ["tofu", "m", "tofu", "m"], "汤": ["zuppa", "f", "zuppe"], "小吃": ["spuntino", "m", "spuntini"], "水果": ["frutta", "f", "frutta", "m"],
+    "苹果": ["mela", "f", "mele"], "香蕉": ["banana", "f", "banane"], "西瓜": ["anguria", "f", "angurie"], "冰淇淋": ["gelato", "m", "gelati"],
+    "甜点": ["dolce", "m", "dolci"], "糖": ["zucchero", "m", "zuccheri", "m"], "盐": ["sale", "m", "sali", "m"], "菜单": ["menù", "m", "menù"],
+    "披萨": ["pizza", "f", "pizze"], "意大利面": ["pasta", "f", "paste", "m"], "奶酪": ["formaggio", "m", "formaggi", "m"], "橙子": ["arancia", "f", "arance"],
+    "葡萄": ["uva", "f", "uve", "m"], "草莓": ["fragola", "f", "fragole"], "土豆": ["patata", "f", "patate"], "西红柿": ["pomodoro", "m", "pomodori"],
+    "书": ["libro", "m", "libri"], "手机": ["cellulare", "m", "cellulari"], "电话": ["telefono", "m", "telefoni"], "电脑": ["computer", "m", "computer"],
+    "电视": ["televisione", "f", "televisioni"], "电影": ["film", "m", "film"], "音乐": ["musica", "f", "musiche", "m"], "钱": ["soldi", "m", "soldi", "mp"],
+    "票": ["biglietto", "m", "biglietti"], "护照": ["passaporto", "m", "passaporti"], "行李": ["bagaglio", "m", "bagagli"], "地图": ["mappa", "f", "mappe"],
+    "衣服": ["vestito", "m", "vestiti", "p"], "衬衫": ["camicia", "f", "camicie"], "裤子": ["pantaloni", "m", "pantaloni", "p"], "鞋子": ["scarpa", "f", "scarpe", "p"],
+    "帽子": ["cappello", "m", "cappelli"], "手表": ["orologio", "m", "orologi"], "礼物": ["regalo", "m", "regali"], "东西": ["cosa", "f", "cose"],
+    "问题": ["domanda", "f", "domande"], "房子": ["casa", "f", "case"], "房间": ["camera", "f", "camere"], "门": ["porta", "f", "porte"],
+    "窗户": ["finestra", "f", "finestre"], "桌子": ["tavolo", "m", "tavoli"], "椅子": ["sedia", "f", "sedie"], "床": ["letto", "m", "letti"],
+    "照片": ["foto", "f", "foto"], "笔": ["penna", "f", "penne"], "包": ["borsa", "f", "borse"], "钥匙": ["chiave", "f", "chiavi"], "雨伞": ["ombrello", "m", "ombrelli"],
+    "狗": ["cane", "m", "cani"], "猫": ["gatto", "m", "gatti"], "鸟": ["uccello", "m", "uccelli"], "马": ["cavallo", "m", "cavalli"], "熊猫": ["panda", "m", "panda"],
+    "花#huā": ["fiore", "m", "fiori"], "树": ["albero", "m", "alberi"],
+    "中文": ["cinese", "m", "cinese", "l"], "汉语": ["cinese", "m", "cinese", "l"], "英语": ["inglese", "m", "inglese", "l"], "意大利语": ["italiano", "m", "italiano", "l"],
+    "汉字": ["carattere cinese", "m", "caratteri cinesi"], "作业": ["compiti", "m", "compiti", "p"], "考试": ["esame", "m", "esami"], "课": ["lezione", "f", "lezioni"],
+    "故事": ["storia", "f", "storie"], "新闻": ["notizie", "f", "notizie", "p"], "游戏": ["gioco", "m", "giochi"], "工作": ["lavoro", "m", "lavori"],
+    "名字": ["nome", "m", "nomi"], "天气": ["tempo", "m", "tempo"], "生日": ["compleanno", "m", "compleanni"], "时间": ["tempo", "m", "tempo", "mz"],
+    "足球": ["calcio", "m", "calcio"], "药": ["medicina", "f", "medicine"],
+    "车": ["macchina", "f", "macchine", "t"], "汽车": ["automobile", "f", "automobili", "t"], "出租车": ["taxi", "m", "taxi", "t"],
+    "公共汽车": ["autobus", "m", "autobus", "t"], "地铁": ["metropolitana", "f", "metropolitane", "t"], "火车": ["treno", "m", "treni", "t"],
+    "高铁": ["treno ad alta velocità", "m", "treni ad alta velocità", "t"], "飞机": ["aereo", "m", "aerei", "t"], "船": ["nave", "f", "navi", "t"],
+    "自行车": ["bicicletta", "f", "biciclette", "t"],
+    /* luoghi che si usano anche come nomi (这里有一个超市, 超市很大): «in…» e «a…» stanno nella tabella dei luoghi */
+    "学校": ["scuola", "f", "scuole"], "大学": ["università", "f", "università"], "医院": ["ospedale", "m", "ospedali"], "药店": ["farmacia", "f", "farmacie"],
+    "银行": ["banca", "f", "banche"], "商店": ["negozio", "m", "negozi"], "超市": ["supermercato", "m", "supermercati"], "市场": ["mercato", "m", "mercati"],
+    "饭店": ["ristorante", "m", "ristoranti"], "餐厅": ["ristorante", "m", "ristoranti"], "咖啡馆": ["bar", "m", "bar"], "酒店": ["hotel", "m", "hotel"],
+    "公园": ["parco", "m", "parchi"], "图书馆": ["biblioteca", "f", "biblioteche"], "博物馆": ["museo", "m", "musei"], "电影院": ["cinema", "m", "cinema"],
+    "厕所": ["bagno", "m", "bagni"], "洗手间": ["bagno", "m", "bagni"], "车站": ["stazione", "f", "stazioni"], "火车站": ["stazione", "f", "stazioni"],
+    "机场": ["aeroporto", "m", "aeroporti"], "城市": ["città", "f", "città"], "厨房": ["cucina", "f", "cucine"], "海滩": ["spiaggia", "f", "spiagge"],
+    "教堂": ["chiesa", "f", "chiese"], "邮局": ["ufficio postale", "m", "uffici postali"], "广场": ["piazza", "f", "piazze"]
+  },
+
+  /* nomi che cambiano significato dopo 有 (avere): 我有两个孩子 = ho due figli */
+  haveNouns: { "孩子": ["figlio", "m", "figli", "", "figlia", "figlie"] },
+
+  /* luoghi: [come nome (con l'articolo), «stato o moto a luogo», «moto da luogo» se diverso dalla regola] */
+  places: {
+    "家": ["casa", "a casa", "da casa"], "学校": ["la scuola", "a scuola"], "大学": ["l'università", "all'università"], "公司": ["l'ufficio", "in ufficio"],
+    "医院": ["l'ospedale", "in ospedale"], "药店": ["la farmacia", "in farmacia"], "银行": ["la banca", "in banca"], "警察局": ["la stazione di polizia", "alla stazione di polizia"],
+    "商店": ["il negozio", "in negozio"], "超市": ["il supermercato", "al supermercato"], "市场": ["il mercato", "al mercato"], "饭店": ["il ristorante", "al ristorante"],
+    "餐厅": ["il ristorante", "al ristorante"], "咖啡馆": ["il bar", "al bar"], "酒吧": ["il pub", "al pub"], "酒店": ["l'hotel", "in hotel"],
+    "公园": ["il parco", "al parco"], "图书馆": ["la biblioteca", "in biblioteca"], "博物馆": ["il museo", "al museo"], "电影院": ["il cinema", "al cinema"],
+    "厕所": ["il bagno", "in bagno"], "洗手间": ["il bagno", "in bagno"], "车站": ["la stazione", "alla stazione"], "火车站": ["la stazione", "alla stazione"],
+    "机场": ["l'aeroporto", "in aeroporto"], "城市": ["la città", "in città"], "厨房": ["la cucina", "in cucina"], "客厅": ["il soggiorno", "in soggiorno"],
+    "卧室": ["la camera da letto", "in camera da letto"], "海滩": ["la spiaggia", "in spiaggia"], "教堂": ["la chiesa", "in chiesa"], "邮局": ["l'ufficio postale", "all'ufficio postale"],
+    "广场": ["la piazza", "in piazza"], "市中心": ["il centro", "in centro"], "办公室": ["l'ufficio", "in ufficio"], "大使馆": ["l'ambasciata", "all'ambasciata"],
+    "寺庙": ["il tempio", "al tempio"], "海": ["il mare", "al mare"], "山": ["la montagna", "in montagna"],
+    "中国": ["la Cina", "in Cina"], "意大利": ["l'Italia", "in Italia"], "西西里": ["la Sicilia", "in Sicilia"], "欧洲": ["l'Europa", "in Europa"],
+    "美国": ["gli Stati Uniti", "negli Stati Uniti"], "法国": ["la Francia", "in Francia"], "德国": ["la Germania", "in Germania"],
+    "英国": ["il Regno Unito", "nel Regno Unito"], "日本": ["il Giappone", "in Giappone"], "西班牙": ["la Spagna", "in Spagna"],
+    "北京": ["Pechino", "a Pechino"], "上海": ["Shanghai", "a Shanghai"], "罗马": ["Roma", "a Roma"],
+    "这里": [null, "qui", "da qui"], "那里": [null, "lì", "da lì"], "哪里": [null, "dove", "da dove"], "哪儿": [null, "dove", "da dove"]
+  },
+
+  /* paese o città + 人 = di quel posto: [maschile, femminile, maschile plurale, femminile plurale] o una forma sola */
+  nations: {
+    "中国": ["cinese", "cinese", "cinesi", "cinesi"], "意大利": ["italiano", "italiana", "italiani", "italiane"],
+    "西西里": ["siciliano", "siciliana", "siciliani", "siciliane"], "美国": ["americano", "americana", "americani", "americane"],
+    "法国": ["francese", "francese", "francesi", "francesi"], "德国": ["tedesco", "tedesca", "tedeschi", "tedesche"],
+    "英国": ["inglese", "inglese", "inglesi", "inglesi"], "日本": ["giapponese", "giapponese", "giapponesi", "giapponesi"],
+    "西班牙": ["spagnolo", "spagnola", "spagnoli", "spagnole"], "欧洲": ["europeo", "europea", "europei", "europee"],
+    "罗马": ["romano", "romana", "romani", "romane"], "北京": "di Pechino", "上海": "di Shanghai"
+  },
+
+  /* verbi: [infinito, ausiliare "a" (avere) | "e" (essere), segni, preposizione dell'oggetto, infinito dopo 去/来 se diverso]
+     segni: d = va verso un luogo (去中国 = vado in Cina)     e = mangiare/bere (massa senza articolo: «bevo acqua»)
+            s = abilità (会 = «sapere»: so nuotare)           l = con le lingue («parlo cinese»)
+            o = vuole per forza un oggetto (senza oggetto non lo traduco)   n = non prende oggetti
+            L = senza oggetto prende «lo» (知道 = lo so) */
+  verbs: {
+    "吃": ["mangiare", "a", "e"], "喝": ["bere", "a", "e"], "去": ["andare", "e", "dn"], "来": ["venire", "e", "dn"], "回": ["tornare", "e", "dn"],
+    "到": ["arrivare", "e", "dn"], "走": ["andare via", "e", "n"], "跑": ["correre", "a", "n"], "住": ["abitare", "a", "dn"],
+    "睡觉": ["dormire", "a", "n"], "起床": ["alzarsi", "e", "n"], "洗澡": ["fare la doccia", "a", "n"], "看": ["guardare", "a", "o"], "见": ["vedere", "a", ""],
+    "听": ["ascoltare", "a", "o"], "说": ["parlare", "a", "ls"], "问": ["chiedere", "a", "o", "a"], "回答": ["rispondere", "a", "", "a"], "读": ["leggere", "a", "s"],
+    "写": ["scrivere", "a", "s"], "画": ["disegnare", "a", "s"], "唱歌": ["cantare", "a", "sn"], "跳舞": ["ballare", "a", "sn"], "玩": ["giocare", "a", "n"],
+    "笑": ["ridere", "a", "n"], "哭": ["piangere", "a", "n"], "做": ["fare", "a", "so"], "工作": ["lavorare", "a", "n"], "学": ["studiare", "a", "l"],
+    "学习": ["studiare", "a", "l"], "教": ["insegnare", "a", "l"], "买": ["comprare", "a", "o"], "卖": ["vendere", "a", "o"], "付钱": ["pagare", "a", "n"],
+    "找": ["cercare", "a", "o"], "找到": ["trovare", "a", "o"], "用": ["usare", "a", "o"], "帮": ["aiutare", "a", ""], "帮助": ["aiutare", "a", ""],
+    "等": ["aspettare", "a", ""], "认识": ["conoscere", "a", "o"], "知道": ["sapere", "a", "L"], "懂": ["capire", "a", "l"], "明白": ["capire", "a", ""],
+    "爱": ["amare", "a", "o"], "担心": ["preoccuparsi", "e", "n"], "希望": ["sperare", "a", "n"], "记得": ["ricordare", "a", "o"], "忘记": ["dimenticare", "a", "o"],
+    "开始": ["iniziare", "a", ""], "准备": ["preparare", "a", "o"], "选择": ["scegliere", "a", "o"], "休息": ["riposare", "a", "n"],
+    "送": ["regalare", "a", "o"], "告诉": ["dire", "a", "o"], "迟到": ["arrivare in ritardo", "e", "n"], "参加": ["partecipare", "a", "o", "a"], "邀请": ["invitare", "a", "o"],
+    "出发": ["partire", "e", "n"], "旅游": ["viaggiare", "a", "n", "", "fare turismo"], "游泳": ["nuotare", "a", "sn"], "下雨": ["piovere", "e", "n"], "下雪": ["nevicare", "e", "n"],
+    "生病": ["ammalarsi", "e", "n"], "结婚": ["sposarsi", "e", "n"], "做饭": ["cucinare", "a", "sn"], "吃饭": ["mangiare", "a", "n"], "吃早饭": ["fare colazione", "a", "n"], "吃午饭": ["pranzare", "a", "n"], "吃晚饭": ["cenare", "a", "n"], "看书": ["leggere", "a", "n"],
+    "上班": ["andare al lavoro", "e", "n"], "下班": ["staccare dal lavoro", "a", "n"], "打电话": ["telefonare", "a", "", "a"], "开车": ["guidare", "a", "sn"],
+    "穿": ["indossare", "a", "o"], "洗": ["lavare", "a", "o"], "等等": ["aspettare", "a", "n"], "试试": ["provare", "a", "o"], "坐": ["sedersi", "e", ""], "看见": ["vedere", "a", "o"], "给": ["dare", "a", "o"]
+  },
+  /* verbo + oggetto preciso = un altro verbo italiano: [infinito, ausiliare, resa fissa dell'oggetto ("" = sparisce)]
+     看书 = leggere, 看电影 = guardare un film, 买东西 = fare acquisti, 坐 + mezzo ("t") = prendere la metropolitana */
+  verbObj: {
+    "坐": { "t": ["prendere", "a"] },
+    "看": { "书": ["leggere", "a"], "电影": ["guardare", "a", "un film"] },
+    "买": { "东西": ["fare acquisti", "a", ""] },
+    "送": { "礼物": ["fare", "a"] }
+  },
+
+  /* aggettivi: [m s, f s, m p, f p] */
+  adjs: {
+    "好": ["buono", "buona", "buoni", "buone"],
+    "大": ["grande", "grande", "grandi", "grandi"], "小": ["piccolo", "piccola", "piccoli", "piccole"], "贵": ["caro", "cara", "cari", "care"],
+    "便宜": ["economico", "economica", "economici", "economiche"], "热": ["caldo", "calda", "caldi", "calde"], "冷": ["freddo", "fredda", "freddi", "fredde"],
+    "好吃": ["buono", "buona", "buoni", "buone"], "好喝": ["buono", "buona", "buoni", "buone"], "好看": ["bello", "bella", "belli", "belle"],
+    "漂亮": ["bello", "bella", "belli", "belle"], "新": ["nuovo", "nuova", "nuovi", "nuove"], "旧": ["vecchio", "vecchia", "vecchi", "vecchie"],
+    "老": ["vecchio", "vecchia", "vecchi", "vecchie"], "高": ["alto", "alta", "alti", "alte"], "矮": ["basso", "bassa", "bassi", "basse"],
+    "长": ["lungo", "lunga", "lunghi", "lunghe"], "短": ["corto", "corta", "corti", "corte"], "快": ["veloce", "veloce", "veloci", "veloci"],
+    "慢": ["lento", "lenta", "lenti", "lente"], "远": ["lontano", "lontana", "lontani", "lontane"], "近": ["vicino", "vicina", "vicini", "vicine"],
+    "忙": ["impegnato", "impegnata", "impegnati", "impegnate"], "累": ["stanco", "stanca", "stanchi", "stanche"], "干净": ["pulito", "pulita", "puliti", "pulite"],
+    "脏": ["sporco", "sporca", "sporchi", "sporche"], "容易": ["facile", "facile", "facili", "facili"], "难": ["difficile", "difficile", "difficili", "difficili"],
+    "简单": ["semplice", "semplice", "semplici", "semplici"], "复杂": ["complicato", "complicata", "complicati", "complicate"],
+    "重要": ["importante", "importante", "importanti", "importanti"], "安静": ["tranquillo", "tranquilla", "tranquilli", "tranquille"],
+    "方便": ["comodo", "comoda", "comodi", "comode"], "甜": ["dolce", "dolce", "dolci", "dolci"], "咸": ["salato", "salata", "salati", "salate"],
+    "辣": ["piccante", "piccante", "piccanti", "piccanti"], "酸": ["aspro", "aspra", "aspri", "aspre"], "苦": ["amaro", "amara", "amari", "amare"],
+    "可爱": ["carino", "carina", "carini", "carine"], "开心": ["contento", "contenta", "contenti", "contente"], "高兴": ["contento", "contenta", "contenti", "contente"],
+    "难过": ["triste", "triste", "tristi", "tristi"], "胖": ["grasso", "grassa", "grassi", "grasse"], "瘦": ["magro", "magra", "magri", "magre"],
+    "重": ["pesante", "pesante", "pesanti", "pesanti"], "轻": ["leggero", "leggera", "leggeri", "leggere"], "奇怪": ["strano", "strana", "strani", "strane"],
+    "危险": ["pericoloso", "pericolosa", "pericolosi", "pericolose"], "安全": ["sicuro", "sicura", "sicuri", "sicure"], "生气": ["arrabbiato", "arrabbiata", "arrabbiati", "arrabbiate"],
+    "紧张": ["nervoso", "nervosa", "nervosi", "nervose"], "聪明": ["intelligente", "intelligente", "intelligenti", "intelligenti"],
+    "有意思": ["interessante", "interessante", "interessanti", "interessanti"], "新鲜": ["fresco", "fresca", "freschi", "fresche"], "饱": ["sazio", "sazia", "sazi", "sazie"]
+  },
+  /* aggettivi che in italiano diventano «avere …» con le persone: 我饿 = ho fame */
+  haveAdjs: { "饿": "fame", "渴": "sete", "困": "sonno" },
+  /* aggettivi del tempo che fa: senza soggetto o col tempo come soggetto = «fa caldo» */
+  weatherAdjs: { "热": "caldo", "冷": "freddo" },
+
+  /* gradi dell'aggettivo: 很 lega soltanto (很好 = bene), gli altri cambiano il senso */
+  degree: { "很": "", "非常": "molto", "太": "troppo", "真": "davvero", "特别": "particolarmente", "有点": "un po'", "挺": "piuttosto" },
+
+  /* tempo: [italiano, "past" | "fut" | ""] */
+  time: {
+    "今天": ["oggi", ""], "明天": ["domani", "fut"], "昨天": ["ieri", "past"], "后天": ["dopodomani", "fut"], "前天": ["l'altro ieri", "past"],
+    "现在": ["adesso", ""], "今年": ["quest'anno", ""], "明年": ["l'anno prossimo", "fut"], "去年": ["l'anno scorso", "past"],
+    "早上": ["la mattina", ""], "上午": ["la mattina", ""], "中午": ["a mezzogiorno", ""], "下午": ["il pomeriggio", ""], "晚上": ["la sera", ""],
+    "每天": ["ogni giorno", ""], "每年": ["ogni anno", ""], "周末": ["nel fine settimana", ""], "刚才": ["poco fa", "past"],
+    "星期一": ["lunedì", ""], "星期二": ["martedì", ""], "星期三": ["mercoledì", ""], "星期四": ["giovedì", ""], "星期五": ["venerdì", ""],
+    "星期六": ["sabato", ""], "星期天": ["domenica", ""]
+  },
+
+  /* numeri e classificatori */
+  nums: { "零": 0, "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10, "百": 100 },
+  /* classificatori: "" = non si traduce (一本书 = un libro); [contenitore, genere, plurale] = si traduce (一杯茶 = una tazza di tè) */
+  clf: {
+    "个": "", "本": "", "张": "", "件": "", "条": "", "位": "", "只": "", "辆": "", "双": ["paio", "m", "paia"],
+    "杯": ["tazza", "f", "tazze"], "瓶": ["bottiglia", "f", "bottiglie"], "碗": ["ciotola", "f", "ciotole"], "盘": ["piatto", "m", "piatti"]
+  },
+  /* 一杯 + bevanda: la forma che si usa davvero al bar */
+  cups: { "咖啡": ["un caffè", "%N caffè"], "啤酒": ["una birra", "%N birre"], "水": ["un bicchiere d'acqua", "%N bicchieri d'acqua"], "牛奶": ["un bicchiere di latte", "%N bicchieri di latte"], "葡萄酒": ["un bicchiere di vino", "%N bicchieri di vino"], "果汁": ["un succo di frutta", "%N succhi di frutta"] },
+
+  /* frasi fatte: si traducono intere */
+  fixed: {
+    "你好": "Ciao", "您好": "Buongiorno", "你好吗": "Come stai?", "谢谢": "Grazie", "谢谢你": "Grazie", "再见": "Arrivederci", "对不起": "Scusa", "不客气": "Prego",
+    "没关系": "Non fa niente", "早上好": "Buongiorno", "晚上好": "Buonasera", "晚安": "Buonanotte", "干杯": "Cin cin!", "明天见": "A domani",
+    "我也是": "Anch'io", "多少钱": "Quanto costa?", "这个多少钱": "Quanto costa questo?", "太贵了": "È troppo caro!", "你叫什么": "Come ti chiami?",
+    "你叫什么名字": "Come ti chiami?", "我不知道": "Non lo so", "我知道": "Lo so", "我不懂": "Non capisco", "我懂了": "Ho capito", "我明白了": "Ho capito"
+  }
+};
+</script>
+<script>
+/* ---- data/verified.js ---- */
+/* Frasi verificate: [cinese, italiano corretto] (+ "memoria" se le regole non ci arrivano ancora).
+   - Il laboratorio le usa così come sono: vincono sulle regole (insieme alle frasi già tradotte a mano negli
+     esercizi, nei modelli, nelle frasi e nei dialoghi).
+   - «node tools/grammar.mjs» (e la build) controlla che le regole arrivino da sole alla stessa identica traduzione:
+     così ogni frase qui è anche una prova, e una regola nuova non può rompere quelle vecchie.
+   - "memoria": le regole non ci arrivano ancora; vale la traduzione scritta qui. Quando una regola nuova ci arriva,
+     lo strumento lo dice e il segno si può togliere.
+   Ogni riga è stata riletta da una persona: aggiungi solo frasi di cui sei sicuro, una per riga.
+   «o/a» = la parola cambia se chi parla è un uomo o una donna. */
+var VERIFIED = [
+  ["我是意大利人","Sono italiano/a."],
+  ["她是意大利人","Lei è italiana."],
+  ["他们是意大利人","Loro sono italiani."],
+  ["我们都是意大利人","Siamo tutti italiani."],
+  ["你是意大利人吗","Sei italiano/a?"],
+  ["您是中国人吗","Lei è cinese?"],
+  ["我不是中国人","Non sono cinese."],
+  ["我也是意大利人","Anch'io sono italiano/a."],
+  ["她也是中国人","Anche lei è cinese."],
+  ["我妈妈是意大利人","La mia mamma è italiana."],
+  ["我爸爸是中国人","Il mio papà è cinese."],
+  ["他是我哥哥","Lui è mio fratello maggiore."],
+  ["她是我妈妈","Lei è la mia mamma."],
+  ["她是我的老师","Lei è la mia insegnante."],
+  ["他是我的朋友","Lui è un mio amico."],
+  ["他们是我朋友","Loro sono miei amici."],
+  ["这是我的书","Questo è il mio libro."],
+  ["这是我妈妈","Questa è la mia mamma."],
+  ["这是谁","Chi è questo?"],
+  ["他是谁","Chi è lui?"],
+  ["你是谁","Chi sei?"],
+  ["这是什么","Che cos'è questo?"],
+  ["这是书","Questo è un libro."],
+  ["这是一本书","Questo è un libro."],
+  ["那是我的手机","Quello è il mio cellulare."],
+  ["我是学生","Sono studente/studentessa."],
+  ["她是学生","Lei è studentessa."],
+  ["我们是学生","Siamo studenti."],
+  ["他是医生","Lui è medico."],
+  ["我是老师","Sono insegnante."],
+  ["她是我同事","Lei è una mia collega."],
+  ["我有一个哥哥","Ho un fratello maggiore."],
+  ["我有两个妹妹","Ho due sorelle minori."],
+  ["她没有孩子","Lei non ha figli."],
+  ["你有孩子吗","Hai figli?"],
+  ["你有几个孩子","Quanti figli hai?"],
+  ["我没有时间","Non ho tempo."],
+  ["你有时间吗","Hai tempo?"],
+  ["我们有很多朋友","Abbiamo molti amici."],
+  ["这里有一个超市","Qui c'è un supermercato."],
+  ["这里没有超市","Qui non ci sono supermercati."],
+  ["我饿了","Ho fame."],
+  ["我很饿","Ho fame."],
+  ["我非常饿","Ho molta fame."],
+  ["她很累","Lei è stanca."],
+  ["我们很忙","Siamo impegnati."],
+  ["他不忙","Lui non è impegnato."],
+  ["今天很热","Oggi fa caldo."],
+  ["今天很冷","Oggi fa freddo."],
+  ["昨天很冷","Ieri faceva freddo."],
+  ["天气很好","Il tempo è bello."],
+  ["这个很贵","Questo è caro."],
+  ["这本书很贵","Questo libro è caro."],
+  ["这件衣服太贵了","Questo vestito è troppo caro."],
+  ["衣服很贵","I vestiti sono cari."],
+  ["我的手机很新","Il mio cellulare è nuovo."],
+  ["我妈妈很忙","La mia mamma è impegnata."],
+  ["中国很大","La Cina è grande."],
+  ["意大利比中国小","L'Italia è più piccola della Cina."],
+  ["我比你高","Sono più alto/a di te."],
+  ["她比我累","Lei è più stanca di me."],
+  ["我喜欢你","Mi piaci."],
+  ["我爱你","Ti amo."],
+  ["他喜欢她","Lei gli piace."],
+  ["我喜欢狗","Mi piacciono i cani."],
+  ["我不喜欢猫","Non mi piacciono i gatti."],
+  ["你喜欢什么","Che cosa ti piace?"],
+  ["你喜欢喝咖啡吗","Ti piace bere caffè?"],
+  ["我也喜欢茶","Anche a me piace il tè."],
+  ["我妈妈喜欢喝茶","Alla mia mamma piace bere tè."],
+  ["我们喜欢意大利","Ci piace l'Italia."],
+  ["我去中国","Vado in Cina."],
+  ["我明天去北京","Domani vado a Pechino."],
+  ["他昨天去了上海","Ieri lui è andato a Shanghai."],
+  ["我去过意大利","Sono stato/a in Italia."],
+  ["你去过中国吗","Sei mai stato/a in Cina?"],
+  ["我没去过中国","Non sono mai stato/a in Cina."],
+  ["我回家","Torno a casa."],
+  ["我们回家吧","Torniamo a casa!"],
+  ["她在家","Lei è a casa."],
+  ["他不在家","Lui non è a casa."],
+  ["你在哪里","Dove sei?"],
+  ["我在北京","Sono a Pechino."],
+  ["我妈妈在医院","La mia mamma è in ospedale."],
+  ["我在家看书","Leggo a casa."],
+  ["我在学校学中文","Studio cinese a scuola."],
+  ["我跟朋友一起吃饭","Mangio insieme a un amico."],
+  ["我跟妈妈去超市","Vado al supermercato con la mia mamma."],
+  ["他和我一起去","Lui va insieme a me."],
+  ["我给你打电话","Ti telefono."],
+  ["我吃饭","Mangio."],
+  ["我吃了饭","Ho mangiato."],
+  ["我没吃饭","Non ho mangiato."],
+  ["我还没吃饭","Non ho ancora mangiato."],
+  ["我已经吃饭了","Ho già mangiato."],
+  ["你吃饭了吗","Hai mangiato?"],
+  ["我喝水","Bevo acqua."],
+  ["她喝咖啡","Lei beve caffè."],
+  ["他喝了两杯咖啡","Lui ha bevuto due caffè."],
+  ["我要一杯茶","Voglio una tazza di tè."],
+  ["我要两瓶水","Voglio due bottiglie d'acqua."],
+  ["我想喝咖啡","Vorrei bere del caffè."],
+  ["我不想去","Non voglio andare."],
+  ["你想去哪里","Dove vorresti andare?"],
+  ["你想吃什么","Che cosa vorresti mangiare?"],
+  ["我要去中国","Voglio andare in Cina."],
+  ["我会说中文","So parlare cinese."],
+  ["我会游泳","So nuotare."],
+  ["她不会说意大利语","Lei non sa parlare italiano."],
+  ["你会说中文吗","Sai parlare cinese?"],
+  ["我可以去吗","Posso andare?"],
+  ["我能帮你","Ti posso aiutare."],
+  ["你可以帮我吗","Mi puoi aiutare?"],
+  ["你应该休息","Dovresti riposare."],
+  ["我必须工作","Devo lavorare."],
+  ["明天会下雨","Domani pioverà."],
+  ["下雨了","Piove."],
+  ["我在学中文","Sto studiando cinese."],
+  ["她正在睡觉","Lei sta dormendo."],
+  ["我每天学中文","Ogni giorno studio cinese."],
+  ["他经常去中国","Lui va spesso in Cina."],
+  ["我们一起去","Andiamo insieme."],
+  ["我买了一本书","Ho comprato un libro."],
+  ["我买书","Compro dei libri."],
+  ["我买了三个苹果","Ho comprato tre mele."],
+  ["她卖水果","Lei vende frutta."],
+  ["你买什么","Che cosa compri?"],
+  ["你在找什么","Che cosa stai cercando?"],
+  ["我找到了我的钥匙","Ho trovato la mia chiave."],
+  ["我认识他","Lo conosco."],
+  ["我不认识她","Non la conosco."],
+  ["我知道","Lo so."],
+  ["我懂了","Ho capito."],
+  ["我看见他了","L'ho visto."],
+  ["我等你","Ti aspetto."],
+  ["你等我","Mi aspetti."],
+  ["我想你","Mi manchi."],
+  ["我明天去学校","Domani vado a scuola."],
+  ["我们明天见","Domani ci vediamo."],
+  ["他每天工作","Ogni giorno lui lavora."],
+  ["他们在公园玩","Loro giocano al parco."],
+  ["我起床了","Mi sono alzato/a."],
+  ["我睡觉","Dormo."],
+  ["我妈妈做饭","La mia mamma cucina."],
+  ["我喜欢做饭","Mi piace cucinare."],
+  ["他开车","Lui guida."],
+  ["我会开车","So guidare."],
+  ["我坐地铁","Prendo la metropolitana."],
+  ["他坐出租车去机场","Lui va in aeroporto in taxi."],
+  ["你几岁","Quanti anni hai?"],
+  ["我二十岁","Ho 20 anni."],
+  ["他三十五岁","Lui ha 35 anni."],
+  ["这个多少钱","Quanto costa questo?"],
+  ["这本书多少钱","Quanto costa questo libro?"],
+  ["我们走吧","Andiamo via!"],
+  ["你呢","E tu?"],
+  ["他是不是中国人","Lui è cinese?"],
+  ["你为什么学中文","Perché studi cinese?"],
+  ["你什么时候去中国","Quando vai in Cina?"],
+  ["你怎么去北京","Come vai a Pechino?"],
+  ["谁是你的老师","Chi è il tuo insegnante?"],
+  ["谁去中国","Chi va in Cina?"],
+  ["这个人是谁","Chi è questa persona?"],
+  ["这两本书很好","Questi due libri sono buoni."],
+  ["那些人是中国人","Quelle persone sono cinesi."],
+  ["这是我爸爸的书","Questo è il libro del mio papà."],
+  ["老师的书很贵","Il libro dell'insegnante è caro."],
+  ["我看电视","Guardo la televisione."],
+  ["我听音乐","Ascolto musica."],
+  ["我喜欢听音乐","Mi piace ascoltare musica."],
+  ["她在看电影","Lei sta guardando un film."],
+  ["我给你一本书","Ti do un libro."],
+  ["我送你一个礼物","Ti faccio un regalo."],
+  ["我学习汉语","Studio cinese."],
+  ["我不懂中文","Non capisco cinese."],
+  ["你懂吗","Capisci?"],
+  ["我明白了","Ho capito."],
+  ["我的朋友是中国人","Il mio amico è cinese."],
+  ["他的妈妈是老师","La sua mamma è insegnante."],
+  ["我们的老师很好","Il nostro insegnante è bravo."],
+  ["你的中文很好","Il tuo cinese è buono."],
+  ["我哥哥比我高","Mio fratello maggiore è più alto di me."],
+  ["我的狗很可爱","Il mio cane è carino."],
+  ["我想买一个手机","Vorrei comprare un cellulare."],
+  ["我要买一本书","Voglio comprare un libro."],
+  ["他们都很忙","Loro sono tutti impegnati."],
+  ["你们都是学生吗","Siete tutti studenti?"],
+  ["我只喝水","Bevo solo acqua."],
+  ["我只有一个妹妹","Ho solo una sorella minore."],
+  ["我也去","Anch'io vado."],
+  ["他也来","Anche lui viene."],
+  ["我也不知道","Neanch'io lo so."],
+  ["你们是意大利人吗","Siete italiani?"],
+  ["他们不是学生","Loro non sono studenti."],
+  ["我们不是朋友","Non siamo amici."],
+  ["这些是我的书","Questi sono i miei libri."],
+  ["那些书很贵","Quei libri sono cari."],
+  ["这些苹果很好吃","Queste mele sono buone."],
+  ["那个人很高","Quella persona è alta."],
+  ["这个房间很小","Questa camera è piccola."],
+  ["我的房间不大","La mia camera non è grande."],
+  ["你的妈妈很漂亮","La tua mamma è bella."],
+  ["她的女儿很可爱","Sua figlia è carina."],
+  ["我们的老师是中国人","Il nostro insegnante è cinese."],
+  ["他们的孩子很聪明","Il loro bambino è intelligente."],
+  ["天气不太好","Il tempo non è molto bello."],
+  ["今天有点冷","Oggi fa un po' freddo."],
+  ["咖啡太热了","Il caffè è troppo caldo."],
+  ["我太累了","Sono troppo stanco/a."],
+  ["我不太饿","Non ho molta fame."],
+  ["他有点累","Lui è un po' stanco."],
+  ["我们很高兴","Siamo contenti."],
+  ["她不高兴","Lei non è contenta."],
+  ["你累吗","Sei stanco/a?"],
+  ["你饿吗","Hai fame?"],
+  ["你忙吗","Sei impegnato/a?"],
+  ["他们忙吗","Loro sono impegnati?"],
+  ["你是老师吗","Sei insegnante?"],
+  ["她是你妈妈吗","Lei è la tua mamma?"],
+  ["这是你的手机吗","Questo è il tuo cellulare?"],
+  ["你有哥哥吗","Hai fratelli maggiori?"],
+  ["我没有哥哥","Non ho fratelli maggiori."],
+  ["他有一个女朋友","Lui ha una ragazza."],
+  ["她有男朋友吗","Lei ha un ragazzo?"],
+  ["我们有两个孩子","Abbiamo due figli."],
+  ["我有一只狗","Ho un cane."],
+  ["他们有三只猫","Loro hanno tre gatti."],
+  ["我有很多书","Ho molti libri."],
+  ["我想去意大利","Vorrei andare in Italia."],
+  ["他想喝啤酒","Lui vorrebbe bere della birra."],
+  ["她不想吃饭","Lei non vuole mangiare."],
+  ["你想喝什么","Che cosa vorresti bere?"],
+  ["你要什么","Che cosa vuoi?"],
+  ["我要一杯咖啡","Voglio un caffè."],
+  ["我要两杯啤酒","Voglio due birre."],
+  ["他要一瓶水","Lui vuole una bottiglia d'acqua."],
+  ["我们要三碗米饭","Vogliamo tre ciotole di riso."],
+  ["他会做饭","Lui sa cucinare."],
+  ["你会游泳吗","Sai nuotare?"],
+  ["我不会开车","Non so guidare."],
+  ["明天会很冷","Domani farà freddo."],
+  ["她会来吗","Lei verrà?"],
+  ["我可以坐这里吗","Posso sedermi qui?"],
+  ["你能来吗","Puoi venire?"],
+  ["我不能去","Non posso andare."],
+  ["他们在家吃饭","Loro mangiano a casa."],
+  ["我在银行工作","Lavoro in banca."],
+  ["她在医院工作","Lei lavora in ospedale."],
+  ["我妈妈在家做饭","La mia mamma cucina a casa."],
+  ["我们在超市买水果","Compriamo della frutta al supermercato."],
+  ["他在公园跑","Lui corre al parco."],
+  ["我昨天去了超市","Ieri sono andato/a al supermercato."],
+  ["我们昨天吃了饺子","Ieri abbiamo mangiato i ravioli."],
+  ["他今天没来","Oggi lui non è venuto."],
+  ["你昨天去哪里了","Ieri dove sei andato/a?"],
+  ["你昨天买了什么","Ieri che cosa hai comprato?"],
+  ["她还没来","Lei non è ancora venuta."],
+  ["他已经走了","Lui è già andato via."],
+  ["我们已经到了","Siamo già arrivati."],
+  ["你到了吗","Sei arrivato/a?"],
+  ["我刚才吃了一个苹果","Poco fa ho mangiato una mela."],
+  ["我每天喝咖啡","Ogni giorno bevo caffè."],
+  ["她每天早上跑","Ogni mattina lei corre."],
+  ["我们晚上看电视","La sera guardiamo la televisione."],
+  ["他周末去公园","Nel fine settimana lui va al parco."],
+  ["星期六我们去北京","Sabato andiamo a Pechino."],
+  ["你明天来吗","Domani vieni?"],
+  ["我明年去中国","L'anno prossimo vado in Cina."],
+  ["他们去年去了意大利","L'anno scorso loro sono andati in Italia."],
+  ["我住在北京","Abito a Pechino."],
+  ["你住在哪里","Dove abiti?"],
+  ["她住在罗马","Lei abita a Roma."],
+  ["我们回中国","Torniamo in Cina."],
+  ["他回家了","Lui è tornato a casa."],
+  ["你什么时候回家","Quando torni a casa?"],
+  ["你喜欢中国吗","Ti piace la Cina?"],
+  ["我很喜欢意大利","Mi piace molto l'Italia."],
+  ["他不喜欢喝茶","Non gli piace bere tè."],
+  ["我们喜欢吃饺子","Ci piace mangiare i ravioli."],
+  ["她喜欢看书","Le piace leggere."],
+  ["你喜欢我吗","Ti piaccio?"],
+  ["他爱她","Lui la ama."],
+  ["我认识你妈妈","Conosco la tua mamma."],
+  ["你认识他吗","Lo conosci?"],
+  ["我记得你","Ti ricordo."],
+  ["你在找谁","Chi stai cercando?"],
+  ["我等我妈妈","Aspetto la mia mamma."],
+  ["我们一起吃饭吧","Mangiamo insieme!"],
+  ["你跟谁去","Con chi vai?"],
+  ["我跟我妈妈一起去中国","Vado in Cina insieme alla mia mamma."],
+  ["他跟他朋友去北京","Lui va a Pechino con il suo amico."],
+  ["我给我妈妈打电话","Telefono alla mia mamma."],
+  ["我送他一本书","Gli regalo un libro."],
+  ["我给她一个苹果","Le do una mela."],
+  ["老师教我们中文","L'insegnante ci insegna cinese."],
+  ["我问老师","Chiedo all'insegnante."],
+  ["他是我的同学","Lui è un mio compagno di classe."],
+  ["她是我的同事","Lei è una mia collega."],
+  ["我是你的朋友","Sono un tuo amico."],
+  ["我们是同学","Siamo compagni di classe."],
+  ["他是厨师","Lui è cuoco."],
+  ["她是护士","Lei è infermiera."],
+  ["我爸爸是医生","Il mio papà è medico."],
+  ["我妈妈是老师","La mia mamma è insegnante."],
+  ["我哥哥是警察","Mio fratello maggiore è poliziotto."],
+  ["我今年三十岁","Quest'anno ho 30 anni."],
+  ["我妈妈六十岁","La mia mamma ha 60 anni."],
+  ["你妹妹几岁","Tua sorella minore quanti anni ha?"],
+  ["这杯咖啡多少钱","Quanto costa questo caffè?"],
+  ["苹果多少钱","Quanto costano le mele?"],
+  ["这些多少钱","Quanto costano questi?"],
+  ["我比他忙","Sono più impegnato/a di lui."],
+  ["他比我大","Lui è più grande di me."],
+  ["今天比昨天冷","Oggi fa più freddo di ieri."],
+  ["北京比上海大","Pechino è più grande di Shanghai."],
+  ["这个比那个贵","Questo è più caro di quello."],
+  ["你好","Ciao."],
+  ["谢谢","Grazie."],
+  ["再见","Arrivederci."],
+  ["对不起","Scusa."],
+  ["没关系","Non fa niente."],
+  ["我很好","Sto bene."],
+  ["他很好","Lui sta bene."],
+  ["她不好","Lei non sta bene."],
+  ["你好吗","Come stai?"],
+  ["我们去吧","Andiamo!"],
+  ["下雪了","Nevica."],
+  ["明天下雨吗","Domani piove?"],
+  ["我正在吃饭","Sto mangiando."],
+  ["他们正在工作","Loro stanno lavorando."],
+  ["你在做什么","Che cosa stai facendo?"],
+  ["她在打电话","Lei sta telefonando."],
+  ["我在等你","Ti sto aspettando."],
+  ["我开始学中文","Inizio a studiare cinese."],
+  ["我学游泳","Imparo a nuotare."],
+  ["我准备去中国","Mi preparo ad andare in Cina."],
+  ["他们开始工作了","Loro hanno iniziato a lavorare."],
+  ["我喜欢唱歌","Mi piace cantare."],
+  ["她会跳舞","Lei sa ballare."],
+  ["我们去看电影","Andiamo a guardare un film."],
+  ["我去买东西","Vado a fare acquisti."],
+  ["你来中国吗","Vieni in Cina?"],
+  ["他来意大利了","Lui è venuto in Italia."],
+  ["我们都很累","Siamo tutti stanchi."],
+  ["他们都是我的朋友","Loro sono tutti miei amici."],
+  ["你们都去吗","Andate tutti?"],
+  ["我也很忙","Anch'io sono impegnato/a."],
+  ["她也不知道","Neanche lei lo sa."],
+  ["我也想去","Anch'io vorrei andare."],
+  ["我只要一杯水","Voglio solo un bicchiere d'acqua."],
+  ["他只会说中文","Lui sa parlare solo cinese."],
+  ["我经常喝茶","Bevo spesso tè."],
+  ["他一直工作","Lui lavora sempre."],
+  ["我马上来","Vengo subito."],
+  ["我从来不喝咖啡","Non bevo mai caffè."],
+  ["有时候我喝茶","A volte bevo tè."],
+  ["我很好你呢","Sto bene, e tu?","memoria"],
+  ["我们是好朋友","Siamo buoni amici.","memoria"],
+  ["你给我打电话吧","Telefonami!","memoria"],
+  ["我们都喜欢中国","A tutti noi piace la Cina.","memoria"],
+  ["我饿了你呢","Ho fame, e tu?","memoria"]
+];
+</script>
 <!-- Interfaccia in più lingue -->
 <script>
 /* ---- i18n/i18n.js ---- */
@@ -8161,6 +8746,8 @@ I18N.zh = {
      - fix: cambia py, it o note di una parola (target = chiave), di una frase (phr:<gruppo>:<riga>) o di una battuta (dlg:<id>:<riga>).
        Mai hz: è la chiave dei progressi in cp-srs-v1. Per un carattere sbagliato si usa flag.
      - add: una parola nuova (section, py, hz, it).   - flag: una segnalazione (target, why).
+     - tr: la traduzione giusta di una frase del laboratorio (target = i caratteri della frase, new = l'italiano, old = quello
+       che diceva il laboratorio): vale subito nel laboratorio di chi la scrive, con l'etichetta «✏️ tua traduzione».
      Le correzioni dell'utente si applicano subito alla sua copia, con l'etichetta «✏️ tua correzione», e si possono annullare. ---- */
   var CKEY = "cp-community-contribs", CJKONLY = /^[㐀-鿿]+$/;
   function clean(py) { var c = String(py).replace(/[!?,;:…"“”«»()（），。？！、]/g, " ").replace(/\.(?=\s|$)/g, " ").trim(); return c ? syllables(c.replace(/\s+/g, " ")) : []; }
@@ -8199,6 +8786,11 @@ I18N.zh = {
       else if (WORDS[it.hz]) e.push(it.hz + " è già nel dizionario: usa «Correggi»");
       var m2 = pyOk(it.py || "", it.hz || ""); if (m2) e.push(m2);
       if (!String(it.it || "").trim()) e.push("manca l'italiano");
+    } else if (it.op === "tr") {
+      var z = String(it.target || "").replace(/[\s，。？！、,.!?]/g, "");
+      if (!CJKONLY.test(z) || Array.from(z).length > 40) e.push("la frase deve essere in caratteri cinesi (al massimo 40)");
+      if (!String(it.new || "").trim()) e.push("scrivi la traduzione italiana");
+      else if (String(it.new).trim() === String(it.old || "").trim()) e.push("la traduzione è uguale a quella di adesso");
     } else if (it.op === "flag") {
       if (!it.target || (!WORDS[it.target] && !lineOf(it.target))) e.push("non trovo «" + (it.target || "") + "»");
       if (String(it.why || "").trim().length < 3) e.push("scrivi in breve che cosa non va");
@@ -9807,9 +10399,9 @@ I18N.zh = {
   }
   function fixBox(chk, p) {
     if (!chk || chk.ok) return "";
-    var bad = hzOf(lab.t, p), good = hzOf(chk.fixed, p), fl = CP.lab.fluid(chk.fixed, p === "?" ? "?" : p === "!" ? "!" : "."), why = chk.issues[0] === "Ordine non valido." ? "Ordine non valido in cinese" : chk.issues[0].replace(/\.$/, "");
+    var bad = hzOf(lab.t, p), good = hzOf(chk.fixed, p), fl = CP.lab.translate(chk.fixed, p === "?" ? "?" : p === "!" ? "!" : "."), why = chk.issues[0] === "Ordine non valido." ? "Ordine non valido in cinese" : chk.issues[0].replace(/\.$/, "");
     return '<div class="fixbox" role="group" aria-label="Correzione della frase"><div class="fx-bad">⚠️ <b>Come l\'hai scritta:</b> <span class="han">' + esc(bad) + '</span> <span class="muted small">(' + esc(why) + ")</span></div>" +
-      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.it ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
+      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.sure ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
       '<button type="button" class="btn-main" data-labfix>✨ Correggi automaticamente la mia frase</button></div>';
   }
   function fixLogBox() {
@@ -9821,9 +10413,15 @@ I18N.zh = {
     var p = labPunct(), w = lint(lab.t).map(function (m) { return '<div class="warn">' + esc(m) + "</div>"; }).join("");
     var chk = CP.lab ? CP.lab.check(lab.t) : null, body;
     if (lab.view === "fluid" && CP.lab) {
-      var src = chk && !chk.ok ? chk.fixed : lab.t, fl = CP.lab.fluid(src, p === "?" ? "?" : p === "!" ? "!" : "."), ct = "";
-      ct = '<div class="fluid"><div class="fl-it" lang="it">' + esc(fl.it) + "</div>" + (chk && !chk.ok ? '<div class="small muted">Traduzione della versione corretta.</div>' : "") +
+      var src = chk && !chk.ok ? chk.fixed : lab.t, fl = CP.lab.translate(src, p === "?" ? "?" : p === "!" ? "!" : "."), ct = "";
+      lab.tr = { zh: src.map(hz).join(""), it: fl.sure ? fl.it : "", id: fl.contribId || "" };
+      var badge = fl.src === "mine" ? '<span class="tag mine-tag">✏️ tua traduzione</span>' : fl.src === "verified" || fl.src === "data" ? '<span class="tag ok-tag">✓ frase verificata</span>' : "";
+      if (fl.sure) ct = '<div class="fluid"><div class="fl-it" lang="it">' + esc(fl.it) + "</div>" + badge + (chk && !chk.ok ? '<div class="small muted">Traduzione della versione corretta.</div>' : "") +
         fl.notes.map(function (n) { return '<div class="snote">' + esc(n) + "</div>"; }).join("") + "</div>";
+      else ct = '<div class="fluid unsure"><div class="fl-it" lang="it">' + esc(CP.lab.NOPE) + "</div>" +
+        '<div class="fl-words"><span class="small muted">Parola per parola:</span> ' + fl.words.map(function (w) { return '<span class="flw"><span class="han">' + esc(w[0]) + "</span> " + esc(w[1]) + "</span>"; }).join(" · ") + "</div>" +
+        (fl.reason ? '<div class="snote">Perché: ' + esc(fl.reason) + ".</div>" : "") + "</div>";
+      ct += CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-labtr>' + (fl.sure ? "✏️ La traduzione è sbagliata?" : "✏️ Proponi la traduzione giusta") + "</button></div>" : "";
       body = full(lab.t, p, true) + ct;
     } else body = full(lab.t, p);
     return labToggle() + body + fixBox(chk, p) + fixLogBox() + spokenBlock(lab.t, p) + w + '<div class="acts">' + CP.audioBtns(hzOf(lab.t, p)) +
@@ -9928,6 +10526,7 @@ I18N.zh = {
     if (t.id === "ex-check") { checkEx(); CP.sfx(ex.state === "ok" ? "ok" : "ko"); render(); return; }
     if (t.id === "ex-show") { ex.state = "show"; render(); return; }
     if (t.id === "ex-next") { ex = null; render(); return; }
+    if (a("data-labtr") !== null && lab.tr) { CP.contribOpen({ op: "tr", target: lab.tr.zh, old: lab.tr.it, fromId: lab.tr.id }); return; }
     if (a("data-labview")) { lab.view = a("data-labview"); CP.sfx("tap"); updLab(); return; }
     if (a("data-labfix") !== null) {
       var ck = CP.lab.check(lab.t); if (!ck.ok) { lab.fixLog = ck.steps.slice(); lab.t = ck.fixed.slice(); CP.sfx("ok"); updLab(); var fb = document.querySelector(".fixlog"); if (fb && fb.scrollIntoView) fb.scrollIntoView({ block: "nearest" }); }
@@ -9966,6 +10565,7 @@ I18N.zh = {
     else if (id === "opt-it") { showIt = ev.target.checked; render(); }
   });
   CP.lint = lint; CP.spoken = spokenPinyin; CP._lab = lab;
+  CP.labRefresh = function () { if (sub === "lab" && labMode !== "slot") updLab(); };
   CP.build = {
     render: function () { render(); },
     setSub: function (s) { sub = s; render(); },
@@ -12104,6 +12704,17 @@ I18N.zh = {
       add("Laboratorio: numeri composti (二十 = 20, 三十五 = 35, 十二 = 12…)", !zbad.length, zbad.length ? zbad.map(function (x) { return x[0].join("") + "→" + zn(x[0]); }).join(", ") : zc.length + " casi");
     } catch (e) { add("Laboratorio: numeri composti", false, String(e)); }
     try {
+      /* le frasi verificate devono uscire identiche dalle regole (come in tools/grammar.mjs, ma col vocabolario della pagina) */
+      var gbad = [], gn = 0;
+      VERIFIED.forEach(function (v) {
+        if (v[2] === "memoria") return; gn++;
+        var tk = CP.segment(v[0]).filter(function (x) { return x.w; }).map(function (x) { return x.w.key; }), r = CP.lab.translate(tk, ".", { rulesOnly: true });
+        if (!r.sure || r.it !== v[1]) gbad.push(v[0] + " → " + r.it);
+      });
+      var nope = CP.lab.translate(CP.segment("我学汉字书").filter(function (x) { return x.w; }).map(function (x) { return x.w.key; }), ".", { rulesOnly: true });
+      add("Grammatica: frasi verificate tradotte dalle regole; se non è sicuro non inventa", !gbad.length && !nope.sure && nope.it === "Non so ancora tradurre questa frase.", gbad.length ? gbad.slice(0, 3).join(" · ") : gn + " frasi · 我学汉字书 → «" + nope.it + "»");
+    } catch (e) { add("Grammatica: frasi verificate", false, String(e)); }
+    try {
       var sbad = [], scount = 0;
       SLOTS.forEach(function (m) {
         var idx = m.cols.map(function () { return 0; });
@@ -13142,7 +13753,8 @@ I18N.zh = {
 </script>
 <script>
 /* ---- phrases/grammar.js ---- */
-/* ===== V6: Laboratorio. (1) traduzione fluida in italiano con coniugazione (2) correttore d'ordine delle frasi cinesi ===== */
+/* ===== Laboratorio: correttore d'ordine delle frasi cinesi (segnala solo errori sicuri).
+   La traduzione in italiano sta in phrases/translate.js (regole) + data/grammar.js (schede) + data/verified.js (frasi verificate). ===== */
 (function () {
   var CP = window.CP, W = CP.WORDS, ORDER = CP.ORDER, esc = CP.esc;
   var byHz = null;
@@ -13198,86 +13810,7 @@ I18N.zh = {
   var NOISC = { "dormire": 1, "aprire": 1, "partire": 1, "sentire": 1, "offrire": 1, "servire": 1, "seguire": 1, "coprire": 1, "salire": 1, "uscire": 1, "venire": 1 };
   var ABILITY = { "说": 1, "游泳": 1, "唱歌": 1, "跳舞": 1, "做": 1, "写": 1, "读": 1, "开": 1, "画": 1, "吃": 1, "用": 1 };
 
-  /* ================== coniugazione italiana ================== */
-  var CLITIC = ["mi", "ti", "si", "ci", "vi", "si"];
-  function split(inf) { /* "fare la doccia" -> ["fare", " la doccia"]; "partecipare a" -> ["partecipare", " a"] */
-    var i = inf.indexOf(" "); return i < 0 ? [inf, ""] : [inf.slice(0, i), inf.slice(i)];
-  }
-  function presentOf(inf, pi) { /* pi: 0..5 */
-    var s = split(inf), v = s[0], tail = s[1], refl = /si$/.test(v), base = refl ? v.replace(/si$/, "e").replace(/rse$/, "re") : v, f;
-    if (refl) base = v.replace(/rsi$/, "re");
-    if (IRRP[v]) f = IRRP[v][pi];
-    else if (IRRP[base]) f = IRRP[base][pi];
-    else {
-      var st = base.slice(0, -3), t = base.slice(-3);
-      if (t === "are") {
-        if (/[cg]$/.test(st) && (pi === 1 || pi === 3)) st += "h";
-        var e = ["o", "i", "a", "iamo", "ate", "ano"][pi];
-        if (/i$/.test(st) && (pi === 1 || pi === 3)) e = e.replace(/^i/, "");
-        f = st + e;
-        if (/i$/.test(base.slice(0, -3)) && pi === 1) f = base.slice(0, -3);   /* mangi */
-        if (/[cg]h$/.test(st) === false && /i$/.test(base.slice(0, -3)) && pi === 3) f = base.slice(0, -3) + "amo";
-      } else if (t === "ere") f = st + ["o", "i", "e", "iamo", "ete", "ono"][pi];
-      else if (t === "ire") f = NOISC[base] ? st + ["o", "i", "e", "iamo", "ite", "ono"][pi] : (pi === 3 || pi === 4 ? st + ["", "", "", "iamo", "ite"][pi] : st + ["isco", "isci", "isce", "", "", "iscono"][pi]);
-      else f = base;
-    }
-    if (refl) f = CLITIC[pi] + " " + f;
-    return f + tail;
-  }
-  function ppOf(inf) {
-    var s = split(inf), v = s[0], refl = /si$/.test(v), base = refl ? v.replace(/rsi$/, "re") : v;
-    var pp = IRRPP[v] || IRRPP[base];
-    if (!pp) { var t = base.slice(-3), st = base.slice(0, -3); pp = t === "are" ? st + "ato" : t === "ere" ? st + "uto" : st + "ito"; }
-    return pp;
-  }
-  function gerundOf(inf) {
-    var v = split(inf)[0], refl = /si$/.test(v), base = refl ? v.replace(/rsi$/, "re") : v;
-    return IRRG[base] || (base.slice(-3) === "are" ? base.slice(0, -3) + "ando" : base.slice(0, -3) + "endo");
-  }
-  function agree(pp, g, num) { /* participio con essere */
-    var m = pp.replace(/o$/, ""); if (!/o$/.test(pp)) return pp;
-    if (num === "p") return g === "f" ? m + "e" : m + "i";
-    return g === "f" ? m + "a" : m + "o";
-  }
-  function auxForm(aux, pi) { return IRRP[aux][pi]; }
-
-  /* ================== articoli e sintagmi nominali ================== */
-  function nounInfo(k) {
-    var h = hz(k), t = NT[h];
-    if (t) return { s: t[0], g: t[1], p: t[2], known: true };
-    var g = W[k] ? W[k].it : "", f = g.split(/[;,(]/)[0].replace(/\s*\/.*$/, "").trim() || h;
-    var gen = /a$/.test(f.split(" ")[0]) ? "f" : "m";
-    return { s: f, g: gen, p: /o$/.test(f) ? f.replace(/o$/, "i") : /a$/.test(f) ? f.replace(/a$/, "e") : /e$/.test(f) ? f.replace(/e$/, "i") : f, known: false };
-  }
-  function vowelStart(w) { return /^[aeiouàèéìòù]/i.test(w); }
-  function sImpure(w) { return /^(s[bcdfghlmnpqrtvz]|z|gn|ps|x|y)/i.test(w); }
-  function defArt(n, plural) {
-    var first = n.s.split(" ")[0];
-    if (plural) return n.g === "f" ? "le" : (vowelStart(n.p) || sImpure(n.p) ? "gli" : "i");
-    if (vowelStart(first)) return "l'";
-    if (n.g === "f") return "la";
-    return sImpure(first) ? "lo" : "il";
-  }
-  function indefArt(n) { if (n.g === "f") return vowelStart(n.s) ? "un'" : "una"; return sImpure(n.s) ? "uno" : "un"; }
-  function withArt(art, noun) { return art + (/'$/.test(art) ? "" : " ") + noun; }
-  function demIt(d, n, plural) {
-    var near = d === "这";
-    if (near) return plural ? (n.g === "f" ? "queste" : "questi") : (n.g === "f" ? "questa" : "questo");
-    var first = n.s.split(" ")[0];
-    if (plural) return n.g === "f" ? "quelle" : (vowelStart(n.p) ? "quegli" : sImpure(n.p) ? "quegli" : "quei");
-    if (n.g === "f") return vowelStart(first) ? "quell'" : "quella";
-    return vowelStart(first) ? "quell'" : sImpure(first) ? "quello" : "quel";
-  }
-  function possIt(p, n, plural) {
-    var base = POSS[p]; if (!base) return null;
-    var fam = ["爸爸", "妈妈", "哥哥", "弟弟", "姐姐", "妹妹", "儿子", "女儿", "丈夫", "妻子", "男朋友", "女朋友"];
-    var f = base === "loro" ? "loro" : base.replace(/o$/, n.g === "f" ? "a" : "o");
-    if (plural && base !== "loro") f = base.replace(/o$/, n.g === "f" ? "e" : "i");
-    return f;
-  }
-
-  /* ================== analisi in unità (usata da traduzione e correttore) ================== */
-  /* ruolo di ogni gettone */
+  /* ================== ruolo di ogni parola (per il correttore) ================== */
   function roleOf(h, ctx) {
     if (PRON[h]) return "pron"; if (TIMEW[h] !== undefined) return "time"; if (NEG[h]) return "neg";
     if (ADVS[h] !== undefined) return "adv"; if (INTENS[h] !== undefined) return "int"; if (MODAL[h]) return "modal"; if (FINAL[h]) return "final";
@@ -13287,424 +13820,6 @@ I18N.zh = {
     if (h === "不是") return "negcop"; if (VO[h]) return "vo"; if (VB[h]) return "verb"; if (ADJS[h] || HAVE[h]) return "adj"; if (PLACE[h]) return "place";
     return "noun";
   }
-  var SLOT = { pron: 1, noun1: 1, time: 2, adv: 3, neg: 3, int: 3, prog: 3, "with": 4, at: 5, modal: 6, verb: 7, vo: 7, negcop: 7, cop: 7, have: 7, adj: 7, asp: 8, num: 9, dem: 9, clf: 9, obj: 9, final: 10, q: 9 };
-  var SLOTN = { 9.5: "Particella 了 finale", 1: "Soggetto", 2: "Tempo", 3: "Avverbio / negazione", 4: "Con chi", 5: "Luogo", 6: "Verbo modale", 7: "Verbo", 8: "Particella (了/过/着)", 9: "Quantità + oggetto", 10: "Particella finale" };
-
-  /* raggruppa i gettoni in unita' [{slot, i0, keys[], hzs[], kind}] */
-  function units(tokens) {
-    var hs = tokens.map(hz), n = hs.length, out = [], i = 0, seenVerb = false;
-    var verbAhead = function (from) { for (var j = from; j < n; j++) { var r = roleOf(hs[j]); if (r === "verb" || r === "vo" || r === "negcop" || r === "adj" || r === "cop" || r === "have") return true; } return false; };
-    while (i < n) {
-      var h = hs[i], r = roleOf(h), u = { i0: i, keys: [tokens[i]], hzs: [h], kind: r, slot: SLOT[r] || 9 };
-      if (r === "with" || r === "at") {
-        /* preposizione + sintagma: prende i gettoni nominali che seguono */
-        var j = i + 1; while (j < n && ["noun", "place", "pron", "dem", "num", "clf"].indexOf(roleOf(hs[j])) >= 0 && !(r === "at" && roleOf(hs[j]) === "verb")) { u.keys.push(tokens[j]); u.hzs.push(hs[j]); j++; if (r === "with" && roleOf(hs[j - 1]) === "pron") break; if (u.keys.length >= 3) break; }
-        /* 在 senza verbo dopo = verbo "stare/essere in" */
-        u.slot = r === "with" ? 4 : 5; if (r === "with" && h === "给" && out.some(function (x) { return x.slot === 7; })) u.slot = 9.2; if (r === "at" && !verbAhead(j) && !out.some(function (x) { return x.slot === 7; })) { u.kind = "atverb"; u.slot = 7; }
-        i = j; out.push(u); continue;
-      }
-      if (r === "modal") { if (!verbAhead(i + 1)) { u.kind = "verb"; u.slot = 7; } }
-      if (r === "pron" && i + 1 < n && roleOf(hs[i + 1]) === "noun" && FAMILY.indexOf(hs[i + 1]) >= 0 && !out.some(function (x) { return x.slot >= 6; })) {
-        u.keys.push(tokens[i + 1]); u.hzs.push(hs[i + 1]); u.kind = "subj"; u.slot = 1; u.poss = true; i += 2; out.push(u); continue;
-      }
-      if ((r === "dem") && hs[i + 1] === "是" && !out.length) { u.kind = "subjdem"; u.slot = 1; i++; out.push(u); continue; }
-      if (r === "q" && hs[i] === "谁" && !out.some(function (x) { return x.slot === 1; }) && verbAhead(i + 1)) { u.kind = "qsubj"; u.slot = 1; i++; out.push(u); continue; }
-      if (r === "asp" && h === "了") { var prev = out[out.length - 1]; if (prev && prev.slot >= 9) { u.slot = 9.5; } }
-      if (r === "num" || r === "dem") {
-        var j2 = i + 1; u.slot = 9;
-        while (j2 < n && ["num", "clf", "noun", "place"].indexOf(roleOf(hs[j2])) >= 0 && u.keys.length < 7) { u.keys.push(tokens[j2]); u.hzs.push(hs[j2]); j2++; if (roleOf(hs[j2 - 1]) === "noun") break; }
-        u.kind = "np"; i = j2; out.push(u); continue;
-      }
-      if (r === "noun" || r === "place") {
-        /* nome: soggetto se all'inizio (prima del verbo), altrimenti oggetto/complemento */
-        var before = out.some(function (x) { return x.slot >= 6 && x.slot <= 8; });
-        if (!before && !out.some(function (x) { return x.slot === 1; }) && (i === 0 || out.every(function (x) { return x.slot === 2 || x.slot === 3 || x.slot < 1; })) && verbAhead(i + 1)) { u.slot = 1; u.kind = "subj"; }
-        else if (!before && i < n - 1 && hs[i + 1] === "的") { u.slot = u.slot; }
-        else { u.slot = 9; u.kind = "np"; }
-      }
-      if (r === "pron" && out.some(function (x) { return x.slot >= 6; })) { u.slot = 9; u.kind = "np"; }   /* pronome oggetto */
-      if (r === "q") { u.slot = (out.some(function (x) { return x.slot === 7; }) ? 9 : 9); }
-      if (r === "adj" && !out.some(function (x) { return x.slot === 7; })) u.slot = 7;
-      i++; out.push(u);
-    }
-    return out;
-  }
-
-  var MERGE = { "看见": 1, "想要": 1, "打电话": 1, "喜欢": 1 };
-  var V2PREP = { "开始": "a", "决定": "di", "希望": "di", "学": "a", "试试": "a", "准备": "di", "爱": "", "怕": "", "喜欢": "", "帮": "a" };
-  function infOf(h) { if (VO[h]) return VO[h][0]; if (VB[h]) return VB[h][0]; return null; }
-  /* ================== traduzione fluida ================== */
-  function personIdx(p) { return (p[0] - 1) + (p[1] === "p" ? 3 : 0); }
-  function numWord(n) { return n <= 10 ? NUMIT[n] : String(n); }
-  /* numero cinese da una serie di caratteri numerici consecutivi: 二十 = 20, 十二 = 12, 三十五 = 35, 一百 = 100.
-     Abbreviazione parlata: 三百五 = 350 (la cifra dopo 百 vale decine, se non c'è 零). */
-  function zhNum(hs) {
-    var total = 0, cur = 0, unit = 0, zero = false;
-    hs.forEach(function (h) {
-      var v = NUMS[h];
-      if (v === 10 || v === 100) { total += (cur || 1) * v; cur = 0; unit = v; zero = false; }
-      else if (v === 0) zero = true;
-      else cur = v;
-    });
-    if (cur && unit === 100 && !zero && hs.length > 2) cur *= 10;
-    return total + cur;
-  }
-  function nameFromTokens(keys) {
-    /* ritorna [numero (or null), classificatore hz or null, dem, nome key] */
-    var nums = [], clf = null, dem = null, noun = null;
-    keys.forEach(function (k) {
-      var h = hz(k), r = roleOf(h);
-      if (r === "num") { if (NUMS[h] !== undefined) nums.push(h); } else if (r === "dem") dem = h; else if (r === "clf") clf = h; else if (r === "noun" || r === "place") noun = k;
-    });
-    return { num: nums.length ? zhNum(nums) : null, clf: clf, dem: dem, noun: noun };
-  }
-  function npIt(keys, o) {
-    var p = nameFromTokens(keys), ap = [];
-    if (!p.noun) {
-      if (p.dem) return { t: p.dem === "这" ? "questo" : "quello" };
-      if (p.num != null && p.clf === "块") return { t: numWord(p.num) + " yuan" };
-      if (p.num != null && p.clf) return { t: numWord(p.num) + " " + (CLF[p.clf] || "") };
-      return { t: keys.map(function (k) { return gloss(k); }).join(" ") };
-    }
-    var h = hz(p.noun), n = nounInfo(p.noun);
-    if (PLACE[h] && !NT[h]) return { t: PLACE[h], place: true, ap: ap };
-    if (!n.known) ap.push(h);
-    if (p.num != null) {
-      if (p.clf === "杯" && CUP[h]) return { t: p.num === 1 ? CUP[h][0] : CUP[h][1].replace("%N", numWord(p.num)), ap: ap };
-      var co = p.clf ? CLF_OF[p.clf] : null, many = p.num > 1;
-      if (co) {
-        var cont = co[0].indexOf(h) >= 0 ? (many ? co[2] : co[1]) : (many ? co[4] : co[3]);
-        var cg = co[0].indexOf(h) >= 0 ? "f" : "m"; if (p.clf === "瓶" || p.clf === "碗" || p.clf === "盘") cg = p.clf === "盘" ? "m" : "f"; if (p.clf === "双" || p.clf === "块") cg = "m";
-        var nn = many ? numWord(p.num) : (cg === "f" ? "una" : "un"); if (many === false && p.clf === "盘") nn = "un";
-        var noun = n.s; /* di + nome */
-        return { t: nn + " " + cont + " di " + (n.g === "f" && p.num === 1 && false ? "" : noun), ap: ap };
-      }
-      if (p.clf === "岁") return { t: numWord(p.num) + " anni", ap: ap };
-      if (p.clf === "次") return { t: numWord(p.num) + (p.num > 1 ? " volte" : " volta"), ap: ap };
-      return { t: p.num === 1 ? withArt(indefArt(n), n.s) : numWord(p.num) + " " + n.p, ap: ap };
-    }
-    if (p.dem) return { t: withArt(demIt(p.dem, n, false), n.s).replace("' ", "'"), ap: ap };
-    return { t: o && o.noArt ? n.s : withArt(defArt(n, false), n.s), ap: ap, n: n };
-  }
-  function gloss(k) { var g = W[k] ? W[k].it : k; return g.split(/[;,(:]/)[0].trim(); }
-
-  /* risultato: {it, notes[], approx[], tense} */
-  function fluid(tokens, punct) {
-    var notes = [], approx = [], hs = tokens.map(hz);
-    if (!tokens.length) return { it: "", notes: notes, approx: approx };
-    /* espressioni fisse */
-    var hjoin = tokens.map(hz).join(""), FIX = { "你好": "Ciao", "你好吗": "Come stai?", "谢谢": "Grazie", "再见": "Arrivederci", "对不起": "Scusa", "不客气": "Prego", "没关系": "Non fa niente", "早上好": "Buongiorno", "晚上好": "Buonasera", "晚安": "Buonanotte", "请问": "Scusi, posso chiedere…", "干杯": "Cin cin!" };
-    if (FIX[hjoin]) return { it: FIX[hjoin] + (/[?!]$/.test(FIX[hjoin]) || punct === "none" ? "" : (punct === "?" ? "?" : punct === "!" ? "!" : ".")).replace(/\.$/, ""), notes: [], approx: [], tense: "pres" };
-    /* quanto costa (anche quando 这个多少钱 e' un gettone solo) */
-    if (/多少钱$/.test(hjoin) && tokens.length === 1) {
-      var ld = hjoin.replace(/多少钱$/, ""); return { it: "Quanto costa" + (ld === "这个" || ld === "这" ? " questo" : ld === "那个" || ld === "那" ? " quello" : "") + "?", notes: [], approx: [], tense: "pres" };
-    }
-    /* quanto costa */
-    var mq = tokens.map(hz).indexOf("多少");
-    if (mq < 0) mq = tokens.map(hz).indexOf("多少钱");
-    if (mq >= 0 && (hz(tokens[mq]) === "多少钱" || hz(tokens[mq + 1] || "") === "钱")) {
-      var lead = tokens.slice(0, mq), qt = "";
-      if (lead.length === 1 && (hz(lead[0]) === "这个" || hz(lead[0]) === "那个")) qt = hz(lead[0]) === "这个" ? "questo" : "quello";
-      else if (lead.length) { var qn = npIt(lead.filter(function (k) { return roleOf(hz(k)) !== "pron" || true; }), {}); qt = qn.t; }
-      return { it: "Quanto costa" + (qt ? " " + qt : "") + "?", notes: [], approx: [], tense: "pres" };
-    }
-    /* frase relativa: [soggetto][tempo] verbo 的 nome  ->  il nome che ho + participio + tempo */
-    var di = tokens.map(hz).indexOf("的");
-    if (di > 0 && di < tokens.length - 1 && VB[hz(tokens[di - 1])]) {
-      var cl = tokens.slice(0, di), nounK = tokens[di + 1], cs = null, ct = [], cv = null;
-      cl.forEach(function (k) { var h0 = hz(k); if (PRON[h0]) cs = h0; else if (TIMEW[h0] !== undefined) ct.push(h0); else if (VB[h0]) cv = h0; });
-      if (cv) {
-        var rp = cs ? PRON[cs] : [1, "s", "x"], rpi = personIdx(rp), vb = VB[cv], isPast = ct.some(function (t) { return PASTT[t]; }) || cl.map(hz).indexOf("了") >= 0;
-        var nI = nounInfo(nounK), saved = P0();
-        var verbIt = isPast ? (vb[1] === "e" ? IRRP.essere[rpi] + " " + ppOf(vb[0]) : IRRP.avere[rpi] + " " + ppOf(vb[0])) : presentOf(vb[0], rpi);
-        var relT = withArt(defArt(nI, false), nI.s) + " che " + verbIt + (ct.length ? " " + ct.map(function (t) { return TIMEW[t]; }).join(" ") : "");
-        var ap0 = nI.known ? [] : [hz(nounK)];
-        return { it: relT.charAt(0).toUpperCase() + relT.slice(1) + ".", notes: ["Il verbo viene PRIMA del nome e 的 fa da «che»: 我昨天买的书 = il libro che ho comprato ieri."].concat(ap0.length ? ["Per " + ap0.join(", ") + " ho usato la traduzione più semplice, controllala."] : []), approx: ap0, tense: isPast ? "past" : "pres" };
-      }
-    }
-    function P0() { return null; }
-    /* i composti verbo+oggetto (吃 饭) diventano un verbo solo */
-    var toks = tokens.slice(), merged = [];
-    for (var m = 0; m < toks.length - 1; m++) { var comp = hz(toks[m]) + hz(toks[m + 1]); if (VO[comp] || MERGE[comp]) { merged.push(m); toks.splice(m, 2, "VO:" + comp); } }
-    var hs2 = toks.map(function (k) { return /^VO:/.test(k) ? k.slice(3) : hz(k); });
-    var us = units(toks);
-    var subj = null, subjP = null, subjG = "x", time = [], adv = [], neg = null, withP = null, placeP = null, modal = null, verb = null, asp = null, obj = [], fin = null, q = null, adj = null, cop = false, have = false, prog = false, atverb = null, voV = null, intens = null, deP = [], negNoPast = false, possSubj = null, subjDem = null, qSubj = false, verb2 = null;
-    us.forEach(function (u) {
-      var h = u.hzs[0], k = u.keys[0];
-      switch (u.kind) {
-        case "pron": if (!subj && !verb && !cop && !modal) { subj = h; subjP = PRON[h]; subjG = PRON[h][2]; } else obj.push(u); break;
-        case "subj":
-          if (u.poss) { var fk = u.keys[1], fh = u.hzs[1], fn = nounInfo(fk), fg = fn.g; subj = fh; subjP = [3, "s", fg]; subjG = fg; possSubj = POSS[h] ? { p: possIt(h, fn, false), n: fn, plural: false } : null; if (fh === "父母") subjP[1] = "p"; }
-          else { subj = u.hzs[0]; subjP = [3, "s", NT[h] ? NT[h][1] : "m"]; subjG = subjP[2]; u.nIt = nounInfo(k); }
-          break;
-        case "subjdem": subj = h; subjP = [3, "s", "m"]; subjG = "m"; subjDem = h === "这" ? "questo" : "quello"; break;
-        case "qsubj": q = "谁"; subj = null; subjP = [3, "s", "m"]; subjG = "m"; qSubj = true; break;
-        case "time": time.push(h); break;
-        case "neg": neg = h; break; case "adv": adv.push(h); break; case "int": intens = h; break;
-        case "prog": prog = true; break;
-        case "with": withP = u; break; case "at": placeP = u; break; case "atverb": atverb = u; break;
-        case "modal": modal = h; break;
-        case "verb": if (verb) verb2 = h; else verb = h; break;
-        case "vo": if (verb) verb2 = h; else { voV = h; verb = h; } break;
-        case "negcop": neg = "不"; cop = true; break;
-        case "cop": cop = true; break; case "have": have = true; break;
-        case "adj": adj = h; break;
-        case "asp": asp = h; break;
-        case "final": fin = h; break;
-        case "q": q = h; break;
-        case "np": obj.push(u); break;
-        default: if (h === "的") deP.push(u); else obj.push(u);
-      }
-    });
-    if (neg === "没有" && !verb && !modal && !adj && !voV && !cop && !atverb && !have) { have = true; neg = "没"; negNoPast = true; }
-    if (cop && adj) cop = false;
-    /* "吃/做 + 饭" : l'oggetto è già nel verbo */
-    if ((verb === "吃" || verb === "做") && obj.some(function (u) { return u.hzs.length === 1 && u.hzs[0] === "饭"; })) { obj = obj.filter(function (u) { return !(u.hzs.length === 1 && u.hzs[0] === "饭"); }); if (verb === "做") { verb = null; voV = "做饭"; } else { verb = null; voV = "吃饭"; } }
-    /* "有" come verbo */
-    var tense = "pres", past = false, fut = false;
-    time.forEach(function (t) { if (PASTT[t]) past = true; if (FUTT[t]) fut = true; });
-    if (asp === "了" && (verb || have || voV) && !(hs2.indexOf("了") === hs2.length - 1 && adj)) past = true;
-    if (asp === "过") tense = "exp";
-    if ((neg === "没" || neg === "没有") && !negNoPast) { past = !fut; }
-    if (past) tense = "past"; else if (fut && tense === "pres") tense = "fut";
-    var pi = subjP ? personIdx(subjP) : 0;                       /* senza soggetto: io */
-    var subjImplicit = !subj && !qSubj; if (subjImplicit) { subjP = [1, "s", "x"]; pi = 0; if (obj.length && (q || fin === "吗")) { subjP = [2, "s", "x"]; pi = 1; } }
-    var P = { pi: pi, g: subjG, num: subjP[1] };
-    var parts = { time: "", pre: "", core: "", obj: "", place: "", com: "", fin: "", front: "" };
-
-    /* tempo */
-    time = time.filter(function (t, ix) { return time.indexOf(t) === ix; });
-    parts.time = time.map(function (t) { return TIMEW[t]; }).join(" ");
-    /* avverbi */
-    var advIt = adv.map(function (a) { return ADVS[a]; }).filter(Boolean);
-    var anche = advIt.indexOf("anche") >= 0, insieme = advIt.indexOf("insieme") >= 0; advIt = advIt.filter(function (a) { return a !== "anche" && a !== "tutti" && a !== "insieme"; });
-    var advBefore = advIt.length ? advIt.join(" ") + " " : "";   /* dichiarata qui: il ramo di 喜欢 la azzera e il valore deve restare */
-    var tutti = adv.indexOf("都") >= 0;
-
-    /* composizione del verbo */
-    function vform(inf, aux, tns, negat) {
-      var np = (negat ? "non " : "");
-      if (tns === "past" || tns === "exp") {
-        var pp = ppOf(inf), s0 = split(inf), refl = /si$/.test(s0[0]);
-        if (aux === "e" || refl) {
-          var fm = agree(pp, P.g === "x" ? (P.pi <= 2 ? "x" : "m") : P.g, P.num), res = (refl ? CLITIC[P.pi] + " " : "") + auxForm("essere", P.pi) + " " + fm + s0[1];
-          if (P.g === "x" && P.num === "s" && P.pi <= 1) res = (refl ? CLITIC[P.pi] + " " : "") + auxForm("essere", P.pi) + " " + pp.replace(/o$/, "o/a") + s0[1];
-          else if (P.g === "x" && P.num === "p" && P.pi <= 4 && P.pi >= 3) res = (refl ? CLITIC[P.pi] + " " : "") + auxForm("essere", P.pi) + " " + pp.replace(/o$/, "i/e") + s0[1];
-          return np + (tns === "exp" ? "" : "") + res;
-        }
-        return np + (tns === "exp" && !negat ? "ho già ".replace("ho", auxForm("avere", P.pi)) : auxForm("avere", P.pi) + " ") + pp + s0[1];
-      }
-      if (tns === "fut") {
-        var st2 = split(inf), b = st2[0].replace(/rsi$/, "re"), refl2 = /si$/.test(st2[0]);
-        var fb = b.replace(/are$/, "er").replace(/ere$/, "er").replace(/ire$/, "ir"); if (/(andare)$/.test(b)) fb = b.replace(/andare$/, "andr"); if (/^(essere)$/.test(b)) fb = "sar"; if (/^(avere)$/.test(b)) fb = "avr"; if (/^(fare)$/.test(b)) fb = "far"; if (/^(venire)$/.test(b)) fb = "verr"; if (/^(bere)$/.test(b)) fb = "berr"; if (/(care|gare)$/.test(b)) fb = b.replace(/(c|g)are$/, "$1her");
-        var ends = ["ò", "ai", "à", "emo", "ete", "anno"], fv = fb + ends[P.pi];
-        return np + (refl2 ? CLITIC[P.pi] + " " : "") + fv + st2[1];
-      }
-      return np + presentOf(inf, P.pi);
-    }
-
-    var verbPhrase = "", objText = "", ap = [], used = false;
-    /* oggetto */
-    function npText(u) {
-      var r = npIt(u.keys, {}); r.ap && r.ap.forEach(function (x) { if (approx.indexOf(x) < 0) approx.push(x); }); return r;
-    }
-    /* possessivo: pron 的 nome  /  nome 的 nome */
-    function bindDe(list) {
-      /* cerca nei token della frase "X 的 Y" tra le unita' oggetto */
-      return list;
-    }
-    /* costruzione del predicato */
-    var nObj = obj.filter(function (u) { return u.kind === "np" || u.kind === "noun" || u.kind === "pron" || u.kind === "place"; });
-    var cliticObj = null;
-    var objIt = nObj.map(function (u) {
-      if (u.hzs.length === 1 && PRON[u.hzs[0]] && !(cop || atverb)) { var pr0 = PRON[u.hzs[0]]; cliticObj = { "1s": "mi", "2s": "ti", "3sm": "lo", "3sf": "la", "1p": "ci", "2p": "vi", "3p": "li" }[pr0[0] + pr0[1] + (pr0[0] === 3 && pr0[1] === "s" ? pr0[2] : "")]; return { t: "", cl: true }; }
-      if (u.kind === "pron") { var pr = PRON[u.hzs[0]]; var obs = { "1s": "me", "2s": "te", "3sm": "lui", "3sf": "lei", "1p": "noi", "2p": "voi", "3p": "loro" }[pr[0] + pr[1] + (pr[1] === "s" && pr[0] === 3 ? pr[2] : "")]; return { t: obs || "", pr: true }; }
-      return npText(u);
-    });
-    /* possessivi con 的 */
-    var deIdx = hs2.indexOf("的");
-    if (deIdx >= 0) {
-      var before = toks[deIdx - 1], after = toks[deIdx + 1], bh = hz(before || ""), ah = hz(after || "");
-      if (after && roleOf(bh) === "pron" && W[after]) {
-        var nn = nounInfo(after), ps = possIt(bh, nn, false), fam = ["爸爸", "妈妈", "哥哥", "弟弟", "姐姐", "妹妹", "儿子", "女儿", "丈夫", "妻子", "男朋友", "女朋友", "家人"].indexOf(ah) >= 0;
-        var phrase = (fam && bh !== "他们" ? "" : (nn.g === "f" ? "la " : "il ")) + ps + " " + nn.s;
-        objIt = [{ t: phrase }]; if (subj === bh && subjImplicit === false && obj.length) { }
-      } else if (after && before && W[before] && W[after]) {
-        var n1 = nounInfo(after), n2 = nounInfo(before);
-        objIt = [{ t: withArt(defArt(n1, false), n1.s) + " di " + withArt(defArt(n2, false), n2.s).replace(/^di il /, "del ") }];
-      }
-    }
-    var mainObj = objIt.length ? objIt[0] : null;
-    var qFront = "", qDone = false;
-    if (q) {
-      var qm = { "什么": "che cosa", "谁": "chi", "哪里": "dove", "哪儿": "dove", "为什么": "perché", "怎么": "come", "怎么样": "come va", "什么时候": "quando", "多久": "quanto tempo", "多少": "quanto", "几": "quanti", "哪": "quale" };
-      qFront = qm[q] || ""; qDone = true;
-    }
-    var aux = null, core = "", inf = null;
-    var negat = !!neg;
-    if (atverb) {
-      /* 他在家 = lui è a casa */
-      var pl = npIt(atverb.keys.slice(1), {}); core = (negat ? "non " : "") + auxForm("essere", P.pi) + " " + (pl.t || ""); if (q === "哪里" || q === "哪儿") core = "dove " + (negat ? "non " : "") + auxForm("essere", P.pi);
-      verbPhrase = core; mainObj = null; placeP = null;
-    } else if (cop) {
-      var cpred = mainObj ? mainObj.t : (adj ? "" : "");
-      /* 我是学生 / 这是什么 */
-      if (q === "什么" && subjDem) { verbPhrase = "che cos'è " + subjDem; subjDem = null; subj = null; subjImplicit = true; qFront = ""; mainObj = null; qDone = false; }
-      else if (qSubj) { verbPhrase = "chi " + (negat ? "non " : "") + "è"; qFront = ""; qDone = false; }
-      else if (q === "什么" || q === "谁") { verbPhrase = qFront + " " + (negat ? "non " : "") + auxForm("essere", P.pi); qFront = ""; mainObj = null; }
-      else {
-        var pred = mainObj ? mainObj.t : "";
-        var PROF = ["学生", "老师", "医生", "同事", "老板", "司机", "警察", "厨师", "护士", "朋友"];
-        if (mainObj && mainObj.n && nObj[0] && PROF.indexOf(hz(nameFromTokens(nObj[0].keys).noun || "")) >= 0 && nObj[0].keys.length === 1) pred = mainObj.n.s;
-        if (P.num === "p" && mainObj && mainObj.n && pred === mainObj.n.s) pred = mainObj.n.p;
-        verbPhrase = (negat ? "non " : "") + auxForm("essere", P.pi) + (tutti ? " tutti" : "") + (pred ? " " + pred : ""); mainObj = null; if (tutti) tutti = false;
-      }
-    } else if (have) {
-      var haveInf = "avere";
-      if (neg === "没有" || neg === "没") negat = true;
-      verbPhrase = vform(haveInf, "a", tense === "exp" ? "pres" : tense, negat);
-      if (nObj[0] && nObj[0].keys.length === 1 && W[nObj[0].keys[0]] && !PRON[nObj[0].hzs[0]]) { var hn0 = nounInfo(nObj[0].keys[0]); var plr = ["钱", "衣服", "鞋子", "父母", "作业", "新闻", "行李", "时间"].indexOf(nObj[0].hzs[0]) >= 0; mainObj = { t: plr || negat ? (hn0.s === "soldi" || plr ? hn0.s : hn0.s) : withArt(indefArt(hn0), hn0.s), n: hn0 }; if (hn0.s === "tempo" || nObj[0].hzs[0] === "时间") mainObj.t = negat ? "tempo" : "tempo"; }
-      if (tense === "past" || tense === "fut") { }
-      if (mainObj) { var oo = mainObj; if (negat && oo.n) oo = { t: oo.n.s }; mainObj = oo; }
-    } else if (adj) {
-      var a = ADJS[adj], hv = HAVE[adj], ad = intens ? INTENS[intens] : "";
-      var subjIsPerson = !subj || subjP[0] <= 2 || (subj && (PRON[subj] || ["朋友", "老师", "学生", "孩子", "妈妈", "爸爸"].indexOf(subj) >= 0));
-      if (hv && subjIsPerson && ["饿", "渴", "困"].indexOf(adj) >= 0 || (hv && subjIsPerson && ["冷", "热"].indexOf(adj) >= 0 && subj && PRON[subj])) {
-        var amt = ad ? (ad === "molto" ? "molt" + (adj === "饿" || adj === "渴" ? "a" : "o") : ad) : "";
-        verbPhrase = (negat ? "non " : "") + vform("avere", "a", tense === "exp" ? "pres" : (tense === "past" ? "past" : tense), false).replace(/^non /, "") + (amt ? " " + amt : "") + " " + hv[0];
-      } else if (adj === "好" && subj && PRON[subj] && !mainObj) {
-        verbPhrase = (negat ? "non " : "") + presentOf("stare", P.pi) + (ad ? " " + ad : "") + " bene";
-      } else if (adj === "热" || adj === "冷") {
-        verbPhrase = (negat ? "non " : "") + (tense === "past" ? "faceva" : "fa") + (ad ? " " + ad : "") + " " + (adj === "热" ? "caldo" : "freddo");
-      } else if (a) {
-        var gg = P.g === "f" ? 1 : 0, num2 = P.num === "p" ? 2 : gg;
-        var af = a[num2]; if (P.g === "x" && P.num === "s" && P.pi <= 1 && a[0] !== a[1]) af = a[0] + "/" + a[1].slice(-1);
-        if (!subj && !mainObj) { subjImplicit = true; }
-        if (subj === "天气" && adj === "好") af = "bello";
-        verbPhrase = (negat ? "non " : "") + (tense === "past" ? (P.pi === 2 ? "era" : ["ero", "eri", "era", "eravamo", "eravate", "erano"][P.pi]) : auxForm("essere", P.pi)) + (ad ? " " + ad : "") + " " + af;
-      } else { verbPhrase = (negat ? "non " : "") + "è " + gloss(tokens[hs.indexOf(adj)]); approx.push(adj); }
-    } else if (verb || modal || voV || (prog && !verb)) {
-      var vinf = null, vaux = "a", vH = voV || verb;
-      if (voV) { vinf = VO[voV][0]; vaux = "a"; if (VO[voV][1] && !mainObj) mainObj = { t: VO[voV][1] }; }
-      else if (verb) { var vv = VB[verb]; vinf = vv ? vv[0] : null; vaux = vv ? vv[1] : "a"; if (!vv) { vinf = gloss(toks[hs2.indexOf(verb)]); approx.push(verb); } }
-      if (verb === "想要") {
-        verbPhrase = (negat ? "non " : "") + (tense === "past" ? ["volevo", "volevi", "voleva", "volevamo", "volevate", "volevano"][P.pi] : ["vorrei", "vorresti", "vorrebbe", "vorremmo", "vorreste", "vorrebbero"][P.pi]);
-      } else if (verb === "叫" && q === "什么") {
-        verbPhrase = "come " + presentOf("chiamarsi", P.pi); qFront = ""; qDone = false; negat = false;
-      } else if (verb === "喜欢") {
-        /* piacere: soggetto cinese = a me; oggetto = chi piace */
-        var dat = { 0: "mi", 1: "ti", 2: "gli", 3: "ci", 4: "vi", 5: "gli" }[P.pi]; if (P.g === "f" && P.pi === 2) dat = "le";
-        var plural = mainObj && mainObj.n && false;
-        var pv = tense === "past" ? "è piaciuto" : "piace"; if (modal) pv = "piace";
-        if (anche && subj && PRON[subj]) { dat = ""; var strongP = { 0: "a me", 1: "a te", 2: P.g === "f" ? "a lei" : "a lui", 3: "a noi", 4: "a voi", 5: "a loro" }[P.pi]; verbPhrase = "anche " + strongP + " " + (negat ? "non " : "") + pv; anche = false; advBefore = ""; }
-        else verbPhrase = (negat ? "non " : "") + dat + " " + pv;
-        if (tutti && !(anche && subj && PRON[subj])) { verbPhrase = "a tutti " + ({ 0: "me", 1: "te", 2: "loro", 3: "noi", 4: "voi", 5: "loro" }[P.pi]) + " " + (negat ? "non " : "") + pv; tutti = false; }
-        if (verb2 && infOf(verb2)) { verbPhrase += " " + infOf(verb2); if (VO[verb2] && VO[verb2][1] && !mainObj) mainObj = { t: VO[verb2][1] }; }
-        negat = false;
-        if (mainObj) mainObj = { t: mainObj.t };
-        subjImplicit = true; subj = null;
-      } else if (modal) {
-        var mInf = { "想": null, "要": "volere", "会": "sapere", "能": "potere", "可以": "potere", "应该": "dovere", "必须": "dovere" }[modal], mform;
-        var vi = vinf ? split(vinf) : ["", ""];
-        var cond = (modal === "想"), abil = (modal === "会" && (tense !== "fut") && (ABILITY[verb] || voV));
-        if (modal === "会" && !abil) { /* futuro */ verbPhrase = vform(vinf || "essere", vaux, "fut", negat); }
-        else if (false) {
-          verbPhrase = (negat ? "non " : "") + (tense === "past" ? ["volevo", "volevi", "voleva", "volevamo", "volevate", "volevano"][P.pi] : ["vorrei", "vorresti", "vorrebbe", "vorremmo", "vorreste", "vorrebbero"][P.pi]);
-        }
-        else if (modal === "想") {
-          var vol = ["vorrei", "vorresti", "vorrebbe", "vorremmo", "vorreste", "vorrebbero"][P.pi];
-          verbPhrase = (negat ? "non " : "") + (tense === "past" ? ["volevo", "volevi", "voleva", "volevamo", "volevate", "volevano"][P.pi] : vol) + " " + (vinf || "");
-          if (tense !== "past") notes.push("想 può essere «vorrei» o «ho voglia di».");
-        } else {
-          var mp = IRRP[mInf][P.pi]; if (tense === "past") mp = { "volere": ["volevo", "volevi", "voleva", "volevamo", "volevate", "volevano"], "potere": ["potevo", "potevi", "poteva", "potevamo", "potevate", "potevano"], "sapere": ["sapevo", "sapevi", "sapeva", "sapevamo", "sapevate", "sapevano"], "dovere": ["dovevo", "dovevi", "doveva", "dovevamo", "dovevate", "dovevano"] }[mInf][P.pi];
-          if (modal === "应该") mp = ["dovrei", "dovresti", "dovrebbe", "dovremmo", "dovreste", "dovrebbero"][P.pi];
-          verbPhrase = (negat ? "non " : "") + mp + " " + (vinf || "");
-        }
-      } else if (verb2 && infOf(verb2) && V2PREP[verb] !== undefined) {
-        var pre = V2PREP[verb], vInfo = VB[verb] ? VB[verb][0] : vinf, conj0 = vform(vinf, vaux, tense === "exp" ? "pres" : tense, negat);
-        if (verb === "怕") conj0 = (negat ? "non " : "") + presentOf("avere", P.pi) + " paura";
-        verbPhrase = conj0 + (pre ? " " + pre : (verb === "怕" ? " di" : "")) + " " + infOf(verb2); if (VO[verb2] && VO[verb2][1] && !mainObj) mainObj = { t: VO[verb2][1] };
-      } else if (prog) {
-        var stv = tense === "past" ? ["stavo", "stavi", "stava", "stavamo", "stavate", "stavano"][P.pi] : presentOf("stare", P.pi);
-        var gf = gerundOf(vinf), refl3 = /si$/.test(split(vinf)[0]);
-        verbPhrase = (negat ? "non " : "") + (refl3 ? CLITIC[P.pi] + " " : "") + stv + " " + gf.replace(/^(\S+)/, "$1") + split(vinf)[1];
-      } else {
-        var tns = tense === "exp" ? "exp" : tense, negV = negat;
-        if (verb === "要" || verb === "想") { }
-        verbPhrase = vform(vinf, vaux, tns, negV);
-        if (asp === "着") notes.push("着 indica uno stato che continua: qui è reso con il presente.");
-        if (tense === "exp") verbPhrase = verbPhrase.replace(/^(non )?/, "$1") ;
-        if (tense === "exp") { var e1 = verbPhrase.split(" "); verbPhrase = verbPhrase.replace(/^(non )?(\S+) /, function (_, n0, au) { return (n0 || "") + au + " già "; }); if (negat) verbPhrase = verbPhrase.replace("non ", "non ").replace(" già ", " mai "); }
-      }
-    } else if (nObj.some(function (u) { return nameFromTokens(u.keys).clf === "岁"; })) {
-      /* 他二十岁: l'età si dice senza verbo in cinese, con «avere» in italiano */
-      verbPhrase = vform("avere", "a", tense === "exp" ? "pres" : tense, negat);
-    } else if (mainObj || q) {
-      verbPhrase = ""; 
-    }
-    /* destinazione: 去/来/回/到 + luogo */
-    var placeIt = "";
-    if (placeP) { var pp2 = npIt(placeP.keys.slice(1), {}); placeIt = pp2.t; pp2.ap && pp2.ap.forEach(function (x) { if (approx.indexOf(x) < 0) approx.push(x); }); }
-    var withIt = "";
-    if (withP && withP.hzs[0] === "给") {
-      var gk = withP.keys[1], gh = hz(gk || "");
-      if (PRON[gh]) { var gpr = PRON[gh]; cliticObj = { "1s": "mi", "2s": "ti", "3sm": "gli", "3sf": "le", "1p": "ci", "2p": "vi", "3p": "gli" }[gpr[0] + gpr[1] + (gpr[0] === 3 && gpr[1] === "s" ? gpr[2] : "")]; }
-      else if (gk) { var gn = nounInfo(gk); withIt = "a " + (FAMILY.indexOf(gh) >= 0 && ["爸爸", "妈妈"].indexOf(gh) >= 0 ? gn.s : withArt(defArt(gn, false), gn.s)); }
-    } else if (withP) {
-      var wk = withP.keys.slice(1), w0 = wk[0], wh = hz(w0 || "");
-      if (PRON[wh]) { var ob = { "我": "me", "你": "te", "您": "Lei", "他": "lui", "她": "lei", "我们": "noi", "你们": "voi", "他们": "loro" }[wh]; withIt = "con " + ob; }
-      else if (w0) { var wn = nounInfo(w0); var art = withP.keys.length > 2 ? null : null; withIt = "con " + (["爸爸", "妈妈", "哥哥", "弟弟", "姐姐", "妹妹", "儿子", "女儿"].indexOf(wh) >= 0 ? "mio " + wn.s : withArt(indefArt(wn), wn.s)).replace("mio mamma", "mia mamma").replace("mio sorella", "mia sorella").replace("mio figlia", "mia figlia"); if (!wn.known) { if (approx.indexOf(wh) < 0) approx.push(wh); } }
-    }
-    /* assemblaggio */
-    var sentence = [];
-    var subjIt = "";
-    if (subjDem) { subjIt = subjDem; }
-    else if (qSubj) { subjIt = ""; }
-    else if (possSubj) {
-      var fam0 = possSubj.n; subjIt = (possSubj.p + " " + fam0.s); subjIt = subjIt.charAt(0).toUpperCase() + subjIt.slice(1);
-      if (anche) subjIt = "anche " + subjIt.toLowerCase(); P.pi = (P.pi < 3 ? 2 : 5); if (subj === "父母") P.pi = 5;
-    } else if (subj && !subjImplicit) {
-      if (PRON[subj]) {
-        var key2 = subjP[0] + subjP[1] + (subjP[0] === 3 && subjP[1] === "s" ? subjP[2] : ""); var ex = (subjP[0] === 3 || anche || tutti);
-        subjIt = ex ? PRON_IT[key2] || "" : "";
-        if (anche) subjIt = { "1s": "anch'io", "2s": "anche tu", "3sm": "anche lui", "3sf": "anche lei", "1p": "anche noi", "2p": "anche voi", "3p": "anche loro" }[key2];
-        if (subj === "您") subjIt = "Lei";
-        if (subjP[0] === 3 && subjP[1] === "p" && !anche && !tutti) subjIt = "";
-      } else {
-        var sn = nounInfo(toks[hs2.indexOf(subj)]); subjIt = withArt(defArt(sn, false), sn.s); if (!sn.known) approx.push(subj);
-        if (anche) subjIt = "anche " + subjIt;
-        P.pi = (P.pi < 3 ? 2 : 5);
-      }
-    } else if (anche) { subjIt = ""; advBefore = "anche " + advBefore; }
-    var mainObjT = mainObj ? mainObj.t : "";
-    if (qDone && qFront && !(cop && (q === "什么" || q === "谁"))) {
-      /* domanda con parola interrogativa: la parola va davanti */
-      if (q === "什么" && !mainObjT) { mainObjT = ""; }
-    }
-    var tail = [mainObjT, placeIt, withIt, insieme ? "insieme" : ""].filter(Boolean).join(" ");
-    if (cliticObj && verbPhrase) verbPhrase = verbPhrase.replace(/^(non )?/, "$1" + cliticObj + " ");
-    var core2 = (advBefore + verbPhrase + (tutti && verbPhrase ? " tutti" : "")).trim();
-    if (qDone && qFront && !cop) {
-      if (q === "哪里" || q === "哪儿") { mainObjT = ""; tail = [withIt, placeIt === "" ? "" : placeIt].filter(Boolean).join(" "); sentence = [qFront, core2, tail]; }
-      else if (q === "多少" && hs2.indexOf("钱") >= 0) { sentence = ["quanto costa"]; }
-      else sentence = [qFront, core2, tail];
-      if (q === "什么" && !verbPhrase) sentence = [qFront, ""];
-    } else {
-      sentence = [parts.time, subjIt, core2, tail];
-    }
-    var out = sentence.filter(function (x) { return x && x.trim(); }).join(" ").replace(/\s+/g, " ").replace(/\bdi il\b/g, "del").replace(/\bdi la\b/g, "della").replace(/\bdi lo\b/g, "dello").replace(/\bdi i\b/g, "dei").replace(/\bin il\b/g, "nel").replace(/\bin la\b/g, "nella").replace(/\ba il\b/g, "al").replace(/\ba la\b/g, "alla").trim();
-    if (!out) { out = tokens.map(gloss).join(" "); notes.push("Non ho una regola per questa combinazione: ti mostro le parole una per una."); }
-    /* particelle finali */
-    var isQ = fin === "吗" || !!q || punct === "?";
-    var excl = false;
-    if (fin === "吧") { if (P.num === "p" && P.pi === 3) excl = true; else { out = out + ", vero"; isQ = true; } }
-    if (fin === "呢" && tokens.length === 2 && subj) { out = "e " + (PRON_IT[subjP[0] + subjP[1] + (subjP[0] === 3 && subjP[1] === "s" ? subjP[2] : "")] || out); isQ = true; }
-    out = out.charAt(0).toUpperCase() + out.slice(1) + (isQ ? "?" : (punct === "!" || excl) ? "!" : ".");
-    if (approx.length) notes.push("Per " + approx.join(", ") + " non ho una regola specifica: ho usato la traduzione più semplice, controllala.");
-    if (/\/[a-z]/.test(out)) notes.push("In italiano il participio cambia col genere: «o/a» = scegli tu (maschile/femminile).");
-    return { it: out, notes: notes, approx: approx, tense: tense };
-  }
-
   /* ================== correttore d'ordine ================== */
   /* Prudente: segnala solo errori sicuri (precisione prima della copertura). Ogni regola e' una cosa che un cinese non direbbe mai. */
   var ACTV2 = { "吃": 1, "喝": 1, "学": 1, "学习": 1, "看": 1, "买": 1, "工作": 1, "睡觉": 1, "玩": 1, "做": 1, "读": 1, "写": 1, "唱歌": 1, "跳舞": 1, "洗澡": 1, "吃饭": 1, "做饭": 1, "看书": 1, "卖": 1, "听": 1, "说": 1, "教": 1, "游泳": 1, "跑": 1, "走": 1, "起床": 1 };
@@ -13815,7 +13930,1029 @@ I18N.zh = {
     res.fixed = t; res.steps = steps; res.issues = issues; res.ok = !issues.length; res.changed = t.join("|") !== tokens.join("|");
     return res;
   }
-  CP.lab = { fluid: fluid, check: check, units: units, _roleOf: roleOf, zhNum: zhNum };
+  CP.lab = CP.lab || {};
+  CP.lab.check = check; CP.lab._roleOf = roleOf;
+})();
+</script>
+<script>
+/* ---- phrases/italian.js ---- */
+/* Morfologia italiana per il traduttore del laboratorio: coniugazioni, articoli, preposizioni articolate,
+   possessivi, accordi. Nessun dato sul cinese qui: solo regole dell'italiano, provate da tools/grammar.mjs.
+   Persone: pi = 0..5 (io, tu, lui/lei, noi, voi, loro). Genere: "m", "f" o "x" (non si sa: «o/a»). */
+(function () {
+  var CP = window.CP;
+  var IRR = {   /* presente indicativo */
+    essere: ["sono", "sei", "è", "siamo", "siete", "sono"], avere: ["ho", "hai", "ha", "abbiamo", "avete", "hanno"],
+    andare: ["vado", "vai", "va", "andiamo", "andate", "vanno"], venire: ["vengo", "vieni", "viene", "veniamo", "venite", "vengono"],
+    fare: ["faccio", "fai", "fa", "facciamo", "fate", "fanno"], dire: ["dico", "dici", "dice", "diciamo", "dite", "dicono"],
+    potere: ["posso", "puoi", "può", "possiamo", "potete", "possono"], volere: ["voglio", "vuoi", "vuole", "vogliamo", "volete", "vogliono"],
+    dovere: ["devo", "devi", "deve", "dobbiamo", "dovete", "devono"], sapere: ["so", "sai", "sa", "sappiamo", "sapete", "sanno"],
+    bere: ["bevo", "bevi", "beve", "beviamo", "bevete", "bevono"], uscire: ["esco", "esci", "esce", "usciamo", "uscite", "escono"],
+    stare: ["sto", "stai", "sta", "stiamo", "state", "stanno"], dare: ["do", "dai", "dà", "diamo", "date", "danno"],
+    salire: ["salgo", "sali", "sale", "saliamo", "salite", "salgono"], scegliere: ["scelgo", "scegli", "sceglie", "scegliamo", "scegliete", "scelgono"],
+    piacere: ["piaccio", "piaci", "piace", "piacciamo", "piacete", "piacciono"], sedere: ["siedo", "siedi", "siede", "sediamo", "sedete", "siedono"],
+    rimanere: ["rimango", "rimani", "rimane", "rimaniamo", "rimanete", "rimangono"], tenere: ["tengo", "tieni", "tiene", "teniamo", "tenete", "tengono"],
+    tradurre: ["traduco", "traduci", "traduce", "traduciamo", "traducete", "traducono"], morire: ["muoio", "muori", "muore", "moriamo", "morite", "muoiono"],
+    togliere: ["tolgo", "togli", "toglie", "togliamo", "togliete", "tolgono"], spegnere: ["spengo", "spegni", "spegne", "spegniamo", "spegnete", "spengono"],
+    porre: ["pongo", "poni", "pone", "poniamo", "ponete", "pongono"], cuocere: ["cuocio", "cuoci", "cuoce", "cuociamo", "cuocete", "cuociono"]
+  };
+  var PP = {   /* participi passati irregolari */
+    essere: "stato", stare: "stato", fare: "fatto", dire: "detto", bere: "bevuto", leggere: "letto", scrivere: "scritto", prendere: "preso",
+    mettere: "messo", vedere: "visto", aprire: "aperto", chiudere: "chiuso", rispondere: "risposto", perdere: "perso", scegliere: "scelto",
+    spendere: "speso", venire: "venuto", chiedere: "chiesto", correre: "corso", ridere: "riso", piangere: "pianto", rimanere: "rimasto",
+    scendere: "sceso", decidere: "deciso", conoscere: "conosciuto", nascere: "nato", vendere: "venduto", piacere: "piaciuto", sedere: "seduto",
+    tenere: "tenuto", vivere: "vissuto", morire: "morto", rompere: "rotto", succedere: "successo", offrire: "offerto", scoprire: "scoperto",
+    accendere: "acceso", spegnere: "spento", vincere: "vinto", dipingere: "dipinto", tradurre: "tradotto", crescere: "cresciuto",
+    muovere: "mosso", discutere: "discusso", permettere: "permesso", promettere: "promesso", smettere: "smesso", togliere: "tolto",
+    porre: "posto", aggiungere: "aggiunto", raggiungere: "raggiunto", dividere: "diviso", sorridere: "sorriso", cuocere: "cotto",
+    friggere: "fritto", assumere: "assunto", ricevere: "ricevuto", credere: "creduto", ripetere: "ripetuto", sapere: "saputo",
+    dovere: "dovuto", potere: "potuto", volere: "voluto", avere: "avuto", tagliare: "tagliato", appendere: "appeso", spingere: "spinto",
+    raccogliere: "raccolto", restituire: "restituito", difendere: "difeso", proteggere: "protetto", esprimere: "espresso", uccidere: "ucciso"
+  };
+  var FUT = {   /* radici irregolari di futuro e condizionale */
+    essere: "sar", avere: "avr", andare: "andr", venire: "verr", fare: "far", bere: "berr", potere: "potr", volere: "vorr", dovere: "dovr",
+    sapere: "sapr", vedere: "vedr", vivere: "vivr", stare: "star", dare: "dar", tenere: "terr", rimanere: "rimarr", dire: "dir",
+    tradurre: "tradurr", morire: "morr", porre: "porr", cadere: "cadr"
+  };
+  var IMPF = { essere: ["ero", "eri", "era", "eravamo", "eravate", "erano"], fare: "fac", dire: "dic", bere: "bev", tradurre: "traduc", porre: "pon" };
+  var GER = { fare: "facendo", dire: "dicendo", bere: "bevendo", tradurre: "traducendo", porre: "ponendo" };
+  /* verbi in -ire senza «-isc-» (dormo, apro, parto…): tutti gli altri prendono -isc- (capisco, finisco) */
+  var NOISC = { dormire: 1, aprire: 1, partire: 1, sentire: 1, offrire: 1, servire: 1, seguire: 1, coprire: 1, scoprire: 1, soffrire: 1, vestire: 1, fuggire: 1, bollire: 1, divertire: 1, avvertire: 1, cucire: 1, riaprire: 1, ripartire: 1 };
+  var CLITIC = ["mi", "ti", "si", "ci", "vi", "si"];
+
+  /* "fare la doccia" -> verbo "fare" + resto " la doccia"; "alzarsi" -> base "alzare", riflessivo */
+  function parts(inf) {
+    var i = inf.indexOf(" "), v = i < 0 ? inf : inf.slice(0, i), rest = i < 0 ? "" : inf.slice(i);
+    var refl = /rsi$/.test(v), base = refl ? v.replace(/si$/, "e") : v;
+    return { v: v, base: base, rest: rest, refl: refl };
+  }
+  function stem(base) { return base.slice(0, -3); }
+  function presentRegular(base, pi) {
+    var st = stem(base), t = base.slice(-3);
+    if (t === "are") {
+      var e = ["o", "i", "a", "iamo", "ate", "ano"][pi];
+      if (/[cg]$/.test(st) && /^i/.test(e)) st += "h";
+      else if (/i$/.test(st) && /^i/.test(e)) e = e.slice(1);   /* mangi, mangiamo, studi */
+      return st + e;
+    }
+    if (t === "ere") return st + ["o", "i", "e", "iamo", "ete", "ono"][pi];
+    if (t === "ire") return NOISC[base] ? st + ["o", "i", "e", "iamo", "ite", "ono"][pi] : st + ["isco", "isci", "isce", "iamo", "ite", "iscono"][pi];
+    return null;
+  }
+  function present(inf, pi) {
+    var p = parts(inf), f = IRR[p.base] ? IRR[p.base][pi] : presentRegular(p.base, pi);
+    if (f == null) return null;
+    return (p.refl ? CLITIC[pi] + " " : "") + f + p.rest;
+  }
+  function pp(inf) {
+    var b = parts(inf).base; if (PP[b]) return PP[b];
+    var t = b.slice(-3), st = stem(b);
+    return t === "are" ? st + "ato" : t === "ere" ? st + "uto" : t === "ire" ? st + "ito" : null;
+  }
+  /* accordo del participio (con essere) o di un aggettivo in -o: g "x" al singolare = «o/a» */
+  function agreeO(w, g, num) {
+    if (!/o$/.test(w)) return w;
+    var r = w.slice(0, -1);
+    if (num === "p") return r + (g === "f" ? "e" : "i");
+    return g === "f" ? r + "a" : g === "x" ? w + "/a" : w;
+  }
+  function passato(inf, aux, pi, g, num) {
+    var p = parts(inf), part = pp(inf); if (!part) return null;
+    if (aux === "e" || p.refl) return (p.refl ? CLITIC[pi] + " " : "") + IRR.essere[pi] + " " + agreeO(part, g, num) + p.rest;
+    return IRR.avere[pi] + " " + part + p.rest;
+  }
+  function futStem(base) {
+    if (FUT[base]) return FUT[base];
+    var st = stem(base), t = base.slice(-3);
+    if (t === "are") { if (/[cg]$/.test(st)) return st + "her"; if (/[cg]i$/.test(st)) return st.slice(0, -1) + "er"; return st + "er"; }
+    return st + (t === "ere" ? "er" : "ir");
+  }
+  function future(inf, pi) { var p = parts(inf); return (p.refl ? CLITIC[pi] + " " : "") + futStem(p.base) + ["ò", "ai", "à", "emo", "ete", "anno"][pi] + p.rest; }
+  function conditional(inf, pi) { var p = parts(inf); return (p.refl ? CLITIC[pi] + " " : "") + futStem(p.base) + ["ei", "esti", "ebbe", "emmo", "este", "ebbero"][pi] + p.rest; }
+  function imperfect(inf, pi) {
+    var p = parts(inf), b = p.base, x = IMPF[b], f;
+    if (Array.isArray(x)) f = x[pi];
+    else {
+      var st = x || stem(b), v = x ? "e" : b.slice(-3, -2);
+      f = st + v + ["vo", "vi", "va", "vamo", "vate", "vano"][pi];
+    }
+    return (p.refl ? CLITIC[pi] + " " : "") + f + p.rest;
+  }
+  function gerund(inf) { var p = parts(inf), b = p.base; return GER[b] || (b.slice(-3) === "are" ? stem(b) + "ando" : stem(b) + "endo"); }
+
+  /* ---- nomi e articoli ---- */
+  function vowel(w) { return /^[aeiouàèéìòùh]/i.test(w) && !/^h[^aeiou]/i.test(w); }
+  function sImpure(w) { return /^(s[bcdfghlmnpqrtvwz]|z|gn|ps|pn|x|y|i[aeiou])/i.test(w); }
+  function first(s) { return String(s).split(" ")[0]; }
+  /* articolo determinativo per la parola «w» (la prima parola del sintagma) */
+  function def(w, g, num) {
+    var f = first(w);
+    if (num === "p") return g === "f" ? "le" : (vowel(f) || sImpure(f) ? "gli" : "i");
+    if (g === "f") return vowel(f) ? "l'" : "la";
+    return vowel(f) ? "l'" : sImpure(f) ? "lo" : "il";
+  }
+  function indef(w, g) {
+    var f = first(w);
+    if (g === "f") return vowel(f) ? "un'" : "una";
+    return sImpure(f) ? "uno" : "un";
+  }
+  function partitive(w, g, num) { return prep("di", def(w, g, num)); }
+  function join(art, w) { return /'$/.test(art) ? art + w : art + " " + w; }
+  /* preposizione + articolo: di + il = del, a + l' = all', in + gli = negli… */
+  var PA = { di: "de", a: "a", da: "da", "in": "ne", su: "su" };
+  function prep(p, art) {
+    if (!PA[p]) return p + " " + art;
+    var b = PA[p];
+    if (art === "il") return b + "l"; if (art === "lo") return b + "llo"; if (art === "la") return b + "lla"; if (art === "l'") return b + "ll'";
+    if (art === "i") return b + "i"; if (art === "gli") return b + "gli"; if (art === "le") return b + "lle";
+    return p + " " + art;
+  }
+  /* applica una preposizione a un sintagma che comincia (forse) con un articolo: "di" + "il pane" = "del pane" */
+  function withPrep(p, np) {
+    var m = /^(il|lo|la|i|gli|le) (.*)$/.exec(np) || /^(l')(.*)$/.exec(np);
+    if (m) { var a = prep(p, m[1]); return /'$/.test(a) ? a + m[2] : a + " " + m[2]; }
+    if (p === "di" && vowel(np)) return "d'" + np;
+    return p + " " + np;
+  }
+  /* aggettivo con 4 forme [m s, f s, m p, f p] */
+  function adj(forms, g, num) {
+    if (num === "p") return g === "f" ? forms[3] : forms[2];
+    if (g === "x") return forms[0] === forms[1] ? forms[0] : (/o$/.test(forms[0]) && forms[1] === forms[0].slice(0, -1) + "a" ? forms[0] + "/a" : forms[0] + "/" + forms[1]);
+    return g === "f" ? forms[1] : forms[0];
+  }
+  /* possessivo: base "mio", "tuo", "suo", "nostro", "vostro", "loro", "Suo" */
+  var POSSF = { mio: ["mio", "mia", "miei", "mie"], tuo: ["tuo", "tua", "tuoi", "tue"], suo: ["suo", "sua", "suoi", "sue"], Suo: ["Suo", "Sua", "Suoi", "Sue"], nostro: ["nostro", "nostra", "nostri", "nostre"], vostro: ["vostro", "vostra", "vostri", "vostre"], loro: ["loro", "loro", "loro", "loro"] };
+  function poss(base, g, num) { return adj(POSSF[base], g === "x" ? "m" : g, num); }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  var NUMW = ["zero", "uno", "due", "tre", "quattro", "cinque", "sei", "sette", "otto", "nove", "dieci"];
+  function num(n, g) { if (n === 1) return g === "f" ? "una" : "un"; return n >= 0 && n <= 10 ? NUMW[n] : String(n); }
+
+  CP.ita = {
+    present: present, pp: pp, passato: passato, future: future, conditional: conditional, imperfect: imperfect, gerund: gerund,
+    agreeO: agreeO, def: def, indef: indef, partitive: partitive, join: join, prep: prep, withPrep: withPrep, adj: adj, poss: poss,
+    cap: cap, num: num, vowel: vowel, CLITIC: CLITIC, IRR: IRR
+  };
+})();
+</script>
+<script>
+/* ---- phrases/translate.js ---- */
+/* Traduttore del laboratorio, cinese → italiano. Prudente per costruzione:
+   1. una frase verificata (src/data/verified.js, le frasi tradotte a mano nell'app, le correzioni dell'utente) vince sempre;
+   2. altrimenti analizza la frase con le regole e le schede di src/data/grammar.js;
+   3. se una parola non ha la scheda o la costruzione non è tra quelle note, NON indovina: risponde
+      «Non so ancora tradurre questa frase», mostra la frase parola per parola e dice che cosa manca.
+   Le regole si provano con «node tools/grammar.mjs» su tutte le frasi verificate. */
+(function () {
+  var CP = window.CP, I = CP.ita, G = GRAM, W = CP.WORDS;
+  var NOPE = "Non so ancora tradurre questa frase.";
+  function hz(k) { return W[k] ? W[k].hz : String(k); }
+  /* scheda di una parola: la chiave esatta se ha «#» (omografi), altrimenti i caratteri */
+  function lex(t, k) { if (k == null) return undefined; if (Object.prototype.hasOwnProperty.call(t, k)) return t[k]; if (String(k).indexOf("#") >= 0) return undefined; var h = hz(k); return Object.prototype.hasOwnProperty.call(t, h) ? t[h] : undefined; }
+  function gloss(k) { return W[k] ? CP.gloss(W[k]) : String(k); }
+
+  /* parole grammaticali (non sono dati da ampliare: ognuna ha una regola nel codice qui sotto) */
+  var NEG = { "不": 1, "没": 1, "没有": 1 }, MODAL = { "想": 1, "要": 1, "想要": 1, "会": 1, "能": 1, "可以": 1, "应该": 1, "必须": 1 };
+  var FINAL = { "吗": 1, "呢": 1, "吧": 1 };
+  var DEMS = { "这": ["这", 0], "那": ["那", 0], "这个": ["这", 1], "那个": ["那", 1], "这些": ["这", 2], "那些": ["那", 2] };
+  var ADVS = { "也": 1, "都": 1, "还": 1, "已经": 1, "只": 1, "经常": 1, "一直": 1, "马上": 1, "有时候": 1, "从来不": 1 };
+  var QPLACE = { "哪里": 1, "哪儿": 1 };
+  var ABIL = { "说": 1, "写": 1, "读": 1, "画": 1, "做": 1, "唱歌": 1, "跳舞": 1, "游泳": 1, "做饭": 1, "开车": 1 };
+
+  var NOTES = [], CURSUBJ = null;
+  function Fail(msg, k) { this.msg = msg; this.k = k; }
+  function fail(msg, k) { throw new Fail(msg, k); }
+
+  /* ================= analisi ================= */
+  function Parser(keys) { this.k = keys; this.i = 0; }
+  Parser.prototype.h = function (o) { var k = this.k[this.i + (o || 0)]; return k == null ? null : hz(k); };
+  Parser.prototype.key = function (o) { return this.k[this.i + (o || 0)]; };
+  Parser.prototype.end = function () { return this.i >= this.k.length; };
+  Parser.prototype.eat = function (h) { if (this.h() === h) { this.i++; return true; } return false; };
+
+  function isNoun(k) { return lex(G.nouns, k) !== undefined; }
+  function isPlace(k) { return lex(G.places, k) !== undefined; }
+  function isVerb(k) { return lex(G.verbs, k) !== undefined; }
+  function isAdj(k) { return lex(G.adjs, k) !== undefined || lex(G.haveAdjs, k) !== undefined; }
+  function isNum(h) { return h != null && G.nums[h] !== undefined; }
+  function zhNum(hs) {   /* 二十 = 20, 十二 = 12, 三十五 = 35, 一百 = 100, 三百五 = 350 */
+    var total = 0, cur = 0, unit = 0, zero = false;
+    hs.forEach(function (h) { var v = G.nums[h]; if (v === 10 || v === 100) { total += (cur || 1) * v; cur = 0; unit = v; zero = false; } else if (v === 0) zero = true; else cur = v; });
+    if (cur && unit === 100 && !zero && hs.length > 2) cur *= 10;
+    return total + cur;
+  }
+
+  /* sintagma nominale */
+  Parser.prototype.np = function () {
+    var h = this.h(), k = this.key(), np;
+    if (h == null) return null;
+    if (G.pron[h]) {
+      var nk = this.key(1), nh = this.h(1);
+      if (nh === "的" && this.key(2) && isNoun(this.key(2))) { this.i += 3; return { t: "poss", pron: h, head: this.k[this.i - 1] }; }
+      if (nk && isNoun(nk) && /[rk]/.test(lex(G.nouns, nk)[3] || "")) {
+        this.i += 2; var po = { t: "poss", pron: h, head: nk, noDe: true };
+        if (this.h() === "的" && this.key(1) && isNoun(this.key(1))) { this.i += 2; return { t: "of", owner: po, head: this.key(-1) }; }
+        return po;
+      }
+      this.i++; return { t: "pron", pron: h };
+    }
+    if (DEMS[h]) {
+      var d = DEMS[h]; this.i++;
+      np = { t: "dem", dem: d[0], plural: d[1] === 2 };
+      if (d[1] === 0) { var nn = this.numSeq(); if (nn != null) np.n = nn; if (G.clf[this.h()] !== undefined) { np.clf = this.h(); this.i++; } }
+      if (this.key() && isNoun(this.key())) { np.head = this.key(); this.i++; }
+      else if (np.n != null) fail("dopo il numero manca la cosa contata", this.key());
+      if (np.n != null && np.n > 1) np.plural = true;
+      return np;
+    }
+    if (h === "几" || h === "多少") {
+      this.i++; var qc = G.clf[this.h()] !== undefined ? this.h() : null; if (qc) this.i++;
+      if (this.h() === "岁") { this.i++; return { t: "qage" }; }
+      if (h === "多少" && this.h() === "钱") { this.i++; return { t: "qprice" }; }
+      if (this.key() && isNoun(this.key())) { this.i++; return { t: "qnum", head: this.key(-1), clf: qc }; }
+      fail("dopo «" + h + "» mi serve la cosa da contare", this.key());
+    }
+    if (isNum(h)) {
+      var n = this.numSeq(), c = G.clf[this.h()] !== undefined ? this.h() : null;
+      if (this.h() === "岁") { this.i++; return { t: "age", n: n }; }
+      if (c) this.i++;
+      if (this.key() && isNoun(this.key())) {
+        if (!c && n > 0) fail("tra il numero e la cosa manca il classificatore (一个, 一本, 两杯…)", this.key());
+        this.i++; return { t: "count", n: n, clf: c, head: this.key(-1) };
+      }
+      fail("dopo il numero manca la cosa contata", this.key());
+    }
+    if (h === "很" && this.h(1) === "多" && this.key(2) && isNoun(this.key(2))) { this.i += 3; return { t: "many", head: this.key(-1) }; }
+    if ((QPLACE[h] || h === "哪") && this.h(1) === "人") { this.i += 2; return { t: "qnat" }; }
+    if (G.nations[h] !== undefined && this.h(1) === "人") { this.i += 2; return { t: "nat", nat: h }; }
+    if (h === "什么") { this.i++; if (this.key() && isNoun(this.key())) { this.i++; return { t: "qwhich", head: this.key(-1) }; } return { t: "q", q: "什么" }; }
+    if (h === "谁") { this.i++; return { t: "q", q: "谁" }; }
+    if (isNoun(k)) {
+      this.i++;
+      if (this.h() === "的" && this.key(1) && isNoun(this.key(1))) { this.i += 2; return { t: "of", owner: { t: "noun", head: k }, head: this.key(-1) }; }
+      return { t: "noun", head: k };
+    }
+    if (isPlace(k)) { this.i++; return { t: "place", head: k }; }
+    return null;
+  };
+  Parser.prototype.numSeq = function () { var hs = []; while (isNum(this.h())) { hs.push(this.h()); this.i++; } return hs.length ? zhNum(hs) : null; };
+  Parser.prototype.place = function () {
+    var k = this.key();
+    if (k && isPlace(k)) { this.i++; return { t: "place", head: k }; }
+    var save = this.i, np = this.np();
+    if (np && np.t === "poss" && hz(np.head) === "家") return np;
+    this.i = save; return null;
+  };
+
+  /* frase: [tempo] soggetto [tempo] [avverbi] [不/没] [modale] [跟…/在…/给…/从…] predicato [了] [吗/呢/吧] */
+  function parse(keys) {
+    var p = new Parser(keys), S = { time: [], adv: [], pp: [] };
+    if (p.h() === "有时候") { S.adv.push("有时候"); p.i++; }
+    function times() { while (p.key() && lex(G.time, p.key()) !== undefined) { S.time.push(p.h()); p.i++; } }
+    times();
+    /* soggetto */
+    var h0 = p.h();
+    if (h0 === "谁") { p.i++; S.subj = { t: "q", q: "谁" }; }
+    else if (h0 && !isVerb(p.key()) && !MODAL[h0] && !NEG[h0] && !isAdj(p.key()) && h0 !== "是" && h0 !== "有" && h0 !== "在" && !ADVS[h0]) {
+      var save = p.i, np = p.np();
+      if (np) S.subj = np; else p.i = save;
+      if (np && np.t === "place" && (p.h() === "有" || p.h() === "没有")) { S.topicPlace = np; S.subj = null; }
+    }
+    times();
+    if (p.h() === "为什么" || p.h() === "怎么") { S.qadv = p.h(); p.i++; }
+    if (p.h() === "什么时候") { S.qwhen = true; p.i++; }
+    while (p.h() && ADVS[p.h()]) { S.adv.push(p.h()); p.i++; }
+    if (p.h() === "为什么" || p.h() === "怎么") { S.qadv = p.h(); p.i++; }
+    if (p.h() === "不" || p.h() === "没" || (p.h() === "没有" && (isVerb(p.key(1)) || p.h(1) === "去"))) { S.neg = p.h(); p.i++; }
+    if (p.h() === "太" && S.neg === "不") { S.notVery = true; p.i++; }
+    if (p.h() === "会" && p.key(1) && (isAdj(p.key(1)) || G.degree[p.h(1)] !== undefined && isAdj(p.key(2)))) { S.modal = "会"; p.i++; }
+    else if (p.h() && MODAL[p.h()] && (isVerb(p.key(1)) || ADVS[p.h(1)] || p.h(1) === "跟" || p.h(1) === "和" || p.h(1) === "在" || p.h(1) === "给" || p.h(1) === "去" || p.h(1) === "一起")) {
+      if (p.h() === "要" && S.neg === "不" && !S.subj) fail("「不要 + verbo」 è un divieto: non lo traduco ancora");
+      S.modal = p.h(); p.i++;
+    }
+    /* complementi prima del verbo */
+    for (;;) {
+      var hh = p.h();
+      if ((hh === "跟" || hh === "和") && S.subj) { p.i++; var wn = p.np(); if (!wn) fail("dopo «" + hh + "» mi serve una persona", p.key()); S.pp.push({ t: "with", np: wn }); if (p.eat("一起")) S.together = true; continue; }
+      if (hh === "一起") { p.i++; S.together = true; continue; }
+      if (hh === "在" && p.key(1) && !isVerb(p.key(1))) {
+        var save2 = p.i; p.i++; var pl = p.place();
+        if (pl && !p.end() && !FINAL[p.h()]) { S.pp.push({ t: "at", np: pl }); continue; }
+        p.i = save2; break;
+      }
+      if (hh === "给" && S.subj) {
+        var save4 = p.i; p.i++; var gn = p.np(); if (!gn) fail("dopo «给» mi serve una persona", p.key());
+        if (p.key() && (isVerb(p.key()) || MODAL[p.h()] || ADVS[p.h()])) { S.pp.push({ t: "to", np: gn }); continue; }
+        p.i = save4; break;   /* 我给你一本书: qui 给 è il verbo «dare» */
+      }
+      if (hh === "从") { p.i++; var fp = p.place(); if (!fp) fail("dopo «从» mi serve un luogo", p.key()); S.pp.push({ t: "from", np: fp }); continue; }
+      break;
+    }
+    if (!S.neg && (p.h() === "不" || p.h() === "没")) { S.neg = p.h(); p.i++; }
+    /* domanda «sì o no» col verbo ripetuto: 是不是, 有没有, 去不去 */
+    if (!S.neg && p.h() && (p.h(1) === "不" || p.h(1) === "没") && p.h(2) === p.h()) { S.anotA = true; p.i += 2; }
+    else if (!S.neg && p.h() && (p.h(1) === "不" + p.h() || p.h(1) === "没" + p.h())) { S.anotA = true; p.i += 1; p.k = p.k.slice(); p.k[p.i] = p.k[p.i - 1]; }
+    /* predicato */
+    var h = p.h(), k = p.key();
+    if (h == null) fail("manca il verbo");
+    if ((h === "很" || h === "非常") && (p.h(1) === "喜欢" || p.h(1) === "爱")) { S.likeMuch = true; p.i++; h = p.h(); k = p.key(); }
+    if (h === "呢" && p.i === p.k.length - 1 && S.subj && !S.time.length && !S.adv.length && !S.neg && !S.modal && !S.pp.length) { p.i++; S.pred = { t: "ne" }; return S; }
+    if ((h === "多少钱" || h === "多少" && p.h(1) === "钱") && S.subj) { p.i += h === "多少钱" ? 1 : 2; S.pred = { t: "price" }; if (p.h() && FINAL[p.h()]) { S.fin = p.h(); p.i++; } if (!p.end()) fail("non so dove mettere «" + p.h() + "» in questa frase", p.key()); return S; }
+    if (h === "是" || h === "不是") {
+      if (h === "不是") S.neg = "不"; p.i++;
+      var pn = p.np(); if (!pn) fail("dopo «是» mi serve chi o che cosa", p.key());
+      S.pred = { t: "cop", np: pn };
+    } else if (h === "有" || h === "没有") {
+      if (h === "没有") S.neg = "没"; p.i++;
+      var hn = p.np(); if (!hn) fail("dopo «" + h + "» mi serve una cosa o una persona", p.key());
+      S.pred = { t: "have", np: hn };
+    } else if (h === "在" || h === "正在") {
+      p.i++;
+      if (h === "在" && !isVerb(p.key())) { var lp = p.place(); if (!lp) fail("dopo «在» mi serve un luogo", p.key()); S.pred = { t: "loc", np: lp }; }
+      else { S.prog = true; S.pred = verbPred(p); }
+    } else if (h === "比") {
+      p.i++; var than = null;
+      if (p.key() && lex(G.time, p.key()) !== undefined) { than = { t: "time", h: p.h() }; p.i++; } else than = p.np();
+      if (!than) fail("dopo «比» mi serve con chi o che cosa paragoni", p.key());
+      p.eat("更"); var ak = p.key(); if (!ak || !isAdj(ak) || lex(G.haveAdjs, ak) !== undefined) fail("nel paragone con «比» mi serve un aggettivo che conosco", ak);
+      p.i++; S.pred = { t: "cmp", than: than, adj: ak };
+    } else if (G.degree[h] !== undefined && p.key(1) && isAdj(p.key(1))) {
+      p.i++; S.pred = { t: "adj", adj: p.key(), deg: h }; p.i++;
+      if (h === "太") S.tooLe = p.h() === "了";
+    } else if (isAdj(k) && !isVerb(k)) {
+      p.i++; S.pred = { t: "adj", adj: k };
+    } else if (h === "喜欢" || h === "爱") {
+      p.i++; S.pred = { t: "like", love: h === "爱" };
+      if (p.key() && isVerb(p.key())) S.pred.vp = verbPred(p);
+      else { var ln = p.np(); if (!ln) fail("dopo «" + h + "» mi serve che cosa piace", p.key()); S.pred.np = ln; }
+      if (h === "爱" && S.pred.vp) fail("«爱 + verbo» non lo traduco ancora: prova con 喜欢");
+    } else if (MODAL[h] && !S.modal && (h === "要" || h === "想" || h === "想要")) {
+      p.i++; var mn = p.np(); if (!mn) fail("dopo «" + h + "» mi serve un verbo o una cosa", p.key());
+      if (h === "想" && mn.t === "pron") S.pred = { t: "like", np: mn, miss: true };
+      else if (h === "想") fail("«想 + cosa» vuol dire «mi manca, penso a»: non lo traduco ancora. Per «ho voglia di» usa 想 + verbo (想喝茶)");
+      else S.pred = { t: "want", np: mn, cond: h === "想要" };
+    } else if (isVerb(k)) {
+      S.pred = verbPred(p);
+      /* 坐地铁去机场: il mezzo, poi il verbo di movimento */
+      if (hz(S.pred.k) === "坐" && S.pred.obj && S.pred.obj.t === "noun" && /t/.test(lex(G.nouns, S.pred.obj.head)[3] || "") && p.key() && isVerb(p.key()) && /d/.test(lex(G.verbs, p.key())[2] || "")) {
+        S.means = S.pred.obj; S.pred = verbPred(p);
+      }
+    } else {
+      var save3 = p.i, agn = p.np();
+      if (agn && agn.t === "age") { S.pred = { t: "age", n: agn.n }; }
+      else if (agn && agn.t === "qage") { S.pred = { t: "age", q: true }; }
+      else { p.i = save3; fail(W[k] ? "non conosco ancora la grammatica di «" + h + "»" : "non riconosco «" + h + "»", k); }
+    }
+    /* fine */
+    if (p.h() === "了") { S.le = true; p.i++; }
+    if (p.h() && FINAL[p.h()]) { S.fin = p.h(); p.i++; }
+    if (!p.end()) fail(W[p.key()] ? "non so dove mettere «" + p.h() + "» in questa frase" : "non riconosco «" + p.h() + "»", p.key());
+    return S;
+  }
+  /* verbo [了/过/着] [oggetto | luogo | verbo] */
+  function verbPred(p) {
+    var k = p.key(), v = { t: "verb", k: k, info: lex(G.verbs, k) }; p.i++;
+    if (p.h() === "了") { v.le = true; p.i++; }
+    else if (p.h() === "过") { v.guo = true; p.i++; }
+    else if (p.h() === "着") fail("«着» (stato che continua) non lo traduco ancora");
+    var fl = v.info[2] || "";
+    if (/d/.test(fl)) {
+      if (p.h() === "在" && hz(k) === "住") p.i++;
+      var save = p.i, pl = p.place(); if (pl) { v.dest = pl; return v; } p.i = save;
+      if (p.key() && isVerb(p.key()) && /^(去|来)$/.test(hz(k))) { v.then = verbPred(p); return v; }
+    }
+    if (p.key() && !FINAL[p.h()] && p.h() !== "了") {
+      if (p.key() && isPlace(p.key()) && lex(G.places, p.key())[0] === null) { v.objPlace = { t: "place", head: p.key() }; p.i++; return v; }
+      if (/n/.test(fl) && !(p.key() && /^(什么|哪里|哪儿)$/.test(p.h()))) fail("«" + hz(k) + "» non vuole un oggetto: non so cosa farne di «" + p.h() + "»", p.key());
+      if (isVerb(p.key()) && /^(开始|学|学习|准备|喜欢)$/.test(hz(k))) { v.then = verbPred(p); return v; }
+      var save2 = p.i, o = p.np();
+      if (o && o.t === "pron" && /^(给|送|教|告诉|问)$/.test(hz(k)) && p.key() && !FINAL[p.h()] && p.h() !== "了") {
+        var o2 = p.np(); if (!o2) fail("dopo «" + hz(k) + " + persona» mi serve che cosa", p.key());
+        v.io = o; o = o2;
+      }
+      if (o) v.obj = o;
+      else { p.i = save2; var pl2 = p.place(); if (pl2) v.objPlace = pl2; }
+    }
+    if (/o/.test(fl) && !v.obj && !v.objPlace && !v.then) fail("«" + hz(k) + "» qui ha bisogno di un oggetto");
+    return v;
+  }
+
+  /* ================= generazione ================= */
+  function noun(k) { var n = lex(G.nouns, k); return { s: n[0], g: n[1], p: n[2], fl: n[3] || "", fs: n[4], fp: n[5] }; }
+  function haveNoun(k) { var n = lex(G.haveNouns, k); return n ? { s: n[0], g: n[1], p: n[2], fl: n[3] || "", fs: n[4], fp: n[5] } : noun(k); }
+  /* il genere del nome al singolare e al plurale (uovo è maschile, uova femminile) */
+  function gOf(n, num) { return n.g === "f" ? "f" : (num === "p" && /a$/.test(n.p) && /o$/.test(n.s)) ? "f" : "m"; }
+  function form(n, num, g) { if (g === "f" && n.fs) return num === "p" ? n.fp : n.fs; if (g === "x" && n.fs && n.fs !== n.s) return num === "p" ? n.p : n.s + "/" + n.fs; return num === "p" ? n.p : n.s; }
+  function defNP(n, num) { var w = num === "p" ? n.p : n.s; return I.join(I.def(w, gOf(n, num), num), w); }
+  function personKey(P) { return P[0] + P[1] + (P[0] === 3 && P[1] === "s" ? P[2] : ""); }
+  var PRON_IT = { "1s": "io", "2s": "tu", "3sm": "lui", "3sf": "lei", "3sx": "Lei", "1p": "noi", "2p": "voi", "3pm": "loro", "3p": "loro" };
+  var STRONG = { "1s": "me", "2s": "te", "3sm": "lui", "3sf": "lei", "3sx": "Lei", "1p": "noi", "2p": "voi", "3p": "loro" };
+  var CL_DIR = { "1s": "mi", "2s": "ti", "3sm": "lo", "3sf": "la", "3sx": "La", "1p": "ci", "2p": "vi", "3p": "li" };
+  var CL_IND = { "1s": "mi", "2s": "ti", "3sm": "gli", "3sf": "le", "3sx": "Le", "1p": "ci", "2p": "vi", "3p": "gli" };
+
+  /* testo italiano di un sintagma nominale, in un ruolo:
+     role = "subj" | "pred" | "obj" | "with" | "than" | "like";  ctx = { verb, neg, q, have, mass… } */
+  function npIt(np, role, ctx) {
+    ctx = ctx || {};
+    var n;
+    switch (np.t) {
+      case "pron": return { it: STRONG[personKey(G.pron[np.pron])], P: G.pron[np.pron], pron: true };
+      case "poss": {
+        var pr = G.pron[np.pron], hn = ctx.have ? haveNoun(np.head) : noun(np.head), num = /p/.test(hn.fl) && hn.s === hn.p ? "p" : (hz(np.head) === "父母" ? "p" : "s");
+        if (role === "pred" && ctx.plural) num = "p";
+        if (np.noDe && !/[rk]/.test(hn.fl)) fail("senza 的 si dice solo per parenti e amici (我妈妈, 我朋友): qui serve 我的…");
+        var g = role === "pred" && ctx.g === "f" && hn.fs ? "f" : gOf(hn, num), w = form(hn, num, g), ps = I.poss(pr[3], g, num);
+        if (hz(np.head) === "家") return { it: "casa " + (pr[3] === "loro" ? "loro" : I.poss(pr[3], "f", "s")), P: [3, "s", "f"], place: true };
+        if (role === "pred" && /u/.test(hn.fl) && !ctx.plural) return { it: I.indef(ps, g) + " " + ps + " " + w, P: [3, num, g] };
+        if (role === "pred" && /u/.test(hn.fl) && ctx.plural) return { it: I.poss(pr[3], g, "p") + " " + hn.p, P: [3, "p", g] };
+        var art = /k/.test(hn.fl) && num === "s" && pr[3] !== "loro" ? "" : I.def(ps, g, num);
+        return { it: (art ? I.join(art, ps) : ps) + " " + w, P: [3, num, g], kin: !art };
+      }
+      case "dem": {
+        var near = np.dem === "这";
+        if (!np.head) { var pl0 = np.plural; return { it: near ? (pl0 ? "questi" : "questo") : (pl0 ? "quelli" : "quello"), P: [3, pl0 ? "p" : "s", "m"], dem: np.dem }; }
+        n = noun(np.head); var num2 = np.plural ? "p" : "s", g2 = gOf(n, num2), w2 = num2 === "p" ? n.p : n.s;
+        var det = near ? I.adj(["questo", "questa", "questi", "queste"], g2, num2) : quel(w2, g2, num2);
+        if (near && num2 === "s" && I.vowel(w2)) det = "quest'";
+        var nn = np.n != null && np.n > 1 ? " " + I.num(np.n) : "";
+        return { it: (/'$/.test(det) ? det + w2 : det + nn + " " + w2), P: [3, num2, g2] };
+      }
+      case "count": {
+        n = ctx.have ? haveNoun(np.head) : noun(np.head); var h = hz(np.head), many = np.n !== 1;
+        if (np.n === 0) fail("con lo zero non so contare");
+        if (np.clf === "杯" && G.cups[h]) return { it: np.n === 1 ? G.cups[h][0] : G.cups[h][1].replace("%N", I.num(np.n)), P: [3, many ? "p" : "s", "m"] };
+        var cl = np.clf ? G.clf[np.clf] : "";
+        if (cl) {
+          var cont = many ? cl[2] : cl[0], of = np.clf === "双" ? n.p : n.s;
+          return { it: (many ? I.num(np.n) : I.num(1, cl[1]) + (cl[1] === "f" && I.vowel(cont) ? "'" : "")).replace(/un'$/, "un'") + (many || !(cl[1] === "f" && I.vowel(cont)) ? " " : "") + cont + " " + (I.vowel(of) ? "d'" + of : "di " + of), P: [3, many ? "p" : "s", cl[1]] };
+        }
+        if (/m/.test(n.fl) && !/p/.test(n.fl)) fail("«" + h + "» non si conta così: serve un contenitore (一杯, 一瓶…)", np.head);
+        var gg = ctx.g && n.fs ? ctx.g : n.g;
+        if (!many) { var s1 = form(n, "s", gg === "x" ? "m" : gg), g1 = gg === "f" ? "f" : gOf(n, "s"); return { it: I.join(I.indef(s1, g1), s1), P: [3, "s", g1] }; }
+        return { it: I.num(np.n) + " " + form(n, "p", gg === "x" ? "m" : gg), P: [3, "p", gOf(n, "p")] };
+      }
+      case "many": { n = noun(np.head); var gm = gOf(n, "p"); return { it: (/m/.test(n.fl) && !/p/.test(n.fl) ? (n.g === "f" ? "molta " : "molto ") + n.s : (gm === "f" ? "molte " : "molti ") + n.p), P: [3, /m/.test(n.fl) && !/p/.test(n.fl) ? "s" : "p", gm] }; }
+      case "nat": { var na = G.nations[np.nat]; return { nat: na }; }
+      case "noun": {
+        n = ctx.have ? haveNoun(np.head) : noun(np.head);
+        if ((/k/.test(n.fl) || /^(爸爸|妈妈|父母)$/.test(hz(np.head))) && role !== "pred" && !ctx.have) {
+          /* 妈妈 da solo = la mamma di chi parla: lo dico solo quando chi parla è il soggetto (或 il parente stesso) */
+          var owner = role === "subj" ? "我" : CURSUBJ && CURSUBJ.t === "pron" && /^(我|我们)$/.test(CURSUBJ.pron) ? CURSUBJ.pron : null;
+          if (!owner) fail("di chi è «" + hz(np.head) + "»? Scrivi 我" + hz(np.head) + ", 他" + hz(np.head) + "…", np.head);
+          var asPoss = npIt({ t: "poss", pron: owner, head: np.head }, role, ctx);
+          NOTES.push(hz(np.head) + " da solo vuol dire di solito «" + asPoss.it + "»: in cinese il possessivo dei parenti si sottintende.");
+          return asPoss;
+        }
+        var mass = /m/.test(n.fl), plu = /p/.test(n.fl) && !mass ? true : (/p/.test(n.fl) && mass && n.s === n.p);
+        var numN = plu ? "p" : "s";
+        if (/l/.test(n.fl) && ctx.lang) return { it: n.s, P: [3, "s", "m"] };
+        if (role === "subj" || role === "like" || role === "than" || role === "defobj") return { it: likeForm(n, mass, role), P: [3, likeNum(n, mass, role), gOf(n, likeNum(n, mass, role))], n: n };
+        if (role === "pred") {
+          if (/j/.test(n.fl) || /[ru]/.test(n.fl) && ctx.plural) { var num3 = ctx.plural ? "p" : "s"; return { it: form(n, num3, ctx.g || "m"), P: [3, num3, n.g] }; }
+          if (ctx.plural) return { it: n.p, P: [3, "p", gOf(n, "p")] };
+          if (mass) fail("«" + hz(np.head) + "» dopo «是» non lo traduco ancora", np.head);
+          return { it: I.join(I.indef(n.s, n.g), n.s), P: [3, "s", n.g] };
+        }
+        if (role === "with") { if (mass) fail("«跟/和» va con le persone", np.head); var gw = gOf(n, "s"); return { it: I.join(I.indef(n.s, gw), n.s), P: [3, "s", gw] }; }
+        if (role === "to") return { it: defNP(n, "s"), P: [3, "s", gOf(n, "s")] };
+        /* oggetto */
+        if ((ctx.eat || ctx.massBare) && mass && !ctx.partitive) return { it: n.s, P: [3, "s", gOf(n, "s")] };
+        if (ctx.partitive) {
+          if (/z/.test(n.fl)) return { it: n.s, P: [3, "s", gOf(n, "s")] };
+          if (/1/.test(n.fl)) return { it: I.join(I.indef(n.s, gOf(n, "s")), n.s), P: [3, "s", gOf(n, "s")] };
+          if (ctx.neg || (ctx.q && !mass)) return { it: mass ? n.s : n.p, P: [3, mass ? "s" : "p", gOf(n, mass ? "s" : "p")] };
+          var nm = mass ? (plu ? "p" : "s") : "p", wp = nm === "p" ? n.p : n.s;
+          return { it: I.partitive(wp, gOf(n, nm), nm) + (/'$/.test(I.partitive(wp, gOf(n, nm), nm)) ? "" : " ") + wp, P: [3, nm, gOf(n, nm)] };
+        }
+        if (ctx.eat && !mass) return { it: defNP(n, "p"), P: [3, "p", gOf(n, "p")] };
+        if (ctx.neg && mass) return { it: n.s, P: [3, "s", gOf(n, "s")] };
+        return { it: defNP(n, numN), P: [3, numN, gOf(n, numN)] };
+      }
+      case "of": {
+        var hd = noun(np.head), ow = npIt(np.owner, "defobj", {});
+        return { it: defNP(hd, "s") + " " + I.withPrep("di", ow.it), P: [3, "s", gOf(hd, "s")] };
+      }
+      case "place": { var pl = lex(G.places, np.head); if (!pl[0]) fail("«" + hz(np.head) + "» qui non lo so usare", np.head); var gpl = /^(la|l'[A-Z]?)/.test(pl[0]) && /a$/.test(pl[0]) ? "f" : /^(gli|i) /.test(pl[0]) ? "m" : "m"; return { it: pl[0], P: [3, /^(gli|i|le) /.test(pl[0]) ? "p" : "s", /^la /.test(pl[0]) || /^l'.*a$/.test(pl[0]) ? "f" : "m"], place: true }; }
+      case "q": return { it: np.q === "谁" ? "chi" : "che cosa", q: np.q };
+      case "time": return { it: G.time[np.h][0] };
+      case "qwhich": { n = noun(np.head); return { it: "che " + n.s, q: "什么", P: [3, "s", n.g] }; }
+      case "qnum": { n = ctx.have ? haveNoun(np.head) : noun(np.head); var gq = gOf(n, "p"); return { it: (gq === "f" ? "quante " : "quanti ") + n.p, q: "几", P: [3, "p", gq] }; }
+      default: fail("questa costruzione non la conosco ancora");
+    }
+  }
+  function quel(w, g, num) {
+    if (num === "p") return g === "f" ? "quelle" : (I.vowel(w) || /^(s[^aeiou]|z|gn|ps)/i.test(w) ? "quegli" : "quei");
+    if (g === "f") return I.vowel(w) ? "quell'" : "quella";
+    return I.vowel(w) ? "quell'" : /^(s[^aeiou]|z|gn|ps)/i.test(w) ? "quello" : "quel";
+  }
+  /* soggetto, cosa che piace, termine di paragone: con l'articolo determinativo; i numerabili al plurale (mi piacciono i cani) */
+  function likeNum(n, mass, role) { return mass ? (n.s === n.p && /p/.test(n.fl) ? "p" : "s") : (/p/.test(n.fl) || role === "like" ? "p" : "s"); }
+  function likeForm(n, mass, role) { var num = likeNum(n, mass, role); return defNP(n, num); }
+
+  function placeAt(np) {
+    if (np.t === "place") return lex(G.places, np.head)[1];
+    if (np.t === "poss" && hz(np.head) === "家") { var pr = G.pron[np.pron]; return "a casa " + (pr[3] === "loro" ? "loro" : I.poss(pr[3], "f", "s")); }
+    fail("questo non è un luogo che conosco");
+  }
+  function placeFrom(np) {
+    if (np.t === "place") { var pl = lex(G.places, np.head); return pl[2] || (pl[0] ? I.withPrep("da", pl[0]) : fail("non so dire «da» con questo luogo")); }
+    return "da " + placeAt(np).replace(/^a /, "");
+  }
+
+  /* coniuga «inf» per la persona P nel tempo «tns»: pres | past | exp | fut | impf | cond */
+  function conj(inf, aux, P, tns, g) {
+    var pi = (P[0] - 1) + (P[1] === "p" ? 3 : 0), gg = g || P[2];
+    if (tns === "past" || tns === "exp") return I.passato(inf, aux, pi, gg, P[1]);
+    if (tns === "fut") return I.future(inf, pi);
+    if (tns === "impf") return I.imperfect(inf, pi);
+    if (tns === "cond") return I.conditional(inf, pi);
+    return I.present(inf, pi);
+  }
+  /* infinito con il pronome riflessivo della persona giusta: alzarsi -> alzarmi */
+  function infFor(inf, P) {
+    var pi = (P[0] - 1) + (P[1] === "p" ? 3 : 0), m = /^(\S+?)si(\b.*)?$/.exec(inf);
+    if (m && /r$/.test(m[1])) return m[1] + I.CLITIC[pi] + (m[2] || "");
+    return inf;
+  }
+  /* inserisce una parola dopo il verbo coniugato (dopo l'ausiliare nei tempi composti): «ho già mangiato», «siamo tutti» */
+  function afterFinite(vp, w) {
+    var m = /^((?:non )?(?:(?:mi|ti|si|ci|vi|lo|la|li|le|gli|l')\s?)?)(\S+)(.*)$/.exec(vp);
+    return m ? m[1] + m[2] + " " + w + m[3] : vp + " " + w;
+  }
+
+  function generate(S, punct) {
+    var notes = [], it = "", subjIt = "", P, g;
+    var isQ = S.fin === "吗" || punct === "?" || !!S.anotA;
+    if (S.anotA && S.fin === "吗") fail("con 是不是 (o 去不去…) la domanda c'è già: niente 吗");
+    var past = S.time.some(function (t) { return G.time[t][1] === "past"; });
+    var ye = S.adv.indexOf("也") >= 0, dou = S.adv.indexOf("都") >= 0, hai = S.adv.indexOf("还") >= 0, yijing = S.adv.indexOf("已经") >= 0,
+      zhi = S.adv.indexOf("只") >= 0, jingchang = S.adv.indexOf("经常") >= 0, yizhi = S.adv.indexOf("一直") >= 0, mashang = S.adv.indexOf("马上") >= 0,
+      youshihou = S.adv.indexOf("有时候") >= 0, conglaibu = S.adv.indexOf("从来不") >= 0;
+    var neg = !!S.neg || conglaibu, q = null;
+
+    /* soggetto */
+    var subj = S.subj; CURSUBJ = subj;
+    var used = {}; function use(a) { used[a] = 1; return true; }
+    if (S.topicPlace) { P = [3, "s", "m"]; }
+    else if (!subj) {
+      var weatherOnly = S.pred && S.pred.t === "adj" && lex(G.weatherAdjs, S.pred.adj) !== undefined || S.pred && S.pred.t === "cmp" && lex(G.weatherAdjs, S.pred.adj) !== undefined;
+      var rain = S.pred && S.pred.t === "verb" && /^(下雨|下雪)$/.test(hz(S.pred.k));
+      if (!weatherOnly && !rain) fail("manca il soggetto: in cinese a volte si sottintende, ma per tradurre mi serve (我, 你, 他…)");
+      P = [3, "s", "m"];
+    } else if (subj.t === "q") { P = [3, "s", "m"]; subjIt = "chi"; q = "谁"; }
+    else {
+      var sj = npIt(subj, "subj", {});
+      if (sj.nat) fail("«" + hz(subj.nat) + "人» come soggetto non lo traduco ancora: prova 他是" + hz(subj.nat) + "人");
+      P = sj.P; g = P[2];
+      if (sj.pron) {
+        var pk = personKey(P);
+        subjIt = P[0] === 3 ? PRON_IT[pk] : "";
+        if (S.subj.pron === "您") subjIt = "Lei";
+      } else subjIt = sj.it;
+      if (ye) subjIt = sj.pron ? { "1s": "anch'io", "2s": "anche tu", "3sm": "anche lui", "3sf": "anche lei", "3sx": "anche Lei", "1p": "anche noi", "2p": "anche voi", "3p": "anche loro", "3pm": "anche loro" }[personKey(P)] : "anche " + subjIt;
+    }
+    if (dou && P[1] !== "p") fail("«都» (tutti) vuole un soggetto plurale");
+    var tutti = dou ? (P[2] === "f" ? "tutte" : "tutti") : "";
+    var gx = P[2];
+
+    /* tempo verbale */
+    var tense = "pres";
+    var pr = S.pred, vp = "", tail = [], front = "", qWord = "";
+    function stateTense() { return past ? "impf" : "pres"; }
+
+    if (S.modal && pr.t !== "verb" && !(S.modal === "会" && (pr.t === "adj" || pr.t === "cmp"))) fail("«" + S.modal + "» qui non lo so ancora tradurre");
+    if (pr.t === "ne") {
+      var neIt = subj.t === "pron" ? (subj.pron === "您" ? "Lei" : PRON_IT[personKey(P)]) : npIt(subj, "subj", {}).it;
+      return { it: "E " + neIt + "?", notes: [] };
+    }
+    if (pr.t === "price") {
+      if (subj.t === "pron") fail("«多少钱» va dopo una cosa (这本书多少钱?)");
+      if (subj.t === "noun" && !/m/.test(noun(subj.head).fl)) { var pn0 = noun(subj.head); subjIt = defNP(pn0, "p"); P = [3, "p", gOf(pn0, "p")]; }
+      return { it: "Quanto " + (P[1] === "p" ? "costano " : "costa ") + subjIt + "?", notes: [] };
+    }
+    if (pr.t === "cop") {
+      var tn = stateTense(), essere = conj("essere", "e", P, tn), np = pr.np;
+      if (np.t === "nat") {
+        var na = G.nations[np.nat], pred = typeof na === "string" ? na : I.adj(na, gx === "x" && P[1] === "p" ? "m" : gx, P[1]);
+        vp = essere + " " + pred;
+      } else if (np.t === "qnat") {
+        q = "dove"; vp = essere; qWord = "di dove";
+        if (/^è/.test(vp)) { qWord = "di dov'"; }
+      } else if (np.t === "q") {
+        q = np.q;
+        if (np.q === "什么") { if (!subj || subj.t !== "dem") fail("«是什么» lo traduco solo con 这/那 (这是什么?)"); qWord = "che cos'"; vp = essere; }
+        else { qWord = "chi"; vp = essere; }
+      } else {
+        /* genere naturale: «persona» è femminile per grammatica, ma «questa persona è un mio amico» */
+        var natG = subj && subj.head && /N/.test((lex(G.nouns, subj.head) || [])[3] || "") ? "m" : gx;
+        var pn = npIt(np, "pred", { plural: P[1] === "p", g: natG });
+        vp = essere + " " + pn.it;
+        if (subj && subj.t === "dem" && !subj.head && pn.P) { subjIt = subj.dem === "这" ? I.adj(["questo", "questa", "questi", "queste"], pn.P[2] === "x" ? "m" : pn.P[2], pn.P[1]) : I.adj(["quello", "quella", "quelli", "quelle"], pn.P[2] === "x" ? "m" : pn.P[2], pn.P[1]); P = [3, pn.P[1], pn.P[2]]; vp = conj("essere", "e", P, tn) + " " + pn.it; if (ye) subjIt = "anche " + subjIt; }
+      }
+      if (neg) vp = "non " + vp;
+      if (tutti) vp = afterFinite(vp, tutti);
+      if (yijing) vp = afterFinite(vp, "già");
+    } else if (pr.t === "have") {
+      var hn = pr.np;
+      if (hn.t === "q" || hn.t === "qwhich") { q = "什么"; qWord = hn.t === "q" ? "che cosa" : npIt(hn, "obj", {}).it; }
+      var obj = hn.t === "q" ? null : npIt(hn, "obj", { have: true, partitive: true, neg: neg, q: isQ });
+      if (hn.t === "qnum") { q = "几"; qWord = obj.it; obj = null; }
+      if (S.topicPlace || (!subj && S.time.length)) {
+        var where = S.topicPlace ? placeAt(S.topicPlace) : "";
+        var plural = obj && obj.P && obj.P[1] === "p";
+        var ce = past ? (plural ? "c'erano" : "c'era") : (plural ? "ci sono" : "c'è");
+        if (neg) { ce = "non " + ce; }
+        subjIt = where; vp = ce; if (obj) tail.push(obj.it);
+        if (S.topicPlace && hn.t === "count" && !isQ) { /* 这里有一个超市 */ }
+      } else {
+        vp = (neg ? "non " : "") + conj("avere", "a", P, stateTense());
+        if (obj) tail.push(obj.it);
+        if (yijing) vp = afterFinite(vp, "già");
+        if (tutti) vp = afterFinite(vp, tutti);
+      }
+      if (hai) fail("«还有» (c'è ancora / e poi) non lo traduco ancora");
+    } else if (pr.t === "loc") {
+      if (pr.np.t === "place" && QPLACE[hz(pr.np.head)]) { q = "哪里"; qWord = "dove"; vp = (neg ? "non " : "") + conj("essere", "e", P, stateTense()); }
+      else { vp = (neg ? "non " : "") + conj("essere", "e", P, stateTense()); tail.push(placeAt(pr.np)); }
+      if (yijing) vp = afterFinite(vp, "già"); if (tutti) vp = afterFinite(vp, tutti); if (hai) vp = afterFinite(vp, "ancora");
+    } else if (pr.t === "adj" || pr.t === "cmp") {
+      var ak = pr.adj, haveA = lex(G.haveAdjs, ak), weather = lex(G.weatherAdjs, ak), forms = lex(G.adjs, ak), deg = pr.deg ? G.degree[pr.deg] : "";
+      if (S.notVery) deg = "molto";
+      var personSubj = subj && (subj.t === "pron" || subj.t === "poss");
+      var fut = S.modal === "会", tn2 = fut ? "fut" : stateTense(), more = pr.t === "cmp" ? "più " : "";
+      var than = "";
+      if (pr.t === "cmp" && pr.than.t === "time") { if (subj || !S.time.length) fail("il paragone tra due momenti lo so fare solo col tempo che fa (今天比昨天热)"); than = "di " + G.time[pr.than.h][0]; }
+      else if (pr.t === "cmp") { var tt = npIt(pr.than, "than", {}); than = tt.pron ? "di " + tt.it : I.withPrep("di", tt.it); if (pr.than.t === "place" && lex(G.places, pr.than.head)[0] === null) fail("questo paragone non lo so ancora fare"); }
+      if (pr.deg === "很") notes.push("很 qui lega soltanto l'aggettivo: non vuol dire per forza «molto». «Molto» è 非常.");
+      if (haveA !== undefined && personSubj) {
+        if (pr.t === "cmp") fail("questo paragone non lo so ancora fare");
+        var amt = deg === "molto" ? "molta " : deg === "troppo" ? "troppa " : deg === "un po'" ? "un po' di " : "";
+        if (deg && !amt) fail("questo grado con «" + hz(ak) + "» non lo so ancora dire");
+        vp = (neg ? "non " : "") + conj("avere", "a", P, tn2) + " " + amt + haveA;
+        if (S.le && !neg) notes.push("了 dopo uno stato dice che è appena cambiato: «mi è venuta " + haveA + "», cioè adesso ho " + haveA + ".");
+      } else if (weather !== undefined && (!subj || subj.t === "noun" && hz(subj.head) === "天气")) {
+        if (subj) subjIt = "";
+        vp = (neg ? "non " : "") + (fut ? "farà" : past ? "faceva" : "fa") + " " + (deg ? deg + " " : "") + more + weather + (than ? " " + than : "");
+      } else if (weather !== undefined && personSubj) {
+        vp = (neg ? "non " : "") + conj("avere", "a", P, tn2) + " " + (deg ? deg + " " : "") + more + weather + (than ? " " + than : "");
+        if (deg === "molto") vp = vp.replace("molto " + weather, "molto " + weather);
+      } else if (forms) {
+        if (!subj && !S.topicPlace) fail("manca il soggetto");
+        if (subj && subj.t === "pron" && hz(ak) === "好") { vp = (neg ? "non " : "") + conj("stare", "a", P, tn2) + (deg ? " " + deg : "") + " bene"; }
+        else {
+          if (hz(ak) === "好" && subj && subj.t === "noun" && hz(subj.head) === "天气") forms = ["bello", "bella", "belli", "belle"];
+          else if (hz(ak) === "好" && subj && (subj.t === "poss" || subj.t === "noun" || subj.t === "of") && /[jrku]/.test(noun(subj.head).fl)) forms = ["bravo", "brava", "bravi", "brave"];
+          var af = I.adj(forms, gx === "x" && P[1] === "p" ? "m" : gx, P[1]);
+          vp = (neg ? "non " : "") + conj("essere", "e", P, tn2) + " " + (deg ? deg + " " : "") + more + af + (than ? " " + than : "");
+        }
+      } else if (hz(ak) === "好" && subj && subj.t === "pron") { vp = (neg ? "non " : "") + conj("stare", "a", P, tn2) + (deg ? " " + deg : "") + " bene"; }
+      else fail("l'aggettivo «" + hz(ak) + "» con questo soggetto non lo so ancora usare", ak);
+      if (pr.deg === "太" && S.tooLe) S.le = false;
+      if (S.le && haveA === undefined && !neg) notes.push("了 dopo un aggettivo dice che la situazione è cambiata (adesso è così).");
+      if (yijing) vp = afterFinite(vp, "già"); if (tutti) vp = afterFinite(vp, tutti); if (hai) vp = afterFinite(vp, "ancora");
+      S.le = false;
+    } else if (pr.t === "age") {
+      if (pr.q) { q = "几"; qWord = "quanti anni"; vp = conj("avere", "a", P, "pres"); }
+      else vp = (neg ? "non " : "") + conj("avere", "a", P, "pres") + " " + (pr.n > 10 ? pr.n : I.num(pr.n)) + " anni";
+      if (pr.n === 1) vp = vp.replace(/ un anni$/, " un anno");
+    } else if (pr.t === "want") {
+      var wo = npIt(pr.np, "obj", { partitive: true, neg: neg, q: isQ });
+      if (pr.np.t === "q" || pr.np.t === "qwhich") { q = "什么"; qWord = wo.it; wo = null; }
+      if (pr.np.t === "qnum") { q = "几"; qWord = wo.it; wo = null; }
+      if (pr.np.t === "pron") fail("«要 + persona» non lo traduco ancora");
+      vp = (neg ? "non " : "") + conj("volere", "a", P, past ? "impf" : pr.cond && !neg ? "cond" : "pres");
+      if (wo) tail.push(wo.it);
+      if (!pr.cond) notes.push("要 + cosa = «voglio…»; al bar e al ristorante l'italiano dice più spesso «prendo…».");
+    } else if (pr.t === "like") {
+      var lt = past || S.le ? "past" : "pres", likeSubj = "";
+      if (ye) use("也");
+      if (pr.vp) {
+        var vinf = verbPhraseInf(pr.vp, P, notes);
+        vp = likeVerb(P, subj, ye, neg, "s", "m", lt, subjIt) + " " + vinf.it; if (vinf.q) { q = vinf.q; qWord = vinf.qWord; }
+        subjIt = ""; S.le = false;
+      } else {
+        var lo = pr.np;
+        if (lo.t === "q" || lo.t === "qwhich") { q = "什么"; qWord = lo.t === "q" ? "che cosa" : npIt(lo, "like", {}).it; vp = likeVerb(P, subj, ye, neg, lo.t === "qwhich" && /p/.test(noun(lo.head).fl) ? "p" : "s", "f", lt, subjIt); }
+        else if (lo.t === "pron") {
+          var OP = G.pron[lo.pron];
+          if (pr.love) { vp = (neg ? "non " : "") + CL_DIR[personKey(OP)] + " " + conj("amare", "a", P, lt); }
+          else {
+            if (subj && subj.t !== "pron") fail("«… 喜欢 + persona» con questo soggetto non lo traduco ancora");
+            if (ye) fail("«也» con «mi piaci / mi manchi» non lo traduco ancora");
+            vp = (neg ? "non " : "") + CL_IND[personKey(P)] + " " + conj(pr.miss ? "mancare" : "piacere", "e", OP, lt, OP[2]);
+            /* chi piace (o manca) diventa il soggetto italiano: «Lei gli piace», «Mi manchi» */
+            likeSubj = OP[0] === 3 ? (lo.pron === "您" ? "Lei" : PRON_IT[personKey(OP)]) : "";
+            if (pr.miss) notes.push("想 + persona = «mi manchi»: in italiano chi manca è il soggetto.");
+          }
+        } else {
+          var lk = npIt(lo, "like", {});
+          if (pr.love) vp = (neg ? "non " : "") + conj("amare", "a", P, lt) + " " + lk.it;
+          else vp = likeVerb(P, subj, ye, neg, lk.P[1], lk.P[2], lt, subjIt) + " " + lk.it;
+        }
+        if (!pr.love) subjIt = likeSubj;
+      }
+      if (!pr.love && ye) { /* già dentro likeVerb */ }
+      if (tutti) fail("«都喜欢» non lo traduco ancora");
+      if (S.likeMuch) {
+        /* «mi piace molto», «ti amo molto»: molto subito dopo il verbo */
+        var lm = /^(.*?\b(?:piace|piacciono|piaci|piaccio|piacciamo|piacete|manca|mancano|manchi|amo|ami|ama|amiamo|amate|amano|è piaciuto|è piaciuta|sono piaciuti|sono piaciute))(.*)$/.exec(vp);
+        if (!lm) fail("«很喜欢» qui non lo so ancora dire");
+        vp = lm[1] + " molto" + lm[2];
+      }
+      S.le = false;
+    } else if (pr.t === "verb") {
+      var r = verbIt(S, P, neg, isQ, notes, { yijing: yijing, hai: hai, zhi: zhi, tutti: tutti, past: past });
+      vp = r.vp; tail = tail.concat(r.tail); if (r.q) { q = r.q; qWord = r.qWord; } if (r.front) front = r.front;
+    }
+
+    /* complementi: luogo, compagnia, a chi, da dove */
+    S.pp.forEach(function (x) {
+      if (x.t === "at" && x.np.t === "place" && QPLACE[hz(x.np.head)]) { if (q) fail("due domande nella stessa frase"); q = "哪里"; qWord = "dove"; }
+      else if (x.t === "at") tail.push(placeAt(x.np));
+      else if (x.t === "with" && x.np.t === "q") { if (q) fail("due domande nella stessa frase"); q = "谁"; qWord = "con chi"; }
+      else if (x.t === "with") { var w = npIt(x.np, "with", {}); if (S.together) { tail.push(w.pron ? "insieme a " + w.it : "insieme " + I.withPrep("a", w.it)); S.together = false; } else tail.push("con " + w.it); }
+      else if (x.t === "from") tail.push(placeFrom(x.np));
+      else if (x.t === "to") {
+        var tn = npIt(x.np, "to", {});
+        if (tn.pron) vp = vp.replace(/^(non )?/, "$1" + CL_IND[personKey(tn.P)] + " ");
+        else tail.push(I.withPrep("a", tn.it));
+      }
+    });
+    if (S.together) tail.push("insieme");
+    if (S.means) tail.push("in " + noun(S.means.head).s);
+    if (zhi && !used["只"]) { if (!tail.length || q) fail("«只» (solo) qui non so dove metterlo"); tail[0] = "solo " + tail[0]; use("只"); }
+    if (jingchang) vp = afterFinite(vp, "spesso");
+    if (yizhi) vp = afterFinite(vp, "sempre");
+    if (mashang) vp = afterFinite(vp, "subito");
+    if (conglaibu) { vp = afterFinite(vp, "mai"); }
+    if (youshihou) front = (front ? front + " " : "") + "a volte";
+    ["经常", "一直", "马上", "从来不", "有时候"].forEach(function (a) { use(a); });
+    /* anche + non = neanche: «Neanch'io lo so» */
+    if (ye && neg && pr.t !== "like" && subjIt) {
+      subjIt = subjIt.replace(/^anch'io$/, "neanch'io").replace(/^anche /, "neanche ").replace(/^Anche /, "Neanche ");
+      vp = vp.replace(/^non /, "");
+    }
+    if (ye && subjIt) use("也");
+    if (tutti && vp.indexOf(" " + tutti) > 0) use("都");
+    if (yijing && / già(\s|$)/.test(vp)) use("已经");
+    if (hai && / ancora(\s|$)/.test(vp)) use("还");
+    S.adv.forEach(function (a) { if (!used[a]) fail("non so ancora dove mettere «" + a + "» in questa frase", a); });
+
+    /* domande con parola interrogativa */
+    if (S.qadv === "为什么") { if (q) fail("due domande nella stessa frase"); q = "为什么"; qWord = "perché"; }
+    if (S.qadv === "怎么") { if (q || pr.t !== "verb" || !subj || subj.t !== "pron") fail("«怎么» lo traduco solo con una persona e un verbo (你怎么去?)"); q = "怎么"; qWord = "come"; }
+    if (S.qwhen) { if (q) fail("due domande nella stessa frase"); q = "什么时候"; qWord = "quando"; }
+    if (q && S.fin === "吗") fail("con una parola interrogativa (什么, 哪里, 谁…) non si usa 吗");
+    if (S.fin === "呢" && !q) fail("«呢» qui non lo traduco ancora");
+
+    /* assemblaggio */
+    var timeIt = S.time.map(function (t) { return G.time[t][0]; }).join(" ")
+      .replace(/^ogni giorno la (mattina|sera)$/, "ogni $1").replace(/^ogni giorno il pomeriggio$/, "ogni pomeriggio");
+    var words;
+    if (q) {
+      isQ = true;
+      if (q === "谁" && subj && subj.t === "q") words = [timeIt, front, "chi", vp].concat(tail);
+      else if (qWord === "di dov'") words = [timeIt, front, subjIt, "di dov'" + vp].concat(tail);
+      else if (qWord === "che cos'") words = [timeIt, front, "che cos'" + vp, subjIt].concat(tail);
+      else if (q === "谁" && pr.t === "cop") words = [timeIt, front, "chi", vp, subjIt].concat(tail);
+      else if (q === "哪里" && pr.t === "loc") words = [timeIt, front, /^è$/.test(vp) ? "dov'è" : "dove " + vp, subjIt].concat(tail);
+      else words = [timeIt, front, subjIt && !/^(io|tu|noi|voi)$/.test(subjIt) ? subjIt : "", qWord, vp].concat(tail);
+    } else words = [timeIt, front, subjIt, vp].concat(tail);
+    it = words.filter(function (x) { return x && String(x).trim(); }).join(" ").replace(/\s+/g, " ").trim();
+    it = it.replace(/\bdi dov' è\b/, "di dov'è").replace(/\bche cos' è\b/, "che cos'è");
+    var excl = false;
+    if (S.fin === "吧") {
+      if (P[0] === 1 && P[1] === "p" && pr.t === "verb" && !neg && !past) excl = true;
+      else if (P[0] === 2 && (pr.t === "verb" || pr.t === "like")) fail("«你…吧» è un invito («fallo!»): l'imperativo non lo traduco ancora");
+      else { it += ", vero"; isQ = true; }
+    }
+    if (S.fin === "呢" && q) { /* 呢 ammorbidisce la domanda: non si traduce */ }
+    it = I.cap(it) + (isQ ? "?" : (excl || punct === "!") ? "!" : ".");
+    if (/\w\/\w/.test(it)) notes.push("«o/a»: in italiano la parola cambia se sei uomo o donna: scegli tu.");
+    return { it: it, notes: notes };
+  }
+  /* «mi piace», «anche a me piace», «a mia madre piace» */
+  function likeVerb(P, subj, ye, neg, num, g, tense, subjIt) {
+    var pv = tense === "past" ? (num === "p" ? "sono piaciut" + (g === "f" ? "e" : "i") : "è piaciut" + (g === "f" ? "a" : "o")) : (num === "p" ? "piacciono" : "piace");
+    var pk = personKey(P), n = neg ? "non " : "";
+    if (subj && subj.t !== "pron") return (ye ? (neg ? "neanche " : "anche ") : "") + I.withPrep("a", subjIt.replace(/^(anche|neanche) /, "")) + " " + (ye && neg ? "" : n) + pv;
+    if (ye) return (neg ? "neanche a " : "anche a ") + STRONG[pk] + " " + (neg ? "" : n) + pv;
+    return n + CL_IND[pk] + " " + pv;
+  }
+  /* verbo all'infinito con il suo oggetto (dopo 喜欢, 想, 会…) */
+  function verbPhraseInf(v, P, notes, afterGo) {
+    var info = v.info, k = v.k, inf = afterGo && info[4] ? info[4] : info[0], out = { it: "" };
+    var o = objOf(v, { inf: true }); fixedObj(v, o);
+    if (o.q) { out.q = o.q; out.qWord = o.qWord; }
+    var vo = lex(G.verbObj, k);
+    if (vo && v.obj && v.obj.head) { var nf = lex(G.nouns, v.obj.head), alt = vo[hz(v.obj.head)] || (nf && /t/.test(nf[3] || "") ? vo.t : null); if (alt) inf = alt[0]; }
+    if (vo && vo.t && inf === info[0] && /^坐$/.test(hz(k)) && v.obj) fail("«坐» con questo oggetto non lo so tradurre");
+    var base = infFor(inf, P);
+    if (o.clitic) base = base.replace(/e$/, "") + o.clitic;
+    out.it = [base].concat(o.tail).join(" ");
+    if (v.then) { var t2 = verbPhraseInf(v.then, P, notes); out.it += " " + aPrep(t2.it); if (t2.q) { out.q = t2.q; out.qWord = t2.qWord; } }
+    return out;
+  }
+  /* «a» davanti a un infinito: «ad» se comincia per a (vado ad aiutare) */
+  function aPrep(w) { return (/^a/i.test(w) ? "ad " : "a ") + w; }
+  /* verbo + oggetto con una resa fissa: 看电影 = guardare un film, 买东西 = fare acquisti */
+  function fixedObj(v, o) {
+    var vo = lex(G.verbObj, v.k), alt = vo && v.obj && v.obj.t === "noun" ? vo[hz(v.obj.head)] : null;
+    if (!alt || alt.length < 3 || o.objIndex == null) return;
+    if (alt[2]) o.tail[o.objIndex] = alt[2]; else o.tail.splice(o.objIndex, 1);
+  }
+  /* oggetto, luogo e complementi di un verbo */
+  function objOf(v, ctx) {
+    var info = v.info, fl = info[2] || "", res = { tail: [] };
+    if (v.dest) {
+      if (v.dest.t === "place" && QPLACE[hz(v.dest.head)]) { res.q = "哪里"; res.qWord = "dove"; }
+      else res.tail.push(placeAt(v.dest));
+    }
+    if (v.objPlace) {
+      if (v.objPlace.t === "place" && QPLACE[hz(v.objPlace.head)]) { res.q = "哪里"; res.qWord = "dove"; }
+      else if (lex(G.places, v.objPlace.head)[0] === null) res.tail.push(placeAt(v.objPlace));
+      else fail("«" + hz(v.k) + "» + luogo non lo so ancora tradurre");
+    }
+    if (v.io) { var IP = G.pron[v.io.pron]; res.clitic = CL_IND[personKey(IP)]; res.cliticInd = true; }
+    if (v.obj) {
+      var o = v.obj;
+      if (o.t === "q") { res.q = o.q; res.qWord = o.q === "谁" ? "chi" : "che cosa"; if (info[3]) res.qWord = info[3] + " " + res.qWord; }
+      else if (o.t === "qwhich" || o.t === "qnum") { var qq = npIt(o, "obj", {}); res.q = qq.q; res.qWord = qq.it; }
+      else if (o.t === "pron") {
+        if (res.clitic) fail("due pronomi complemento insieme non li so ancora combinare");
+        var OP = G.pron[o.pron], pk = personKey(OP);
+        if (info[3] === "a") res.clitic = CL_IND[pk]; else res.clitic = CL_DIR[pk];
+        res.cliticP = OP;
+      } else if (o.t === "nat" || o.t === "qnat" || o.t === "age" || o.t === "qage" || o.t === "qprice") fail("questo oggetto non lo so ancora usare");
+      else {
+        var ctxo = { eat: /e/.test(fl) && !ctx.past && !ctx.modal, massBare: !ctx.past && !ctx.modal, lang: /l/.test(fl), neg: ctx.neg, partitive: /e/.test(fl) && !!ctx.modal };
+        if (/^(买|要)$/.test(hz(v.k)) && o.t === "noun") ctxo.partitive = true;
+        var oi = npIt(o, "obj", ctxo);
+        res.objIndex = res.tail.length;
+        res.tail.push(info[3] ? I.withPrep(info[3], oi.it) : oi.it);
+        res.objP = oi.P;
+      }
+    }
+    return res;
+  }
+  function verbIt(S, P, neg, isQ, notes, F) {
+    var v = S.pred, info = v.info, k = v.k, h = hz(k), inf = info[0], aux = info[1], fl = info[2] || "";
+    var vo = lex(G.verbObj, k);
+    if (vo && v.obj && v.obj.head) { var nf = lex(G.nouns, v.obj.head), alt = vo[hz(v.obj.head)] || (nf && /t/.test(nf[3] || "") ? vo.t : null); if (alt) { inf = alt[0]; aux = alt[1]; } else if (h === "坐") fail("«坐» con questo oggetto non lo so tradurre"); }
+    if (v.then && h === "学") inf = "imparare";
+    if (v.then && h === "准备") { inf = "prepararsi"; aux = "e"; }
+    if (h === "告诉" && !v.io) fail("«告诉» vuole a chi e che cosa (我告诉你一件事): così non lo traduco ancora");
+    var tense = "pres";
+    if (v.le || S.le || v.then && v.then.le) tense = "past";
+    if (S.neg === "没" || S.neg === "没有") tense = "past";
+    if (F.past && !S.modal) tense = "past";
+    if (v.guo) tense = "exp";
+    if (/^(下雨|下雪)$/.test(h) && (v.le || S.le) && !F.past) { tense = "pres"; S.le = false; notes.push("下雨了 = ha appena cominciato a piovere: adesso piove."); }
+    if (h === "见" && !v.obj) { if (P[0] === 1 && P[1] === "p") inf = "vedersi"; else fail("«见» qui ha bisogno di qualcuno da vedere"); }
+    if (/L/.test(fl) && !v.obj && !v.then) { if (tense !== "pres") fail("«" + h + "» al passato non lo traduco ancora"); v.loClitic = true; }
+    if (S.prog) { if (tense !== "pres") fail("«在 + verbo» con il passato non lo traduco ancora"); tense = "prog"; }
+    var o = objOf(v, { neg: neg, past: tense === "past" || tense === "exp", modal: !!S.modal });
+    if (v.loClitic) o.clitic = "lo";
+    fixedObj(v, o);
+    var vp;
+    var modal = S.modal, front = "";
+    if (modal) {
+      if (tense === "past" || tense === "exp") fail("verbo modale al passato: non lo traduco ancora");
+      var base = infFor(inf, P);
+      var mv;
+      if (modal === "想要") mv = neg ? conj("volere", "a", P, "pres") : conj("volere", "a", P, F.past ? "impf" : "cond");
+      else if (modal === "想") { mv = neg ? conj("volere", "a", P, "pres") : conj("volere", "a", P, F.past ? "impf" : "cond"); if (!neg && !F.past) notes.push("想 + verbo = «vorrei / ho voglia di…»."); }
+      else if (modal === "要") { mv = conj("volere", "a", P, F.past ? "impf" : "pres"); notes.push("要 + verbo può voler dire «voglio», ma anche «devo» o «sto per»: dipende dal contesto."); }
+      else if (modal === "会") {
+        if (ABIL[h] || /s/.test(fl)) { mv = conj("sapere", "a", P, "pres"); notes.push("会 + verbo = «so fare»: un'abilità imparata."); }
+        else { mv = null; vp = (neg ? "non " : "") + (o.clitic ? o.clitic + " " : "") + conj(inf, aux, P, "fut"); }
+      }
+      else if (modal === "能" || modal === "可以") mv = conj("potere", "a", P, F.past ? "impf" : "pres");
+      else if (modal === "应该") mv = conj("dovere", "a", P, "cond");
+      else if (modal === "必须") mv = conj("dovere", "a", P, "pres");
+      if (mv) vp = (neg ? "non " : "") + (o.clitic ? o.clitic + " " : "") + mv + " " + base;
+    } else if (tense === "prog") {
+      var pi = (P[0] - 1) + (P[1] === "p" ? 3 : 0), refl = /rsi(\s|$)/.test(inf);
+      vp = (neg ? "non " : "") + (refl ? I.CLITIC[pi] + " " : "") + (o.clitic ? o.clitic + " " : "") + conj("stare", "a", P, "pres") + " " + I.gerund(inf) + (inf.indexOf(" ") > 0 ? inf.slice(inf.indexOf(" ")) : "");
+    } else {
+      var fin = conj(inf, aux, P, tense, P[2]);
+      if ((tense === "past" || tense === "exp") && o.clitic && !o.cliticInd && /^(lo|la|li|le|La)$/.test(o.clitic) && aux === "a") {
+        var OP = o.cliticP, part = I.pp(inf);
+        fin = fin.replace(part, I.agreeO(part, OP[2] === "x" ? "m" : OP[2], OP[1]));
+        fin = (/^(lo|la|La)$/.test(o.clitic) && /^h/.test(fin) ? "l'" : o.clitic + " ") + fin;
+      } else if (o.clitic) fin = o.clitic + " " + fin;
+      vp = (neg ? "non " : "") + fin;
+      if (h === "去" && v.guo) { vp = (neg ? "non " : "") + conj("essere", "e", P, "past"); notes.push("去过 = «ci sono stato»: l'esperienza di essere andato."); }
+    }
+    if (v.guo) {
+      if (neg) vp = afterFinite(vp, "mai");
+      else if (isQ) vp = afterFinite(vp, "mai");
+      else if (h !== "去") vp = afterFinite(vp, "già");
+      if (h !== "去") notes.push("过 = l'hai fatto almeno una volta nella vita.");
+    }
+    if (F.yijing && !v.guo) vp = afterFinite(vp, "già");
+    if (F.hai) { if (S.neg) vp = afterFinite(vp, "ancora"); else vp = afterFinite(vp, "ancora"); }
+    if (F.tutti) vp = afterFinite(vp, F.tutti);
+    var tail = o.tail.slice();
+    if (v.then) {
+      if (!/^(去|来)$/.test(h) && !/^(开始|学|学习|准备)$/.test(h)) fail("due verbi di fila: non lo traduco ancora");
+      var t2 = verbPhraseInf(v.then, P, notes, /^(去|来)$/.test(h));
+      tail.push(aPrep(t2.it)); if (t2.q) { o.q = t2.q; o.qWord = t2.qWord; }
+    }
+    if (v.le && S.fin === "了") { /* 了 doppio: compiuto */ }
+    if (tense === "past" && !neg && !v.le && S.le) notes.push("了 in fondo alla frase: l'azione è avvenuta (o la situazione è cambiata).");
+    return { vp: vp, tail: tail, q: o.q, qWord: o.qWord, front: front };
+  }
+
+  /* ================= memoria: frasi verificate e correzioni dell'utente ================= */
+  var MEM = null;
+  function strip(s) { return String(s).replace(/[\s，。？！、,.!?;；:：“”"'‘’…]/g, ""); }
+  function memory() {
+    if (MEM) return MEM;
+    MEM = {};
+    var add = function (zh, it, src) { var k = strip(zh); if (k && it && !MEM[k]) MEM[k] = { it: it, src: src }; };
+    (typeof VERIFIED !== "undefined" ? VERIFIED : []).forEach(function (v) { add(v[0], v[1], "verified"); });
+    (typeof EX !== "undefined" ? EX : []).forEach(function (e) { add(e[0].join(""), e[2], "data"); });
+    (typeof PATTERNS !== "undefined" ? PATTERNS : []).forEach(function (p) { p.ex.forEach(function (e) { add(typeof e[0] === "string" ? e[0] : e[0].join(""), e[2], "data"); }); });
+    (typeof PHRASES !== "undefined" ? PHRASES : []).forEach(function (g) { g.items.forEach(function (x) { add(x[1], x[2], "data"); }); });
+    (typeof DIALOGS !== "undefined" ? DIALOGS : []).forEach(function (d) { d.lines.forEach(function (l) { add(l[2], l[3], "data"); }); });
+    return MEM;
+  }
+  /* correzioni dell'utente (contributi «tr»): vincono su tutto, solo nella sua copia */
+  function mine() {
+    var out = {};
+    if (CP.contrib && CP.contrib.list) CP.contrib.list().forEach(function (c) { if (c.op === "tr" && !c.undone && c.target) out[strip(c.target)] = { it: c.new, id: c.id }; });
+    return out;
+  }
+
+  /* verbo + oggetto che in italiano è un verbo solo (吃 + 晚饭 = cenare), 想 + 要 = vorrei */
+  var FUNC = { "是": 1, "不是": 1, "有": 1, "在": 1, "正在": 1, "比": 1, "更": 1, "了": 1, "过": 1, "着": 1, "的": 1, "跟": 1, "和": 1, "给": 1, "从": 1, "一起": 1, "多": 1, "几": 1, "多少": 1, "钱": 1, "岁": 1, "人": 1, "什么": 1, "谁": 1, "为什么": 1, "怎么": 1, "什么时候": 1, "喜欢": 1, "爱": 1, "哪": 1, "多少钱": 1 };
+  function covered(k) {
+    var h = hz(k);
+    return [G.pron, G.nouns, G.places, G.verbs, G.adjs, G.haveAdjs, G.time, G.nums, G.clf, G.degree, G.nations].some(function (t) { return lex(t, k) !== undefined; }) ||
+      NEG[h] || MODAL[h] || FINAL[h] || DEMS[h] || ADVS[h] || QPLACE[h] || FUNC[h];
+  }
+  /* una parola del vocabolario che è in realtà una frase fatta (我也是, 太贵了, 明天见): la divido nelle sue parole */
+  function split(keys) {
+    var out = [];
+    keys.forEach(function (k) {
+      var h = hz(k), cs = Array.from(h);
+      if (cs.length < 2 || covered(k)) { out.push(k); return; }
+      var parts = [], i = 0;
+      while (i < cs.length) {
+        var L = Math.min(4, cs.length - i), got = null;
+        for (; L >= 1; L--) { var sub = cs.slice(i, i + L).join(""); if (sub !== h && W[sub]) { got = sub; break; } }
+        if (!got) { parts = null; break; }
+        parts.push(got); i += L;
+      }
+      if (parts && parts.every(function (x) { return covered(x); })) out.push.apply(out, parts); else out.push(k);
+    });
+    return out;
+  }
+  function merge(keys) {
+    var out = [];
+    for (var i = 0; i < keys.length; i++) {
+      var a = hz(keys[i]), b = keys[i + 1] != null ? hz(keys[i + 1]) : null, c = keys[i + 2] != null ? hz(keys[i + 2]) : null;
+      if (b && a === "想" && b === "要") { out.push("想要"); i++; continue; }
+      /* 吃了饭 = 吃饭 + 了 */
+      if (c && (b === "了" || b === "过") && !W[a + c] && lex(G.verbs, a + c) !== undefined) { out.push(a + c); out.push(keys[i + 1]); i += 2; continue; }
+      if (b && !W[a + b] && lex(G.verbs, a + b) !== undefined) { out.push(a + b); i++; continue; }
+      out.push(keys[i]);
+    }
+    return out;
+  }
+
+  /* ================= ingresso ================= */
+  /* keys: chiavi del vocabolario nell'ordine della frase; punct: ".", "?", "!" o "" */
+  function translate(keys, punct, opt) {
+    opt = opt || {};
+    var zh = keys.map(hz).join(""), sk = strip(zh), res = { zh: zh, it: "", notes: [], sure: false, src: "", words: keys.map(function (k) { return [hz(k), gloss(k)]; }) };
+    if (!keys.length) return res;
+    if (!opt.rulesOnly) {
+      var my = mine()[sk]; if (my) { res.it = my.it; res.sure = true; res.src = "mine"; res.contribId = my.id; return res; }
+      var m = memory()[sk]; if (m) { res.it = m.it; res.sure = true; res.src = m.src; return res; }
+    }
+    var fx = G.fixed[zh] || G.fixed[zh.replace(/[吗呢吧]$/, "")] && null;
+    if (G.fixed[zh]) { var f = G.fixed[zh]; res.it = /[.!?]$/.test(f) ? f : f + (punct === "?" ? "?" : punct === "!" ? "!" : "."); res.sure = true; res.src = "rules"; return res; }
+    for (var i = 0; i < keys.length; i++) if (!W[keys[i]]) { res.reason = "non riconosco «" + keys[i] + "»"; res.it = NOPE; return res; }
+    try {
+      NOTES = [];
+      var S = parse(merge(split(keys))), out = generate(S, punct);
+      res.it = out.it; res.notes = NOTES.concat(out.notes).filter(function (x, j, a) { return a.indexOf(x) === j; }); res.sure = true; res.src = "rules";
+    } catch (e) {
+      if (!(e instanceof Fail)) { if (opt.throwErrors) throw e; res.reason = "errore interno: " + e.message; }
+      else { res.reason = e.msg; if (e.k) res.missing = hz(e.k); }
+      res.it = NOPE; res.sure = false;
+    }
+    return res;
+  }
+  CP.lab = CP.lab || {};
+  CP.lab.translate = translate;
+  CP.lab.NOPE = NOPE;
+  CP.lab.memory = function () { MEM = null; return memory(); };
+  CP.lab.strip = strip;
+  CP.lab.zhNum = zhNum;
+  /* compatibilità con il vecchio nome */
+  CP.lab.fluid = function (keys, punct) { var r = translate(keys, punct); return { it: r.it, notes: r.notes, approx: r.sure ? [] : ["?"], sure: r.sure, src: r.src, reason: r.reason, words: r.words }; };
 })();
 </script>
 <script>
@@ -14065,6 +15202,7 @@ I18N.zh = {
     var F = { py: "pinyin", it: "italiano", note: "nota" };
     if (it.op === "fix") return "✏️ " + who + " · " + F[it.field] + ": «" + it.new + "»";
     if (it.op === "add") return "➕ " + it.hz + " " + it.py + " · " + it.it;
+    if (it.op === "tr") return "🈯 " + it.target + " → «" + it.new + "»";
     return "🚩 " + who + " · " + it.why;
   }
   function patch(items) {
@@ -14078,9 +15216,9 @@ I18N.zh = {
   function secOpts(sel) { return CP.SEC.map(function (S) { return '<option value="' + CP.attr(S.id) + '"' + (S.id === sel ? " selected" : "") + ">" + esc(S.title) + "</option>"; }).join(""); }
   function formHTML(errs) {
     var f = form, w = CP.WORDS[f.target], ln = !w && f.target ? CP.contrib.lineOf(f.target) : null, cur = w || ln, h;
-    var head = f.op === "add" ? "Proponi una parola nuova" : (w ? "«" + esc(w.hz) + "» " + esc(w.py) : ln ? esc(ln.hz) : "");
-    h = '<div class="fam-head"><div class="meta"><b>' + (f.op === "add" ? head : "Correggi o segnala") + "</b>" + (f.op !== "add" ? '<div class="small muted han">' + head + "</div>" : "") + '</div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>';
-    if (f.op !== "add") h += '<div class="seg" role="group" aria-label="Tipo"><button type="button" data-ct-op="fix"' + (f.op === "fix" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>✏️ Correggi</button><button type="button" data-ct-op="flag"' + (f.op === "flag" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🚩 Segnala</button></div>";
+    var head = f.op === "add" ? "Proponi una parola nuova" : f.op === "tr" ? esc(f.target) : (w ? "«" + esc(w.hz) + "» " + esc(w.py) : ln ? esc(ln.hz) : "");
+    h = '<div class="fam-head"><div class="meta"><b>' + (f.op === "add" ? head : f.op === "tr" ? "La traduzione giusta" : "Correggi o segnala") + "</b>" + (f.op !== "add" ? '<div class="small muted han">' + head + "</div>" : "") + '</div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>';
+    if (f.op !== "add" && f.op !== "tr") h += '<div class="seg" role="group" aria-label="Tipo"><button type="button" data-ct-op="fix"' + (f.op === "fix" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>✏️ Correggi</button><button type="button" data-ct-op="flag"' + (f.op === "flag" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🚩 Segnala</button></div>";
     h += '<div class="ct-form">';
     if (f.op === "fix") {
       var fields = w ? [["py", "Pinyin"], ["it", "Italiano"], ["note", "Nota"]] : [["py", "Pinyin"], ["it", "Italiano"]];
@@ -14088,6 +15226,10 @@ I18N.zh = {
         '<p class="small muted" style="margin:0">Adesso: <b>' + esc((cur && cur[f.field]) || "—") + "</b></p>" +
         '<label>Diventa<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : (cur && cur[f.field]) || "") + '" autocomplete="off" spellcheck="false"></label>' +
         '<p class="small muted" style="margin:0">I caratteri non si correggono da qui (sono la chiave dei tuoi progressi): se sono sbagliati usa «Segnala».</p>';
+    } else if (f.op === "tr") {
+      h += '<p class="small muted" style="margin:0">Il laboratorio dice: <b>' + esc(f.old || CP.lab.NOPE) + "</b></p>" +
+        '<label>Come si dice in italiano<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : f.old || "") + '" autocomplete="off"></label>' +
+        '<p class="small muted" style="margin:0">La tua traduzione vale subito nel tuo laboratorio. Se la mandi all\'autore, viene riletta e poi diventa una frase verificata per tutti.</p>';
     } else if (f.op === "add") {
       h += '<label>Sezione<select id="ct-sec">' + secOpts(f.section) + "</select></label>" +
         '<label>Caratteri<input type="text" id="ct-hz" maxlength="8" value="' + CP.attr(f.hz || "") + '" autocomplete="off" lang="zh"></label>' +
@@ -14098,7 +15240,7 @@ I18N.zh = {
       '<label>Nickname (facoltativo)<input type="text" id="ct-nick" maxlength="40" value="' + CP.attr(nick()) + '" autocomplete="nickname"></label>' +
       (errs && errs.length ? '<div class="warn" role="alert">' + errs.map(esc).join("<br>") + "</div>" : "") +
       '<p class="small muted" style="margin:0">🔒 Cosa invii: solo questa correzione e, se lo scrivi, un nickname. A chi: all\'autore dell\'app, quando scegli tu un canale (messaggio, email, modulo). Verrà pubblicata nel dizionario dell\'app. Nessun altro dato.</p>' +
-      '<button type="button" class="btn-main" id="ct-save" style="margin-top:0">' + (f.op === "fix" ? "Salva e prova nella mia copia" : "Salva") + "</button></div>";
+      '<button type="button" class="btn-main" id="ct-save" style="margin-top:0">' + (f.op === "fix" || f.op === "tr" ? "Salva e prova nella mia copia" : "Salva") + "</button></div>";
     return h;
   }
   function read() {
@@ -14113,7 +15255,7 @@ I18N.zh = {
     return true;
   }
   CP.contribOpen = function (o) {
-    form = { op: o.op || "fix", target: o.target || "", field: o.field || "py", section: o.section || (CP.SEC[0] && CP.SEC[0].id) };
+    form = { op: o.op || "fix", target: o.target || "", field: o.field || "py", section: o.section || (CP.SEC[0] && CP.SEC[0].id), old: o.old || "" };
     CP.openSheet(formHTML());
   };
   function save() {
@@ -14122,14 +15264,18 @@ I18N.zh = {
     var it = { id: CP.contrib.id(), op: form.op, t: Date.now() };
     if (form.op === "fix") { it.target = form.target; it.field = form.field; it.old = cur ? String(cur[form.field] || "") : ""; it.new = form.new; }
     else if (form.op === "flag") it.target = form.target;
+    else if (form.op === "tr") { it.target = form.target; it.old = form.old || ""; it.new = form.new; }
     else { it.section = form.section; it.hz = form.hz; it.py = form.py; it.it = form.it; }
     if (form.why) it.why = form.why;
     var errs = CP.contrib.validate(it);
     if (errs.length) { CP.openSheet(formHTML(errs)); CP.sfx("ko"); return; }
-    var l = list(); l.push(it); saveList(l);
+    var l = list();
+    if (it.op === "tr") l = l.filter(function (x) { return !(x.op === "tr" && x.target === it.target && !x.sent); });   /* una sola traduzione per frase, la più recente */
+    l.push(it); saveList(l);
+    if (it.op === "tr" && CP.labRefresh) CP.labRefresh();
     CP.sfx("ok");
     CP.openSheet('<div class="fam-head"><div class="meta"><b>Grazie!</b><div class="small muted">' + esc(label(it)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
-      (it.op === "fix" && w ? '<p style="margin:0">La vedi già nella tua copia, con l\'etichetta «✏️ tua correzione». La puoi annullare da ⚙️ → Contributi.</p>' : '<p style="margin:0">È salvata in questo dispositivo (e nel backup).</p>') +
+      (it.op === "fix" && w ? '<p style="margin:0">La vedi già nella tua copia, con l\'etichetta «✏️ tua correzione». La puoi annullare da ⚙️ → Contributi.</p>' : it.op === "tr" ? '<p style="margin:0">La vedi già nel laboratorio, con l\'etichetta «✏️ tua traduzione». La puoi annullare da ⚙️ → Contributi.</p>' : '<p style="margin:0">È salvata in questo dispositivo (e nel backup).</p>') +
       sendHTML());
   }
 
@@ -14170,7 +15316,7 @@ I18N.zh = {
       '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-ct-find>✏️ Correggi o segnala…</button><button type="button" class="btn-s" data-ct-add>➕ Parola nuova</button></div>' +
       (l.length ? '<ul class="ct-list">' + l.map(function (it) {
         return '<li class="' + (it.undone ? "undone" : "") + '"><span>' + esc(label(it)) + (it.sent ? ' <span class="muted small">· inviato</span>' : "") + "</span>" +
-          (it.op === "fix" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + (it.undone ? "Riapplica" : "Annulla") + "</button>" : "") +
+          (it.op === "fix" || it.op === "tr" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + (it.undone ? "Riapplica" : "Annulla") + "</button>" : "") +
           '<button type="button" class="btn-s" data-ct-del="' + CP.attr(it.id) + '" aria-label="Elimina">×</button></li>';
       }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
   });
@@ -14209,8 +15355,8 @@ I18N.zh = {
     var l, id;
     if (b.hasAttribute("data-ct-find")) { CP.untrap(document.getElementById("settings")); CP.contribFind(); }
     else if (b.hasAttribute("data-ct-add")) { CP.untrap(document.getElementById("settings")); CP.contribOpen({ op: "add" }); }
-    else if ((id = b.getAttribute("data-ct-undo"))) { l = list(); l.forEach(function (x) { if (x.id === id) { x.undone = !x.undone; x.t = Date.now(); } }); saveList(l); CP.sfx("tap"); }
-    else if ((id = b.getAttribute("data-ct-del"))) { l = list().filter(function (x) { return x.id !== id; }); saveList(l); CP.sfx("tap"); }
+    else if ((id = b.getAttribute("data-ct-undo"))) { l = list(); l.forEach(function (x) { if (x.id === id) { x.undone = !x.undone; x.t = Date.now(); } }); saveList(l); CP.sfx("tap"); if (CP.labRefresh) CP.labRefresh(); }
+    else if ((id = b.getAttribute("data-ct-del"))) { l = list().filter(function (x) { return x.id !== id; }); saveList(l); CP.sfx("tap"); if (CP.labRefresh) CP.labRefresh(); }
     else if (b.hasAttribute("data-ct-send")) send(b.getAttribute("data-ct-send"));
   });
 })();

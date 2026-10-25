@@ -11,13 +11,16 @@
        (dlg:<id>:<riga>). Mai hz: è la chiave dei progressi (cp-srs-v1). Per un carattere sbagliato c'è flag.
      - add aggiunge una parola in fondo a una sezione; se i caratteri esistono già è un doppione.
      - flag non cambia niente: finisce nel riepilogo, da guardare a mano.
+     - tr propone la traduzione italiana di una frase del laboratorio (target = i caratteri della frase): con --apply
+       entra in src/data/verified.js segnata "memoria" (il laboratorio la usa così com'è); poi «node tools/grammar.mjs»
+       dice se le regole ci arrivano da sole. Rileggi ogni traduzione prima di applicarla.
      - pinyin: sillabe = caratteri, segni di tono presenti; niente < o >; al massimo 200 caratteri per campo.
 
    Uso:  node tools/merge-contrib.mjs patch1.json [patch2.json …] [--src src] [--out riepilogo.md] [--apply]
    Codice d'uscita: 0 se tutto è valido, 1 se ci sono voci scartate o conflitti (con --apply quelle voci restano fuori). */
 import fs from "fs";
 import path from "path";
-import { assets, load as loadData, sectionFile, dialogFile, phrasesFile } from "./lib/data.mjs";
+import { assets, load as loadData, sectionFile, dialogFile, phrasesFile, verifiedFile } from "./lib/data.mjs";
 
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : def; };
@@ -30,7 +33,8 @@ if (!files.length) { console.error("Uso: node tools/merge-contrib.mjs patch.json
 /* ---------- dati (da src/data, nell'ordine di src/index.html) ---------- */
 const DATA = loadData(srcDir), list = assets(srcDir).scripts.map((x) => x.src);
 const vocabFiles = list.filter((f) => f.startsWith("data/vocab/")), dialogFiles = list.filter((f) => f.startsWith("data/dialogs/") && !f.includes("/_"));
-const SEC = { data: DATA.SECTIONS }, PHR = { data: DATA.PHRASES }, DLG = { data: DATA.DIALOGS };
+const SEC = { data: DATA.SECTIONS }, PHR = { data: DATA.PHRASES }, DLG = { data: DATA.DIALOGS }, VER = { data: DATA.VERIFIED || [] };
+const stripZh = (z) => String(z || "").replace(/[\s，。？！、,.!?;；:：“”"'‘’…]/g, "");
 const touched = new Set();
 function store() {
   for (const t of touched) {
@@ -38,6 +42,7 @@ function store() {
     if (kind === "sec") fs.writeFileSync(path.join(srcDir, vocabFiles[n]), sectionFile(SEC.data[n], n + 1));
     else if (kind === "dlg") fs.writeFileSync(path.join(srcDir, dialogFiles[n]), dialogFile(DLG.data[n]));
     else if (kind === "phr") fs.writeFileSync(path.join(srcDir, "data/phrases.js"), phrasesFile(PHR.data));
+    else if (kind === "ver") { const f = path.join(srcDir, "data/verified.js"); fs.writeFileSync(f, verifiedFile(VER.data, fs.readFileSync(f, "utf8"))); }
   }
 }
 
@@ -76,6 +81,10 @@ function validate(it) {
     if (!CJKONLY.test(it.hz || "") || cjkCount(it.hz) > 8) e.push("caratteri non validi");
     const m = pyOk(it.py || "", it.hz || ""); if (m) e.push(m);
     if (!String(it.it || "").trim()) e.push("manca l'italiano");
+  } else if (it.op === "tr") {
+    const z = stripZh(it.target);
+    if (!CJKONLY.test(z) || Array.from(z).length > 40) e.push("la frase deve essere in caratteri cinesi (al massimo 40)");
+    if (!String(it.new || "").trim()) e.push("manca la traduzione");
   } else if (it.op === "flag") {
     if (!it.target || (!WORDS[it.target] && !lineOf(it.target))) e.push(`non trovo «${it.target}»`);
     if (String(it.why || "").trim().length < 3) e.push("segnalazione senza motivo");
@@ -106,6 +115,14 @@ for (const f of files) {
       if (prev) { conflicts.push({ a: prev, b: { src, it } }); continue; }
       seenFix.set(k, { src, it });
     }
+    if (it.op === "tr") {
+      const z = stripZh(it.target), have = VER.data.find((v) => stripZh(v[0]) === z);
+      if (have && have[1] === it.new.trim()) { same.push({ src, it }); continue; }
+      const k = "tr|" + z, prev = seenFix.get(k);
+      if (prev && prev.it.new.trim() === it.new.trim()) { dup.push({ src, it, of: prev.src }); continue; }
+      if (prev) { conflicts.push({ a: prev, b: { src, it } }); continue; }
+      seenFix.set(k, { src, it });
+    }
     if (it.op === "add") {
       if (WORDS[it.hz]) { dup.push({ src, it, of: "dizionario" }); continue; }
       if (seenAdd.has(it.hz)) { dup.push({ src, it, of: seenAdd.get(it.hz) }); continue; }
@@ -115,14 +132,16 @@ for (const f of files) {
   }
 }
 /* un conflitto tiene fuori entrambe le proposte: decide una persona */
-const conflictKeys = new Set(conflicts.map((c) => c.a.it.target + "|" + c.a.it.field));
-const ok = all.filter((x) => !(x.it.op === "fix" && conflictKeys.has(x.it.target + "|" + x.it.field)));
+const ckey = (it) => it.op === "tr" ? "tr|" + stripZh(it.target) : it.target + "|" + it.field;
+const conflictKeys = new Set(conflicts.map((c) => ckey(c.a.it)));
+const ok = all.filter((x) => !((x.it.op === "fix" || x.it.op === "tr") && conflictKeys.has(ckey(x.it))));
 
 /* ---------- riepilogo ---------- */
 const show = (it) => {
   if (!it) return "—";
   if (it.op === "fix") { const cur = current(it) ?? "—"; return `fix ${it.target} · ${it.field}: «${cur}» → «${it.new}»` + (it.old != null && it.old !== cur ? ` (attenzione: la patch partiva da «${it.old}»)` : ""); }
   if (it.op === "add") return `add ${it.hz} ${it.py} «${it.it}» in ${it.section}`;
+  if (it.op === "tr") { const have = VER.data.find((v) => stripZh(v[0]) === stripZh(it.target)); return `tr ${stripZh(it.target)} → «${it.new}»` + (have ? ` (oggi verificata: «${have[1]}»)` : it.old ? ` (il laboratorio diceva «${it.old}»)` : ""); }
   return `flag ${it.target}: ${it.why}`;
 };
 let md = `# Contributi · riepilogo\n\n${files.length} file · ${ok.length} da applicare · ${flags.length} segnalazioni · ${dup.length + same.length} doppioni · ${conflicts.length} conflitti · ${rejected.length} scartati\n`;
@@ -142,9 +161,15 @@ if (apply && ok.length) {
       if (w) { const idx = { py: 0, it: 2, note: 3 }[it.field]; if (idx === 3 && w.w.length < 4) w.w.push(""); w.w[idx] = it.new; if (idx === 3 && !it.new) w.w.length = 3; touched.add("sec:" + SEC.data.findIndex((s) => s.id === w.sec)); n++; }
       else { const ln = lineOf(it.target); ln.row[ln[it.field]] = it.new; const m = /^(phr|dlg):([^:]+)/.exec(it.target); touched.add(m[1] === "phr" ? "phr:0" : "dlg:" + DLG.data.findIndex((d) => d.id === m[2])); n++; }
     } else if (it.op === "add") { const si = SEC.data.findIndex((s) => s.id === it.section); SEC.data[si].words.push([it.py, it.hz, it.it]); touched.add("sec:" + si); n++; }
+    else if (it.op === "tr") {
+      const z = stripZh(it.target), i = VER.data.findIndex((v) => stripZh(v[0]) === z), row = [z, it.new.trim(), "memoria"];
+      if (i >= 0) VER.data[i] = row; else VER.data.push(row);
+      touched.add("ver:0"); n++;
+    }
   }
   store();
-  md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso in #selftest (oggi 3500).\n`;
+  md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso in #selftest (oggi 3500).` +
+    (touched.has("ver:0") ? " Le traduzioni sono entrate in src/data/verified.js come «memoria»: node tools/grammar.mjs dice quali le regole sanno già fare da sole." : "") + "\n";
 } else if (apply) md += "\nNiente da applicare.\n";
 else if (ok.length) md += "\nProva a secco: rilancia con --apply per scrivere le modifiche.\n";
 
