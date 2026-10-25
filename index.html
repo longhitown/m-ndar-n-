@@ -5120,6 +5120,10 @@ const PATH = {
       if (prevT) de.setAttribute("data-theme", prevT); else de.removeAttribute("data-theme");
       add("Tema Carta di Riso: toni tarati sulla carta (anche col sistema scuro)", t1 === "#B42A24", "--t1 = " + t1);
     } catch (e) { add("Tema Carta di Riso", false, String(e)); }
+    try {
+      var zn = CP.lab.zhNum, zc = [[["二", "十"], 20], [["三", "十", "五"], 35], [["十", "二"], 12], [["一", "百", "零", "五"], 105], [["三", "百", "五"], 350]], zbad = zc.filter(function (x) { return zn(x[0]) !== x[1]; });
+      add("Laboratorio: numeri composti (二十 = 20, 三十五 = 35, 十二 = 12…)", !zbad.length, zbad.length ? zbad.map(function (x) { return x[0].join("") + "→" + zn(x[0]); }).join(", ") : zc.length + " casi");
+    } catch (e) { add("Laboratorio: numeri composti", false, String(e)); }
     /* memoria */
     try {
       var sch = new FSRS.Scheduler({ retention: 0.9, fuzz: false }), c = sch.review(sch.newCard(0), 3, 0);
@@ -5961,7 +5965,7 @@ const PATH = {
       if (r === "asp" && h === "了") { var prev = out[out.length - 1]; if (prev && prev.slot >= 9) { u.slot = 9.5; } }
       if (r === "num" || r === "dem") {
         var j2 = i + 1; u.slot = 9;
-        while (j2 < n && ["num", "clf", "noun", "place"].indexOf(roleOf(hs[j2])) >= 0 && u.keys.length < 4) { u.keys.push(tokens[j2]); u.hzs.push(hs[j2]); j2++; if (roleOf(hs[j2 - 1]) === "noun") break; }
+        while (j2 < n && ["num", "clf", "noun", "place"].indexOf(roleOf(hs[j2])) >= 0 && u.keys.length < 7) { u.keys.push(tokens[j2]); u.hzs.push(hs[j2]); j2++; if (roleOf(hs[j2 - 1]) === "noun") break; }
         u.kind = "np"; i = j2; out.push(u); continue;
       }
       if (r === "noun" || r === "place") {
@@ -5987,19 +5991,33 @@ const PATH = {
   /* ================== traduzione fluida ================== */
   function personIdx(p) { return (p[0] - 1) + (p[1] === "p" ? 3 : 0); }
   function numWord(n) { return n <= 10 ? NUMIT[n] : String(n); }
+  /* numero cinese da una serie di caratteri numerici consecutivi: 二十 = 20, 十二 = 12, 三十五 = 35, 一百 = 100.
+     Abbreviazione parlata: 三百五 = 350 (la cifra dopo 百 vale decine, se non c'è 零). */
+  function zhNum(hs) {
+    var total = 0, cur = 0, unit = 0, zero = false;
+    hs.forEach(function (h) {
+      var v = NUMS[h];
+      if (v === 10 || v === 100) { total += (cur || 1) * v; cur = 0; unit = v; zero = false; }
+      else if (v === 0) zero = true;
+      else cur = v;
+    });
+    if (cur && unit === 100 && !zero && hs.length > 2) cur *= 10;
+    return total + cur;
+  }
   function nameFromTokens(keys) {
     /* ritorna [numero (or null), classificatore hz or null, dem, nome key] */
-    var num = null, clf = null, dem = null, noun = null;
+    var nums = [], clf = null, dem = null, noun = null;
     keys.forEach(function (k) {
       var h = hz(k), r = roleOf(h);
-      if (r === "num") num = (num === null ? 0 : num) + (NUMS[h] === 100 ? 0 : 0) || NUMS[h]; else if (r === "dem") dem = h; else if (r === "clf") clf = h; else if (r === "noun" || r === "place") noun = k;
+      if (r === "num") { if (NUMS[h] !== undefined) nums.push(h); } else if (r === "dem") dem = h; else if (r === "clf") clf = h; else if (r === "noun" || r === "place") noun = k;
     });
-    return { num: num, clf: clf, dem: dem, noun: noun };
+    return { num: nums.length ? zhNum(nums) : null, clf: clf, dem: dem, noun: noun };
   }
   function npIt(keys, o) {
     var p = nameFromTokens(keys), ap = [];
     if (!p.noun) {
       if (p.dem) return { t: p.dem === "这" ? "questo" : "quello" };
+      if (p.num != null && p.clf === "块") return { t: numWord(p.num) + " yuan" };
       if (p.num != null && p.clf) return { t: numWord(p.num) + " " + (CLF[p.clf] || "") };
       return { t: keys.map(function (k) { return gloss(k); }).join(" ") };
     }
@@ -6272,6 +6290,9 @@ const PATH = {
         if (tense === "exp") verbPhrase = verbPhrase.replace(/^(non )?/, "$1") ;
         if (tense === "exp") { var e1 = verbPhrase.split(" "); verbPhrase = verbPhrase.replace(/^(non )?(\S+) /, function (_, n0, au) { return (n0 || "") + au + " già "; }); if (negat) verbPhrase = verbPhrase.replace("non ", "non ").replace(" già ", " mai "); }
       }
+    } else if (nObj.some(function (u) { return nameFromTokens(u.keys).clf === "岁"; })) {
+      /* 他二十岁: l'età si dice senza verbo in cinese, con «avere» in italiano */
+      verbPhrase = vform("avere", "a", tense === "exp" ? "pres" : tense, negat);
     } else if (mainObj || q) {
       verbPhrase = ""; 
     }
@@ -6449,7 +6470,7 @@ const PATH = {
     res.fixed = t; res.steps = steps; res.issues = issues; res.ok = !issues.length; res.changed = t.join("|") !== tokens.join("|");
     return res;
   }
-  CP.lab = { fluid: fluid, check: check, units: units, _roleOf: roleOf };
+  CP.lab = { fluid: fluid, check: check, units: units, _roleOf: roleOf, zhNum: zhNum };
 })();
 
 </script>
