@@ -1370,7 +1370,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
 (function () {
   var CJK = /[㐀-鿿]/;
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
-  function attr(s) { return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+  /* testo dentro un attributo HTML: protegge anche le virgolette (i dati della community non sono fidati) */
+  function attr(s) { return esc(s).replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
   function tone(s) {
     var d = s.normalize("NFD");
     if (/̄/.test(d)) return 1;
@@ -1399,7 +1400,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       return '<span class="p">' + esc(ch) + "</span>";
     }).join("");
   }
-  var CP = window.CP = { esc: esc, tone: tone, syllables: syllables, pinyinHTML: pinyinHTML, hanziHTML: hanziHTML };
+  var CP = window.CP = { esc: esc, attr: attr, tone: tone, syllables: syllables, pinyinHTML: pinyinHTML, hanziHTML: hanziHTML };
 
   /* ---- modello dati: chiave = il carattere; doppioni -> carattere#pinyin ---- */
   var WORDS = {}, ORDER = [], SEC = [];
@@ -1838,6 +1839,72 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     } catch (e) { if (zh) cloud(); else finish(); }
   };
   CP.say = function (text, el) { CP.speak(text, { el: el }); };
+
+  /* ---- caratteri con più letture (V6.7). La sintesi vocale legge il carattere, non il pinyin:
+     per 还 huán direbbe «hái». Per questi caratteri si fa leggere una parola d'esempio con la stessa lettura. ---- */
+  function sylList(py) {
+    var clean = String(py).replace(/[!?,;:…"“”«»()（），。？！、]/g, " ").replace(/\.(?=\s|$)/g, " ").trim();
+    return clean ? CP.syllables(clean.replace(/\s+/g, " ")).map(function (x) { return x.replace(/['’]/g, "").toLowerCase(); }) : [];
+  }
+  function alignHz(hz, py) {
+    var ch = Array.from(String(hz)).filter(function (c) { return CJK.test(c); }), sy = sylList(py);
+    return ch.length && ch.length === sy.length ? ch.map(function (c, i) { return [c, sy[i]]; }) : null;
+  }
+  function bsyl(s) { return String(s).normalize("NFD").replace(/[̀́̄̌]/g, "").normalize("NFC").toLowerCase().replace(/[^a-zü]/g, ""); }
+  function rkey(s) { return bsyl(s) + CP.tone(s); }
+  /* letture note, oltre a quelle del dizionario (alcune non compaiono nelle parole) */
+  var POLY_MANUAL = { "了": ["le", "liǎo"], "着": ["zhe", "zháo", "zhuó"], "行": ["xíng", "háng"], "长": ["cháng", "zhǎng"], "得": ["de", "dé", "děi"], "地": ["de", "dì"], "都": ["dōu", "dū"], "重": ["zhòng", "chóng"], "便": ["biàn", "pián"], "乐": ["lè", "yuè"], "觉": ["jué", "jiào"], "空": ["kōng", "kòng"] };
+  /* 一 e 不 cambiano tono per sandhi, non per significato: le spiega già «Come si dice davvero» */
+  var POLY_SANDHI = { "一": 1, "不": 1 };
+  /* esempi brevi scelti a mano, quando il dizionario non ne ha uno corto */
+  var POLY_EX = { "还huán": "还书", "看kān": "看门", "只zhī": "一只猫", "只zhǐ": "只有", "教jiāo": "教书", "更gēng": "更新", "脏zāng": "脏衣服", "炸zhá": "炸鸡", "炸zhà": "爆炸", "都dōu": "都是", "更gèng": "更好" };
+  var READ = {}, POLY = new Set(), polyCache = {};
+  ORDER.forEach(function (k) {
+    var w = WORDS[k], al = alignHz(w.hz, w.py); if (!al) return;
+    al.forEach(function (p) { var r = READ[p[0]] = READ[p[0]] || {}; (r[p[1]] = r[p[1]] || []).push(k); });
+  });
+  Object.keys(READ).forEach(function (c) {
+    if (POLY_SANDHI[c]) return;
+    var sy = Object.keys(READ[c]), bases = {}, toned = {};
+    sy.forEach(function (s) { bases[bsyl(s)] = 1; if (CP.tone(s) !== 5) toned[rkey(s)] = 1; });
+    if (Object.keys(bases).length > 1 || Object.keys(toned).length > 1) POLY.add(c);
+  });
+  Object.keys(POLY_MANUAL).forEach(function (c) { POLY.add(c); });
+  CP.POLY = POLY;
+  function readingsOf(c) {
+    var out = [], seen = {};
+    Object.keys(READ[c] || {}).concat(POLY_MANUAL[c] || []).forEach(function (s) { var k = rkey(s); if (!seen[k]) { seen[k] = 1; out.push(s); } });
+    /* il tono neutro non è un'altra lettura se la stessa sillaba esiste con un tono pieno */
+    return out.filter(function (s) { return CP.tone(s) !== 5 || !out.some(function (o) { return o !== s && CP.tone(o) !== 5 && bsyl(o) === bsyl(s); }); });
+  }
+  function polyOf(w) {
+    if (!w || polyCache[w.key] !== undefined) return w ? polyCache[w.key] : null;
+    var ch = Array.from(w.hz), info = null;
+    if (ch.length === 1 && POLY.has(ch[0])) {
+      var own = sylList(w.py)[0] || "", ok = rkey(own), c = ch[0], ex = POLY_EX[c + own] ? { hz: POLY_EX[c + own] } : null, best = ex ? -1 : 1e9;
+      var others = readingsOf(c).filter(function (s) { return rkey(s) !== ok && !(CP.tone(own) === 5 && bsyl(s) === bsyl(own) && CP.tone(s) === 5); });
+      /* esempio: la parola più corta (meglio di due caratteri) dove il carattere ha la stessa lettura */
+      (READ[c] && READ[c][own] || []).forEach(function (k) {
+        if (k === w.key) return; var o = WORDS[k], n = Array.from(o.hz).length; if (n < 2) return;
+        var sc = Math.abs(n - 2) * 10 + Array.from(o.hz).filter(function (x) { return x !== c && POLY.has(x); }).length;
+        if (sc < best) { best = sc; ex = { hz: o.hz, py: o.py }; }
+      });
+      if (!ex) PHRASES.some(function (g) { return g.items.some(function (p) {
+        var al = alignHz(p[1], p[0]); if (!al) return false;
+        if (al.some(function (x) { return x[0] === c && x[1] === own; })) { ex = { hz: p[1], py: p[0] }; return true; } return false;
+      }); });
+      info = { others: others, ex: ex };
+    }
+    return (polyCache[w.key] = info);
+  }
+  CP.polyInfo = polyOf;
+  /* testo da far leggere alla voce per una parola del dizionario */
+  CP.sayHz = function (w) { var p = polyOf(w); return p && p.ex ? p.ex.hz : (w ? w.hz : ""); };
+  CP.polyNote = function (w) {
+    var p = polyOf(w); if (!p || (!p.others.length && !p.ex)) return "";
+    return '<div class="cd-note poly-note">⚠️ ' + (p.others.length ? "Si legge anche " + p.others.map(function (s) { return "<b>" + CP.pinyinHTML(s) + "</b>"; }).join(", ") + ". " : "") +
+      (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
+  };
   CP.sayBtn = function (text) {
     return '<button class="say" type="button" data-say="' + CP.esc(text) + '" aria-label="Ascolta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
   };
@@ -2074,7 +2141,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     h = '<div class="fam-head"><div class="big">' + CP.esc(ch) + '</div><div class="meta">' +
       (selfW ? '<div class="lp">' + CP.pinyinHTML(selfW.py) + '</div><div class="small muted">' + CP.esc(selfW.it) + "</div>"
              : '<div class="small muted">Da solo non è una parola del vocabolario: compare dentro altre parole.</div>') +
-      "</div>" + (selfW ? CP.audioBtns(ch, true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>';
+      "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "");
     if (fam.chars.length > 1) {
       h += '<div class="fam-chars" role="group" aria-label="Caratteri">' + fam.chars.map(function (c) {
         return '<button type="button" data-fc="' + CP.esc(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
@@ -2170,7 +2237,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var m = t.closest("td.hz .m-hz, .cd-hz");
     if (m && !(document.body.classList.contains("hide-hz") && !m.classList.contains("shown"))) {
       var ch = charTarget(t);
-      if (ch && (e.shiftKey || e.altKey)) CP.openFamily(ch); else CP.say(m.textContent, m);
+      var hk = m.closest("[data-k]"), hw = hk ? WORDS[hk.getAttribute("data-k")] : null;
+      if (ch && (e.shiftKey || e.altKey)) CP.openFamily(ch); else CP.say(hw && hw.hz === m.textContent ? CP.sayHz(hw) : m.textContent, m);
     }
   });
 
@@ -2387,7 +2455,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var h = "";
     if (set.py) h += '<div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" + CP.toneCurveHTML(w.py);
     if (set.hz) h += '<div class="cd-hz">' + CP.hanziHTML(w.hz, w.py) + "</div>";
-    if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "");
+    if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (set.py ? CP.polyNote(w) : "");
     return h;
   }
   var TAGS = { pi: "Che cosa significa?", ip: "Come si dice?", hp: "Leggi il carattere" };
@@ -2401,7 +2469,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   }
   function cardTools(w, full) {
     var fv = CP.favs && CP.favs.has(w.key);
-    return (full ? '<div class="btns">' + CP.sayBtn(w.hz) + CP.micBtn(w.hz) + "</div>" : "") +
+    return (full ? '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + CP.micBtn(w.hz) + "</div>" : "") +
       '<div class="acts cardacts"><button type="button" id="pad-open">✍️ Traccia</button>' + (full ? '<button type="button" data-fam="' + esc(w.hz) + '">🔍 Famiglia</button>' : "") +
       (full && CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + esc(w.key) + '">〰️ Tono</button>' : "") +
       '<button type="button" class="favb' + (fv ? " on" : "") + '" data-fav-k="' + esc(w.key) + '" aria-pressed="' + (fv ? "true" : "false") + '">' + (fv ? "★ Segnata" : "☆ Segna") + "</button></div>";
@@ -2477,15 +2545,15 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var e = sess.q[0], w = CP.WORDS[e.k], h = head();
     if (e.kind === "intro") {
       var ex = example(w.hz);
-      h += '<div class="panel fc"><span class="tag">Nuova parola · ' + esc(w.secTitle) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
+      h += '<div class="panel fc" data-k="' + CP.attr(w.key) + '"><span class="tag">Nuova parola · ' + esc(w.secTitle) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
         (ex ? '<div class="cd-ex"><span class="tag">Esempio</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><button type="button" class="btn-main" id="next">Avanti</button>' + KBD;
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
-      h += '<div class="panel fc"><span class="tag">' + TAGS[e.type] + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
+      h += '<div class="panel fc" data-k="' + CP.attr(w.key) + '"><span class="tag">' + TAGS[e.type] + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
         '<button type="button" class="btn-main" id="reveal">Mostra la risposta</button>' + KBD;
     } else {
-      h += '<div class="panel fc"><span class="tag">' + TAGS[e.type] + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
+      h += '<div class="panel fc" data-k="' + CP.attr(w.key) + '"><span class="tag">' + TAGS[e.type] + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
         '<div class="grades">' +
         '<button type="button" data-g="0">Non la so<span class="sub">torna tra poco</span></button>' +
         '<button type="button" data-g="1">Quasi<span class="sub">torna tra poco</span></button>' +
@@ -2498,7 +2566,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var fcEl = root.querySelector(".fc");
     if (fcEl && e.kind === "test") CP.bindCardSwipe(fcEl, function () { var rv = document.getElementById("reveal"); if (rv) rv.click(); }, function (g) { answer(g); }, function () { return !!sess.revealed; });
     window.scrollTo(0, 0);
-    if (CP.pref.auto && (e.kind === "intro" || sess.revealed)) CP.say(w.hz, root.querySelector(".say"));
+    if (CP.pref.auto && (e.kind === "intro" || sess.revealed)) CP.say(CP.sayHz(w), root.querySelector(".say"));
   }
   function answer(g) {
     CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko");
@@ -2584,7 +2652,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     ev.preventDefault();
     if (a && a.blur && (inCard || isTab) && tag === "BUTTON") a.blur();
     if (act === "reveal") { CP.sfx("tap"); sess.revealed = true; render(); }
-    else if (act === "say") CP.say(w.hz, root.querySelector(".say"));
+    else if (act === "say") CP.say(CP.sayHz(w), root.querySelector(".say"));
     else if (act === "next") { CP.sfx("tap"); next(); }
     else answer(parseInt(ev.key, 10) - 1);
   });
@@ -3552,7 +3620,7 @@ const PATH = {
   var ROUNDS = 10, ear = null, TONE_NAMES = { 1: "alto e piatto", 2: "sale", 3: "scende e risale", 4: "cade secco" };
   function earPool() {
     return CP.ORDER.map(function (k) { return W[k]; }).filter(function (w) {
-      return Array.from(w.hz).length === 1 && CP.syllables(w.py).length === 1 && CP.tone(w.py) <= 4;
+      return Array.from(w.hz).length === 1 && CP.syllables(w.py).length === 1 && CP.tone(w.py) <= 4 && !(CP.POLY && CP.POLY.has(w.hz));
     });
   }
   function baseOf(w) { return CP.baseSyl(w.py); }
@@ -3645,14 +3713,14 @@ const PATH = {
     });
     SP.q = { w: w, opts: shuffle([w].concat(ds)) }; SP.lock = false;
     sprintRender();
-    if (CP.pref.auto) CP.speak(w.hz, { rate: 1 });
+    if (CP.pref.auto) CP.speak(CP.sayHz(w), { rate: 1 });
   }
   function sprintRender() {
     var left = Math.max(0, SP.dur - (Date.now() - SP.t0)), w = SP.q.w, m = mult();
     root.innerHTML = '<div class="sprint-top"><button type="button" class="btn-quiet" id="m-quit" style="min-height:44px">Esci</button><span class="pts" id="sp-pts">' + SP.pts + '</span><span class="combo" id="sp-combo">' + (m > 1 ? "×" + m : "") + '</span><span id="sp-time">' + Math.ceil(left / 1000) + ' s</span></div>' +
       '<div class="timebar" aria-hidden="true"><i id="sp-bar" style="width:' + (left / SP.dur * 100) + '%"></i></div>' +
       '<div class="panel fc"><div class="cd-hz" style="font-size:calc(var(--hz)*2.4)">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" +
-      '<div class="btns">' + CP.sayBtn(w.hz) + '</div>' +
+      '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + '</div>' +
       '<div class="choices">' + SP.q.opts.map(function (o, i) { return '<button type="button" data-sp="' + i + '">' + esc(shortGloss(o)) + "</button>"; }).join("") + "</div></div>" +
       '<p class="kbd-hint">Tastiera: <kbd>1</kbd>–<kbd>4</kbd> per rispondere</p>';
   }
@@ -3713,6 +3781,7 @@ const PATH = {
   var oldOnStudy = CP.onStudy;
   CP.onStudy = function () { if (mode) { cancelMode(); CP.studyHome(); return; } if (oldOnStudy) oldOnStudy(); };
   CP.mode = { sprint: sprintStart, ear: earStart, active: function () { return mode; } };
+  CP.earPool = earPool;
 })();
 
 /* ===== V4c: oscilloscopio dei toni (microfono + autocorrelazione, funziona offline) ===== */
@@ -4530,7 +4599,7 @@ const PATH = {
     } else if (cfg.src === "words") {
       var prog = CP.ORDER.filter(function (k) { return CP.state(k) === 1; });
       var pool = prog.length >= 10 ? prog : CP.ORDER.filter(function (k) { return CP.state(k) !== 2; }).slice(0, 40);
-      pool.forEach(function (k) { var w = W[k]; out.push({ it: CP.gloss(w), py: w.py, hz: w.hz }); });
+      pool.forEach(function (k) { var w = W[k]; out.push({ it: CP.gloss(w), py: w.py, hz: w.hz, say: CP.sayHz(w) }); });
     } else {
       DIALOGS.forEach(function (d) { d.lines.forEach(function (l) { out.push({ it: l[3], py: l[1], hz: l[2] }); }); });
     }
@@ -4578,11 +4647,11 @@ const PATH = {
       show(it, "🗣 Tocca a te", false); barAnim(PAUSE_IT);
       later(PAUSE_IT, function () {
         show(it, "🐢 Lento", true);
-        CP.speak(it.hz, { rate: 0.8, onEnd: function () {
+        CP.speak(it.say || it.hz, { rate: 0.8, onEnd: function () {
           if (me !== run) return;
           later(PAUSE_MID, function () {
             show(it, "🐇 Naturale", true);
-            CP.speak(it.hz, { rate: 1, onEnd: function () {
+            CP.speak(it.say || it.hz, { rate: 1, onEnd: function () {
               if (me !== run) return;
               later(PAUSE_END, function () { pos = (pos + 1) % items.length; if (pos === 0 && cfg.shuffle) items = U.shuffle(items); play(); }, me);
             }, onStop: function () {} });
@@ -5140,6 +5209,12 @@ const PATH = {
       });
       add("Slot machine: nessuna frase con punteggiatura orfana", !sbad.length, sbad.length ? sbad.slice(0, 2).join(" | ") : scount + " combinazioni");
     } catch (e) { add("Slot machine", false, String(e)); }
+    try {
+      var ep = CP.earPool(), epBad = ep.filter(function (w) { return CP.POLY.has(w.hz); });
+      add("Orecchio: nessun carattere con più letture (" + CP.POLY.size + " esclusi)", !epBad.length && ep.length > 50, ep.length + " parole; " + (epBad.length ? "da togliere: " + epBad.map(function (w) { return w.hz; }).join("") : "ok"));
+      var hw = CP.WORDS["还#huán"];
+      add("Voce: 还 huán si fa leggere dentro un esempio", !!hw && CP.sayHz(hw) !== "还" && CP.sayHz(hw).indexOf("还") >= 0, hw ? CP.sayHz(hw) : "parola assente");
+    } catch (e) { add("Caratteri con più letture", false, String(e)); }
     /* memoria */
     try {
       var sch = new FSRS.Scheduler({ retention: 0.9, fuzz: false }), c = sch.review(sch.newCard(0), 3, 0);
