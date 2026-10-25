@@ -2158,11 +2158,39 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     };
   };
 
+  /* ---- fogli e finestre modali (V6.7): il focus resta dentro (Tab / Maiusc+Tab ciclano), Esc chiude,
+     alla chiusura il focus torna all'elemento da cui si era partiti. Vale per #fam, #guide, #jk-pop, #selftest e i fogli nuovi. ---- */
+  var traps = [], FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
+  function focusables(el) { return Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (x) { return x.getClientRects().length > 0 && !x.closest("[hidden]"); }); }
+  function trapIdx(el) { for (var i = 0; i < traps.length; i++) if (traps[i].el === el) return i; return -1; }
+  CP.trap = function (el, onClose) {
+    if (trapIdx(el) >= 0) return;
+    traps.push({ el: el, back: document.activeElement, onClose: onClose || null });
+    el.hidden = false; el.setAttribute("aria-modal", "true"); document.body.style.overflow = "hidden";
+  };
+  CP.untrap = function (el) {
+    var i = trapIdx(el); el.hidden = true; if (i < 0) return;
+    var t = traps.splice(i, 1)[0];
+    if (!traps.length) document.body.style.overflow = "";
+    if (t.back && t.back.focus && t.back.isConnected) { try { t.back.focus({ preventScroll: true }); } catch (e) {} }
+  };
+  CP.focusFirst = function (el) { var f = focusables(el); if (f.length) { try { f[0].focus({ preventScroll: true }); } catch (e) {} } };
+  CP.topSheet = function () { var t = traps[traps.length - 1]; return t && !t.el.hidden ? t.el : null; };
+  document.addEventListener("keydown", function (e) {
+    var t = traps[traps.length - 1]; if (!t || t.el.hidden) return;
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (t.onClose) t.onClose(); else CP.untrap(t.el); return; }
+    if (e.key !== "Tab") return;
+    var f = focusables(t.el); if (!f.length) { e.preventDefault(); return; }
+    var a = document.activeElement, first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (a === first || !t.el.contains(a))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (a === last || !t.el.contains(a))) { e.preventDefault(); first.focus(); }
+  }, true);
+
   /* ---- famiglia del carattere ---- */
   CP.familyOf = function (ch) {
     return ORDER.filter(function (k) { var h = WORDS[k].hz; return h.indexOf(ch) >= 0 && h !== ch; }).map(function (k) { return WORDS[k]; });
   };
-  var famEl = document.getElementById("fam"), famCard = document.getElementById("fam-card"), fam = null, famBack = null;
+  var famEl = document.getElementById("fam"), famCard = document.getElementById("fam-card"), fam = null;
   function famRender() {
     var ch = fam.cur, selfW = ORDER.filter(function (k) { return WORDS[k].hz === ch; }).map(function (k) { return WORDS[k]; })[0];
     var list = CP.familyOf(ch), h;
@@ -2190,20 +2218,16 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (!chars.length) return;
     if (!famEl.hidden && chars.length === 1 && fam && fam.chars.indexOf(chars[0]) >= 0) fam.cur = chars[0];
     else fam = { chars: chars, cur: chars[0] };
-    if (famEl.hidden) { famBack = document.activeElement; famEl.hidden = false; document.body.style.overflow = "hidden"; }
+    if (famEl.hidden) CP.trap(famEl, famClose);
     famRender();
     var x = famCard.querySelector("[data-famclose]"); if (x) x.focus({ preventScroll: true });
     CP.sfx("tap");
   };
-  function famClose() {
-    famEl.hidden = true; document.body.style.overflow = "";
-    if (famBack && famBack.focus) { try { famBack.focus({ preventScroll: true }); } catch (e) {} }
-    famBack = null;
-  }
+  function famClose() { CP.untrap(famEl); }
   CP.openSheet = function (h) {
-    if (famEl.hidden) { famBack = document.activeElement; famEl.hidden = false; document.body.style.overflow = "hidden"; }
-    fam = null; famCard.innerHTML = h;
-    var x = famCard.querySelector("[data-famclose]"); if (x) x.focus({ preventScroll: true });
+    if (famEl.hidden) CP.trap(famEl, famClose);
+    fam = null; famCard.innerHTML = h; famCard.scrollTop = 0;
+    var x = famCard.querySelector("[data-famclose]"); if (x) x.focus({ preventScroll: true }); else CP.focusFirst(famCard);
     CP.sfx("tap");
   };
   CP.closeSheet = function () { famClose(); };
@@ -2397,7 +2421,6 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   });
   document.addEventListener("keydown", function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key === "Escape" && !famEl.hidden) { famClose(); return; }
     var a = document.activeElement, typing = a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
     if (e.key === "/" && !typing && famEl.hidden && !document.getElementById("view-words").hidden) {
       e.preventDefault(); qEl.focus(); qEl.select();
@@ -4619,7 +4642,7 @@ const PATH = {
 (function () {
   var CP = window.CP, esc = CP.esc, U = CP.u, W = CP.WORDS;
   var el = document.getElementById("guide"), btn = document.getElementById("guide-btn");
-  var items = [], pos = 0, run = 0, timers = [], paused = false, phase = "", wl = null, back = null, cfg = { src: "phr", grp: "", shuffle: true, awake: true };
+  var items = [], pos = 0, run = 0, timers = [], paused = false, phase = "", wl = null, cfg = { src: "phr", grp: "", shuffle: true, awake: true };
   var PAUSE_IT = 3200, PAUSE_MID = 1100, PAUSE_END = 1400;
 
   function clearT() { timers.forEach(clearTimeout); timers = []; }
@@ -4698,17 +4721,13 @@ const PATH = {
   }
   function unwake() { try { if (wl) { wl.release(); wl = null; } } catch (e) {} }
   function open() {
-    back = document.activeElement; el.hidden = false; document.body.style.overflow = "hidden"; el.innerHTML = setupHTML();
+    el.innerHTML = setupHTML(); CP.trap(el, close);
     var c = $("g-close"); if (c) c.focus({ preventScroll: true });
   }
-  function close() {
-    halt(); unwake(); el.hidden = true; document.body.style.overflow = ""; el.innerHTML = "";
-    if (back && back.focus) { try { back.focus({ preventScroll: true }); } catch (e) {} }
-  }
+  function close() { halt(); unwake(); CP.untrap(el); el.innerHTML = ""; }
   btn.addEventListener("click", function () { CP.sfx("tap"); open(); });
   document.addEventListener("keydown", function (e) {
     if (el.hidden) return;
-    if (e.key === "Escape") { close(); return; }
     if (!$("g-pp")) return;
     if (e.key === " " && document.activeElement && document.activeElement.tagName !== "BUTTON") { e.preventDefault(); toggle(); }
     if (e.key === "ArrowRight") step(1);
@@ -5339,7 +5358,7 @@ const PATH = {
 /* ===== V5: #selftest — controlli automatici dentro l'app (apri la pagina con #selftest in fondo all'indirizzo) ===== */
 (function () {
   var CP = window.CP, esc = CP.esc;
-  var box = document.createElement("div"); box.id = "selftest"; box.hidden = true; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Autodiagnosi");
+  var box = document.createElement("div"); box.id = "selftest"; box.hidden = true; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Autodiagnosi");
   document.body.appendChild(box);
   var R = [];
   function add(name, ok, detail) { R.push({ name: name, ok: ok, detail: detail || "" }); }
@@ -5436,8 +5455,9 @@ const PATH = {
     return Store.exportObj(true).then(function (o) { add("Backup: il file si genera e si rilegge", !!o && o.app === "mandarino" && o.v === 5 && typeof o.kv === "object" && Array.isArray(o.log), "versione " + (o && o.v) + ", " + Object.keys(o.kv || {}).length + " chiavi"); }, function (e) { add("Backup", false, String(e)); })
       .then(function () { return CP.micState(); }).then(function (m) { info.push(["Permesso microfono", m !== "denied", m]); return info; });
   }
+  function close() { CP.untrap(box); if (location.hash === "#selftest") history.replaceState(null, "", location.pathname + location.search); }
   function show() {
-    box.hidden = false; document.body.style.overflow = "hidden";
+    CP.trap(box, close);
     box.innerHTML = '<div class="st-in"><h2>Autodiagnosi</h2><p class="muted small">Sto controllando…</p></div>';
     setTimeout(function () {
       run().then(function (info) {
@@ -5448,11 +5468,12 @@ const PATH = {
         info.forEach(function (r) { h += '<li class="' + (r[1] ? "ok" : "wa") + '"><b>' + (r[1] ? "✓" : "!") + "</b> " + esc(r[0]) + ' <span class="muted small">— ' + esc(r[2]) + "</span></li>"; });
         h += '</ul><div class="acts"><button type="button" class="btn-s" id="st-copy">Copia il risultato</button><button type="button" class="btn-s" id="st-close">Chiudi</button></div></div>';
         box.innerHTML = h; window.__SELFTEST = { pass: pass, total: R.length, results: R, info: info };
+        var cb = document.getElementById("st-close"); if (cb) cb.focus({ preventScroll: true });
       });
     }, 30);
   }
   box.addEventListener("click", function (e) {
-    if (e.target.id === "st-close") { box.hidden = true; document.body.style.overflow = ""; if (location.hash === "#selftest") history.replaceState(null, "", location.pathname + location.search); }
+    if (e.target.id === "st-close") close();
     if (e.target.id === "st-copy") {
       var t = R.map(function (r) { return (r.ok ? "OK  " : "KO  ") + r.name + " — " + r.detail; }).join("\n");
       try { navigator.clipboard.writeText(t).then(function () { CP.toast("Copiato."); }, function () { CP.toast("Non riesco a copiare: fai uno screenshot."); }); } catch (er) { CP.toast("Non riesco a copiare: fai uno screenshot."); }
@@ -5843,7 +5864,7 @@ const PATH = {
   CP.jukebox = { tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
 
   /* ---------- interfaccia: popup sul 🎵 + selettore in "Voce e audio" ---------- */
-  var pop = document.createElement("div"); pop.id = "jk-pop"; pop.hidden = true; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", "Jukebox"); document.body.appendChild(pop);
+  var pop = document.createElement("div"); pop.id = "jk-pop"; pop.hidden = true; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-modal", "true"); pop.setAttribute("aria-label", "Jukebox"); document.body.appendChild(pop);
   function moodPills() {
     return '<div class="cpills jk-moods" role="group" aria-label="Filtra per umore">' + MOODS.map(function (m) {
       return '<button type="button" data-jk-mood="' + m[0] + '"' + (J.mood === m[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + m[1] + "</button>";
@@ -5879,8 +5900,8 @@ const PATH = {
     var box = document.getElementById("jk-sel"); if (box) box.innerHTML = list("compact");
     if (!pop.hidden) { pop.querySelectorAll(".jk-it").forEach(function (b) { var on = b.getAttribute("data-jk") === J.sel; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false"); }); }
   }
-  function openPop() { pop.innerHTML = popHTML(); pop.hidden = false; var f = pop.querySelector("[data-jk-toggle]"); if (f) f.focus(); }
-  function closePop() { pop.hidden = true; }
+  function openPop() { pop.innerHTML = popHTML(); CP.trap(pop, closePop); var f = pop.querySelector("[data-jk-toggle]"); if (f) f.focus(); }
+  function closePop() { CP.untrap(pop); }
   function toggle() {
     J.want = !J.want; lset("cp-music", J.want ? "1" : "0");
     if (J.want && !CP.pref.sfx) CP.setPref("sfx", true);
@@ -5915,7 +5936,6 @@ const PATH = {
   });
   /* il conto alla rovescia del cambio traccia si aggiorna mentre il pannello è aperto */
   setInterval(function () { if (!pop.hidden && J.run) { var n = document.getElementById("jk-now"); if (n) n.innerHTML = nowLine(); } }, 1000);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pop.hidden) closePop(); });
   document.getElementById("vset-body").addEventListener("click", onClick);
   mus.addEventListener("click", function () {
     if (!J.want) { J.want = true; lset("cp-music", "1"); if (!CP.pref.sfx) CP.setPref("sfx", true); CP.musicApply(); }
