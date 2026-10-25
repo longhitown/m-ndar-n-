@@ -856,7 +856,7 @@ input[type="range"]{accent-color:var(--accent)}
 }
 /* --- micro-texture di carta (SVG tassellato: costa una sola volta) --- */
 :root {
-  --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .30 0 0 0 0 .24 0 0 0 0 .14 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .30 0 0 0 0 .24 0 0 0 0 .14 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="sepia"]) { --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .75 0 0 0 0 .85 0 0 0 0 .8 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -1064,6 +1064,42 @@ nav.chips[hidden] { display: none; }
 .pills.groups { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
 .pills.groups button { min-height: 44px; padding: 0 6px; white-space: nowrap; font-size: 14px; }
 .pills button, .seg button, .cpills button, .mpick button, .xr-sample button { min-height: 44px; }
+
+/* §4.4 · tessere in stile Mahjong: ovunque ci sia qualcosa da toccare e spostare */
+.tactile, .tile, .xw, .reel .rc, .choices button { background: var(--surface); border: 1px solid var(--line); border-bottom: 4px solid color-mix(in srgb, var(--line) 70%, var(--ink)); border-radius: 12px; transition: transform 0.08s, border-bottom-width 0.08s; }
+.tb, .pzb { border-bottom-width: 4px; border-radius: 12px; transition: transform 0.08s, border-bottom-width 0.08s; }
+.tactile:active:not(:disabled), .tile:active:not(:disabled), .xw:active, .reel .rc:active, .choices button:active:not(:disabled), .pzb:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+:root[data-theme="sepia"] .tactile, :root[data-theme="sepia"] .tile, :root[data-theme="sepia"] .xw, :root[data-theme="sepia"] .reel .rc, :root[data-theme="sepia"] .choices button, :root[data-theme="sepia"] .tb { background: #FBF7EF; box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(60, 40, 10, 0.08); }
+@media (prefers-reduced-motion: reduce) { .tactile, .tile, .xw, .reel .rc, .choices button, .tb, .pzb { transition: none; } }
+.xw { min-width: 44px; min-height: 44px; padding: 4px 6px; }
+.reel .rc { padding: 4px 10px; }
+.choices button.right { border-color: var(--accent); border-bottom-color: var(--accent); }
+.choices button.wrong { border-color: var(--seal); border-bottom-color: var(--seal); }
+
+/* U7 · toni anche nella forma: il carattere ha una sottolineatura diversa per ogni tono */
+body.tone-shapes :is(.m-hz, .cd-hz, .lh, .bh, .xh, .th, .g-hz) :is(.t1, .t2, .t3, .t4, .t5) { text-decoration-line: underline; text-decoration-thickness: 2px; text-underline-offset: 0.16em; }
+body.tone-shapes :is(.m-hz, .cd-hz, .lh, .bh, .xh, .th, .g-hz) .t1 { text-decoration-style: solid; }
+body.tone-shapes :is(.m-hz, .cd-hz, .lh, .bh, .xh, .th, .g-hz) .t2 { text-decoration-style: dashed; }
+body.tone-shapes :is(.m-hz, .cd-hz, .lh, .bh, .xh, .th, .g-hz) .t3 { text-decoration-style: wavy; }
+body.tone-shapes :is(.m-hz, .cd-hz, .lh, .bh, .xh, .th, .g-hz) .t4 { text-decoration-style: double; }
+body.tone-shapes :is(.m-hz, .cd-hz, .lh, .bh, .xh, .th, .g-hz) .t5 { text-decoration-style: dotted; }
+.tone .tshape { display: none; }
+body.tone-shapes .tone .tshape { display: inline; }
+
+/* U9 · grana della carta: lieve sulla carta di riso, spenta di notte */
+:root[data-theme="dark"] { --paper: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="sepia"]) { --paper: none; } }
+/* U9 · badge dei ripassi in scadenza sul tab Studia */
+.dtab { position: relative; }
+.dbadge { position: absolute; top: 4px; right: calc(50% - 26px); min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--seal); color: var(--seal-ink); font: 700 13px/20px var(--f-body); text-align: center; box-shadow: 0 0 0 2px var(--surface); }
+.dbadge[hidden] { display: none; }
+
+/* U8 · benvenuto */
+.welcome-card { display: grid; gap: var(--sp-3); }
+.welcome-card .fc { padding: 14px; border-radius: 16px; background: var(--chip); }
+.welcome-card .order { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; font-size: 13px; color: var(--muted); }
+.welcome-goal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.welcome-goal button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 /* U9 · toast: una riga, mai sopra la dock */
 #toast { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 32px); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
@@ -1166,11 +1202,11 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
     <div class="fam-head"><h2 id="legend-title" style="margin:0">Legenda e regole</h2><button type="button" class="fam-x btn-s" data-sheet-close>Chiudi</button></div>
     <section class="set-sec"><h3>I colori dei toni</h3>
   <div class="tones" aria-label="I colori dei toni">
-    <span class="tone"><strong class="t1">mā</strong> 1° alto, piatto</span>
-    <span class="tone"><strong class="t2">má</strong> 2° sale</span>
-    <span class="tone"><strong class="t3">mǎ</strong> 3° scende e risale</span>
-    <span class="tone"><strong class="t4">mà</strong> 4° cade secco</span>
-    <span class="tone"><strong class="t5">ma</strong> neutro, leggero</span>
+    <span class="tone"><strong class="t1">mā</strong> <span class="m-hz han tshape"><span class="t1">妈</span></span> 1° alto, piatto</span>
+    <span class="tone"><strong class="t2">má</strong> <span class="m-hz han tshape"><span class="t2">麻</span></span> 2° sale</span>
+    <span class="tone"><strong class="t3">mǎ</strong> <span class="m-hz han tshape"><span class="t3">马</span></span> 3° scende e risale</span>
+    <span class="tone"><strong class="t4">mà</strong> <span class="m-hz han tshape"><span class="t4">骂</span></span> 4° cade secco</span>
+    <span class="tone"><strong class="t5">ma</strong> <span class="m-hz han tshape"><span class="t5">吗</span></span> neutro, leggero</span>
   </div>
     </section>
     <section class="set-sec"><h3>Come si usa la tabella</h3>
@@ -1875,7 +1911,19 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       if (s) tr.classList.add("st-" + s);
     });
     if (CP.refilter) CP.refilter();
+    badge();
   };
+  /* U9: sul tab Studia il numero di ripassi già in scadenza (letto dai progressi, nessun contatore a parte) */
+  function badge() {
+    var tab = document.getElementById("tab-study"); if (!tab) return;
+    var b = tab.querySelector(".dbadge"); if (!b) { b = document.createElement("span"); b.className = "dbadge"; b.setAttribute("aria-hidden", "true"); tab.appendChild(b); }
+    var now = Date.now(), n = 0; Object.keys(S).forEach(function (k) { var r = S[k]; if (r && r.n && r.d <= now && WORDS[k]) n++; });
+    b.hidden = !n; b.textContent = n > 99 ? "99+" : n;
+    tab.setAttribute("aria-label", "Studia" + (n ? ", " + n + " da ripassare" : ""));
+  }
+  CP.badge = badge;
+  setInterval(badge, 60000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) badge(); });
 
   var CJK = /[㐀-鿿]/;
 
@@ -3834,7 +3882,7 @@ const PATH = {
   function resumeHTML(cur) {
     var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur];
     return '<div class="panel resume"><div class="small muted">Tappa ' + (cur + 1) + " · " + esc(title(s)) + "</div>" +
-      '<button type="button" class="btn-main" id="path-continue">' + (n ? "Continua da dove eri · ≈ " + Math.max(1, Math.round(n * 20 / 60)) + " min" : "Esplora la tappa " + (cur + 1)) + "</button>" +
+      '<button type="button" class="btn-main" id="path-continue">' + (n ? "Continua · ≈ " + Math.max(1, Math.round(n * 20 / 60)) + " min" : "Esplora la tappa " + (cur + 1)) + "</button>" +
       '<div class="small muted">' + (n ? c.due + " da ripassare · " + c.nw + " " + (c.nw === 1 ? "nuova" : "nuove") : "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.") + "</div></div>";
   }
   function stopHTML(s, i, cur) {
@@ -7434,6 +7482,42 @@ const PATH = {
   });
 })();
 
+
+/* ===== V6.7 · U8: benvenuto, una volta sola (cp-ux-v1.onboarded) ===== */
+(function () {
+  var CP = window.CP, goal = 5;
+  function html() {
+    var w = CP.WORDS["我"];
+    return '<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">Benvenuto in màndarínō</h2><button type="button" class="fam-x btn-s" data-famclose id="w-later">Più tardi</button></div>' +
+      '<p style="margin:0">' + CP.ORDER.length + " parole per parlare, nell'ordine in cui servono. Ogni parola si impara in tre passi: <b>come si legge</b>, <b>come si scrive</b>, <b>cosa vuol dire</b>.</p>" +
+      '<div class="fc"><div class="order"><span>1 · si legge</span><span>2 · si scrive</span><span>3 · significa</span></div>' +
+      '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
+      '<p class="small muted" style="margin:0">I colori sono i toni: rosso alto e piatto, verde sale, blu scende e risale, viola cade.</p></div>' +
+      '<div><b>Quante parole nuove al giorno?</b><div class="welcome-goal" role="group" aria-label="Parole nuove al giorno" style="margin-top:8px">' +
+      [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +
+      '<p class="small muted" style="margin:6px 0 0">Si cambia quando vuoi in Studia → Personalizza. Meglio poche ogni giorno che tante una volta.</p></div>' +
+      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">Inizia con ' + goal + " parole</button></div>";
+  }
+  CP.welcome = function (force) {
+    if (!force && CP.ux.get("onboarded")) return;
+    CP.openSheet(html());
+  };
+  var fam = document.getElementById("fam");
+  fam.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-wgoal], #w-start, #w-later") : null; if (!b) return;
+    if (b.hasAttribute("data-wgoal")) { goal = parseInt(b.getAttribute("data-wgoal"), 10); var card = fam.querySelector(".welcome-card"); if (card) { CP.openSheet(html()); } return; }
+    CP.ux.set("onboarded", 1);
+    if (b.id === "w-start") {
+      if (CP.studyCfg) CP.studyCfg({ n: goal }); if (CP.game && CP.game.setGoal) CP.game.setGoal(goal === 20 ? 20 : goal);
+      CP.closeSheet(); CP.show("study"); if (CP.studyStart) CP.studyStart();
+    }
+  });
+  /* chi ha già dei progressi non è nuovo */
+  if (!CP.ux.get("onboarded")) {
+    if (Object.keys(CP.S()).length) CP.ux.set("onboarded", 1);
+    else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 400);
+  }
+})();
 </script>
 </body>
 </html>
