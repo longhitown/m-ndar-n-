@@ -1100,6 +1100,19 @@ body.tone-shapes .tone .tshape { display: inline; }
 .welcome-card .order { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; font-size: 13px; color: var(--muted); }
 .welcome-goal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .welcome-goal button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* §6 · contributi */
+.ct-form { display: grid; gap: 10px; margin-top: 12px; }
+.ct-form label { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
+.ct-form select { width: 100%; }
+.ct-form textarea { font: 400 16px/1.4 var(--f-body); }
+.ct-send { display: grid; gap: 8px; margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--chip); }
+.ct-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ct-list li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.ct-list li > span { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 14px; }
+.ct-list li.undone > span { text-decoration: line-through; color: var(--muted); }
+.ct-hit { grid-template-columns: 1fr; }
+.mine-tag { color: var(--accent); font-weight: 600; }
 /* U9 · toast: una riga, mai sopra la dock */
 #toast { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 32px); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
@@ -1535,6 +1548,14 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     });
     return out;
   }
+  /* contributi: unione per id, vince la voce modificata più di recente (t) */
+  function mergeContribs(a, b) {
+    var by = {};
+    [].concat(Array.isArray(a) ? a : [], Array.isArray(b) ? b : []).forEach(function (x) {
+      if (!x || !x.id) return; var o = by[x.id]; if (!o || (x.t || 0) > (o.t || 0)) by[x.id] = x;
+    });
+    return Object.keys(by).map(function (k) { return by[k]; }).sort(function (x, y) { return (x.t || 0) - (y.t || 0); });
+  }
   function importObj(o, mode) {
     if (!o || o.app !== "mandarino" || !o.kv) return { ok: false, msg: "File non riconosciuto." };
     var n = 0;
@@ -1545,6 +1566,11 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
         try {
           if (k === "cp-srs-v1") inc = JSON.stringify(mergeSrs(JSON.parse(cur), JSON.parse(inc)));
           else if (k === "cp-fav-v1") { var u = JSON.parse(cur); var v = JSON.parse(inc); if (Array.isArray(u)) { var t = {}; u.forEach(function (x) { t[x] = 1; }); u = t; } if (Array.isArray(v)) { var t2 = {}; v.forEach(function (x) { t2[x] = 1; }); v = t2; } inc = JSON.stringify(Object.assign({}, v, u)); }
+          else if (k === "cp-community-contribs") inc = JSON.stringify(mergeContribs(JSON.parse(cur), JSON.parse(inc)));
+          /* V6.7: preferenze dell'interfaccia; si aggiungono le voci mancanti, a parità vince questo dispositivo */
+          else if (k === "cp-ux-v1") inc = JSON.stringify(Object.assign({}, JSON.parse(inc) || {}, JSON.parse(cur) || {}));
+          /* V6.7: preferenze del dispositivo (vibrazione, volumi, musica, toni con segno, nickname): vince il dispositivo corrente */
+          else if (["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-toneshapes", "cp-contrib-nick", "cp-lang"].indexOf(k) >= 0) inc = cur;
           else inc = cur;   /* le altre chiavi (impostazioni, gioco): vince il dispositivo corrente */
         } catch (e) { inc = cur; }
       }
@@ -1576,7 +1602,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
 
   window.Store = { status: function () { return { ls: st.ls, idb: st.idb, restored: st.restored }; }, get: lget, set: lset, snapshot: snapshot, flush: flush,
     log: logAdd, logAll: logAll, logClear: logClear, recent: function () { return buf; },
-    exportObj: exportObj, importObj: importObj, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
+    exportObj: exportObj, importObj: importObj, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
 })();
 
 </script>
@@ -1631,12 +1657,82 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     SEC.push({ id: s.id, title: s.title, i0: i0, i1: ORDER.length, shown: ORDER.length - i0, m: false, h: 0, sig: "" });
   });
   CP.WORDS = WORDS; CP.ORDER = ORDER; CP.SEC = SEC;
+  CP.VERSION = "6.7"; CP.DATASET = "2026-10-25";
+
+  /* ---- V6.7 · contributi della community (cp-community-contribs: un array di voci con id univoco).
+     Formato della patch: { schema: "mandarino-contrib/1", app, dataset, created, author, items: [...] }.
+     - fix: cambia py, it o note di una parola (target = chiave), di una frase (phr:<gruppo>:<riga>) o di una battuta (dlg:<id>:<riga>).
+       Mai hz: è la chiave dei progressi in cp-srs-v1. Per un carattere sbagliato si usa flag.
+     - add: una parola nuova (section, py, hz, it).   - flag: una segnalazione (target, why).
+     Le correzioni dell'utente si applicano subito alla sua copia, con l'etichetta «✏️ tua correzione», e si possono annullare. ---- */
+  var CKEY = "cp-community-contribs", CJKONLY = /^[㐀-鿿]+$/;
+  function clean(py) { var c = String(py).replace(/[!?,;:…"“”«»()（），。？！、]/g, " ").replace(/\.(?=\s|$)/g, " ").trim(); return c ? syllables(c.replace(/\s+/g, " ")) : []; }
+  function cjkCount(h) { return Array.from(String(h)).filter(function (c) { return CJK.test(c); }).length; }
+  function hasTone(py) { return /[̄́̌̀]/.test(String(py).normalize("NFD")); }
+  function lineOf(target) {
+    var m = /^(phr|dlg):([^:]+):(\d+)$/.exec(target || ""); if (!m) return null;
+    if (m[1] === "phr") { var g = PHRASES[+m[2]], it = g && g.items[+m[3]]; return it ? { py: it[0], hz: it[1], it: it[2] } : null; }
+    var d = (typeof DIALOGS !== "undefined" ? DIALOGS : []).filter(function (x) { return x.id === m[2]; })[0], l = d && d.lines[+m[3]];
+    return l ? { py: l[1], hz: l[2], it: l[3] } : null;
+  }
+  function validate(it) {
+    var e = [];
+    if (!it || typeof it !== "object") return ["voce non valida"];
+    ["target", "field", "old", "new", "why", "section", "py", "hz", "it", "author"].forEach(function (f) {
+      var v = it[f]; if (v == null) return; v = String(v);
+      if (/[<>]/.test(v)) e.push("«" + f + "»: niente < o > (niente HTML)");
+      if (v.length > 200) e.push("«" + f + "»: al massimo 200 caratteri");
+    });
+    var pyOk = function (py, hz) {
+      if (!String(py).trim()) return "il pinyin è vuoto";
+      if (!hasTone(py)) return "il pinyin non ha segni di tono (ā á ǎ à)";
+      var a = clean(py).length, b = cjkCount(hz);
+      return a !== b ? "il pinyin ha " + a + " sillabe ma i caratteri sono " + b : "";
+    };
+    if (it.op === "fix") {
+      var w = WORDS[it.target], ln = w ? null : lineOf(it.target);
+      if (!w && !ln) e.push("non trovo «" + it.target + "»");
+      else if (["py", "it", "note"].indexOf(it.field) < 0 || (!w && it.field === "note")) e.push("si possono correggere solo pinyin, italiano" + (w ? " e nota" : "") + " (mai i caratteri: per quelli usa «Segnala»)");
+      else if (it.field === "py") { var m1 = pyOk(it.new, (w || ln).hz); if (m1) e.push(m1); }
+      else if (it.field === "it" && !String(it.new || "").trim()) e.push("l'italiano è vuoto");
+      if (w && it.field && String(it.new) === String((w.orig || w)[it.field] || "")) e.push("il testo nuovo è uguale a quello di adesso");
+    } else if (it.op === "add") {
+      if (!SEC.some(function (S) { return S.id === it.section; })) e.push("scegli una sezione");
+      if (!CJKONLY.test(it.hz || "") || cjkCount(it.hz) > 8) e.push("i caratteri devono essere solo cinesi (da 1 a 8)");
+      else if (WORDS[it.hz]) e.push(it.hz + " è già nel dizionario: usa «Correggi»");
+      var m2 = pyOk(it.py || "", it.hz || ""); if (m2) e.push(m2);
+      if (!String(it.it || "").trim()) e.push("manca l'italiano");
+    } else if (it.op === "flag") {
+      if (!it.target || (!WORDS[it.target] && !lineOf(it.target))) e.push("non trovo «" + (it.target || "") + "»");
+      if (String(it.why || "").trim().length < 3) e.push("scrivi in breve che cosa non va");
+    } else e.push("tipo di contributo sconosciuto");
+    return e;
+  }
+  function cLoad() { try { var a = JSON.parse(localStorage.getItem(CKEY) || "[]"); return Array.isArray(a) ? a.filter(function (x) { return x && x.id; }) : []; } catch (e) { return []; } }
+  function overlay(list) {
+    /* riporta tutto all'originale, poi applica le correzioni locali in ordine di tempo */
+    Object.keys(WORDS).forEach(function (k) { var w = WORDS[k]; if (w.orig) { w.py = w.orig.py; w.it = w.orig.it; w.note = w.orig.note; delete w.orig; } w.mine = false; });
+    list.slice().sort(function (a, b) { return (a.t || 0) - (b.t || 0); }).forEach(function (it) {
+      if (it.op !== "fix" || it.undone) return;
+      var w = WORDS[it.target]; if (!w || ["py", "it", "note"].indexOf(it.field) < 0) return;
+      if (!w.orig) w.orig = { py: w.py, it: w.it, note: w.note };
+      w[it.field] = String(it.new); w.mine = true;
+    });
+  }
+  CP.contrib = {
+    KEY: CKEY, validate: validate, lineOf: lineOf,
+    list: cLoad,
+    save: function (list) { try { localStorage.setItem(CKEY, JSON.stringify(list)); } catch (e) {} overlay(list); },
+    id: function () { return "c_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); },
+    overlay: function () { overlay(cLoad()); }
+  };
+  overlay(cLoad());
   var N = ORDER.length, OK = CP.OK = new Uint8Array(N); OK.fill(1);
 
   var STAR = '<button type="button" class="fav%ON%" aria-pressed="%PR%" aria-label="Segna come preferita o difficile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 17l-5.4 3 1.2-6L3.3 9.8l6.1-.7z"/></svg></button>';
   function rowHTML(i) {
     var k = ORDER[i], w = WORDS[k], st = CP.state ? CP.state(k) : 0, fav = !!(CP.favs && CP.favs.has(k));
-    var note = w.note ? '<span class="note">' + esc(w.note) + "</span>" : "";
+    var note = (w.note ? '<span class="note">' + esc(w.note) + "</span>" : "") + (w.mine ? '<span class="note mine-tag">✏️ tua correzione</span>' : "");
     return '<tr data-k="' + attr(k) + '"' + (st ? ' class="st-' + st + '"' : "") + ">" +
       '<td class="py"><span class="m m-py">' + pinyinHTML(w.py) + "</span></td>" +
       '<td class="hz"><span class="m m-hz">' + hanziHTML(w.hz, w.py) + "</span></td>" +
@@ -1739,6 +1835,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     });
   };
   CP.rowHTML = rowHTML;
+  CP.refreshRows = function () { SEC.forEach(function (S) { if (S.m) fill(S); }); };
   /* porta in vista la riga di una parola (apre la sezione, la materializza, ci scorre) */
   CP.reveal = function (k) {
     var w = WORDS[k]; if (!w) return null;
@@ -2449,7 +2546,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     h = '<div class="fam-head"><div class="big">' + CP.esc(ch) + '</div><div class="meta">' +
       (selfW ? '<div class="lp">' + CP.pinyinHTML(selfW.py) + '</div><div class="small muted">' + CP.esc(selfW.it) + "</div>"
              : '<div class="small muted">Da solo non è una parola del vocabolario: compare dentro altre parole.</div>') +
-      "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "");
+      "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
+      (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ Correggi o segnala</button></div>' : "");
     if (fam.chars.length > 1) {
       h += '<div class="fam-chars" role="group" aria-label="Caratteri">' + fam.chars.map(function (c) {
         return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
@@ -2548,7 +2646,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
 
   /* ---- indice di ricerca (sui dati, non sul DOM) ---- */
   var Q = CP.Q = new Array(ORDER.length);
-  ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = norm(w.py) + "|" + w.hz + "|" + norm(w.it + w.note); });
+  CP.reindex = function () { ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = norm(w.py) + "|" + w.hz + "|" + norm(w.it + w.note); }); };
+  CP.reindex();
   var lines = document.querySelectorAll("#sections .ln");
   Array.prototype.forEach.call(lines, function (ln) {
     ln._q = norm(ln.querySelector(".lp").textContent) + "|" + ln.querySelector(".lh").textContent + "|" + norm(ln.querySelector(".li").textContent);
@@ -2777,7 +2876,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     var h = "";
     if (set.py) h += '<div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" + CP.toneCurveHTML(w.py);
     if (set.hz) h += '<div class="cd-hz">' + CP.hanziHTML(w.hz, w.py) + "</div>";
-    if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (set.py ? CP.polyNote(w) : "");
+    if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (w.mine ? '<div class="cd-note mine-tag">✏️ tua correzione</div>' : "") + (set.py ? CP.polyNote(w) : "");
     return h;
   }
   var TAGS = { pi: "Che cosa significa?", ip: "Come si dice?", hp: "Leggi il carattere" };
@@ -2808,7 +2907,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     CP.openSheet('<div class="fam-head"><div class="meta"><b>Altro</b><div class="small muted">' + (full ? esc(w.hz) + " · " + esc(w.py) : "per questa carta") + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
       '<div class="sheet-rows">' + row("pad", "✍️", "Traccia", full ? "Scrivi il carattere col dito, con la guida" : "Prova a scriverlo a memoria, poi controlla") +
       (full ? row("fam", "🔍", "Famiglia", "Le altre parole che contengono questi caratteri") : "") +
-      (full && CP.canScope && CP.canScope() ? row("scope", "〰️", "Tono", "Parla e guarda la curva della tua voce, anche senza rete") : "") + "</div>");
+      (full && CP.canScope && CP.canScope() ? row("scope", "〰️", "Tono", "Parla e guarda la curva della tua voce, anche senza rete") : "") +
+      (full && CP.contribOpen ? row("contrib", "✏️", "Correggi o segnala", "Pinyin o traduzione sbagliati? Correggili nella tua copia e mandali all'autore") : "") + "</div>");
   }
   var KBD = '<p class="kbd-hint">Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti</p>';
   function togglePad(keep) {
@@ -2978,6 +3078,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (act === "pad") togglePad();
     else if (act === "fam") CP.openFamily(w.hz);
     else if (act === "scope" && fc && CP.scopePanel) CP.scopePanel(fc, w);
+    else if (act === "contrib" && CP.contribOpen) CP.contribOpen({ op: "fix", target: w.key, field: "it" });
   });
   root.addEventListener("change", function (ev) {
     if (ev.target.id === "cfg-n") { cfg.n = parseInt(ev.target.value, 10); saveCfg(); home(); var d = root.querySelector(".today-cfg"); if (d) d.open = true; }
@@ -3008,6 +3109,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   CP.onStudy = function () { if (!sess) home(); else CP.focusMode(true); };
   CP.studyHome = function () { sess = null; home(); };
   CP.studyActive = function () { return !!sess; };
+  CP.studyRefresh = function () { if (sess && sess.q.length) render(); };
   CP.studyStart = function () { sess = null; home(); start(); };
   CP.studyCounts = function () { return { due: dueKeys().length, nw: newKeys().length, n: cfg.n, seen: newSeen() }; };
   CP.studySection = function (id) {
@@ -4432,7 +4534,8 @@ const PATH = {
       '<div class="dlg-head"><h3>' + esc(d.title) + "</h3><p>" + esc(d.sub) + "</p></div>" +
       '<div class="dlg-bar"><button type="button" class="btn-main" data-dlg-play style="margin:0">▶️ Ascolta tutto il dialogo</button><button type="button" data-dlg-role>🎭 Fai tu la parte di B</button></div>' +
       '<div class="chat' + (showIt ? "" : " noit") + '" id="dlg-chat">' + d.lines.map(function (_, i) { return bubble(d, i); }).join("") + "</div>" +
-      '<p class="small muted" style="margin-top:12px">Tocca una parola per vederla da vicino. Il numero di battute e le frasi sono scritti per essere detti ad alta voce.</p>';
+      '<p class="small muted" style="margin-top:12px">Tocca una parola per vederla da vicino. Il numero di battute e le frasi sono scritti per essere detti ad alta voce.</p>' +
+      '<div class="acts"><button type="button" class="btn-s" data-dlg-flag>✏️ Segnala un errore in questo dialogo</button></div>';
   }
   CP.subs = CP.subs || {};
   CP.subs.dlg = {
@@ -4529,6 +4632,7 @@ const PATH = {
     if (t.closest("[data-dlg-back]")) { stopAll(); cur = null; refresh(); CP.sfx("tap"); return; }
     if (t.closest("[data-dlg-play]")) { var pb = t.closest("[data-dlg-play]"); if (pb.textContent.indexOf("Ferma") >= 0) stopAll(); else playAll(); return; }
     if (t.closest("[data-dlg-role]")) { roleStart(); return; }
+    if (t.closest("[data-dlg-flag]")) { if (CP.contribDialog) CP.contribDialog(cur); return; }
     if (t.closest("[data-rp-exit]")) { roleExit(); return; }
     if (t.closest("[data-rp-again]")) { roleStart(); return; }
     if ((b = t.closest("[data-rp-opt]")) && rp) {
@@ -5765,6 +5869,11 @@ const PATH = {
       add("Jukebox: 20 tracce, ognuna con il suo umore", jt.length >= 20 && !jbad.length, jt.length + " tracce · 🧘 " + jm.calm + " · 🎯 " + jm.focus + " · ⚡ " + jm.energy);
       add("Audio: bus separati per effetti e musica", !!(CP.bus && CP.bus.duck && CP.bus.setSfxVol), "volume effetti " + Math.round(CP.bus.sfxVol() * 100) + "%");
     } catch (e) { add("Jukebox", false, String(e)); }
+    try {
+      var V = CP.contrib.validate, vok = !V({ op: "fix", target: "炸菜", field: "py", new: "zhà.cài" }).length && V({ op: "fix", target: "炸菜", field: "hz", new: "榨菜" }).length && V({ op: "fix", target: "我", field: "py", new: "wǒ.men" }).length && V({ op: "add", section: CP.SEC[0].id, hz: "x<y", py: "", it: "" }).length && !V({ op: "flag", target: "dlg:jiali:5", why: "pinyin diviso male" }).length;
+      var mc = Store.mergeContribs([{ id: "a", t: 1, why: "vecchio" }, { id: "b", t: 5 }], [{ id: "a", t: 3, why: "nuovo" }, { id: "c", t: 2 }]);
+      add("Contributi: validazione (mai hz, sillabe = caratteri, niente HTML) e unione per id", !!vok && mc.length === 3 && mc.filter(function (x) { return x.id === "a"; })[0].why === "nuovo", mc.map(function (x) { return x.id; }).join(""));
+    } catch (e) { add("Contributi", false, String(e)); }
     var ml = document.querySelector('link[rel="manifest"]');
     add("PWA: manifest collegato dal <head>", !!ml && (location.protocol === "file:" ? /^blob:/.test(ml.href) : /manifest\.json$/.test(ml.getAttribute("href") || "")), ml ? (ml.getAttribute("href") || "").slice(0, 40) : "manca");
     /* memoria */
@@ -7385,10 +7494,12 @@ const PATH = {
     var v = document.getElementById("set-sfxvol"); if (v && CP.bus) v.value = CP.bus.sfxVol();
     var ts = document.getElementById("opt-toneshapes"); if (ts) ts.checked = document.body.classList.contains("tone-shapes");
     if (CP.audioMode) Array.prototype.forEach.call(el.querySelectorAll("[data-audio-set]"), function (b) { var on = b.getAttribute("data-audio-set") === CP.audioMode(); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
-    if (CP.settingsExtra) CP.settingsExtra(document.getElementById("set-extra"));
+    var ex = document.getElementById("set-extra");
+    if (ex && CP.settingsExtras) { var open = {}; Array.prototype.forEach.call(ex.querySelectorAll("details[id]"), function (d) { open[d.id] = d.open; }); ex.innerHTML = CP.settingsExtras.map(function (f) { return f(); }).join(""); Object.keys(open).forEach(function (id) { var d = document.getElementById(id); if (d) d.open = open[id]; }); }
     paintMic();
   }
   function close() { CP.untrap(el); }
+  CP.repaintSettings = paint;
   CP.openSettings = function (sec) {
     paint(); CP.trap(el, close);
     var x = el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
@@ -7482,6 +7593,176 @@ const PATH = {
   });
 })();
 
+
+/* ===== V6.7 · §6 contributi della community: correggi, segnala, proponi; invia senza account ===== */
+(function () {
+  var CP = window.CP, esc = CP.esc, fam = document.getElementById("fam");
+  /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).
+     form = URL «viewform» di un Modulo Google con un campo testo lungo; formEntry = il suo numero (entry.<N>).
+     repo = repository PUBBLICO dei contributi (es. «utente/mandarino-contributi»): su uno privato gli estranei non aprono issue. */
+  var CFG = { email: "", form: "", formEntry: "", repo: "" };
+  var NICK = "cp-contrib-nick";
+  function nick() { try { return localStorage.getItem(NICK) || ""; } catch (e) { return ""; } }
+  function list() { return CP.contrib.list(); }
+  function saveList(l) {
+    CP.contrib.save(l); CP.reindex(); CP.refreshRows(); if (CP.studyRefresh) CP.studyRefresh();
+    if (CP.studyActive && !CP.studyActive() && CP.studyHome && !document.getElementById("view-study").hidden) CP.studyHome();
+    if (CP.repaintSettings && !document.getElementById("settings").hidden) CP.repaintSettings();
+  }
+  function label(it) {
+    var w = CP.WORDS[it.target], ln = !w && it.target ? CP.contrib.lineOf(it.target) : null, who = w ? w.hz : ln ? ln.hz : it.target || "";
+    var F = { py: "pinyin", it: "italiano", note: "nota" };
+    if (it.op === "fix") return "✏️ " + who + " · " + F[it.field] + ": «" + it.new + "»";
+    if (it.op === "add") return "➕ " + it.hz + " " + it.py + " · " + it.it;
+    return "🚩 " + who + " · " + it.why;
+  }
+  function patch(items) {
+    return { schema: "mandarino-contrib/1", app: CP.VERSION, dataset: CP.DATASET, created: Date.now(), author: nick() || undefined,
+      items: items.map(function (it) { var o = {}; ["id", "op", "target", "field", "old", "new", "section", "py", "hz", "it", "why"].forEach(function (k) { if (it[k] !== undefined && it[k] !== "") o[k] = it[k]; }); return o; }) };
+  }
+  function pending() { return list().filter(function (it) { return !it.undone && !it.sent; }); }
+
+  /* ---- il modulo ---- */
+  var form = null;
+  function secOpts(sel) { return CP.SEC.map(function (S) { return '<option value="' + CP.attr(S.id) + '"' + (S.id === sel ? " selected" : "") + ">" + esc(S.title) + "</option>"; }).join(""); }
+  function formHTML(errs) {
+    var f = form, w = CP.WORDS[f.target], ln = !w && f.target ? CP.contrib.lineOf(f.target) : null, cur = w || ln, h;
+    var head = f.op === "add" ? "Proponi una parola nuova" : (w ? "«" + esc(w.hz) + "» " + esc(w.py) : ln ? esc(ln.hz) : "");
+    h = '<div class="fam-head"><div class="meta"><b>' + (f.op === "add" ? head : "Correggi o segnala") + "</b>" + (f.op !== "add" ? '<div class="small muted han">' + head + "</div>" : "") + '</div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>';
+    if (f.op !== "add") h += '<div class="seg" role="group" aria-label="Tipo"><button type="button" data-ct-op="fix"' + (f.op === "fix" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>✏️ Correggi</button><button type="button" data-ct-op="flag"' + (f.op === "flag" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🚩 Segnala</button></div>";
+    h += '<div class="ct-form">';
+    if (f.op === "fix") {
+      var fields = w ? [["py", "Pinyin"], ["it", "Italiano"], ["note", "Nota"]] : [["py", "Pinyin"], ["it", "Italiano"]];
+      h += '<label>Che cosa<select id="ct-field">' + fields.map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === f.field ? " selected" : "") + ">" + x[1] + "</option>"; }).join("") + "</select></label>" +
+        '<p class="small muted" style="margin:0">Adesso: <b>' + esc((cur && cur[f.field]) || "—") + "</b></p>" +
+        '<label>Diventa<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : (cur && cur[f.field]) || "") + '" autocomplete="off" spellcheck="false"></label>' +
+        '<p class="small muted" style="margin:0">I caratteri non si correggono da qui (sono la chiave dei tuoi progressi): se sono sbagliati usa «Segnala».</p>';
+    } else if (f.op === "add") {
+      h += '<label>Sezione<select id="ct-sec">' + secOpts(f.section) + "</select></label>" +
+        '<label>Caratteri<input type="text" id="ct-hz" maxlength="8" value="' + CP.attr(f.hz || "") + '" autocomplete="off" lang="zh"></label>' +
+        '<label>Pinyin, con i toni (sillabe separate da un punto: ni.hao)<input type="text" id="ct-py" maxlength="200" value="' + CP.attr(f.py || "") + '" autocomplete="off" spellcheck="false"></label>' +
+        '<label>Italiano<input type="text" id="ct-it" maxlength="200" value="' + CP.attr(f.it || "") + '" autocomplete="off"></label>';
+    }
+    h += '<label>' + (f.op === "flag" ? "Che cosa non va" : "Perché (facoltativo)") + '<textarea id="ct-why" maxlength="200" rows="2">' + esc(f.why || "") + "</textarea></label>" +
+      '<label>Nickname (facoltativo)<input type="text" id="ct-nick" maxlength="40" value="' + CP.attr(nick()) + '" autocomplete="nickname"></label>' +
+      (errs && errs.length ? '<div class="warn" role="alert">' + errs.map(esc).join("<br>") + "</div>" : "") +
+      '<p class="small muted" style="margin:0">🔒 Cosa invii: solo questa correzione e, se lo scrivi, un nickname. A chi: all\'autore dell\'app, quando scegli tu un canale (messaggio, email, modulo). Verrà pubblicata nel dizionario dell\'app. Nessun altro dato.</p>' +
+      '<button type="button" class="btn-main" id="ct-save" style="margin-top:0">' + (f.op === "fix" ? "Salva e prova nella mia copia" : "Salva") + "</button></div>";
+    return h;
+  }
+  function read() {
+    var g = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : undefined; };
+    if (g("ct-field") !== undefined) { var nf = g("ct-field"); if (nf !== form.field) { form.field = nf; form.new = undefined; return false; } }
+    if (g("ct-new") !== undefined) form.new = g("ct-new");
+    if (g("ct-sec") !== undefined) form.section = g("ct-sec");
+    if (g("ct-hz") !== undefined) form.hz = g("ct-hz");
+    if (g("ct-py") !== undefined) form.py = g("ct-py");
+    if (g("ct-it") !== undefined) form.it = g("ct-it");
+    form.why = g("ct-why") || ""; var n = g("ct-nick"); if (n !== undefined) { try { localStorage.setItem(NICK, n); } catch (e) {} }
+    return true;
+  }
+  CP.contribOpen = function (o) {
+    form = { op: o.op || "fix", target: o.target || "", field: o.field || "py", section: o.section || (CP.SEC[0] && CP.SEC[0].id) };
+    CP.openSheet(formHTML());
+  };
+  function save() {
+    if (!read()) { CP.openSheet(formHTML()); return; }
+    var w = CP.WORDS[form.target], ln = !w && form.target ? CP.contrib.lineOf(form.target) : null, cur = w ? (w.orig || w) : ln;
+    var it = { id: CP.contrib.id(), op: form.op, t: Date.now() };
+    if (form.op === "fix") { it.target = form.target; it.field = form.field; it.old = cur ? String(cur[form.field] || "") : ""; it.new = form.new; }
+    else if (form.op === "flag") it.target = form.target;
+    else { it.section = form.section; it.hz = form.hz; it.py = form.py; it.it = form.it; }
+    if (form.why) it.why = form.why;
+    var errs = CP.contrib.validate(it);
+    if (errs.length) { CP.openSheet(formHTML(errs)); CP.sfx("ko"); return; }
+    var l = list(); l.push(it); saveList(l);
+    CP.sfx("ok");
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>Grazie!</b><div class="small muted">' + esc(label(it)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
+      (it.op === "fix" && w ? '<p style="margin:0">La vedi già nella tua copia, con l\'etichetta «✏️ tua correzione». La puoi annullare da ⚙️ → Contributi.</p>' : '<p style="margin:0">È salvata in questo dispositivo (e nel backup).</p>') +
+      sendHTML());
+  }
+
+  /* ---- invio: dal più semplice al più tecnico ---- */
+  function sendHTML() {
+    var n = pending().length; if (!n) return "";
+    return '<div class="ct-send"><b>Manda ' + (n === 1 ? "il contributo" : "i " + n + " contributi") + " all'autore</b>" +
+      '<div class="acts" style="margin:0">' + (navigator.share ? '<button type="button" class="btn-s" data-ct-send="share">📤 Condividi (WeChat, WhatsApp…)</button>' : "") +
+      '<button type="button" class="btn-s" data-ct-send="mail">✉️ Email</button>' +
+      (CFG.form && CFG.formEntry ? '<button type="button" class="btn-s" data-ct-send="form">📝 Modulo Google</button>' : "") +
+      (CFG.repo ? '<button type="button" class="btn-s" data-ct-send="gh">🐙 GitHub</button>' : "") +
+      '<button type="button" class="btn-s" data-ct-send="file">⬇ Scarica .json</button></div></div>';
+  }
+  function send(how) {
+    var items = pending(); if (!items.length) return;
+    var p = patch(items), text = JSON.stringify(p), pretty = JSON.stringify(p, null, 1), subj = "màndarínō · " + items.length + (items.length === 1 ? " contributo" : " contributi");
+    var done = function () { var ids = {}; items.forEach(function (x) { ids[x.id] = 1; }); var l = list(); l.forEach(function (x) { if (ids[x.id]) { x.sent = Date.now(); x.t = Date.now(); } }); saveList(l); };
+    var open = function (u) { try { window.open(u, "_blank", "noopener"); } catch (e) { location.href = u; } };
+    if (how === "share" && navigator.share) navigator.share({ title: subj, text: text }).then(done, function () {});
+    else if (how === "mail") {
+      if (pretty.length > 1800) { CP.toast("Troppo lungo per un'email: scarico il file, allegalo tu."); Store.download("mandarino-contributi.json", pretty); }
+      else open("mailto:" + encodeURIComponent(CFG.email) + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(pretty));
+      done();
+    } else if (how === "form" && CFG.form) { open(CFG.form + (CFG.form.indexOf("?") < 0 ? "?" : "&") + "usp=pp_url&entry." + CFG.formEntry + "=" + encodeURIComponent(text)); done(); }
+    else if (how === "gh" && CFG.repo) {
+      var body = "```json\n" + pretty + "\n```\n";
+      if (body.length > 7000) { CP.toast("Troppo lungo per GitHub: scarico il file."); Store.download("mandarino-contributi.json", pretty); }
+      else open("https://github.com/" + CFG.repo + "/issues/new?labels=contributo&title=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body));
+      done();
+    } else if (how === "file") { Store.download("mandarino-contributi-" + Date.now() + ".json", pretty); done(); }
+  }
+
+  /* ---- ⚙️ → Contributi ---- */
+  (CP.settingsExtras = CP.settingsExtras || []).push(function () {
+    var l = list().slice().reverse();
+    return '<details class="set-sec" id="set-contrib"><summary>✏️ Contributi' + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
+      '<p class="small muted" style="margin:0">Hai trovato un errore? Correggilo: lo vedi subito nella tua copia e lo puoi mandare all\'autore, senza account.</p>' +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-ct-find>✏️ Correggi o segnala…</button><button type="button" class="btn-s" data-ct-add>➕ Parola nuova</button></div>' +
+      (l.length ? '<ul class="ct-list">' + l.map(function (it) {
+        return '<li class="' + (it.undone ? "undone" : "") + '"><span>' + esc(label(it)) + (it.sent ? ' <span class="muted small">· inviato</span>' : "") + "</span>" +
+          (it.op === "fix" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + (it.undone ? "Riapplica" : "Annulla") + "</button>" : "") +
+          '<button type="button" class="btn-s" data-ct-del="' + CP.attr(it.id) + '" aria-label="Elimina">×</button></li>';
+      }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
+  });
+  function finder(q) {
+    q = CP.norm(q || ""); if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
+    var out = [];
+    CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.Q[i].indexOf(q) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
+    PHRASES.forEach(function (g, gi) { g.items.forEach(function (p, ri) { if (out.length < 40 && (CP.norm(p[0]) + p[1] + CP.norm(p[2])).indexOf(q) >= 0) out.push(["phr:" + gi + ":" + ri, "💬 " + p[1] + " · " + p[2]]); }); });
+    DIALOGS.forEach(function (d) { d.lines.forEach(function (l, li) { if (out.length < 55 && (CP.norm(l[1]) + l[2] + CP.norm(l[3])).indexOf(q) >= 0) out.push(["dlg:" + d.id + ":" + li, "🗨️ " + l[2] + " · " + l[3]]); }); });
+    return out.length ? out.map(function (x) { return '<button type="button" class="goto-row ct-hit" data-ct-target="' + CP.attr(x[0]) + '"><span class="han">' + esc(x[1]) + "</span></button>"; }).join("") : '<p class="muted">Niente trovato.</p>';
+  }
+  CP.contribFind = function () {
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>Che cosa vuoi correggere?</b></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
+      '<label for="ct-q" class="sr">Cerca</label><input id="ct-q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" autocomplete="off" style="margin-top:10px"><div class="goto-list" id="ct-hits">' + finder("") + "</div>");
+    var q = document.getElementById("ct-q"); if (q) q.focus({ preventScroll: true });
+  };
+  /* battute di un dialogo: si sceglie la riga */
+  CP.contribDialog = function (id) {
+    var d = DIALOGS.filter(function (x) { return x.id === id; })[0]; if (!d) return;
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>Quale battuta?</b><div class="small muted">' + esc(d.title) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div><div class="goto-list">' +
+      d.lines.map(function (l, i) { return '<button type="button" class="goto-row ct-hit" data-ct-target="dlg:' + CP.attr(d.id) + ":" + i + '"><span><span class="han">' + esc(l[2]) + '</span><br><span class="small muted">' + esc(l[1]) + "</span></span></button>"; }).join("") + "</div>");
+  };
+
+  fam.addEventListener("input", function (e) { if (e.target.id === "ct-q") document.getElementById("ct-hits").innerHTML = finder(e.target.value); });
+  fam.addEventListener("change", function (e) { if (e.target.id === "ct-field" && form) { read(); CP.openSheet(formHTML()); } });
+  fam.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+    if (b.hasAttribute("data-ct-target")) { var tg = b.getAttribute("data-ct-target"); CP.contribOpen({ op: "fix", target: tg, field: CP.WORDS[tg] ? "it" : "py" }); }
+    else if (b.hasAttribute("data-ct-op") && form) { read(); form.op = b.getAttribute("data-ct-op"); CP.openSheet(formHTML()); }
+    else if (b.id === "ct-save") save();
+    else if (b.hasAttribute("data-ct-send")) send(b.getAttribute("data-ct-send"));
+    else if (b.hasAttribute("data-contrib")) CP.contribOpen({ op: "fix", target: b.getAttribute("data-contrib"), field: "it" });
+  });
+  document.getElementById("settings").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+    var l, id;
+    if (b.hasAttribute("data-ct-find")) { CP.untrap(document.getElementById("settings")); CP.contribFind(); }
+    else if (b.hasAttribute("data-ct-add")) { CP.untrap(document.getElementById("settings")); CP.contribOpen({ op: "add" }); }
+    else if ((id = b.getAttribute("data-ct-undo"))) { l = list(); l.forEach(function (x) { if (x.id === id) { x.undone = !x.undone; x.t = Date.now(); } }); saveList(l); CP.sfx("tap"); }
+    else if ((id = b.getAttribute("data-ct-del"))) { l = list().filter(function (x) { return x.id !== id; }); saveList(l); CP.sfx("tap"); }
+    else if (b.hasAttribute("data-ct-send")) send(b.getAttribute("data-ct-send"));
+  });
+})();
 
 /* ===== V6.7 · U8: benvenuto, una volta sola (cp-ux-v1.onboarded) ===== */
 (function () {
