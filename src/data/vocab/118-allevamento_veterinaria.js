@@ -12,7 +12,7 @@ SECTIONS.push({
     ["sì.liào","饲料","mangime"],
     ["shòu.yī","兽医","veterinario"],
     ["chǒng.wù","宠物","animale da compagnia"],
-    ["jiē.zhǒng","接种","vaccinare"],
+    ["jiē.zhòng","接种","vaccinare"],
     ["fáng.yì","防疫","prevenzione epidemica"],
     ["qín.liú.gǎn","禽流感","influenza aviaria"],
     ["kǒu.tí.yì","口蹄疫","afta epizootica"],

@@ -50,7 +50,8 @@
         (st.done ? '<div class="okline">✓ Completata: hai iniziato almeno l\'80% delle parole.</div>' : "") +
         '<div style="display:flex;flex-wrap:wrap;gap:8px">' +
           (pat ? '<button type="button" class="gpl" data-pat="' + P.g + '">📐 ' + esc(pat.t) + "</button>" : "") +
-          (d ? '<button type="button" class="gpl" data-dlg="' + d.id + '">💬 Dialogo: ' + esc(d.title) + "</button>" : "") + "</div>" +
+          (d ? '<button type="button" class="gpl" data-dlg="' + d.id + '">💬 Dialogo: ' + esc(d.title) + "</button>" : "") +
+          (CP.lessons ? CP.lessons.forPath(s.id).map(function (l) { var pr = CP.lessons.progress(l.id); return '<button type="button" class="gpl" data-lesson="' + CP.attr(l.id) + '">📘 ' + ((pr.best || 0) >= 80 ? "✓ " : "") + "Lezione: " + esc(l.title) + "</button>"; }).join("") : "") + "</div>" +
         '<div class="sacts"><button type="button" data-go="words" data-id="' + s.id + '"><span aria-hidden="true">📖</span>Esplora le parole</button>' +
         '<button type="button" data-go="study" data-id="' + s.id + '"><span aria-hidden="true">🎴</span>Impara con le carte</button>' +
         '<button type="button" data-go="practice" data-id="' + s.id + '"><span aria-hidden="true">🧩</span>Pratica</button></div>' +
@@ -124,6 +125,7 @@
     else if (go === "practice") { CP.build.practice(id); CP.show("build"); }
     else if (t.hasAttribute("data-pat")) { CP.build.openPattern(parseInt(t.getAttribute("data-pat"), 10)); CP.show("build"); }
     else if (t.hasAttribute("data-dlg")) { CP.dlg.open(t.getAttribute("data-dlg")); CP.show("build"); }
+    else if (t.hasAttribute("data-lesson")) { CP.build.openLesson(t.getAttribute("data-lesson")); CP.show("build"); }
   });
   root.addEventListener("change", function (e) {
     if (e.target.id === "goal-sel") { CP.game.setGoal(parseInt(e.target.value, 10)); render(); }

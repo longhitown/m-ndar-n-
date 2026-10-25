@@ -834,6 +834,31 @@ input[type="range"]{accent-color:var(--accent)}
 .fixlog{margin:10px 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--t2) 12%,var(--surface));border:1px solid var(--line)}
 .fixlog ol{margin:6px 0 0;padding-left:20px}
 .fixlog li{margin:4px 0;line-height:1.4}
+/* lezioni di grammatica */
+.ls-list{display:grid;gap:8px}
+.ls-card{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;text-align:left;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-height:56px}
+.ls-card .ls-n{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--chip);font-weight:700}
+.ls-card.done .ls-n{background:var(--accent);color:var(--bg)}
+.ls-card .ls-t{display:grid;gap:2px}
+.ls-card .ls-st{color:var(--muted);white-space:nowrap}
+.ls-lesson h3{margin:6px 0 4px}
+.ls-lesson h4{margin:18px 0 6px}
+.ls-goal{font-weight:600;margin:0 0 10px}
+.ls-pat{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:10px 0}
+.ls-plus{color:var(--muted);font-weight:700}
+.ls-ex{padding:10px 0;border-top:1px solid var(--line);display:grid;gap:2px}
+.ls-zh .lp{font-size:17px;font-weight:600}
+.ls-zh .lh{font-family:var(--f-han);font-size:calc(var(--hz) * 0.9)}
+.ls-trap{padding:10px 12px;margin:8px 0;border:1px solid var(--line);border-radius:12px;display:grid;gap:4px}
+.ls-bad .han{text-decoration:line-through;text-decoration-thickness:2px;opacity:.8}
+.ls-quiz .ls-prog{height:6px;border-radius:3px;background:var(--chip);overflow:hidden;margin-bottom:10px}
+.ls-quiz .ls-prog i{display:block;height:100%;background:var(--accent)}
+.ls-opts{display:grid;gap:8px;margin-top:10px}
+.ls-opt{text-align:left;width:100%;min-height:52px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.ls-opt .ls-zh.in .lh{font-size:calc(var(--hz) * 0.8)}
+.ls-opt.right{border-color:var(--accent);border-width:2px;background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.ls-opt.wrong{border-style:dashed;opacity:.85}
+.ls-opt.off{opacity:.55}
 
 /* ---- styles/categories.css ---- */
 /* ===== V6.5: categorie (pills), Pensiero esteso, Puzzle ===== */
@@ -1280,7 +1305,7 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 /* màndarínō · avvio. Gira per primo nel <body>: memorizza la pagina com'era (per la copia scaricabile, CP.snapshot)
    e prepara i registri che i file di dati riempiono (SECTIONS.push, DIALOGS.push). */
 (function(){var cs=document.currentScript,s="",c;for(c=document.body.firstElementChild;c&&c!==cs;c=c.nextElementSibling)s+=c.outerHTML;window.__PRISTINE={head:document.head?document.head.innerHTML:"",body:s,lang:document.documentElement.getAttribute("lang")||"it"};})();
-var SECTIONS = [], DIALOGS = [];
+var SECTIONS = [], DIALOGS = [], LESSONS = [];
 </script>
 <!-- Dati: il vocabolario, una sezione per file (aggiungerne una = un file + una riga qui) -->
 <script>
@@ -2761,7 +2786,7 @@ SECTIONS.push({
     ["xìn.xī","信息","informazione"],
     ["ruǎn.jiàn","软件","software"],
     ["yì.gōng","义工","volontario"],
-    ["diàn.zi","电子","elettronico, elettrone"],
+    ["diàn.zǐ","电子","elettronico, elettrone"],
     ["rén.gōng zhì.néng","人工智能","intelligenza artificiale","IA"],
     ["nà.mǐ.jì.shù","纳米技术","nanotecnologia"],
     ["tài.kōng","太空","spazio cosmico"]
@@ -3340,7 +3365,7 @@ SECTIONS.push({
     ["miàn.liào","面料","tessuto, stoffa"],
     ["fǎng.zhī","纺织","tessile, filatura"],
     ["cái.jiǎn","裁剪","tagliare; sartoria"],
-    ["chuān.zhe","穿着","modo di vestire"],
+    ["chuān.zhuó","穿着","modo di vestire"],
     ["pèi.dài","佩戴","indossare"],
     ["dā.pèi","搭配","abbinare"],
     ["chǐ.cùn","尺寸","taglia, misura"],
@@ -3876,7 +3901,7 @@ SECTIONS.push({
     ["zàn.měi","赞美","lodare"],
     ["chēng.zàn","称赞","elogiare"],
     ["wǎn.jù","婉拒","declinare gentilmente"],
-    ["dá.yìng","答应","acconsentire, promettere"],
+    ["dā.ying","答应","acconsentire, promettere"],
     ["bǎo.shǒu","保守","conservatore"],
     ["kāi.fàng","开放","aperto"],
     ["qiān.ràng","谦让","cedere per cortesia"],
@@ -5326,7 +5351,7 @@ SECTIONS.push({
     ["sì.liào","饲料","mangime"],
     ["shòu.yī","兽医","veterinario"],
     ["chǒng.wù","宠物","animale da compagnia"],
-    ["jiē.zhǒng","接种","vaccinare"],
+    ["jiē.zhòng","接种","vaccinare"],
     ["fáng.yì","防疫","prevenzione epidemica"],
     ["qín.liú.gǎn","禽流感","influenza aviaria"],
     ["kǒu.tí.yì","口蹄疫","afta epizootica"],
@@ -5822,7 +5847,7 @@ SECTIONS.push({
     ["wén.fáng sì.bǎo","文房四宝","i quattro tesori dello studio"],
     ["mò.zhī","墨汁","inchiostro"],
     ["mò.tiáo","墨条","stecca d'inchiostro"],
-    ["yàn.tāi","砚台","pietra per l'inchiostro"],
+    ["yàn.tái","砚台","pietra per l'inchiostro"],
     ["xuān.zhǐ","宣纸","carta di riso"],
     ["máo.bǐ","毛笔","pennello"],
     ["bǐ.fēng","笔锋","punta del pennello"],
@@ -6251,13 +6276,13 @@ SECTIONS.push({
     ["dēng.shān","登山","alpinismo"],
     ["shān.fēng","山峰","vetta"],
     ["xuě.shān","雪山","montagna innevata"],
-    ["shān.jí","山脊","cresta"],
+    ["shān.jǐ","山脊","cresta"],
     ["xuán.yá","悬崖","rupe"],
     ["qiào.bì","峭壁","parete ripida"],
     ["dēng.dǐng","登顶","raggiungere la vetta"],
     ["dà.běn.yíng","大本营","campo base"],
     ["yǎng.qì.guàn","氧气罐","bombola d'ossigeno"],
-    ["bīng.zhǎo","冰爪","ramponi"],
+    ["bīng.zhuǎ","冰爪","ramponi"],
     ["bīng.gǎo","冰镐","piccozza"],
     ["ān.quán.dài","安全带","imbracatura"],
     ["tú.shǒu pān.yán","徒手攀岩","free solo"],
@@ -8244,6 +8269,574 @@ var VERIFIED = [
   ["我饿了你呢","Ho fame, e tu?","memoria"]
 ];
 </script>
+<script>
+/* ---- data/lessons/01-essere.js ---- */
+/* Lezione 1 · Essere: 是.
+   Formato di una lezione (un file per lezione, elencato in src/index.html):
+   id, n (ordine), path (la tappa del Percorso dove compare), title, goal (che cosa saprai fare),
+   body: paragrafi (**grassetto**; i caratteri cinesi si colorano da soli), pattern: lo schema della frase,
+   ex: esempi [cinese, italiano], traps: errori tipici [sbagliata, giusta, perché],
+   quiz: esercizi { k: "order", zh, it } = rimetti in ordine le tessere; { k: "pick", q, zh?, opts, a, why? } = scegli.
+   Ogni frase cinese deve essere fatta di parole del vocabolario: la build lo controlla. */
+LESSONS.push({
+  "id": "essere",
+  "n": 1,
+  "path": "persone",
+  "title": "Essere: 是",
+  "goal": "Dire chi sei, di dove sei e che lavoro fai.",
+  "body": [
+    "是 (shì) è il verbo «essere» quando dici **chi** o **che cosa** è qualcuno o qualcosa: 我是学生 = sono studente.",
+    "Non cambia mai: 我是, 你是, 他是, 我们是. Niente coniugazioni, niente maschile e femminile.",
+    "La nazionalità si dice con **paese + 人** (persona): 意大利人 = italiano, 中国人 = cinese. Quindi 我是意大利人 = sono italiano (o italiana).",
+    "Al negativo 不 va **prima** di 是: 我不是中国人 = non sono cinese.",
+    "Attenzione: 是 **non** si usa davanti agli aggettivi. «Sono stanco» non è 我是累 ma 我很累: lo vedi nella lezione sugli aggettivi."
+  ],
+  "pattern": ["chi", "是", "chi / che cosa"],
+  "ex": [
+    ["我是意大利人。", "Sono italiano/a."],
+    ["她是中国人。", "Lei è cinese."],
+    ["我们是学生。", "Siamo studenti."],
+    ["他是我朋友。", "Lui è un mio amico."],
+    ["我不是老师。", "Non sono insegnante."],
+    ["这是我的书。", "Questo è il mio libro."]
+  ],
+  "traps": [
+    ["我是累。", "我很累。", "Con un aggettivo non si usa 是: ci vuole 很."],
+    ["我是意大利。", "我是意大利人。", "意大利 è il paese, l'Italia. «Italiano» è 意大利人: la persona dell'Italia."],
+    ["我是不中国人。", "我不是中国人。", "不 va prima di 是, non dopo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我是意大利人", "it": "Sono italiano/a."},
+    {"k": "pick", "q": "Come si dice «Lei è cinese»?", "opts": ["她是中国。", "她是中国人。", "她中国人是。"], "a": 1, "why": "Paese + 人 = la nazionalità; 是 sta in mezzo, come in italiano."},
+    {"k": "pick", "q": "Come si dice «Sono stanco»?", "opts": ["我是累。", "我很累。", "我累是。"], "a": 1, "why": "Con gli aggettivi niente 是: si usa 很."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我不是老师。", "opts": ["Non sono insegnante.", "Sono un insegnante.", "Non ho un insegnante."], "a": 0},
+    {"k": "order", "zh": "我们是朋友", "it": "Siamo amici."},
+    {"k": "pick", "q": "Dove va 不 in «non sono cinese»?", "opts": ["我是不中国人。", "我不是中国人。", "不我是中国人。"], "a": 1, "why": "Il negativo sta subito prima del verbo: 不是."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/02-possesso.js ---- */
+/* Lezione 2 · Il possesso: 的. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "possesso",
+  "n": 2,
+  "path": "famiglia",
+  "title": "Il possesso: 的",
+  "goal": "Dire di chi è una cosa e presentare la tua famiglia.",
+  "body": [
+    "的 (de) è il «di» del possesso, ma l'ordine è al contrario rispetto all'italiano: **prima chi possiede, poi la cosa**. 我的书 = il mio libro (alla lettera «io-di libro»).",
+    "Funziona con tutti: 你的手机 = il tuo cellulare, 老师的书 = il libro dell'insegnante.",
+    "Con i **parenti e le persone vicine** il 的 si può togliere: 我妈妈 = la mia mamma, 我朋友 = il mio amico. Con le cose no: «il mio libro» è sempre 我的书.",
+    "In italiano davanti al possessivo c'è l'articolo, tranne che con molti parenti al singolare: «il mio libro», ma «mio fratello». In cinese non ci sono articoli: pensa solo all'ordine."
+  ],
+  "pattern": ["chi possiede", "的", "che cosa"],
+  "ex": [
+    ["这是我的书。", "Questo è il mio libro."],
+    ["那是我的手机。", "Quello è il mio cellulare."],
+    ["她是我妈妈。", "Lei è la mia mamma."],
+    ["我的朋友是中国人。", "Il mio amico è cinese."],
+    ["老师的书很贵。", "Il libro dell'insegnante è caro."],
+    ["这是我爸爸的书。", "Questo è il libro del mio papà."]
+  ],
+  "traps": [
+    ["书的我", "我的书", "Prima chi possiede, poi la cosa: «io 的 libro»."],
+    ["这是我书。", "这是我的书。", "Senza 的 vanno solo parenti e amici (我妈妈, 我朋友); con le cose serve 的."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "这是我的书", "it": "Questo è il mio libro."},
+    {"k": "pick", "q": "Come si dice «il tuo cellulare»?", "opts": ["手机的你", "你的手机", "你手机的"], "a": 1, "why": "Chi possiede + 的 + la cosa."},
+    {"k": "pick", "q": "Quali frasi vanno bene per «la mia mamma è insegnante»?", "opts": ["Solo 我妈妈是老师。", "Solo 我的妈妈是老师。", "Tutte e due"], "a": 2, "why": "Con i parenti il 的 si può mettere o togliere."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "老师的书很贵。", "opts": ["Il libro dell'insegnante è caro.", "L'insegnante ha un libro caro.", "L'insegnante compra un libro."], "a": 0},
+    {"k": "order", "zh": "我的朋友是中国人", "it": "Il mio amico è cinese."},
+    {"k": "pick", "q": "Quale frase è sbagliata?", "opts": ["这是我的书。", "这是我书。", "这是我的手机。"], "a": 1, "why": "Con le cose il 的 serve sempre."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/03-aggettivi.js ---- */
+/* Lezione 3 · Gli aggettivi: 很. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "aggettivi",
+  "n": 3,
+  "path": "aggettivi",
+  "title": "Gli aggettivi: 很",
+  "goal": "Descrivere cose e persone, dire come stai.",
+  "body": [
+    "In cinese l'aggettivo fa già da verbo: **non serve «essere»**. «Il tè è caldo» = 茶很热.",
+    "Davanti all'aggettivo si mette quasi sempre 很 (hěn). Qui **non vuol dire «molto»**: lega soltanto. 我很好 = sto bene.",
+    "Per dire davvero «molto» si usa 非常: 非常贵 = molto caro. 太…了 = troppo: 太贵了 = è troppo caro! 有点 = un po' (di solito per le cose che non vanno): 有点冷 = fa un po' freddo.",
+    "Al negativo basta 不 + aggettivo, senza 很: 不贵 = non è caro. 不太贵 = non molto caro.",
+    "Alcuni aggettivi in italiano diventano «avere»: 我饿 = ho fame, 我渴 = ho sete. E col tempo che fa: 今天很热 = oggi fa caldo."
+  ],
+  "pattern": ["chi / che cosa", "很", "aggettivo"],
+  "ex": [
+    ["茶很热。", "Il tè è caldo."],
+    ["我很累。", "Sono stanco/a."],
+    ["这本书很贵。", "Questo libro è caro."],
+    ["这件衣服太贵了！", "Questo vestito è troppo caro!"],
+    ["今天有点冷。", "Oggi fa un po' freddo."],
+    ["我不饿。", "Non ho fame."]
+  ],
+  "traps": [
+    ["我是累。", "我很累。", "Con l'aggettivo niente 是."],
+    ["茶热很。", "茶很热。", "很 va prima dell'aggettivo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我很累", "it": "Sono stanco/a."},
+    {"k": "pick", "q": "Come si dice «È troppo caro!»?", "opts": ["太贵了！", "是贵了！", "贵太了！"], "a": 0, "why": "太 + aggettivo + 了 = troppo."},
+    {"k": "pick", "q": "In 我很好, 很 vuol dire per forza «molto»?", "opts": ["Sì, sempre.", "No: qui lega soltanto l'aggettivo.", "Vuol dire «non»."], "a": 1, "why": "Per «molto» si usa 非常."},
+    {"k": "pick", "q": "Come si dice «Non è caro»?", "opts": ["不贵。", "没贵。", "不是贵。"], "a": 0, "why": "Al negativo basta 不 + aggettivo."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我饿了。", "opts": ["Ho fame.", "Sono fame.", "Ho mangiato."], "a": 0, "why": "饿 in italiano diventa «avere fame»."},
+    {"k": "order", "zh": "今天很热", "it": "Oggi fa caldo."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/04-negazione.js ---- */
+/* Lezione 4 · Dire di no: 不 e 没. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "negazione",
+  "n": 4,
+  "path": "risposte",
+  "title": "Dire di no: 不 e 没",
+  "goal": "Negare al presente e al passato senza confonderti.",
+  "body": [
+    "不 (bù) nega il presente, le abitudini e il futuro: 我不喝咖啡 = non bevo caffè; 明天我不去 = domani non vado.",
+    "没 (méi) nega il passato, cioè **qualcosa che non è successo**: 我没去 = non sono andato/a; 我没吃饭 = non ho mangiato.",
+    "有 (avere, esserci) si nega **solo** con 没: 没有 = non avere, non c'è. Mai 不有.",
+    "不 cambia tono davanti a un 4° tono: 不是 si legge bú shì. Nel laboratorio lo vedi sotto «Come si dice davvero»."
+  ],
+  "pattern": ["chi", "不 / 没", "verbo"],
+  "ex": [
+    ["我不喝咖啡。", "Non bevo caffè."],
+    ["他不忙。", "Lui non è impegnato."],
+    ["我没吃饭。", "Non ho mangiato."],
+    ["他今天没来。", "Oggi lui non è venuto."],
+    ["我没有钱。", "Non ho soldi."],
+    ["我不知道。", "Non lo so."]
+  ],
+  "traps": [
+    ["我不有钱。", "我没有钱。", "有 si nega solo con 没: 没有."],
+    ["我昨天不去。", "我昨天没去。", "Per dire che una cosa non è successa si usa 没."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Come si dice «Non ho soldi»?", "opts": ["我不有钱。", "我没有钱。", "我有没钱。"], "a": 1, "why": "有 si nega con 没."},
+    {"k": "pick", "q": "Come si dice «Non ho mangiato»?", "opts": ["我不吃饭。", "我没吃饭。"], "a": 1, "why": "Una cosa che non è successa: 没."},
+    {"k": "pick", "q": "Come si dice «Non bevo caffè» (per abitudine)?", "opts": ["我不喝咖啡。", "我没喝咖啡。"], "a": 0, "why": "Le abitudini si negano con 不."},
+    {"k": "order", "zh": "我没吃饭", "it": "Non ho mangiato."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "他今天没来。", "opts": ["Oggi lui non è venuto.", "Oggi lui non viene mai.", "Oggi lui viene."], "a": 0},
+    {"k": "order", "zh": "我不喝咖啡", "it": "Non bevo caffè."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/05-domande.js ---- */
+/* Lezione 5 · Domande sì o no: 吗. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "domande",
+  "n": 5,
+  "path": "risposte",
+  "title": "Domande sì o no: 吗",
+  "goal": "Fare domande semplici e rispondere sì o no.",
+  "body": [
+    "Per una domanda a cui si risponde sì o no basta mettere 吗 (ma) **in fondo** alla frase. L'ordine delle parole non cambia: 你是中国人 → 你是中国人吗? = sei cinese?",
+    "Un altro modo è ripetere il verbo con 不 in mezzo: 你是不是中国人? 你去不去? Con questa forma 吗 non si mette.",
+    "Non c'è una parola per «sì»: si risponde ripetendo il verbo. 你去吗? — 去 (sì, vado) / 不去 (no). Con 是: 是 / 不是."
+  ],
+  "pattern": ["frase", "吗"],
+  "ex": [
+    ["你是中国人吗？", "Sei cinese?"],
+    ["你饿吗？", "Hai fame?"],
+    ["你会说中文吗？", "Sai parlare cinese?"],
+    ["你有时间吗？", "Hai tempo?"],
+    ["他是不是中国人？", "Lui è cinese?"],
+    ["你明天来吗？", "Domani vieni?"]
+  ],
+  "traps": [
+    ["你吗是中国人？", "你是中国人吗？", "吗 va sempre in fondo."],
+    ["你是不是中国人吗？", "你是不是中国人？", "Con 是不是 la domanda c'è già: niente 吗."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "你是中国人吗", "it": "Sei cinese?"},
+    {"k": "pick", "q": "Dove va 吗?", "opts": ["All'inizio della frase", "Dopo il soggetto", "In fondo alla frase"], "a": 2},
+    {"k": "pick", "q": "你去吗? Come rispondi «sì»?", "opts": ["是。", "去。", "吗。"], "a": 1, "why": "Si risponde ripetendo il verbo."},
+    {"k": "pick", "q": "Come si dice «Hai fame?»?", "opts": ["你饿吗？", "你吗饿？", "吗你饿？"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "你是不是学生？", "opts": ["Sei studente?", "Non sei studente.", "Lui è studente."], "a": 0, "why": "是不是 = domanda sì o no."},
+    {"k": "order", "zh": "你有时间吗", "it": "Hai tempo?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/06-interrogative.js ---- */
+/* Lezione 6 · Che cosa, chi, dove: le parole interrogative. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "interrogative",
+  "n": 6,
+  "path": "domande",
+  "title": "Che cosa, chi, dove: le parole interrogative",
+  "goal": "Chiedere che cosa, chi, dove, quanti, perché e quando.",
+  "body": [
+    "什么 = che cosa · 谁 = chi · 哪里 = dove · 几 / 多少 = quanti · 为什么 = perché · 什么时候 = quando · 怎么 = come.",
+    "La regola d'oro: **la parola interrogativa sta esattamente dove starebbe la risposta**. 你吃什么? — 我吃饺子. 你去哪里? — 我去北京.",
+    "In italiano la parola interrogativa va all'inizio («Dove vai?»); in cinese no: non spostarla.",
+    "Con queste parole **non** si usa 吗: la domanda c'è già.",
+    "几 è per i numeri piccoli e vuole il classificatore (你有几个孩子?); 多少 per i numeri grandi e i prezzi (多少钱?)."
+  ],
+  "pattern": ["chi", "verbo", "什么 / 哪里 / 谁"],
+  "ex": [
+    ["你吃什么？", "Che cosa mangi?"],
+    ["你去哪里？", "Dove vai?"],
+    ["他是谁？", "Chi è lui?"],
+    ["你有几个孩子？", "Quanti figli hai?"],
+    ["你为什么学中文？", "Perché studi cinese?"],
+    ["你什么时候去中国？", "Quando vai in Cina?"]
+  ],
+  "traps": [
+    ["你去哪里吗？", "你去哪里？", "Con una parola interrogativa niente 吗."],
+    ["哪里你去？", "你去哪里？", "La parola interrogativa resta dove sarebbe la risposta: dopo il verbo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "你去哪里", "it": "Dove vai?"},
+    {"k": "pick", "q": "Come si dice «Che cosa mangi?»?", "opts": ["什么你吃？", "你吃什么？", "你吃什么吗？"], "a": 1, "why": "什么 sta dove starebbe la risposta, e niente 吗."},
+    {"k": "pick", "q": "Una risposta giusta a 你去哪里?", "opts": ["我去北京。", "北京我去哪里。", "我去哪里北京。"], "a": 0, "why": "La risposta prende il posto di 哪里."},
+    {"k": "pick", "q": "Come si dice «Quanti figli hai?»?", "opts": ["你有几孩子？", "你有几个孩子？", "你几个孩子有？"], "a": 1, "why": "几 vuole il classificatore: 几个."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "他是谁？", "opts": ["Chi è lui?", "Lui chi conosce?", "Lui è qui?"], "a": 0},
+    {"k": "order", "zh": "你为什么学中文", "it": "Perché studi cinese?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/07-avere.js ---- */
+/* Lezione 7 · Avere e «c'è»: 有. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "avere",
+  "n": 7,
+  "path": "casa",
+  "title": "Avere e «c'è»: 有",
+  "goal": "Dire che cosa hai e che cosa c'è in un posto.",
+  "body": [
+    "有 (yǒu) vuol dire «avere»: 我有一个哥哥 = ho un fratello maggiore.",
+    "Vuol dire anche «c'è, ci sono»: **prima il luogo, poi 有**. 这里有一个超市 = qui c'è un supermercato.",
+    "Il negativo è sempre 没有, mai 不有: 我没有时间 = non ho tempo; 这里没有超市 = qui non ci sono supermercati.",
+    "Spesso il cinese non dice quanti: 我有朋友 = ho degli amici. Se vuoi contare serve il classificatore: 我有三个朋友."
+  ],
+  "pattern": ["chi / dove", "有 / 没有", "che cosa"],
+  "ex": [
+    ["我有一个哥哥。", "Ho un fratello maggiore."],
+    ["她没有孩子。", "Lei non ha figli."],
+    ["你有时间吗？", "Hai tempo?"],
+    ["我们有很多朋友。", "Abbiamo molti amici."],
+    ["这里有一个超市。", "Qui c'è un supermercato."],
+    ["这里没有超市。", "Qui non ci sono supermercati."]
+  ],
+  "traps": [
+    ["我不有时间。", "我没有时间。", "有 si nega solo con 没."],
+    ["有一个超市这里。", "这里有一个超市。", "Prima il luogo, poi 有."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我有一个哥哥", "it": "Ho un fratello maggiore."},
+    {"k": "pick", "q": "Come si dice «Non ho tempo»?", "opts": ["我不有时间。", "我没有时间。", "我有没时间。"], "a": 1},
+    {"k": "pick", "q": "Come si dice «Qui c'è un supermercato»?", "opts": ["这里有一个超市。", "这里是一个超市。", "有这里一个超市。"], "a": 0, "why": "«C'è» = 有. Con 是 diresti «questo posto è un supermercato»."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "她没有孩子。", "opts": ["Lei non ha figli.", "Lei non è una bambina.", "Lei non vuole figli."], "a": 0},
+    {"k": "order", "zh": "你有时间吗", "it": "Hai tempo?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/08-classificatori.js ---- */
+/* Lezione 8 · Contare: numeri e classificatori. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "classificatori",
+  "n": 8,
+  "path": "numeri",
+  "title": "Contare: numeri e classificatori",
+  "goal": "Contare persone e cose con il classificatore giusto.",
+  "body": [
+    "Tra il numero e la cosa contata ci vuole un **classificatore**: 一个人 (una persona), 三本书 (tre libri), 两杯茶 (due tazze di tè).",
+    "个 (gè) va bene quasi sempre, soprattutto con le persone. Altri da sapere: 本 per i libri, 杯 per tazze e bicchieri, 张 per le cose piatte (biglietti, tavoli), 件 per i vestiti, 只 per gli animali, 瓶 per le bottiglie.",
+    "Il «due» davanti a un classificatore è 两 (liǎng), non 二: 两个人, 两杯咖啡. 二 si usa per contare (一, 二, 三) e nei numeri composti (十二, 二十).",
+    "Anche 这 (questo) e 那 (quello) vogliono il classificatore: 这本书 = questo libro, 那个人 = quella persona."
+  ],
+  "pattern": ["numero / 这 / 那", "classificatore", "che cosa"],
+  "ex": [
+    ["我有三个朋友。", "Ho tre amici."],
+    ["我买了一本书。", "Ho comprato un libro."],
+    ["我要两杯茶。", "Voglio due tazze di tè."],
+    ["他有一只狗。", "Lui ha un cane."],
+    ["这本书很贵。", "Questo libro è caro."],
+    ["那个人是谁？", "Chi è quella persona?"]
+  ],
+  "traps": [
+    ["我有三朋友。", "我有三个朋友。", "Tra numero e nome manca il classificatore 个."],
+    ["二个人", "两个人", "Davanti al classificatore il «due» è 两."],
+    ["这书很贵。", "这本书很贵。", "Anche 这 vuole il classificatore."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Come si dice «due persone»?", "opts": ["二个人", "两个人", "两人个"], "a": 1, "why": "Davanti al classificatore: 两."},
+    {"k": "pick", "q": "Come si dice «tre libri»?", "opts": ["三书", "三本书", "书三本"], "a": 1, "why": "Numero + 本 + libro."},
+    {"k": "pick", "q": "Come si dice «due tazze di tè»?", "opts": ["两杯茶", "二杯茶", "两茶杯"], "a": 0},
+    {"k": "order", "zh": "我有三个朋友", "it": "Ho tre amici."},
+    {"k": "pick", "q": "Come si dice «questo libro»?", "opts": ["这书", "这本书", "书这本"], "a": 1, "why": "这 + classificatore + nome."},
+    {"k": "order", "zh": "我要两杯茶", "it": "Voglio due tazze di tè."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/09-quando.js ---- */
+/* Lezione 9 · Quando: il tempo prima del verbo. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "quando",
+  "n": 9,
+  "path": "tempo",
+  "title": "Quando: il tempo prima del verbo",
+  "goal": "Dire quando fai le cose, con l'ordine giusto.",
+  "body": [
+    "In cinese il «quando» viene **prima del verbo**: chi + quando + verbo. 我明天去北京 = domani vado a Pechino.",
+    "Il tempo può stare anche all'inizio, prima del soggetto: 明天我去北京. **Mai in fondo** come in italiano («vado a Pechino domani»).",
+    "I verbi cinesi non cambiano con il tempo: è la parola di tempo (今天, 明天, 昨天) a dire quando. 我每天学中文 = studio cinese ogni giorno.",
+    "Se le parole di tempo sono più d'una, si va dal grande al piccolo: 每天早上 = ogni giorno, la mattina → ogni mattina."
+  ],
+  "pattern": ["chi", "quando", "verbo", "che cosa"],
+  "ex": [
+    ["我明天去北京。", "Domani vado a Pechino."],
+    ["我每天学中文。", "Ogni giorno studio cinese."],
+    ["他周末去公园。", "Nel fine settimana lui va al parco."],
+    ["我们晚上看电视。", "La sera guardiamo la televisione."],
+    ["星期六我们去北京。", "Sabato andiamo a Pechino."],
+    ["她每天早上跑。", "Ogni mattina lei corre."]
+  ],
+  "traps": [
+    ["我去北京明天。", "我明天去北京。", "Il tempo va prima del verbo, non in fondo."],
+    ["我学中文每天。", "我每天学中文。", "Anche «ogni giorno» va prima del verbo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我明天去北京", "it": "Domani vado a Pechino."},
+    {"k": "pick", "q": "Dove va 今天 in «oggi compro il pane»?", "opts": ["我买面包今天。", "我今天买面包。", "我买今天面包。"], "a": 1, "why": "Prima del verbo."},
+    {"k": "order", "zh": "我们晚上看电视", "it": "La sera guardiamo la televisione."},
+    {"k": "pick", "q": "Quale frase va bene?", "opts": ["明天我去北京。", "我去北京明天。"], "a": 0, "why": "Il tempo può andare all'inizio, ma non in fondo."},
+    {"k": "pick", "q": "Come si dice al passato il verbo 去?", "opts": ["Non cambia: lo dicono la parola di tempo o 了.", "Diventa sempre 去过.", "Si aggiunge 是."], "a": 0}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/10-dove.js ---- */
+/* Lezione 10 · Dove: 在. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "dove",
+  "n": 10,
+  "path": "spazio",
+  "title": "Dove: 在",
+  "goal": "Dire dove sei e dove fai le cose.",
+  "body": [
+    "在 (zài) + luogo dice dove si trova qualcuno: 我在家 = sono a casa. Qui 在 fa da verbo: «essere (in un posto)».",
+    "Se fai qualcosa in un posto, **在 + luogo va prima del verbo**: 我在家吃饭 = mangio a casa. Ordine: chi + dove + che cosa fai.",
+    "La domanda è 在哪里: 你在哪里? = dove sei? 你在哪里工作? = dove lavori?",
+    "在 + verbo, senza luogo, vuol dire «sto facendo»: 我在学中文 = sto studiando cinese."
+  ],
+  "pattern": ["chi", "在 + luogo", "verbo"],
+  "ex": [
+    ["我在家。", "Sono a casa."],
+    ["我妈妈在医院。", "La mia mamma è in ospedale."],
+    ["我在家吃饭。", "Mangio a casa."],
+    ["她在医院工作。", "Lei lavora in ospedale."],
+    ["你在哪里工作？", "Dove lavori?"],
+    ["我在学中文。", "Sto studiando cinese."]
+  ],
+  "traps": [
+    ["我吃饭在家。", "我在家吃饭。", "Il luogo (在 + luogo) va prima del verbo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我在家吃饭", "it": "Mangio a casa."},
+    {"k": "pick", "q": "Come si dice «Dove sei?»?", "opts": ["你在哪里？", "你哪里在？", "你是哪里？"], "a": 0},
+    {"k": "pick", "q": "Come si dice «Lavoro in banca»?", "opts": ["我工作在银行。", "我在银行工作。", "在银行工作我。"], "a": 1, "why": "Prima dove, poi che cosa fai."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我在学中文。", "opts": ["Sto studiando cinese.", "Studio cinese a scuola.", "Sono in Cina."], "a": 0, "why": "在 + verbo = sto facendo."},
+    {"k": "order", "zh": "你在哪里工作", "it": "Dove lavori?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/11-modali.js ---- */
+/* Lezione 11 · Volere e potere: 想, 要, 会, 能, 可以. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "modali",
+  "n": 11,
+  "path": "verbi1",
+  "title": "Volere e potere: 想, 要, 会, 能, 可以",
+  "goal": "Dire che cosa vuoi, che cosa sai fare e che cosa puoi fare.",
+  "body": [
+    "Questi verbi vanno **davanti all'altro verbo**, come in italiano: 我想喝茶 = vorrei bere un tè.",
+    "想 = vorrei, ho voglia di (gentile). 要 = voglio (più deciso; al bar 我要… = prendo…).",
+    "会 = so fare, l'ho imparato: 我会游泳 = so nuotare. Ma 会 dice anche che una cosa probabilmente succederà: 明天会下雨 = domani pioverà.",
+    "能 = posso, riesco. 可以 = posso, è permesso: 我可以坐这里吗? = posso sedermi qui?",
+    "Il negativo va prima di loro: 我不想去 = non voglio andare; 我不会开车 = non so guidare."
+  ],
+  "pattern": ["chi", "想 / 要 / 会 / 能 / 可以", "verbo"],
+  "ex": [
+    ["我想喝咖啡。", "Vorrei bere del caffè."],
+    ["我要一杯茶。", "Voglio una tazza di tè."],
+    ["我会说中文。", "So parlare cinese."],
+    ["我不会开车。", "Non so guidare."],
+    ["我可以坐这里吗？", "Posso sedermi qui?"],
+    ["明天会下雨。", "Domani pioverà."]
+  ],
+  "traps": [
+    ["我喝想茶。", "我想喝茶。", "Il verbo «volere / potere» va prima dell'altro verbo."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Come si dice «So nuotare» (l'ho imparato)?", "opts": ["我会游泳。", "我能游泳。", "我可以游泳。"], "a": 0, "why": "Un'abilità imparata: 会. 能 e 可以 dicono «posso»."},
+    {"k": "pick", "q": "Come si dice «Posso sedermi qui?»?", "opts": ["我可以坐这里吗？", "我会坐这里吗？", "我坐可以这里吗？"], "a": 0, "why": "Chiedere il permesso: 可以."},
+    {"k": "order", "zh": "我想喝咖啡", "it": "Vorrei bere del caffè."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "明天会下雨。", "opts": ["Domani pioverà.", "Domani so piovere.", "Domani può piovere?"], "a": 0, "why": "会 + verbo che non è un'abilità = futuro probabile."},
+    {"k": "pick", "q": "Come si dice «Non voglio andare»?", "opts": ["我不想去。", "我想去不。", "不我想去。"], "a": 0, "why": "不 prima di 想."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/12-passato.js ---- */
+/* Lezione 12 · Fatto e finito: 了. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "passato",
+  "n": 12,
+  "path": "viaggi",
+  "title": "Fatto e finito: 了",
+  "goal": "Raccontare quello che hai fatto.",
+  "body": [
+    "Il verbo cinese non ha il passato. Per dire che un'azione è **compiuta** si mette 了 (le) dopo il verbo: 我买了一本书 = ho comprato un libro.",
+    "了 in fondo alla frase dice che qualcosa è successo o è **cambiato**: 我饿了 = (adesso) ho fame; 下雨了 = ha cominciato a piovere.",
+    "Al negativo 了 sparisce: si usa 没 + verbo. 我没吃饭 = non ho mangiato. Mai 没…了.",
+    "La domanda: 你吃饭了吗? = hai mangiato?"
+  ],
+  "pattern": ["chi", "verbo", "了", "che cosa"],
+  "ex": [
+    ["我买了一本书。", "Ho comprato un libro."],
+    ["他昨天去了上海。", "Ieri lui è andato a Shanghai."],
+    ["我们昨天吃了饺子。", "Ieri abbiamo mangiato i ravioli."],
+    ["你吃饭了吗？", "Hai mangiato?"],
+    ["我没吃饭。", "Non ho mangiato."],
+    ["下雨了。", "Piove."]
+  ],
+  "traps": [
+    ["我没吃饭了。", "我没吃饭。", "Al negativo niente 了: basta 没."],
+    ["我了买一本书。", "我买了一本书。", "了 va dopo il verbo, mai prima."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我买了一本书", "it": "Ho comprato un libro."},
+    {"k": "pick", "q": "Come si dice «Non ho mangiato»?", "opts": ["我没吃饭了。", "我没吃饭。", "我不吃了饭。"], "a": 1, "why": "Negativo del passato: 没, senza 了."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我饿了。", "opts": ["Ho fame (adesso).", "Ho avuto fame.", "Non ho fame."], "a": 0, "why": "了 in fondo: la situazione è cambiata."},
+    {"k": "pick", "q": "Come si dice «Ieri lui è andato a Shanghai»?", "opts": ["他昨天去了上海。", "他去了上海昨天。", "他昨天了去上海。"], "a": 0},
+    {"k": "order", "zh": "你吃饭了吗", "it": "Hai mangiato?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/13-esperienze.js ---- */
+/* Lezione 13 · L'hai mai fatto? 过. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "esperienze",
+  "n": 13,
+  "path": "luoghi",
+  "title": "L'hai mai fatto? 过",
+  "goal": "Dire dove sei già stato e che cosa hai già provato.",
+  "body": [
+    "过 (guo) dopo il verbo dice che una cosa l'hai fatta **almeno una volta nella vita**: 我去过中国 = sono stato/a in Cina.",
+    "Il negativo è 没 + verbo + 过: 我没去过中国 = non sono mai stato/a in Cina.",
+    "La domanda: 你去过中国吗? = sei mai stato/a in Cina? 你吃过饺子吗? = hai mai mangiato i ravioli?",
+    "Differenza con 了: 我吃了饺子 = ho mangiato i ravioli (quella volta); 我吃过饺子 = li ho già provati (nella vita)."
+  ],
+  "pattern": ["chi", "verbo", "过", "che cosa"],
+  "ex": [
+    ["我去过意大利。", "Sono stato/a in Italia."],
+    ["你去过中国吗？", "Sei mai stato/a in Cina?"],
+    ["我没去过中国。", "Non sono mai stato/a in Cina."],
+    ["你吃过饺子吗？", "Hai mai mangiato i ravioli?"]
+  ],
+  "traps": [
+    ["我不去过中国。", "我没去过中国。", "Con 过 il negativo è 没."],
+    ["我去中国过。", "我去过中国。", "过 va subito dopo il verbo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我去过意大利", "it": "Sono stato/a in Italia."},
+    {"k": "pick", "q": "Come si dice «Non sono mai stato in Cina»?", "opts": ["我不去过中国。", "我没去过中国。", "我没去中国过。"], "a": 1},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "你吃过饺子吗？", "opts": ["Hai mai mangiato i ravioli?", "Hai mangiato i ravioli oggi?", "Mangi i ravioli?"], "a": 0},
+    {"k": "pick", "q": "Che differenza c'è tra 我吃了饺子 e 我吃过饺子?", "opts": ["Il primo: li ho mangiati quella volta. Il secondo: li ho già provati nella vita.", "Vogliono dire la stessa cosa.", "过 è il futuro."], "a": 0}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/14-piacere.js ---- */
+/* Lezione 14 · Mi piace: 喜欢. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "piacere",
+  "n": 14,
+  "path": "cibo",
+  "title": "Mi piace: 喜欢",
+  "goal": "Dire che cosa ti piace e che cosa no.",
+  "body": [
+    "喜欢 (xǐhuan) è «piacere», ma la frase è costruita al contrario dell'italiano: **chi prova il piacere è il soggetto**. 我喜欢茶 = mi piace il tè (alla lettera «io gradisco tè»).",
+    "In italiano si gira: la cosa che piace diventa il soggetto e il verbo si accorda con lei: mi piace il tè, **mi piacciono** i cani (我喜欢狗).",
+    "喜欢 + verbo = mi piace fare qualcosa: 我喜欢做饭 = mi piace cucinare.",
+    "Per «molto» si dice 很喜欢: 我很喜欢意大利 = mi piace molto l'Italia. Al negativo 不喜欢.",
+    "Con le persone: 我喜欢你 = mi piaci. 我爱你 = ti amo."
+  ],
+  "pattern": ["chi", "喜欢", "che cosa / verbo"],
+  "ex": [
+    ["我喜欢茶。", "Mi piace il tè."],
+    ["我喜欢狗。", "Mi piacciono i cani."],
+    ["我不喜欢猫。", "Non mi piacciono i gatti."],
+    ["我喜欢做饭。", "Mi piace cucinare."],
+    ["我很喜欢意大利。", "Mi piace molto l'Italia."],
+    ["你喜欢什么？", "Che cosa ti piace?"]
+  ],
+  "traps": [
+    ["我喜欢很意大利。", "我很喜欢意大利。", "很 va prima di 喜欢."],
+    ["茶喜欢我。", "我喜欢茶。", "Prima chi prova il piacere, poi la cosa."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我喜欢茶", "it": "Mi piace il tè."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我喜欢狗。", "opts": ["Mi piacciono i cani.", "Piaccio ai cani.", "I cani mi cercano."], "a": 0, "why": "In italiano i cani diventano il soggetto: «piacciono»."},
+    {"k": "pick", "q": "Come si dice «Mi piace molto l'Italia»?", "opts": ["我很喜欢意大利。", "我喜欢很意大利。", "意大利很喜欢我。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我喜欢你。", "opts": ["Mi piaci.", "Ti piaccio.", "Mi piace lui."], "a": 0},
+    {"k": "order", "zh": "我喜欢做饭", "it": "Mi piace cucinare."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/15-paragoni.js ---- */
+/* Lezione 15 · Più … di: 比. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "paragoni",
+  "n": 15,
+  "path": "aggettivi",
+  "title": "Più … di: 比",
+  "goal": "Fare paragoni tra persone, cose e giorni.",
+  "body": [
+    "Per dire «A è più … di B» si usa 比 (bǐ): **A + 比 + B + aggettivo**. 我哥哥比我高 = mio fratello è più alto di me.",
+    "Nel paragone **niente 很**: 比我很高 è sbagliato. Per «ancora più» si usa 更: 他比我更高.",
+    "Funziona anche col tempo che fa: 今天比昨天热 = oggi fa più caldo di ieri.",
+    "In italiano diciamo «più alto di me»; il cinese mette prima il termine di paragone (比我) e poi l'aggettivo (高)."
+  ],
+  "pattern": ["A", "比", "B", "aggettivo"],
+  "ex": [
+    ["我哥哥比我高。", "Mio fratello maggiore è più alto di me."],
+    ["今天比昨天热。", "Oggi fa più caldo di ieri."],
+    ["北京比上海大。", "Pechino è più grande di Shanghai."],
+    ["这个比那个贵。", "Questo è più caro di quello."],
+    ["面包比米饭贵。", "Il pane è più caro del riso."]
+  ],
+  "traps": [
+    ["他比我很高。", "他比我高。", "Nel paragone niente 很 (al massimo 更)."],
+    ["他高比我。", "他比我高。", "比 + termine di paragone vanno prima dell'aggettivo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "北京比上海大", "it": "Pechino è più grande di Shanghai."},
+    {"k": "pick", "q": "Come si dice «Oggi fa più caldo di ieri»?", "opts": ["今天比昨天热。", "今天热比昨天。", "今天比昨天很热。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "这个比那个贵。", "opts": ["Questo è più caro di quello.", "Quello è più caro di questo.", "Costano uguale."], "a": 0},
+    {"k": "pick", "q": "Come si dice «Lui è più alto di me»?", "opts": ["他比我高。", "我比他高。", "他高我。"], "a": 0, "why": "Chi è «più» viene per primo."},
+    {"k": "order", "zh": "这个比那个贵", "it": "Questo è più caro di quello."}
+  ]
+});
+</script>
 <!-- Interfaccia in più lingue -->
 <script>
 /* ---- i18n/i18n.js ---- */
@@ -8298,7 +8891,7 @@ I18N.it = {
   "more.title": "Altro", "more.card": "per questa carta", "more.pad": "Traccia", "more.padFull": "Scrivi il carattere col dito, con la guida", "more.padBlind": "Prova a scriverlo a memoria, poi controlla",
   "more.fam": "Famiglia", "more.famSub": "Le altre parole che contengono questi caratteri", "more.tone": "Tono", "more.toneSub": "Parla e guarda la curva della tua voce, anche senza rete",
   "more.contrib": "Correggi o segnala", "more.contribSub": "Pinyin o traduzione sbagliati? Correggili nella tua copia e mandali all'autore",
-  "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi",
+  "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi", "grp.learn": "📘 Impara", "sub.lessons": "Lezioni",
   "sub.ex": "Esercizi", "sub.lab": "Laboratorio", "sub.slot": "Slot", "sub.dlg": "Dialoghi", "sub.thought": "Pensiero", "sub.reader": "Lettore", "sub.pat": "Modelli",
   "path.stage": "Tappa {n}", "path.continue": "Continua · ≈ {min} min", "path.explore": "Esplora la tappa {n}", "path.counts": "{due} da ripassare · {nw} {new}",
   "path.doneToday": "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.", "path.goto": "📍 Vai alla tappa {n} sulla mappa",
@@ -8341,7 +8934,7 @@ I18N.zh = {
   "more.title": "更多", "more.card": "这张卡片", "more.pad": "描红", "more.padFull": "用手指写这个字，有提示", "more.padBlind": "先凭记忆写，再对照",
   "more.fam": "词族", "more.famSub": "含有这些字的其他词", "more.tone": "声调", "more.toneSub": "说一遍，看看你的音高曲线（不需要网络）",
   "more.contrib": "纠错或反馈", "more.contribSub": "拼音或翻译有错？在你的副本里改正，并发给作者",
-  "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读",
+  "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读", "grp.learn": "📘 学语法", "sub.lessons": "课程",
   "sub.ex": "练习", "sub.lab": "实验室", "sub.slot": "老虎机", "sub.dlg": "对话", "sub.thought": "语序", "sub.reader": "阅读器", "sub.pat": "句型",
   "path.stage": "第 {n} 站", "path.continue": "继续 · 约 {min} 分钟", "path.explore": "看看第 {n} 站", "path.counts": "待复习 {due} · 新词 {nw}",
   "path.doneToday": "今天的复习做完了：可以看看这一站的词，或者练练句子。", "path.goto": "📍 在地图上找第 {n} 站",
@@ -8637,6 +9230,17 @@ I18N.zh = {
     });
     return Object.keys(by).map(function (k) { return by[k]; }).sort(function (x, y) { return (x.t || 0) - (y.t || 0); });
   }
+  function mergeLessons(a, b) {
+    var out = {}; a = a || {}; b = b || {};
+    Object.keys(a).concat(Object.keys(b)).forEach(function (id) {
+      var x = a[id] || {}, y = b[id] || {}, o = {};
+      if (x.best != null || y.best != null) o.best = Math.max(x.best || 0, y.best || 0);
+      if (x.done || y.done) o.done = Math.min(x.done || Infinity, y.done || Infinity);
+      if (x.seen || y.seen) o.seen = Math.max(x.seen || 0, y.seen || 0);
+      out[id] = o;
+    });
+    return out;
+  }
   function importObj(o, mode) {
     if (!o || o.app !== "mandarino" || !o.kv) return { ok: false, msg: "File non riconosciuto." };
     var n = 0;
@@ -8648,6 +9252,8 @@ I18N.zh = {
           if (k === "cp-srs-v1") inc = JSON.stringify(mergeSrs(JSON.parse(cur), JSON.parse(inc)));
           else if (k === "cp-fav-v1") { var u = JSON.parse(cur); var v = JSON.parse(inc); if (Array.isArray(u)) { var t = {}; u.forEach(function (x) { t[x] = 1; }); u = t; } if (Array.isArray(v)) { var t2 = {}; v.forEach(function (x) { t2[x] = 1; }); v = t2; } inc = JSON.stringify(Object.assign({}, v, u)); }
           else if (k === "cp-community-contribs") inc = JSON.stringify(mergeContribs(JSON.parse(cur), JSON.parse(inc)));
+          /* lezioni di grammatica: per ogni lezione il punteggio migliore, la prima volta superata, l'ultima letta */
+          else if (k === "cp-lessons-v1") inc = JSON.stringify(mergeLessons(JSON.parse(cur), JSON.parse(inc)));
           /* V6.7: preferenze dell'interfaccia; si aggiungono le voci mancanti, a parità vince questo dispositivo */
           else if (k === "cp-ux-v1") inc = JSON.stringify(Object.assign({}, JSON.parse(inc) || {}, JSON.parse(cur) || {}));
           /* V6.7: preferenze del dispositivo (vibrazione, volumi, musica, toni con segno, nickname): vince il dispositivo corrente */
@@ -10489,7 +11095,7 @@ I18N.zh = {
 
   /* ---- struttura ---- */
   /* §4.3: tre gruppi invece di sei pillole scorrevoli */
-  var GROUPS = [["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["reader", "sub.reader"], ["pat", "sub.pat"]]]];
+  var GROUPS = [["learn", "grp.learn", [["lessons", "sub.lessons"], ["pat", "sub.pat"]]], ["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["reader", "sub.reader"]]]];
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
   function groupOf(x) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].some(function (s) { return s[0] === x; })) return GROUPS[i]; return GROUPS[0]; }
@@ -10580,7 +11186,9 @@ I18N.zh = {
       var d = document.getElementById("pat-" + i);
       if (d) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: "center" }); }, 30); }
     },
-    labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); }
+    labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); },
+    labLoad: function (t, p) { lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
+    openLesson: function (id) { sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); }
   };
   CP.subs = CP.subs || {};
   CP.onBuild = function () { if (!root.innerHTML) render(); };
@@ -10884,7 +11492,8 @@ I18N.zh = {
         (st.done ? '<div class="okline">✓ Completata: hai iniziato almeno l\'80% delle parole.</div>' : "") +
         '<div style="display:flex;flex-wrap:wrap;gap:8px">' +
           (pat ? '<button type="button" class="gpl" data-pat="' + P.g + '">📐 ' + esc(pat.t) + "</button>" : "") +
-          (d ? '<button type="button" class="gpl" data-dlg="' + d.id + '">💬 Dialogo: ' + esc(d.title) + "</button>" : "") + "</div>" +
+          (d ? '<button type="button" class="gpl" data-dlg="' + d.id + '">💬 Dialogo: ' + esc(d.title) + "</button>" : "") +
+          (CP.lessons ? CP.lessons.forPath(s.id).map(function (l) { var pr = CP.lessons.progress(l.id); return '<button type="button" class="gpl" data-lesson="' + CP.attr(l.id) + '">📘 ' + ((pr.best || 0) >= 80 ? "✓ " : "") + "Lezione: " + esc(l.title) + "</button>"; }).join("") : "") + "</div>" +
         '<div class="sacts"><button type="button" data-go="words" data-id="' + s.id + '"><span aria-hidden="true">📖</span>Esplora le parole</button>' +
         '<button type="button" data-go="study" data-id="' + s.id + '"><span aria-hidden="true">🎴</span>Impara con le carte</button>' +
         '<button type="button" data-go="practice" data-id="' + s.id + '"><span aria-hidden="true">🧩</span>Pratica</button></div>' +
@@ -10958,6 +11567,7 @@ I18N.zh = {
     else if (go === "practice") { CP.build.practice(id); CP.show("build"); }
     else if (t.hasAttribute("data-pat")) { CP.build.openPattern(parseInt(t.getAttribute("data-pat"), 10)); CP.show("build"); }
     else if (t.hasAttribute("data-dlg")) { CP.dlg.open(t.getAttribute("data-dlg")); CP.show("build"); }
+    else if (t.hasAttribute("data-lesson")) { CP.build.openLesson(t.getAttribute("data-lesson")); CP.show("build"); }
   });
   root.addEventListener("change", function (e) {
     if (e.target.id === "goal-sel") { CP.game.setGoal(parseInt(e.target.value, 10)); render(); }
@@ -14875,6 +15485,7 @@ I18N.zh = {
     (typeof PATTERNS !== "undefined" ? PATTERNS : []).forEach(function (p) { p.ex.forEach(function (e) { add(typeof e[0] === "string" ? e[0] : e[0].join(""), e[2], "data"); }); });
     (typeof PHRASES !== "undefined" ? PHRASES : []).forEach(function (g) { g.items.forEach(function (x) { add(x[1], x[2], "data"); }); });
     (typeof DIALOGS !== "undefined" ? DIALOGS : []).forEach(function (d) { d.lines.forEach(function (l) { add(l[2], l[3], "data"); }); });
+    (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (e) { add(e[0], e[1], "data"); }); (l.quiz || []).forEach(function (q) { if (q.k === "order") add(q.zh, q.it, "data"); }); });
     return MEM;
   }
   /* correzioni dell'utente (contributi «tr»): vincono su tutto, solo nella sua copia */
@@ -14953,6 +15564,178 @@ I18N.zh = {
   CP.lab.zhNum = zhNum;
   /* compatibilità con il vecchio nome */
   CP.lab.fluid = function (keys, punct) { var r = translate(keys, punct); return { it: r.it, notes: r.notes, approx: r.sure ? [] : ["?"], sure: r.sure, src: r.src, reason: r.reason, words: r.words }; };
+})();
+</script>
+<script>
+/* ---- phrases/lessons.js ---- */
+/* Lezioni di grammatica (Frasi → 📘 Impara → Lezioni): spiegazione, schema, esempi con audio, errori tipici
+   ed esercizi corretti subito. I contenuti stanno in src/data/lessons/ (un file per lezione).
+   Progressi: cp-lessons-v1 = { id: { best: 0-100, done: ts della prima volta superata, seen: ts } }. */
+(function () {
+  var CP = window.CP, esc = CP.esc, W = CP.WORDS, root = document.getElementById("build-root");
+  var KEY = "cp-lessons-v1", PASS = 80;
+  var view = "list", cur = null, quiz = null;
+  function load() { try { var o = JSON.parse(localStorage.getItem(KEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
+  function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
+  function prog(id) { return load()[id] || {}; }
+  function mark(id, patch) { var o = load(), p = o[id] || {}; Object.keys(patch).forEach(function (k) { p[k] = patch[k]; }); o[id] = p; save(o); }
+  function byId(id) { return LESSONS.filter(function (l) { return l.id === id; })[0] || null; }
+  function sorted() { return LESSONS.slice().sort(function (a, b) { return (a.n || 0) - (b.n || 0); }); }
+
+  /* una frase cinese con pinyin e toni a colori, presa dal vocabolario */
+  var PUNCT = { "。": ".", "？": "?", "！": "!", "，": ",", "、": "," };
+  function toks(z) { return CP.segment(z).filter(function (s) { return s.w; }).map(function (s) { return s.w.key; }); }
+  function pyOf(z) {
+    var out = [];
+    CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (PUNCT[s.raw]) { if (out.length) out[out.length - 1] += PUNCT[s.raw]; } });
+    var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
+  }
+  function zhHTML(z, cls) { var py = pyOf(z); return '<div class="' + (cls || "ls-zh") + '"><div class="lp">' + CP.pinyinHTML(py) + '</div><div class="lh">' + CP.hanziHTML(z, py) + "</div></div>"; }
+  /* testo della spiegazione: **grassetto**, caratteri cinesi in evidenza */
+  function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([㐀-鿿，。？！、]+)/g, '<span class="han">$1</span>'); }
+  function isZh(o) { return /[㐀-鿿]/.test(o) && !/[a-zàèéìòù]{3}/i.test(o); }
+
+  /* ---- elenco ---- */
+  function listHTML() {
+    var P = load(), done = 0;
+    var cards = sorted().map(function (l) {
+      var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
+      return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-ls-open="' + CP.attr(l.id) + '">' +
+        '<span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + "</span>" +
+        '<span class="ls-t"><b>' + rich(l.title) + "</b><span class=\"small muted\">" + esc(l.goal) + "</span></span>" +
+        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? "letta" : "") + "</span></button>";
+    }).join("");
+    return '<p class="lede" style="margin:14px 0 4px">Studia la grammatica una regola alla volta: leggi la spiegazione, ascolta gli esempi, guarda gli errori tipici e mettiti alla prova. ' +
+      "Una lezione è superata con almeno " + PASS + "% di risposte giuste.</p>" +
+      '<p class="small muted" style="margin:0 0 10px">' + done + " lezioni superate su " + LESSONS.length + ".</p>" +
+      '<div class="ls-list">' + cards + "</div>";
+  }
+
+  /* ---- lezione ---- */
+  function lessonHTML(l) {
+    var p = prog(l.id), qn = (l.quiz || []).length;
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-back>← Lezioni</button></div>' +
+      '<article class="panel ls-lesson"><span class="tag muted small">Lezione ' + l.n + (p.best != null ? " · migliore: " + p.best + "%" : "") + "</span>" +
+      "<h3>" + rich(l.title) + "</h3>" +
+      '<p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
+      l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
+      (l.pattern ? '<div class="ls-pat" aria-label="Schema">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
+      "<h4>Esempi</h4>" + (l.ex || []).map(function (e) {
+        return '<div class="ls-ex">' + zhHTML(e[0]) + '<div class="small muted" lang="it">' + esc(e[1]) + "</div>" + CP.audioBtns(e[0].replace(/[。？！，]/g, "")) + "</div>";
+      }).join("") +
+      ((l.traps || []).length ? "<h4>Errori tipici</h4>" + l.traps.map(function (t) {
+        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han">' + esc(t[1]) + '</span></div><div class="small">' + rich(t[2]) + "</div></div>";
+      }).join("") : "") +
+      '<div class="acts">' + (qn ? '<button type="button" class="btn-main" data-ls-quiz style="margin:0">✏️ Esercitati (' + qn + " domande)</button>" : "") +
+      ((l.ex || []).length ? '<button type="button" class="btn-s" data-ls-lab>🧪 Prova nel laboratorio</button>' : "") + "</div></article>";
+  }
+
+  /* ---- esercizi ---- */
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function startQuiz(l) {
+    quiz = { l: l, i: 0, score: 0, state: "play", choice: null, order: null };
+    prepare();
+  }
+  function prepare() {
+    var q = quiz.l.quiz[quiz.i]; quiz.state = "play"; quiz.choice = null; quiz.order = null;
+    if (q.k === "order") {
+      var t = toks(q.zh), bank = t.map(function (k, i) { return { id: i, k: k }; }), sh;
+      for (var n = 0; n < 6; n++) { sh = shuffle(bank); if (sh.map(function (b) { return b.k; }).join("|") !== t.join("|")) break; }
+      quiz.order = { bank: sh, pick: [] };
+    }
+  }
+  function tileHTML(b, attr, used) { var w = W[b.k]; return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(w.py) + '</span><span class="th">' + CP.hanziHTML(w.hz, w.py) + "</span></button>"; }
+  function quizHTML() {
+    var l = quiz.l, q = l.quiz[quiz.i], n = l.quiz.length, h = "";
+    h += '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">← ' + rich(l.title) + "</button></div>";
+    h += '<div class="panel ls-quiz"><div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(quiz.i * 100 / n) + '%"></i></div>' +
+      '<span class="tag muted small">Domanda ' + (quiz.i + 1) + " di " + n + " · giuste: " + quiz.score + "</span>";
+    if (q.k === "order") {
+      var o = quiz.order, byId = {};
+      o.bank.forEach(function (b) { byId[b.id] = b; });
+      h += '<p class="ask">Metti in ordine: «' + esc(q.it) + "»</p>" +
+        '<div class="slot" aria-live="polite" data-empty="Tocca le tessere nell\'ordine giusto">' + o.pick.map(function (id) { return tileHTML(byId[id], 'data-ls-un="' + id + '"' + (quiz.state !== "play" ? " disabled" : "")); }).join("") + "</div>";
+      if (quiz.state === "play") {
+        h += '<div class="bank">' + o.bank.map(function (b) { return tileHTML(b, 'data-ls-pick="' + b.id + '"', o.pick.indexOf(b.id) >= 0); }).join("") + "</div>" +
+          '<div class="acts"><button type="button" data-ls-undo' + (o.pick.length ? "" : " disabled") + '>Cancella</button><button type="button" class="btn-main" data-ls-check style="margin:0"' + (o.pick.length === o.bank.length ? "" : " disabled") + ">Controlla</button></div>";
+      } else {
+        h += quiz.state === "ok" ? '<p class="verdict ok">Giusto!</p>' : '<p class="verdict ko">Non ancora. La frase giusta è:</p>' + zhHTML(q.zh.replace(/[。？！]$/, "")) ;
+        h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? "Avanti" : "Risultato") + "</button></div>";
+      }
+    } else {
+      h += '<p class="ask">' + rich(q.q) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
+      h += '<div class="ls-opts" role="group" aria-label="Risposte">' + q.opts.map(function (op, j) {
+        var cls = quiz.state === "play" ? "" : j === q.a ? " right" : j === quiz.choice ? " wrong" : " off";
+        return '<button type="button" class="ls-opt' + cls + '" data-ls-opt="' + j + '"' + (quiz.state !== "play" ? " disabled" : "") + ">" + (isZh(op) ? zhHTML(op, "ls-zh in") : '<span lang="it">' + rich(op) + "</span>") + "</button>";
+      }).join("") + "</div>";
+      if (quiz.state !== "play") {
+        h += (quiz.state === "ok" ? '<p class="verdict ok">Giusto!' : '<p class="verdict ko">Non è questa.') + (q.why ? " " + rich(q.why) : "") + "</p>" +
+          '<div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? "Avanti" : "Risultato") + "</button></div>";
+      }
+    }
+    return h + "</div>";
+  }
+  function resultHTML() {
+    var l = quiz.l, n = l.quiz.length, pct = Math.round(quiz.score * 100 / n), ok = pct >= PASS;
+    return '<div class="panel ls-quiz" style="margin-top:14px"><h3>' + (ok ? "🎉 Lezione superata!" : "Quasi!") + "</h3>" +
+      "<p>" + quiz.score + " risposte giuste su " + n + " (" + pct + "%)." + (ok ? "" : " Per superare la lezione ne servono almeno " + PASS + "%: rileggi la spiegazione e riprova.") + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" data-ls-quiz style="margin:0">🔁 Rifai gli esercizi</button><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">📘 Rileggi la lezione</button>' +
+      '<button type="button" class="btn-s" data-ls-back>Tutte le lezioni</button>' + (ok && nextOf(l) ? '<button type="button" class="btn-s" data-ls-open="' + CP.attr(nextOf(l).id) + '">Lezione dopo →</button>' : "") + "</div></div>";
+  }
+  function nextOf(l) { var s = sorted(), i = s.indexOf(l); return s[i + 1] || null; }
+  function finish() {
+    var l = quiz.l, pct = Math.round(quiz.score * 100 / l.quiz.length), p = prog(l.id), patch = { best: Math.max(p.best || 0, pct) };
+    if (pct >= PASS && !p.done) patch.done = Date.now();
+    mark(l.id, patch); view = "result";
+    CP.sfx(pct >= PASS ? "ok" : "tap");
+  }
+
+  function html() {
+    if (view === "lesson" && cur) return lessonHTML(cur);
+    if (view === "quiz" && quiz) return quizHTML();
+    if (view === "result" && quiz) return resultHTML();
+    return listHTML();
+  }
+  function paint(top) {
+    var box = document.getElementById("ls-root"); if (!box) return;
+    box.innerHTML = html();
+    if (top) { try { box.scrollIntoView({ block: "start" }); } catch (e) {} }
+  }
+  function open(id) { var l = byId(id); if (!l) return; cur = l; view = "lesson"; quiz = null; mark(l.id, { seen: Date.now() }); }
+
+  CP.subs = CP.subs || {};
+  CP.subs.lessons = { render: function () { return '<div id="ls-root">' + html() + "</div>"; }, after: function () {} };
+  CP.lessons = {
+    list: sorted,
+    open: open,
+    forPath: function (secId) { return sorted().filter(function (l) { return l.path === secId; }); },
+    progress: function (id) { return prog(id); }
+  };
+
+  root.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target.closest("button") : null; if (!t || !document.getElementById("ls-root") || !document.getElementById("ls-root").contains(t)) return;
+    var a = function (n) { return t.getAttribute(n); };
+    if (a("data-ls-open") !== null) { open(a("data-ls-open")); CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-back")) { view = "list"; cur = null; quiz = null; paint(true); return; }
+    if (t.hasAttribute("data-ls-quiz")) { startQuiz(cur || quiz.l); cur = quiz.l; view = "quiz"; CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-lab")) { var ex0 = cur.ex[0][0]; if (CP.build && CP.build.labLoad) CP.build.labLoad(toks(ex0), /？$/.test(ex0) ? "?" : /！$/.test(ex0) ? "!" : "."); return; }
+    if (!quiz) return;
+    var q = quiz.l.quiz[quiz.i];
+    if (a("data-ls-pick") !== null && quiz.state === "play") { quiz.order.pick.push(+a("data-ls-pick")); CP.sfx("tap"); paint(); return; }
+    if (a("data-ls-un") !== null && quiz.state === "play") { var u = +a("data-ls-un"); quiz.order.pick = quiz.order.pick.filter(function (x) { return x !== u; }); CP.sfx("tap"); paint(); return; }
+    if (t.hasAttribute("data-ls-undo")) { quiz.order.pick.pop(); paint(); return; }
+    if (t.hasAttribute("data-ls-check")) {
+      var by = {}; quiz.order.bank.forEach(function (b) { by[b.id] = b; });
+      var got = quiz.order.pick.map(function (id) { return W[by[id].k].hz; }).join(""), want = [q.zh].concat(q.alt || []).map(CP.lab.strip);
+      quiz.state = want.indexOf(got) >= 0 ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+      CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint(); return;
+    }
+    if (a("data-ls-opt") !== null && quiz.state === "play") {
+      quiz.choice = +a("data-ls-opt"); quiz.state = quiz.choice === q.a ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+      CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint(); return;
+    }
+    if (t.hasAttribute("data-ls-next")) { if (quiz.i + 1 < quiz.l.quiz.length) { quiz.i++; prepare(); } else finish(); paint(true); return; }
+  });
 })();
 </script>
 <script>
