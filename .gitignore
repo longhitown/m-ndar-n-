@@ -2,3 +2,9 @@
 *.u8
 *.u8.gz
 /rapporto*.md
+android/local.properties
+android/.gradle/
+android/build/
+android/app/build/
+*.jks
+*.keystore

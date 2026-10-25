@@ -62,7 +62,8 @@
       if (t.hasAttribute("data-sw-update") && reg.waiting) { t.disabled = true; t.textContent = "Aggiorno…"; if (window.Store) Store.flush(); reg.waiting.postMessage({ type: "SKIP_WAITING" }); }
     };
   }
-  if (http && "serviceWorker" in navigator) {
+  /* nell'APK l'app è già dentro il pacchetto: niente service worker (gli aggiornamenti arrivano con un APK nuovo) */
+  if (http && "serviceWorker" in navigator && !window.__MD_APK) {
     navigator.serviceWorker.addEventListener("controllerchange", function () { if (reloading || !swNote || swNote.hidden) return; reloading = true; location.reload(); });
     fetch("sw.js", { cache: "no-store" }).then(function (r) {
       if (!r.ok) return;
@@ -78,7 +79,7 @@
     }).catch(function () {});
   }
   CP.pwaState = function () {
-    return { http: http, sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller), standalone: (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true };
+    return { http: http, sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller), standalone: !!window.__MD_APK || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true, apk: window.__MD_APK ? window.__MD_APK.version || true : false };
   };
 
   /* ---- 3. pacchetto ZIP (senza librerie: formato "store") ---- */

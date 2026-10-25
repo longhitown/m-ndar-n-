@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- microfono: «Registra e confronta», oscilloscopio dei toni e riconoscimento vocale -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- vibrazione al tocco (si spegne nelle impostazioni dell'app) -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- solo per la voce di riserva online e i link esterni: l'app funziona senza rete -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- per sapere se c'è un motore di sintesi e di riconoscimento vocale (Android 11+) -->
+    <queries>
+        <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
+        <intent><action android:name="android.speech.RecognitionService" /></intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="false"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density|fontScale"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- per condividere il file di backup (Android 8 e 9, dove non si scrive direttamente in Download) -->
+        <provider
+            android:name=".ShareProvider"
+            android:authorities="it.mandarino.app.share"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>

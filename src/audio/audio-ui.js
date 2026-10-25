@@ -69,7 +69,7 @@
   var AB = { a: "", b: "" };
   var PHR = "你好，我是你的新朋友。今天天气很好。";
   CP.voiceExtra = function () {
-    var vs = CP.voices(), st = CP.audioState(), h = (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">Suono del dispositivo</div>' +
+    var vs = CP.voices(), st = CP.audioState(), h = (window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">Suono del dispositivo</div>' +
       '<p class="small muted" style="margin:2px 0 6px" id="aud-state">Audio: ' + (st === "running" ? "attivo" : st === "none" ? "non ancora avviato (tocca un pulsante)" : st === "suspended" ? "in pausa: tocca «Prova il suono»" : esc(st)) + ".</p>" +
       '<button type="button" class="btn-s" id="snd-test">🔔 Prova il suono</button>';
     if (vs.length >= 2) {
@@ -83,6 +83,7 @@
     } else h += '<p class="small muted" style="margin:10px 0 0">Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.</p>';
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
+    if (ps && ps.apk) { h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App Android</div><p class="small muted" style="margin:2px 0 0">Versione ' + esc(String(ps.apk)) + ". Gli aggiornamenti si installano sopra questa, senza perdere i progressi.</p></div>"; return h; }
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App sul telefono (PWA)</div>' +
       '<p class="small muted" style="margin:2px 0 6px">' + (ps && ps.standalone ? "Stai usando l'app installata." : ps && ps.http ? "Su https puoi aggiungerla alla schermata Home e usarla offline." : "Per installarla e avere il microfono senza richieste ripetute serve un indirizzo https: scarica il pacchetto e caricalo su GitHub + Cloudflare Pages.") + "</p>" +
       '<button type="button" class="btn-s" id="pwa-dl">📦 Scarica pacchetto PWA per GitHub</button></div>';

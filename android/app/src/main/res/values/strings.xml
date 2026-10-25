@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">màndarínō</string>
+    <string name="saved">Salvato in Download: %1$s</string>
+    <string name="save_failed">Non riesco a salvare il file.</string>
+    <string name="share_title">Condividi con…</string>
+    <string name="no_app">Nessuna app per aprire questo link.</string>
+    <string name="mic_denied">Senza il permesso del microfono non posso ascoltarti.</string>
+</resources>
