@@ -1,0 +1,8 @@
+/*
+  Permissions-Policy: microphone=(self)
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: same-origin
+/sw.js
+  Cache-Control: no-cache
+/manifest.json
+  Cache-Control: no-cache
