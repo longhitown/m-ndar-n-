@@ -782,6 +782,10 @@ table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), t
 .jk-it.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
 .jk-it:active{transform:translateY(2px);border-bottom-width:1px}
 .jk-list.compact .jk-it{min-height:48px;padding:7px 10px}
+.jk-vol{display:flex;gap:10px;align-items:center;margin-bottom:6px;min-height:44px}
+.jk-vol input{flex:1;min-height:44px}
+input[type="range"]{accent-color:var(--accent)}
+.jk-moods{margin:4px 0 10px}
 #music-btn.on{box-shadow:inset 0 0 0 2px var(--accent)}
 
 /* ===== V6: lavagna a dito ===== */
@@ -1691,8 +1695,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
   /* ---- impostazioni salvate ---- */
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, String(v)); } catch (e) {} }
-  var PK = { rate: "cp-rate", uri: "cp-voice", auto: "cp-auto", sfx: "cp-sfx", alt: "cp-alt" };
-  var pref = { rate: lsGet("cp-rate") === "1" ? 1 : 0.8, uri: lsGet("cp-voice") || "", auto: lsGet("cp-auto") !== "0", sfx: lsGet("cp-sfx") !== "0", alt: lsGet("cp-alt") === "1" };
+  var PK = { rate: "cp-rate", uri: "cp-voice", auto: "cp-auto", sfx: "cp-sfx", alt: "cp-alt", haptics: "cp-haptics" };
+  var pref = { rate: lsGet("cp-rate") === "1" ? 1 : 0.8, uri: lsGet("cp-voice") || "", auto: lsGet("cp-auto") !== "0", sfx: lsGet("cp-sfx") !== "0", alt: lsGet("cp-alt") === "1", haptics: lsGet("cp-haptics") !== "0" };
   CP.pref = pref;
   CP.setPref = function (k, v) {
     pref[k] = v;
@@ -1736,7 +1740,8 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
       h += '<p class="small muted" style="margin:0">' + (voice ? "Voce: " + CP.esc(voice.name) + "." : "Il dispositivo non elenca voci cinesi: provo comunque con quella predefinita (zh-CN).") + "</p>";
     }
     h += '<label class="chk"><input type="checkbox" id="opt-auto"' + (pref.auto ? " checked" : "") + '> Audio automatico nella scheda Studia</label>' +
-      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (pref.sfx ? " checked" : "") + '> Suoni e vibrazione al tocco</label>' +
+      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (pref.sfx ? " checked" : "") + '> Suoni al tocco</label>' +
+      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (pref.haptics ? " checked" : "") + '> Vibrazione</label>' +
       '<label class="chk"><input type="checkbox" id="opt-alt"' + (pref.alt ? " checked" : "") + '> Usa la voce alternativa (richiede internet)</label>' +
       '<p class="small muted" style="margin:0">Se la voce del dispositivo resta muta, provo da solo un servizio vocale online non ufficiale. Può smettere di funzionare in ogni momento.</p>' +
       (CP.inFrame ? '<div class="notice"><p>Dentro questa pagina il browser può bloccare microfono e audio. Scarica il file e aprilo come pagina a sé: funziona anche senza internet.</p>' + CP.frameBtn() + "</div>" : "") +
@@ -1755,6 +1760,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     if (e.target.id === "voice-sel") CP.setPref("uri", e.target.value);
     else if (e.target.id === "opt-auto") CP.setPref("auto", e.target.checked);
     else if (e.target.id === "opt-sfx") CP.setPref("sfx", e.target.checked);
+    else if (e.target.id === "opt-haptics") CP.setPref("haptics", e.target.checked);
     else if (e.target.id === "opt-alt") CP.setPref("alt", e.target.checked);
   });
 
@@ -1794,8 +1800,10 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     els.forEach(function (x) { x.classList.add("speaking"); });
     live = els;
     var finished = false, failTimer = 0, startTimer = 0;
+    if (CP.bus) CP.bus.duck(true);      /* la musica scende di 10 dB mentre parla la voce */
     var finish = function () {
       if (finished) return; finished = true; clearTimeout(failTimer); clearTimeout(startTimer);
+      if (CP.bus) CP.bus.duck(false);
       if (live === els) clearLive(); else els.forEach(function (x) { x.classList.remove("speaking"); });
       if (token !== mine) return;
       curStop = null;
@@ -1937,6 +1945,24 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     }
     return master;
   };
+  /* V6.7: tre bus sotto il master. sfx (volume regolabile, cp-sfxvol), music (il jukebox ci si collega),
+     e il ducking: quando parla la voce la musica scende di 10 dB e poi risale. */
+  CP.bus = (function () {
+    var B = {}, duckN = 0;
+    function mk(name, v) { var c = getCtx(); if (!c) return null; if (!B[name]) { B[name] = c.createGain(); B[name].gain.value = v; B[name].connect(CP.master()); } return B[name]; }
+    function sfxVol() { var v = parseFloat(lsGet("cp-sfxvol")); return v >= 0 && v <= 1 ? v : 0.7; }
+    return {
+      sfx: function () { return mk("sfx", sfxVol()); },
+      music: function () { return mk("music", duckN ? 0.3 : 1); },
+      sfxVol: sfxVol,
+      setSfxVol: function (v) { v = Math.max(0, Math.min(1, +v || 0)); lsSet("cp-sfxvol", v); var c = getCtx(); if (B.sfx && c) B.sfx.gain.setTargetAtTime(v, c.currentTime, 0.02); },
+      duck: function (on) {
+        duckN = on ? 1 : 0;
+        var m = B.music, c = getCtx(); if (!m || !c) return;
+        m.gain.cancelScheduledValues(c.currentTime); m.gain.setTargetAtTime(on ? 0.3 : 1, c.currentTime, on ? 0.05 : 0.4);
+      }
+    };
+  })();
   /* scala pentatonica (do re mi sol la) per la "vittoria": sale con la serie di risposte giuste */
   var PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.5];
   var NOISE = null;
@@ -1963,26 +1989,27 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     }
   }
   CP.strike = strike;
+  /* effetti calibrati per gli altoparlanti dei telefoni (sotto i 500-600 Hz rendono poco):
+     tap = blocco di legno 820 Hz, ok = giada do-mi-sol (sale con la serie), ko = gong piccolo 330 Hz, level = campana + arpeggio */
+  var lastTap = 0;
   CP.sfx = function (type, step) {
     if (!pref.sfx) return;
     try {
-      if (navigator.vibrate) navigator.vibrate(type === "ok" ? [8, 40, 12] : type === "ko" ? 35 : 5);
+      if (type === "tap") { var tn = Date.now(); if (tn - lastTap < 60) return; lastTap = tn; }   /* al massimo un tap ogni 60 ms */
+      if (pref.haptics && navigator.vibrate) navigator.vibrate(type === "ok" ? [8, 40, 12] : type === "ko" ? 35 : type === "level" ? [10, 50, 10, 50, 20] : 5);
       var c = getCtx(); if (!c) return;
       var play = function () {
-        var now = c.currentTime + 0.005, out = CP.master();
+        var now = c.currentTime + 0.005, out = CP.bus.sfx() || CP.master();
         if (type === "tap") {
-          /* legno cavo (muyu/bambu): 380 Hz + ottava, 140 ms */
-          strike(c, out, 380, now, 0.62, 0.19, [[1, 1, 1], [2, 0.55, 0.75], [3.1, 0.12, 0.35]], 0.35, 340);
+          strike(c, out, 820, now, 0.38, 0.11, [[1, 1, 1], [2.7, 0.35, 0.5], [5.1, 0.1, 0.25]], 0.25, 760);
         } else if (type === "ok") {
-          /* giada/guzheng: arpeggio pentatonico di 3 note, ogni nota con quinta e ottava, coda ~380 ms */
-          var s0 = Math.max(0, Math.min(PENTA.length - 5, step || 0)), idx = [0, 1, 3];
-          idx.forEach(function (k, i) {
-            var f = PENTA[s0 + k];
-            strike(c, out, f, now + i * 0.085, 0.34, 0.38, [[1, 1, 1], [1.5, 0.3, 0.8], [2, 0.22, 0.55]], 0.18);
-          });
+          var s0 = Math.max(0, Math.min(PENTA.length - 4, step || 0));
+          [0, 2, 3].forEach(function (k, i) { strike(c, out, PENTA[s0 + k], now + i * 0.08, 0.28, 0.42, [[1, 1, 1], [2, 0.25, 0.6], [3, 0.08, 0.4]], 0.08); });
         } else if (type === "ko") {
-          /* gong smorzato: 180 -> 130 Hz, 260 ms */
-          strike(c, out, 180, now, 0.7, 0.34, [[1, 1, 1], [1.5, 0.35, 0.8], [2.4, 0.2, 0.5]], 0.2, 130);
+          strike(c, out, 330, now, 0.42, 0.26, [[1, 1, 1], [1.48, 0.4, 0.8], [2.3, 0.2, 0.5]], 0.15, 250);
+        } else if (type === "level") {
+          strike(c, out, 392, now, 0.3, 0.9, [[1, 1, 1], [2.76, 0.35, 0.6], [5.4, 0.12, 0.35]], 0.1);
+          [0, 1, 2, 3, 5].forEach(function (k, i) { strike(c, out, PENTA[k], now + 0.12 + i * 0.09, 0.22, 0.5, [[1, 1, 1], [2, 0.25, 0.6], [3, 0.08, 0.4]], 0.05); });
         }
       };
       if (c.state === "running") play();
@@ -2450,6 +2477,7 @@ const THINK_CATS=[["tempo","⏰","Tempo e luogo"],["mod","📎","Modificatore + 
     dueKeys().forEach(function (k) { q.push({ k: k, kind: "test", type: pickType(k), retry: false }); });
     newKeys().forEach(function (k) { q.push({ k: k, kind: "intro", retry: false }); });
     sess = { q: q, words: q.length, finished: 0, revealed: false, miss: {}, first: 0 };
+    if (CP.musicMood) CP.musicMood("focus");
     render();
   }
   function parts(w, set) {
@@ -3304,7 +3332,7 @@ const PATH = {
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
     var b = rankIdx(G.xp); G.xp += n; var a = rankIdx(G.xp);
-    if (a > b) CP.toast("Nuovo grado: " + RANKS[a].n);
+    if (a > b) { CP.toast("Nuovo grado: " + RANKS[a].n); CP.sfx("level"); }
   }
   function rankInfo() {
     var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null;
@@ -3318,7 +3346,7 @@ const PATH = {
     addWord: function (k) {
       var r = rec(true); if (r.w.indexOf(k) >= 0) return;
       var was = r.w.length; r.w.push(k); award(10); save();
-      if (was < G.goal && r.w.length >= G.goal) CP.toast("Obiettivo di oggi raggiunto: " + G.goal + " parole.");
+      if (was < G.goal && r.w.length >= G.goal) { CP.toast("Obiettivo di oggi raggiunto: " + G.goal + " parole."); CP.sfx("level"); }
       ui();
     },
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
@@ -3700,6 +3728,7 @@ const PATH = {
     CP.stopSpeak();
     SP = { pool: sprintPool(), pts: 0, ok: 0, ko: 0, streak: 0, bestStreak: 0, t0: Date.now(), dur: 60000, q: null, lock: false, last: null };
     mode = "sprint"; sprintQ();
+    if (CP.musicMood) CP.musicMood("energy");
     clearInterval(sprintTimer); sprintTimer = setInterval(sprintTick, 100);
   }
   function mult() { return SP.streak >= 6 ? 3 : SP.streak >= 3 ? 2 : 1; }
@@ -4489,7 +4518,7 @@ const PATH = {
       n++;
       var o = c.o[rnd(c.o.length)];
       rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
-      CP.sfx("tap");
+      if (n % 2 === 0) CP.sfx("tap");      /* un tap ogni due giri: sei in 420 ms erano troppi */
       if (n >= 6) { clearInterval(iv); r.classList.remove("spin"); pick[ci] = final; paintParts(); afterChange(); if (done) done(); }
     }, 70);
   }
@@ -5362,6 +5391,11 @@ const PATH = {
       var hw = CP.WORDS["还#huán"];
       add("Voce: 还 huán si fa leggere dentro un esempio", !!hw && CP.sayHz(hw) !== "还" && CP.sayHz(hw).indexOf("还") >= 0, hw ? CP.sayHz(hw) : "parola assente");
     } catch (e) { add("Caratteri con più letture", false, String(e)); }
+    try {
+      var jt = CP.jukebox.tracks, jm = { calm: 0, focus: 0, energy: 0 }, jbad = jt.filter(function (t) { if (jm[t.mood] === undefined) return true; jm[t.mood]++; return false; });
+      add("Jukebox: 20 tracce, ognuna con il suo umore", jt.length >= 20 && !jbad.length, jt.length + " tracce · 🧘 " + jm.calm + " · 🎯 " + jm.focus + " · ⚡ " + jm.energy);
+      add("Audio: bus separati per effetti e musica", !!(CP.bus && CP.bus.duck && CP.bus.setSfxVol), "volume effetti " + Math.round(CP.bus.sfxVol() * 100) + "%");
+    } catch (e) { add("Jukebox", false, String(e)); }
     var ml = document.querySelector('link[rel="manifest"]');
     add("PWA: manifest collegato dal <head>", !!ml && (location.protocol === "file:" ? /^blob:/.test(ml.href) : /manifest\.json$/.test(ml.getAttribute("href") || "")), ml ? (ml.getAttribute("href") || "").slice(0, 40) : "manca");
     /* memoria */
@@ -5441,7 +5475,11 @@ const PATH = {
   var FADE = 1.8;
 
   var J = { want: lget("cp-music") === "1", sel: lget("cp-track") || "shuffle", vol: parseFloat(lget("cp-musicvol") || "0.8"),
-    run: false, timer: 0, hold: 0, bus: null, cur: null, curId: "", order: [], pos: 0, slotAt: 0, bufs: {}, noise: null, played: [] };
+    run: false, timer: 0, hold: 0, bus: null, cur: null, curId: "", order: [], pos: 0, slotAt: 0, bufs: {}, noise: null, played: [],
+    mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0", live: 0 };
+  var MAXV = 40;                          /* tetto di oscillatori in coda: sotto il 15% di CPU su un telefono medio */
+  function track(o) { J.live++; o.onended = function () { J.live = Math.max(0, J.live - 1); try { o.disconnect(); } catch (e) {} }; return o; }
+  function room(n) { return J.live + (n || 1) <= MAXV; }
   if (!(J.vol >= 0.1 && J.vol <= 1)) J.vol = 0.8;
 
   /* ---------- attrezzi sonori ---------- */
@@ -5475,7 +5513,7 @@ const PATH = {
   /* parziali sinusoidali con inviluppo (campane, giada, Rhodes) */
   function partials(c, out, f, t, peak, dec, list, att) {
     list.forEach(function (p) {
-      var o = c.createOscillator(), g = c.createGain(), d = dec * (p[2] || 1), a = att || 0.004;
+      var o = track(c.createOscillator()), g = c.createGain(), d = dec * (p[2] || 1), a = att || 0.004;
       o.type = "sine"; o.frequency.value = f * p[0];
       g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak * p[1], t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
       o.connect(g); g.connect(out); o.start(t); o.stop(t + a + d + 0.05);
@@ -5483,7 +5521,7 @@ const PATH = {
   }
   /* flauto (dizi): onda quasi pura + vibrato lento + fiato */
   function flute(c, out, f, t, dur, vel) {
-    var o = c.createOscillator(), lfo = c.createOscillator(), lg = c.createGain(), g = c.createGain(), o2 = c.createOscillator(), g2 = c.createGain();
+    var o = track(c.createOscillator()), lfo = track(c.createOscillator()), lg = c.createGain(), g = c.createGain(), o2 = track(c.createOscillator()), g2 = c.createGain();
     o.type = "triangle"; o.frequency.value = f; o2.type = "sine"; o2.frequency.value = f * 2; g2.gain.value = 0.18;
     lfo.frequency.value = 5.2; lg.gain.value = f * 0.007; lfo.connect(lg); lg.connect(o.frequency); lg.connect(o2.frequency);
     g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vel, t + 0.09); g.gain.setValueAtTime(vel * 0.85, t + dur * 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -5531,7 +5569,79 @@ const PATH = {
     return function () { var r = Math.random(), st = r < 0.32 ? 0 : r < 0.62 ? 1 : r < 0.84 ? -1 : (Math.random() < 0.5 ? 2 : -2); i = Math.max(0, Math.min(len - 1, i + st)); return i; };
   }
 
-  /* ---------- le tracce. make(c, bus) -> { step(until), stop() } ---------- */
+
+  /* ---------- V6.7: batteria sintetica e motore a sequencer (tutto da oscillatori e dal buffer di rumore, zero file) ---------- */
+  function kick(c, out, t, v, f0, f1) { var o = track(c.createOscillator()), g = c.createGain(); o.frequency.setValueAtTime(f0 || 150, t); o.frequency.exponentialRampToValueAtTime(f1 || 45, t + 0.12); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.3); }
+  function snare(c, out, t, v, f) { var s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(); s.buffer = noiseLoop(c); fl.type = "bandpass"; fl.frequency.value = f || 1800; fl.Q.value = 0.8; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16); s.connect(fl); fl.connect(g); g.connect(out); s.start(t, Math.random() * 2); s.stop(t + 0.18); }
+  function hat(c, out, t, v, open, brush) {
+    var s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(), d = brush ? (open ? 0.22 : 0.09) : (open ? 0.18 : 0.04);
+    s.buffer = noiseLoop(c); fl.type = brush ? "bandpass" : "highpass"; fl.frequency.value = brush ? 2600 : 7000; if (brush) fl.Q.value = 0.6;
+    g.gain.setValueAtTime(brush ? 0.0001 : v, t); if (brush) g.gain.linearRampToValueAtTime(v, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    s.connect(fl); fl.connect(g); g.connect(out); s.start(t, Math.random() * 2); s.stop(t + d + 0.02);
+  }
+  /* tamburo a cornice / tamburo grave: colpo sinusoidale + pelle (rumore passa-banda basso) */
+  function tom(c, out, t, v, f) { kick(c, out, t, v, f || 180, (f || 180) * 0.6); var s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(); s.buffer = noiseLoop(c); fl.type = "bandpass"; fl.frequency.value = (f || 180) * 1.6; fl.Q.value = 1.4; g.gain.setValueAtTime(v * 0.5, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12); s.connect(fl); fl.connect(g); g.connect(out); s.start(t, Math.random() * 2); s.stop(t + 0.14); }
+  function bassNote(c, out, f, t, d, v, type) { var o = track(c.createOscillator()), lp = c.createBiquadFilter(), g = c.createGain(); o.type = type || "sawtooth"; o.frequency.value = f; lp.type = "lowpass"; lp.frequency.setValueAtTime(900, t); lp.frequency.exponentialRampToValueAtTime(220, t + d); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d); o.connect(lp); lp.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.05); }
+  /* onda quadra con inviluppo secco (chiptune) */
+  function square(c, out, f, t, d, v) { var o = track(c.createOscillator()), g = c.createGain(); o.type = "square"; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + 0.005); g.gain.setValueAtTime(v * 0.7, t + d * 0.5); g.gain.exponentialRampToValueAtTime(0.0001, t + d); o.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.02); }
+  function binaural(c, bus, fl, fr, v) {
+    var ns = [];
+    [[fl, -1], [fr, 1]].forEach(function (p) {
+      var o = c.createOscillator(), g = c.createGain(), pn = c.createStereoPanner ? c.createStereoPanner() : null;
+      o.type = "sine"; o.frequency.value = p[0]; g.gain.value = v; o.connect(g);
+      if (pn) { pn.pan.value = p[1]; g.connect(pn); pn.connect(bus); ns.push(pn); } else g.connect(bus);
+      o.start(); ns.push(o, g);
+    });
+    return { stop: function () { ns.forEach(function (n) { try { if (n.stop) n.stop(); } catch (e) {} }); setTimeout(function () { ns.forEach(function (n) { try { n.disconnect(); } catch (e) {} }); }, 300); } };
+  }
+  var BELL = [[1, 1, 1], [2.76, 0.4, 0.6], [5.4, 0.18, 0.35]], JADE = [[1, 1, 1], [2, 0.3, 0.5], [3, 0.08, 0.3]];
+  /* una traccia descritta come dati: 16 passi per battuta, swing, progressione (una fondamentale o [fondamentale, intervalli] per battuta),
+     melodia a passeggiata sulla scala. bpm 0 = solo letti di rumore ed eventi sparsi (ev). */
+  function groove(spec) {
+    return function (c, bus) {
+      var sp = space(c, bus, spec.delay || 0.3, spec.fb || 0.25, spec.wet || 0.25, spec.damp || 2800);
+      var beds = (spec.beds || []).map(function (b) { return bed(c, bus, b[0], b[1], b[2], b[3], b[4], b[5]); });
+      var bin = spec.binaural ? binaural(c, bus, spec.binaural[0], spec.binaural[1], spec.binaural[2] || 0.05) : null;
+      var stopAll = function () { beds.forEach(function (b) { b.stop(); }); if (bin) bin.stop(); sp.stop(); };
+      var te = 0;
+      function events(until, now) { if (!spec.ev) return; if (te < now) te = now + rnd(0.3, 1.5); while (te < until) { if (room(4)) spec.ev(c, sp.in, te, bus); te += rnd(spec.evMin || 2, spec.evMax || 6); } }
+      if (!spec.bpm) return { step: events, stop: stopAll };
+      var step = 60 / spec.bpm / 4, t = 0, n = 0, bar = 0, nx = walker(spec.scale ? spec.scale.length : 1, 2);
+      return {
+        step: function (until, now) {
+          if (t < now) t = now + 0.05;
+          events(until, now);
+          while (t < until) {
+            var s = n % 16, sw = (s % 2) ? step * (spec.swing || 0) : 0, tt = t + sw, pr = spec.prog ? spec.prog[bar % spec.prog.length] : 48;
+            var root = Array.isArray(pr) ? pr[0] : pr, chordIv = Array.isArray(pr) ? pr[1] : spec.chord;
+            if (spec.kick && spec.kick[s] === "x") kick(c, bus, tt, spec.kv || 0.5, spec.kf0, spec.kf1);
+            if (spec.snare && spec.snare[s] === "x") snare(c, bus, tt, spec.sv || 0.25, spec.sf);
+            if (spec.tom && spec.tom[s] === "x") tom(c, bus, tt, spec.tv || 0.35, spec.tf);
+            if (spec.hat && spec.hat[s] !== ".") hat(c, bus, tt, spec.hv || 0.06, spec.hat[s] === "o", spec.brush);
+            if (spec.bass && spec.bass[s] === "x") { var bw = spec.walk ? spec.walk[Math.floor(s / 4) % spec.walk.length] : 0; bassNote(c, bus, hz(root - 12 + bw), tt, step * (spec.blen || 1.8), spec.bv || 0.22, spec.btype); }
+            var chordHere = chordIv && (spec.stab ? spec.stab[s] === "x" : (s === 0 && bar % (spec.chordEvery || 1) === 0));
+            if (chordHere && room(chordIv.length * (spec.ctype === "square" ? 1 : 3))) chordIv.forEach(function (iv, k) {
+              if (spec.ctype === "square") square(c, sp.in, hz(root + iv), tt, spec.stab ? step * 1.5 : step * 8, (spec.cv || 0.05));
+              else partials(c, sp.in, hz(root + iv), tt + k * (spec.stab ? 0 : 0.03), spec.cv || 0.1, spec.stab ? 0.22 : (spec.cdec || 2.2), JADE, 0.01);
+            });
+            var L = spec.lead;
+            if (L && Math.random() < L.p && s % (L.every || 2) === 0 && room(3)) {
+              var f = hz(spec.scale[nx()]);
+              if (L.inst === "pluck") pluck(c, sp.in, f, tt, L.v || 0.5, { coef: 0.4985, len: 1.4 });
+              else if (L.inst === "flute") flute(c, sp.in, f, tt, step * 4, L.v || 0.18);
+              else if (L.inst === "square") square(c, sp.in, f, tt, step * 1.6, L.v || 0.05);
+              else if (L.inst === "vibe") partials(c, sp.in, f, tt, L.v || 0.12, 1.2, [[1, 1, 1], [4, 0.2, 0.3]], 0.004);
+              else partials(c, sp.in, f, tt, L.v || 0.14, 0.9, [[1, 1, 1], [2, 0.25, 0.4]], 0.005);
+            }
+            n++; t += step; if (s === 15) bar++;
+          }
+        },
+        stop: stopAll
+      };
+    };
+  }
+
+  /* ---------- le tracce. make(c, bus) -> { step(until), stop() }. mood: calm 🧘 · focus 🎯 · energy ⚡ ---------- */
   var TRACKS = [
     { id: "suzhou", ico: "🎋", name: "Giardino di Suzhou", desc: "Guzheng lento, scala di do pentatonica, brezza", make: function (c, bus) {
       var sp = space(c, bus, 0.42, 0.28, 0.35, 2600), br = bed(c, sp.in, "bandpass", 700, 0.7, 0.025, 0.07, 0.015), S = [60, 62, 64, 67, 69, 72, 74, 76], nx = walker(S.length, 3), t = 0, idx = 3;
@@ -5612,11 +5722,54 @@ const PATH = {
         while (td < until) { drop(c, sp.in, td, rnd(0.025, 0.06)); td += rnd(1.2, 3.6); } }, stop: function () { br.stop(); sp.stop(); } };
     } }
   ];
+  /* le otto tracce V6 ricevono il loro umore; le dodici nuove sono solo dati per groove() */
+  var MOOD0 = { suzhou: "calm", li: "calm", sichuan: "energy", tempio: "calm", shanghai: "focus", alfa: "focus", ovest: "calm", guilin: "calm" };
+  TRACKS.forEach(function (t) { t.mood = MOOD0[t.id] || "calm"; });
+  [
+    { id: "neon", ico: "🌃", name: "Neon a Chongqing", desc: "Synthwave energica, arpeggi pentatonici, basso a ottavi", mood: "energy", g: {
+      bpm: 118, kick: "x...x...x...x...", snare: "....x.......x...", hat: "x.x.x.x.x.x.x.x.", bass: "x.x.x.x.x.x.x.x.", blen: 1.6, bv: 0.18,
+      prog: [57, 53, 48, 55], chord: [0, 7, 12], cv: 0.06, cdec: 1.8, scale: [69, 72, 74, 76, 79, 81, 84], lead: { p: 0.7, every: 2, inst: "plain", v: 0.11 }, delay: 0.38, fb: 0.3, wet: 0.28 } },
+    { id: "metro", ico: "🚇", name: "Linea 2 all'ora di punta", desc: "House leggera, quattro in battuta, accordi stab", mood: "energy", g: {
+      bpm: 128, kick: "x...x...x...x...", snare: "....x.......x...", sv: 0.16, hat: ".x.o.x.o.x.o.x.o", hv: 0.045, bass: "..x...x...x...x.", bv: 0.2,
+      prog: [[48, [12, 16, 19]], [53, [12, 16, 19]], [55, [12, 16, 19]], [53, [12, 15, 19]]], stab: "..x.....x.x.....", cv: 0.07, delay: 0.23, fb: 0.2, wet: 0.2 } },
+    { id: "dumpling", ico: "🥟", name: "Dumpling Funk", desc: "Funk con lo swing, basso sincopato, pipa pizzicata", mood: "energy", g: {
+      bpm: 104, swing: 0.12, kick: "x..x..x...x.....", snare: "....x.......x...", sv: 0.24, hat: "x.x.x.x.x.x.x.x.", hv: 0.05, bass: "x..x..x.x..x.x..", blen: 1.2, bv: 0.24,
+      prog: [52, 52, 57, 59], scale: [64, 67, 69, 71, 74, 76], lead: { p: 0.5, every: 2, inst: "pluck", v: 0.45 }, delay: 0.29, fb: 0.2, wet: 0.2 } },
+    { id: "lofi2", ico: "🌙", name: "Studio notturno (lo-fi)", desc: "Lo-fi hip hop con lo swing, accordi di settima, pioggia leggera", mood: "focus", g: {
+      bpm: 78, swing: 0.18, kick: "x.....x...x.....", kv: 0.42, snare: "....x.......x...", sv: 0.18, hat: "x.x.x.x.x.x.x.x.", hv: 0.03,
+      prog: [[53, [0, 4, 7, 11]], [52, [0, 3, 7, 10]], [50, [0, 3, 7, 10]], [55, [0, 4, 7, 10]]], cv: 0.08, cdec: 3.2,
+      beds: [["highpass", 1400, 0.5, 0.025, 0.12, 0.008]], scale: [72, 74, 76, 79, 81], lead: { p: 0.18, every: 4, inst: "vibe", v: 0.08 }, delay: 0.4, fb: 0.3, wet: 0.3, damp: 1800 } },
+    { id: "drago", ico: "🐉", name: "Danza del Drago", desc: "Percussioni da festa: tamburo grave e piatti, per gli sprint", mood: "energy", g: {
+      bpm: 132, tom: "x..x..x.x.x..x..", tf: 95, tv: 0.5, hat: "..o...o...o.o.o.", hv: 0.07, snare: "....x..x....x..x", sv: 0.12, sf: 900 } },
+    { id: "taiji", ico: "☯️", name: "Mattino di Taiji", desc: "Lenta, senza batteria: accordi aperti e un flauto ogni tanto", mood: "calm", g: {
+      bpm: 60, prog: [50, 55, 57, 52], chord: [0, 7, 14, 19], chordEvery: 2, cv: 0.09, cdec: 5, scale: [74, 76, 78, 81, 83, 86], lead: { p: 0.06, every: 4, inst: "flute", v: 0.14 }, delay: 0.55, fb: 0.4, wet: 0.45, damp: 2000 } },
+    { id: "pioggia", ico: "🌧️", name: "Pioggia sul bambù", desc: "Solo pioggia e gocce: concentrazione pura", mood: "focus", g: {
+      bpm: 0, beds: [["lowpass", 900, 0.4, 0.08, 0.05, 0.015], ["highpass", 2400, 0.5, 0.05, 0.11, 0.015]], evMin: 0.4, evMax: 1.8,
+      ev: function (c, out, t) { drop(c, out, t, rnd(0.03, 0.07)); } } },
+    { id: "seta", ico: "🐫", name: "Via della Seta", desc: "Modale, mi frigio pentatonico, tamburo a cornice, pipa", mood: "focus", g: {
+      bpm: 96, tom: "x..x..x.x..x.x..", tf: 150, tv: 0.3, bass: "x...............", blen: 12, bv: 0.12,
+      prog: [52], scale: [64, 65, 69, 71, 72, 76, 77], lead: { p: 0.55, every: 2, inst: "pluck", v: 0.5 }, delay: 0.32, fb: 0.28, wet: 0.3 } },
+    { id: "pechino8bit", ico: "👾", name: "Pechino 8-bit", desc: "Chiptune: onde quadre, arpeggi veloci", mood: "energy", g: {
+      bpm: 140, kick: "x...x...x...x...", kv: 0.4, snare: "....x.......x...", sv: 0.15, sf: 3000, hat: "x.x.x.x.x.x.x.x.", hv: 0.03, bass: "x.x.x.x.x.x.x.x.", btype: "square", bv: 0.07, blen: 1.4,
+      prog: [48, 57, 53, 55], chord: [12, 16, 19], ctype: "square", cv: 0.025, scale: [72, 74, 76, 79, 81, 84], lead: { p: 0.85, every: 2, inst: "square", v: 0.035 }, wet: 0.08 } },
+    { id: "jazz", ico: "🎷", name: "Jazz a Shanghai 1930", desc: "Swing, spazzole, accordi di sesta e nona", mood: "energy", g: {
+      bpm: 112, swing: 0.25, brush: true, hat: "x.xx..xx..x.x.xx", hv: 0.05, kick: "x.......x.......", kv: 0.25, snare: "....x.......x...", sv: 0.08, sf: 2200,
+      bass: "x...x...x...x...", walk: [0, 7, 12, 9], btype: "triangle", bv: 0.3, blen: 3.6,
+      prog: [[53, [0, 4, 9, 14]], [50, [0, 3, 9, 14]], [55, [0, 4, 9, 14]], [48, [0, 4, 9, 14]]], cv: 0.07, cdec: 2.6, scale: [72, 74, 77, 79, 81, 84], lead: { p: 0.35, every: 2, inst: "vibe", v: 0.1 }, delay: 0.3, wet: 0.22 } },
+    { id: "mare", ico: "🌊", name: "Onde a Hainan", desc: "Ambient marina: risacca lenta e campane lontane", mood: "calm", g: {
+      bpm: 0, beds: [["lowpass", 520, 0.5, 0.1, 0.08, 0.08], ["highpass", 3000, 0.4, 0.03, 0.08, 0.025]], evMin: 4, evMax: 9, delay: 0.6, fb: 0.4, wet: 0.5, damp: 1600,
+      ev: function (c, out, t) { partials(c, out, hz(pick([62, 64, 67, 69, 71, 74])), t, 0.09, 4, BELL, 0.006); } } },
+    { id: "focus", ico: "🎯", name: "Focus 40 Hz", desc: "Battimento binaurale 40 Hz (gamma), meglio con le cuffie", mood: "focus", g: {
+      bpm: 0, binaural: [220, 260, 0.045], evMin: 5, evMax: 10, delay: 0.55, fb: 0.4, wet: 0.45, damp: 2200,
+      ev: function (c, out, t) { partials(c, out, hz(pick([69, 72, 74, 76, 79])), t, 0.07, 3, JADE, 0.02); } } }
+  ].forEach(function (d) { TRACKS.push({ id: d.id, ico: d.ico, name: d.name, desc: d.desc, mood: d.mood, make: groove(d.g) }); });
+  var MOODS = [["", "Tutte"], ["calm", "🧘 Calma"], ["focus", "🎯 Concentrazione"], ["energy", "⚡ Energia"]];
   var BYID = {}; TRACKS.forEach(function (t) { BYID[t.id] = t; });
 
   /* ---------- motore ---------- */
+  function pool() { var a = TRACKS.filter(function (t) { return !J.mood || t.mood === J.mood; }); return a.length ? a : TRACKS; }
   function shuffleOrder(avoid) {
-    var a = TRACKS.map(function (t) { return t.id; }), i, j, t;
+    var a = pool().map(function (t) { return t.id; }), i, j, t;
     for (i = a.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = a[i]; a[i] = a[j]; a[j] = t; }
     if (avoid && a[0] === avoid && a.length > 1) { t = a[0]; a[0] = a[1]; a[1] = t; }
     return a;
@@ -5624,7 +5777,7 @@ const PATH = {
   function ensureBus(c) {
     if (J.bus) return J.bus;
     J.bus = c.createGain(); J.bus.gain.value = 0.34 * J.vol;
-    var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; J.bus.connect(lp); lp.connect(CP.master());
+    var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; J.bus.connect(lp); lp.connect((CP.bus && CP.bus.music()) || CP.master());
     return J.bus;
   }
   function play(id) {
@@ -5655,12 +5808,15 @@ const PATH = {
     CP.audioUnlock().then(function () {
       if (J.run || !J.want) return;
       J.run = true;
+      /* iOS 17+: la musica suona anche col tasto silenzioso (gli effetti no) */
+      try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
       if (J.sel === "shuffle") { if (!J.order.length) { J.order = shuffleOrder(); J.pos = 0; } play(J.order[J.pos]); } else play(J.sel);
       J.timer = setInterval(tick, 400);
     });
   }
   function stop() {
     if (!J.run) return; J.run = false; clearInterval(J.timer); J.timer = 0;
+    try { if (navigator.audioSession) navigator.audioSession.type = "ambient"; } catch (e) {}
     var c = CP.getCtx(), old = J.cur; J.cur = null; J.curId = "";
     if (old && c) { try { old.tb.gain.cancelScheduledValues(c.currentTime); old.tb.gain.setValueAtTime(old.tb.gain.value, c.currentTime); old.tb.gain.linearRampToValueAtTime(0, c.currentTime + 0.5); } catch (e) {} setTimeout(function () { try { old.inst.stop(); old.tb.disconnect(); } catch (e) {} }, 700); }
     paint();
@@ -5676,25 +5832,47 @@ const PATH = {
     paint();
   };
   CP.musicHold = function (on) { J.hold = Math.max(0, J.hold + (on ? 1 : -1)); CP.musicApply(); };
-  CP.musicState = function () { return { want: J.want, running: J.run, hold: J.hold, track: J.curId, sel: J.sel, played: J.played.slice() }; };
-  CP.jukebox = { tracks: TRACKS, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
+  CP.musicState = function () { return { want: J.want, running: J.run, hold: J.hold, track: J.curId, sel: J.sel, played: J.played.slice(), mood: J.mood, live: J.live }; };
+  /* abbinamento automatico: in modalità casuale, la Sfida parte con una traccia ⚡ e lo studio con una 🎯 */
+  CP.musicMood = function (m) {
+    if (!J.auto || !J.run || J.sel !== "shuffle" || !J.cur) return;
+    var cur = BYID[J.curId]; if (cur && cur.mood === m) return;
+    var c = TRACKS.filter(function (t) { return t.mood === m && t.id !== J.curId; }); if (!c.length) return;
+    play(c[Math.floor(Math.random() * c.length)].id);
+  };
+  CP.jukebox = { tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
 
   /* ---------- interfaccia: popup sul 🎵 + selettore in "Voce e audio" ---------- */
   var pop = document.createElement("div"); pop.id = "jk-pop"; pop.hidden = true; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", "Jukebox"); document.body.appendChild(pop);
+  function moodPills() {
+    return '<div class="cpills jk-moods" role="group" aria-label="Filtra per umore">' + MOODS.map(function (m) {
+      return '<button type="button" data-jk-mood="' + m[0] + '"' + (J.mood === m[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + m[1] + "</button>";
+    }).join("") + "</div>";
+  }
   function list(extraCls) {
-    var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="Scegli la musica">';
-    h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>Tutte, in ordine casuale</b><i>1 ora di tracce sempre diverse, poi si rimescola</i></span></button>';
-    TRACKS.forEach(function (t) {
+    var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="Scegli la musica">', mn = MOODS.filter(function (m) { return m[0] === J.mood; })[0];
+    h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>' + (J.mood ? "Casuali · " + mn[1] : "Tutte, in ordine casuale") + '</b><i>Cambia traccia ogni 7 minuti e mezzo, poi si rimescola</i></span></button>';
+    pool().forEach(function (t) {
       h += '<button type="button" class="jk-it' + (cur === t.id ? " on" : "") + '" role="radio" aria-checked="' + (cur === t.id) + '" data-jk="' + t.id + '"><span class="ico">' + t.ico + '</span><span><b>' + esc(t.name) + '</b><i>' + esc(t.desc) + "</i></span></button>";
     });
     return h + "</div>";
   }
-  function nowLine() { var t = BYID[J.curId]; return J.want ? (J.hold ? "In pausa: il microfono è aperto." : t ? "In ascolto: " + t.ico + " " + esc(t.name) : "Si avvia al prossimo tocco…") : "Spento."; }
+  function left() { var ms = Math.max(0, SLOT_MS - (Date.now() - J.slotAt)), m = Math.floor(ms / 60000), sec = Math.floor(ms / 1000) % 60; return m + ":" + (sec < 10 ? "0" : "") + sec; }
+  function nowLine() {
+    var t = BYID[J.curId];
+    if (!J.want) return "Spento.";
+    if (J.hold) return "In pausa: il microfono è aperto.";
+    if (!t) return "Si avvia al prossimo tocco…";
+    return "In ascolto: " + t.ico + " " + esc(t.name) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· prossima tra ' + left() + "</span>" : "");
+  }
   function popHTML() {
     return '<div class="jk-card"><div class="jk-h"><b>🎵 Jukebox</b><button type="button" class="btn-s" data-jk-close aria-label="Chiudi">✕</button></div>' +
       '<p class="small muted jk-now" id="jk-now" aria-live="polite">' + nowLine() + "</p>" +
       '<div class="acts" style="margin:0 0 8px"><button type="button" class="btn-main" data-jk-toggle style="flex:1">' + (J.want ? "⏸ Spegni la musica" : "▶ Accendi la musica") + '</button><button type="button" class="btn-s" data-jk-next' + (J.want ? "" : " disabled") + '>⏭ Prossima</button></div>' +
-      '<label class="small muted" style="display:flex;gap:10px;align-items:center;margin-bottom:8px">Volume <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol style="flex:1"></label>' + list() + "</div>";
+      '<label class="jk-vol small muted">🎵 Musica <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
+      '<label class="jk-vol small muted">🔔 Effetti <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
+      '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> Abbina la musica all\'attività (⚡ nella Sfida, 🎯 nello studio)</label>' +
+      moodPills() + list() + "</div>";
   }
   function paint() {
     var n = document.getElementById("jk-now"); if (n) n.innerHTML = nowLine();
@@ -5716,6 +5894,11 @@ const PATH = {
   }
   function onClick(e) {
     var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+    if (b.hasAttribute("data-jk-mood")) {
+      J.mood = b.getAttribute("data-jk-mood"); lset("cp-jkmood", J.mood); CP.sfx("tap");
+      if (J.sel === "shuffle") { J.order = shuffleOrder(J.curId); J.pos = 0; if (J.run && BYID[J.curId] && J.mood && BYID[J.curId].mood !== J.mood) play(J.order[0]); }
+      if (!pop.hidden) pop.innerHTML = popHTML(); paint(); return;
+    }
     if (b.hasAttribute("data-jk")) choose(b.getAttribute("data-jk"));
     else if (b.hasAttribute("data-jk-close")) closePop();
     else if (b.hasAttribute("data-jk-toggle")) toggle();
@@ -5724,7 +5907,14 @@ const PATH = {
   pop.addEventListener("click", function (e) { if (e.target === pop) closePop(); else onClick(e); });
   pop.addEventListener("input", function (e) {
     if (e.target.hasAttribute && e.target.hasAttribute("data-jk-vol")) { J.vol = parseFloat(e.target.value); lset("cp-musicvol", String(J.vol)); if (J.bus) J.bus.gain.value = 0.34 * J.vol; }
+    if (e.target.hasAttribute && e.target.hasAttribute("data-sfx-vol") && CP.bus) { CP.bus.setSfxVol(parseFloat(e.target.value)); }
   });
+  pop.addEventListener("change", function (e) {
+    if (e.target.hasAttribute && e.target.hasAttribute("data-sfx-vol")) CP.sfx("tap");
+    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-auto")) { J.auto = e.target.checked; lset("cp-jkauto", J.auto ? "1" : "0"); }
+  });
+  /* il conto alla rovescia del cambio traccia si aggiorna mentre il pannello è aperto */
+  setInterval(function () { if (!pop.hidden && J.run) { var n = document.getElementById("jk-now"); if (n) n.innerHTML = nowLine(); } }, 1000);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !pop.hidden) closePop(); });
   document.getElementById("vset-body").addEventListener("click", onClick);
   mus.addEventListener("click", function () {
