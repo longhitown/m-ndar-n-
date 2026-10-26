@@ -1491,6 +1491,24 @@ body.in-focus #ls-root > .acts:first-child, body.in-focus #build-root .ls-prog {
 var SECTIONS = [], DIALOGS = [], LESSONS = [], ITLESSONS = [];
 </script>
 <script>
+/* ---- config.js ---- */
+/* ===== màndarínō · configurazione: l'identità del progetto in un solo punto.
+   Il primo script dopo boot.js: tutti gli altri moduli leggono da qui (window.MD_CONFIG), nessuno scrive indirizzi a mano.
+   Se il repository cambia nome, se cambia la pagina di sostegno o l'indirizzo di contatto, si cambia solo questo file.
+   Gli interruttori FEATURE_* li può sovrascrivere la build (versione «store», vedi tools/build.mjs --flavor store). ===== */
+var MD_CONFIG = {
+  REPO: "longhitown/m-ndar-n-",                       /* GitHub: issue dei contributi, controllo delle release dell'APK */
+  CONTACT_EMAIL: "mandarinoapp@gmail.com",            /* canale secondario dei contributi */
+  SUPPORT_URL: "https://ko-fi.com/mandarinoapp",      /* sostegno volontario (link aperto solo da un tocco) */
+  STORE_URLS: { play: "", fdroid: "" },               /* indirizzi degli store, quando ci saranno */
+  SITE_URL: "",                                       /* sito pubblico (GitHub Pages), quando ci sarà */
+  FLAVOR: "direct",                                   /* "direct" (sito, APK da GitHub) | "store" */
+  FEATURE_DONATE: true,
+  FEATURE_SEALS: true,
+  SEAL_PUBKEYS: []                                    /* chiavi pubbliche dei sigilli: [{ kid, jwk }]; vuoto = niente «riscatta» */
+};
+</script>
+<script>
 /* ---- pwa/android.js ---- */
 /* Dentro l'APK (android/): la WebView di Android non ha voce, riconoscimento vocale, download e condivisione come un
    browser. Qui li ricostruiamo con le API web standard (speechSynthesis, SpeechRecognition, <a download>, navigator.share)
@@ -19233,7 +19251,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       sitHTML() +
       '<div class="reels">' + m.cols.map(function (_, i) { return reelHTML(i); }).join("") + "</div>" +
       '<div class="sbox" id="slot-out">' + outHTML() + "</div>" +
-      '<div class="dlg-bar"><button type="button" class="btn-main" data-spin-all style="margin:0">🎰 ' + T("slot.spinAll") + "</button></div>";
+      '<div class="dlg-bar"><button type="button" class="btn-s" data-spin-all style="margin:0">🎰 ' + T("slot.spinAll") + "</button></div>";
   }
   function paint() {
     var b = document.getElementById("slot-box"); if (!b) return;
@@ -19997,7 +20015,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   }
   /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
      con lo stesso avviso della PWA. Si spegne in ⚙️ → Voce e audio → App Android. */
-  var REPO = "longhitown/m-ndar-n-";   /* se il repository cambia nome, GitHub reindirizza anche le API */
+  var REPO = MD_CONFIG.REPO;   /* src/config.js; se il repository cambia nome, GitHub reindirizza anche le API */
   CP.apkUpdates = { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
   function vnum(v) { return String(v || "").replace(/^v/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
   function newer(a, b) { a = vnum(a); b = vnum(b); for (var i = 0; i < Math.max(a.length, b.length); i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); } return false; }
@@ -23786,7 +23804,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).
      form = URL «viewform» di un Modulo Google con un campo testo lungo; formEntry = il suo numero (entry.<N>).
      repo = repository PUBBLICO dei contributi (es. «utente/mandarino-contributi»): su uno privato gli estranei non aprono issue. */
-  var CFG = { email: "", form: "", formEntry: "", repo: "longhitown/m-ndar-n-" };   /* repo: le proposte come issue, che .github/workflows/contrib.yml controlla da sola */
+  var CFG = { email: MD_CONFIG.CONTACT_EMAIL, form: "", formEntry: "", repo: MD_CONFIG.REPO };   /* src/config.js; repo: le proposte come issue, che .github/workflows/contrib.yml controlla da sola */
   var NICK = "cp-contrib-nick";
   function nick() { try { return localStorage.getItem(NICK) || ""; } catch (e) { return ""; } }
   function list() { return CP.contrib.list(); }

@@ -8,6 +8,7 @@ telefono (localStorage + copia in IndexedDB), si salvano su file e si sincronizz
 Su Android c'è anche l'APK, con scorciatoie, widget «Oggi», promemoria facoltativo e musica in secondo piano.
 
 Come i moduli si agganciano tra loro (l'oggetto `CP`, i registri, i richiami, il ponte Android): **[docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)**.
+Dove vive ogni funzione e quando compare (schede, fogli, impostazioni, glossario): **[docs/ux-architettura.md](docs/ux-architettura.md)**.
 
 ## Com'è fatto il repository
 
@@ -15,6 +16,7 @@ Come i moduli si agganciano tra loro (l'oggetto `CP`, i registri, i richiami, il
 src/                       ← si lavora qui (si apre anche così com'è, da file://, senza build)
   index.html               struttura della pagina + l'elenco ordinato di stili e script (l'ordine è quello di esecuzione)
   boot.js                  primo script: copia pulita della pagina, registri SECTIONS e DIALOGS
+  config.js                MD_CONFIG: repository, e-mail, pagina di sostegno, store, interruttori FEATURE_* (unico punto)
   main.js                  ultimo script: avvio finale
   data/vocab/NNN-<id>.js   il vocabolario, una sezione per file, una parola per riga
   data/dialogs/<id>.js     un dialogo per file (+ _categorie.js)
@@ -209,7 +211,7 @@ node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
 node tools/e2e.mjs          # 46 prove su dist/ (corso di italiano e correttore, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
-node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
+node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi). `#dev` accende il modo sviluppatore

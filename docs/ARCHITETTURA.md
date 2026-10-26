@@ -8,6 +8,14 @@ dall'elenco senza rompere gli altri.
 
 Ci sono quattro modi di agganciarsi, sempre gli stessi.
 
+## 0. Configurazione
+
+`src/config.js` è il primo script dopo `boot.js`. Definisce `MD_CONFIG`, che è l'unico posto con l'identità del progetto:
+repository GitHub, e-mail di contatto, pagina di sostegno, indirizzi degli store, il *flavor* (`direct` | `store`), gli
+interruttori `FEATURE_DONATE` e `FEATURE_SEALS` e le chiavi pubbliche dei sigilli. Lo leggono `pwa/pwa.js`
+(aggiornamenti dell'APK) e `contrib/contrib.js` (issue ed e-mail dei contributi). La mappa delle schede, dei fogli e
+delle impostazioni, con le regole di rivelazione progressiva, sta in `docs/ux-architettura.md`.
+
 ## 1. Funzioni di servizio (definite una volta, chiamate da tutti)
 
 | Che cosa | Dove nasce | A cosa serve |
