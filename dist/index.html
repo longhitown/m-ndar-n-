@@ -801,6 +801,7 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 .card-cv { width: 100%; max-width: 420px; height: auto; display: block; margin: 10px auto 0; border-radius: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.15); }
 .cred-author { padding: 12px 14px; border-radius: 14px; background: var(--chip); }
 .cred-libs { margin: 6px 0; padding-left: 18px; display: grid; gap: 3px; }
+.amb-hint { margin: 8px 0 0; padding: 6px 10px; border-radius: 10px; background: var(--chip); }
 
 /* ---- styles/brand-audio.css ---- */
 /* ===== V5: componenti nuovi ===== */
@@ -14960,7 +14961,7 @@ Object.assign(I18N.it, { "tg.chi": "Chi", "tg.when": "Quando", "tg.with": "Con c
 /* Lettore */
 Object.assign(I18N.it, { "rd.s1": "Presentazione", "rd.s2": "Al ristorante", "rd.s3": "Chiedere la strada", "rd.s4": "Un invito", "rd.s5": "Fa caldo", "rd.empty": "Incolla o scrivi qui sopra un testo in cinese. Per ogni parola che conosco vedi pinyin, carattere e significato.", "rd.inside": "Compare in:", "rd.in": "in", "rd.unkT": "Non è nel vocabolario", "rd.unk": "non ancora", "rd.known": "Riconosco {n} caratteri su {tot} ({p}%).", "rd.insideN": "Altri {n} li conosci dentro parole del vocabolario (tocca per vederle).", "rd.unkList": "Non ancora nel vocabolario: {l}.", "rd.play": "Leggi tutto il testo", "rd.lede": "Incolla una frase, un messaggio o un menù in cinese. Io lo taglio in parole e ti dico come si legge.", "rd.label": "Testo cinese", "rd.ph": "Scrivi o incolla qui, per esempio: 你好，我想学中文。", "rd.samples": "Testi di prova" });
 /* Impostazioni: voce e app */
-Object.assign(I18N.it, { "vo.rate": "Velocità della voce", "vo.slow": "Lento", "vo.normal": "Normale", "vo.cur": "Voce: {v}.", "vo.none": "Il dispositivo non elenca voci cinesi: provo comunque con quella predefinita (zh-CN).", "vo.auto": "Audio automatico nella scheda Studia", "vo.sfx": "Suoni al tocco", "vo.haptics": "Vibrazione", "vo.alt": "Usa la voce alternativa (richiede internet)", "vo.altHint": "Se la voce del dispositivo resta muta, provo da solo un servizio vocale online non ufficiale. Può smettere di funzionare in ogni momento.", "vo.frame": "Dentro questa pagina il browser può bloccare microfono e audio. Scarica il file e aprilo come pagina a sé: funziona anche senza internet.", "vo.test": "Prova la voce: 你好", "vo.ab": "Confronta due voci", "vo.play": "Ascolta {x}", "vo.use": "Usa {x}", "vo.one": "Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.", "pwa.title": "App sul telefono (PWA)", "pwa.installed": "Stai usando l'app installata.", "pwa.https": "Su https puoi aggiungerla alla schermata Home e usarla offline.", "pwa.need": "Per installarla e avere il microfono senza richieste ripetute serve un indirizzo https: scarica il pacchetto e caricalo su GitHub + Cloudflare Pages.", "pwa.dl": "Scarica pacchetto PWA per GitHub", "set.aboutLede": "<b>{n} parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce." });
+Object.assign(I18N.it, { "vo.rate": "Velocità della voce", "vo.slow": "Lento", "vo.normal": "Normale", "vo.cur": "Voce: {v}.", "vo.none": "Il dispositivo non elenca voci cinesi: provo comunque con quella predefinita (zh-CN).", "vo.auto": "Audio automatico nella scheda Studia", "vo.sfx": "Suoni al tocco", "vo.haptics": "Vibrazione", "vo.alt": "Usa la voce online quando quella del telefono tace (richiede internet)", "vo.altHint": "Spenta di default. Accesa, il testo da leggere va a un servizio vocale online esterno e non ufficiale (Google Translate): niente account, ma la richiesta esce dal telefono. Può smettere di funzionare in ogni momento.", "vo.frame": "Dentro questa pagina il browser può bloccare microfono e audio. Scarica il file e aprilo come pagina a sé: funziona anche senza internet.", "vo.test": "Prova la voce: 你好", "vo.ab": "Confronta due voci", "vo.play": "Ascolta {x}", "vo.use": "Usa {x}", "vo.one": "Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.", "pwa.title": "App sul telefono (PWA)", "pwa.installed": "Stai usando l'app installata.", "pwa.https": "Su https puoi aggiungerla alla schermata Home e usarla offline.", "pwa.need": "Per installarla e avere il microfono senza richieste ripetute serve un indirizzo https: scarica il pacchetto e caricalo su GitHub + Cloudflare Pages.", "pwa.dl": "Scarica pacchetto PWA per GitHub", "set.aboutLede": "<b>{n} parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce." });
 /* Cerca ovunque */
 Object.assign(I18N.it, { "fd.t0": "Studia adesso", "fd.t1": "Allena l'orecchio", "fd.t2": "Sfida 60 secondi", "fd.t3": "I miei progressi", "fd.t4": "Lezioni di grammatica", "fd.t5": "Modelli di frase", "fd.t6": "Esercizi: ricomponi la frase", "fd.t7": "Laboratorio di frasi", "fd.t8": "Slot delle frasi", "fd.t9": "Dialoghi", "fd.t10": "Ordine del pensiero", "fd.t11": "Lettore", "fd.t12": "Il percorso", "fd.t13": "Tutte le parole", "fd.t14": "Modalità guida", "fd.t15": "Musica (jukebox)", "fd.t16": "Impostazioni", "fd.words": "{n} parole", "fd.gTools": "Strumenti", "fd.gStops": "Tappe" });
 /* Pannello Parla */
@@ -14991,6 +14992,12 @@ Object.assign(I18N.it, { "card.title": "La card di oggi", "card.open": "Condivid
 Object.assign(I18N.it, { "jk.bg": "Continua anche con l'app in secondo piano", "jk.bgApk": "Continua con lo schermo spento (notifica con pausa e brano successivo)" });
 /* Crediti: autore e musica */
 Object.assign(I18N.it, { "cr.authorT": "màndarínō", "cr.author": "Ideata, scritta e curata da <b>Claudio Longhitano</b>.", "cr.coauthor": "Con la complicità di <b>Claude Code</b> (Anthropic), che ha scritto molto codice, ha contato molti toni e ha imparato che 了 non si traduce mai con «già» senza pensarci due volte. Gli errori rimasti sono di tutti e due; quelli simpatici, soprattutto suoi.", "cr.code": "Il codice dell'app è libero (licenza MIT); la musica è sotto licenza CC BY 4.0. I testi delle licenze sono nel repository (LICENSE, LICENZE/).", "cr.music": "Musica", "cr.musicT": "22 brani originali di <b>Claudio Longhitano</b> per màndarínō (CC BY 4.0). Strumenti campionati da librerie libere CC0 o di pubblico dominio: nessun credito è obbligatorio, li citiamo volentieri.", "cr.m1": "archi, ottoni, legni, arpa, timpani, glockenspiel, marimba · CC0", "cr.m2": "percussioni, vibrafono, campane, đàn tranh, ocarina, kalimba, organi, clavicembalo, flauti dolci, strumstick · CC0", "cr.m3": "pianoforte · CC0", "cr.m4": "violoncello solista · CC0", "cr.m5": "erhu, banjo, voce · CC0", "cr.m6": "steel drum · pubblico dominio (Unlicense)", "cr.m7": "vocio, allarme delle porte (Linea 2) · CC0", "cr.musicSynth": "Tanggu, bangu, suona, sheng, carta, sintetizzatori e voci sintetiche sono sintetizzati o costruiti a partire da percussioni CC0." });
+/* Carte ambigue */
+Object.assign(I18N.it, { "amb.hint": "Più parole hanno questo significato: si chiede quella", "amb.len": "di {n} caratteri", "amb.sec": "della tappa {s}", "amb.also": "Stesso significato anche:" });
+/* Aggiornamenti */
+Object.assign(I18N.it, { "upd.title": "Nuova versione disponibile.", "upd.keep": "I tuoi progressi restano dove sono.", "upd.go": "Aggiorna", "upd.going": "Aggiorno…", "upd.apk": "È uscita la versione {v} dell'app.", "upd.apkKeep": "Si installa sopra questa: i progressi restano.", "upd.dl": "Scarica", "upd.check": "Controlla se c'è una versione nuova (una richiesta a GitHub al giorno, solo con la rete)" });
+/* Voce online su richiesta */
+Object.assign(I18N.it, { "vo.mute": "La voce del telefono non risponde: installa la voce cinese, o accendi la voce online in ⚙️ → Voce." });
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15055,7 +15062,7 @@ Object.assign(I18N.zh, { "tg.chi": "谁", "tg.when": "时间", "tg.with": "和�
 /* Lettore */
 Object.assign(I18N.zh, { "rd.s1": "自我介绍", "rd.s2": "在饭馆", "rd.s3": "问路", "rd.s4": "邀请", "rd.s5": "天气热", "rd.empty": "在上面粘贴或输入一段中文。我认识的每个词都会显示拼音、汉字和意思。", "rd.inside": "出现在：", "rd.in": "在", "rd.unkT": "不在词库里", "rd.unk": "还没有", "rd.known": "认识 {tot} 个字里的 {n} 个（{p}%）。", "rd.insideN": "另外 {n} 个字出现在词库的词语里（点一下查看）。", "rd.unkList": "还不在词库里：{l}。", "rd.play": "朗读全文", "rd.lede": "粘贴一句话、一条消息或一份中文菜单。我会把它分成词语，并告诉你怎么读。", "rd.label": "中文文本", "rd.ph": "在这里输入或粘贴，例如：你好，我想学中文。", "rd.samples": "示例文本" });
 /* Impostazioni: voce e app */
-Object.assign(I18N.zh, { "vo.rate": "语速", "vo.slow": "慢", "vo.normal": "正常", "vo.cur": "语音：{v}。", "vo.none": "设备没有列出中文语音：仍然尝试使用默认语音（zh-CN）。", "vo.auto": "在「学习」里自动播放读音", "vo.sfx": "点击音效", "vo.haptics": "振动", "vo.alt": "使用备用语音（需要联网）", "vo.altHint": "如果设备语音没有声音，会自动尝试一个非官方的在线语音服务。它随时可能停止工作。", "vo.frame": "在这个页面里，浏览器可能会阻止麦克风和声音。下载文件并单独打开：没有网络也能用。", "vo.test": "试听：你好", "vo.ab": "比较两种语音", "vo.play": "听 {x}", "vo.use": "使用 {x}", "vo.one": "设备只有一种中文语音（或没有）。想要更多：手机设置 → 文字转语音 → 中文。", "pwa.title": "手机应用（PWA）", "pwa.installed": "你正在使用已安装的应用。", "pwa.https": "在 https 网址上可以把它添加到主屏幕，离线使用。", "pwa.need": "要安装应用并且不用反复授权麦克风，需要一个 https 网址：下载安装包，上传到 GitHub + Cloudflare Pages。", "pwa.dl": "下载用于 GitHub 的 PWA 安装包", "set.aboutLede": "<b>{n} 个词</b>，按需要的顺序学习。拼音在前，汉字在旁边，意大利语在一侧。每天 10 个词，大声读出来。" });
+Object.assign(I18N.zh, { "vo.rate": "语速", "vo.slow": "慢", "vo.normal": "正常", "vo.cur": "语音：{v}。", "vo.none": "设备没有列出中文语音：仍然尝试使用默认语音（zh-CN）。", "vo.auto": "在「学习」里自动播放读音", "vo.sfx": "点击音效", "vo.haptics": "振动", "vo.alt": "手机语音没有声音时使用在线语音（需要联网）", "vo.altHint": "默认关闭。打开后，要朗读的文字会发送到一个外部的非官方在线语音服务（Google 翻译）：不需要账号，但请求会离开手机。它随时可能停止工作。", "vo.frame": "在这个页面里，浏览器可能会阻止麦克风和声音。下载文件并单独打开：没有网络也能用。", "vo.test": "试听：你好", "vo.ab": "比较两种语音", "vo.play": "听 {x}", "vo.use": "使用 {x}", "vo.one": "设备只有一种中文语音（或没有）。想要更多：手机设置 → 文字转语音 → 中文。", "pwa.title": "手机应用（PWA）", "pwa.installed": "你正在使用已安装的应用。", "pwa.https": "在 https 网址上可以把它添加到主屏幕，离线使用。", "pwa.need": "要安装应用并且不用反复授权麦克风，需要一个 https 网址：下载安装包，上传到 GitHub + Cloudflare Pages。", "pwa.dl": "下载用于 GitHub 的 PWA 安装包", "set.aboutLede": "<b>{n} 个词</b>，按需要的顺序学习。拼音在前，汉字在旁边，意大利语在一侧。每天 10 个词，大声读出来。" });
 /* Cerca ovunque */
 Object.assign(I18N.zh, { "fd.t0": "现在学习", "fd.t1": "练耳朵", "fd.t2": "60 秒挑战", "fd.t3": "我的进度", "fd.t4": "语法课", "fd.t5": "句型", "fd.t6": "练习：重组句子", "fd.t7": "句子实验室", "fd.t8": "句子老虎机", "fd.t9": "对话", "fd.t10": "语序思维", "fd.t11": "阅读器", "fd.t12": "学习路线", "fd.t13": "全部词语", "fd.t14": "导览模式", "fd.t15": "音乐", "fd.t16": "设置", "fd.words": "{n} 个词", "fd.gTools": "工具", "fd.gStops": "关卡" });
 /* Pannello Parla */
@@ -15086,6 +15093,12 @@ Object.assign(I18N.zh, { "card.title": "今天的卡片", "card.open": "分享�
 Object.assign(I18N.zh, { "jk.bg": "应用在后台时继续播放", "jk.bgApk": "锁屏时继续播放（通知里可以暂停和切歌）" });
 /* Crediti: autore e musica */
 Object.assign(I18N.zh, { "cr.authorT": "màndarínō", "cr.author": "由 <b>Claudio Longhitano</b> 构思、编写和维护。", "cr.coauthor": "也有 <b>Claude Code</b>（Anthropic）的「帮凶」：它写了很多代码，数了很多声调，也终于学会了「了」不能不假思索地翻成「<span lang=\"it\">già</span>」。剩下的错误两人都有份；有趣的那些，主要算它的。", "cr.code": "应用代码是开源的（MIT 许可）；音乐采用 CC BY 4.0 许可。许可全文在代码仓库里（LICENSE、LICENZE/）。", "cr.music": "音乐", "cr.musicT": "22 首原创曲目，由 <b>Claudio Longhitano</b> 为 màndarínō 创作（CC BY 4.0）。采样乐器来自 CC0 或公有领域的开放音源库：不要求署名，我们乐意注明。", "cr.m1": "弦乐、铜管、木管、竖琴、定音鼓、钟琴、马林巴 · CC0", "cr.m2": "打击乐、颤音琴、钟、越南筝、陶笛、卡林巴、管风琴、大键琴、竖笛、strumstick · CC0", "cr.m3": "钢琴 · CC0", "cr.m4": "独奏大提琴 · CC0", "cr.m5": "二胡、班卓琴、人声 · CC0", "cr.m6": "钢鼓 · 公有领域（Unlicense）", "cr.m7": "人声嘈杂、地铁关门提示（2 号线） · CC0", "cr.musicSynth": "堂鼓、板鼓、唢呐、笙、纸声、合成器和合成人声都是合成的，或由 CC0 打击乐制作而成。" });
+/* Carte ambigue */
+Object.assign(I18N.zh, { "amb.hint": "有几个词是这个意思，这里问的是", "amb.len": "{n} 个字的那个", "amb.sec": "来自关卡 {s}", "amb.also": "同样意思的还有：" });
+/* Aggiornamenti */
+Object.assign(I18N.zh, { "upd.title": "有新版本。", "upd.keep": "你的学习进度会保留。", "upd.go": "更新", "upd.going": "正在更新……", "upd.apk": "应用新版本 {v} 已发布。", "upd.apkKeep": "直接覆盖安装：学习进度会保留。", "upd.dl": "下载", "upd.check": "检查是否有新版本（每天向 GitHub 请求一次，仅在联网时）" });
+/* Voce online su richiesta */
+Object.assign(I18N.zh, { "vo.mute": "手机语音没有反应：请安装中文语音，或在 ⚙️ → 语音 里打开在线语音。" });
 </script>
 <!-- Nucleo: ripasso FSRS, archivio, tabella delle parole (crea window.CP), stato condiviso -->
 <script>
@@ -16139,6 +16152,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     })();
   }
   CP.fallbackAudioTTS = fallbackAudioTTS;
+  var muteHinted = false;
   CP.canSay = function () { return true; };
   CP.stopSpeak = function () {
     token++; stopAudio(); clearLive();
@@ -16170,10 +16184,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
     failTimer = setTimeout(finish, 6500 + text.length * 900);
+    /* V6.8: la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
+       accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
       if (finished || token !== mine) return;
       clearTimeout(startTimer);
       try { if (synth) synth.cancel(); } catch (e) {}
+      if (!pref.alt) { if (!muteHinted && CP.toast) { muteHinted = true; CP.toast(t("vo.mute")); } finish(); return; }
       fallbackAudioTTS(text, rate, finish);
     };
     if (zh && (!synth || pref.alt)) { cloud(); return; }
@@ -17133,6 +17150,25 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       '<button type="button" data-g="2" class="g-good">' + G(2) + '<span class="sub">' + sub(2) + "</span></button>" +
       '<button type="button" data-g="3">' + G(3) + '<span class="sub">' + sub(3) + "</span></button></div>";
   }
+  /* carte ambigue: 322 gruppi di parole hanno lo stesso italiano (爸爸/爸 = papà, 但是/但 = ma, però). Nella carta
+     italiano → cinese un indizio dice quale si chiede (quanti caratteri, da che tappa); dopo la risposta compaiono
+     anche le altre, così chi ha pensato al sinonimo impara la coppia invece di sentirsi in errore. */
+  var SAME = null;
+  function sameAs(w) {
+    if (!SAME) { SAME = {}; CP.ORDER.forEach(function (k) { var x = CP.WORDS[k], f = String(x.it).trim().toLowerCase(); (SAME[f] = SAME[f] || []).push(x); }); }
+    return (SAME[String(w.it).trim().toLowerCase()] || []).filter(function (x) { return x !== w && x.hz !== w.hz; });
+  }
+  CP.sameMeaning = sameAs;
+  function ambigHint(w) {
+    var o = sameAs(w), T = CP.t, esc = CP.esc; if (!o.length) return "";
+    var n = Array.from(w.hz).length, same = o.filter(function (x) { return Array.from(x.hz).length === n; }).length;
+    var t = T("amb.len", { n: n }) + (same ? " · " + T("amb.sec", { s: '<span lang="it">' + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" }) : "");
+    return '<p class="amb-hint small">💡 ' + T("amb.hint") + " " + t + "</p>";
+  }
+  function ambigAlso(w) {
+    var o = sameAs(w), T = CP.t, esc = CP.esc; if (!o.length) return "";
+    return '<p class="amb-hint small">' + T("amb.also") + " " + o.slice(0, 4).map(function (x) { return '<span class="han" lang="zh-CN">' + esc(x.hz) + "</span> " + CP.pinyinHTML(x.py); }).join(" · ") + "</p>";
+  }
   function render() {
     if (!sess.q.length) return done();
     var e = sess.q[0], w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
@@ -17144,10 +17180,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
-      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
+      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, PROMPT[e.type]) + (e.type === "ip" ? ambigHint(w) : "") + cardTools(w, false) + "</div>" +
         '<div class="actbar"><button type="button" class="btn-main" id="reveal">' + T("sess.reveal") + "</button>" + kbd() + "</div>";
     } else {
-      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
+      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + (e.type === "ip" ? ambigAlso(w) : "") + cardTools(w, true) + "</div>" +
         '<div class="actbar">' + gradesHTML(e) + hint + kbd() + "</div>";
     }
     root.innerHTML = h; root.classList.add("is-card");
@@ -19802,7 +19838,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">' + CP.t("vo.one") + "</p>";
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
-    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p></div>"; return h; }
+    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p>" + (CP.apkUpdates ? '<label class="chk small"><input type="checkbox" id="opt-apkcheck"' + (CP.apkUpdates.on() ? " checked" : "") + "> " + CP.t("upd.check") + "</label>" : "") + "</div>"; return h; }
     if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">' + CP.t("pwa.title") + "</div>" +
       '<p class="small muted" style="margin:2px 0 6px">' + CP.t(ps && ps.standalone ? "pwa.installed" : ps && ps.http ? "pwa.https" : "pwa.need") + "</p>" +
@@ -19947,14 +19983,37 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   var swNote = document.getElementById("sw-notice"), reloading = false;
   function offerUpdate(reg) {
     if (!swNote || !reg || !reg.waiting || !navigator.serviceWorker.controller) return;
-    swNote.innerHTML = '<p><b>Nuova versione disponibile.</b> I tuoi progressi restano dove sono.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn-s" data-sw-update>Aggiorna</button><button type="button" class="btn-s" data-sw-later>Più tardi</button></div>';
+    swNote.innerHTML = "<p><b>" + CP.t("upd.title") + "</b> " + CP.t("upd.keep") + '</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn-s" data-sw-update>' + CP.t("upd.go") + '</button><button type="button" class="btn-s" data-sw-later>' + CP.t("common.later") + "</button></div>";
     swNote.hidden = false;
     swNote.onclick = function (e) {
       var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
       if (t.hasAttribute("data-sw-later")) { swNote.hidden = true; return; }
-      if (t.hasAttribute("data-sw-update") && reg.waiting) { t.disabled = true; t.textContent = "Aggiorno…"; if (window.Store) Store.flush(); reg.waiting.postMessage({ type: "SKIP_WAITING" }); }
+      if (t.hasAttribute("data-sw-update") && reg.waiting) { t.disabled = true; t.textContent = CP.t("upd.going"); if (window.Store) Store.flush(); reg.waiting.postMessage({ type: "SKIP_WAITING" }); }
     };
   }
+  /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
+     con lo stesso avviso della PWA. Si spegne in ⚙️ → Voce e audio → App Android. */
+  var REPO = "longhitown/m-ndar-n-";   /* se il repository cambia nome, GitHub reindirizza anche le API */
+  CP.apkUpdates = { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
+  function vnum(v) { return String(v || "").replace(/^v/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
+  function newer(a, b) { a = vnum(a); b = vnum(b); for (var i = 0; i < Math.max(a.length, b.length); i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); } return false; }
+  function apkCheck() {
+    var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
+    var last = 0; try { last = +localStorage.getItem("md-apkcheck-t") || 0; } catch (e) {}
+    if (Date.now() - last < 86400000) return;
+    try { localStorage.setItem("md-apkcheck-t", String(Date.now())); } catch (e) {}
+    fetch("https://api.github.com/repos/" + REPO + "/releases/latest", { headers: { Accept: "application/vnd.github+json" } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rel) {
+      if (!rel || !rel.tag_name || !newer(rel.tag_name, cur)) return;
+      var skip = ""; try { skip = localStorage.getItem("md-apkskip") || ""; } catch (e) {}
+      if (skip === rel.tag_name) return;
+      var asset = (rel.assets || []).filter(function (a) { return /\.apk$/.test(a.name); })[0], href = asset ? asset.browser_download_url : rel.html_url;
+      swNote.innerHTML = "<p><b>" + CP.t("upd.apk", { v: CP.esc(rel.tag_name.replace(/^v/, "")) }) + "</b> " + CP.t("upd.apkKeep") + '</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-s" href="' + CP.attr(href) + '" target="_blank" rel="noopener">' + CP.t("upd.dl") + '</a><button type="button" class="btn-s" data-apk-later>' + CP.t("common.later") + "</button></div>";
+      swNote.hidden = false;
+      swNote.onclick = function (e) { var t = e.target.closest ? e.target.closest("[data-apk-later]") : null; if (t) { swNote.hidden = true; try { localStorage.setItem("md-apkskip", rel.tag_name); } catch (er) {} } };
+    }).catch(function () {});
+  }
+  if (window.__MD_APK) setTimeout(apkCheck, 4000);
+  document.addEventListener("change", function (e) { if (e.target && e.target.id === "opt-apkcheck") CP.apkUpdates.set(e.target.checked); });
   /* nell'APK l'app è già dentro il pacchetto: niente service worker (gli aggiornamenti arrivano con un APK nuovo) */
   if (http && "serviceWorker" in navigator && !window.__MD_APK) {
     navigator.serviceWorker.addEventListener("controllerchange", function () { if (reloading || !swNote || swNote.hidden) return; reloading = true; location.reload(); });

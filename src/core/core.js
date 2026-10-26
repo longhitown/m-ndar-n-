@@ -251,6 +251,7 @@
     })();
   }
   CP.fallbackAudioTTS = fallbackAudioTTS;
+  var muteHinted = false;
   CP.canSay = function () { return true; };
   CP.stopSpeak = function () {
     token++; stopAudio(); clearLive();
@@ -282,10 +283,13 @@
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
     failTimer = setTimeout(finish, 6500 + text.length * 900);
+    /* V6.8: la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
+       accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
       if (finished || token !== mine) return;
       clearTimeout(startTimer);
       try { if (synth) synth.cancel(); } catch (e) {}
+      if (!pref.alt) { if (!muteHinted && CP.toast) { muteHinted = true; CP.toast(t("vo.mute")); } finish(); return; }
       fallbackAudioTTS(text, rate, finish);
     };
     if (zh && (!synth || pref.alt)) { cloud(); return; }
