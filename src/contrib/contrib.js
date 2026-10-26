@@ -4,7 +4,7 @@
   /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).
      form = URL «viewform» di un Modulo Google con un campo testo lungo; formEntry = il suo numero (entry.<N>).
      repo = repository PUBBLICO dei contributi (es. «utente/mandarino-contributi»): su uno privato gli estranei non aprono issue. */
-  var CFG = { email: "", form: "", formEntry: "", repo: "" };
+  var CFG = { email: "", form: "", formEntry: "", repo: "longhitown/m-ndar-n-" };   /* repo: le proposte come issue, che .github/workflows/contrib.yml controlla da sola */
   var NICK = "cp-contrib-nick";
   function nick() { try { return localStorage.getItem(NICK) || ""; } catch (e) { return ""; } }
   function list() { return CP.contrib.list(); }

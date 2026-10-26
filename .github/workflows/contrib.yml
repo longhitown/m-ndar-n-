@@ -1,0 +1,71 @@
+# Contributi arrivati come issue (dal pulsante GitHub nell'app: una patch «mandarino-contrib/1» in un blocco ```json).
+# L'etichetta «contributo» nell'indirizzo vale solo per chi gestisce il repository, quindi la mette questa Action.
+# 1. A ogni issue aperta o modificata: tools/merge-contrib.mjs controlla la patch (senza applicarla) e risponde nella issue
+#    con il riepilogo: da applicare, doppioni, conflitti, scartati.
+# 2. Quando chi gestisce il repository aggiunge l'etichetta «applica»: applica le voci valide, ricostruisce dist/ e apre
+#    una pull request da rileggere. Niente entra nel ramo principale senza una persona che la unisca.
+# Il testo della issue non è fidato: passa solo come variabile d'ambiente e come file, mai dentro lo script.
+name: contributi
+on:
+  issues:
+    types: [opened, edited, labeled]
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+concurrency:
+  group: contrib-${{ github.event.issue.number }}
+  cancel-in-progress: true
+jobs:
+  controlla:
+    if: (contains(github.event.issue.body, 'mandarino-contrib/1') || contains(github.event.issue.labels.*.name, 'contributo')) && (github.event.action != 'labeled' || github.event.label.name == 'applica')
+    runs-on: ubuntu-latest
+    env:
+      BODY: ${{ github.event.issue.body }}
+      NUM: ${{ github.event.issue.number }}
+      APPLY: ${{ github.event.action == 'labeled' && github.event.label.name == 'applica' }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Estrae la patch dalla issue
+        run: |
+          mkdir -p "$RUNNER_TEMP/arrivati"
+          printf '%s' "$BODY" > "$RUNNER_TEMP/arrivati/issue-$NUM.json"
+      - name: Riepilogo (senza applicare)
+        id: check
+        run: |
+          set +e
+          node tools/merge-contrib.mjs "$RUNNER_TEMP/arrivati/issue-$NUM.json" --out "$RUNNER_TEMP/riepilogo.md"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Risponde nella issue
+        if: env.APPLY != 'true'
+        run: |
+          gh label create contributo --color 1D76DB --description "Contributo dall'app" 2>/dev/null || true
+          gh label create applica --color 0E8A16 --description "Applica il contributo (apre una pull request)" 2>/dev/null || true
+          gh issue edit "$NUM" --add-label contributo || true
+          { echo "Controllo automatico del contributo:"; echo; cat "$RUNNER_TEMP/riepilogo.md"; echo
+            echo "Per applicare le voci valide, chi gestisce il repository aggiunge l'etichetta \`applica\`: si apre una pull request da rileggere."
+            echo; echo "---"; echo "_Generato da tools/merge-contrib.mjs_"; } > "$RUNNER_TEMP/commento.md"
+          gh issue comment "$NUM" --body-file "$RUNNER_TEMP/commento.md"
+      - name: Applica e apre una pull request
+        if: env.APPLY == 'true'
+        run: |
+          set -e
+          node tools/merge-contrib.mjs "$RUNNER_TEMP/arrivati/issue-$NUM.json" --apply || true
+          node tools/build.mjs
+          node tools/grammar.mjs
+          if git diff --quiet -- src dist/index.html; then gh issue comment "$NUM" --body "Nessuna voce da applicare."; exit 0; fi
+          BR="contributo/issue-$NUM"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BR"
+          git add src dist/index.html dist/sw.js
+          git commit -m "Contributo dalla issue #$NUM"
+          git push -f origin "$BR"
+          { echo "Voci del contributo della issue #$NUM, applicate da tools/merge-contrib.mjs. Rileggi ogni riga prima di unire."; echo; cat "$RUNNER_TEMP/riepilogo.md"; } > "$RUNNER_TEMP/pr.md"
+          gh pr create --head "$BR" --title "Contributo dalla issue #$NUM" --body-file "$RUNNER_TEMP/pr.md" || gh pr edit "$BR" --body-file "$RUNNER_TEMP/pr.md"
+          gh issue comment "$NUM" --body "Pull request aperta dal ramo \`$BR\`: da rileggere e unire a mano."
