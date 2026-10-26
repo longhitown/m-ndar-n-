@@ -43,6 +43,19 @@ export function verify(L) {
 }
 
 /* lezioni: id unici, ogni frase cinese fatta di parole del vocabolario, esercizi coerenti */
+/* le frasi d'esempio delle parole (src/data/examples): solo parole del vocabolario, e la parola deve uscire dal taglio
+   come parola (中 non vale dentro 中国), altrimenti la scheda la mostrerebbe a vuoto */
+export function checkExamples(L) {
+  const err = [];
+  for (const [k, e] of Object.entries(L.D.EXAMPLES || {})) {
+    if (!L.W[k]) { err.push(`esempio per una parola che non esiste: ${k}`); continue; }
+    if (!Array.isArray(e) || e.length !== 2 || !e[0] || !e[1]) { err.push(`esempio di ${k}: deve essere [cinese, italiano]`); continue; }
+    const u = L.unknown(e[0]); if (u.length) { err.push(`esempio di ${k}: «${e[0]}» usa caratteri fuori dal vocabolario (${u.join("")})`); continue; }
+    if (!L.CP.segment(e[0]).some((s) => s.w && s.w.hz === L.W[k].hz)) err.push(`esempio di ${k}: in «${e[0]}» la parola non risulta come parola (${L.tokens(e[0]).join("|")})`);
+  }
+  return err;
+}
+
 export function checkLessons(L) {
   const err = [], ids = new Set(), CJK = /[㐀-鿿]/;
   const zhOk = (where, z) => { const u = L.unknown(z); if (u.length) err.push(`${where}: «${z}» usa caratteri fuori dal vocabolario (${u.join("")})`); };
