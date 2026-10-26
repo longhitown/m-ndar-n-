@@ -946,7 +946,8 @@
       try { localStorage.setItem("cp-tab", name); } catch (e) {}
     };
     if (!instant && document.startViewTransition && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-      try { var vt = document.startViewTransition(run); if (vt && vt.finished) vt.finished.then(function () { document.documentElement.removeAttribute("data-dir"); }, function () {}); } catch (e) { run(); }
+      try { var vt = document.startViewTransition(run); if (vt) [vt.ready, vt.updateCallbackDone].forEach(function (pr) { if (pr && pr.catch) pr.catch(function () {}); });   /* se la finestra cambia misura la transizione si annulla: non è un errore */
+      if (vt && vt.finished) vt.finished.then(function () { document.documentElement.removeAttribute("data-dir"); }, function () {}); } catch (e) { run(); }
     } else run();
   }
   CP.show = show;
