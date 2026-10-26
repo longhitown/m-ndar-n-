@@ -1,8 +1,8 @@
-/* 13. Emozioni e stati d'animo · 17 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Emozioni e stati d'animo · 17 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "stati",
-  "title": "13. Emozioni e stati d'animo",
+  "title": "Emozioni e stati d'animo",
   "words": [
     ["gāo.xìng","高兴","contento, felice"],
     ["kāi.xīn","开心","allegro, felice"],

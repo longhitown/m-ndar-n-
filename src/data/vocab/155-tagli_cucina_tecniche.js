@@ -1,8 +1,8 @@
-/* 155. Tecniche coltellarie e consistenze al palato · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Tecniche coltellarie e consistenze al palato · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "tagli_cucina_tecniche",
-  "title": "155. Tecniche coltellarie e consistenze al palato",
+  "title": "Tecniche coltellarie e consistenze al palato",
   "words": [
     ["cài.dāo","菜刀","coltello da cucina"],
     ["zhēn.bǎn","砧板","tagliere"],

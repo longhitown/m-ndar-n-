@@ -1,8 +1,8 @@
-/* 51. Logistica, trasporti e spedizioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Logistica, trasporti e spedizioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "logistica_trasporti",
-  "title": "51. Logistica, trasporti e spedizioni",
+  "title": "Logistica, trasporti e spedizioni",
   "words": [
     ["wù.liú","物流","logistica"],
     ["cāng.kù","仓库","magazzino, deposito"],

@@ -1,8 +1,8 @@
-/* 80. Antropologia, miti e folclore · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Antropologia, miti e folclore · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "antropologia_folclore",
-  "title": "80. Antropologia, miti e folclore",
+  "title": "Antropologia, miti e folclore",
   "words": [
     ["rén.lèi.xué","人类学","antropologia"],
     ["shén.huà","神话","mito, mitologia"],

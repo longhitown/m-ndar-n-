@@ -1,8 +1,8 @@
-/* 84. Struttura sociale, disuguaglianza e welfare · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Struttura sociale, disuguaglianza e welfare · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "societa_disuguaglianza",
-  "title": "84. Struttura sociale, disuguaglianza e welfare",
+  "title": "Struttura sociale, disuguaglianza e welfare",
   "words": [
     ["pín.fù chā.jù","贫富差距","divario sociale"],
     ["jiē.jí","阶级","classe sociale"],

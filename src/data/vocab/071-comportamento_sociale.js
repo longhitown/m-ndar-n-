@@ -1,8 +1,8 @@
-/* 71. Comportamento sociale, etichetta e convenzioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Comportamento sociale, etichetta e convenzioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "comportamento_sociale",
-  "title": "71. Comportamento sociale, etichetta e convenzioni",
+  "title": "Comportamento sociale, etichetta e convenzioni",
   "words": [
     ["lǐ.jié","礼节","etichetta, galateo"],
     ["lǐ.mào","礼貌","cortesia"],

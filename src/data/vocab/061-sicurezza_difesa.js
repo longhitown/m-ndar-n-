@@ -1,8 +1,8 @@
-/* 61. Sicurezza, difesa e protezione civile · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Sicurezza, difesa e protezione civile · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "sicurezza_difesa",
-  "title": "61. Sicurezza, difesa e protezione civile",
+  "title": "Sicurezza, difesa e protezione civile",
   "words": [
     ["fáng.hù","防护","protezione, difesa"],
     ["jūn.shì","军事","militare, forze armate"],

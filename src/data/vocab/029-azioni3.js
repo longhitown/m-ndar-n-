@@ -1,8 +1,8 @@
-/* 29. Azioni fisiche e vita in casa · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Azioni fisiche e vita in casa · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "azioni3",
-  "title": "29. Azioni fisiche e vita in casa",
+  "title": "Azioni fisiche e vita in casa",
   "words": [
     ["dǎ.sǎo","打扫","pulire, spazzare"],
     ["shōu.shi","收拾","rassettare, preparare i bagagli"],

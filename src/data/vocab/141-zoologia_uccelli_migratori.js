@@ -1,8 +1,8 @@
-/* 141. Ornitologia, piumaggi e canti · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Ornitologia, piumaggi e canti · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "zoologia_uccelli_migratori",
-  "title": "141. Ornitologia, piumaggi e canti",
+  "title": "Ornitologia, piumaggi e canti",
   "words": [
     ["fēi.qín","飞禽","uccelli, volatili"],
     ["yàn.zi","燕子","rondine"],

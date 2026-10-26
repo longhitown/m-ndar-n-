@@ -1,8 +1,8 @@
-/* 90. E-commerce, logistica dell'ultimo miglio e resi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* E-commerce, logistica dell'ultimo miglio e resi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "commercio_elettronico",
-  "title": "90. E-commerce, logistica dell'ultimo miglio e resi",
+  "title": "E-commerce, logistica dell'ultimo miglio e resi",
   "words": [
     ["diàn.shāng","电商","e-commerce"],
     ["píng.tái","平台","piattaforma"],

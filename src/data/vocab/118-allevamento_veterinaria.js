@@ -1,8 +1,8 @@
-/* 118. Zootecnia, fauna e cura degli animali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Zootecnia, fauna e cura degli animali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "allevamento_veterinaria",
-  "title": "118. Zootecnia, fauna e cura degli animali",
+  "title": "Zootecnia, fauna e cura degli animali",
   "words": [
     ["xù.mù.yè","畜牧业","allevamento"],
     ["mù.chǎng","牧场","pascolo"],

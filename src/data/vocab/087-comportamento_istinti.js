@@ -1,8 +1,8 @@
-/* 87. Istinti primari, abitudini e condizionamento · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Istinti primari, abitudini e condizionamento · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "comportamento_istinti",
-  "title": "87. Istinti primari, abitudini e condizionamento",
+  "title": "Istinti primari, abitudini e condizionamento",
   "words": [
     ["běn.néng","本能","istinto"],
     ["yòu.huò","诱惑","tentare"],

@@ -1,8 +1,8 @@
-/* 99. Dinamiche relazionali, riconciliazione e distacco · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Dinamiche relazionali, riconciliazione e distacco · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "relazioni_conflitti",
-  "title": "99. Dinamiche relazionali, riconciliazione e distacco",
+  "title": "Dinamiche relazionali, riconciliazione e distacco",
   "words": [
     ["wù.huì","误会","malinteso"],
     ["jiě.shì","解释","spiegare"],

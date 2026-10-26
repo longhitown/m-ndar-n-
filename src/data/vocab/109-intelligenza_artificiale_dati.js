@@ -1,8 +1,8 @@
-/* 109. Reti neurali, machine learning e automazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Reti neurali, machine learning e automazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "intelligenza_artificiale_dati",
-  "title": "109. Reti neurali, machine learning e automazione",
+  "title": "Reti neurali, machine learning e automazione",
   "words": [
     ["shēn.dù xué.xí","深度学习","deep learning"],
     ["shén.jīng wǎng.luò","神经网络","rete neurale"],

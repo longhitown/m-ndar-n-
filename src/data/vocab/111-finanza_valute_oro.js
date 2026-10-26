@@ -1,8 +1,8 @@
-/* 111. Riserve valutarie, oro e metalli preziosi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Riserve valutarie, oro e metalli preziosi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "finanza_valute_oro",
-  "title": "111. Riserve valutarie, oro e metalli preziosi",
+  "title": "Riserve valutarie, oro e metalli preziosi",
   "words": [
     ["wài.huì chǔ.bèi","外汇储备","riserve valutarie"],
     ["huáng.jīn","黄金","oro"],

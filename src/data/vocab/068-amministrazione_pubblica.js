@@ -1,8 +1,8 @@
-/* 68. Amministrazione pubblica e burocrazia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Amministrazione pubblica e burocrazia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "amministrazione_pubblica",
-  "title": "68. Amministrazione pubblica e burocrazia",
+  "title": "Amministrazione pubblica e burocrazia",
   "words": [
     ["xíng.zhèng","行政","amministrazione"],
     ["shěn.pī","审批","approvare"],

@@ -1,8 +1,8 @@
-/* 9. Tempo, giorni e date · 46 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Tempo, giorni e date · 46 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "tempo",
-  "title": "9. Tempo, giorni e date",
+  "title": "Tempo, giorni e date",
   "words": [
     ["xiàn.zài","现在","adesso, ora"],
     ["jīn.tiān","今天","oggi"],

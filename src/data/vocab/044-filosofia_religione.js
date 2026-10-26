@@ -1,8 +1,8 @@
-/* 44. Filosofia, etica e spiritualità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Filosofia, etica e spiritualità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "filosofia_religione",
-  "title": "44. Filosofia, etica e spiritualità",
+  "title": "Filosofia, etica e spiritualità",
   "words": [
     ["zhé.xué","哲学","filosofia"],
     ["sī.xiǎng","思想","pensiero, ideologia"],

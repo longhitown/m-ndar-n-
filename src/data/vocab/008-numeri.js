@@ -1,8 +1,8 @@
-/* 8. Numeri e classificatori · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Numeri e classificatori · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "numeri",
-  "title": "8. Numeri e classificatori",
+  "title": "Numeri e classificatori",
   "words": [
     ["líng","零","zero"],
     ["yī","一","uno"],

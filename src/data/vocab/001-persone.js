@@ -1,8 +1,8 @@
-/* 1. Persone e pronomi · 26 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Persone e pronomi · 26 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "persone",
-  "title": "1. Persone e pronomi",
+  "title": "Persone e pronomi",
   "words": [
     ["wǒ","我","io, me"],
     ["nǐ","你","tu"],

@@ -1,8 +1,8 @@
-/* 77. Geopolitica, sfere d'influenza e confini · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Geopolitica, sfere d'influenza e confini · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "geopolitica_confini",
-  "title": "77. Geopolitica, sfere d'influenza e confini",
+  "title": "Geopolitica, sfere d'influenza e confini",
   "words": [
     ["dì.yuán zhèng.zhì","地缘政治","geopolitica"],
     ["shì.lì fàn.wéi","势力范围","sfera d'influenza"],

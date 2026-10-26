@@ -1,8 +1,8 @@
-/* 49. Management e amministrazione d'impresa · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Management e amministrazione d'impresa · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "gestione_aziendale",
-  "title": "49. Management e amministrazione d'impresa",
+  "title": "Management e amministrazione d'impresa",
   "words": [
     ["qǐ.yè","企业","impresa, azienda"],
     ["jīng.lǐ","经理","direttore, manager"],

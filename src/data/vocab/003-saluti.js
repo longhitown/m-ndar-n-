@@ -1,8 +1,8 @@
-/* 3. Saluti e cortesia · 25 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Saluti e cortesia · 25 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "saluti",
-  "title": "3. Saluti e cortesia",
+  "title": "Saluti e cortesia",
   "words": [
     ["nǐ hǎo","你好","ciao, buongiorno"],
     ["zǎo.shang hǎo","早上好","buongiorno (al mattino)"],

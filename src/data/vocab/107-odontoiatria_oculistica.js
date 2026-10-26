@@ -1,8 +1,8 @@
-/* 107. Odontoiatria, oftalmologia e sensi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Odontoiatria, oftalmologia e sensi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "odontoiatria_oculistica",
-  "title": "107. Odontoiatria, oftalmologia e sensi",
+  "title": "Odontoiatria, oftalmologia e sensi",
   "words": [
     ["yá.kē","牙科","dentista"],
     ["yǎn.kē","眼科","oculista"],

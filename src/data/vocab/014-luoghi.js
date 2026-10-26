@@ -1,8 +1,8 @@
-/* 14. Paesi, città e luoghi · 42 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Paesi, città e luoghi · 42 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "luoghi",
-  "title": "14. Paesi, città e luoghi",
+  "title": "Paesi, città e luoghi",
   "words": [
     ["Zhōng.guó","中国","Cina"],
     ["Yì.dà.lì","意大利","Italia"],

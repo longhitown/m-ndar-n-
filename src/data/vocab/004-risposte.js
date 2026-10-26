@@ -1,8 +1,8 @@
-/* 4. Sì, no, logica e particelle · 51 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Sì, no, logica e particelle · 51 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "risposte",
-  "title": "4. Sì, no, logica e particelle",
+  "title": "Sì, no, logica e particelle",
   "words": [
     ["shì","是","essere; sì, è così"],
     ["bú shì","不是","non è; no"],

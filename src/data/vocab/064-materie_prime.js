@@ -1,8 +1,8 @@
-/* 64. Materie prime e risorse industriali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Materie prime e risorse industriali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "materie_prime",
-  "title": "64. Materie prime e risorse industriali",
+  "title": "Materie prime e risorse industriali",
   "words": [
     ["yuán.liào","原料","materia prima"],
     ["kuàng.chǎn","矿产","risorse minerarie"],

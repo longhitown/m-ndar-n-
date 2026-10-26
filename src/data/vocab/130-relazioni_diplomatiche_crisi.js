@@ -1,8 +1,8 @@
-/* 130. Crisi internazionali, sanzioni e mediazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Crisi internazionali, sanzioni e mediazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "relazioni_diplomatiche_crisi",
-  "title": "130. Crisi internazionali, sanzioni e mediazione",
+  "title": "Crisi internazionali, sanzioni e mediazione",
   "words": [
     ["wò.xuán","斡旋","mediare"],
     ["tiáo.tíng","调停","mediazione"],

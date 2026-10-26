@@ -1,8 +1,8 @@
-/* 48. Finanza avanzata, banche e mercati · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Finanza avanzata, banche e mercati · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "finanza_investimenti",
-  "title": "48. Finanza avanzata, banche e mercati",
+  "title": "Finanza avanzata, banche e mercati",
   "words": [
     ["jīn.róng","金融","finanza"],
     ["gǔ.piào","股票","azioni"],

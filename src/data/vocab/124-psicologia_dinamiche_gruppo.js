@@ -1,8 +1,8 @@
-/* 124. Dinamiche di gruppo, leadership e persuasione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Dinamiche di gruppo, leadership e persuasione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "psicologia_dinamiche_gruppo",
-  "title": "124. Dinamiche di gruppo, leadership e persuasione",
+  "title": "Dinamiche di gruppo, leadership e persuasione",
   "words": [
     ["cóng.zhòng","从众","conformismo"],
     ["lǐng.xiù","领袖","leader"],

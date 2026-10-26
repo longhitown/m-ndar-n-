@@ -243,7 +243,7 @@
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
       var ex = example(w.key);
-      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
+      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + CP.hskBadge(w.hz) + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
         (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {

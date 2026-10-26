@@ -1,8 +1,8 @@
-/* 117. Mercato immobiliare, mutui e rogiti · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Mercato immobiliare, mutui e rogiti · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "immobiliare_compravendita",
-  "title": "117. Mercato immobiliare, mutui e rogiti",
+  "title": "Mercato immobiliare, mutui e rogiti",
   "words": [
     ["fáng.dì.chǎn","房地产","immobiliare"],
     ["zhōng.jiè","中介","agente immobiliare"],

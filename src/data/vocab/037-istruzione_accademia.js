@@ -1,8 +1,8 @@
-/* 37. Istruzione, università e ricerca · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Istruzione, università e ricerca · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "istruzione_accademia",
-  "title": "37. Istruzione, università e ricerca",
+  "title": "Istruzione, università e ricerca",
   "words": [
     ["jiào.yù","教育","istruzione; educare"],
     ["zhuān.yè","专业","specializzazione; professionale"],

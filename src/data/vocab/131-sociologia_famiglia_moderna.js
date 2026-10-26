@@ -1,8 +1,8 @@
-/* 131. Mutamenti familiari, generazioni e solitudine · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Mutamenti familiari, generazioni e solitudine · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "sociologia_famiglia_moderna",
-  "title": "131. Mutamenti familiari, generazioni e solitudine",
+  "title": "Mutamenti familiari, generazioni e solitudine",
   "words": [
     ["dān.qīn","单亲","monogenitoriale"],
     ["dīng.kè","丁克","coppia senza figli","DINK"],

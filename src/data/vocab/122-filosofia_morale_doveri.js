@@ -1,8 +1,8 @@
-/* 122. Doveri civici, imperativo etico e virtù · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Doveri civici, imperativo etico e virtù · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "filosofia_morale_doveri",
-  "title": "122. Doveri civici, imperativo etico e virtù",
+  "title": "Doveri civici, imperativo etico e virtù",
   "words": [
     ["zé.rèn.gǎn","责任感","senso di responsabilità"],
     ["gōng.dé","公德","senso civico"],

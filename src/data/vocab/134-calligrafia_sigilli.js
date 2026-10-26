@@ -1,8 +1,8 @@
-/* 134. Calligrafia classica, stili e incisione di sigilli · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Calligrafia classica, stili e incisione di sigilli · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "calligrafia_sigilli",
-  "title": "134. Calligrafia classica, stili e incisione di sigilli",
+  "title": "Calligrafia classica, stili e incisione di sigilli",
   "words": [
     ["kǎi.shū","楷书","scrittura regolare","kaishu"],
     ["xíng.shū","行书","scrittura corsiva","xingshu"],

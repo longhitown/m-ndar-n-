@@ -1,8 +1,8 @@
-/* 25. Amicizia, amore e vita sociale · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Amicizia, amore e vita sociale · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "relazioni",
-  "title": "25. Amicizia, amore e vita sociale",
+  "title": "Amicizia, amore e vita sociale",
   "words": [
     ["jiāo péng.you","交朋友","fare amicizia"],
     ["yuē.huì","约会","appuntamento (romantico o tra amici)"],

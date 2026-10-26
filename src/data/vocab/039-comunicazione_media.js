@@ -1,8 +1,8 @@
-/* 39. Comunicazione, media e giornalismo · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Comunicazione, media e giornalismo · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "comunicazione_media",
-  "title": "39. Comunicazione, media e giornalismo",
+  "title": "Comunicazione, media e giornalismo",
   "words": [
     ["méi.tǐ","媒体","media, mass media"],
     ["bào.zhǐ","报纸","giornale"],

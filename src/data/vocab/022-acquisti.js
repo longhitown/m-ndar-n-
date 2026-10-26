@@ -1,8 +1,8 @@
-/* 22. Fare acquisti, prezzi e pagamenti · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Fare acquisti, prezzi e pagamenti · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "acquisti",
-  "title": "22. Fare acquisti, prezzi e pagamenti",
+  "title": "Fare acquisti, prezzi e pagamenti",
   "words": [
     ["guàng.jiē","逛街","fare shopping, passeggiare per negozi"],
     ["jià.gé","价格","prezzo"],

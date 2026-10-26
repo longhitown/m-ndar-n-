@@ -1,8 +1,8 @@
-/* 20. Professioni, studio e hobby · 26 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Professioni, studio e hobby · 26 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "lavoro",
-  "title": "20. Professioni, studio e hobby",
+  "title": "Professioni, studio e hobby",
   "words": [
     ["lǎo.shī","老师","insegnante, professore"],
     ["xué.shēng","学生","studente"],

@@ -1,8 +1,8 @@
-/* 143. Ottica strumentale, rifrazione e fotografia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Ottica strumentale, rifrazione e fotografia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "ottica_fotografia_luce",
-  "title": "143. Ottica strumentale, rifrazione e fotografia",
+  "title": "Ottica strumentale, rifrazione e fotografia",
   "words": [
     ["guāng.xiàn","光线","raggio di luce"],
     ["tòu.jìng","透镜","lente"],

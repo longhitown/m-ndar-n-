@@ -1,8 +1,8 @@
-/* 38. Psicologia e tratti della personalità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Psicologia e tratti della personalità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "psicologia_personalita",
-  "title": "38. Psicologia e tratti della personalità",
+  "title": "Psicologia e tratti della personalità",
   "words": [
     ["xìng.gé","性格","carattere, personalità"],
     ["xīn.lǐ","心理","psicologia"],

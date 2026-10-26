@@ -1,8 +1,8 @@
-/* 79. Archeologia, civiltà e storia antica · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Archeologia, civiltà e storia antica · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "archeologia_storia",
-  "title": "79. Archeologia, civiltà e storia antica",
+  "title": "Archeologia, civiltà e storia antica",
   "words": [
     ["kǎo.gǔ","考古","archeologia"],
     ["wén.wù","文物","reperto"],

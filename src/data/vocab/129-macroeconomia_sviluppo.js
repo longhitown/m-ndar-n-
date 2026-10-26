@@ -1,8 +1,8 @@
-/* 129. Macroeconomia, PIL e cicli monetari · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Macroeconomia, PIL e cicli monetari · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "macroeconomia_sviluppo",
-  "title": "129. Macroeconomia, PIL e cicli monetari",
+  "title": "Macroeconomia, PIL e cicli monetari",
   "words": [
     ["guó.nèi shēng.chǎn.zǒng.zhí","国内生产总值","PIL"],
     ["rén.jūn","人均","pro capite"],

@@ -1,8 +1,8 @@
-/* 72. Meteorologia avanzata e catastrofi naturali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Meteorologia avanzata e catastrofi naturali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "meteorologia_estrema",
-  "title": "72. Meteorologia avanzata e catastrofi naturali",
+  "title": "Meteorologia avanzata e catastrofi naturali",
   "words": [
     ["qì.xiàng","气象","meteorologia"],
     ["bào.fēng.yǔ","暴风雨","tempesta, burrasca"],

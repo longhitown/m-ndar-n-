@@ -1,8 +1,8 @@
-/* 45. Energia, ecologia e sostenibilità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Energia, ecologia e sostenibilità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "energia_ambiente",
-  "title": "45. Energia, ecologia e sostenibilità",
+  "title": "Energia, ecologia e sostenibilità",
   "words": [
     ["diàn.lì","电力","energia elettrica"],
     ["shuǐ.lì","水力","energia idraulica"],

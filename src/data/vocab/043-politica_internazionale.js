@@ -1,8 +1,8 @@
-/* 43. Politica e relazioni internazionali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Politica e relazioni internazionali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "politica_internazionale",
-  "title": "43. Politica e relazioni internazionali",
+  "title": "Politica e relazioni internazionali",
   "words": [
     ["wài.jiāo","外交","diplomazia"],
     ["guó.jì","国际","internazionale"],

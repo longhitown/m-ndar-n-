@@ -1,8 +1,8 @@
-/* 149. Selvicoltura, boschi e filiera della cellulosa · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Selvicoltura, boschi e filiera della cellulosa · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "selvicoltura_legname_carta",
-  "title": "149. Selvicoltura, boschi e filiera della cellulosa",
+  "title": "Selvicoltura, boschi e filiera della cellulosa",
   "words": [
     ["lín.yè","林业","silvicoltura"],
     ["yuán.shǐ.sēn.lín","原始森林","foresta vergine"],

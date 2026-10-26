@@ -1,8 +1,8 @@
-/* 31. Opinioni, dubbi e punti di vista · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Opinioni, dubbi e punti di vista · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "opinioni",
-  "title": "31. Opinioni, dubbi e punti di vista",
+  "title": "Opinioni, dubbi e punti di vista",
   "words": [
     ["yì.jiàn","意见","opinione, parere"],
     ["tí.gōng","提供","fornire, offrire"],

@@ -1,8 +1,8 @@
-/* 110. Onde elettromagnetiche, 5G e fibra ottica · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Onde elettromagnetiche, 5G e fibra ottica · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "telecomunicazioni_onde",
-  "title": "110. Onde elettromagnetiche, 5G e fibra ottica",
+  "title": "Onde elettromagnetiche, 5G e fibra ottica",
   "words": [
     ["guāng.xiān","光纤","fibra ottica"],
     ["kuān.dài","宽带","banda larga"],

@@ -1,8 +1,8 @@
-/* 63. Risorse umane e gestione del personale · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Risorse umane e gestione del personale · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "risorse_umane",
-  "title": "63. Risorse umane e gestione del personale",
+  "title": "Risorse umane e gestione del personale",
   "words": [
     ["rén.shì","人事","personale, HR"],
     ["yìng.pìn","应聘","candidarsi"],

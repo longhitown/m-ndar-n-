@@ -1,8 +1,8 @@
-/* 150. Trasporto per vie d'acqua interne e dighe · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Trasporto per vie d'acqua interne e dighe · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "navigazione_fluviale_chiuse",
-  "title": "150. Trasporto per vie d'acqua interne e dighe",
+  "title": "Trasporto per vie d'acqua interne e dighe",
   "words": [
     ["nèi.hé háng.yùn","内河航运","navigazione fluviale"],
     ["bó.chuán","驳船","chiatta"],

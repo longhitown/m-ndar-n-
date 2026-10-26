@@ -1,8 +1,8 @@
-/* 133. Estetica orientale, vuoto e imperfezione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Estetica orientale, vuoto e imperfezione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "filosofia_estetica_vuoto",
-  "title": "133. Estetica orientale, vuoto e imperfezione",
+  "title": "Estetica orientale, vuoto e imperfezione",
   "words": [
     ["yì.jìng","意境","atmosfera poetica"],
     ["liú.bái","留白","spazio vuoto","nella pittura"],

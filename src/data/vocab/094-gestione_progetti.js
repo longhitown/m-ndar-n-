@@ -1,8 +1,8 @@
-/* 94. Project management e sviluppo agili · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Project management e sviluppo agili · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "gestione_progetti",
-  "title": "94. Project management e sviluppo agili",
+  "title": "Project management e sviluppo agili",
   "words": [
     ["xiàng.mù","项目","progetto"],
     ["zhōu.qī","周期","ciclo"],

@@ -1,8 +1,8 @@
-/* 89. Crittografia, reti e sicurezza informatica · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Crittografia, reti e sicurezza informatica · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "cybersecurity_crittografia",
-  "title": "89. Crittografia, reti e sicurezza informatica",
+  "title": "Crittografia, reti e sicurezza informatica",
   "words": [
     ["jiā.mì","加密","crittografare"],
     ["jiě.mì","解密","decrittografare"],

@@ -1,8 +1,8 @@
-/* 47. Sport, gare e competizioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Sport, gare e competizioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "sport_competizione",
-  "title": "47. Sport, gare e competizioni",
+  "title": "Sport, gare e competizioni",
   "words": [
     ["tǐ.yù","体育","sport"],
     ["jìng.sài","竞赛","gara"],

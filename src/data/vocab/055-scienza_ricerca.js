@@ -1,8 +1,8 @@
-/* 55. Scienza, fisica e ricerca avanzata · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Scienza, fisica e ricerca avanzata · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "scienza_ricerca",
-  "title": "55. Scienza, fisica e ricerca avanzata",
+  "title": "Scienza, fisica e ricerca avanzata",
   "words": [
     ["yán.jiū","研究","ricerca; studiare"],
     ["lǐ.lùn","理论","teoria"],

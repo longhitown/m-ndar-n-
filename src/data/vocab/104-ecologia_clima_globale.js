@@ -1,8 +1,8 @@
-/* 104. Sostenibilità, transizione verde e biodiversità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Sostenibilità, transizione verde e biodiversità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "ecologia_clima_globale",
-  "title": "104. Sostenibilità, transizione verde e biodiversità",
+  "title": "Sostenibilità, transizione verde e biodiversità",
   "words": [
     ["wēn.shì xiào.yìng","温室效应","effetto serra"],
     ["quán.qiú biàn.nuǎn","全球变暖","riscaldamento globale"],

@@ -1,8 +1,8 @@
-/* 95. Pensiero astratto, ontologia e paradosso · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Pensiero astratto, ontologia e paradosso · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "filosofia_linguaggio",
-  "title": "95. Pensiero astratto, ontologia e paradosso",
+  "title": "Pensiero astratto, ontologia e paradosso",
   "words": [
     ["shí.tǐ","实体","entità"],
     ["běn.zhì","本质","essenza"],

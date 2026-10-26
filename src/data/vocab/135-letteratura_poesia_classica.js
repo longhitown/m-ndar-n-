@@ -1,8 +1,8 @@
-/* 135. Metrica poetica classica (Shi e Ci) · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Metrica poetica classica (Shi e Ci) · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "letteratura_poesia_classica",
-  "title": "135. Metrica poetica classica (Shi e Ci)",
+  "title": "Metrica poetica classica (Shi e Ci)",
   "words": [
     ["gǔ.tǐ.shī","古体诗","poesia antica"],
     ["jìn.tǐ.shī","近体诗","poesia regolata"],

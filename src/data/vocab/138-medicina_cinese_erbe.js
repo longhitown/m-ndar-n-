@@ -1,8 +1,8 @@
-/* 138. Farmacopea tradizionale cinese, erbe e diagnosi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Farmacopea tradizionale cinese, erbe e diagnosi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "medicina_cinese_erbe",
-  "title": "138. Farmacopea tradizionale cinese, erbe e diagnosi",
+  "title": "Farmacopea tradizionale cinese, erbe e diagnosi",
   "words": [
     ["zhōng.yī","中医","medicina cinese"],
     ["zhōng.yào","中药","erbe medicinali"],

@@ -1,8 +1,8 @@
-/* 144. Acustica fisica, vibrazioni e decibel · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Acustica fisica, vibrazioni e decibel · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "acustica_suono_onde",
-  "title": "144. Acustica fisica, vibrazioni e decibel",
+  "title": "Acustica fisica, vibrazioni e decibel",
   "words": [
     ["shēng.bō","声波","onda sonora"],
     ["shēng.sù","声速","velocità del suono"],

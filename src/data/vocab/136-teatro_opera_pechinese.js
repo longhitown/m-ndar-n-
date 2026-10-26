@@ -1,8 +1,8 @@
-/* 136. Opera di Pechino, ruoli e maschere · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Opera di Pechino, ruoli e maschere · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "teatro_opera_pechinese",
-  "title": "136. Opera di Pechino, ruoli e maschere",
+  "title": "Opera di Pechino, ruoli e maschere",
   "words": [
     ["chàng.qiāng","唱腔","stile di canto"],
     ["liǎn.pǔ","脸谱","trucco dell'opera"],

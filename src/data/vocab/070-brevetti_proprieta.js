@@ -1,8 +1,8 @@
-/* 70. Brevetti e proprietà intellettuale · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Brevetti e proprietà intellettuale · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "brevetti_proprieta",
-  "title": "70. Brevetti e proprietà intellettuale",
+  "title": "Brevetti e proprietà intellettuale",
   "words": [
     ["zhī.shi chǎn.quán","知识产权","proprietà intellettuale"],
     ["zhuān.lì","专利","brevetto"],

@@ -1,8 +1,8 @@
-/* 154. Condimenti complessi, spezie e fermentazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Condimenti complessi, spezie e fermentazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "gastronomia_spezie_sapori",
-  "title": "154. Condimenti complessi, spezie e fermentazioni",
+  "title": "Condimenti complessi, spezie e fermentazioni",
   "words": [
     ["bā.jiǎo","八角","anice stellato"],
     ["huā.jiāo","花椒","pepe del Sichuan"],

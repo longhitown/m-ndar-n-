@@ -1,8 +1,8 @@
-/* 100. Critica letteraria, generi e stile · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Critica letteraria, generi e stile · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "letteratura_stilistica",
-  "title": "100. Critica letteraria, generi e stile",
+  "title": "Critica letteraria, generi e stile",
   "words": [
     ["sǎn.wén","散文","prosa"],
     ["chuàng.zuò","创作","creare; creazione"],

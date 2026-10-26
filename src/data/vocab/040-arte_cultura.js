@@ -1,8 +1,8 @@
-/* 40. Arte, letteratura e spettacolo · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Arte, letteratura e spettacolo · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "arte_cultura",
-  "title": "40. Arte, letteratura e spettacolo",
+  "title": "Arte, letteratura e spettacolo",
   "words": [
     ["huì.huà","绘画","pittura, dipingere"],
     ["diāo.kè","雕刻","scultura, scolpire"],

@@ -1,8 +1,8 @@
-/* 102. Geologia strutturale, minerali ed ere geologiche · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Geologia strutturale, minerali ed ere geologiche · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "geologia_tettonica",
-  "title": "102. Geologia strutturale, minerali ed ere geologiche",
+  "title": "Geologia strutturale, minerali ed ere geologiche",
   "words": [
     ["dì.qiào","地壳","crosta terrestre"],
     ["bǎn.kuài","板块","placca tettonica"],

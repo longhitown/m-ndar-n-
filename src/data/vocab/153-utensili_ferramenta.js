@@ -1,8 +1,8 @@
-/* 153. Attrezzi manuali, viteria e fai-da-te · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Attrezzi manuali, viteria e fai-da-te · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "utensili_ferramenta",
-  "title": "153. Attrezzi manuali, viteria e fai-da-te",
+  "title": "Attrezzi manuali, viteria e fai-da-te",
   "words": [
     ["luó.sī.dāo","螺丝刀","cacciavite"],
     ["bān.shǒu","扳手","chiave inglese"],

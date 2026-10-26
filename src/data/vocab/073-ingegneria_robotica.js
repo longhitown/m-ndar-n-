@@ -1,8 +1,8 @@
-/* 73. Ingegneria, robotica e automazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Ingegneria, robotica e automazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "ingegneria_robotica",
-  "title": "73. Ingegneria, robotica e automazione",
+  "title": "Ingegneria, robotica e automazione",
   "words": [
     ["jī.qì.rén","机器人","robot, automa"],
     ["zì.dòng.huà","自动化","automazione"],

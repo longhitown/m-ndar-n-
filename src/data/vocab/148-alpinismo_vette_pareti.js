@@ -1,8 +1,8 @@
-/* 148. Alpinismo estremo, arrampicata e ghiaccio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Alpinismo estremo, arrampicata e ghiaccio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "alpinismo_vette_pareti",
-  "title": "148. Alpinismo estremo, arrampicata e ghiaccio",
+  "title": "Alpinismo estremo, arrampicata e ghiaccio",
   "words": [
     ["dēng.shān","登山","alpinismo"],
     ["shān.fēng","山峰","vetta"],

@@ -1,8 +1,8 @@
-/* 113. Industria manifatturiera e supply chain · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Industria manifatturiera e supply chain · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "catena_montaggio_manifattura",
-  "title": "113. Industria manifatturiera e supply chain",
+  "title": "Industria manifatturiera e supply chain",
   "words": [
     ["liú.shuǐ.xiàn","流水线","catena di montaggio"],
     ["zhì.zào.yè","制造业","industria manifatturiera"],

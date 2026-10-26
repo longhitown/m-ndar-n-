@@ -1,8 +1,8 @@
-/* 86. Neuroscienze, sonno e processi mentali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Neuroscienze, sonno e processi mentali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "neuroscienze_mente",
-  "title": "86. Neuroscienze, sonno e processi mentali",
+  "title": "Neuroscienze, sonno e processi mentali",
   "words": [
     ["dà.nǎo","大脑","cervello"],
     ["shén.jīng.yuán","神经元","neurone"],

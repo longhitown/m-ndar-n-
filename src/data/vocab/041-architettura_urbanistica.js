@@ -1,8 +1,8 @@
-/* 41. Architettura e pianificazione urbana · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Architettura e pianificazione urbana · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "architettura_urbanistica",
-  "title": "41. Architettura e pianificazione urbana",
+  "title": "Architettura e pianificazione urbana",
   "words": [
     ["jiàn.zhù","建筑","edificio; architettura"],
     ["xiàn.dài","现代","moderno"],

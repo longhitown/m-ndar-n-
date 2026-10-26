@@ -1,8 +1,8 @@
-/* 137. Arti marziali tradizionali, qi e punti vitali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Arti marziali tradizionali, qi e punti vitali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "arti_marziali_qi",
-  "title": "137. Arti marziali tradizionali, qi e punti vitali",
+  "title": "Arti marziali tradizionali, qi e punti vitali",
   "words": [
     ["wǔ.shù","武术","arti marziali"],
     ["qì.gōng","气功","qigong"],

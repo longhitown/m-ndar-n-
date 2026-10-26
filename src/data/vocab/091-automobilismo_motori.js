@@ -1,8 +1,8 @@
-/* 91. Meccanica dei veicoli, guida e manutenzione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Meccanica dei veicoli, guida e manutenzione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "automobilismo_motori",
-  "title": "91. Meccanica dei veicoli, guida e manutenzione",
+  "title": "Meccanica dei veicoli, guida e manutenzione",
   "words": [
     ["fā.dòng.jī","发动机","motore"],
     ["lún.tāi","轮胎","pneumatico"],

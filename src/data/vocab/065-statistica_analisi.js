@@ -1,8 +1,8 @@
-/* 65. Statistica, analisi e misurazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Statistica, analisi e misurazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "statistica_analisi",
-  "title": "65. Statistica, analisi e misurazioni",
+  "title": "Statistica, analisi e misurazioni",
   "words": [
     ["tǒng.jì","统计","statistica; censire"],
     ["bào.gào","报告","report, relazione"],

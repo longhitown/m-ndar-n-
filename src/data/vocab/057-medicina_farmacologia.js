@@ -1,8 +1,8 @@
-/* 57. Medicina, anatomia e farmacologia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Medicina, anatomia e farmacologia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "medicina_farmacologia",
-  "title": "57. Medicina, anatomia e farmacologia",
+  "title": "Medicina, anatomia e farmacologia",
   "words": [
     ["yī.xué","医学","medicina"],
     ["jiě.pōu","解剖","anatomia"],

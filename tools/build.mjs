@@ -42,6 +42,13 @@ if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
   const ST = vm.runInContext("STROKES", sctx), miss = new Set();
   D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !ST[ch]) miss.add(ch); })));
   if (miss.size) fail(`caratteri senza tratti in src/data/strokes.js: ${[...miss].join("")} (lancia node tools/strokes.mjs graphics.txt)`); }
+/* il Percorso: ogni tappa ha un capitolo (data/levels.js) e i file del vocabolario sono in ordine di capitolo */
+{ const lctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/levels.js"), "utf8"), lctx);
+  const SC = vm.runInContext("SECTION_CHAPTER", lctx); let last = 0;
+  for (const s of D.SECTIONS) {
+    const ch = SC[s.id]; if (!ch) fail(`la tappa ${s.id} non ha un capitolo in src/data/levels.js (lancia node tools/levels.mjs complete.json)`);
+    if (ch < last) fail(`la tappa ${s.id} (capitolo ${ch}) viene dopo una del capitolo ${last}: lancia node tools/levels.mjs complete.json`); last = ch;
+  } }
 if (ee.length) fail("frasi d'esempio non valide:\n  " + ee.slice(0, 20).join("\n  "));
 if (gv.bad.length) fail("frasi verificate che le regole non traducono più così (dettagli: node tools/grammar.mjs):\n  " + gv.bad.slice(0, 10).map((b) => b.zh + " → «" + b.got + "», attesa «" + b.want + "»").join("\n  "));
 

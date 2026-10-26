@@ -1,8 +1,8 @@
-/* 19. Meteo, natura e animali · 24 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Meteo, natura e animali · 24 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "natura",
-  "title": "19. Meteo, natura e animali",
+  "title": "Meteo, natura e animali",
   "words": [
     ["tiān.qì","天气","tempo atmosferico"],
     ["tài.yáng","太阳","sole"],

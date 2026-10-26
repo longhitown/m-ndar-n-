@@ -1,8 +1,8 @@
-/* 62. Scambi commerciali e dogane · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Scambi commerciali e dogane · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "scambi_commerciali",
-  "title": "62. Scambi commerciali e dogane",
+  "title": "Scambi commerciali e dogane",
   "words": [
     ["mào.yì","贸易","commercio"],
     ["jìn.kǒu","进口","importazione"],
