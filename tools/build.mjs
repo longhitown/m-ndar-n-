@@ -18,7 +18,7 @@ import crypto from "crypto";
 import vm from "vm";
 import { fileURLToPath } from "url";
 import { assets, load, check } from "./lib/data.mjs";
-import { lab, verify, checkLessons } from "./lib/lab.mjs";
+import { lab, verify, checkLessons, checkExamples } from "./lib/lab.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src"), OUT = path.join(ROOT, "dist");
@@ -35,14 +35,15 @@ if (c.err.length) fail("dati non validi:\n  " + c.err.slice(0, 30).join("\n  ") 
 
 /* 1b. grammatica: le frasi verificate (src/data/verified.js) devono uscire identiche dalle regole;
        le lezioni (src/data/lessons) devono usare solo parole del vocabolario e avere esercizi ben fatti */
-const LAB = lab(SRC), gv = verify(LAB), le = checkLessons(LAB);
+const LAB = lab(SRC), gv = verify(LAB), le = checkLessons(LAB), ee = checkExamples(LAB);
 if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
+if (ee.length) fail("frasi d'esempio non valide:\n  " + ee.slice(0, 20).join("\n  "));
 if (gv.bad.length) fail("frasi verificate che le regole non traducono più così (dettagli: node tools/grammar.mjs):\n  " + gv.bad.slice(0, 10).map((b) => b.zh + " → «" + b.got + "», attesa «" + b.want + "»").join("\n  "));
 
 /* 2. ogni file è elencato */
 const { html, scripts, styles } = assets(SRC);
 const listed = new Set(scripts.map((s) => s.src));
-for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "data/it/lessons", "audio/tracks"]) {
+for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "data/examples", "data/it/lessons", "audio/tracks"]) {
   for (const f of fs.readdirSync(path.join(SRC, dir)).filter((x) => x.endsWith(".js"))) {
     if (!listed.has(dir + "/" + f)) fail(`src/${dir}/${f} non è elencato in src/index.html (aggiungi <script src="${dir}/${f}"></script>)`);
   }

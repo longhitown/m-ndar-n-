@@ -52,7 +52,10 @@
     CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (P[s.raw] && out.length) out[out.length - 1] += P[s.raw]; });
     var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
   }
+  /* prima la frase scritta apposta per la parola (src/data/examples), poi quella trovata nel resto dell'app */
   function example(k) {
+    var x = typeof EXAMPLES !== "undefined" && EXAMPLES[k];
+    if (x) return [pyOf(x[0]), x[0], x[1]];
     var e = exIndex()[k]; if (!e) return null;
     return e[0] ? e : [pyOf(e[1]), e[1], e[2]];
   }

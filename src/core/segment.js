@@ -14,9 +14,15 @@ var MDSegment = (function () {
     function est(w) { var r = 0; Array.from(w).forEach(function (c) { r = Math.max(r, RANK[c] || RARE); }); return r; }
     /* composti che nelle frasi sono più spesso due parole: 才能 «talento» ma 只有…才能… = 才|能; 个人 ma 这个人 = 这个|人 */
     var WEAK = { "才能": 3, "只有": 2, "还有": 2, "有时": 2, "从中": 2, "个人": 2, "有一些": 4, "请进": 2.5, "请坐": 2.5 };
-    /* parole che dipendono da ciò che c'è prima: 他的话 = 他的|话 (non «se»), 八点十分 = 十|分 (non «molto») */
-    var CTX = [[/^的话$/, /[我你他她它们]$/, 4], [/^十分$/, /点$/, 9]];
-    function ctx(w, before) { var p = 0; for (var i = 0; i < CTX.length; i++) if (CTX[i][0].test(w) && CTX[i][1].test(before)) p += CTX[i][2]; return p; }
+    /* parole che dipendono dal contesto: 他的话 = 他的|话 (non «se»), 八点十分 = 十|分 (non «molto»); un costo negativo
+       restituisce il composto debole dove è un nome: 他的才能 «il suo talento», 个人信息 «dati personali» */
+    var CTX = [[/^的话$/, /[我你他她它们]$/, null, 4], [/^十分$/, /点$/, null, 9], [/^挺好$/, null, /^[吃看听玩用喝]/, 6],
+      [/^才能$/, /[的有]$/, null, -3], [/^个人$/, /(^|[的我你他她])$/, null, -2]];
+    function ctx(w, before, after) {
+      var p = 0;
+      for (var i = 0; i < CTX.length; i++) if (CTX[i][0].test(w) && (!CTX[i][1] || CTX[i][1].test(before)) && (!CTX[i][2] || CTX[i][2].test(after))) p += CTX[i][3];
+      return p;
+    }
     /* caratteri che oggi vivono quasi sempre dentro parole composte: da soli costano di più (中文|学 e non 中|文学) */
     var BOUND = { "中": 1.5, "国": 1.5, "文": 1.5, "时": 1.5, "间": 1.5, "日": 1, "语": 1.5 };
     function cost(w) { return Math.log((RANK[w] || est(w)) + 20) + TOK + (WEAK[w] || 0) + (BOUND[w] || 0); }
@@ -29,7 +35,7 @@ var MDSegment = (function () {
         for (L = 1; L <= MAXL && i + L <= n; L++) {
           var sub = cs.slice(i, i + L).join("");
           if (!has.call(WORDS, sub)) continue;
-          var c = best[i] + cost(sub) + (i ? ctx(sub, cs.slice(Math.max(0, i - 2), i).join("")) : 0);
+          var c = best[i] + cost(sub) + ctx(sub, cs.slice(Math.max(0, i - 2), i).join(""), cs.slice(i + L, i + L + 1).join(""));
           if (c < best[i + L] - 1e-9) { best[i + L] = c; prev[i + L] = i; wi[i + L] = sub; }
         }
       }
