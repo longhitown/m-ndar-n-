@@ -16,4 +16,7 @@
     <string name="w_large_name">今天</string>
     <string name="w_small_desc">连续天数和待复习数量</string>
     <string name="w_large_desc">连续天数、待复习数量和今日一词</string>
+    <string name="m_play">继续</string>
+    <string name="m_pause">暂停</string>
+    <string name="m_next">下一首</string>
 </resources>

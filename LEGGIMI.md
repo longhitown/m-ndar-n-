@@ -106,7 +106,10 @@ sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 
 ## Pubblicare (Cloudflare Pages, il più semplice)
 
 1. Cloudflare → Workers & Pages → Create → Pages → Connect to Git → questo repository.
-2. Build command: vuoto (`dist/` è già nel repository). Output directory: `dist`.
+2. Build command: `node tools/build.mjs` (solo Node, nessuna dipendenza). Output directory: `dist`.
+   I file pesanti (i brani, con l'impronta nel nome, e i «nomi e termini» del Lettore) non stanno nel repository dentro
+   `dist/`: li genera la build dagli originali in `src/`. `dist/index.html` invece resta nel repository (si scarica e
+   funziona da solo).
 3. Dal telefono apri `https://….pages.dev` → menu del browser → «Aggiungi a schermata Home».
 
 Su https il microfono chiede il permesso una volta sola; dopo il primo caricamento l'app funziona senza rete.

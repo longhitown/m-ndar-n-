@@ -86,3 +86,7 @@ Object.assign(I18N.zh, { "rd.wikiGet": "同时查找人名、地名和术语（�
 Object.assign(I18N.zh, { "rm.title": "学习提醒", "rm.on": "每天提醒一次", "rm.time": "时间", "rm.hint": "只有今天还没学习、并且有需要复习的内容时才会提醒。一切都在手机上计算：没有服务器。", "rm.denied": "手机设置里关闭了这个应用的通知。", "rm.needPerm": "没有通知权限就无法提醒。", "rm.onDone": "提醒已开启：每天 {t}。", "rm.offDone": "提醒已关闭。", "rm.webOnly": "提醒只在安卓应用里有。在浏览器和 iPhone 上，网页没有服务器就无法可靠地提醒你，而这个应用没有服务器。" });
 /* Card del giorno */
 Object.assign(I18N.zh, { "card.title": "今天的卡片", "card.open": "分享今天的卡片", "card.share": "分享", "card.sub": "给意大利人的中文", "card.words": "学过的词", "card.wotd": "今日一词", "card.foot": "离线 · 免费 · 无需账号 · màndarínō" });
+/* Musica in secondo piano */
+Object.assign(I18N.zh, { "jk.bg": "应用在后台时继续播放", "jk.bgApk": "锁屏时继续播放（通知里可以暂停和切歌）" });
+/* Crediti: autore e musica */
+Object.assign(I18N.zh, { "cr.authorT": "màndarínō", "cr.author": "由 <b>Claudio Longhitano</b> 构思、编写和维护。", "cr.coauthor": "也有 <b>Claude Code</b>（Anthropic）的「帮凶」：它写了很多代码，数了很多声调，也终于学会了「了」不能不假思索地翻成「<span lang=\"it\">già</span>」。剩下的错误两人都有份；有趣的那些，主要算它的。", "cr.code": "应用代码是开源的（MIT 许可）；音乐采用 CC BY 4.0 许可。许可全文在代码仓库里（LICENSE、LICENZE/）。", "cr.music": "音乐", "cr.musicT": "22 首原创曲目，由 <b>Claudio Longhitano</b> 为 màndarínō 创作（CC BY 4.0）。采样乐器来自 CC0 或公有领域的开放音源库：不要求署名，我们乐意注明。", "cr.m1": "弦乐、铜管、木管、竖琴、定音鼓、钟琴、马林巴 · CC0", "cr.m2": "打击乐、颤音琴、钟、越南筝、陶笛、卡林巴、管风琴、大键琴、竖笛、strumstick · CC0", "cr.m3": "钢琴 · CC0", "cr.m4": "独奏大提琴 · CC0", "cr.m5": "二胡、班卓琴、人声 · CC0", "cr.m6": "钢鼓 · 公有领域（Unlicense）", "cr.m7": "人声嘈杂、地铁关门提示（2 号线） · CC0", "cr.musicSynth": "堂鼓、板鼓、唢呐、笙、纸声、合成器和合成人声都是合成的，或由 CC0 打击乐制作而成。" });

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="it">
 <head>
+<script>window.MUSIC_FILES = {"alba":["alba.274e308f.ogg",4005387],"ascesa":["ascesa.ef66f5cd.ogg",3357196],"bambu":["bambu.c68fac34.ogg",4603782],"biblioteca":["biblioteca.e6298560.ogg",4669250],"calligrafia":["calligrafia.5768d802.ogg",3534314],"chengdu":["chengdu.0ba69e89.ogg",3016136],"drago":["drago.a48df1f6.ogg",2599303],"guilin":["guilin.6417e45a.ogg",4146573],"hainan":["hainan.0c3c122a.ogg",3916743],"lanterne":["lanterne.f7d8844c.ogg",4488353],"li":["li.918ea80f.ogg",3866803],"metro":["metro.619c9e82.ogg",2898320],"neon":["neon.67f063a2.ogg",2445513],"ovest":["ovest.9cb49033.ogg",4066948],"pechino8bit":["pechino8bit.70604b19.ogg",2484690],"puer":["puer.5a9cf416.ogg",4749318],"seta":["seta.c9276a6b.ogg",4412000],"shanghai":["shanghai.c0c4d7b1.ogg",2781577],"studio":["studio.c70c43b8.ogg",3151426],"suzhou":["suzhou.c7520140.ogg",3079370],"taiji":["taiji.ab91689b.ogg",3904562],"tempio":["tempio.d9deaf85.ogg",4306002]}; window.WIKI_FILE = "data/wiki/zh-it.a39d15ab.txt";</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14594A">
@@ -798,6 +799,8 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 .xr-wiki li { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .xw-w { border: 0; background: transparent; padding: 2px 0; min-height: 32px; font-size: 18px; color: var(--accent); }
 .card-cv { width: 100%; max-width: 420px; height: auto; display: block; margin: 10px auto 0; border-radius: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.15); }
+.cred-author { padding: 12px 14px; border-radius: 14px; background: var(--chip); }
+.cred-libs { margin: 6px 0; padding-left: 18px; display: grid; gap: 3px; }
 
 /* ---- styles/brand-audio.css ---- */
 /* ===== V5: componenti nuovi ===== */
@@ -14984,6 +14987,10 @@ Object.assign(I18N.it, { "rd.wikiGet": "Cerca anche nomi e termini (Wikipedia, 2
 Object.assign(I18N.it, { "rm.title": "Promemoria", "rm.on": "Un promemoria al giorno", "rm.time": "Ora", "rm.hint": "Arriva solo se oggi non hai ancora studiato e c'è qualcosa da ripassare. Tutto si calcola sul telefono: nessun server.", "rm.denied": "Le notifiche dell'app sono spente nelle impostazioni del telefono.", "rm.needPerm": "Senza il permesso delle notifiche il promemoria non può arrivare.", "rm.onDone": "Promemoria acceso: alle {t}.", "rm.offDone": "Promemoria spento.", "rm.webOnly": "I promemoria ci sono nell'app Android. Nel browser e sull'iPhone una pagina web non può avvisarti in modo affidabile senza un server, e questa app non ne ha." });
 /* Card del giorno */
 Object.assign(I18N.it, { "card.title": "La card di oggi", "card.open": "Condividi la card di oggi", "card.share": "Condividi", "card.sub": "IL CINESE PER ITALIANI", "card.words": "parole studiate", "card.wotd": "Parola del giorno", "card.foot": "Offline, gratis, senza account · màndarínō" });
+/* Musica in secondo piano */
+Object.assign(I18N.it, { "jk.bg": "Continua anche con l'app in secondo piano", "jk.bgApk": "Continua con lo schermo spento (notifica con pausa e brano successivo)" });
+/* Crediti: autore e musica */
+Object.assign(I18N.it, { "cr.authorT": "màndarínō", "cr.author": "Ideata, scritta e curata da <b>Claudio Longhitano</b>.", "cr.coauthor": "Con la complicità di <b>Claude Code</b> (Anthropic), che ha scritto molto codice, ha contato molti toni e ha imparato che 了 non si traduce mai con «già» senza pensarci due volte. Gli errori rimasti sono di tutti e due; quelli simpatici, soprattutto suoi.", "cr.code": "Il codice dell'app è libero (licenza MIT); la musica è sotto licenza CC BY 4.0. I testi delle licenze sono nel repository (LICENSE, LICENZE/).", "cr.music": "Musica", "cr.musicT": "22 brani originali di <b>Claudio Longhitano</b> per màndarínō (CC BY 4.0). Strumenti campionati da librerie libere CC0 o di pubblico dominio: nessun credito è obbligatorio, li citiamo volentieri.", "cr.m1": "archi, ottoni, legni, arpa, timpani, glockenspiel, marimba · CC0", "cr.m2": "percussioni, vibrafono, campane, đàn tranh, ocarina, kalimba, organi, clavicembalo, flauti dolci, strumstick · CC0", "cr.m3": "pianoforte · CC0", "cr.m4": "violoncello solista · CC0", "cr.m5": "erhu, banjo, voce · CC0", "cr.m6": "steel drum · pubblico dominio (Unlicense)", "cr.m7": "vocio, allarme delle porte (Linea 2) · CC0", "cr.musicSynth": "Tanggu, bangu, suona, sheng, carta, sintetizzatori e voci sintetiche sono sintetizzati o costruiti a partire da percussioni CC0." });
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15075,6 +15082,10 @@ Object.assign(I18N.zh, { "rd.wikiGet": "同时查找人名、地名和术语（�
 Object.assign(I18N.zh, { "rm.title": "学习提醒", "rm.on": "每天提醒一次", "rm.time": "时间", "rm.hint": "只有今天还没学习、并且有需要复习的内容时才会提醒。一切都在手机上计算：没有服务器。", "rm.denied": "手机设置里关闭了这个应用的通知。", "rm.needPerm": "没有通知权限就无法提醒。", "rm.onDone": "提醒已开启：每天 {t}。", "rm.offDone": "提醒已关闭。", "rm.webOnly": "提醒只在安卓应用里有。在浏览器和 iPhone 上，网页没有服务器就无法可靠地提醒你，而这个应用没有服务器。" });
 /* Card del giorno */
 Object.assign(I18N.zh, { "card.title": "今天的卡片", "card.open": "分享今天的卡片", "card.share": "分享", "card.sub": "给意大利人的中文", "card.words": "学过的词", "card.wotd": "今日一词", "card.foot": "离线 · 免费 · 无需账号 · màndarínō" });
+/* Musica in secondo piano */
+Object.assign(I18N.zh, { "jk.bg": "应用在后台时继续播放", "jk.bgApk": "锁屏时继续播放（通知里可以暂停和切歌）" });
+/* Crediti: autore e musica */
+Object.assign(I18N.zh, { "cr.authorT": "màndarínō", "cr.author": "由 <b>Claudio Longhitano</b> 构思、编写和维护。", "cr.coauthor": "也有 <b>Claude Code</b>（Anthropic）的「帮凶」：它写了很多代码，数了很多声调，也终于学会了「了」不能不假思索地翻成「<span lang=\"it\">già</span>」。剩下的错误两人都有份；有趣的那些，主要算它的。", "cr.code": "应用代码是开源的（MIT 许可）；音乐采用 CC BY 4.0 许可。许可全文在代码仓库里（LICENSE、LICENZE/）。", "cr.music": "音乐", "cr.musicT": "22 首原创曲目，由 <b>Claudio Longhitano</b> 为 màndarínō 创作（CC BY 4.0）。采样乐器来自 CC0 或公有领域的开放音源库：不要求署名，我们乐意注明。", "cr.m1": "弦乐、铜管、木管、竖琴、定音鼓、钟琴、马林巴 · CC0", "cr.m2": "打击乐、颤音琴、钟、越南筝、陶笛、卡林巴、管风琴、大键琴、竖笛、strumstick · CC0", "cr.m3": "钢琴 · CC0", "cr.m4": "独奏大提琴 · CC0", "cr.m5": "二胡、班卓琴、人声 · CC0", "cr.m6": "钢鼓 · 公有领域（Unlicense）", "cr.m7": "人声嘈杂、地铁关门提示（2 号线） · CC0", "cr.musicSynth": "堂鼓、板鼓、唢呐、笙、纸声、合成器和合成人声都是合成的，或由 CC0 打击乐制作而成。" });
 </script>
 <!-- Nucleo: ripasso FSRS, archivio, tabella delle parole (crea window.CP), stato condiviso -->
 <script>
@@ -15419,7 +15430,7 @@ Object.assign(I18N.zh, { "card.title": "今天的卡片", "card.open": "分享�
     return out.slice(0, 40);
   }
   /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
-  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-toneshapes", "cp-contrib-nick", "cp-lang"];
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-lang"];
   function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
   function mergeKey(k, a, b) {
     if (k === "cp-srs-v1") return mergeSrs(a, b);
@@ -19302,7 +19313,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (WK.p) return WK.p;
     if (location.protocol === "file:") { WK.err = true; return Promise.resolve(null); }
     WK.err = false;
-    return (WK.p = fetch("data/wiki/zh-it.txt").then(function (r) { if (!r.ok) throw new Error("http"); return r.text(); }).then(function (t) {
+    return (WK.p = fetch(window.WIKI_FILE || "data/wiki/zh-it.txt").then(function (r) { if (!r.ok) throw new Error("http"); return r.text(); }).then(function (t) {
       var m = new Map(); t.split("\n").forEach(function (l) { var i = l.indexOf("\t"); if (i > 0) m.set(l.slice(0, i), l.slice(i + 1)); });
       WK.map = m; try { localStorage.setItem("md-wiki", "1"); } catch (e) {} return m;
     }).catch(function () { WK.err = true; WK.p = null; return null; }));
@@ -20937,58 +20948,71 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 </script>
 <script>
 /* ---- audio/file-player.js ---- */
-/* màndarínō · riproduttore dei brani registrati (audio/music/<id>.ogg, Opus): li scarica, li decodifica con Web Audio e li
-   suona in loop senza interruzioni. Interfaccia come ogni traccia: CP.audioFile.player(c, bus, id) → { step, stop }.
-   In memoria resta decodificato un solo brano alla volta (circa 90 MB per 4 minuti stereo).
-   I file non stanno dentro index.html: li serve lo stesso posto dell'app (sito, APK). Il service worker li tiene in una cache
-   a parte (mandarino-music), che sopravvive agli aggiornamenti dell'app; da file:// il browser non li lascia leggere. */
+/* màndarínō · riproduttore dei brani registrati (audio/music/<id>.<impronta>.ogg, Opus).
+   V6.8: non si decodifica più tutto il brano in memoria (circa 90 MB per 4 minuti stereo): il file compresso (3-5 MB)
+   diventa la sorgente di un elemento <audio> in loop, collegato al grafo Web Audio dell'app (MediaElementSource), così
+   volume, abbassamento sotto la voce e silenzio col microfono restano gli stessi. Il loop è quello del lettore del
+   browser, senza stacchi. Interfaccia come ogni traccia: CP.audioFile.player(c, bus, id) → { step, stop }.
+   I nomi dei file e le dimensioni li scrive la build in window.MUSIC_FILES; il service worker li tiene in una cache a
+   parte (mandarino-music), che sopravvive agli aggiornamenti. Da file:// il browser non li lascia leggere. */
 (function () {
   var CP = window.CP, BASE = "audio/music/", MCACHE = "mandarino-music";
-  var CACHE = {}, STATE = {}, listeners = [];
+  var STATE = {}, listeners = [];
   function set(id, s) { STATE[id] = s; listeners.forEach(function (f) { try { f(id, s); } catch (e) {} }); }
-  function url(id) { return BASE + id + ".ogg"; }
+  function info(id) { return (window.MUSIC_FILES || {})[id] || null; }
+  function url(id) { var m = info(id); return BASE + (m ? m[0] : id + ".ogg"); }
   var fileProto = location.protocol === "file:";
-  function bytes(id) {
+  /* il file intero come Blob (dalla cache del service worker quando c'è): sorgente locale, si può riavvolgere senza rete */
+  function blob(id) {
     if (fileProto) return Promise.reject(new Error("file"));
-    return fetch(url(id)).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); });
-  }
-  function decode(c, ab) { return new Promise(function (ok, ko) { var p = c.decodeAudioData(ab, ok, ko); if (p && p.then) p.then(ok, ko); }); }
-  function load(c, id) {
-    Object.keys(CACHE).forEach(function (k) { if (k !== id) delete CACHE[k]; });
-    if (!CACHE[id]) {
-      set(id, "loading");
-      CACHE[id] = bytes(id).then(function (ab) { return decode(c, ab); });
-      CACHE[id].then(function () { set(id, "ok"); }, function (e) { delete CACHE[id]; set(id, fileProto || (e && e.message === "file") ? "file" : "err"); });
-    }
-    return CACHE[id];
+    return fetch(url(id)).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); });
   }
   CP.audioFile = {
     state: function (id) { return STATE[id] || ""; },
     onState: function (f) { listeners.push(f); },
     fileProto: fileProto,
+    url: url,
+    /* MB dei brani, dal catalogo della build (prima era un numero fisso) */
+    mb: function (ids) { var b = 0; (ids || Object.keys(window.MUSIC_FILES || {})).forEach(function (id) { var m = info(id); if (m) b += m[1]; }); return b / 1048576; },
     player: function (c, bus, id) {
-      var stopped = false, src = null, g = c.createGain();
+      var stopped = false, g = c.createGain(), el = new Audio(), src = null, obj = "";
       g.gain.value = 0; g.connect(bus);
-      load(c, id).then(function (buf) {
+      el.loop = true; el.preload = "auto";
+      set(id, "loading");
+      blob(id).then(function (b) {
         if (stopped) return;
-        src = c.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(g);
-        var t = c.currentTime + 0.05; src.start(t); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + 1.5);
-      }).catch(function () {});
+        obj = URL.createObjectURL(b); el.src = obj;
+        src = c.createMediaElementSource(el); src.connect(g);
+        el.addEventListener("playing", function () { set(id, "ok"); }, { once: true });
+        return el.play().then(function () {
+          var t = c.currentTime; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + 1.5);
+        });
+      }).catch(function (e) { if (!stopped) set(id, fileProto || (e && e.message === "file") ? "file" : "err"); });
       return {
         step: function () {},
+        el: el,
+        pause: function (on) { try { if (on) el.pause(); else el.play(); } catch (e) {} },
         stop: function () {
           if (stopped) return; stopped = true;
           var t = c.currentTime;
           try { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + 0.6); } catch (e) {}
-          setTimeout(function () { try { if (src) src.stop(); } catch (e) {} try { g.disconnect(); } catch (e) {} src = null; }, 700);
+          setTimeout(function () { try { el.pause(); el.removeAttribute("src"); el.load(); } catch (e) {} try { if (src) src.disconnect(); g.disconnect(); } catch (e) {} if (obj) URL.revokeObjectURL(obj); }, 700);
         }
       };
     },
-    /* offline: quali brani sono già nella cache del telefono, e lo scaricamento di tutti (il service worker li mette da parte) */
+    /* offline: quali brani (con il nome di adesso) sono già nella cache del telefono; via quelli vecchi */
     offline: function () {
       if (fileProto || !window.caches) return Promise.resolve(null);
-      return caches.open(MCACHE).then(function (ch) { return ch.keys(); }).then(function (ks) {
-        var have = {}; ks.forEach(function (r) { var m = /\/audio\/music\/([\w-]+)\.ogg$/.exec(r.url); if (m) have[m[1]] = 1; }); return have;
+      var cur = {}; Object.keys(window.MUSIC_FILES || {}).forEach(function (id) { cur[url(id)] = id; });
+      return caches.open(MCACHE).then(function (ch) {
+        return ch.keys().then(function (ks) {
+          var have = {};
+          ks.forEach(function (r) {
+            var p = new URL(r.url).pathname, m = /audio\/music\/[^/]+$/.exec(p); if (!m) return;
+            var id = cur[m[0]]; if (id) have[id] = 1; else ch.delete(r);   /* un brano sostituito: la copia vecchia se ne va */
+          });
+          return have;
+        });
       }).catch(function () { return null; });
     },
     downloadAll: function (ids, progress) {
@@ -21170,7 +21194,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
 
   var J = { want: lget("cp-music") === "1", sel: lget("cp-track") || "shuffle", vol: parseFloat(lget("cp-musicvol") || "0.8"),
     run: false, timer: 0, hold: 0, bus: null, cur: null, curId: "", order: [], pos: 0, slotAt: 0, bufs: {}, noise: null, played: [],
-    mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0" };
+    mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0", bg: lget("cp-jkbg") === "1" };
   var TRACKS = CP.audioTracks.list, groove = CP.synth.groove;
   var MOODS = [["", CP.t("jk.mAll")], ["calm", CP.t("jk.mCalm")], ["focus", CP.t("jk.mFocus")], ["energy", CP.t("jk.mEnergy")]];
   var BYID = {}; TRACKS.forEach(function (t) { BYID[t.id] = t; });
@@ -21179,7 +21203,9 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var ZH = typeof LANG !== "undefined" && LANG === "zh";
   function nm(t) { return ZH && t.zh ? t.zh[0] : t.name; }
   function ds(t) { return ZH && t.zh ? t.zh[1] : t.desc; }
-  var MB = 80, DL = null;
+  /* livello della musica: i brani sono normalizzati a circa −20 dB RMS (picchi a −1 dBFS), quindi niente filtro e un
+     guadagno più alto di quello pensato per le vecchie tracce generate (era 0,34 con un passa-basso a 5200 Hz) */
+  var G0 = 0.6, DL = null;
 
   /* ---------- motore ---------- */
   function pool() { var a = TRACKS.filter(function (t) { return !J.mood || t.mood === J.mood; }); return a.length ? a : TRACKS; }
@@ -21191,8 +21217,8 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   }
   function ensureBus(c) {
     if (J.bus) return J.bus;
-    J.bus = c.createGain(); J.bus.gain.value = 0.34 * J.vol;
-    var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; J.bus.connect(lp); lp.connect((CP.bus && CP.bus.music()) || CP.master());
+    J.bus = c.createGain(); J.bus.gain.value = G0 * J.vol;
+    J.bus.connect((CP.bus && CP.bus.music()) || CP.master());
     return J.bus;
   }
   function play(id) {
@@ -21202,6 +21228,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     CP.synth.reset();
     var tb = c.createGain(); tb.gain.setValueAtTime(0, now); tb.gain.linearRampToValueAtTime(1, now + FADE); tb.connect(ensureBus(c));
     J.cur = { id: id, tb: tb, inst: BYID[id].make(c, tb) }; J.curId = id; J.slotAt = Date.now();
+    session(true);
     if (J.played[J.played.length - 1] !== id) J.played.push(id);
     paint(); schedule();
   }
@@ -21234,13 +21261,39 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   function stop() {
     if (!J.run) return; J.run = false; clearInterval(J.timer); J.timer = 0;
     try { if (navigator.audioSession) navigator.audioSession.type = "ambient"; } catch (e) {}
-    var c = CP.getCtx(), old = J.cur; J.cur = null; J.curId = "";
+    var c = CP.getCtx(), old = J.cur; J.cur = null; J.curId = ""; session(false);
     if (old && c) { try { old.tb.gain.cancelScheduledValues(c.currentTime); old.tb.gain.setValueAtTime(old.tb.gain.value, c.currentTime); old.tb.gain.linearRampToValueAtTime(0, c.currentTime + 0.5); } catch (e) {} setTimeout(function () { try { old.inst.stop(); old.tb.disconnect(); } catch (e) {} }, 700); }
     paint();
   }
+  /* comandi del sistema: Media Session (schermata di blocco, cuffie, Chrome) e, nell'app Android, la notifica del servizio
+     di riproduzione (MusicService), che tiene viva la musica con lo schermo spento quando si sceglie il secondo piano */
+  function session(on) {
+    var t = BYID[J.curId], ms = navigator.mediaSession, A = window.MandarinoAndroid;
+    try {
+      if (ms) {
+        if (on && t && window.MediaMetadata) ms.metadata = new MediaMetadata({ title: nm(t), artist: "màndarínō", album: CP.t("jk.title").replace(/^\S+\s/, ""), artwork: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }] });
+        ms.playbackState = on ? "playing" : "paused";
+      }
+    } catch (e) {}
+    try { if (A && A.musicNotify) A.musicNotify(on && t ? t.ico + " " + nm(t) : "", !!on, !!J.bg); } catch (e) {}
+  }
+  function remote(cmd) {
+    if (cmd === "next") { if (J.run) { if (J.sel === "shuffle") next(); else { var i = (TRACKS.map(function (t) { return t.id; }).indexOf(J.sel) + 1) % TRACKS.length; choose(TRACKS[i].id); } } return; }
+    if (cmd === "pause" || (cmd === "toggle" && J.want)) { J.want = false; lset("cp-music", "0"); }
+    else if (cmd === "play" || cmd === "toggle") { J.want = true; lset("cp-music", "1"); }
+    CP.musicApply(); if (!pop.hidden) { pop.innerHTML = popHTML(); paintOff(); }
+  }
+  try {
+    if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler("play", function () { remote("play"); });
+      navigator.mediaSession.setActionHandler("pause", function () { remote("pause"); });
+      navigator.mediaSession.setActionHandler("nexttrack", function () { remote("next"); });
+    }
+  } catch (e) {}
   function modeNow() { return !CP.pref.sfx ? "mute" : "on"; }
   CP.musicApply = function () {
-    var on = J.want && modeNow() !== "mute" && !J.hold && !document.hidden;
+    /* in secondo piano la musica si ferma, a meno che non si sia scelto di lasciarla suonare (⚙️ nel pannello 🎵) */
+    var on = J.want && modeNow() !== "mute" && !J.hold && (J.bg || !document.hidden);
     if (on) start(); else stop();
     if (mus) {
       mus.textContent = "🎵"; mus.classList.toggle("on", J.want && modeNow() !== "mute"); mus.setAttribute("aria-pressed", J.want ? "true" : "false");
@@ -21257,7 +21310,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var c = TRACKS.filter(function (t) { return t.mood === m && t.id !== J.curId; }); if (!c.length) return;
     play(c[Math.floor(Math.random() * c.length)].id);
   };
-  CP.jukebox = { tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
+  CP.jukebox = { remote: function (c) { remote(c); }, tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
 
   /* ---------- interfaccia: popup sul 🎵 + selettore in "Voce e audio" ---------- */
   var pop = document.createElement("div"); pop.id = "jk-pop"; pop.hidden = true; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-modal", "true"); pop.setAttribute("aria-label", "Jukebox"); document.body.appendChild(pop);
@@ -21293,6 +21346,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       '<label class="jk-vol small muted">' + CP.t("jk.music") + ' <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
       '<label class="jk-vol small muted">' + CP.t("jk.fx") + ' <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
       '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> ' + CP.t("jk.auto") + '</label>' +
+      '<label class="chk small"><input type="checkbox" data-jk-bg' + (J.bg ? " checked" : "") + '> ' + CP.t(window.MandarinoAndroid ? "jk.bgApk" : "jk.bg") + "</label>" +
       offLine() + moodPills() + list() + "</div>";
   }
   /* offline: sul sito i brani si salvano sul telefono al primo ascolto, oppure tutti insieme; nell'APK sono già dentro */
@@ -21307,7 +21361,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       if (!have) { box.textContent = ""; return; }
       var ids = fileIds(), n = ids.filter(function (id) { return have[id]; }).length;
       if (n === ids.length) { box.textContent = CP.t("jk.offAll", { tot: ids.length }); return; }
-      box.innerHTML = esc(CP.t("jk.off1", { n: n, tot: ids.length })) + ' <button type="button" class="btn-s" data-jk-dl>' + esc(CP.t("jk.dl", { mb: Math.max(1, Math.round(MB * (ids.length - n) / ids.length)) })) + "</button>";
+      box.innerHTML = esc(CP.t("jk.off1", { n: n, tot: ids.length })) + ' <button type="button" class="btn-s" data-jk-dl>' + esc(CP.t("jk.dl", { mb: Math.max(1, Math.round(CP.audioFile.mb(ids.filter(function (id) { return !have[id]; })))) })) + "</button>";
     });
   }
   function downloadAll() {
@@ -21354,12 +21408,13 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   }
   pop.addEventListener("click", function (e) { if (e.target === pop) closePop(); else onClick(e); });
   pop.addEventListener("input", function (e) {
-    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-vol")) { J.vol = parseFloat(e.target.value); lset("cp-musicvol", String(J.vol)); if (J.bus) J.bus.gain.value = 0.34 * J.vol; }
+    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-vol")) { J.vol = parseFloat(e.target.value); lset("cp-musicvol", String(J.vol)); if (J.bus) J.bus.gain.value = G0 * J.vol; }
     if (e.target.hasAttribute && e.target.hasAttribute("data-sfx-vol") && CP.bus) { CP.bus.setSfxVol(parseFloat(e.target.value)); }
   });
   pop.addEventListener("change", function (e) {
     if (e.target.hasAttribute && e.target.hasAttribute("data-sfx-vol")) CP.sfx("tap");
     if (e.target.hasAttribute && e.target.hasAttribute("data-jk-auto")) { J.auto = e.target.checked; lset("cp-jkauto", J.auto ? "1" : "0"); }
+    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-bg")) { J.bg = e.target.checked; lset("cp-jkbg", J.bg ? "1" : "0"); session(J.run); }
   });
   /* il conto alla rovescia del cambio traccia si aggiorna mentre il pannello è aperto */
   setInterval(function () { if (!pop.hidden && J.run) { var n = document.getElementById("jk-now"); if (n) n.innerHTML = nowLine(); } }, 1000);
@@ -23362,6 +23417,14 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var MIT_HSK = "MIT License\n\nCopyright (c) 2026 Yanis Zafirópulos\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.";
   var MIT_FSRS = "MIT License\n\nCopyright (c) 2022 Open Spaced Repetition\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.";
   var APACHE = "Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"{}\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright {yyyy} {name of copyright owner}\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.";
+  var MUSIC_LIBS = [["VSCO 2 Community Edition (Versilian Studios, Sam Gossner)", "cr.m1"], ["VCSL – Versilian Community Sample Library", "cr.m2"], ["Osiris Piano (Versilian Studios / Karoryfer Samples)", "cr.m3"],
+    ["Karoryfer Samples", "cr.m4"], ["sfzinstruments", "cr.m5"], ["jSteelDrum", "cr.m6"], ["BigSoundBank (Joseph Sardin)", "cr.m7"]];
+  function headHTML() {
+    return '<section class="cred cred-author"><h4>' + CP.t("cr.authorT") + '</h4><p>' + CP.t("cr.author") + '</p><p class="small muted">' + CP.t("cr.coauthor") + "</p>" +
+      '<p class="small">' + CP.t("cr.code") + "</p></section>" +
+      '<section class="cred"><h4>🎵 ' + CP.t("cr.music") + '</h4><p class="small">' + CP.t("cr.musicT") + '</p><ul class="small cred-libs">' +
+      MUSIC_LIBS.map(function (m) { return "<li><b data-noi18n>" + esc(m[0]) + "</b> · " + esc(CP.t(m[1])) + "</li>"; }).join("") + '</ul><p class="small muted">' + CP.t("cr.musicSynth") + "</p></section>";
+  }
   var ITEMS = [
     ["cr.mmh", "cr.mmhT", APL],
     ["cr.hsk", "cr.hskT", MIT_HSK],
@@ -23372,7 +23435,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var DEV = "cr.dev";
   CP.credits = function () {
     CP.openSheet('<div class="fam-head"><div class="meta"><b>' + CP.t("cr.title") + '</b><div class="small muted">' + CP.t("cr.sub") + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' +
-      ITEMS.map(function (it) {
+      headHTML() + ITEMS.map(function (it) {
         return '<section class="cred"><h4>' + esc(CP.t(it[0])) + '</h4><p class="small">' + CP.t(it[1]) + '</p><details><summary class="small">' + CP.t("cr.lic") + '</summary><pre class="lic" lang="en">' + esc(it[2]) + "</pre></details></section>";
       }).join("") + '<p class="small muted">' + esc(CP.t(DEV)) + "</p>");
   };

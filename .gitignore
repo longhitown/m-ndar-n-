@@ -8,3 +8,7 @@ android/build/
 android/app/build/
 *.jks
 *.keystore
+
+# file pesanti di dist/: si generano con «node tools/build.mjs» (gli originali sono in src/)
+/dist/audio/
+/dist/data/

@@ -106,28 +106,36 @@ for (const s of scripts) {
 out = out.replace(/<!-- =+\n[\s\S]*?=+ -->\n/, "<!-- màndarínō: file generato da tools/build.mjs a partire da src/. Per modificare l'app lavora in src/. -->\n");
 if (/<script\b[^>]*\bsrc=|<link\b[^>]*rel="stylesheet"/.test(out)) fail("è rimasto un riferimento esterno in dist/index.html");
 
+/* i brani del jukebox restano file a parte, con l'impronta nel nome (dist/audio/music/<id>.<hash>.ogg): un brano sostituito
+   ha un nome nuovo e arriva anche a chi aveva già quello vecchio nella cache. Il catalogo (nome del file, byte) va nella
+   pagina come window.MUSIC_FILES: da lì il riproduttore sa che file chiedere e quanti MB mancano. */
+const MUS = path.join(SRC, "audio/music"), ogg = fs.existsSync(MUS) ? fs.readdirSync(MUS).filter((f) => f.endsWith(".ogg")) : [], MUSIC = {}, MUSICB = [];
+for (const f of ogg) {
+  const b = fs.readFileSync(path.join(MUS, f));
+  if (b.length > 25 * 1024 * 1024) fail(`src/audio/music/${f} supera i 25 MB (limite di Cloudflare Pages)`);
+  const id = f.replace(/\.ogg$/, ""), name = id + "." + crypto.createHash("sha256").update(b).digest("hex").slice(0, 8) + ".ogg";
+  MUSICB.push([name, b]); MUSIC[id] = [name, b.length];
+}
+/* lo stesso per i «nomi e termini» del Lettore (tools/wikidict.mjs) */
+const WIKI = path.join(SRC, "data/wiki/zh-it.txt"), WIKIB = fs.existsSync(WIKI) ? fs.readFileSync(WIKI) : null;
+const WIKIF = WIKIB ? "zh-it." + crypto.createHash("sha256").update(WIKIB).digest("hex").slice(0, 8) + ".txt" : "";
+out = out.replace("<head>", () => "<head>\n<script>window.MUSIC_FILES = " + JSON.stringify(MUSIC) + "; window.WIKI_FILE = " + JSON.stringify(WIKIF ? "data/wiki/" + WIKIF : "") + ";</script>");
 const version = crypto.createHash("sha256").update(out).digest("hex").slice(0, 12);
 const sw = fs.readFileSync(path.join(SRC, "pwa/sw.js"), "utf8");
 if (!sw.includes("'__APP_VERSION__'")) fail("src/pwa/sw.js deve contenere APP_VERSION = '__APP_VERSION__'");
 const files = { "index.html": out, "sw.js": sw.replace("'__APP_VERSION__'", "'" + version + "'") };
 for (const f of fs.readdirSync(path.join(SRC, "pwa"))) if (!/\.js$/.test(f)) files[f] = fs.readFileSync(path.join(SRC, "pwa", f));
 /* «nomi e termini» del Lettore (tools/wikidict.mjs): un file a parte, scaricato solo quando serve */
-const WIKI = path.join(SRC, "data/wiki/zh-it.txt");
-if (fs.existsSync(WIKI)) files["data/wiki/zh-it.txt"] = fs.readFileSync(WIKI);
-/* i brani del jukebox restano file a parte (dist/audio/music/): ogni modulo audio/tracks/<id>.js con «file: true» ha il suo .ogg */
-const MUS = path.join(SRC, "audio/music"), ogg = fs.existsSync(MUS) ? fs.readdirSync(MUS).filter((f) => f.endsWith(".ogg")) : [];
-for (const f of ogg) {
-  const b = fs.readFileSync(path.join(MUS, f));
-  if (b.length > 25 * 1024 * 1024) fail(`src/audio/music/${f} supera i 25 MB (limite di Cloudflare Pages)`);
-  files["audio/music/" + f] = b;
-}
+if (WIKIB) files["data/wiki/" + WIKIF] = WIKIB;
+for (const [name, b] of MUSICB) files["audio/music/" + name] = b;
 for (const s of scripts.filter((s) => /^audio\/tracks\/(?!index)/.test(s.src))) {
   const m = /file: true[\s\S]*?player\(c, bus, "([\w-]+)"\)/.exec(fs.readFileSync(path.join(SRC, s.src), "utf8"));
   if (m && !ogg.includes(m[1] + ".ogg")) fail(`${s.src} vuole audio/music/${m[1]}.ogg, che non c'è`);
 }
 
 if (onlyCheck) {
-  const stale = Object.keys(files).filter((f) => { const p = path.join(OUT, f); return !fs.existsSync(p) || !Buffer.from(files[f]).equals(fs.readFileSync(p)); });
+  /* i file pesanti (brani, nomi e termini) non stanno nel repository: si generano a ogni build (CI, Cloudflare) */
+  const stale = Object.keys(files).filter((f) => !/^(audio\/music|data\/wiki)\//.test(f)).filter((f) => { const p = path.join(OUT, f); return !fs.existsSync(p) || !Buffer.from(files[f]).equals(fs.readFileSync(p)); });
   if (stale.length) fail("dist/ non è aggiornato (" + stale.join(", ") + "): lancia «node tools/build.mjs»");
   console.log("✓ dist/ è aggiornato · versione " + version);
   process.exit(0);

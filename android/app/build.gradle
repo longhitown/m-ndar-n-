@@ -54,6 +54,7 @@ def copyWeb = tasks.register("copyWeb", Sync) {
     into "$buildDir/generated/web/www"
     doFirst {
         if (!file("${rootDir}/../dist/index.html").exists()) throw new GradleException("Manca dist/index.html: lancia prima «node tools/build.mjs».")
+        if (!file("${rootDir}/../dist/audio/music").isDirectory()) throw new GradleException("Mancano i brani in dist/audio/music: lancia prima «node tools/build.mjs».")
     }
 }
 tasks.named("preBuild") { dependsOn copyWeb }

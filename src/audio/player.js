@@ -10,7 +10,7 @@
 
   var J = { want: lget("cp-music") === "1", sel: lget("cp-track") || "shuffle", vol: parseFloat(lget("cp-musicvol") || "0.8"),
     run: false, timer: 0, hold: 0, bus: null, cur: null, curId: "", order: [], pos: 0, slotAt: 0, bufs: {}, noise: null, played: [],
-    mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0" };
+    mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0", bg: lget("cp-jkbg") === "1" };
   var TRACKS = CP.audioTracks.list, groove = CP.synth.groove;
   var MOODS = [["", CP.t("jk.mAll")], ["calm", CP.t("jk.mCalm")], ["focus", CP.t("jk.mFocus")], ["energy", CP.t("jk.mEnergy")]];
   var BYID = {}; TRACKS.forEach(function (t) { BYID[t.id] = t; });
@@ -19,7 +19,9 @@
   var ZH = typeof LANG !== "undefined" && LANG === "zh";
   function nm(t) { return ZH && t.zh ? t.zh[0] : t.name; }
   function ds(t) { return ZH && t.zh ? t.zh[1] : t.desc; }
-  var MB = 80, DL = null;
+  /* livello della musica: i brani sono normalizzati a circa −20 dB RMS (picchi a −1 dBFS), quindi niente filtro e un
+     guadagno più alto di quello pensato per le vecchie tracce generate (era 0,34 con un passa-basso a 5200 Hz) */
+  var G0 = 0.6, DL = null;
 
   /* ---------- motore ---------- */
   function pool() { var a = TRACKS.filter(function (t) { return !J.mood || t.mood === J.mood; }); return a.length ? a : TRACKS; }
@@ -31,8 +33,8 @@
   }
   function ensureBus(c) {
     if (J.bus) return J.bus;
-    J.bus = c.createGain(); J.bus.gain.value = 0.34 * J.vol;
-    var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; J.bus.connect(lp); lp.connect((CP.bus && CP.bus.music()) || CP.master());
+    J.bus = c.createGain(); J.bus.gain.value = G0 * J.vol;
+    J.bus.connect((CP.bus && CP.bus.music()) || CP.master());
     return J.bus;
   }
   function play(id) {
@@ -42,6 +44,7 @@
     CP.synth.reset();
     var tb = c.createGain(); tb.gain.setValueAtTime(0, now); tb.gain.linearRampToValueAtTime(1, now + FADE); tb.connect(ensureBus(c));
     J.cur = { id: id, tb: tb, inst: BYID[id].make(c, tb) }; J.curId = id; J.slotAt = Date.now();
+    session(true);
     if (J.played[J.played.length - 1] !== id) J.played.push(id);
     paint(); schedule();
   }
@@ -74,13 +77,39 @@
   function stop() {
     if (!J.run) return; J.run = false; clearInterval(J.timer); J.timer = 0;
     try { if (navigator.audioSession) navigator.audioSession.type = "ambient"; } catch (e) {}
-    var c = CP.getCtx(), old = J.cur; J.cur = null; J.curId = "";
+    var c = CP.getCtx(), old = J.cur; J.cur = null; J.curId = ""; session(false);
     if (old && c) { try { old.tb.gain.cancelScheduledValues(c.currentTime); old.tb.gain.setValueAtTime(old.tb.gain.value, c.currentTime); old.tb.gain.linearRampToValueAtTime(0, c.currentTime + 0.5); } catch (e) {} setTimeout(function () { try { old.inst.stop(); old.tb.disconnect(); } catch (e) {} }, 700); }
     paint();
   }
+  /* comandi del sistema: Media Session (schermata di blocco, cuffie, Chrome) e, nell'app Android, la notifica del servizio
+     di riproduzione (MusicService), che tiene viva la musica con lo schermo spento quando si sceglie il secondo piano */
+  function session(on) {
+    var t = BYID[J.curId], ms = navigator.mediaSession, A = window.MandarinoAndroid;
+    try {
+      if (ms) {
+        if (on && t && window.MediaMetadata) ms.metadata = new MediaMetadata({ title: nm(t), artist: "màndarínō", album: CP.t("jk.title").replace(/^\S+\s/, ""), artwork: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }] });
+        ms.playbackState = on ? "playing" : "paused";
+      }
+    } catch (e) {}
+    try { if (A && A.musicNotify) A.musicNotify(on && t ? t.ico + " " + nm(t) : "", !!on, !!J.bg); } catch (e) {}
+  }
+  function remote(cmd) {
+    if (cmd === "next") { if (J.run) { if (J.sel === "shuffle") next(); else { var i = (TRACKS.map(function (t) { return t.id; }).indexOf(J.sel) + 1) % TRACKS.length; choose(TRACKS[i].id); } } return; }
+    if (cmd === "pause" || (cmd === "toggle" && J.want)) { J.want = false; lset("cp-music", "0"); }
+    else if (cmd === "play" || cmd === "toggle") { J.want = true; lset("cp-music", "1"); }
+    CP.musicApply(); if (!pop.hidden) { pop.innerHTML = popHTML(); paintOff(); }
+  }
+  try {
+    if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler("play", function () { remote("play"); });
+      navigator.mediaSession.setActionHandler("pause", function () { remote("pause"); });
+      navigator.mediaSession.setActionHandler("nexttrack", function () { remote("next"); });
+    }
+  } catch (e) {}
   function modeNow() { return !CP.pref.sfx ? "mute" : "on"; }
   CP.musicApply = function () {
-    var on = J.want && modeNow() !== "mute" && !J.hold && !document.hidden;
+    /* in secondo piano la musica si ferma, a meno che non si sia scelto di lasciarla suonare (⚙️ nel pannello 🎵) */
+    var on = J.want && modeNow() !== "mute" && !J.hold && (J.bg || !document.hidden);
     if (on) start(); else stop();
     if (mus) {
       mus.textContent = "🎵"; mus.classList.toggle("on", J.want && modeNow() !== "mute"); mus.setAttribute("aria-pressed", J.want ? "true" : "false");
@@ -97,7 +126,7 @@
     var c = TRACKS.filter(function (t) { return t.mood === m && t.id !== J.curId; }); if (!c.length) return;
     play(c[Math.floor(Math.random() * c.length)].id);
   };
-  CP.jukebox = { tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
+  CP.jukebox = { remote: function (c) { remote(c); }, tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
 
   /* ---------- interfaccia: popup sul 🎵 + selettore in "Voce e audio" ---------- */
   var pop = document.createElement("div"); pop.id = "jk-pop"; pop.hidden = true; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-modal", "true"); pop.setAttribute("aria-label", "Jukebox"); document.body.appendChild(pop);
@@ -133,6 +162,7 @@
       '<label class="jk-vol small muted">' + CP.t("jk.music") + ' <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
       '<label class="jk-vol small muted">' + CP.t("jk.fx") + ' <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
       '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> ' + CP.t("jk.auto") + '</label>' +
+      '<label class="chk small"><input type="checkbox" data-jk-bg' + (J.bg ? " checked" : "") + '> ' + CP.t(window.MandarinoAndroid ? "jk.bgApk" : "jk.bg") + "</label>" +
       offLine() + moodPills() + list() + "</div>";
   }
   /* offline: sul sito i brani si salvano sul telefono al primo ascolto, oppure tutti insieme; nell'APK sono già dentro */
@@ -147,7 +177,7 @@
       if (!have) { box.textContent = ""; return; }
       var ids = fileIds(), n = ids.filter(function (id) { return have[id]; }).length;
       if (n === ids.length) { box.textContent = CP.t("jk.offAll", { tot: ids.length }); return; }
-      box.innerHTML = esc(CP.t("jk.off1", { n: n, tot: ids.length })) + ' <button type="button" class="btn-s" data-jk-dl>' + esc(CP.t("jk.dl", { mb: Math.max(1, Math.round(MB * (ids.length - n) / ids.length)) })) + "</button>";
+      box.innerHTML = esc(CP.t("jk.off1", { n: n, tot: ids.length })) + ' <button type="button" class="btn-s" data-jk-dl>' + esc(CP.t("jk.dl", { mb: Math.max(1, Math.round(CP.audioFile.mb(ids.filter(function (id) { return !have[id]; })))) })) + "</button>";
     });
   }
   function downloadAll() {
@@ -194,12 +224,13 @@
   }
   pop.addEventListener("click", function (e) { if (e.target === pop) closePop(); else onClick(e); });
   pop.addEventListener("input", function (e) {
-    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-vol")) { J.vol = parseFloat(e.target.value); lset("cp-musicvol", String(J.vol)); if (J.bus) J.bus.gain.value = 0.34 * J.vol; }
+    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-vol")) { J.vol = parseFloat(e.target.value); lset("cp-musicvol", String(J.vol)); if (J.bus) J.bus.gain.value = G0 * J.vol; }
     if (e.target.hasAttribute && e.target.hasAttribute("data-sfx-vol") && CP.bus) { CP.bus.setSfxVol(parseFloat(e.target.value)); }
   });
   pop.addEventListener("change", function (e) {
     if (e.target.hasAttribute && e.target.hasAttribute("data-sfx-vol")) CP.sfx("tap");
     if (e.target.hasAttribute && e.target.hasAttribute("data-jk-auto")) { J.auto = e.target.checked; lset("cp-jkauto", J.auto ? "1" : "0"); }
+    if (e.target.hasAttribute && e.target.hasAttribute("data-jk-bg")) { J.bg = e.target.checked; lset("cp-jkbg", J.bg ? "1" : "0"); session(J.run); }
   });
   /* il conto alla rovescia del cambio traccia si aggiorna mentre il pannello è aperto */
   setInterval(function () { if (!pop.hidden && J.run) { var n = document.getElementById("jk-now"); if (n) n.innerHTML = nowLine(); } }, 1000);

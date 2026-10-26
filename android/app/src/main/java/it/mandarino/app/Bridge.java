@@ -424,6 +424,17 @@ public class Bridge {
         TodayWidget.updateAll(act.getApplicationContext());
     }
 
+    /* ---------------- musica in secondo piano ---------------- */
+
+    /** stato del jukebox: con il secondo piano scelto, la notifica del brano tiene viva la musica a schermo spento */
+    @JavascriptInterface
+    public void musicNotify(String title, boolean playing, boolean background) {
+        android.content.Context c = act.getApplicationContext();
+        MusicService.page = new java.lang.ref.WeakReference<>(act);
+        if (!background) { MusicService.stop(c); return; }
+        MusicService.update(c, title, playing);
+    }
+
     /* ---------------- promemoria ---------------- */
 
     @JavascriptInterface
