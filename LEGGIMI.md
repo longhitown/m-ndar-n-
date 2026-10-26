@@ -1,6 +1,7 @@
-# màndarínō · il cinese per italiani (V6.7)
+# màndarínō · il cinese per italiani, l'italiano per cinesi (V6.7)
 
-Un'app che si pubblica come file unico (`dist/index.html`, generato da `src/`): 3500 parole in 155 sezioni, pinyin davanti, toni a colori, ripasso FSRS-6,
+Due corsi in un'app: **il cinese per italiani** e, scelto dal benvenuto o da ⚙️ → Corso, **意大利语课程, l'italiano per
+chi parla cinese**. Un'app che si pubblica come file unico (`dist/index.html`, generato da `src/`): 3500 parole in 155 sezioni, pinyin davanti, toni a colori, ripasso FSRS-6,
 dialoghi, laboratorio di frasi, oscilloscopio dei toni. Nessuna libreria esterna, nessuna richiesta di rete
 all'avvio; i progressi restano nel browser (localStorage + copia in IndexedDB) e si salvano su file.
 
@@ -29,7 +30,11 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
   phrases/translate.js     il traduttore del laboratorio (regole); phrases/italian.js = coniugazioni e articoli
-tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, lib/ (Node puro, zero dipendenze)
+  it/course.js             il corso di italiano per chi parla cinese; data/it/lessons/ = le sue lezioni (in cinese)
+android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
+.github/workflows/apk.yml  costruisce l'APK su GitHub e lo pubblica come Release
+tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+                           hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
 
 **Dopo ogni modifica in `src/`:** `node tools/build.mjs`, poi committa anche `dist/`.
@@ -86,12 +91,56 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 **Nome del repository:** GitHub ha tolto gli accenti e il repository si chiama `m-ndar-n-`. Conviene rinominarlo
 `mandarino` (Settings → General → Repository name): i vecchi indirizzi vengono reindirizzati.
 
+## L'APK per Android (gratis, senza Play Store)
+
+Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk.yml`): controlla `dist/` e la grammatica,
+costruisce l'APK, lo verifica con Android lint e `apksigner` e, sul ramo principale, lo pubblica come Release.
+Il link da mandare a chi vuole l'app non cambia mai:
+
+`https://github.com/longhitown/m-ndar-n-/releases/latest/download/mandarino.apk`
+
+(se rinomini il repository, cambia la parte `longhitown/m-ndar-n-`). Chi lo apre sul telefono deve consentire
+l'installazione «da questa fonte» la prima volta. Android 8.0 o più recente.
+
+**La chiave di firma (una volta sola, poi mai più):** perché ogni nuova versione si installi sopra la vecchia senza perdere
+i progressi, tutte le versioni devono essere firmate con la stessa chiave. Va messa nei segreti del repository:
+Settings → Secrets and variables → Actions → New repository secret:
+- `MD_KEYSTORE_B64`: il contenuto del file della chiave in base64;
+- `MD_KEYSTORE_PASSWORD`: la sua password.
+
+Senza segreti l'APK viene comunque costruito (si scarica dagli «Artifacts» della corsa) ma con una chiave di prova e non
+viene pubblicato. **Conserva una copia della chiave fuori da GitHub**: se si perde, le versioni nuove non si installano
+più sopra le vecchie (bisognerebbe disinstallare, dopo aver fatto il backup dei progressi).
+Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype PKCS12 -alias mandarino -keyalg RSA -keysize 4096 -validity 18250`.
+
+**In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleRelease lintRelease`.
+
+Come funziona dentro: la pagina è servita all'indirizzo `https://appassets.androidplatform.net/` (sempre lo stesso: è lì che
+la WebView tiene i progressi). `src/pwa/android.js` ricostruisce sopra il ponte nativo le API web standard che la WebView
+non ha: voce (`speechSynthesis` → motore di sintesi del telefono, anche offline se la voce è installata), riconoscimento
+vocale (`SpeechRecognition` → riconoscimento del telefono), download dei backup (→ cartella Download), condivisione, tasto
+Indietro. Il resto dell'app non sa di essere dentro un APK.
+
+## Il corso di italiano per chi parla cinese
+
+Si sceglie dal benvenuto («我是中国人，我想学意大利语») o da ⚙️ → Corso · 课程; per tornare indietro, stesso posto.
+I due corsi hanno progressi separati. Le schede: 课程 (10 lezioni in cinese, `src/data/it/lessons/`), 单词 (370 parole
+italiane ricavate dalle schede di `src/data/grammar.js`: articolo, plurale, forme, coniugazioni), 复习 (ripasso FSRS),
+变位 (coniugazioni), 句子 (frasi e dialoghi bilingui con la voce italiana).
+
+**L'italiano è controllato due volte, in sviluppo** (i file esterni non entrano nel repository):
+```
+node tools/morphit-check.mjs morph-it_048.txt --dump da-controllare.txt   # Morph-it: genere, numero, persona di ogni forma
+python3 tools/hunspell-check.py cartella/it_IT da-controllare.txt        # Hunspell di LibreOffice: ortografia di ciò che Morph-it non ha
+```
+Primo giro: nessuna forma sbagliata nelle regole; trovato un errore nei dati (鸡蛋 «uovo» segnato femminile), corretto.
+
 ## Prove
 
 ```
 node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
-node tools/e2e.mjs          # 17 prove su dist/, ~1 minuto
+node tools/e2e.mjs          # 22 prove su dist/ (anche il corso di italiano), ~1 minuto
 node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
 ```
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi).
@@ -119,16 +168,19 @@ node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ so
 ## Chiavi salvate (tutte `cp-*`, tutte con una regola nel ripristino «unisci»)
 
 Nuove in V6.7: `cp-community-contribs` (unione per id, vince la voce più recente; contiene anche le traduzioni proposte, tipo `tr`),
-`cp-lessons-v1` (lezioni: per ognuna il punteggio migliore, la prima volta superata, l'ultima letta), `cp-ux-v1` (benvenuto, legenda,
+`cp-lessons-v1` e `cp-it-lessons-v1` (lezioni: per ognuna il punteggio migliore, la prima volta superata, l'ultima letta),
+`cp-it-srs-v1` (ripasso del corso di italiano: per ogni parola vince la scheda ripassata più di recente),
+`cp-course`, `cp-it-tab`, `cp-it-welcome` (preferenze del dispositivo), `cp-ux-v1` (benvenuto, legenda,
 suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-toneshapes`, `cp-contrib-nick`,
 `cp-lang` (preferenze del dispositivo: vince quello corrente). `cp-game-v1.days[giorno]` ha due campi nuovi:
 `nw` (parole nuove introdotte) e `nx` (permesso extra «Ancora 5 parole»). Il formato del backup resta `{app:"mandarino", v:5, kv, log}`.
 
 ## Che cosa resta aperto
 
-- §5 fasi 2 e 3 (corso italiano per cinesi, correttore italiano): da decidere. La fase 1 è fatta: `I18N` + `t()`,
-  lingua dei menu in ⚙️. I testi interni dei moduli più vecchi (esercizi, dialoghi, lettore, guida, Pensiero,
-  laboratorio, oscilloscopio, contributi) sono ancora solo in italiano e vanno portati su `t()` un po' alla volta.
+- Corso di italiano: il pannello ⚙️ (voce, contributi, backup) è ancora in buona parte in italiano; le lezioni sono 10:
+  se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato). Correttore di frasi italiane: da fare.
+- I testi interni dei moduli più vecchi del corso di cinese (esercizi, dialoghi, lettore, guida, Pensiero, laboratorio,
+  oscilloscopio, contributi) sono ancora solo in italiano e vanno portati su `t()` un po' alla volta.
 - La modalità a schermo pieno vale per la sessione di studio, l'Orecchio e la Sfida; per gli esercizi di Frasi
   (puzzle, laboratorio, dialoghi) non è ancora attiva.
 - Facoltativa: una GitHub Action che lanci `merge-contrib.mjs` sulle issue con etichetta `contributo`.
