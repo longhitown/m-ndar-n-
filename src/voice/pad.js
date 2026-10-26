@@ -120,6 +120,60 @@
     return out.slice(0, 6);
   }
 
+  /* ---------- ordine e direzione dei tratti (Make Me a Hanzi, src/data/strokes.js) ----------
+     Ogni tratto del modello è la sua linea centrale, dall'inizio alla fine, nell'ordine giusto: punti da 0 a 1. */
+  var MED = {};
+  function medians(ch) {
+    if (MED[ch] !== undefined) return MED[ch];
+    var raw = typeof STROKES !== "undefined" && STROKES[ch], A = typeof STROKES_A !== "undefined" ? STROKES_A : "", Q = A.length - 1;
+    if (!raw || !Q) return (MED[ch] = null);
+    return (MED[ch] = raw.split(" ").map(function (st) {
+      var pts = []; for (var i = 0; i + 1 < st.length; i += 2) pts.push({ x: A.indexOf(st[i]) / Q, y: A.indexOf(st[i + 1]) / Q });
+      return pts;
+    }));
+  }
+  CP.strokeData = medians;
+  function resample(s, n) {
+    if (s.length < 2) { var o = []; for (var q = 0; q < n; q++) o.push({ x: s[0].x, y: s[0].y }); return o; }
+    var d = [0], i; for (i = 1; i < s.length; i++) d.push(d[i - 1] + Math.hypot(s[i].x - s[i - 1].x, s[i].y - s[i - 1].y));
+    var tot = d[d.length - 1] || 1, out = [], j = 0;
+    for (var k = 0; k < n; k++) {
+      var t = tot * k / (n - 1); while (j < s.length - 2 && d[j + 1] < t) j++;
+      var seg = (d[j + 1] - d[j]) || 1, f = Math.min(1, Math.max(0, (t - d[j]) / seg));
+      out.push({ x: s[j].x + (s[j + 1].x - s[j].x) * f, y: s[j].y + (s[j + 1].y - s[j].y) * f });
+    }
+    return out;
+  }
+  /* porta un insieme di tratti in un quadrato unitario centrato (stessa scala su x e y) */
+  function normalize(list) {
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    list.forEach(function (s) { s.forEach(function (p) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); }); });
+    var sz = Math.max(x1 - x0, y1 - y0) || 1, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    return list.map(function (s) { return s.map(function (p) { return { x: (p.x - cx) / sz, y: (p.y - cy) / sz }; }); });
+  }
+  function sdist(a, b) { var t = 0; for (var i = 0; i < a.length; i++) t += Math.hypot(a[i].x - b[i].x, a[i].y - b[i].y); return t / a.length; }
+  /* confronto tratto per tratto: per ogni tratto scritto, il tratto del modello più simile ancora libero (anche al contrario) */
+  function strokeCheck(user, ch) {
+    var M = medians(ch); if (!M || !user.length) return null;
+    var N = 12, U = normalize(user).map(function (s) { return resample(s, N); }), T = normalize(M).map(function (s) { return resample(s, N); });
+    var used = {}, res = [], ok = 0;
+    U.forEach(function (u, i) {
+      var best = null;
+      T.forEach(function (t, j) {
+        if (used[j]) return;
+        var f = sdist(u, t), r = sdist(u, t.slice().reverse()), d = Math.min(f, r);
+        if (!best || d < best.d - 1e-9 || (Math.abs(d - best.d) < 0.02 && j === i)) best = { j: j, d: d, rev: r < f * 0.75 && f > 0.12 };
+      });
+      if (!best || best.d > 0.3) { res.push({ i: i, j: -1 }); return; }
+      used[best.j] = 1;
+      var r0 = { i: i, j: best.j, rev: best.rev, order: best.j !== i };
+      if (!r0.rev && !r0.order) ok++;
+      res.push(r0);
+    });
+    return { expect: M.length, got: user.length, items: res, ok: ok, score: Math.round(100 * ok / Math.max(M.length, user.length)) };
+  }
+  CP._strokeCheck = strokeCheck;
+
   /* ---------- la lavagna ---------- */
   CP.pad = function (hz, o) {
     o = o || {};
@@ -133,12 +187,12 @@
     }
     h += '<div class="pad-stage"><canvas class="pad-bg" aria-hidden="true"></canvas><canvas class="pad-ink" role="img" aria-label="Lavagna per scrivere il carattere con il dito"></canvas><i class="pad-dot" hidden></i></div>' +
       '<p class="pad-info small muted" aria-live="polite"></p>' +
-      '<div class="padbtns"><button type="button" data-pa="undo">↩ Annulla tratto</button><button type="button" data-pa="clear">🧽 Pulisci</button><button type="button" data-pa="guide"></button><button type="button" data-pa="assist"></button></div>' +
+      '<div class="padbtns"><button type="button" data-pa="undo">↩ Annulla tratto</button><button type="button" data-pa="clear">🧽 Pulisci</button><button type="button" data-pa="guide"></button><button type="button" data-pa="assist"></button><button type="button" data-pa="order">▶ Ordine dei tratti</button></div>' +
       '<button type="button" class="btn-main pad-eval" data-pa="eval">✓ Valuta tratto</button><div class="pad-res" hidden aria-live="polite"></div>';
     el.innerHTML = h;
     var bg = el.querySelector(".pad-bg"), ink = el.querySelector(".pad-ink"), dot = el.querySelector(".pad-dot"), info = el.querySelector(".pad-info"), res = el.querySelector(".pad-res");
     var bx = bg.getContext("2d"), ix = ink.getContext("2d"), dpr = Math.min(3, window.devicePixelRatio || 1), px = 1;
-    var drawing = null, destroyed = false;
+    var drawing = null, destroyed = false, anim = null;
 
     function cells() { return S.cur === "all" ? n : 1; }
     function cellChar(k) { return S.cur === "all" ? chars[k] : chars[S.cur]; }
@@ -177,6 +231,29 @@
       }
       var z = s[s.length - 1]; ix.lineWidth = z.w; ix.beginPath(); ix.moveTo(mx0, my0); ix.lineTo(z.x, z.y); ix.stroke();
     }
+    /* animazione dell'ordine dei tratti: ogni tratto del modello si disegna dall'inizio alla fine, col suo numero */
+    function stopAnim() { if (anim) { cancelAnimationFrame(anim.raf); anim = null; } }
+    function playOrder() {
+      stopAnim(); if (S.cur === "all") return;
+      var M = medians(chars[S.cur]); if (!M) return;
+      var t0 = performance.now(), per = 520, gap = 140, acc = css("--accent", "#14594A"), inkC = css("--ink", "#222");
+      anim = { raf: 0 };
+      var frame = function (now) {
+        if (destroyed || !anim) return;
+        paintBg(); var K = k(); bx.setTransform(K, 0, 0, K, 0, 0); bx.lineCap = "round"; bx.lineJoin = "round";
+        var el0 = now - t0, done = Math.floor(el0 / (per + gap)), part = Math.min(1, (el0 - done * (per + gap)) / per);
+        M.forEach(function (st, i) {
+          if (i > done) return;
+          var f = i < done ? 1 : part, pts = resample(st.map(function (p) { return { x: p.x * L, y: p.y * L }; }), 40), m = Math.max(1, Math.round(f * 39));
+          bx.strokeStyle = i < done ? inkC : acc; bx.globalAlpha = i < done ? 0.55 : 0.95; bx.lineWidth = L * 0.055;
+          bx.beginPath(); bx.moveTo(pts[0].x, pts[0].y); for (var q = 1; q <= m; q++) bx.lineTo(pts[q].x, pts[q].y); bx.stroke();
+          bx.globalAlpha = 1; bx.fillStyle = acc; bx.font = "700 " + Math.round(L * 0.045) + "px sans-serif"; bx.textAlign = "center"; bx.textBaseline = "middle";
+          bx.fillText(String(i + 1), pts[0].x - L * 0.035, pts[0].y - L * 0.035);
+        });
+        if (done < M.length) anim.raf = requestAnimationFrame(frame); else anim = null;
+      };
+      anim.raf = requestAnimationFrame(frame);
+    }
     function paintInk() { ix.setTransform(1, 0, 0, 1, 0, 0); ix.clearRect(0, 0, px, px); strokesFor().forEach(drawStroke); }
     function counts() { var m = strokesFor().length; return m + (m === 1 ? " tratto" : " tratti"); }
     function refreshInfo() {
@@ -186,6 +263,7 @@
       var ab = el.querySelector('[data-pa="assist"]'); ab.textContent = "✨ Ricalco assistito"; ab.setAttribute("aria-pressed", S.assist ? "true" : "false"); ab.classList.toggle("on", S.assist);
       el.querySelectorAll("[data-pc]").forEach(function (b) { var on = b.getAttribute("data-pc") === String(S.cur); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
       el.querySelector('[data-pa="undo"]').disabled = !strokesFor().length;
+      var ob = el.querySelector('[data-pa="order"]'); ob.hidden = S.cur === "all" || !medians(chars[S.cur]);
     }
     /* punto verde: il primo punto "ancora da tracciare" in alto a sinistra (euristica: i tratti partono in alto/sinistra) */
     function assistDot() {
@@ -197,7 +275,7 @@
       if (bx0 < 0 || left < T.n * 0.05) return;
       dot.style.left = (bx0 / SC * 100) + "%"; dot.style.top = (by0 / SC * 100) + "%"; dot.hidden = false;
     }
-    function refreshAll() { paintBg(); paintInk(); refreshInfo(); assistDot(); }
+    function refreshAll() { stopAnim(); paintBg(); paintInk(); refreshInfo(); assistDot(); }
     function pos(e) { var r = ink.getBoundingClientRect(); return { x: (e.clientX - r.left) * L / r.width, y: (e.clientY - r.top) * L / r.height }; }
     function width(p, prev, e) {
       var v = prev ? Math.hypot(p.x - prev.x, p.y - prev.y) / Math.max(1, p.t - prev.t) : 0;      /* unità logiche per ms */
@@ -237,7 +315,9 @@
         U = inkMask(ink, box);
         /* in "Tutti" ogni carattere vive in una cella: per confrontarlo lo si porta alla stessa scala del modello */
         var T = glyphMask(ch), cmp = compare(U, T), an = analyze(strokes);
-        parts.push({ ch: ch, cmp: cmp, an: an, U: U, T: T }); total += cmp.score; cnt++;
+        /* in "Tutti" i tratti sono in una cella: si riportano al quadrato del carattere */
+        var sc = strokeCheck(S.cur === "all" ? strokes.map(function (s) { return s.map(function (p) { return { x: p.x - L * ci / n, y: p.y }; }); }) : strokes, ch);
+        parts.push({ ch: ch, cmp: cmp, an: an, U: U, T: T, sc: sc }); total += cmp.score; cnt++;
       });
       if (!cnt) { res.hidden = false; res.className = "pad-res"; res.innerHTML = "<p>Scrivi qualcosa prima: poi ti dico come è andata.</p>"; return; }
       var avg = Math.round(total / cnt), lab = avg >= 85 ? "Ottimo tratto!" : avg >= 70 ? "Buono, ci sei quasi." : avg >= 50 ? "Si riconosce, ma si può migliorare." : "Ancora lontano: riprova con la guida attiva.";
@@ -248,9 +328,22 @@
       });
       var one = parts.filter(function (p) { return !p.empty; })[0];
       if (one) {
-        var tp = tips(one.ch, one.U, one.T, one.cmp, one.an);
+        var tp = tips(one.ch, one.U, one.T, one.cmp, one.an), sc = one.sc;
+        if (sc) {
+          /* con i dati dei tratti, ordine e direzione si controllano davvero: tolgo i consigli generici su questi due punti */
+          tp = tp.filter(function (t) { return !/^<b>(Direzione|Ordine):/.test(t); });
+          var lines = [];
+          if (sc.got !== sc.expect) lines.push("<b>Numero di tratti:</b> ne hai scritti " + sc.got + ", " + esc(one.ch) + " ne ha " + sc.expect + "." + (sc.got < sc.expect ? " Forse ne hai uniti due in uno: in cinese si stacca la penna a ogni tratto." : ""));
+          var rev = sc.items.filter(function (x) { return x.j >= 0 && x.rev; }).map(function (x) { return x.i + 1; });
+          var ord = sc.items.filter(function (x) { return x.j >= 0 && x.order && !x.rev; });
+          if (rev.length) lines.push("<b>Direzione:</b> " + (rev.length > 1 ? "i tratti " + rev.join(", ") + " sono scritti" : "il tratto " + rev[0] + " è scritto") + " al contrario. Guarda l'animazione: ogni tratto ha un inizio e una fine precisi.");
+          if (ord.length) lines.push("<b>Ordine:</b> " + ord.slice(0, 3).map(function (x) { return "il tuo " + (x.i + 1) + "° tratto è il " + (x.j + 1) + "° del modello"; }).join("; ") + (ord.length > 3 ? "…" : "") + ". Premi «▶ Ordine dei tratti» per vederlo.");
+          if (!lines.length && sc.ok === sc.expect) lines.push("<b>Ordine e direzione:</b> tutti i " + sc.expect + " tratti giusti. 👍");
+          tp = lines.concat(tp);
+        }
+        if (sc) html += '<p class="small" style="margin:6px 0 2px"><b>Tratti giusti (ordine e direzione): ' + sc.ok + " su " + sc.expect + "</b></p>";
         html += (S.cur !== "all" ? '<p class="small muted" style="margin:6px 0 2px">Copertura ' + Math.round(one.cmp.coverage * 100) + "% · pulizia " + Math.round(one.cmp.precision * 100) + "% · " + one.an.strokes + " tratti</p>" : "") +
-          '<ul class="pad-tips">' + tp.map(function (t) { return "<li>" + t + "</li>"; }).join("") + '</ul><p class="small muted">La direzione e l\'ordine sono controlli di buon senso sulle regole generali (non su un dizionario di tratti): le eccezioni esistono.</p>';
+          '<ul class="pad-tips">' + tp.map(function (t) { return "<li>" + t + "</li>"; }).join("") + '</ul>' + (one.sc ? '<p class="small muted">Ordine e direzione confrontati tratto per tratto con Make Me a Hanzi.</p>' : '<p class="small muted">La direzione e l\'ordine sono controlli di buon senso sulle regole generali (non su un dizionario di tratti): le eccezioni esistono.</p>');
       }
       if (avg > 70) {
         var key = S.cur === "all" ? "*" : chars[S.cur];
@@ -269,6 +362,7 @@
       else if (pa === "guide") { S.guide = !S.guide; if (!S.guide) S.assist = false; CP.sfx("tap"); refreshAll(); }
       else if (pa === "assist") { S.assist = !S.assist; if (S.assist) S.guide = true; CP.sfx("tap"); refreshAll(); }
       else if (pa === "eval") evaluate();
+      else if (pa === "order") { CP.sfx("tap"); playOrder(); }
     });
     /* il quadrato segue la larghezza: se cambia (rotazione, tastiera) ridisegno */
     var ro = window.ResizeObserver ? new ResizeObserver(function () { if (destroyed || !el.isConnected) return; var w = ink.getBoundingClientRect().width; if (w && Math.round(w * dpr) !== px) { setSize(); refreshAll(); } }) : null;
@@ -277,7 +371,7 @@
       el: el, mount: mount, score: evaluate,
       state: function () { return { cur: S.cur, strokes: S.strokes, guide: S.guide, assist: S.assist, awarded: S.awarded }; },
       setGuide: function (on) { S.guide = !!on; refreshAll(); },
-      destroy: function () { destroyed = true; if (ro) ro.disconnect(); }
+      destroy: function () { destroyed = true; stopAnim(); if (ro) ro.disconnect(); }
     };
   };
   /* compatibilità col vecchio nome */

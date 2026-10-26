@@ -204,3 +204,6 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 .chip-best .han { font-size: 18px; }
 tr.flash > td { background: var(--chip); transition: background .3s; }
 .xw.part .xh { text-decoration: underline dotted var(--muted); text-underline-offset: 4px; }
+/* crediti e licenze */
+.cred h4 { margin: 12px 0 4px; }
+.cred .lic { white-space: pre-wrap; font-size: 11px; line-height: 1.35; max-height: 40vh; overflow: auto; background: var(--chip); padding: 8px; border-radius: 8px; }
