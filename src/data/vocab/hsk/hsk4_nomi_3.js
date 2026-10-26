@@ -23,7 +23,7 @@ SECTIONS.push({
     ["jì.jié","季节","stagione"],
     ["dēng.guāng","灯光","luci, illuminazione"],
     ["dài.yù","待遇","trattamento; stipendio"],
-    ["Jiāng","江","fiume"],
+    ["jiāng","江","fiume"],
     ["qián.tú","前途","futuro, prospettive"],
     ["chéng.rén","成人","adulto"],
     ["jìng.zi","镜子","specchio"],

@@ -15,11 +15,11 @@ SECTIONS.push({
     ["zhì","治","curare; governare"],
     ["bì.miǎn","避免","evitare"],
     ["nào","闹","fare chiasso, litigare"],
-    ["Gě","盖","coperchio; coprire; costruire"],
+    ["gài","盖","coperchio; coprire; costruire"],
     ["wēi.xiào","微笑","sorriso; sorridere"],
     ["liè","列","fila; elencare; classificatore per treni"],
     ["sī.kǎo","思考","riflettere"],
-    ["Guī","归","tornare; spettare a"],
+    ["guī","归","tornare; spettare a"],
     ["zhuī.qiú","追求","perseguire; corteggiare"],
     ["tiāo","挑","scegliere"],
     ["zǔ.zhǐ","阻止","impedire"],
@@ -40,12 +40,12 @@ SECTIONS.push({
     ["sōng","松","allentato; allentare","松 = anche pino"],
     ["dēng","登","salire; pubblicare"],
     ["zài.hu","在乎","importare a qualcuno","我不在乎 = non m'importa"],
-    ["Yù","遇","incontrare"],
+    ["yù","遇","incontrare"],
     ["jì","寄","spedire (per posta)"],
     ["yǐn","引","guidare, attirare; citare"],
     ["jiàng","降","scendere, abbassare"],
     ["shuì.zháo","睡着","addormentarsi"],
     ["dù.guò","度过","trascorrere"],
-    ["Shǎn","闪","lampeggiare; schivare"]
+    ["shǎn","闪","lampeggiare; schivare"]
   ]
 });

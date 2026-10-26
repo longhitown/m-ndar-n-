@@ -24,7 +24,7 @@ SECTIONS.push({
     ["zhì.néng","智能","intelligente (tecnologia)","智能手机 = smartphone"],
     ["shǒu.gōng","手工","fatto a mano"],
     ["qióng.rén","穷人","i poveri"],
-    ["Shù.lín","树林","bosco"],
+    ["shù.lín","树林","bosco"],
     ["xíng.hào","型号","modello (di un prodotto)"],
     ["suān.nǎi","酸奶","yogurt"],
     ["tái.jiē","台阶","gradini"],

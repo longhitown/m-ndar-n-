@@ -33,7 +33,7 @@ SECTIONS.push({
     ["bó.ruò","薄弱","debole"],
     ["qín.fèn","勤奋","diligente"],
     ["yì.kǒu.qì","一口气","tutto d'un fiato"],
-    ["Cháng.shòu","长寿","longevità; longevo"],
+    ["cháng.shòu","长寿","longevità; longevo"],
     ["jiē.lián","接连","di seguito"],
     ["bú.nài.fán","不耐烦","impaziente"],
     ["kuài.huo","快活","allegro"],

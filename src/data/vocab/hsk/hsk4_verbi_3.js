@@ -16,7 +16,7 @@ SECTIONS.push({
     ["zuò.chū","作出","fare, prendere (una decisione)"],
     ["yù.cè","预测","prevedere"],
     ["wèi.yú","位于","trovarsi, essere situato"],
-    ["Yáo","摇","scuotere, agitare"],
+    ["yáo","摇","scuotere, agitare"],
     ["péi.yǎng","培养","formare, coltivare"],
     ["wéi.hù","维护","difendere, tutelare"],
     ["duì.fu","对付","affrontare, cavarsela"],

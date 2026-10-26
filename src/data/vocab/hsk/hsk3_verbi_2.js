@@ -28,7 +28,7 @@ SECTIONS.push({
     ["mǎn.zú","满足","soddisfare; soddisfatto"],
     ["pèi","配","abbinare; essere degno di"],
     ["děng.dài","等待","attendere"],
-    ["Bǎo","保","proteggere, garantire"],
+    ["bǎo","保","proteggere, garantire"],
     ["zhì.zào","制造","fabbricare, produrre"],
     ["yǎn","演","recitare, interpretare"],
     ["tíng.zhǐ","停止","smettere, fermare"],
