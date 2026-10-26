@@ -55,6 +55,14 @@ I caratteri sono la chiave dei progressi: una parola esistente non cambia mai i 
 `<script src="data/lessons/…">` in `src/index.html`. La build controlla che ogni frase cinese sia fatta di parole del
 vocabolario e che gli esercizi siano ben formati. Il campo `path` la fa comparire nella tappa giusta del Percorso.
 
+**Livelli e capitoli:** `node tools/levels.mjs complete.json` (complete-hsk-vocabulary) scrive `src/data/levels.js`: il livello
+HSK di ogni parola e il capitolo di ogni tappa (1-5 = HSK 1-5, 6 = oltre l'HSK), e rimette in ordine i file del vocabolario
+in `src/index.html`. Si rilancia dopo aver aggiunto parole o sezioni; la build controlla capitoli e ordine.
+
+**Navigazione:** 🔍 in alto (o /, Ctrl+K) apre «Cerca ovunque» (`src/ui/finder.js`): strumenti, lezioni, dialoghi, tappe,
+parole. Uno scorrimento orizzontale cambia scheda (`src/ui/gestures.js`). All'avvio una schermata col logo
+(`styles/splash.css`) copre il caricamento; nel file unico frasi d'esempio, tratti e lessico italiano sono JSON letto al primo uso.
+
 **Frasi d'esempio:** in `src/data/examples/` una riga `"chiave": ["中文句子。", "Frase italiana."]`. La build controlla che
 la frase usi solo parole del vocabolario e che il taglio in parole la restituisca come parola (中 non vale dentro 中国).
 Se il taglio sbaglia una frase giusta, si corregge `core/segment.js` (WEAK, CTX, BOUND), non la frase.
@@ -141,9 +149,10 @@ Indietro. Il resto dell'app non sa di essere dentro un APK.
 ## Il corso di italiano per chi parla cinese
 
 Si sceglie dal benvenuto («我是中国人，我想学意大利语») o da ⚙️ → Corso · 课程; per tornare indietro, stesso posto.
-I due corsi hanno progressi separati. Le schede: 课程 (10 lezioni in cinese, `src/data/it/lessons/`), 单词 (370 parole
-italiane ricavate dalle schede di `src/data/grammar.js`: articolo, plurale, forme, coniugazioni), 复习 (ripasso FSRS),
-变位 (coniugazioni), 句子 (frasi e dialoghi bilingui con la voce italiana).
+I due corsi hanno progressi separati. Le schede: 课程 (30 lezioni in cinese, `src/data/it/lessons/`), 单词 (4780 parole: quelle delle schede di
+`src/data/grammar.js`, con coniugazioni complete, più `src/data/it/lexicon.js` generato da `node tools/itlex.mjs morph-it.txt`:
+nomi con genere e plurale, aggettivi, verbi, espressioni; ogni parola con una frase d'esempio italiano → cinese), 复习
+(ripasso FSRS), 变位 (coniugazioni), 句子 (frasi, dialoghi bilingui ed esercizio 句子练习 sulle frasi d'esempio).
 
 **L'italiano è controllato due volte, in sviluppo** (i file esterni non entrano nel repository):
 ```
@@ -199,7 +208,7 @@ suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-
 
 ## Che cosa resta aperto
 
-- Corso di italiano: le lezioni sono 10; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
+- Corso di italiano: 30 lezioni; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
   Correttore di frasi italiane: da fare.
 - I testi interni dei moduli più vecchi del corso di cinese (esercizi, dialoghi, lettore, guida, Pensiero, laboratorio,
   oscilloscopio, contributi) sono ancora solo in italiano e vanno portati su `t()` un po' alla volta.
