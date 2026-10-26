@@ -25,12 +25,38 @@
     do { t = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && t === prev);
     return t;
   }
-  function example(hz) {
-    for (var g = 0; g < PHRASES.length; g++) for (var i = 0; i < PHRASES[g].items.length; i++) {
-      if (PHRASES[g].items[i][1].indexOf(hz) >= 0) return PHRASES[g].items[i];
-    }
-    return null;
+  /* frase d'esempio per una parola nuova: la più corta tra tutte le frasi dell'app (frasi, dialoghi, lezioni, frasi
+     verificate) in cui la parola compare davvero come parola (taglio in parole, non ricerca di caratteri: 中 non
+     prende 中国). L'indice si costruisce una volta sola, alla prima carta. */
+  var EXIDX = null;
+  function exIndex() {
+    if (EXIDX) return EXIDX;
+    EXIDX = {};
+    var add = function (py, hz, it) {
+      if (!hz || !it || Array.from(hz).length > 24) return;
+      var seen = {};
+      CP.segment(hz).forEach(function (s) {
+        if (!s.w || seen[s.w.key]) return; seen[s.w.key] = 1;
+        var cur = EXIDX[s.w.key];
+        if (!cur || hz.length < cur[1].length) EXIDX[s.w.key] = [py, hz, it];
+      });
+    };
+    PHRASES.forEach(function (g) { g.items.forEach(function (x) { add(x[0], x[1], x[2]); }); });
+    (typeof DIALOGS !== "undefined" ? DIALOGS : []).forEach(function (d) { d.lines.forEach(function (l) { add(l[1], l[2], l[3]); }); });
+    (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (e) { add(null, e[0], e[1]); }); });
+    (typeof VERIFIED !== "undefined" ? VERIFIED : []).forEach(function (v) { add(null, v[0], v[1]); });
+    return EXIDX;
   }
+  function pyOf(z) {
+    var P = { "，": ",", "。": ".", "？": "?", "！": "!" }, out = [];
+    CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (P[s.raw] && out.length) out[out.length - 1] += P[s.raw]; });
+    var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
+  }
+  function example(k) {
+    var e = exIndex()[k]; if (!e) return null;
+    return e[0] ? e : [pyOf(e[1]), e[1], e[2]];
+  }
+  CP.exampleFor = example;
   function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
 
   /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
@@ -212,7 +238,7 @@
     var e = sess.q[0], w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
-      var ex = example(w.hz);
+      var ex = example(w.key);
       h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
         (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
