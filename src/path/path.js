@@ -34,7 +34,14 @@
     var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur], T = CP.t;
     return '<div class="panel resume"><div class="small muted">' + T("path.stage", { n: cur + 1 }) + " · " + esc(title(s)) + "</div>" +
       '<button type="button" class="btn-main" id="path-continue">' + (n ? T("path.continue", { min: Math.max(1, Math.round(n * 20 / 60)) }) : T("path.explore", { n: cur + 1 })) + "</button>" +
-      '<div class="small muted">' + (n ? T("path.counts", { due: c.due, nw: c.nw, "new": T(c.nw === 1 ? "study.new1" : "study.newN") }) : T("path.doneToday")) + "</div></div>";
+      '<div class="small muted">' + (n ? T("path.counts", { due: c.due, nw: c.nw, "new": T(c.nw === 1 ? "study.new1" : "study.newN") }) : T("path.doneToday")) + "</div>" + nextSteps(s) + "</div>";
+  }
+  /* sotto «Continua»: la lezione e il dialogo della tappa corrente, a un tocco (non nascosti dentro Frasi) */
+  function nextSteps(s) {
+    var b = [], d = dlgFor(s.id);
+    if (CP.lessons) CP.lessons.forPath(s.id).forEach(function (l) { var pr = CP.lessons.progress(l.id); if ((pr.best || 0) < 80) b.push('<button type="button" class="gpl" data-lesson="' + CP.attr(l.id) + '">📘 ' + esc(l.title) + "</button>"); });
+    if (d) b.push('<button type="button" class="gpl" data-dlg="' + d.id + '">💬 ' + esc(d.title) + "</button>");
+    return b.length ? '<div class="next-steps">' + b.slice(0, 2).join("") + "</div>" : "";
   }
   function stopHTML(s, i, cur) {
     var st = stats(s.id), P = PATH[s.id] || { o: "Leggi le " + KEYS[s.id].length + " parole di questo argomento, poi mettile alla prova con le carte e le frasi.", g: -1 }, d = dlgFor(s.id), isOpen = open[s.id];
