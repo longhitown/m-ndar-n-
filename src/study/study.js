@@ -178,7 +178,7 @@
     cardEl.style.touchAction = "pan-y"; cardEl.style.cursor = "grab"; cardEl.style.userSelect = "none";
     var sx = 0, sy = 0, dx = 0, drag = false, down = false, pid = null;
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    function ignore(t) { return !!(t && t.closest && t.closest("button, canvas, .pad, .scope, .rec, a, input, select, textarea, .say, .wd, [role=\"button\"], [data-fam]")); }
+    function ignore(t) { return !!(t && t.closest && t.closest("button, canvas, .pad, .vp, a, input, select, textarea, .say, .wd, [role=\"button\"], [data-fam]")); }
     /* l'esito si vede prima del rilascio: etichetta «La so» / «Non la so» che compare con il trascinamento */
     function paint(x) {
       var k = Math.max(-1, Math.min(1, x / 140)), col = x > 0 ? "var(--accent)" : "var(--seal)";
