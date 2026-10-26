@@ -12,8 +12,14 @@
     run: false, timer: 0, hold: 0, bus: null, cur: null, curId: "", order: [], pos: 0, slotAt: 0, bufs: {}, noise: null, played: [],
     mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0" };
   var TRACKS = CP.audioTracks.list, groove = CP.synth.groove;
-  var MOODS = [["", "Tutte"], ["calm", "🧘 Calma"], ["focus", "🎯 Concentrazione"], ["energy", "⚡ Energia"]];
+  var MOODS = [["", CP.t("jk.mAll")], ["calm", CP.t("jk.mCalm")], ["focus", CP.t("jk.mFocus")], ["energy", CP.t("jk.mEnergy")]];
   var BYID = {}; TRACKS.forEach(function (t) { BYID[t.id] = t; });
+  /* una traccia scelta che non c'è più (le vecchie tracce generate) torna a «tutte, in ordine casuale» */
+  if (J.sel !== "shuffle" && !BYID[J.sel]) { J.sel = "shuffle"; lset("cp-track", "shuffle"); }
+  var ZH = typeof LANG !== "undefined" && LANG === "zh";
+  function nm(t) { return ZH && t.zh ? t.zh[0] : t.name; }
+  function ds(t) { return ZH && t.zh ? t.zh[1] : t.desc; }
+  var MB = 80, DL = null;
 
   /* ---------- motore ---------- */
   function pool() { var a = TRACKS.filter(function (t) { return !J.mood || t.mood === J.mood; }); return a.length ? a : TRACKS; }
@@ -45,9 +51,11 @@
   }
   function tick() {
     if (!J.run) return;
-    if (J.sel === "shuffle" && J.cur && Date.now() - J.slotAt > SLOT_MS) next();
+    if (J.sel === "shuffle" && J.cur && Date.now() - J.slotAt > slot()) next();
     schedule();
   }
+  /* un brano registrato suona una volta intera (dal momento in cui è pronto), poi parte il successivo */
+  function slot() { var t = BYID[J.curId]; return t && t.sec ? t.sec * 1000 - FADE * 1000 : SLOT_MS; }
   function next() {
     if (J.pos >= J.order.length - 1) { J.order = shuffleOrder(J.curId); J.pos = 0; } else J.pos++;
     play(J.order[J.pos]);
@@ -102,17 +110,21 @@
     var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="' + CP.t("jk.choose") + '">', mn = MOODS.filter(function (m) { return m[0] === J.mood; })[0];
     h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>' + (J.mood ? CP.t("jk.rand", { m: mn[1] }) : CP.t("jk.all")) + '</b><i>' + CP.t("jk.cycle") + '</i></span></button>';
     pool().forEach(function (t) {
-      h += '<button type="button" class="jk-it' + (cur === t.id ? " on" : "") + '" role="radio" aria-checked="' + (cur === t.id) + '" data-jk="' + t.id + '"><span class="ico">' + t.ico + '</span><span><b>' + esc(t.name) + '</b><i>' + esc(t.desc) + "</i></span></button>";
+      h += '<button type="button" class="jk-it' + (cur === t.id ? " on" : "") + '" role="radio" aria-checked="' + (cur === t.id) + '" data-jk="' + t.id + '"><span class="ico">' + t.ico + '</span><span><b>' + esc(nm(t)) + '</b><i>' + esc(ds(t)) + "</i></span></button>";
     });
     return h + "</div>";
   }
-  function left() { var ms = Math.max(0, SLOT_MS - (Date.now() - J.slotAt)), m = Math.floor(ms / 60000), sec = Math.floor(ms / 1000) % 60; return m + ":" + (sec < 10 ? "0" : "") + sec; }
+  function left() { var ms = Math.max(0, slot() - (Date.now() - J.slotAt)), m = Math.floor(ms / 60000), sec = Math.floor(ms / 1000) % 60; return m + ":" + (sec < 10 ? "0" : "") + sec; }
   function nowLine() {
     var t = BYID[J.curId];
     if (!J.want) return CP.t("jk.nowOff");
     if (J.hold) return CP.t("jk.nowHold");
     if (!t) return CP.t("jk.nowWait");
-    return CP.t("jk.now", { t: t.ico + " " + esc(t.name) }) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· ' + CP.t("jk.left", { t: left() }) + "</span>" : "");
+    var st = CP.audioFile && t.file ? CP.audioFile.state(t.id) : "";
+    if (st === "file") return CP.t("jk.errFile");
+    if (st === "err") return CP.t("jk.err");
+    if (st === "loading") return CP.t("jk.loading", { t: t.ico + " " + esc(nm(t)) });
+    return CP.t("jk.now", { t: t.ico + " " + esc(nm(t)) }) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· ' + CP.t("jk.left", { t: left() }) + "</span>" : "");
   }
   function popHTML() {
     return '<div class="jk-card"><div class="jk-h"><b>🎵 Jukebox</b><button type="button" class="btn-s" data-jk-close aria-label="Chiudi">✕</button></div>' +
@@ -121,35 +133,62 @@
       '<label class="jk-vol small muted">' + CP.t("jk.music") + ' <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
       '<label class="jk-vol small muted">' + CP.t("jk.fx") + ' <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
       '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> ' + CP.t("jk.auto") + '</label>' +
-      moodPills() + list() + "</div>";
+      offLine() + moodPills() + list() + "</div>";
+  }
+  /* offline: sul sito i brani si salvano sul telefono al primo ascolto, oppure tutti insieme; nell'APK sono già dentro */
+  function fileIds() { return TRACKS.filter(function (t) { return t.file; }).map(function (t) { return t.id; }); }
+  function offLine() {
+    if (!CP.audioFile || CP.audioFile.fileProto || window.MandarinoAndroid || !("serviceWorker" in navigator)) return "";
+    return '<div class="jk-off small muted" id="jk-off">' + (DL ? esc(CP.t("jk.dling", { n: DL.n, tot: DL.tot })) : "") + "</div>";
+  }
+  function paintOff() {
+    var box = document.getElementById("jk-off"); if (!box || DL) return;
+    CP.audioFile.offline().then(function (have) {
+      if (!have) { box.textContent = ""; return; }
+      var ids = fileIds(), n = ids.filter(function (id) { return have[id]; }).length;
+      if (n === ids.length) { box.textContent = CP.t("jk.offAll", { tot: ids.length }); return; }
+      box.innerHTML = esc(CP.t("jk.off1", { n: n, tot: ids.length })) + ' <button type="button" class="btn-s" data-jk-dl>' + esc(CP.t("jk.dl", { mb: Math.max(1, Math.round(MB * (ids.length - n) / ids.length)) })) + "</button>";
+    });
+  }
+  function downloadAll() {
+    var ids = fileIds(), box = document.getElementById("jk-off");
+    DL = { n: 1, tot: ids.length }; if (box) box.textContent = CP.t("jk.dling", DL);
+    CP.audioFile.downloadAll(ids, function (done, fail, tot) {
+      DL.n = Math.min(tot, done + fail + 1); var b = document.getElementById("jk-off"); if (b) b.textContent = CP.t("jk.dling", { n: DL.n, tot: tot });
+    }).then(function (r) {
+      DL = null; paintOff();
+      if (r.fail && CP.toast) CP.toast(CP.t("jk.dlFail", { n: r.fail }));
+    }, function () { DL = null; paintOff(); });
   }
   function paint() {
     var n = document.getElementById("jk-now"); if (n) n.innerHTML = nowLine();
     var box = document.getElementById("jk-sel"); if (box) box.innerHTML = list("compact");
     if (!pop.hidden) { pop.querySelectorAll(".jk-it").forEach(function (b) { var on = b.getAttribute("data-jk") === J.sel; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false"); }); }
   }
-  function openPop() { pop.innerHTML = popHTML(); CP.trap(pop, closePop); var f = pop.querySelector("[data-jk-toggle]"); if (f) f.focus(); }
+  function openPop() { pop.innerHTML = popHTML(); paintOff(); CP.trap(pop, closePop); var f = pop.querySelector("[data-jk-toggle]"); if (f) f.focus(); }
+  if (CP.audioFile) CP.audioFile.onState(function (id, s) { if (id === J.curId) { if (s === "ok") J.slotAt = Date.now(); paint(); } if (s === "ok" && !pop.hidden) paintOff(); });
   function closePop() { CP.untrap(pop); }
   function toggle() {
     J.want = !J.want; lset("cp-music", J.want ? "1" : "0");
     if (J.want && !CP.pref.sfx) CP.setPref("sfx", true);
-    CP.musicApply(); if (!pop.hidden) pop.innerHTML = popHTML();
+    CP.musicApply(); if (!pop.hidden) { pop.innerHTML = popHTML(); paintOff(); }
   }
   function choose(id) {
     J.sel = id; lset("cp-track", id);
     if (!J.want) { J.want = true; lset("cp-music", "1"); if (!CP.pref.sfx) CP.setPref("sfx", true); }
     if (J.run) { if (id === "shuffle") { J.order = shuffleOrder(J.curId); J.pos = 0; play(J.order[0]); } else play(id); } else CP.musicApply();
-    CP.sfx("tap"); paint(); if (!pop.hidden) pop.innerHTML = popHTML();
+    CP.sfx("tap"); paint(); if (!pop.hidden) { pop.innerHTML = popHTML(); paintOff(); }
   }
   function onClick(e) {
     var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
     if (b.hasAttribute("data-jk-mood")) {
       J.mood = b.getAttribute("data-jk-mood"); lset("cp-jkmood", J.mood); CP.sfx("tap");
       if (J.sel === "shuffle") { J.order = shuffleOrder(J.curId); J.pos = 0; if (J.run && BYID[J.curId] && J.mood && BYID[J.curId].mood !== J.mood) play(J.order[0]); }
-      if (!pop.hidden) pop.innerHTML = popHTML(); paint(); return;
+      if (!pop.hidden) { pop.innerHTML = popHTML(); paintOff(); } paint(); return;
     }
     if (b.hasAttribute("data-jk")) choose(b.getAttribute("data-jk"));
     else if (b.hasAttribute("data-jk-close")) closePop();
+    else if (b.hasAttribute("data-jk-dl")) downloadAll();
     else if (b.hasAttribute("data-jk-toggle")) toggle();
     else if (b.hasAttribute("data-jk-next")) { if (J.sel === "shuffle") next(); else { var i = (TRACKS.map(function (t) { return t.id; }).indexOf(J.sel) + 1) % TRACKS.length; choose(TRACKS[i].id); } paint(); }
   }

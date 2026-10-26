@@ -72,6 +72,17 @@ const sw = fs.readFileSync(path.join(SRC, "pwa/sw.js"), "utf8");
 if (!sw.includes("'__APP_VERSION__'")) fail("src/pwa/sw.js deve contenere APP_VERSION = '__APP_VERSION__'");
 const files = { "index.html": out, "sw.js": sw.replace("'__APP_VERSION__'", "'" + version + "'") };
 for (const f of fs.readdirSync(path.join(SRC, "pwa"))) if (!/\.js$/.test(f)) files[f] = fs.readFileSync(path.join(SRC, "pwa", f));
+/* i brani del jukebox restano file a parte (dist/audio/music/): ogni modulo audio/tracks/<id>.js con «file: true» ha il suo .ogg */
+const MUS = path.join(SRC, "audio/music"), ogg = fs.existsSync(MUS) ? fs.readdirSync(MUS).filter((f) => f.endsWith(".ogg")) : [];
+for (const f of ogg) {
+  const b = fs.readFileSync(path.join(MUS, f));
+  if (b.length > 25 * 1024 * 1024) fail(`src/audio/music/${f} supera i 25 MB (limite di Cloudflare Pages)`);
+  files["audio/music/" + f] = b;
+}
+for (const s of scripts.filter((s) => /^audio\/tracks\/(?!index)/.test(s.src))) {
+  const m = /file: true[\s\S]*?player\(c, bus, "([\w-]+)"\)/.exec(fs.readFileSync(path.join(SRC, s.src), "utf8"));
+  if (m && !ogg.includes(m[1] + ".ogg")) fail(`${s.src} vuole audio/music/${m[1]}.ogg, che non c'è`);
+}
 
 if (onlyCheck) {
   const stale = Object.keys(files).filter((f) => { const p = path.join(OUT, f); return !fs.existsSync(p) || !Buffer.from(files[f]).equals(fs.readFileSync(p)); });
@@ -81,5 +92,5 @@ if (onlyCheck) {
 }
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
-for (const [f, data] of Object.entries(files)) fs.writeFileSync(path.join(OUT, f), data);
-console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate, ${(D.LESSONS || []).length} lezioni + ${(D.ITLESSONS || []).length} 意大利语 · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);
+for (const [f, data] of Object.entries(files)) { fs.mkdirSync(path.dirname(path.join(OUT, f)), { recursive: true }); fs.writeFileSync(path.join(OUT, f), data); }
+console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate, ${(D.LESSONS || []).length} lezioni + ${(D.ITLESSONS || []).length} 意大利语 · ${scripts.length} script, ${styles.length} fogli di stile, ${ogg.length} brani · versione ${version}`);

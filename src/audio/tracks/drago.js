@@ -1,6 +1,3 @@
-/* Traccia «Danza del Drago» · ⚡ energia. Contratto e attrezzi (kit = CP.synth): vedi audio/synth.js. */
-(function (kit) {
-  var groove = kit.groove;
-  CP.audioTracks.add({ id: "drago", ico: "🐉", name: "Danza del Drago", desc: "Percussioni da festa: tamburo grave e piatti, per gli sprint", mood: "energy", make: groove({
-      bpm: 132, tom: "x..x..x.x.x..x..", tf: 95, tv: 0.5, hat: "..o...o...o.o.o.", hv: 0.07, snare: "....x..x....x..x", sv: 0.12, sf: 900 }) });
-})(CP.synth);
+/* Traccia «Danza del Drago» · brano registrato (audio/music/drago.ogg, 2:45 in loop). */
+CP.audioTracks.add({ id: "drago", ico: "🐉", name: "Danza del Drago", desc: "Sheng, friscalettu e archi in volo: una danza veloce", mood: "energy",
+  zh: ["龙之舞","笙、西西里笛与弦乐齐飞：一支快舞"], file: true, sec: 165, make: function (c, bus) { return CP.audioFile.player(c, bus, "drago"); } });

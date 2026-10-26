@@ -6,3 +6,5 @@
   Cache-Control: no-cache
 /manifest.json
   Cache-Control: no-cache
+/audio/music/*
+  Cache-Control: public, max-age=604800
