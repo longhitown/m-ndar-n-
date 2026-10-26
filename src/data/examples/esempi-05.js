@@ -630,6 +630,7 @@ Object.assign(EXAMPLES, {
   "电子邮件": ["我给你发了电子邮件。","Ti ho mandato un'email."],
   "有的是": ["时间有的是。","Di tempo ce n'è in abbondanza."],
   "红酒": ["我们喝点红酒吧。","Beviamo un po' di vino rosso."],
+  "支": ["我买了一支笔。","Ho comprato una penna."],
   "推理": ["他喜欢看推理小说。","Gli piace leggere romanzi gialli."],
   "假设": ["假设你是我，你会怎么做？","Supponi di essere me: cosa faresti?"],
   "证明": ["你能证明吗？","Puoi dimostrarlo?"],
