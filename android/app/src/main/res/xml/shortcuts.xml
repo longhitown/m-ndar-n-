@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- pressione prolungata sull'icona: si apre l'app direttamente sull'azione (MainActivity legge mandarino://go/<azione>) -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="study" android:enabled="true" android:icon="@drawable/sc_study"
+        android:shortcutShortLabel="@string/sc_study" android:shortcutLongLabel="@string/sc_study_long">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="it.mandarino.app"
+            android:targetClass="it.mandarino.app.MainActivity" android:data="mandarino://go/study" />
+    </shortcut>
+    <shortcut android:shortcutId="ear" android:enabled="true" android:icon="@drawable/sc_ear"
+        android:shortcutShortLabel="@string/sc_ear" android:shortcutLongLabel="@string/sc_ear_long">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="it.mandarino.app"
+            android:targetClass="it.mandarino.app.MainActivity" android:data="mandarino://go/ear" />
+    </shortcut>
+    <shortcut android:shortcutId="music" android:enabled="true" android:icon="@drawable/sc_music"
+        android:shortcutShortLabel="@string/sc_music" android:shortcutLongLabel="@string/sc_music_long">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="it.mandarino.app"
+            android:targetClass="it.mandarino.app.MainActivity" android:data="mandarino://go/music" />
+    </shortcut>
+</shortcuts>

@@ -27,7 +27,7 @@
       '<div class="gst"><div class="ring-w" aria-hidden="true"><div class="ring" style="--p:' + p + '"></div><span class="tx">' + wt + "</span></div><div><b>" + wt + "/" + goal + "</b><span>" + T("path.today", { n: wt, goal: goal }) + "</span></div></div></div>" +
       '<div class="week" aria-label="' + CP.attr(T("path.week")) + '">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.td ? "td" : "") + '">' + days[i] + "<i></i></span>"; }).join("") + "</div>" +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">' + T("path.goal") + '<select id="goal-sel">' + goalOpts + "</select></label>" +
-      '<button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + "</button></div>";
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + "</button></div></div>";
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {

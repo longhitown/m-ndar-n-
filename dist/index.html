@@ -797,6 +797,7 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 .xr-wiki ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
 .xr-wiki li { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .xw-w { border: 0; background: transparent; padding: 2px 0; min-height: 32px; font-size: 18px; color: var(--accent); }
+.card-cv { width: 100%; max-width: 420px; height: auto; display: block; margin: 10px auto 0; border-radius: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.15); }
 
 /* ---- styles/brand-audio.css ---- */
 /* ===== V5: componenti nuovi ===== */
@@ -14979,6 +14980,10 @@ Object.assign(I18N.it, { "sy.title": "Sincronizzazione", "sy.lede": "Studi su pi
 Object.assign(I18N.it, { "qr.send": "Passa a un altro telefono", "qr.recv": "Ricevi con la fotocamera", "qr.sendHint": "Sull'altro telefono apri ⚙️ → Sincronizzazione → «Ricevi con la fotocamera» e inquadra questi codici: cambiano da soli, aspetta finché tutti i quadratini diventano verdi. Non serve internet.", "qr.cvAria": "Codice QR dei tuoi progressi, cambia da solo", "qr.preparing": "Preparo i dati…", "qr.frame": "Codice {n} di {tot} · {kb} KB", "qr.err": "Non riesco a preparare i dati.", "qr.recvHint": "Sull'altro telefono apri ⚙️ → Sincronizzazione → «Passa a un altro telefono» e inquadra i codici nel riquadro. I progressi si uniscono a quelli di questo telefono.", "qr.camOpen": "Apro la fotocamera…", "qr.aim": "Inquadra i codici dell'altro telefono.", "qr.progress": "Ricevuti {n} di {tot}: continua a inquadrare.", "qr.joining": "Unisco i progressi…", "qr.bad": "I dati non tornano: ricomincio a raccogliere i codici.", "qr.ok": "Progressi ricevuti. Riavvio l'app…", "qr.noCam": "Non trovo una fotocamera utilizzabile.", "qr.camBlocked": "La fotocamera è bloccata: consentila nelle impostazioni del browser o dell'app.", "cr.jsqr": "Lettura dei codici QR", "cr.jsqrT": "<b>jsQR</b> (github.com/cozmo/jsQR), licenza Apache 2.0: legge i QR dalla fotocamera quando il browser non sa farlo da solo, per passare i progressi a un altro telefono. I QR li scrive invece l'app stessa." });
 /* Nomi e termini */
 Object.assign(I18N.it, { "rd.wikiGet": "Cerca anche nomi e termini (Wikipedia, 2,5 MB, si scarica una volta sola)", "rd.wikiErr": "Serve internet la prima volta.", "rd.wikiLoading": "Scarico…", "rd.wikiTitle": "Nomi e termini", "cr.wiki": "Nomi e termini del Lettore", "cr.wikiT": "<b>wikidict-it</b> (github.com/open-dict-data/wikidict-it): i titoli delle voci di Wikipedia in cinese collegati a quelli in italiano, dai dati di <b>Wikidata</b>, rilasciati in pubblico dominio (CC0). Non servono crediti, ma li diamo volentieri." });
+/* Promemoria */
+Object.assign(I18N.it, { "rm.title": "Promemoria", "rm.on": "Un promemoria al giorno", "rm.time": "Ora", "rm.hint": "Arriva solo se oggi non hai ancora studiato e c'è qualcosa da ripassare. Tutto si calcola sul telefono: nessun server.", "rm.denied": "Le notifiche dell'app sono spente nelle impostazioni del telefono.", "rm.needPerm": "Senza il permesso delle notifiche il promemoria non può arrivare.", "rm.onDone": "Promemoria acceso: alle {t}.", "rm.offDone": "Promemoria spento.", "rm.webOnly": "I promemoria ci sono nell'app Android. Nel browser e sull'iPhone una pagina web non può avvisarti in modo affidabile senza un server, e questa app non ne ha." });
+/* Card del giorno */
+Object.assign(I18N.it, { "card.title": "La card di oggi", "card.open": "Condividi la card di oggi", "card.share": "Condividi", "card.sub": "IL CINESE PER ITALIANI", "card.words": "parole studiate", "card.wotd": "Parola del giorno", "card.foot": "Offline, gratis, senza account · màndarínō" });
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15066,6 +15071,10 @@ Object.assign(I18N.zh, { "sy.title": "同步", "sy.lede": "在多台设备上学
 Object.assign(I18N.zh, { "qr.send": "传到另一部手机", "qr.recv": "用摄像头接收", "qr.sendHint": "在另一部手机上打开 ⚙️ → 同步 →「用摄像头接收」，对准这些二维码：它们会自动切换，等到所有小方块都变绿。不需要网络。", "qr.cvAria": "你的学习进度二维码，会自动切换", "qr.preparing": "正在准备数据……", "qr.frame": "第 {n} 个，共 {tot} 个 · {kb} KB", "qr.err": "无法准备数据。", "qr.recvHint": "在另一部手机上打开 ⚙️ → 同步 →「传到另一部手机」，把二维码对准框内。学习进度会和这部手机上的合并。", "qr.camOpen": "正在打开摄像头……", "qr.aim": "对准另一部手机上的二维码。", "qr.progress": "已收到 {n}/{tot}：继续对准。", "qr.joining": "正在合并学习进度……", "qr.bad": "数据校验失败：重新开始接收。", "qr.ok": "已收到学习进度。正在重启应用……", "qr.noCam": "找不到可用的摄像头。", "qr.camBlocked": "摄像头被阻止了：请在浏览器或应用的设置里允许。", "cr.jsqr": "二维码识别", "cr.jsqrT": "<b>jsQR</b>（github.com/cozmo/jsQR），Apache 2.0 许可：当浏览器自己不能识别时，用它读取摄像头里的二维码，把学习进度传到另一部手机。二维码由应用自己生成。" });
 /* Nomi e termini */
 Object.assign(I18N.zh, { "rd.wikiGet": "同时查找人名、地名和术语（维基百科，2.5 MB，只下载一次）", "rd.wikiErr": "第一次需要联网。", "rd.wikiLoading": "正在下载……", "rd.wikiTitle": "人名、地名和术语", "cr.wiki": "阅读器里的人名、地名和术语", "cr.wikiT": "<b>wikidict-it</b>（github.com/open-dict-data/wikidict-it）：维基百科中文词条标题与意大利语标题的对应，来自 <b>Wikidata</b> 数据，以公有领域（CC0）发布。不要求署名，但我们乐意注明。" });
+/* Promemoria */
+Object.assign(I18N.zh, { "rm.title": "学习提醒", "rm.on": "每天提醒一次", "rm.time": "时间", "rm.hint": "只有今天还没学习、并且有需要复习的内容时才会提醒。一切都在手机上计算：没有服务器。", "rm.denied": "手机设置里关闭了这个应用的通知。", "rm.needPerm": "没有通知权限就无法提醒。", "rm.onDone": "提醒已开启：每天 {t}。", "rm.offDone": "提醒已关闭。", "rm.webOnly": "提醒只在安卓应用里有。在浏览器和 iPhone 上，网页没有服务器就无法可靠地提醒你，而这个应用没有服务器。" });
+/* Card del giorno */
+Object.assign(I18N.zh, { "card.title": "今天的卡片", "card.open": "分享今天的卡片", "card.share": "分享", "card.sub": "给意大利人的中文", "card.words": "学过的词", "card.wotd": "今日一词", "card.foot": "离线 · 免费 · 无需账号 · màndarínō" });
 </script>
 <!-- Nucleo: ripasso FSRS, archivio, tabella delle parole (crea window.CP), stato condiviso -->
 <script>
@@ -17840,6 +17849,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     setGoal: function (n) { G.goal = n; save(); ui(); },
     goal: function () { return G.goal; },
     streak: streak, weekDots: weekDots, wordsToday: wordsToday, rank: rankInfo,
+    activeToday: function () { return active(G.days[dkey(new Date())]); },
     dump: function () { return JSON.parse(JSON.stringify(G)); },
     load: function (o) { adopt(o); save(); ui(); }
   };
@@ -18027,7 +18037,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       '<div class="gst"><div class="ring-w" aria-hidden="true"><div class="ring" style="--p:' + p + '"></div><span class="tx">' + wt + "</span></div><div><b>" + wt + "/" + goal + "</b><span>" + T("path.today", { n: wt, goal: goal }) + "</span></div></div></div>" +
       '<div class="week" aria-label="' + CP.attr(T("path.week")) + '">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.td ? "td" : "") + '">' + days[i] + "<i></i></span>"; }).join("") + "</div>" +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">' + T("path.goal") + '<select id="goal-sel">' + goalOpts + "</select></label>" +
-      '<button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + "</button></div>";
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + "</button></div></div>";
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
@@ -20179,6 +20189,85 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     else if (b.hasAttribute("data-qr-recv") && CP.qrReceive) CP.qrReceive();
   });
   CP.sync = { kind: KIND, cfg: cfg, full: full, writeOnly: writeOnly, _P: P };
+})();
+</script>
+<script>
+/* ---- pwa/widget.js ---- */
+/* ===== màndarínō · stato per il widget «Oggi» dell'app Android (android/…/TodayWidget.java).
+   Il widget non vede il localStorage della WebView: ogni volta che lo stato cambia (un ripasso, punti, chiusura dell'app)
+   gli si manda un piccolo JSON con MandarinoAndroid.setWidgetState. Perché il numero dei ripassi resti vero anche ad app
+   chiusa, non si manda «N adesso» ma le scadenze delle prossime 168 ore, ora per ora: il widget somma da solo quelle
+   già passate. La parola del giorno la sceglie il widget dalla lista (giorno dell'anno modulo lunghezza). ===== */
+(function () {
+  var CP = window.CP, A = window.MandarinoAndroid;
+  if (!A || !A.setWidgetState) return;
+  var H = 3600000, timer = 0;
+  function words() { return (CP.wotdPool ? CP.wotdPool() : []).map(function (w) { return [w.hz, w.py.replace(/\./g, ""), CP.gloss(w)]; }); }
+  function state() {
+    var S = CP.S(), now = Date.now(), t0 = Math.floor(now / H) * H, hist = new Array(168).fill(0), over = 0;
+    Object.keys(S).forEach(function (k) {
+      var r = S[k]; if (!r || !r.n || !CP.WORDS[k] || !r.d) return;
+      if (r.d <= now) over++;
+      else { var i = Math.floor((r.d - t0) / H); if (i < 168) hist[i]++; }
+    });
+    var c = CP.studyCounts ? CP.studyCounts() : { nw: 0 }, d = new Date(now);
+    return { v: 1, t: now, t0: t0, over: over, hist: hist, nw: c.nw || 0,
+      day: d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(),
+      streak: CP.game ? CP.game.streak() : 0, today: CP.game && CP.game.activeToday ? CP.game.activeToday() : false,
+      goal: CP.game ? CP.game.goal() : 10, lang: LANG, words: words() };
+  }
+  function push() { clearTimeout(timer); timer = 0; try { A.setWidgetState(JSON.stringify(state())); } catch (e) {} }
+  function soon() { if (!timer) timer = setTimeout(push, 1500); }
+  CP.widgetPush = push;
+  window.__mdWidget = push;   /* MainActivity.onPause */
+  var mark = CP.mark; CP.mark = function () { var r = mark.apply(this, arguments); soon(); return r; };
+  if (CP.game) ["addWord", "sentence", "ear", "xp", "setGoal"].forEach(function (f) { var o = CP.game[f]; if (typeof o === "function") CP.game[f] = function () { var r = o.apply(this, arguments); soon(); return r; }; });
+  document.addEventListener("visibilitychange", function () { if (document.hidden) push(); });
+  setTimeout(push, 2500);
+})();
+</script>
+<script>
+/* ---- pwa/reminder.js ---- */
+/* ===== màndarínō · ⚙️ → Promemoria: un avviso al giorno all'ora scelta, spento finché non lo accendi.
+   Solo nell'app Android (Reminder.java): il permesso delle notifiche si chiede quando lo accendi, non all'avvio.
+   L'avviso si calcola sul telefono dallo stato del widget e non arriva se oggi hai già studiato. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, A = window.MandarinoAndroid;
+  var APK = !!(A && A.setReminder);
+  function cur() { try { return JSON.parse(A.getReminder()); } catch (e) { return { on: false, h: 20, m: 0, perm: "prompt" }; } }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function body(note) {
+    if (!APK) return '<p class="small muted" style="margin:0">' + T("rm.webOnly") + "</p>";
+    var r = cur();
+    return '<label class="chk"><input type="checkbox" id="rm-on"' + (r.on ? " checked" : "") + "> " + T("rm.on") + "</label>" +
+      '<label class="small" style="display:grid;gap:4px;font-weight:600">' + T("rm.time") + '<input type="time" id="rm-time" value="' + pad(r.h) + ":" + pad(r.m) + '"' + (r.on ? "" : " disabled") + "></label>" +
+      '<p class="small muted" style="margin:0">' + T("rm.hint") + "</p>" +
+      (r.on && r.perm === "denied" ? '<p class="small" style="margin:0">⚠️ ' + T("rm.denied") + "</p>" : "") +
+      (note ? '<p class="small" role="status" style="margin:0">' + CP.esc(note) + "</p>" : "");
+  }
+  function paint(note) { var b = document.getElementById("rm-body"); if (b) b.innerHTML = body(note); }
+  (CP.settingsExtras = CP.settingsExtras || []).push(function () {
+    return '<details class="set-sec" id="set-reminder"><summary>🔔 ' + T("rm.title") + '</summary><div class="vbody" id="rm-body">' + body() + "</div></details>";
+  });
+  if (!APK) return;
+  var waits = {}, n = 0, prev = window.__mdEvt;
+  window.__mdEvt = function (type, id, data) { if (type === "notif-perm" && waits[id]) { var f = waits[id]; delete waits[id]; f(data === "1"); return; } if (prev) prev(type, id, data); };
+  function ask(cb) { var id = "n" + (++n); waits[id] = cb; A.requestNotif(id); }
+  function save(on) {
+    var v = (document.getElementById("rm-time") || {}).value || "20:00", p = v.split(":");
+    A.setReminder(on, +p[0] || 0, +p[1] || 0);
+    if (CP.widgetPush) CP.widgetPush();   /* il promemoria legge lo stato del widget: che sia fresco */
+  }
+  document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.id === "rm-on") {
+      if (!t.checked) { save(false); paint(T("rm.offDone")); return; }
+      ask(function (ok) {
+        if (!ok) { A.setReminder(false, 20, 0); paint(T("rm.needPerm")); return; }
+        save(true); paint(T("rm.onDone", { t: (document.getElementById("rm-time") || {}).value || "20:00" }));
+      });
+    } else if (t.id === "rm-time" && cur().on) { save(true); paint(T("rm.onDone", { t: t.value })); }
+  });
 })();
 </script>
 <script>
@@ -23780,7 +23869,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   /* chi ha già dei progressi non è nuovo */
   if (!CP.ux.get("onboarded")) {
     if (Object.keys(CP.S()).length) CP.ux.set("onboarded", 1);
-    else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 400);
+    else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest" && !window.__mdGoing) CP.welcome(); }, 400);
   }
 })();
 </script>
@@ -24248,6 +24337,122 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     if (tab !== "lessons") { show("lessons"); return true; }
     return false;
   };
+})();
+</script>
+<script>
+/* ---- ui/share-card.js ---- */
+/* ===== màndarínō · la card del giorno: un'immagine (canvas, 1080×1350) con il sigillo del grado, la serie di giorni,
+   le parole imparate e la parola del giorno, da condividere (WeChat, WhatsApp, Instagram…). Nessun server: l'immagine
+   nasce sul telefono. Parola del giorno: la stessa del widget Android (lista delle parole viste, giorno dell'anno). ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc;
+  CP.wotdPool = function () {
+    var seen = [], next = [];
+    CP.ORDER.forEach(function (k) { (CP.state(k) ? seen : next).push(CP.WORDS[k]); });
+    return (seen.length >= 30 ? seen : seen.concat(next.slice(0, 366 - seen.length))).slice(0, 366);
+  };
+  CP.wordOfDay = function () {
+    var p = CP.wotdPool(), d = new Date(), y = d.getFullYear(), doy = Math.round((Date.UTC(y, d.getMonth(), d.getDate()) - Date.UTC(y, 0, 0)) / 864e5);
+    return p.length ? p[(y * 366 + doy) % p.length] : null;
+  };
+  function css(v, fb) { return (getComputedStyle(document.documentElement).getPropertyValue(v) || fb).trim() || fb; }
+  /* il mandarino del logo, dalla pagina (defs + simbolo), come immagine */
+  function logoImg() {
+    var svg = document.querySelector("h1.brand svg"); if (!svg) return Promise.resolve(null);
+    var defs = svg.querySelector("defs"), sym = svg.querySelector("#mandarin-symbol"); if (!defs || !sym) return Promise.resolve(null);
+    var src = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="300 10 200 210" width="400" height="420">' + defs.outerHTML + sym.outerHTML.replace(/class="[^"]*"/g, "") + "</svg>";
+    return new Promise(function (res) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src); });
+  }
+  function draw(cv) {
+    var x = cv.getContext("2d"), W = 1080, H = 1350, r = CP.game.rank(), s = CP.game.streak(), c = CP.counts(), w = CP.wordOfDay();
+    cv.width = W; cv.height = H;
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#FBF6EC"); g.addColorStop(1, "#EFE4D0"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var SANS = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif", HAN = "'Noto Serif SC', 'Songti SC', 'SimSun', serif";
+    return logoImg().then(function (logo) {
+      if (logo) x.drawImage(logo, W / 2 - 110, 70, 220, 231);
+      x.textAlign = "center"; x.fillStyle = "#1E2420"; x.font = "700 64px " + SANS; x.fillText("màndarínō", W / 2, 360);
+      x.fillStyle = "#5E6A64"; x.font = "600 26px " + SANS; x.fillText(T("card.sub"), W / 2, 404);
+      /* sigillo del grado */
+      x.save(); x.translate(W / 2 - 300, 470); x.fillStyle = "#C8312B"; x.beginPath(); x.roundRect ? x.roundRect(0, 0, 150, 150, 22) : x.rect(0, 0, 150, 150); x.fill();
+      x.fillStyle = "#FFF6EA"; x.font = "700 104px " + HAN; x.textBaseline = "middle"; x.fillText(r.ch, 75, 80); x.restore();
+      x.textAlign = "left"; x.textBaseline = "alphabetic";
+      x.fillStyle = "#5E6A64"; x.font = "600 26px " + SANS; x.fillText(T("path.rank").toUpperCase(), W / 2 - 120, 510);
+      x.fillStyle = "#1E2420"; x.font = "700 44px " + SANS; x.fillText(r.name, W / 2 - 120, 565);
+      x.fillStyle = "#14594A"; x.font = "600 30px " + SANS; x.fillText(r.xp + " XP", W / 2 - 120, 610);
+      /* tre numeri */
+      var stats = [["🔥 " + s, T(s === 1 ? "done.streak1" : "done.streakN")], [String(c[1] + c[2]), T("card.words")], [String(c[2]), T("study.known")]];
+      stats.forEach(function (st, i) {
+        var cx = 200 + i * 340; x.textAlign = "center";
+        x.fillStyle = "#1E2420"; x.font = "800 72px " + SANS; x.fillText(st[0], cx, 770);
+        x.fillStyle = "#5E6A64"; x.font = "600 26px " + SANS; x.fillText(st[1], cx, 812);
+      });
+      /* parola del giorno */
+      x.fillStyle = "rgba(20,89,74,.08)"; x.beginPath(); x.roundRect ? x.roundRect(90, 870, W - 180, 360, 36) : x.rect(90, 870, W - 180, 360); x.fill();
+      x.textAlign = "center"; x.fillStyle = "#14594A"; x.font = "700 26px " + SANS; x.fillText(T("card.wotd").toUpperCase(), W / 2, 920);
+      if (w) {
+        x.fillStyle = "#1E2420"; x.font = "500 136px " + HAN; x.fillText(w.hz, W / 2, 1058);
+        x.fillStyle = "#14594A"; x.font = "600 44px " + SANS; x.fillText(w.py.replace(/\./g, ""), W / 2, 1140);
+        x.fillStyle = "#5E6A64"; x.font = "500 34px " + SANS; x.fillText(CP.gloss(w).slice(0, 40), W / 2, 1192);
+      }
+      x.fillStyle = "#8A948F"; x.font = "500 24px " + SANS; x.fillText(T("card.foot"), W / 2, 1300);
+      return cv;
+    });
+  }
+  function share(cv) {
+    var name = "mandarino-oggi.png", A = window.MandarinoAndroid;
+    if (A && A.shareFile) { A.shareFile(name, "image/png", cv.toDataURL("image/png").split(",")[1]); return; }
+    cv.toBlob(function (b) {
+      var f = typeof File === "function" ? new File([b], name, { type: "image/png" }) : null;
+      if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: "màndarínō" }).catch(function () {}); return; }
+      var u = URL.createObjectURL(b), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); URL.revokeObjectURL(u); }, 1500);
+    }, "image/png");
+  }
+  CP.shareCard = function () {
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("card.title")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + '</button></div>' +
+      '<canvas class="card-cv" aria-label="' + CP.attr(T("card.title")) + '"></canvas><div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">📤 ' + esc(T("card.share")) + "</button></div>");
+    var cv = document.querySelector(".card-cv"); draw(cv);
+  };
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-open]") : null; if (!b) return;
+    if (b.hasAttribute("data-card-open")) { CP.sfx("tap"); CP.shareCard(); return; }
+    var cv = document.querySelector(".card-cv"); if (cv) share(cv);
+  });
+})();
+</script>
+<script>
+/* ---- ui/launch.js ---- */
+/* ===== màndarínō · aprire l'app su un'azione precisa: «?go=study» (scorciatoie di Android con pressione prolungata
+   sull'icona, widget, promemoria, scorciatoie del manifesto della PWA). Azioni: study, ear, sprint, music, words, frasi,
+   path. Se l'app è già aperta, il lato Android chiama window.__mdGo("study"). ===== */
+(function () {
+  var CP = window.CP;
+  function later(f) { setTimeout(f, 300); }
+  var ACT = {
+    /* prima la scheda, poi (finito il suo primo disegno) l'attività */
+    study: function () { CP.show("study"); later(function () { if (CP.studyStart) CP.studyStart(); }); },
+    ear: function () { CP.show("study"); later(function () { if (CP.mode) CP.mode.ear(); }); },
+    sprint: function () { CP.show("study"); later(function () { if (CP.mode) CP.mode.sprint(); }); },
+    music: function () { if (CP.jukeboxOpen) CP.jukeboxOpen(); },
+    words: function () { CP.show("words"); },
+    frasi: function () { CP.show("build"); },
+    path: function () { CP.show("path"); }
+  };
+  CP.go = function (a) {
+    var f = ACT[a]; if (!f) return false;
+    if (document.body.classList.contains("course-it")) return false;   /* le azioni sono del corso di cinese */
+    if (CP.topSheet && CP.topSheet() && CP.closeSheet) CP.closeSheet();
+    if (CP.immerse && CP.immerse.active()) CP.immerse.leave();
+    try { f(); } catch (e) {}
+    return true;
+  };
+  window.__mdGo = function (a) { setTimeout(function () { CP.go(a); }, 0); };
+  var q = null; try { q = new URLSearchParams(location.search).get("go"); } catch (e) {}
+  if (q) {
+    window.__mdGoing = true;   /* niente benvenuto sopra l'azione scelta */
+    try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+    /* dopo il primo disegno (main.js) e dopo il benvenuto */
+    setTimeout(function () { CP.go(q); }, 350);
+  }
 })();
 </script>
 <!-- Avvio finale: per ultimo -->

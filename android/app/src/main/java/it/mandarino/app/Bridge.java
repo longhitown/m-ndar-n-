@@ -299,6 +299,31 @@ public class Bridge {
         }
     }
 
+    /** condivide un file (la card del giorno, PNG) con il foglio «Condividi» di Android */
+    @JavascriptInterface
+    public boolean shareFile(String name, String mime, String base64) {
+        String safe = name == null ? "mandarino.png" : name.replaceAll("[^A-Za-z0-9._-]", "_");
+        byte[] data;
+        try { data = Base64.decode(base64, Base64.DEFAULT); } catch (IllegalArgumentException e) { return false; }
+        try {
+            File dir = new File(act.getCacheDir(), "share");
+            if (!dir.isDirectory() && !dir.mkdirs()) return false;
+            File f = new File(dir, safe);
+            try (FileOutputStream out = new FileOutputStream(f)) { out.write(data); }
+            final Uri uri = ShareProvider.uriFor(f);
+            final String type = mime == null || mime.isEmpty() ? "image/png" : mime;
+            act.runOnUiThread(() -> {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType(type);
+                i.putExtra(Intent.EXTRA_STREAM, uri);
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                try { act.startActivity(Intent.createChooser(i, act.getString(R.string.share_title))); }
+                catch (ActivityNotFoundException ignored) { }
+            });
+            return true;
+        } catch (IOException | RuntimeException e) { return false; }
+    }
+
     /** navigator.share: testo verso WeChat, WhatsApp, email… */
     @JavascriptInterface
     public void share(final String title, final String text) {
@@ -387,6 +412,41 @@ public class Bridge {
                 if (p.getUri().equals(u) && p.isReadPermission() && p.isWritePermission()) return true;
         } catch (RuntimeException ignored) { }
         return false;
+    }
+
+    /* ---------------- widget «Oggi» ---------------- */
+
+    /** lo stato per il widget (pwa/widget.js): si salva e si ridisegnano i widget sulla schermata Home */
+    @JavascriptInterface
+    public void setWidgetState(String json) {
+        if (json == null || json.length() > 200000) return;
+        act.getSharedPreferences(WidgetState.PREFS, android.content.Context.MODE_PRIVATE).edit().putString("widget", json).apply();
+        TodayWidget.updateAll(act.getApplicationContext());
+    }
+
+    /* ---------------- promemoria ---------------- */
+
+    @JavascriptInterface
+    public String getReminder() {
+        android.content.SharedPreferences p = Reminder.prefs(act);
+        return "{\"on\":" + p.getBoolean("rem_on", false) + ",\"h\":" + p.getInt("rem_h", 20) + ",\"m\":" + p.getInt("rem_m", 0) + ",\"perm\":\"" + notifPerm() + "\"}";
+    }
+
+    @JavascriptInterface
+    public void setReminder(boolean on, int h, int m) { Reminder.set(act.getApplicationContext(), on, Math.max(0, Math.min(23, h)), Math.max(0, Math.min(59, m))); }
+
+    /** "granted" | "prompt" (Android 13+, da chiedere) | "denied" (notifiche spente per l'app) */
+    @JavascriptInterface
+    public String notifPerm() {
+        android.app.NotificationManager nm = (android.app.NotificationManager) act.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= 33 && act.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) return "prompt";
+        return nm != null && !nm.areNotificationsEnabled() ? "denied" : "granted";
+    }
+
+    /** chiede il permesso delle notifiche (Android 13+) nel momento in cui si accende il promemoria */
+    @JavascriptInterface
+    public void requestNotif(final String id) {
+        act.runOnUiThread(() -> act.requestNotif(ok -> emit("notif-perm", id, ok ? "1" : "0")));
     }
 
     /* ---------------- aspetto e informazioni ---------------- */

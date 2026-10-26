@@ -2,4 +2,10 @@
 <resources>
     <color name="paper">#F4EFE6</color>
     <color name="accent">#14594A</color>
+    <!-- widget «Oggi» -->
+    <color name="w_bg">#F4EFE6</color>
+    <color name="w_ink">#1E2420</color>
+    <color name="w_muted">#5E6A64</color>
+    <color name="w_accent">#14594A</color>
+    <color name="w_on_accent">#FFFFFF</color>
 </resources>

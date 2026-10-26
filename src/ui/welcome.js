@@ -31,6 +31,6 @@
   /* chi ha già dei progressi non è nuovo */
   if (!CP.ux.get("onboarded")) {
     if (Object.keys(CP.S()).length) CP.ux.set("onboarded", 1);
-    else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 400);
+    else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest" && !window.__mdGoing) CP.welcome(); }, 400);
   }
 })();

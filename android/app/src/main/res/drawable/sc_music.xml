@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- scorciatoia «Musica»: una nota -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#8438BC" android:pathData="M12,1A11,11 0,1 1,12,23A11,11 0,1 1,12,1Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M10,6.5l7,-1.5v9a2.2,2.2 0,1 1,-1.5,-2.1v-4.6l-4,0.9v7.3a2.2,2.2 0,1 1,-1.5,-2.1z"/>
+</vector>

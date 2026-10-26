@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">màndarínō</string>
+    <string name="app_name" translatable="false">màndarínō</string>
     <string name="saved">Salvato in Download: %1$s</string>
     <string name="save_failed">Non riesco a salvare il file.</string>
     <string name="share_title">Condividi con…</string>
     <string name="no_app">Nessuna app per aprire questo link.</string>
     <string name="mic_denied">Senza il permesso del microfono non posso ascoltarti.</string>
+    <string name="sc_study">Studia ora</string>
+    <string name="sc_study_long">Studia ora: i ripassi di oggi</string>
+    <string name="sc_ear">Orecchio</string>
+    <string name="sc_ear_long">Orecchio ai toni</string>
+    <string name="sc_music">Musica</string>
+    <string name="sc_music_long">Musica per studiare</string>
+    <string name="w_small_name">Oggi (piccolo)</string>
+    <string name="w_large_name">Oggi</string>
+    <string name="w_small_desc">Serie di giorni e ripassi in scadenza</string>
+    <string name="w_large_desc">Serie, ripassi in scadenza e parola del giorno</string>
 </resources>
