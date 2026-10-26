@@ -22,7 +22,7 @@ export function assets(srcDir) {
 /* esegue i soli file di dati (src/data/…) in una sandbox e restituisce le strutture globali */
 export function load(srcDir) {
   const { scripts } = assets(srcDir);
-  const ctx = vm.createContext({ SECTIONS: [], DIALOGS: [], LESSONS: [] });
+  const ctx = vm.createContext({ SECTIONS: [], DIALOGS: [], LESSONS: [], ITLESSONS: [] });
   const files = scripts.filter((s) => s.src.startsWith("data/"));
   for (const s of files) vm.runInContext(fs.readFileSync(path.join(srcDir, s.src), "utf8"), ctx, { filename: s.src });
   const g = (n) => vm.runInContext("typeof " + n + " === 'undefined' ? undefined : " + n, ctx);
@@ -30,7 +30,7 @@ export function load(srcDir) {
     files: files.map((s) => s.src),
     SECTIONS: ctx.SECTIONS, DIALOGS: ctx.DIALOGS, PHRASES: g("PHRASES"), DIALOG_CATS: g("DIALOG_CATS"), THINK: g("THINK"), THINK_CATS: g("THINK_CATS"),
     EX: g("EX"), PATTERNS: g("PATTERNS"), SLOTS: g("SLOTS"), SITUATIONS: g("SITUATIONS"), PATH: g("PATH"),
-    GRAM: g("GRAM"), VERIFIED: g("VERIFIED"), LESSONS: g("LESSONS")
+    GRAM: g("GRAM"), VERIFIED: g("VERIFIED"), LESSONS: g("LESSONS"), ITLESSONS: g("ITLESSONS")
   };
 }
 

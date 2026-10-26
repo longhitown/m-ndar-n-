@@ -11,7 +11,8 @@
       "<div><b>" + T("wel.goal") + '</b><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("wel.goal")) + '" style="margin-top:8px">' +
       [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +
       '<p class="small muted" style="margin:6px 0 0">' + T("wel.goalHint") + "</p></div>" +
-      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">' + T("wel.start", { n: goal }) + "</button></div>";
+      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">' + T("wel.start", { n: goal }) + "</button>" +
+      '<button type="button" class="btn-s" data-course-set="it" lang="zh-CN">🇨🇳 我是中国人，我想学意大利语</button></div>';
   }
   CP.welcome = function (force) {
     if (!force && CP.ux.get("onboarded")) return;

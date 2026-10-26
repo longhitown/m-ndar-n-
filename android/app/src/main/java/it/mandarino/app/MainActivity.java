@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
     @SuppressLint("SetJavaScriptEnabled")   /* la pagina è solo quella del pacchetto: ogni altro indirizzo va al browser */
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        if (BuildConfig.DEBUG) WebView.setWebContentsDebuggingEnabled(true);   /* solo le build di prova: chrome://inspect */
         web = new WebView(this);
         setContentView(web);
 

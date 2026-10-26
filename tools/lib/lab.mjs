@@ -73,5 +73,20 @@ export function checkLessons(L) {
       } else err.push(at + ": tipo «" + q.k + "» sconosciuto (order o pick)");
     });
   });
+  /* corso di italiano: le frasi da ricomporre devono avere almeno due parole; le risposte giuste devono esistere */
+  const itIds = new Set();
+  (L.D.ITLESSONS || []).forEach((l, i) => {
+    const w = "corso it " + (l.id || i);
+    if (!l.id || itIds.has(l.id)) err.push(w + ": id mancante o doppio"); itIds.add(l.id);
+    ["title", "goal"].forEach((f) => { if (!l[f]) err.push(w + ": manca " + f); });
+    (l.ex || []).forEach((e, j) => { if (!Array.isArray(e) || e.length !== 2 || !e[0] || !e[1]) err.push(w + ` ex[${j}]: deve essere [italiano, cinese]`); });
+    (l.traps || []).forEach((t, j) => { if (!Array.isArray(t) || t.length !== 3) err.push(w + ` traps[${j}]: deve essere [sbagliato, giusto, perché]`); else if (t[0] === t[1]) err.push(w + ` traps[${j}]: sbagliato = giusto`); });
+    (l.quiz || []).forEach((q, j) => {
+      const at = w + ` quiz[${j}]`;
+      if (q.k === "order") { if (String(q.it || "").split(/\s+/).filter(Boolean).length < 2 || !q.zh) err.push(at + ": servono it (almeno due parole) e zh"); }
+      else if (q.k === "pick") { if (!q.q || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length) || new Set(q.opts).size !== q.opts.length) err.push(at + ": servono q, opts diverse (almeno 2) e a"); }
+      else err.push(at + ": tipo «" + q.k + "» sconosciuto");
+    });
+  });
   return err;
 }

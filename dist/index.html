@@ -859,6 +859,27 @@ input[type="range"]{accent-color:var(--accent)}
 .ls-opt.right{border-color:var(--accent);border-width:2px;background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
 .ls-opt.wrong{border-style:dashed;opacity:.85}
 .ls-opt.off{opacity:.55}
+/* corso di italiano (src/it/course.js): al posto delle quattro schede del corso di cinese */
+body.course-it #view-path, body.course-it #view-words, body.course-it #view-study, body.course-it #view-build, body.course-it nav.dock:not(.dock-it), body.course-it #guide-btn { display: none !important; }
+body:not(.course-it) .dock-it { display: none; }
+.dock-it .dtab { gap: 2px; }
+.dock-it .it-ico { font-size: 20px; line-height: 1; }
+.it-big { font-size: 1.15rem; font-weight: 600; }
+.it-zh .lp { font-weight: 600; }
+.it-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.it-row .it-w { display: grid; gap: 2px; text-align: left; background: none; border: 0; padding: 4px 0; min-height: 44px; }
+.it-topic { margin: 18px 0 4px; }
+.it-card { text-align: center; }
+.it-front { font-size: 2rem; font-weight: 700; margin: 14px 0 6px; }
+.it-back { font-size: 1.4rem; margin: 12px 0; }
+.it-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.it-grades button { min-height: 48px; }
+.it-conj { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.it-conj th, .it-conj td { text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); }
+.it-line { padding: 10px 12px; margin: 8px 0; border-radius: 12px; border: 1px solid var(--line); display: grid; gap: 4px; }
+.it-line.it-b { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.it-tile .th { font-family: inherit; font-size: 18px; }
+.dock.dock-it { grid-template-columns: repeat(5, 1fr); }
 
 /* ---- styles/categories.css ---- */
 /* ===== V6.5: categorie (pills), Pensiero esteso, Puzzle ===== */
@@ -1305,7 +1326,7 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 /* màndarínō · avvio. Gira per primo nel <body>: memorizza la pagina com'era (per la copia scaricabile, CP.snapshot)
    e prepara i registri che i file di dati riempiono (SECTIONS.push, DIALOGS.push). */
 (function(){var cs=document.currentScript,s="",c;for(c=document.body.firstElementChild;c&&c!==cs;c=c.nextElementSibling)s+=c.outerHTML;window.__PRISTINE={head:document.head?document.head.innerHTML:"",body:s,lang:document.documentElement.getAttribute("lang")||"it"};})();
-var SECTIONS = [], DIALOGS = [], LESSONS = [];
+var SECTIONS = [], DIALOGS = [], LESSONS = [], ITLESSONS = [];
 </script>
 <script>
 /* ---- pwa/android.js ---- */
@@ -7918,7 +7939,7 @@ var GRAM = {
     "啤酒": ["birra", "f", "birre", "m"], "葡萄酒": ["vino", "m", "vini", "m"],
     "米饭": ["riso", "m", "riso", "m"], "早饭": ["colazione", "f", "colazioni"], "午饭": ["pranzo", "m", "pranzi"], "晚饭": ["cena", "f", "cene"],
     "面条": ["noodles", "m", "noodles", "mp"], "饺子": ["raviolo", "m", "ravioli", "p"], "包子": ["panino al vapore", "m", "panini al vapore"],
-    "面包": ["pane", "m", "pani", "m"], "鸡蛋": ["uovo", "f", "uova"], "肉": ["carne", "f", "carni", "m"], "牛肉": ["manzo", "m", "manzo", "m"],
+    "面包": ["pane", "m", "pani", "m"], "鸡蛋": ["uovo", "m", "uova"], "肉": ["carne", "f", "carni", "m"], "牛肉": ["manzo", "m", "manzo", "m"],
     "猪肉": ["maiale", "m", "maiale", "m"], "鸡肉": ["pollo", "m", "pollo", "m"], "鱼": ["pesce", "m", "pesci", "m"], "海鲜": ["frutti di mare", "m", "frutti di mare", "mp"],
     "蔬菜": ["verdura", "f", "verdure", "m"], "豆腐": ["tofu", "m", "tofu", "m"], "汤": ["zuppa", "f", "zuppe"], "小吃": ["spuntino", "m", "spuntini"], "水果": ["frutta", "f", "frutta", "m"],
     "苹果": ["mela", "f", "mele"], "香蕉": ["banana", "f", "banane"], "西瓜": ["anguria", "f", "angurie"], "冰淇淋": ["gelato", "m", "gelati"],
@@ -8446,6 +8467,8 @@ var VERIFIED = [
   ["我马上来","Vengo subito."],
   ["我从来不喝咖啡","Non bevo mai caffè."],
   ["有时候我喝茶","A volte bevo tè."],
+  ["我吃了一个鸡蛋","Ho mangiato un uovo."],
+  ["我买了两个鸡蛋","Ho comprato due uova."],
   ["我很好你呢","Sto bene, e tu?","memoria"],
   ["我们是好朋友","Siamo buoni amici.","memoria"],
   ["你给我打电话吧","Telefonami!","memoria"],
@@ -9021,6 +9044,400 @@ LESSONS.push({
   ]
 });
 </script>
+<script>
+/* ---- data/it/lessons/01-pronuncia.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 1 · 发音：怎么写就怎么读.
+   Formato: come src/data/lessons (vedi 01-essere.js), ma al contrario: spiegazioni in cinese, ex = [italiano, cinese],
+   traps = [italiano sbagliato, italiano giusto, perché (in cinese)], quiz order = { it: frase da ricomporre, zh: il senso }.
+   L'italiano passa da tools/morphit-check.mjs (Morph-it + Hunspell). */
+ITLESSONS.push({
+  "id": "pronuncia",
+  "n": 1,
+  "title": "发音：怎么写就怎么读",
+  "goal": "看到意大利语单词，就能读出来。",
+  "body": [
+    "意大利语基本上**怎么写就怎么读**：每个字母都要读出来，规则不多，例外也很少。记住下面几条，几乎所有单词你都会读。",
+    "**p、t、c（k）不送气**：读的时候不出气，很像汉语拼音的 b、d、g。比如 **pane**（面包）的 p 接近拼音的 b。意大利语的 **b、d、g 是浊音**，发音时声带要振动，普通话里没有这样的音。",
+    "**c 和 g 的读音看后面的字母**：在 e、i 前面读 [tʃ]、[dʒ]，像英语 church、gin 的开头：**ciao、cena、gelato、giorno**；在 a、o、u 前面读 [k]、[g]：**casa、gatto**。想在 e、i 前读 [k]、[g]，就加一个 h：**che、chi、ghi**。",
+    "**gn** 读 [ɲ]，舌面贴住上颚，接近汉语\"你\"的声母：**bagno**（浴室）。**gli** 读 [ʎ]，舌面贴住上颚发 l：**figlio**（儿子）。**sc** 在 e、i 前读 [ʃ]，像英语 she：**pesce**（鱼）。",
+    "**双辅音要读长**：**pala**（铲子）和 **palla**（球）、**caro**（贵）和 **carro**（货车）意思不一样。**r** 是舌尖颤音（大舌音）。",
+    "**重音**一般在倒数第二个音节：a-**MI**-co。如果重音在最后一个元音上，就要写重音符号：**città、caffè、perché**。"
+  ],
+  "pattern": ["ca · co · cu = [k]", "ce · ci = [tʃ]", "che · chi = [k]"],
+  "ex": [
+    ["Ciao!", "你好！（也可以说再见）"],
+    ["Buongiorno.", "早上好。/ 你好。"],
+    ["Il gelato è buono.", "冰淇淋很好吃。"],
+    ["Che cos'è questo?", "这是什么？"],
+    ["Mio figlio si chiama Luca.", "我儿子叫卢卡。"],
+    ["Il pesce è buono.", "鱼很好吃。"],
+    ["La città è bella.", "这座城市很漂亮。"]
+  ],
+  "traps": [
+    ["chiao", "ciao", "ch 读 [k]，chiao 会读成\"kiao\"。要读 [tʃ] 就写 ci。"],
+    ["citta", "città", "重音落在最后一个元音上，必须写重音符号，不写就是错字。"],
+    ["gelatto", "gelato", "单辅音和双辅音不能混：gelato 只有一个 t。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "ciao 里的 c 怎么读？", "opts": ["[k]，像英语 cat", "[tʃ]，像英语 church 的 ch", "[s]"], "a": 1, "why": "c 在 i 前读 [tʃ]，这里的 i 不单独发音，只让 c 变软。"},
+    {"k": "pick", "q": "哪个词里的 c 读 [k]？", "opts": ["cena", "ciao", "che"], "a": 2, "why": "ch 加 e 或 i 读 [k]。"},
+    {"k": "pick", "q": "pala 和 palla 一样吗？", "opts": ["一样，只是写法不同", "不一样：双辅音要读长，意思也不同（铲子 / 球）"], "a": 1},
+    {"k": "pick", "q": "amico 的重音在哪儿？", "opts": ["A-mi-co", "a-MI-co", "a-mi-CO"], "a": 1, "why": "一般在倒数第二个音节。"},
+    {"k": "pick", "q": "意大利语 pane 里的 p 更像汉语拼音的哪个音？", "opts": ["p（送气）", "b（不送气）", "f"], "a": 1},
+    {"k": "pick", "q": "哪种写法是对的？", "opts": ["citta", "città", "cittá"], "a": 1, "why": "a 上的重音符号是 à（向左下斜）。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/02-genere.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 2 · 名词：阴性、阳性和复数.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "genere",
+  "n": 2,
+  "title": "名词：阴性、阳性和复数",
+  "goal": "知道名词是阴性还是阳性，会变复数。",
+  "body": [
+    "意大利语的每个名词都有**性**：阳性或阴性。连书、桌子、城市都有性。性很重要，因为冠词和形容词都要跟着变。",
+    "一般规律：以 **-o** 结尾的多半是**阳性**（libro 书），以 **-a** 结尾的多半是**阴性**（casa 房子），以 **-e** 结尾的可能是阳性也可能是阴性（il pane 面包、la chiave 钥匙），只能一个一个记。",
+    "复数：**-o → -i**（libro → libri），**-a → -e**（casa → case），**-e → -i**（chiave → chiavi）。",
+    "有的词复数不变：最后一个音节有重音的（città、caffè）和外来词（bar、film、computer）。una città → due città。",
+    "少数例外要特别记：**uovo**（鸡蛋）是阳性，复数却是阴性的 **uova**；**mano**（手）以 -o 结尾，却是阴性。汉语的名词没有单复数变化，所以要习惯：数量多于一，名词就要变。"
+  ],
+  "pattern": ["-o → -i", "-a → -e", "-e → -i"],
+  "ex": [
+    ["un libro, due libri", "一本书，两本书"],
+    ["una casa, due case", "一栋房子，两栋房子"],
+    ["una chiave, tre chiavi", "一把钥匙，三把钥匙"],
+    ["un caffè, due caffè", "一杯咖啡，两杯咖啡"],
+    ["un uovo, due uova", "一个鸡蛋，两个鸡蛋"]
+  ],
+  "traps": [
+    ["due libro", "due libri", "数量多于一，名词就要变复数。"],
+    ["due caffès", "due caffè", "以重音结尾的词复数不变，也不加 -s。"],
+    ["due uovi", "due uova", "uovo 的复数不规则：uova。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "libro 的复数是？", "opts": ["libre", "libri", "libros"], "a": 1},
+    {"k": "pick", "q": "casa 的复数是？", "opts": ["case", "casi", "casas"], "a": 0},
+    {"k": "pick", "q": "哪个词是阴性？", "opts": ["libro", "chiave", "caffè"], "a": 1, "why": "chiave 以 -e 结尾，却是阴性：la chiave。-e 结尾的词只能记。"},
+    {"k": "pick", "q": "una città 的复数是？", "opts": ["due città", "due cittè", "due citte"], "a": 0, "why": "最后一个音节有重音的词复数不变。"},
+    {"k": "order", "it": "ho due libri", "zh": "我有两本书。"},
+    {"k": "pick", "q": "uovo 的复数是？", "opts": ["uovi", "uova", "uove"], "a": 1}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/03-articoli.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 3 · 冠词：il、lo、la…….
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "articoli",
+  "n": 3,
+  "title": "冠词：il、lo、la……",
+  "goal": "在名词前面放上正确的冠词。",
+  "body": [
+    "汉语没有冠词，意大利语几乎每个名词前面都要有。**定冠词**（il、la……）表示双方都知道的那一个，或者泛指一类东西；**不定冠词**（un、una……）表示\"一个\"，第一次提到的东西。",
+    "**阳性单数**：一般用 **il / un**（il libro、un libro）；在 **s + 辅音、z、gn、ps** 开头的词前用 **lo / uno**（lo studente、uno zaino）；在元音前用 **l' / un**（l'amico、un amico）。",
+    "**阴性单数**：**la / una**（la casa、una casa）；元音前用 **l' / un'**（l'acqua、un'amica）。注意：阳性的 un 后面**不加**撇号，阴性的 un' 要加。",
+    "**复数**：阳性用 **i**（i libri）；在 s + 辅音、z 和元音前用 **gli**（gli studenti、gli amici）。阴性都用 **le**（le case、le amiche）。",
+    "冠词既跟着**名词的性和数**变，也跟着**后面那个词的开头字母**变。"
+  ],
+  "pattern": ["il · lo · l'", "la · l'", "i · gli · le"],
+  "ex": [
+    ["il libro, i libri", "这本书，这些书"],
+    ["lo studente, gli studenti", "这个学生，这些学生"],
+    ["l'amico, gli amici", "这个朋友，这些朋友"],
+    ["la casa, le case", "这栋房子，这些房子"],
+    ["l'acqua", "水"],
+    ["un amico, un'amica", "一个（男性）朋友，一个（女性）朋友"]
+  ],
+  "traps": [
+    ["il studente", "lo studente", "s + 辅音开头的阳性词用 lo。"],
+    ["la acqua", "l'acqua", "元音前 la 变成 l'。"],
+    ["un'amico", "un amico", "阳性的 un 永远不加撇号。"],
+    ["i amici", "gli amici", "元音前的阳性复数用 gli。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "___ studente", "opts": ["il", "lo", "la"], "a": 1, "why": "s + 辅音开头：lo。"},
+    {"k": "pick", "q": "___ acqua", "opts": ["la", "l'", "il"], "a": 1, "why": "acqua 是阴性，元音开头：l'。"},
+    {"k": "pick", "q": "___ amica（一个女性朋友）", "opts": ["un", "un'", "uno"], "a": 1},
+    {"k": "pick", "q": "___ amici", "opts": ["i", "gli", "le"], "a": 1},
+    {"k": "pick", "q": "___ case", "opts": ["le", "i", "gli"], "a": 0},
+    {"k": "order", "it": "il libro è nuovo", "zh": "这本书是新的。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/04-essere-avere.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 4 · essere（是）和 avere（有）.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "essere-avere",
+  "n": 4,
+  "title": "essere（是）和 avere（有）",
+  "goal": "说自己是谁、有什么，还有饿了、渴了、几岁了。",
+  "body": [
+    "essere（是）和 avere（有）是最重要的两个动词，都是不规则的，要背下来。**essere**：io sono、tu sei、lui / lei è、noi siamo、voi siete、loro sono。**avere**：io ho、tu hai、lui / lei ha、noi abbiamo、voi avete、loro hanno（h 不发音）。",
+    "动词已经说明了\"谁\"，所以主语代词常常省略：**Sono cinese** = 我是中国人。",
+    "国籍是形容词：要跟着性别变，而且**小写**。Sono cinese（男女一样）；Sono italiano（男）/ Sono italiana（女）；Siamo italiani。",
+    "有几件事汉语用\"是\"或者不用动词，意大利语却用 **avere**：**Ho fame**（我饿了，字面是\"我有饥饿\"）、**Ho sete**（我渴了）、**Ho freddo**（我冷）、**Ho vent'anni**（我二十岁）。"
+  ],
+  "pattern": ["sono · sei · è …", "ho · hai · ha …"],
+  "ex": [
+    ["Sono cinese.", "我是中国人。"],
+    ["Lei è italiana.", "她是意大利人。"],
+    ["Siamo studenti.", "我们是学生。"],
+    ["Ho un fratello.", "我有一个兄弟（意大利语不分哥哥弟弟）。"],
+    ["Ho fame.", "我饿了。"],
+    ["Lei ha vent'anni.", "她二十岁。"]
+  ],
+  "traps": [
+    ["Sono fame.", "Ho fame.", "饿、渴、冷、热和年龄都用 avere。"],
+    ["Io sono Cinese.", "Sono cinese.", "国籍要小写；主语 io 一般省略。"],
+    ["Sono vent'anni.", "Ho vent'anni.", "年龄用 avere：\"我有二十年\"。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "我饿了", "opts": ["Sono fame.", "Ho fame.", "Faccio fame."], "a": 1},
+    {"k": "pick", "q": "她是意大利人", "opts": ["Lei è italiano.", "Lei è italiana.", "Lei ha italiana."], "a": 1, "why": "女性用 italiana。"},
+    {"k": "pick", "q": "noi + essere = ?", "opts": ["siamo", "sono", "abbiamo"], "a": 0},
+    {"k": "pick", "q": "loro + avere = ?", "opts": ["hanno", "ho", "sono"], "a": 0},
+    {"k": "order", "it": "lei ha vent'anni", "zh": "她二十岁。"},
+    {"k": "order", "it": "noi siamo studenti", "zh": "我们是学生。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/05-accordo.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 5 · 形容词要和名词一致.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "accordo",
+  "n": 5,
+  "title": "形容词要和名词一致",
+  "goal": "形容词跟着名词变性、变数。",
+  "body": [
+    "意大利语的形容词要和它修饰的名词**同性同数**：un libro nuov**o**、una casa nuov**a**、due libri nuov**i**、due case nuov**e**。",
+    "以 -o 结尾的形容词有四种形式（-o、-a、-i、-e）；以 -e 结尾的只有两种：单数 -e，复数 -i。un libro / una casa interessant**e**，due libri / due case interessant**i**。",
+    "形容词一般放在**名词后面**：un libro nuovo（一本新书），和汉语\"新书\"的顺序相反。少数常用的短形容词（bello、buono、grande、piccolo）也可以放在前面。",
+    "用 essere 的时候也要一致：Il tè è caldo；La zuppa è calda；I ravioli sono buoni。",
+    "汉语的\"很\"常常只是连接，不一定要翻成 molto：茶很热 = Il tè è caldo。真要说\"非常\"才用 molto：Il tè è molto caldo。"
+  ],
+  "pattern": ["-o · -a · -i · -e", "-e · -i"],
+  "ex": [
+    ["un libro nuovo", "一本新书"],
+    ["una casa nuova", "一栋新房子"],
+    ["due libri nuovi", "两本新书"],
+    ["La zuppa è calda.", "汤很热。"],
+    ["I ravioli sono buoni.", "饺子很好吃。"],
+    ["Il tè è caldo.", "茶很热。"]
+  ],
+  "traps": [
+    ["una casa nuovo", "una casa nuova", "casa 是阴性，形容词也用阴性 -a。"],
+    ["due libri nuovo", "due libri nuovi", "复数名词配复数形容词。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "una ragazza ___（高）", "opts": ["alto", "alta", "alti"], "a": 1},
+    {"k": "pick", "q": "due case ___（新）", "opts": ["nuove", "nuovi", "nuova"], "a": 0},
+    {"k": "pick", "q": "un libro ___（有意思）", "opts": ["interessanto", "interessante", "interessanta"], "a": 1, "why": "-e 结尾的形容词单数阴阳同形。"},
+    {"k": "pick", "q": "一本新书", "opts": ["un libro nuovo", "un libro nuova", "una libro nuovo"], "a": 0},
+    {"k": "order", "it": "la casa è nuova", "zh": "这栋房子是新的。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/06-presente.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 6 · 现在时：-are、-ere、-ire.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "presente",
+  "n": 6,
+  "title": "现在时：-are、-ere、-ire",
+  "goal": "会说\"我说、你拿、他睡\"。",
+  "body": [
+    "意大利语的动词要根据**谁做**来变化。原形（不定式）以 -are、-ere、-ire 结尾：parlare（说）、prendere（拿、要）、dormire（睡觉）。",
+    "去掉 -are、-ere、-ire，加上词尾。**-are**：parlo、parli、parla、parliamo、parlate、parlano。**-ere**：prendo、prendi、prende、prendiamo、prendete、prendono。**-ire**：dormo、dormi、dorme、dormiamo、dormite、dormono。",
+    "很多 -ire 动词中间要加 **-isc-**：capisco（我懂）、capisci、capisce、capiamo、capite、capiscono。哪些动词加 -isc- 要记住。",
+    "词尾已经说明了是谁，所以主语常常省略：**Parlo cinese** = 我说中文。",
+    "现在时也可以说马上要做的事：Domani vado a Roma（明天我去罗马）。"
+  ],
+  "pattern": ["parlo", "parli", "parla", "parliamo", "parlate", "parlano"],
+  "ex": [
+    ["Parlo cinese.", "我说中文。"],
+    ["Studio italiano.", "我学意大利语。"],
+    ["Lui prende un caffè.", "他要一杯咖啡。"],
+    ["Dormiamo a casa.", "我们在家睡觉。"],
+    ["Capisci?", "你懂吗？"],
+    ["Domani vado a Roma.", "明天我去罗马。"]
+  ],
+  "traps": [
+    ["Io parlare cinese.", "Parlo cinese.", "动词要变位，不能直接用原形。"],
+    ["Capi?", "Capisci?", "capire 要加 -isc-：capisco、capisci、capisce……"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "tu + parlare", "opts": ["parlo", "parli", "parla"], "a": 1},
+    {"k": "pick", "q": "noi + prendere", "opts": ["prendiamo", "prendemo", "prendono"], "a": 0},
+    {"k": "pick", "q": "loro + dormire", "opts": ["dormono", "dormano", "dorminono"], "a": 0},
+    {"k": "pick", "q": "io + capire", "opts": ["capo", "capisco", "capiro"], "a": 1},
+    {"k": "order", "it": "noi parliamo italiano", "zh": "我们说意大利语。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/07-domande.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 7 · 否定和提问.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "domande",
+  "n": 7,
+  "title": "否定和提问",
+  "goal": "会说\"不\"，会问问题。",
+  "body": [
+    "否定很简单：在动词前面加 **non**。**Non** parlo italiano = 我不说意大利语。",
+    "\"从来不\"、\"什么也不\"要用两个否定词：**Non** bevo **mai** caffè（我从来不喝咖啡）；**Non** capisco **niente**（我什么都不懂）。汉语一个\"不\"就够了，意大利语两个都要说。",
+    "是非问句没有\"吗\"：句子不变，只是**语调上扬**，写的时候加问号。Sei cinese? = 你是中国人吗？",
+    "特殊疑问句的顺序和汉语**相反**：疑问词放在**句子开头**。汉语\"你去哪里？\"→ 意大利语 **Dove** vai?（\"哪里 你去\"）。",
+    "常用疑问词：**che cosa**（什么）、**chi**（谁）、**dove**（哪里）、**quando**（什么时候）、**perché**（为什么）、**come**（怎么）、**quanto**（多少）。perché 既是\"为什么\"，也是\"因为\"。"
+  ],
+  "pattern": ["Dove · Che cosa · Chi …", "+ 动词", "?"],
+  "ex": [
+    ["Non parlo italiano.", "我不说意大利语。"],
+    ["Non bevo mai caffè.", "我从来不喝咖啡。"],
+    ["Sei cinese?", "你是中国人吗？"],
+    ["Dove vai?", "你去哪里？"],
+    ["Che cosa mangi?", "你吃什么？"],
+    ["Chi è lui?", "他是谁？"]
+  ],
+  "traps": [
+    ["Vai dove?", "Dove vai?", "疑问词放在句子开头。"],
+    ["Bevo mai caffè.", "Non bevo mai caffè.", "mai 前面还要有 non。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "你去哪里？", "opts": ["Vai dove?", "Dove vai?", "Dove vai ma?"], "a": 1},
+    {"k": "pick", "q": "我从来不喝咖啡。", "opts": ["Bevo mai caffè.", "Non bevo mai caffè.", "Mai non bevo caffè."], "a": 1},
+    {"k": "pick", "q": "意大利语里的\"吗\"怎么说？", "opts": ["在句子后面加 ma", "句子不变，语调上扬", "在句子前面加 non"], "a": 1},
+    {"k": "pick", "q": "perché 的意思是？", "opts": ["只是\"为什么\"", "既是\"为什么\"，也是\"因为\"", "什么时候"], "a": 1},
+    {"k": "order", "it": "che cosa mangi", "zh": "你吃什么？"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/08-preposizioni.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 8 · 介词：a、in、di、da.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "preposizioni",
+  "n": 8,
+  "title": "介词：a、in、di、da",
+  "goal": "会说去哪儿、在哪儿、从哪儿来、谁的东西。",
+  "body": [
+    "**城市**前用 **a**：vado **a** Roma，abito **a** Pechino。**国家**和大地区前用 **in**：vado **in** Italia，abito **in** Cina。",
+    "回家、去学校：**a casa、a scuola**（不加冠词）。很多场所用 **in**：in banca、in ufficio、in farmacia。",
+    "介词碰到定冠词要**合成一个词**：a + il = **al**（al ristorante），di + il = **del**，da + il = **dal**，in + il = **nel**，su + il = **sul**；a + la = **alla**，di + la = **della**，in + la = **nella**……",
+    "**di** 表示\"的\"，但顺序和汉语相反：先说东西，再说是谁的。il libro **dell'**insegnante = 老师的书。",
+    "**da** 表示\"从\"：Vengo **dalla** Cina = 我从中国来。"
+  ],
+  "pattern": ["a + 城市", "in + 国家", "a + il = al"],
+  "ex": [
+    ["Vado a Roma.", "我去罗马。"],
+    ["Abito in Cina.", "我住在中国。"],
+    ["Vado al ristorante.", "我去饭店。"],
+    ["Sono a casa.", "我在家。"],
+    ["Il libro dell'insegnante è caro.", "老师的书很贵。"],
+    ["Vengo dalla Cina.", "我从中国来。"]
+  ],
+  "traps": [
+    ["Vado in Roma.", "Vado a Roma.", "城市前用 a。"],
+    ["Vado a il ristorante.", "Vado al ristorante.", "a + il 要合成 al。"],
+    ["Abito a Cina.", "Abito in Cina.", "国家前用 in。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "我去意大利", "opts": ["Vado a Italia.", "Vado in Italia.", "Vado al Italia."], "a": 1},
+    {"k": "pick", "q": "a + il = ?", "opts": ["al", "ail", "a il"], "a": 0},
+    {"k": "pick", "q": "in + la = ?", "opts": ["nella", "inla", "nela"], "a": 0},
+    {"k": "pick", "q": "我去北京", "opts": ["Vado a Pechino.", "Vado in Pechino."], "a": 0, "why": "北京是城市：a。"},
+    {"k": "order", "it": "vado al ristorante", "zh": "我去饭店。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/09-passato.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 9 · 说过去的事：近过去时.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "passato",
+  "n": 9,
+  "title": "说过去的事：近过去时",
+  "goal": "会说\"我吃了\"、\"我去了\"、\"我去过\"。",
+  "body": [
+    "说已经完成的事，用**近过去时**（passato prossimo）：**avere 或 essere 的现在时 + 过去分词**。Ho mangiato（我吃了），Sono andato（我去了）。",
+    "过去分词：-are → **-ato**（mangiare → mangiato），-ere → **-uto**（avere → avuto），-ire → **-ito**（dormire → dormito）。很多常用动词不规则：fare → fatto，bere → bevuto，vedere → visto，prendere → preso，leggere → letto，scrivere → scritto。",
+    "大多数动词用 **avere**。表示**移动或变化**的动词（andare、venire、tornare、arrivare、partire、uscire、entrare）和**反身动词**（alzarsi）用 **essere**。",
+    "用 essere 的时候，分词要和主语**一致**：lui è andat**o**，lei è andat**a**，loro sono andat**i**。",
+    "和汉语对照：\"了\"一般翻成近过去时；表示经历的\"过\"也用近过去时，常加 già 或 mai：Sei mai stato in Cina? = 你去过中国吗？"
+  ],
+  "pattern": ["ho · hai · ha … + mangiato", "sono · sei · è … + andato / andata"],
+  "ex": [
+    ["Ho mangiato.", "我吃了。"],
+    ["Ho comprato un libro.", "我买了一本书。"],
+    ["Lui è andato a Shanghai.", "他去了上海。"],
+    ["Lei è arrivata.", "她到了。"],
+    ["Abbiamo mangiato i ravioli.", "我们吃了饺子。"],
+    ["Sei mai stato/a in Cina?", "你去过中国吗？（问男性说 stato，问女性说 stata）"]
+  ],
+  "traps": [
+    ["Sono mangiato.", "Ho mangiato.", "mangiare 用 avere。"],
+    ["Ho andato.", "Sono andato.", "andare 表示移动，用 essere。"],
+    ["Lei è andato.", "Lei è andata.", "用 essere 时，分词跟主语一致。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "我吃了", "opts": ["Sono mangiato.", "Ho mangiato.", "Ho mangiare."], "a": 1},
+    {"k": "pick", "q": "她去了", "opts": ["Lei è andato.", "Lei è andata.", "Lei ha andata."], "a": 1},
+    {"k": "pick", "q": "fare 的过去分词是？", "opts": ["fato", "fatto", "fareto"], "a": 1},
+    {"k": "pick", "q": "哪个动词用 essere？", "opts": ["mangiare", "arrivare", "comprare"], "a": 1, "why": "arrivare（到达）表示移动。"},
+    {"k": "order", "it": "ho comprato un libro", "zh": "我买了一本书。"}
+  ]
+});
+</script>
+<script>
+/* ---- data/it/lessons/10-piacere.js ---- */
+/* Corso di italiano per chi parla cinese · lezione 10 · 我喜欢：mi piace.
+   Formato: vedi 01-pronuncia.js. */
+ITLESSONS.push({
+  "id": "piacere",
+  "n": 10,
+  "title": "我喜欢：mi piace",
+  "goal": "会说喜欢什么、不喜欢什么。",
+  "body": [
+    "汉语说\"我喜欢茶\"，意大利语说 **Mi piace il tè**，字面意思是\"茶让我喜欢\"：**被喜欢的东西是主语**。喜欢的人用 mi（我）、ti（你）、gli（他）、le（她）、ci（我们）、vi（你们）、gli（他们）。",
+    "所以动词跟着**被喜欢的东西**变：一样东西用 **piace**（Mi piace il tè），几样东西用 **piacciono**（Mi piacciono i cani）。",
+    "喜欢做某事：**Mi piace + 动词原形**。Mi piace cucinare = 我喜欢做饭。",
+    "否定：**Non mi piace**。\"我也喜欢\"：**Anche a me piace**。",
+    "东西前面一般要加定冠词：Mi piace **la** musica，Mi piacciono **i** gatti。"
+  ],
+  "pattern": ["mi · ti · gli · le …", "piace · piacciono", "+ 东西"],
+  "ex": [
+    ["Mi piace il tè.", "我喜欢茶。"],
+    ["Mi piacciono i cani.", "我喜欢狗。"],
+    ["Non mi piacciono i gatti.", "我不喜欢猫。"],
+    ["Mi piace cucinare.", "我喜欢做饭。"],
+    ["Ti piace l'Italia?", "你喜欢意大利吗？"],
+    ["Anche a me piace il tè.", "我也喜欢茶。"]
+  ],
+  "traps": [
+    ["Io piace il tè.", "Mi piace il tè.", "喜欢的人用 mi，不用 io。"],
+    ["Mi piace i cani.", "Mi piacciono i cani.", "复数的东西用 piacciono。"],
+    ["Mi piace tè.", "Mi piace il tè.", "东西前面要加定冠词。"]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "我喜欢猫", "opts": ["Mi piace i gatti.", "Mi piacciono i gatti.", "Io piaccio i gatti."], "a": 1},
+    {"k": "pick", "q": "我喜欢音乐", "opts": ["Mi piace la musica.", "Mi piacciono la musica.", "Io piace la musica."], "a": 0},
+    {"k": "pick", "q": "Le piace cucinare. 是什么意思？", "opts": ["她喜欢做饭。", "我喜欢她做饭。", "他们喜欢做饭。"], "a": 0, "why": "le = 她（\"让她喜欢\"）。"},
+    {"k": "pick", "q": "我不喜欢咖啡", "opts": ["Non mi piace il caffè.", "Mi non piace il caffè.", "Non piace mi il caffè."], "a": 0, "why": "non 放在最前面：Non mi piace。"},
+    {"k": "order", "it": "mi piace il tè", "zh": "我喜欢茶。"}
+  ]
+});
+</script>
 <!-- Interfaccia in più lingue -->
 <script>
 /* ---- i18n/i18n.js ---- */
@@ -9425,6 +9842,15 @@ I18N.zh = {
     });
     return out;
   }
+  function mergeItSrs(a, b) {
+    var out = {}; a = a || {}; b = b || {};
+    Object.keys(a).concat(Object.keys(b)).forEach(function (id) {
+      var x = a[id], y = b[id];
+      if (id === "__meta") { out[id] = !x ? y : !y ? x : x.d !== y.d ? (x.d > y.d ? x : y) : { d: x.d, nw: Math.max(x.nw || 0, y.nw || 0) }; return; }
+      out[id] = !x ? y : !y ? x : ((y.lr || 0) > (x.lr || 0) ? y : x);
+    });
+    return out;
+  }
   function importObj(o, mode) {
     if (!o || o.app !== "mandarino" || !o.kv) return { ok: false, msg: "File non riconosciuto." };
     var n = 0;
@@ -9437,7 +9863,9 @@ I18N.zh = {
           else if (k === "cp-fav-v1") { var u = JSON.parse(cur); var v = JSON.parse(inc); if (Array.isArray(u)) { var t = {}; u.forEach(function (x) { t[x] = 1; }); u = t; } if (Array.isArray(v)) { var t2 = {}; v.forEach(function (x) { t2[x] = 1; }); v = t2; } inc = JSON.stringify(Object.assign({}, v, u)); }
           else if (k === "cp-community-contribs") inc = JSON.stringify(mergeContribs(JSON.parse(cur), JSON.parse(inc)));
           /* lezioni di grammatica: per ogni lezione il punteggio migliore, la prima volta superata, l'ultima letta */
-          else if (k === "cp-lessons-v1") inc = JSON.stringify(mergeLessons(JSON.parse(cur), JSON.parse(inc)));
+          else if (k === "cp-lessons-v1" || k === "cp-it-lessons-v1") inc = JSON.stringify(mergeLessons(JSON.parse(cur), JSON.parse(inc)));
+          /* corso di italiano: per ogni parola vince la scheda ripassata più di recente; il conteggio dei nuovi del giorno, il più alto */
+          else if (k === "cp-it-srs-v1") inc = JSON.stringify(mergeItSrs(JSON.parse(cur), JSON.parse(inc)));
           /* V6.7: preferenze dell'interfaccia; si aggiungono le voci mancanti, a parità vince questo dispositivo */
           else if (k === "cp-ux-v1") inc = JSON.stringify(Object.assign({}, JSON.parse(inc) || {}, JSON.parse(cur) || {}));
           /* V6.7: preferenze del dispositivo (vibrazione, volumi, musica, toni con segno, nickname): vince il dispositivo corrente */
@@ -16345,7 +16773,8 @@ I18N.zh = {
       "<div><b>" + T("wel.goal") + '</b><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("wel.goal")) + '" style="margin-top:8px">' +
       [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +
       '<p class="small muted" style="margin:6px 0 0">' + T("wel.goalHint") + "</p></div>" +
-      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">' + T("wel.start", { n: goal }) + "</button></div>";
+      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">' + T("wel.start", { n: goal }) + "</button>" +
+      '<button type="button" class="btn-s" data-course-set="it" lang="zh-CN">🇨🇳 我是中国人，我想学意大利语</button></div>';
   }
   CP.welcome = function (force) {
     if (!force && CP.ux.get("onboarded")) return;
@@ -16366,6 +16795,370 @@ I18N.zh = {
     if (Object.keys(CP.S()).length) CP.ux.set("onboarded", 1);
     else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 400);
   }
+})();
+</script>
+<script>
+/* ---- it/course.js ---- */
+/* ===== Corso di italiano per chi parla cinese (意大利语课程) — la direzione «al contrario» dell'app.
+   Si sceglie dal benvenuto o da ⚙️ → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
+   In modalità "it" l'interfaccia è in cinese e le quattro schede diventano: 课程 (lezioni), 单词 (parole), 复习 (ripasso),
+   变位 (coniugazioni), 句子 (frasi e dialoghi). Le parole italiane non sono scritte a mano qui: nascono dalle schede
+   grammaticali di data/grammar.js (genere, plurale, ausiliare) e dalla morfologia di phrases/italian.js, controllate con
+   tools/morphit-check.mjs (Morph-it + Hunspell). I progressi stanno in chiavi proprie: cp-it-srs-v1, cp-it-lessons-v1. ===== */
+(function () {
+  var CP = window.CP, esc = CP.esc, W = CP.WORDS, G = GRAM, I = CP.ita;
+  var KEY = "cp-course", SRSKEY = "cp-it-srs-v1", LKEY = "cp-it-lessons-v1", NEW_PER_DAY = 10, PASS = 80;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var course = lsGet(KEY) === "it" ? "it" : "zh";
+  CP.course = function () { return course; };
+  CP.setCourse = function (c) {
+    lsSet(KEY, c === "it" ? "it" : "zh");
+    lsSet("cp-lang", c === "it" ? "zh" : "it");
+    if (window.Store && Store.flush) Store.flush();
+    location.reload();
+  };
+  /* ⚙️ → Corso: in tutte e due le lingue, perché lo deve capire chi non legge l'altra */
+  (CP.settingsExtras = CP.settingsExtras || []).unshift(function () {
+    return '<details class="set-sec" id="set-course"><summary>🎓 Corso · 课程</summary><div class="vbody">' +
+      '<div class="seg" role="group" aria-label="Corso"><button type="button" data-course-set="zh"' + (course === "zh" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇮🇹 Impara il cinese</button>" +
+      '<button type="button" data-course-set="it"' + (course === "it" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇨🇳 学意大利语</button></div>" +
+      '<p class="small muted" style="margin:0">Due corsi, progressi separati: passare dall\'uno all\'altro non cancella niente. · 两个课程的学习记录分开保存，切换不会丢失任何内容。</p></div></details>';
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-course-set]") : null;
+    if (b && b.getAttribute("data-course-set") !== course) CP.setCourse(b.getAttribute("data-course-set"));
+  });
+  if (course !== "it") return;
+
+  /* ================= da qui: modalità corso di italiano ================= */
+  var Z = {
+    lessons: "课程", words: "单词", review: "复习", conj: "变位", phrases: "句子",
+    listen: "听", back: "← 返回", start: "开始", next: "下一题", result: "看结果", right: "答对了！", wrong: "不对。", answerIs: "正确答案：",
+    order: "把词语排成正确的句子：", check: "检查", clear: "删除", showAnswer: "显示答案", again: "忘了", hard: "困难", good: "记得", easy: "简单"
+  };
+  var TOPIC = { persone: "人", famiglia: "家庭", saluti: "问候", risposte: "回答和连接", verbi1: "常用动词（一）", verbi2: "常用动词（二）", domande: "提问", numeri: "数字和量词", tempo: "时间", spazio: "方位", cibo: "饮食", aggettivi: "形容词", stati: "心情和状态", luoghi: "地点和国家", viaggi: "旅行和交通", casa: "家里的东西", vestiti: "衣服和颜色", corpo: "身体和健康", natura: "自然和动物", lavoro: "工作和学习", cucina: "厨房", citta: "城市", conversazione: "口语", acquisti: "购物" };
+  var PHR_ZH = ["自我介绍、打开话题", "听懂、说清楚、求助", "在咖啡馆吃早饭", "在饭店点菜", "购物、价格和付款", "问路和找方向", "出租车、火车和机场", "在酒店，房间出了问题", "时间、约会和朋友", "工作、学习和日常生活", "健康、身体和紧急情况", "谈西西里、意大利和天气"];
+  var DLG_ZH = { taxi: "坐出租车", dogana: "过海关", bagaglio: "行李没有到", scheda: "买电话卡", cambio: "换钱", checkin: "办理入住", wifi: "无线网连不上", aria: "房间太热", checkout: "退房", servizi: "请酒店帮忙", ristorante: "在饭店", zaofan: "中式早餐", allergia: "过敏和忌口", kafei: "在咖啡馆", chuan: "路边小吃", treno: "在火车上", metro: "坐地铁", piaoc: "买火车票", gongjiao: "坐公交车", wandian: "火车晚点了", mercato: "在市场", saoma: "扫码付款", shiyi: "试衣服", shuiguo: "在水果摊", tuihuo: "换货或退货", farmacia: "在药店", caffe: "和朋友喝咖啡", sicilia: "聊聊西西里", yisheng: "看医生", diu: "钱包丢了", ganbei: "商务晚宴", jiali: "去朋友家做客" };
+  var PRON = [["io", 0], ["tu", 1], ["lui", 2], ["lei", 2], ["noi", 3], ["voi", 4], ["loro", 5]];
+
+  /* ---------------- lessico: dalle schede grammaticali ---------------- */
+  function pyOf(h) { var k = W[h] ? h : null; return k ? W[k].py : ""; }
+  function wordOf(key) { return W[key] || null; }
+  var LEX = [], BYID = {};
+  function add(e) { if (BYID[e.id]) return; BYID[e.id] = e; LEX.push(e); }
+  function art(w, g, num) { return I.join(I.def(w, g, num), w); }
+  Object.keys(G.nouns).forEach(function (k) {
+    var w = wordOf(k); if (!w) return;
+    var n = G.nouns[k], s = n[0], g = n[1], p = n[2], fl = n[3] || "", gp = g === "f" ? "f" : (/a$/.test(p) && /o$/.test(s) ? "f" : "m");
+    var only = /p/.test(fl) && s === p;
+    var main = only ? art(p, gp, "p") : art(s, g, "s"), forms = only ? [main + "（只用复数）"] : [main, art(p, gp, "p")];
+    if (n[4] && n[4] !== s) forms.push(art(n[4], "f", "s") + "（女）");
+    add({ id: "it:n:" + k, it: main, say: main, kind: "noun", g: only ? gp : g, forms: forms, zh: w.hz, py: w.py, sec: w.sec });
+  });
+  Object.keys(G.places).forEach(function (k) {
+    var w = wordOf(k), pl = G.places[k]; if (!w || !pl[0] || BYID["it:n:" + k]) return;
+    add({ id: "it:l:" + k, it: pl[0], say: pl[0], kind: "place", forms: [pl[0], pl[1]], zh: w.hz, py: w.py, sec: w.sec });
+  });
+  Object.keys(G.nations).forEach(function (k) {
+    var w = wordOf(k), na = G.nations[k]; if (!w || !Array.isArray(na)) return;
+    add({ id: "it:a:" + k + "人", it: na[0] + ", " + na[1], say: na[0], kind: "nat", forms: na, zh: w.hz + "人", py: w.py + " rén", sec: w.sec });
+  });
+  Object.keys(G.verbs).forEach(function (k) {
+    var w = wordOf(k), v = G.verbs[k]; if (!w) return;
+    add({ id: "it:v:" + k, it: v[0], say: v[0], kind: "verb", aux: v[1], zh: w.hz, py: w.py, sec: w.sec });
+  });
+  Object.keys(G.adjs).forEach(function (k) {
+    var w = wordOf(k), a = G.adjs[k]; if (!w) return;
+    add({ id: "it:j:" + k, it: a[0] === a[1] ? a[0] : a[0] + ", " + a[1], say: a[0], kind: "adj", forms: a, zh: w.hz, py: w.py, sec: w.sec });
+  });
+  Object.keys(G.time).forEach(function (k) {
+    var w = wordOf(k); if (!w) return;
+    add({ id: "it:t:" + k, it: G.time[k][0], say: G.time[k][0], kind: "time", zh: w.hz, py: w.py, sec: w.sec });
+  });
+  var SECIDX = {}; CP.SEC.forEach(function (s, i) { SECIDX[s.id] = i; });
+  LEX.sort(function (a, b) { return (SECIDX[a.sec] || 0) - (SECIDX[b.sec] || 0); });
+  var KIND = { noun: "名词", place: "地名", nat: "国籍", verb: "动词", adj: "形容词", time: "时间词" };
+  function gLabel(e) { return e.kind === "noun" ? (e.g === "f" ? "名词 · 阴性" : "名词 · 阳性") : KIND[e.kind]; }
+  CP.itLexicon = function () { return LEX.slice(); };
+
+  /* coniugazione in tabella: presente e passato prossimo */
+  function conjTable(inf, aux) {
+    var rows = PRON.filter(function (p) { return p[0] !== "lei"; }).map(function (p) {
+      var pi = p[1], g = "m", num = pi >= 3 ? "p" : "s";
+      return [p[0] === "lui" ? "lui / lei" : p[0], I.present(inf, pi), I.passato(inf, aux, pi, aux === "e" || /rsi(\s|$)/.test(inf) ? "x" : g, num)];
+    });
+    return '<table class="it-conj"><thead><tr><th></th><th>现在时</th><th>近过去时</th></tr></thead><tbody>' +
+      rows.map(function (r) { return "<tr><th>" + esc(r[0]) + "</th><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td></tr>"; }).join("") + "</tbody></table>" +
+      (aux === "e" || /rsi(\s|$)/.test(inf) ? '<p class="small muted" style="margin:4px 0 0">用 essere：分词要和主语一致（andato / andata / andati / andate）。</p>' : "");
+  }
+  function zhHTML(hz, py) { return '<span class="it-zh"><span class="lp">' + CP.pinyinHTML(py) + '</span> <span class="lh han">' + CP.hanziHTML(hz, py) + "</span></span>"; }
+  function sayBtn(text, small) { return '<button type="button" class="say' + (small ? " btn-s" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr("听：" + text) + '">🔊</button>'; }
+  function detailHTML(e) {
+    var h = '<div class="fam-head"><div class="meta"><b lang="it" style="font-size:1.35rem">' + esc(e.it) + "</b><div class=\"small muted\">" + esc(gLabel(e)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>关闭</button></div>' +
+      '<div class="acts" style="margin:6px 0">' + sayBtn(e.say) + "</div><p style=\"margin:6px 0\">" + zhHTML(e.zh, e.py) + "</p>";
+    if (e.kind === "noun") h += "<p>" + e.forms.map(esc).join(" · ") + '</p><p class="small muted">单数 · 复数（带定冠词）。冠词说明见第 3 课。</p>';
+    else if (e.kind === "adj") h += '<p lang="it">' + esc(e.forms.join(" · ")) + '</p><p class="small muted">阳性单数 · 阴性单数 · 阳性复数 · 阴性复数（见第 5 课）。</p>';
+    else if (e.kind === "nat") h += '<p lang="it">' + esc(e.forms.join(" · ")) + '</p><p class="small muted">国籍是形容词：要配合性别和单复数，而且小写。</p>';
+    else if (e.kind === "place") h += '<p lang="it">' + esc(e.forms[1]) + '</p><p class="small muted">去 / 在：' + esc(e.forms[1]) + "。</p>";
+    else if (e.kind === "verb") h += conjTable(e.it, e.aux);
+    return h;
+  }
+
+  /* ---------------- guscio: vista e schede ---------------- */
+  document.body.classList.add("course-it");
+  var brand = document.querySelector("h1.brand"), sub = brand && brand.querySelector("text.font-sub");
+  if (sub) sub.textContent = "给中国人的意大利语";
+  if (brand) brand.setAttribute("aria-label", "màndarínō，给中国人的意大利语课程");
+  document.documentElement.setAttribute("lang", "zh-CN");
+  var main = document.querySelector("main") || document.body;
+  var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
+  var TABS = [["lessons", "📘", Z.lessons], ["words", "📖", Z.words], ["review", "🎴", Z.review], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
+  var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", "意大利语课程");
+  dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");
+  document.body.appendChild(dock);
+  var tab = lsGet("cp-it-tab") || "lessons";
+  if (!TABS.some(function (t) { return t[0] === tab; })) tab = "lessons";
+  function show(t) {
+    tab = t; lsSet("cp-it-tab", t);
+    Array.prototype.forEach.call(dock.querySelectorAll("[data-it-tab]"), function (b) { var on = b.getAttribute("data-it-tab") === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
+    render(); window.scrollTo(0, 0);
+  }
+  CP.itShow = show;
+  function render() {
+    var h = tab === "lessons" ? lessonsView() : tab === "words" ? wordsView() : tab === "review" ? reviewView() : tab === "conj" ? conjView() : phrasesView();
+    view.innerHTML = h;
+  }
+
+  /* ---------------- 课程: lezioni ---------------- */
+  var ls = { view: "list", cur: null, quiz: null };
+  function lprog() { try { var o = JSON.parse(lsGet(LKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
+  function lmark(id, p) { var o = lprog(), x = o[id] || {}; Object.keys(p).forEach(function (k) { x[k] = p[k]; }); o[id] = x; lsSet(LKEY, JSON.stringify(o)); }
+  function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, '<b lang="it">$1</b>'); }
+  function lessonsView() {
+    if (ls.view === "lesson" && ls.cur) return lessonHTML(ls.cur);
+    if (ls.view === "quiz" && ls.quiz) return quizHTML();
+    if (ls.view === "result" && ls.quiz) return resultHTML();
+    var P = lprog(), done = 0;
+    var cards = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }).map(function (l) {
+      var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
+      return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-itl-open="' + CP.attr(l.id) + '"><span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + '</span><span class="ls-t"><b>' + esc(l.title) + '</b><span class="small muted">' + esc(l.goal) + '</span></span><span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? "已读" : "") + "</span></button>";
+    }).join("");
+    return '<h2 style="margin-top:20px">意大利语课程</h2><p class="lede" style="margin:4px 0">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ' + PASS + "% 以上就算通过。</p>" +
+      '<p class="small muted" style="margin:0 0 10px">已通过 ' + done + " / " + ITLESSONS.length + ' 课。</p><div class="ls-list">' + cards + "</div>";
+  }
+  function lessonHTML(l) {
+    var p = lprog()[l.id] || {};
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + '</button></div><article class="panel ls-lesson"><span class="tag muted small">第 ' + l.n + " 课" + (p.best != null ? " · 最好成绩 " + p.best + "%" : "") + "</span><h3>" + esc(l.title) + '</h3><p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
+      l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
+      '<div class="ls-pat">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx" lang="it">' + esc(f) + "</span>"; }).join("") + "</div>" +
+      "<h4>例句</h4>" + l.ex.map(function (e) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(e[0]) + '</div><div class="small muted">' + esc(e[1]) + "</div><div>" + sayBtn(e[0], true) + "</div></div>"; }).join("") +
+      "<h4>常见错误</h4>" + l.traps.map(function (t) { return '<div class="ls-trap"><div class="ls-bad">❌ <span lang="it">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span lang="it">' + esc(t[1]) + '</span></div><div class="small">' + esc(t[2]) + "</div></div>"; }).join("") +
+      '<div class="acts"><button type="button" class="btn-main" data-itl-quiz style="margin:0">✏️ 做练习（' + l.quiz.length + " 题）</button></div></article>";
+  }
+  function words(s) { return s.replace(/[.,!?¿¡]/g, "").split(/\s+/).filter(Boolean); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function prepare() {
+    var q = ls.quiz.l.quiz[ls.quiz.i]; ls.quiz.state = "play"; ls.quiz.choice = null; ls.quiz.order = null;
+    if (q.k === "order") {
+      var t = words(q.it), bank = t.map(function (w, i) { return { id: i, w: w }; }), sh = bank;
+      for (var n = 0; n < 6; n++) { sh = shuffle(bank); if (sh.map(function (b) { return b.w; }).join(" ") !== t.join(" ")) break; }
+      ls.quiz.order = { bank: sh, pick: [] };
+    }
+  }
+  function quizHTML() {
+    var Q = ls.quiz, l = Q.l, q = l.quiz[Q.i], n = l.quiz.length, h;
+    h = '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-open="' + CP.attr(l.id) + '">' + Z.back + '</button></div><div class="panel ls-quiz"><div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(Q.i * 100 / n) + '%"></i></div><span class="tag muted small">第 ' + (Q.i + 1) + " / " + n + " 题 · 答对 " + Q.score + "</span>";
+    if (q.k === "order") {
+      var by = {}; Q.order.bank.forEach(function (b) { by[b.id] = b; });
+      var tile = function (b, attr, used) { return '<button type="button" class="tile it-tile' + (used ? " used" : "") + '" ' + attr + (used || Q.state !== "play" ? " disabled" : "") + ' lang="it"><span class="th">' + esc(b.w) + "</span></button>"; };
+      h += '<p class="ask">' + Z.order + "「" + esc(q.zh) + "」</p>" + '<div class="slot" data-empty="点下面的词">' + Q.order.pick.map(function (id) { return tile(by[id], 'data-itl-un="' + id + '"'); }).join("") + "</div>";
+      if (Q.state === "play") h += '<div class="bank">' + Q.order.bank.map(function (b) { return tile(b, 'data-itl-pick="' + b.id + '"', Q.order.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" data-itl-undo' + (Q.order.pick.length ? "" : " disabled") + ">" + Z.clear + '</button><button type="button" class="btn-main" data-itl-check style="margin:0"' + (Q.order.pick.length === Q.order.bank.length ? "" : " disabled") + ">" + Z.check + "</button></div>";
+      else h += (Q.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.it) + "</span></p>") + '<div class="acts">' + sayBtn(q.it, true) + '<button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
+    } else {
+      h += '<p class="ask">' + esc(q.q) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
+      h += '<div class="ls-opts">' + q.opts.map(function (o, j) {
+        var cls = Q.state === "play" ? "" : j === q.a ? " right" : j === Q.choice ? " wrong" : " off";
+        return '<button type="button" class="ls-opt' + cls + '" data-itl-opt="' + j + '"' + (Q.state !== "play" ? " disabled" : "") + ">" + esc(o) + "</button>";
+      }).join("") + "</div>";
+      if (Q.state !== "play") h += '<p class="verdict ' + (Q.state === "ok" ? "ok" : "ko") + '">' + (Q.state === "ok" ? Z.right : Z.wrong) + (q.why ? " " + esc(q.why) : "") + '</p><div class="acts"><button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
+    }
+    return h + "</div>";
+  }
+  function resultHTML() {
+    var Q = ls.quiz, n = Q.l.quiz.length, pct = Math.round(Q.score * 100 / n), ok = pct >= PASS;
+    return '<div class="panel ls-quiz" style="margin-top:14px"><h3>' + (ok ? "🎉 这一课通过了！" : "差一点！") + "</h3><p>答对 " + Q.score + " / " + n + "（" + pct + "%）。" + (ok ? "" : "需要 " + PASS + "% 才算通过：再读一遍讲解，然后再试一次。") + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" data-itl-quiz style="margin:0">🔁 再做一次</button><button type="button" class="btn-s" data-itl-open="' + CP.attr(Q.l.id) + '">📘 再读一遍</button><button type="button" class="btn-s" data-itl-back>所有课程</button></div></div>';
+  }
+
+  /* ---------------- 单词: lessico ---------------- */
+  var wq = "";
+  function wordsView() {
+    var q = wq.trim().toLowerCase(), groups = {}, order = [];
+    LEX.forEach(function (e) {
+      if (q && (e.it + " " + e.zh + " " + e.py).toLowerCase().indexOf(q) < 0) return;
+      var t = TOPIC[e.sec] || "其他"; if (!groups[t]) { groups[t] = []; order.push(t); } groups[t].push(e);
+    });
+    return '<h2 style="margin-top:20px">意大利语单词</h2><p class="small muted" style="margin:0 0 8px">共 ' + LEX.length + ' 个词。名词带定冠词，点一个词可以看全部形式和动词变位。</p>' +
+      '<label for="it-q" class="sr">搜索</label><input id="it-q" type="search" placeholder="搜索：意大利语、汉字或拼音" value="' + CP.attr(wq) + '" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+      '<div id="it-wl">' + wordList(groups, order) + "</div>";
+  }
+  function wordList(groups, order) {
+    if (!order.length) return '<p class="muted">没有找到。</p>';
+    return order.map(function (t) {
+      return '<h3 class="it-topic">' + esc(t) + "</h3>" + groups[t].map(function (e) {
+        return '<div class="it-row"><button type="button" class="it-w" data-it-word="' + CP.attr(e.id) + '"><b lang="it">' + esc(e.it) + '</b><span class="small muted">' + esc(gLabel(e)) + "</span></button>" + zhHTML(e.zh, e.py) + sayBtn(e.say) + "</div>";
+      }).join("");
+    }).join("");
+  }
+
+  /* ---------------- 复习: ripasso FSRS ---------------- */
+  var SCH = new FSRS.Scheduler({ retention: 0.9, fuzz: true }), DAY = 86400000;
+  function sload() { try { var o = JSON.parse(lsGet(SRSKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
+  function ssave(o) { lsSet(SRSKEY, JSON.stringify(o)); }
+  function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  var rv = { cur: null, shown: false, done: 0 };
+  function queue() {
+    var S = sload(), now = Date.now(), due = [], fresh = [], meta = S.__meta || {}, newLeft = NEW_PER_DAY - (meta.d === today() ? meta.nw || 0 : 0);
+    LEX.forEach(function (e) { var r = S[e.id]; if (r && r.c) { if (r.c.due <= now) due.push([r.c.due, e]); } else fresh.push(e); });
+    due.sort(function (a, b) { return a[0] - b[0]; });
+    return { due: due.map(function (x) { return x[1]; }), fresh: newLeft > 0 ? fresh.slice(0, newLeft) : [], newLeft: Math.max(0, newLeft), learned: Object.keys(S).filter(function (k) { return k !== "__meta"; }).length };
+  }
+  function reviewView() {
+    var Q = queue();
+    if (!rv.cur) rv.cur = Q.due[0] || Q.fresh[0] || null;
+    var head = '<h2 style="margin-top:20px">复习单词</h2><p class="small muted" style="margin:0 0 10px">今天要复习 ' + Q.due.length + " 个 · 新词还剩 " + Q.newLeft + " 个 · 已经学过 " + Q.learned + " 个。复习间隔由 FSRS 算法安排。</p>";
+    if (!rv.cur) return head + '<div class="panel"><p>🎉 今天的复习都做完了！明天再来，或者去「课程」和「变位」练习。</p></div>';
+    var e = rv.cur, isNew = !sload()[e.id];
+    var h = head + '<div class="panel it-card"><span class="tag muted small">' + (isNew ? "新词" : "复习") + " · " + esc(gLabel(e)) + '</span><div class="it-front" lang="it">' + esc(e.it) + "</div><div>" + sayBtn(e.say) + "</div>";
+    if (!rv.shown) h += '<p class="small muted">先想一想它的中文意思，再看答案。</p><button type="button" class="btn-main" data-itr-show>' + Z.showAnswer + "</button>";
+    else {
+      h += '<div class="it-back">' + zhHTML(e.zh, e.py) + "</div>" + (e.kind === "noun" || e.kind === "adj" || e.kind === "nat" ? '<p class="small" lang="it">' + esc((e.forms || []).join(" · ")) + "</p>" : e.kind === "verb" ? '<p class="small" lang="it">' + esc(I.present(e.it, 0) + " · " + I.present(e.it, 1) + " · " + I.present(e.it, 2)) + "…</p>" : "") +
+        '<div class="it-grades" role="group" aria-label="记得怎么样">' + [[1, Z.again], [2, Z.hard], [3, Z.good], [4, Z.easy]].map(function (g) { return '<button type="button" data-itr-grade="' + g[0] + '">' + g[1] + "</button>"; }).join("") + "</div>";
+    }
+    return h + "</div>";
+  }
+  function grade(r) {
+    var S = sload(), e = rv.cur, now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now);
+    if (!rec.c) { var m = S.__meta && S.__meta.d === today() ? S.__meta : { d: today(), nw: 0 }; m.nw = (m.nw || 0) + 1; S.__meta = m; }
+    var nc = SCH.review(card, r, now);
+    S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: now };
+    ssave(S); rv.cur = null; rv.shown = false; rv.done++;
+    if (CP.game && CP.game.sentence && r >= 3) { try { CP.game.sentence(); } catch (x) {} }
+  }
+
+  /* ---------------- 变位: coniugazioni ---------------- */
+  var VERBS = (function () { var seen = {}, out = []; LEX.forEach(function (e) { if (e.kind === "verb" && !seen[e.it]) { seen[e.it] = 1; out.push(e); } }); return out; })();
+  var cj = { tense: "pres", q: null, state: "play", choice: null, score: 0, n: 0 };
+  function formFor(e, p, tense) {
+    var pi = p[1], num = pi >= 3 ? "p" : "s", g = p[0] === "lei" ? "f" : "m";
+    return tense === "pres" ? I.present(e.it, pi) : I.passato(e.it, e.aux, pi, g, num);
+  }
+  function newQ() {
+    var e = VERBS[Math.floor(Math.random() * VERBS.length)], p = PRON[Math.floor(Math.random() * PRON.length)], right = formFor(e, p, cj.tense), opts = [right];
+    shuffle(PRON).forEach(function (o) { var f = formFor(e, o, cj.tense); if (opts.length < 4 && opts.indexOf(f) < 0) opts.push(f); });
+    if (cj.tense === "past" && opts.length < 4) { var alt = (e.aux === "e" ? I.passato(e.it, "a", p[1], "m", p[1] >= 3 ? "p" : "s") : I.passato(e.it, "e", p[1], p[0] === "lei" ? "f" : "m", p[1] >= 3 ? "p" : "s")); if (opts.indexOf(alt) < 0) opts.push(alt); }
+    cj.q = { e: e, p: p, right: right, opts: shuffle(opts) }; cj.state = "play"; cj.choice = null;
+  }
+  function conjView() {
+    if (!cj.q) newQ();
+    var q = cj.q, h = '<h2 style="margin-top:20px">动词变位练习</h2><div class="seg" role="group" aria-label="时态"><button type="button" data-itc-tense="pres"' + (cj.tense === "pres" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>现在时</button><button type="button" data-itc-tense="past"' + (cj.tense === "past" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">近过去时</button></div>" +
+      '<div class="panel ls-quiz"><span class="tag muted small">答对 ' + cj.score + " / " + cj.n + '</span><p class="ask"><b lang="it">' + esc(q.p[0]) + "</b> + <b lang=\"it\">" + esc(q.e.it) + "</b>（" + zhHTML(q.e.zh, q.e.py) + "）</p>" +
+      '<p class="small muted">' + (cj.tense === "pres" ? "现在时" : "近过去时（lei 指女性）") + "</p>" +
+      '<div class="ls-opts">' + q.opts.map(function (o, j) { var cls = cj.state === "play" ? "" : o === q.right ? " right" : j === cj.choice ? " wrong" : " off"; return '<button type="button" class="ls-opt' + cls + '" data-itc-opt="' + j + '" lang="it"' + (cj.state !== "play" ? " disabled" : "") + ">" + esc(o) + "</button>"; }).join("") + "</div>";
+    if (cj.state !== "play") h += '<p class="verdict ' + (cj.state === "ok" ? "ok" : "ko") + '">' + (cj.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.right) + "</span>") + "</p>" + conjTable(q.e.it, q.e.aux) + '<div class="acts"><button type="button" class="btn-main" data-itc-next style="margin:0">' + Z.next + "</button></div>";
+    return h + "</div>";
+  }
+
+  /* ---------------- 句子: frasi e dialoghi ---------------- */
+  var ph = { dlg: null };
+  function phrasesView() {
+    if (ph.dlg) {
+      var d = DIALOGS.filter(function (x) { return x.id === ph.dlg; })[0];
+      return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itp-back>' + Z.back + "</button></div><h2>" + esc(DLG_ZH[d.id] || d.title) + '</h2><p class="small muted" lang="it">' + esc(d.title + " — " + d.sub) + "</p>" +
+        d.lines.map(function (l) { return '<div class="it-line it-' + (l[0] === "B" ? "b" : "a") + '"><div class="it-big" lang="it">' + esc(l[3]) + '</div><div class="small">' + zhHTML(l[2], l[1]) + "</div>" + sayBtn(l[3], true) + "</div>"; }).join("");
+    }
+    var h = '<h2 style="margin-top:20px">常用句子</h2><p class="small muted" style="margin:0 0 10px">意大利语在上，中文在下。点 🔊 听意大利语。</p>';
+    h += PHRASES.map(function (g, gi) {
+      return '<details class="pat"><summary>' + esc(PHR_ZH[gi] || g.title) + "</summary>" + g.items.map(function (p) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(p[2]) + '</div><div class="small">' + zhHTML(p[1], p[0]) + "</div><div>" + sayBtn(p[2], true) + "</div></div>"; }).join("") + "</details>";
+    }).join("");
+    h += '<h3 style="margin-top:20px">对话（中意对照）</h3><div class="ls-list">' + DIALOGS.map(function (d) { return '<button type="button" class="ls-card" data-itp-dlg="' + CP.attr(d.id) + '"><span class="ls-n" aria-hidden="true">💬</span><span class="ls-t"><b>' + esc(DLG_ZH[d.id] || d.title) + '</b><span class="small muted" lang="it">' + esc(d.title) + "</span></span><span></span></button>"; }).join("") + "</div>";
+    return h;
+  }
+
+  /* ---------------- eventi ---------------- */
+  dock.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-it-tab]") : null; if (b) { CP.sfx("tap"); show(b.getAttribute("data-it-tab")); } });
+  view.addEventListener("input", function (e) { if (e.target.id === "it-q") { wq = e.target.value; var g = {}, o = []; var q = wq.trim().toLowerCase(); LEX.forEach(function (x) { if (q && (x.it + " " + x.zh + " " + x.py).toLowerCase().indexOf(q) < 0) return; var t = TOPIC[x.sec] || "其他"; if (!g[t]) { g[t] = []; o.push(t); } g[t].push(x); }); document.getElementById("it-wl").innerHTML = wordList(g, o); } });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target.closest("[data-it-say]") : null;
+    if (t) { CP.speak(t.getAttribute("data-it-say"), { lang: "it-IT", el: t }); }
+  });
+  view.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.hasAttribute("data-it-say")) return;
+    var a = function (n) { return b.getAttribute(n); };
+    /* lezioni */
+    if (a("data-itl-open") !== null) { ls.cur = ITLESSONS.filter(function (l) { return l.id === a("data-itl-open"); })[0]; ls.view = "lesson"; ls.quiz = null; lmark(ls.cur.id, { seen: Date.now() }); CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
+    if (b.hasAttribute("data-itl-back")) { ls.view = "list"; ls.cur = null; ls.quiz = null; render(); window.scrollTo(0, 0); return; }
+    if (b.hasAttribute("data-itl-quiz")) { ls.quiz = { l: ls.cur || ls.quiz.l, i: 0, score: 0 }; ls.cur = ls.quiz.l; prepare(); ls.view = "quiz"; render(); window.scrollTo(0, 0); return; }
+    if (ls.quiz) {
+      var Q = ls.quiz, q = Q.l.quiz[Q.i];
+      if (a("data-itl-pick") !== null && Q.state === "play") { Q.order.pick.push(+a("data-itl-pick")); CP.sfx("tap"); render(); return; }
+      if (a("data-itl-un") !== null && Q.state === "play") { var u = +a("data-itl-un"); Q.order.pick = Q.order.pick.filter(function (x) { return x !== u; }); render(); return; }
+      if (b.hasAttribute("data-itl-undo")) { Q.order.pick.pop(); render(); return; }
+      if (b.hasAttribute("data-itl-check")) {
+        var by = {}; Q.order.bank.forEach(function (x) { by[x.id] = x; });
+        var got = Q.order.pick.map(function (id) { return by[id].w; }).join(" ").toLowerCase();
+        Q.state = got === words(q.it).join(" ").toLowerCase() ? "ok" : "ko"; if (Q.state === "ok") Q.score++;
+        CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return;
+      }
+      if (a("data-itl-opt") !== null && Q.state === "play") { Q.choice = +a("data-itl-opt"); Q.state = Q.choice === q.a ? "ok" : "ko"; if (Q.state === "ok") Q.score++; CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return; }
+      if (b.hasAttribute("data-itl-next")) {
+        if (Q.i + 1 < Q.l.quiz.length) { Q.i++; prepare(); ls.view = "quiz"; }
+        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) patch.done = Date.now(); lmark(Q.l.id, patch); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
+        render(); window.scrollTo(0, 0); return;
+      }
+    }
+    /* parole */
+    if (a("data-it-word") !== null) { CP.openSheet(detailHTML(BYID[a("data-it-word")])); return; }
+    /* ripasso */
+    if (b.hasAttribute("data-itr-show")) { rv.shown = true; CP.sfx("tap"); render(); return; }
+    if (a("data-itr-grade") !== null) { grade(+a("data-itr-grade")); CP.sfx("tap"); render(); return; }
+    /* coniugazioni */
+    if (a("data-itc-tense") !== null) { cj.tense = a("data-itc-tense"); cj.q = null; render(); return; }
+    if (a("data-itc-opt") !== null && cj.state === "play") { cj.choice = +a("data-itc-opt"); cj.n++; cj.state = cj.q.opts[cj.choice] === cj.q.right ? "ok" : "ko"; if (cj.state === "ok") cj.score++; CP.sfx(cj.state === "ok" ? "ok" : "ko"); render(); return; }
+    if (b.hasAttribute("data-itc-next")) { cj.q = null; render(); return; }
+    /* frasi */
+    if (a("data-itp-dlg") !== null) { ph.dlg = a("data-itp-dlg"); render(); window.scrollTo(0, 0); return; }
+    if (b.hasAttribute("data-itp-back")) { ph.dlg = null; render(); return; }
+  });
+
+  /* benvenuto in cinese, una volta sola */
+  var welcomed = false;
+  CP.welcome = function (force) {
+    if (!force && (welcomed || lsGet("cp-it-welcome"))) return;
+    welcomed = true;
+    CP.openSheet('<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">欢迎来到意大利语课程！</h2><button type="button" class="fam-x btn-s" data-famclose data-itw-ok>好的</button></div>' +
+      "<p>这里有 " + ITLESSONS.length + " 课语法、" + LEX.length + " 个常用词、动词变位练习和中意对照的句子。所有内容都可以离线使用。</p>" +
+      '<p class="small muted">建议从第 1 课「发音」开始。想听意大利语，手机里需要有意大利语的语音（一般在「文字转语音」设置里下载）。</p>' +
+      '<button type="button" class="btn-main" data-itw-ok>开始第 1 课</button></div>');
+  };
+  document.getElementById("fam").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-itw-ok]") : null; if (!b) return;
+    lsSet("cp-it-welcome", "1");
+    if (b.classList.contains("btn-main")) { CP.closeSheet(); ls.cur = ITLESSONS[0]; ls.view = "lesson"; show("lessons"); }
+  });
+  if (CP.ux) CP.ux.set("onboarded", 1);   /* il benvenuto del corso di cinese non deve comparire qui */
+  show(tab);
+  setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 500);
+  /* tasto Indietro dell'APK: prima i fogli (già gestiti), poi la lezione aperta, poi la prima scheda */
+  var prevBack = window.__mdBack;
+  window.__mdBack = function () {
+    if (CP.topSheet && CP.topSheet()) return prevBack ? prevBack() : false;
+    if (tab === "lessons" && ls.view !== "list") { ls.view = "list"; ls.cur = null; ls.quiz = null; render(); return true; }
+    if (tab === "phrases" && ph.dlg) { ph.dlg = null; render(); return true; }
+    if (tab !== "lessons") { show("lessons"); return true; }
+    return false;
+  };
 })();
 </script>
 <!-- Avvio finale: per ultimo -->

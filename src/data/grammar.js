@@ -41,7 +41,7 @@ var GRAM = {
     "啤酒": ["birra", "f", "birre", "m"], "葡萄酒": ["vino", "m", "vini", "m"],
     "米饭": ["riso", "m", "riso", "m"], "早饭": ["colazione", "f", "colazioni"], "午饭": ["pranzo", "m", "pranzi"], "晚饭": ["cena", "f", "cene"],
     "面条": ["noodles", "m", "noodles", "mp"], "饺子": ["raviolo", "m", "ravioli", "p"], "包子": ["panino al vapore", "m", "panini al vapore"],
-    "面包": ["pane", "m", "pani", "m"], "鸡蛋": ["uovo", "f", "uova"], "肉": ["carne", "f", "carni", "m"], "牛肉": ["manzo", "m", "manzo", "m"],
+    "面包": ["pane", "m", "pani", "m"], "鸡蛋": ["uovo", "m", "uova"], "肉": ["carne", "f", "carni", "m"], "牛肉": ["manzo", "m", "manzo", "m"],
     "猪肉": ["maiale", "m", "maiale", "m"], "鸡肉": ["pollo", "m", "pollo", "m"], "鱼": ["pesce", "m", "pesci", "m"], "海鲜": ["frutti di mare", "m", "frutti di mare", "mp"],
     "蔬菜": ["verdura", "f", "verdure", "m"], "豆腐": ["tofu", "m", "tofu", "m"], "汤": ["zuppa", "f", "zuppe"], "小吃": ["spuntino", "m", "spuntini"], "水果": ["frutta", "f", "frutta", "m"],
     "苹果": ["mela", "f", "mele"], "香蕉": ["banana", "f", "banane"], "西瓜": ["anguria", "f", "angurie"], "冰淇淋": ["gelato", "m", "gelati"],
