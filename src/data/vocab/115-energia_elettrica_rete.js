@@ -1,8 +1,8 @@
-/* 115. Reti ad alta tensione e trasformatori · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Reti ad alta tensione e trasformatori · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "energia_elettrica_rete",
-  "title": "115. Reti ad alta tensione e trasformatori",
+  "title": "Reti ad alta tensione e trasformatori",
   "words": [
     ["diàn.wǎng","电网","rete elettrica"],
     ["gāo.yā.diàn","高压电","alta tensione"],

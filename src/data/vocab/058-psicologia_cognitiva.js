@@ -1,8 +1,8 @@
-/* 58. Psicologia cognitiva e percezione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Psicologia cognitiva e percezione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "psicologia_cognitiva",
-  "title": "58. Psicologia cognitiva e percezione",
+  "title": "Psicologia cognitiva e percezione",
   "words": [
     ["rèn.zhī","认知","cognizione"],
     ["sī.wéi","思维","pensiero"],

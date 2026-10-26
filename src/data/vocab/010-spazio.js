@@ -1,8 +1,8 @@
-/* 10. Spazio e direzioni · 22 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Spazio e direzioni · 22 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "spazio",
-  "title": "10. Spazio e direzioni",
+  "title": "Spazio e direzioni",
   "words": [
     ["zài","在","stare in, trovarsi a","我在家 = sono a casa"],
     ["shàng.mian","上面","sopra"],

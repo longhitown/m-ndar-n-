@@ -1,8 +1,8 @@
-/* 28. Studio, ufficio e progetti · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Studio, ufficio e progetti · 32 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "lavoro2",
-  "title": "28. Studio, ufficio e progetti",
+  "title": "Studio, ufficio e progetti",
   "words": [
     ["shàng.bān","上班","andare al lavoro, iniziare il turno"],
     ["xià.bān","下班","uscire dal lavoro"],

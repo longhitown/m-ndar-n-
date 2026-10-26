@@ -1,8 +1,8 @@
-/* 98. Vita urbana, pendolarismo e subculture · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Vita urbana, pendolarismo e subculture · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "societa_antropologia_urbana",
-  "title": "98. Vita urbana, pendolarismo e subculture",
+  "title": "Vita urbana, pendolarismo e subculture",
   "words": [
     ["tóng.chéng","同城","della stessa città"],
     ["tōng.qín","通勤","fare il pendolare"],

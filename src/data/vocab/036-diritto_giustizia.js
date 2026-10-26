@@ -1,8 +1,8 @@
-/* 36. Diritto, leggi e giustizia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Diritto, leggi e giustizia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "diritto_giustizia",
-  "title": "36. Diritto, leggi e giustizia",
+  "title": "Diritto, leggi e giustizia",
   "words": [
     ["fǎ.guī","法规","norme"],
     ["zhì.dù","制度","sistema, regime"],

@@ -1,8 +1,8 @@
-/* 7. Domande e dimostrativi · 23 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Domande e dimostrativi · 23 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "domande",
-  "title": "7. Domande e dimostrativi",
+  "title": "Domande e dimostrativi",
   "words": [
     ["shén.me","什么","che cosa, quale"],
     ["shéi","谁","chi"],

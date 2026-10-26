@@ -1,8 +1,8 @@
-/* 46. Agricoltura, allevamento e produzione alimentare · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Agricoltura, allevamento e produzione alimentare · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "agricoltura_cibo",
-  "title": "46. Agricoltura, allevamento e produzione alimentare",
+  "title": "Agricoltura, allevamento e produzione alimentare",
   "words": [
     ["nóng.yè","农业","agricoltura"],
     ["nóng.cūn","农村","campagna, villaggio"],

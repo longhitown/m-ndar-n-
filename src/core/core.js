@@ -686,6 +686,14 @@
     else if (!e.shiftKey && (a === last || !t.el.contains(a))) { e.preventDefault(); first.focus(); }
   }, true);
 
+  /* ---- livello HSK 3.0 di una parola (data/levels.js): 1-6, 0 = oltre l'HSK. Vale per ogni parola, anche dei temi ---- */
+  var HSKMAP = null;
+  CP.hsk = function (hz) {
+    if (!HSKMAP) { HSKMAP = {}; if (typeof HSK_LEVEL !== "undefined") Object.keys(HSK_LEVEL).forEach(function (l) { HSK_LEVEL[l].split("|").forEach(function (w) { if (w) HSKMAP[w] = +l; }); }); }
+    return HSKMAP[hz] || 0;
+  };
+  CP.hskBadge = function (hz) { var l = CP.hsk(hz); return '<span class="hsk-b' + (l ? "" : " out") + '" title="' + (l ? "Parola del livello HSK " + l : "Fuori dalle liste HSK 1–6") + '">' + (l ? "HSK " + l : "HSK+") + "</span>"; };
+
   /* ---- famiglia del carattere ---- */
   CP.familyOf = function (ch) {
     return ORDER.filter(function (k) { var h = WORDS[k].hz; return h.indexOf(ch) >= 0 && h !== ch; }).map(function (k) { return WORDS[k]; });
@@ -695,7 +703,7 @@
     var ch = fam.cur, selves = CP.homographs(ch), selfW = selves[0];
     var list = CP.familyOf(ch), h;
     h = '<div class="fam-head"><div class="big" lang="zh-CN">' + CP.esc(ch) + '</div><div class="meta">' +
-      (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>"; }).join("")
+      (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + " " + CP.hskBadge(w.hz) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>"; }).join("")
              : '<div class="small muted">Da solo non è una parola del vocabolario: compare dentro altre parole.</div>') +
       "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
       (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ Correggi o segnala</button></div>' : "");

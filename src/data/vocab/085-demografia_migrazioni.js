@@ -1,8 +1,8 @@
-/* 85. Demografia, invecchiamento e migrazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Demografia, invecchiamento e migrazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "demografia_migrazioni",
-  "title": "85. Demografia, invecchiamento e migrazioni",
+  "title": "Demografia, invecchiamento e migrazioni",
   "words": [
     ["chū.shēng.lǜ","出生率","tasso di natalità"],
     ["sǐ.wáng.lǜ","死亡率","tasso di mortalità"],

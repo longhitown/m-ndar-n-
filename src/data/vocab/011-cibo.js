@@ -1,8 +1,8 @@
-/* 11. Cibo, bevande e ristorante · 60 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Cibo, bevande e ristorante · 60 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "cibo",
-  "title": "11. Cibo, bevande e ristorante",
+  "title": "Cibo, bevande e ristorante",
   "words": [
     ["shuǐ","水","acqua"],
     ["rè.shuǐ","热水","acqua calda"],

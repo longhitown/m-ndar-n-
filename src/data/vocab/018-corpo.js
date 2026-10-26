@@ -1,8 +1,8 @@
-/* 18. Corpo e salute · 26 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Corpo e salute · 26 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "corpo",
-  "title": "18. Corpo e salute",
+  "title": "Corpo e salute",
   "words": [
     ["shēn.tǐ","身体","corpo; salute"],
     ["tóu","头","testa"],

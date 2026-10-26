@@ -1,8 +1,8 @@
-/* 128. Derivati esotici, swap e gestione del rischio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Derivati esotici, swap e gestione del rischio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "finanza_derivati_rischio",
-  "title": "128. Derivati esotici, swap e gestione del rischio",
+  "title": "Derivati esotici, swap e gestione del rischio",
   "words": [
     ["yǎn.shēng.pǐn","衍生品","derivati"],
     ["hù.huàn","互换","swap"],

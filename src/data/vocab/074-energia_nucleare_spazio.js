@@ -1,8 +1,8 @@
-/* 74. Astronomia, energia nucleare ed esplorazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Astronomia, energia nucleare ed esplorazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "energia_nucleare_spazio",
-  "title": "74. Astronomia, energia nucleare ed esplorazione",
+  "title": "Astronomia, energia nucleare ed esplorazione",
   "words": [
     ["yǔ.zhòu.fēi.chuán","宇宙飞船","navicella spaziale"],
     ["wèi.xīng","卫星","satellite artificiale"],

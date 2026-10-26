@@ -1,8 +1,8 @@
-/* 2. Famiglia · 23 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Famiglia · 23 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "famiglia",
-  "title": "2. Famiglia",
+  "title": "Famiglia",
   "words": [
     ["jiā","家","casa; famiglia"],
     ["jiā.rén","家人","familiari"],

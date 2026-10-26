@@ -1,8 +1,8 @@
-/* 119. Attività peschereccia e maricoltura · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Attività peschereccia e maricoltura · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "pesca_acquacoltura",
-  "title": "119. Attività peschereccia e maricoltura",
+  "title": "Attività peschereccia e maricoltura",
   "words": [
     ["yú.yè","渔业","pesca (settore)"],
     ["yú.chuán","渔船","peschereccio"],

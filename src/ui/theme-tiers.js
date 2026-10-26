@@ -32,16 +32,11 @@
   paint();
 
   /* ---- filtro per livello (scheda Parole) ---- */
-  /* i livelli seguono le sezioni (per id, non per posizione): le sezioni HSK stanno in fondo al livello giusto */
-  function at(id) { for (var i = 0; i < CP.SEC.length; i++) if (CP.SEC[i].id === id) return i; return -1; }
-  var B1 = at("opinioni"), B2 = at("pensiero_critico"), B3 = at("finanza_valute_oro"), END = CP.SEC.length - 1;
-  var TIERS = [
-    { k: "all", t: "🗂️ Tutte" },
-    { k: 0, t: "🌱 Base + HSK 1–2", a: 0, b: B1 - 1 },
-    { k: 1, t: "🌿 Intermedio + HSK 3", a: B1, b: B2 - 1 },
-    { k: 2, t: "🌳 Avanzato + HSK 4", a: B2, b: B3 - 1 },
-    { k: 3, t: "🏔️ Maestro + HSK 5", a: B3, b: END }
-  ];
+  /* i livelli sono i capitoli del Percorso (path/path.js, data/levels.js): stessi nomi, stesse tappe */
+  var ICO = ["🌱", "🌿", "🍃", "🌳", "🏔️", "🔭"];
+  var TIERS = [{ k: "all", t: "🗂️ Tutte" }].concat((CP.chapters || []).map(function (c, i) {
+    return { k: i, t: ICO[i] + " " + (i + 1) + " · " + c.t + (/^HSK/.test(c.hsk) ? " (" + c.hsk + ")" : ""), ids: c.idx.map(function (j) { return SECTIONS[j].id; }) };
+  }));
   var tierEl = document.getElementById("tiers"), tier = "all";
   function paintTiers() {
     if (!tierEl) return;
@@ -54,10 +49,10 @@
     tier = k; paintTiers();
     var x = TIERS.filter(function (t) { return String(t.k) === String(k); })[0];
     if (!x || x.k === "all") { CP.topic = null; }
-    else CP.topic = SECTIONS.slice(x.a, x.b + 1).map(function (s) { return s.id; });
+    else CP.topic = x.ids;
     if (CP.refilter) CP.refilter();
     if (x && x.k !== "all") {
-      var first = SECTIONS[x.a].id;
+      var first = x.ids[0];
       requestAnimationFrame(function () { if (CP.gotoSection) CP.gotoSection(first, true); });
     } else {
       var tools = document.querySelector(".tools"); if (tools && tools.scrollIntoView) tools.scrollIntoView({ block: "start" });

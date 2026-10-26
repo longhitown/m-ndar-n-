@@ -1,8 +1,8 @@
-/* 69. Finanza aziendale, bilanci e audit · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Finanza aziendale, bilanci e audit · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "finanza_aziendale",
-  "title": "69. Finanza aziendale, bilanci e audit",
+  "title": "Finanza aziendale, bilanci e audit",
   "words": [
     ["cái.wù.bào.biǎo","财务报表","bilancio"],
     ["shěn.jì","审计","audit"],

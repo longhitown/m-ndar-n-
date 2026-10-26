@@ -1,8 +1,8 @@
-/* 81. Cinema avanzato, sceneggiatura e regia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Cinema avanzato, sceneggiatura e regia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "teatro_cinema_avanzato",
-  "title": "81. Cinema avanzato, sceneggiatura e regia",
+  "title": "Cinema avanzato, sceneggiatura e regia",
   "words": [
     ["jù.qíng","剧情","trama narrativa"],
     ["tè.xiào","特效","effetti speciali"],

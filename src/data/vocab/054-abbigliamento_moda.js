@@ -1,8 +1,8 @@
-/* 54. Abbigliamento, moda e tessile · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Abbigliamento, moda e tessile · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "abbigliamento_moda",
-  "title": "54. Abbigliamento, moda e tessile",
+  "title": "Abbigliamento, moda e tessile",
   "words": [
     ["fú.zhuāng","服装","abbigliamento"],
     ["shí.shàng","时尚","moda"],

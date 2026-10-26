@@ -1,8 +1,8 @@
-/* 151. Impiantistica domestica, domotica e arredi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Impiantistica domestica, domotica e arredi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "edilizia_finiture_interni",
-  "title": "151. Impiantistica domestica, domotica e arredi",
+  "title": "Impiantistica domestica, domotica e arredi",
   "words": [
     ["shuǐ.diàn.gōng","水电工","idraulico ed elettricista"],
     ["shuǐ.guǎn","水管","tubo dell'acqua"],

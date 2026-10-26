@@ -1,8 +1,8 @@
-/* 101. Pittura, scultura e restauro · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Pittura, scultura e restauro · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "arti_visive_scultura",
-  "title": "101. Pittura, scultura e restauro",
+  "title": "Pittura, scultura e restauro",
   "words": [
     ["yóu.huà","油画","pittura a olio"],
     ["shuǐ.mò.huà","水墨画","pittura a inchiostro"],

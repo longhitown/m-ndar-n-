@@ -1,8 +1,8 @@
-/* 34. Salute, esami clinici e benessere · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Salute, esami clinici e benessere · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "salute_avanzata",
-  "title": "34. Salute, esami clinici e benessere",
+  "title": "Salute, esami clinici e benessere",
   "words": [
     ["bìng.rén","病人","paziente, malato"],
     ["zhěn.suǒ","诊所","clinica, ambulatorio"],

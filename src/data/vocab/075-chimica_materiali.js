@@ -1,8 +1,8 @@
-/* 75. Chimica pura, composti e nuovi materiali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Chimica pura, composti e nuovi materiali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "chimica_materiali",
-  "title": "75. Chimica pura, composti e nuovi materiali",
+  "title": "Chimica pura, composti e nuovi materiali",
   "words": [
     ["yuán.sù","元素","elemento chimico"],
     ["fèn.zǐ","分子","molecola"],

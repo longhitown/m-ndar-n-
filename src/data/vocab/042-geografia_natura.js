@@ -1,8 +1,8 @@
-/* 42. Geografia, paesaggio e morfologia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Geografia, paesaggio e morfologia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "geografia_natura",
-  "title": "42. Geografia, paesaggio e morfologia",
+  "title": "Geografia, paesaggio e morfologia",
   "words": [
     ["dì.lǐ","地理","geografia"],
     ["shān.mài","山脉","catena montuosa"],

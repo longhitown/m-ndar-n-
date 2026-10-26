@@ -1,8 +1,8 @@
-/* 26. Sapori, ingredienti e cucina · 39 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Sapori, ingredienti e cucina · 39 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "cucina",
-  "title": "26. Sapori, ingredienti e cucina",
+  "title": "Sapori, ingredienti e cucina",
   "words": [
     ["zuò.fàn","做饭","cucinare"],
     ["chǎo","炒","saltare in padella (wok)"],

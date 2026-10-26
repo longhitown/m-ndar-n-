@@ -1,8 +1,8 @@
-/* 21. Parole chiave da conversazione (Filler e reazioni) · 37 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Parole chiave da conversazione (Filler e reazioni) · 37 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "conversazione",
-  "title": "21. Parole chiave da conversazione (Filler e reazioni)",
+  "title": "Parole chiave da conversazione (Filler e reazioni)",
   "words": [
     ["nèi.ge","那个","ehm, dunque… (intercalare)","si dice «nèi.ge» mentre si pensa; si scrive come 那个 (nà.ge)"],
     ["rán.hòu","然后","e poi, dopodiché"],

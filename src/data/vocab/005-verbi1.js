@@ -1,8 +1,8 @@
-/* 5. Verbi d'azione quotidiani · 38 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Verbi d'azione quotidiani · 38 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "verbi1",
-  "title": "5. Verbi d'azione quotidiani",
+  "title": "Verbi d'azione quotidiani",
   "words": [
     ["yào","要","volere, prendere; dovere","al bar: 我要水"],
     ["xiǎng","想","avere voglia di; pensare"],

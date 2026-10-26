@@ -1,8 +1,8 @@
-/* 30. Cultura, feste, società e mondo · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Cultura, feste, società e mondo · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "cultura",
-  "title": "30. Cultura, feste, società e mondo",
+  "title": "Cultura, feste, società e mondo",
   "words": [
     ["chuán.tǒng","传统","tradizione; tradizionale"],
     ["xí.guàn","习惯","abitudine; abituarsi"],

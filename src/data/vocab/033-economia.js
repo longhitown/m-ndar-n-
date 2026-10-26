@@ -1,8 +1,8 @@
-/* 33. Economia, affari e società · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Economia, affari e società · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "economia",
-  "title": "33. Economia, affari e società",
+  "title": "Economia, affari e società",
   "words": [
     ["shāng.yè","商业","commercio"],
     ["tóu.zī","投资","investire, investimento"],

@@ -1,8 +1,8 @@
-/* 114. Idrocarburi, raffinazione ed estrattiva · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Idrocarburi, raffinazione ed estrattiva · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "energie_fossili_miniere",
-  "title": "114. Idrocarburi, raffinazione ed estrattiva",
+  "title": "Idrocarburi, raffinazione ed estrattiva",
   "words": [
     ["yuán.yóu","原油","petrolio greggio"],
     ["liàn.yóu.chǎng","炼油厂","raffineria"],

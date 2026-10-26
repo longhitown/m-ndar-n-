@@ -1,8 +1,8 @@
-/* 116. Genio civile, calcestruzzo e cantieri · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Genio civile, calcestruzzo e cantieri · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "edilizia_materiali",
-  "title": "116. Genio civile, calcestruzzo e cantieri",
+  "title": "Genio civile, calcestruzzo e cantieri",
   "words": [
     ["gōng.dì","工地","cantiere"],
     ["hùn.níng.tǔ","混凝土","calcestruzzo"],

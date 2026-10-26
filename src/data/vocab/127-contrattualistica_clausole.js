@@ -1,8 +1,8 @@
-/* 127. Contrattualistica internazionale e clausole · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Contrattualistica internazionale e clausole · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "contrattualistica_clausole",
-  "title": "127. Contrattualistica internazionale e clausole",
+  "title": "Contrattualistica internazionale e clausole",
   "words": [
     ["tiáo.kuǎn","条款","clausola"],
     ["qián.tí","前提","premessa"],

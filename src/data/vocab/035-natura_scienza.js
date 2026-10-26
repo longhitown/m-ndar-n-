@@ -1,8 +1,8 @@
-/* 35. Natura, scienza e tecnologia avanzata · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Natura, scienza e tecnologia avanzata · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "natura_scienza",
-  "title": "35. Natura, scienza e tecnologia avanzata",
+  "title": "Natura, scienza e tecnologia avanzata",
   "words": [
     ["kē.xué","科学","scienza"],
     ["shí.yàn","实验","esperimento"],

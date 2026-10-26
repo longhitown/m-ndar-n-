@@ -57,27 +57,46 @@
         '<button type="button" data-go="practice" data-id="' + s.id + '"><span aria-hidden="true">🧩</span>Pratica</button></div>' +
       "</div></div></div>";
   }
-  /* Capitoli: raggruppano le tappe per difficolta'. Il livello HSK e' indicativo (le tappe sono per argomento, non per esame). */
+  /* Capitoli per difficoltà: un solo vocabolario, ogni tappa nel capitolo del suo livello (data/levels.js, tools/levels.mjs).
+     Dentro un capitolo prima i temi, poi la «lista HSK» del livello: le parole d'esame che i temi non hanno già portato. */
   var CHAPTERS = [
-    { t: "Sopravvivenza", hsk: "HSK 1", a: 0, b: 30, d: "Saluti, numeri, cibo, spostarsi: quello che serve il primo giorno." },
-    { t: "Vita quotidiana", hsk: "HSK 2", a: 30, b: 65, d: "Casa, lavoro, tempo libero: parlare di sé e delle abitudini." },
-    { t: "Conversazione sicura", hsk: "HSK 3", a: 65, b: 110, d: "Opinioni, progetti, spiegazioni: reggere una conversazione vera." },
-    { t: "Padronanza", hsk: "HSK 4", a: 110, b: 135, d: "Sfumature, registri e temi più astratti." },
-    { t: "Lessico specialistico e cultura", hsk: "HSK 5+", a: 135, b: SECTIONS.length, d: "Lavoro, società, storia e tradizioni." }
+    { t: "Primi passi", hsk: "HSK 1", d: "Presentarsi, salutare, contare, chiedere: le basi del primo giorno." },
+    { t: "Vita quotidiana", hsk: "HSK 2", d: "Cibo, viaggi, casa, acquisti, città: muoversi e cavarsela." },
+    { t: "Conversazione", hsk: "HSK 3", d: "Opinioni, economia, sport, media: reggere una conversazione vera." },
+    { t: "Padronanza", hsk: "HSK 4", d: "Studio, società, amministrazione: temi più astratti." },
+    { t: "Approfondimento", hsk: "HSK 5", d: "Sentimenti, scienza, diritto, arte, lavoro: le sfumature." },
+    { t: "Oltre l'HSK", hsk: "lessico specialistico", d: "Professioni, scienze, cultura e tradizioni cinesi: scegli i temi che ti servono." }
   ];
-  CHAPTERS.forEach(function (c) { c.b = Math.min(c.b, SECTIONS.length); });
+  var CHOF = typeof SECTION_CHAPTER !== "undefined" ? SECTION_CHAPTER : {};
+  function isList(s) { return /^hsk\d/.test(s.id); }
+  CHAPTERS.forEach(function (c, k) {
+    c.idx = []; SECTIONS.forEach(function (s, i) { var n = CHOF[s.id] || (isList(s) ? +s.id.charAt(3) : 6); if (n === k + 1) c.idx.push(i); });
+  });
+  CP.chapters = CHAPTERS;   /* anche per il filtro per livello della scheda Parole (ui/theme-tiers.js) */
   var chap = null;   /* null = il capitolo della tappa corrente; -1 = tutti */
-  function chapOf(i) { for (var k = 0; k < CHAPTERS.length; k++) if (i >= CHAPTERS[k].a && i < CHAPTERS[k].b) return k; return CHAPTERS.length - 1; }
-  function chapDone(c) { var n = 0; for (var i = c.a; i < c.b; i++) if (stats(SECTIONS[i].id).done) n++; return n; }
+  function chapOf(i) { for (var k = 0; k < CHAPTERS.length; k++) if (CHAPTERS[k].idx.indexOf(i) >= 0) return k; return CHAPTERS.length - 1; }
+  function chapDone(c) { return c.idx.filter(function (i) { return stats(SECTIONS[i].id).done; }).length; }
   function chapNav(sel) {
     return '<div class="cpills chap-nav" role="group" aria-label="Capitoli">' + CHAPTERS.map(function (c, k) {
-      var n = c.b - c.a, d = chapDone(c);
-      return '<button type="button" data-chap="' + k + '"' + (sel === k ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '><b>Cap. ' + (k + 1) + "</b> " + esc(c.t.split(" ")[0]) + ' <small>' + d + "/" + n + "</small></button>";
+      var n = c.idx.length, d = chapDone(c);
+      return '<button type="button" data-chap="' + k + '"' + (sel === k ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '><b>' + (k + 1) + "</b> " + esc(c.t) + ' <small>' + d + "/" + n + "</small></button>";
     }).join("") + '<button type="button" data-chap="-1"' + (sel === -1 ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🗂️ Tutti</button></div>";
   }
   function chapHead(k) {
-    var c = CHAPTERS[k], n = c.b - c.a, d = chapDone(c);
-    return '<div class="chap-head"><div><small>Capitolo ' + (k + 1) + " · " + c.hsk + ' (indicativo)</small><h3>' + esc(c.t) + '</h3><p class="muted small" style="margin:2px 0 0">' + esc(c.d) + '</p></div><div class="chap-pc"><b>' + d + "/" + n + '</b><span>tappe</span></div><span class="mini"><i style="width:' + Math.round(d / n * 100) + '%"></i></span></div>';
+    var c = CHAPTERS[k], n = c.idx.length, d = chapDone(c);
+    return '<div class="chap-head"><div><small>Capitolo ' + (k + 1) + " · " + esc(c.hsk) + '</small><h3>' + esc(c.t) + '</h3><p class="muted small" style="margin:2px 0 0">' + esc(c.d) + '</p></div><div class="chap-pc"><b>' + d + "/" + n + '</b><span>tappe</span></div><span class="mini"><i style="width:' + Math.round(d / n * 100) + '%"></i></span></div>';
+  }
+  /* la lista HSK del capitolo: un blocco unico, chiuso finché non ci si arriva */
+  function listHTML(k, ids, cur) {
+    var words = 0, started = 0;
+    ids.forEach(function (i) { var st = stats(SECTIONS[i].id); words += st.n; started += st.started; });
+    var d = ids.filter(function (i) { return stats(SECTIONS[i].id).done; }).length, inside = ids.indexOf(cur) >= 0, key = "list" + k;
+    if (open[key] == null) open[key] = inside;
+    var body = ""; if (open[key]) ids.forEach(function (i) { body += stopHTML(SECTIONS[i], i, cur); });
+    return '<div class="hsk-list' + (d === ids.length ? " done" : "") + (inside ? " cur" : "") + '"><button type="button" class="hl-head" data-list="' + k + '" aria-expanded="' + (open[key] ? "true" : "false") + '">' +
+      '<span class="hl-ico" aria-hidden="true">📋</span><span class="hl-t"><b>Lista HSK ' + (k + 1) + '</b><small>Le parole d\'esame che i temi non hanno già portato · ' + words + " parole in " + ids.length + " tappe</small></span>" +
+      '<span class="pc">' + d + "/" + ids.length + '</span><span class="mini"><i style="width:' + Math.round(started / Math.max(1, words) * 100) + '%"></i></span></button>' +
+      (open[key] ? '<div class="hl-body">' + body + "</div>" : "") + "</div>";
   }
   function render() {
     dirty = false;
@@ -89,11 +108,13 @@
     var ks = sel === -1 ? CHAPTERS.map(function (_, k) { return k; }) : [sel];
     ks.forEach(function (k) {
       list += chapHead(k);
-      for (var i = CHAPTERS[k].a; i < CHAPTERS[k].b; i++) list += stopHTML(SECTIONS[i], i, cur);
+      var lists = [];
+      CHAPTERS[k].idx.forEach(function (i) { if (isList(SECTIONS[i])) lists.push(i); else list += stopHTML(SECTIONS[i], i, cur); });
+      if (lists.length) list += listHTML(k, lists, cur);
     });
     root.innerHTML = resumeHTML(cur) + heroHTML(cur) +
       '<div class="path-head"><h2>Il percorso</h2><span class="muted small">' + done + " / " + SECTIONS.length + " tappe</span></div>" +
-      '<p class="muted" style="margin:0">' + SECTIONS.length + " tappe in " + CHAPTERS.length + ' capitoli, dal primo giorno in Cina ai temi più specifici. Ogni tappa ti porta da «ho visto le parole» a «le uso in una frase». Apri il capitolo che ti serve: non sei obbligato a seguire l\'ordine.</p>' +
+      '<p class="muted" style="margin:0">' + SECTIONS.length + " tappe in " + CHAPTERS.length + ' capitoli, dal più facile al più specialistico: i primi cinque seguono i livelli dell\'esame HSK. Ogni parola compare una volta sola, in un tema o nella lista HSK del suo livello. Non sei obbligato a seguire l\'ordine.</p>' +
       chapNav(sel) + '<div class="path">' + list + "</div>";
   }
   CP.pathDirty = function () { dirty = true; };
@@ -113,10 +134,11 @@
       t = { id: "path-go" };
     }
     if (t.id === "path-go") {
-      var cur = SECTIONS[currentIdx()].id; open[cur] = true; chap = chapOf(currentIdx()); render();
+      var ci = currentIdx(), cur = SECTIONS[ci].id, ck = chapOf(ci); open[cur] = true; chap = ck; if (isList(SECTIONS[ci])) open["list" + ck] = true; render();
       var el = document.getElementById("stop-" + cur); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
       return;
     }
+    if (t.hasAttribute("data-list")) { var lk = "list" + t.getAttribute("data-list"); open[lk] = !open[lk]; CP.sfx("tap"); render(); var hb = root.querySelector('[data-list="' + t.getAttribute("data-list") + '"]'); if (hb && hb.focus) hb.focus({ preventScroll: true }); return; }
     var tg = t.getAttribute("data-toggle");
     if (tg) { open[tg] = !open[tg]; t.setAttribute("aria-expanded", open[tg] ? "true" : "false"); var b = t.parentNode.querySelector(".sbody"); if (b) b.hidden = !open[tg]; CP.sfx("tap"); return; }
     var go = t.getAttribute("data-go"), id = t.getAttribute("data-id");

@@ -1,8 +1,8 @@
-/* 52. Turismo, ospitalità e viaggi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Turismo, ospitalità e viaggi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "turismo_ospitalita",
-  "title": "52. Turismo, ospitalità e viaggi",
+  "title": "Turismo, ospitalità e viaggi",
   "words": [
     ["dǎo.yóu","导游","guida turistica"],
     ["xíng.chéng","行程","itinerario di viaggio"],

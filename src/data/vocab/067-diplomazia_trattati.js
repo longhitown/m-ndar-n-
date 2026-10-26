@@ -1,8 +1,8 @@
-/* 67. Diplomazia formale e trattati internazionali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Diplomazia formale e trattati internazionali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "diplomazia_trattati",
-  "title": "67. Diplomazia formale e trattati internazionali",
+  "title": "Diplomazia formale e trattati internazionali",
   "words": [
     ["wài.jiāo.guān","外交官","diplomatico"],
     ["tán.pàn","谈判","negoziare"],

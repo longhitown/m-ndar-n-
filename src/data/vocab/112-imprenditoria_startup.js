@@ -1,8 +1,8 @@
-/* 112. Startup, incubatori e capitale di rischio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Startup, incubatori e capitale di rischio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "imprenditoria_startup",
-  "title": "112. Startup, incubatori e capitale di rischio",
+  "title": "Startup, incubatori e capitale di rischio",
   "words": [
     ["chuàng.yè","创业","avviare un'impresa"],
     ["chuàng.shǐ.rén","创始人","fondatore"],

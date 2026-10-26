@@ -1,8 +1,8 @@
-/* 50. Marketing, vendite e pubblicità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Marketing, vendite e pubblicità · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "marketing_vendite",
-  "title": "50. Marketing, vendite e pubblicità",
+  "title": "Marketing, vendite e pubblicità",
   "words": [
     ["yíng.xiāo","营销","marketing"],
     ["guǎng.gào","广告","pubblicità, spot"],

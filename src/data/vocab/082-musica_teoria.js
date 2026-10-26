@@ -1,8 +1,8 @@
-/* 82. Strumenti musicali e teoria dell'armonia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Strumenti musicali e teoria dell'armonia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "musica_teoria",
-  "title": "82. Strumenti musicali e teoria dell'armonia",
+  "title": "Strumenti musicali e teoria dell'armonia",
   "words": [
     ["yuè.qì","乐器","strumento musicale"],
     ["gāng.qín","钢琴","pianoforte"],

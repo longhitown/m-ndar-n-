@@ -1,8 +1,8 @@
-/* 142. Gemmologia, pietre preziose e metalli nobili · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Gemmologia, pietre preziose e metalli nobili · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "mineralogia_gemme_cristalli",
-  "title": "142. Gemmologia, pietre preziose e metalli nobili",
+  "title": "Gemmologia, pietre preziose e metalli nobili",
   "words": [
     ["bǎo.shí","宝石","gemma"],
     ["hóng.bǎo.shí","红宝石","rubino"],

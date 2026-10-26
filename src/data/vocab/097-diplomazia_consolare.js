@@ -1,8 +1,8 @@
-/* 97. Procedure consolari, visti e rimpatrio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Procedure consolari, visti e rimpatrio · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "diplomazia_consolare",
-  "title": "97. Procedure consolari, visti e rimpatrio",
+  "title": "Procedure consolari, visti e rimpatrio",
   "words": [
     ["lǐng.shì","领事","console"],
     ["shēn.qǐng.biǎo","申请表","modulo"],

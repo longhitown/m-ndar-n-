@@ -1,8 +1,8 @@
-/* 53. Ristorazione, cucina e gastronomia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Ristorazione, cucina e gastronomia · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "ristorazione_gastronomia",
-  "title": "53. Ristorazione, cucina e gastronomia",
+  "title": "Ristorazione, cucina e gastronomia",
   "words": [
     ["cān.yǐn","餐饮","ristorazione"],
     ["diǎn.cài","点菜","ordinare i piatti"],

@@ -1,8 +1,8 @@
-/* 139. Specie botaniche, fioriture e simboli vegetali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Specie botaniche, fioriture e simboli vegetali · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "botanica_alberi_fiori",
-  "title": "139. Specie botaniche, fioriture e simboli vegetali",
+  "title": "Specie botaniche, fioriture e simboli vegetali",
   "words": [
     ["mǔ.dān","牡丹","peonia"],
     ["méi.huā","梅花","fiore di pruno"],

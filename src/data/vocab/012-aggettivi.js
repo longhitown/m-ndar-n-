@@ -1,8 +1,8 @@
-/* 12. Aggettivi e descrizioni · 55 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Aggettivi e descrizioni · 55 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "aggettivi",
-  "title": "12. Aggettivi e descrizioni",
+  "title": "Aggettivi e descrizioni",
   "words": [
     ["hěn","很","molto (legante per aggettivi)","很好 = buono / bene"],
     ["fēi.cháng","非常","estremamente, moltissimo"],

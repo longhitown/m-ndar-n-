@@ -1,8 +1,8 @@
-/* 93. Aviazione civile, aeroporti e volo · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Aviazione civile, aeroporti e volo · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "aerospazio_volo",
-  "title": "93. Aviazione civile, aeroporti e volo",
+  "title": "Aviazione civile, aeroporti e volo",
   "words": [
     ["háng.bān","航班","volo"],
     ["dēng.jī.pái","登机牌","carta d'imbarco"],

@@ -1,8 +1,8 @@
-/* 106. Farmacologia clinica, ricovero e degenza · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Farmacologia clinica, ricovero e degenza · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "terapia_farmaci",
-  "title": "106. Farmacologia clinica, ricovero e degenza",
+  "title": "Farmacologia clinica, ricovero e degenza",
   "words": [
     ["zhù.yuàn","住院","essere ricoverato"],
     ["chū.yuàn","出院","essere dimesso"],

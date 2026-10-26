@@ -1,8 +1,8 @@
-/* 92. Alta velocità ferroviaria, porti e rotte marittime · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Alta velocità ferroviaria, porti e rotte marittime · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "ferrovia_navigazione",
-  "title": "92. Alta velocità ferroviaria, porti e rotte marittime",
+  "title": "Alta velocità ferroviaria, porti e rotte marittime",
   "words": [
     ["dòng.chē","动车","treno veloce"],
     ["tiě.guǐ","铁轨","binario"],

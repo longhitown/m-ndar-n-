@@ -1,8 +1,8 @@
-/* 103. Oceanografia, correnti e fondali marini · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Oceanografia, correnti e fondali marini · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "oceanografia_abissi",
-  "title": "103. Oceanografia, correnti e fondali marini",
+  "title": "Oceanografia, correnti e fondali marini",
   "words": [
     ["hǎi.dǐ","海底","fondale marino"],
     ["hǎi.liú","海流","corrente oceanica"],

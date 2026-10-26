@@ -1,8 +1,8 @@
-/* 15. Trasporti e viaggi · 24 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Trasporti e viaggi · 24 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "viaggi",
-  "title": "15. Trasporti e viaggi",
+  "title": "Trasporti e viaggi",
   "words": [
     ["lù","路","strada, via"],
     ["jiē","街","via, strada cittadina"],

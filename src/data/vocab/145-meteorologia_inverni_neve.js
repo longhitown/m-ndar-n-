@@ -1,8 +1,8 @@
-/* 145. Criosfera, ghiacciai e paesaggi innevati · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Criosfera, ghiacciai e paesaggi innevati · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "meteorologia_inverni_neve",
-  "title": "145. Criosfera, ghiacciai e paesaggi innevati",
+  "title": "Criosfera, ghiacciai e paesaggi innevati",
   "words": [
     ["bīng.chuān","冰川","ghiacciaio"],
     ["bīng.shān","冰山","iceberg"],

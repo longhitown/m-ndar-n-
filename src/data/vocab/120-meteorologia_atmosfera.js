@@ -1,8 +1,8 @@
-/* 120. Fisica dell'atmosfera, nubi e pressione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Fisica dell'atmosfera, nubi e pressione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "meteorologia_atmosfera",
-  "title": "120. Fisica dell'atmosfera, nubi e pressione",
+  "title": "Fisica dell'atmosfera, nubi e pressione",
   "words": [
     ["dà.qì.céng","大气层","atmosfera"],
     ["duì.liú.céng","对流层","troposfera"],

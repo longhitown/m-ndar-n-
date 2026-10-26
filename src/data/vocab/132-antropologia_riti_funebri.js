@@ -1,8 +1,8 @@
-/* 132. Riti di passaggio, lutto e commemorazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Riti di passaggio, lutto e commemorazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "antropologia_riti_funebri",
-  "title": "132. Riti di passaggio, lutto e commemorazione",
+  "title": "Riti di passaggio, lutto e commemorazione",
   "words": [
     ["sāng.zàng","丧葬","funerale"],
     ["zhuī.dào.huì","追悼会","cerimonia commemorativa"],

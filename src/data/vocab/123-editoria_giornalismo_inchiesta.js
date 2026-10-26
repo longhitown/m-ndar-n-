@@ -1,8 +1,8 @@
-/* 123. Giornalismo d'inchiesta e libertà d'informazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Giornalismo d'inchiesta e libertà d'informazione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "editoria_giornalismo_inchiesta",
-  "title": "123. Giornalismo d'inchiesta e libertà d'informazione",
+  "title": "Giornalismo d'inchiesta e libertà d'informazione",
   "words": [
     ["shēn.dù bào.dào","深度报道","inchiesta"],
     ["dǐ.xiàn","底线","limite invalicabile"],

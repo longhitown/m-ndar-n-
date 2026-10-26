@@ -1,8 +1,8 @@
-/* 146. Idrografia continentale, delta e cascate · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Idrografia continentale, delta e cascate · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "geografia_fiumi_laghi",
-  "title": "146. Idrografia continentale, delta e cascate",
+  "title": "Idrografia continentale, delta e cascate",
   "words": [
     ["liú.yù","流域","bacino fluviale"],
     ["zhī.liú","支流","affluente"],

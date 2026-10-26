@@ -1,8 +1,8 @@
-/* 140. Mondo degli insetti e metamorfosi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Mondo degli insetti e metamorfosi · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "entomologia_insetti",
-  "title": "140. Mondo degli insetti e metamorfosi",
+  "title": "Mondo degli insetti e metamorfosi",
   "words": [
     ["kūn.chóng","昆虫","insetto"],
     ["mì.fēng","蜜蜂","ape"],

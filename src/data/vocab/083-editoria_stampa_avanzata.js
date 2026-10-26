@@ -1,8 +1,8 @@
-/* 83. Editoria, catalogazione e diritti di stampa · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Editoria, catalogazione e diritti di stampa · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "editoria_stampa_avanzata",
-  "title": "83. Editoria, catalogazione e diritti di stampa",
+  "title": "Editoria, catalogazione e diritti di stampa",
   "words": [
     ["shū.hào","书号","codice ISBN"],
     ["bǎn.cì","版次","numero d'edizione"],

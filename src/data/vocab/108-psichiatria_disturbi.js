@@ -1,8 +1,8 @@
-/* 108. Psichiatria clinica e disturbi dell'umore · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Psichiatria clinica e disturbi dell'umore · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "psichiatria_disturbi",
-  "title": "108. Psichiatria clinica e disturbi dell'umore",
+  "title": "Psichiatria clinica e disturbi dell'umore",
   "words": [
     ["yì.yù.zhèng","抑郁症","depressione"],
     ["jiāo.lǜ.zhèng","焦虑症","disturbo d'ansia"],

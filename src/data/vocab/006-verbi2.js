@@ -1,8 +1,8 @@
-/* 6. Verbi pratici, mente e lavoro · 52 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Verbi pratici, mente e lavoro · 52 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "verbi2",
-  "title": "6. Verbi pratici, mente e lavoro",
+  "title": "Verbi pratici, mente e lavoro",
   "words": [
     ["zuò","做","fare, preparare"],
     ["gōng.zuò","工作","lavorare; lavoro"],

@@ -1,8 +1,8 @@
-/* 24. Telefono, internet e vita digitale · 29 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Telefono, internet e vita digitale · 29 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "social",
-  "title": "24. Telefono, internet e vita digitale",
+  "title": "Telefono, internet e vita digitale",
   "words": [
     ["shàng.wǎng","上网","navigare su internet"],
     ["wú.xiàn.wǎng","无线网","Wi-Fi"],

@@ -1,8 +1,8 @@
-/* 76. Biologia cellulare, genetica ed evoluzione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Biologia cellulare, genetica ed evoluzione · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "biologia_genetica",
-  "title": "76. Biologia cellulare, genetica ed evoluzione",
+  "title": "Biologia cellulare, genetica ed evoluzione",
   "words": [
     ["jī.yīn","基因","gene"],
     ["yí.chuán","遗传","ereditarietà"],

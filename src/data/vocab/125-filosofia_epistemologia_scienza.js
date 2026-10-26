@@ -1,8 +1,8 @@
-/* 125. Epistemologia, empirismo e metodo scientifico · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* Epistemologia, empirismo e metodo scientifico · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "filosofia_epistemologia_scienza",
-  "title": "125. Epistemologia, empirismo e metodo scientifico",
+  "title": "Epistemologia, empirismo e metodo scientifico",
   "words": [
     ["kě.zhèng.wěi","可证伪","falsificabile"],
     ["shí.zhèng","实证","prova empirica"],

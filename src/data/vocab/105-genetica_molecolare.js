@@ -1,8 +1,8 @@
-/* 105. DNA, bioingegneria e mutazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+/* DNA, bioingegneria e mutazioni · 20 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
    Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
 SECTIONS.push({
   "id": "genetica_molecolare",
-  "title": "105. DNA, bioingegneria e mutazioni",
+  "title": "DNA, bioingegneria e mutazioni",
   "words": [
     ["shuāng.luó.xuán","双螺旋","doppia elica"],
     ["rǎn.sè.tǐ","染色体","cromosoma"],
