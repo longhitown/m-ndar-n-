@@ -400,11 +400,30 @@ td.hz .m-hz, .cd-hz, .fam-card .lh { -webkit-touch-callout: none; -webkit-user-s
 .heard.ko { border-left-color: var(--t4); }
 .heard .han { font-size: 1.15em; font-weight: 600; }
 /* registra e confronta (ripiego senza riconoscimento vocale) */
-.rec { grid-column: 1 / -1; width: 100%; display: grid; gap: 8px; margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--chip); text-align: left; }
-.rec-h { font-weight: 700; }
-.rec canvas { width: 100%; height: 130px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.rec-st { margin: 0; }
-.rec-judge[hidden] { display: none; }
+/* pannello «Parla» (voice-panel.js) */
+.vp { grid-column: 1 / -1; width: 100%; display: grid; gap: 10px; margin-top: 8px; padding: 12px; border-radius: 16px; background: var(--chip); text-align: left; animation: vp-in .28s cubic-bezier(.2,.8,.2,1); }
+@keyframes vp-in { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+.vp-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.vp-top .han { font-size: 22px; font-weight: 600; }
+.vp-note { flex: 1; min-width: 0; color: var(--muted); }
+.vp-x { margin-left: auto; min-width: 40px; min-height: 40px; border: 0; background: transparent; color: var(--muted); font-size: 18px; border-radius: 50%; }
+.vp-cv { width: 100%; height: 150px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); display: block; }
+.vp-ctl { display: flex; align-items: center; gap: 14px; }
+.vp-mic { --lv: 0; position: relative; flex: none; width: 64px; height: 64px; border-radius: 50%; border: 0; padding: 0; background: var(--accent); color: #fff; display: grid; place-items: center;
+  box-shadow: 0 0 0 calc(4px + var(--lv) * 16px) color-mix(in srgb, var(--accent) 22%, transparent); transition: box-shadow .08s linear, transform .15s ease, background .2s; }
+.vp-mic svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.vp-mic:active { transform: scale(.94); }
+.vp-mic.listening { background: var(--t1); box-shadow: 0 0 0 calc(4px + var(--lv) * 16px) color-mix(in srgb, var(--t1) 25%, transparent); }
+.vp-side { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.vp-st { margin: 0; font-size: 15px; line-height: 1.4; }
+.vp-meter { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--muted) 20%, transparent); overflow: hidden; opacity: 0; transition: opacity .2s; }
+.vp.on .vp-meter { opacity: 1; }
+.vp-meter i { display: block; height: 100%; background: var(--t2); transform-origin: left; transform: scaleX(0); transition: transform .06s linear; }
+.vp-acts { margin-top: 0; }
+.vp-score { display: inline-block; min-width: 3.2em; padding: 2px 8px; margin-right: 4px; border-radius: 999px; font-weight: 700; text-align: center; color: #fff; background: var(--muted); animation: vp-pop .35s cubic-bezier(.3,1.6,.5,1); }
+.vp-score.ok { background: var(--t2); } .vp-score.mid { background: #B7791F; } .vp-score.ko { background: var(--t4); }
+@keyframes vp-pop { from { transform: scale(.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .vp, .vp-score { animation: none; } .vp-mic, .vp-meter i { transition: none; } }
 #mic-live { border-color: var(--t1); }
 #mic-live[hidden] { display: none; }
 @media (prefers-reduced-motion: no-preference) { #mic-live { animation: cp-pulse 1.6s ease-in-out infinite; } }
@@ -598,9 +617,6 @@ h1 { letter-spacing: -0.01em; }
 @media (prefers-reduced-motion: no-preference) { .shake { animation: cp-shake 0.25s ease; } }
 
 /* oscilloscopio */
-.scope { width: 100%; display: grid; gap: 8px; }
-.scope canvas { width: 100%; height: 170px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-.scope .sverdict { text-align: left; }
 
 /* dialoghi */
 .dlgs { display: grid; gap: 10px; margin-top: 14px; }
@@ -16154,22 +16170,23 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (!SR) return null;
     var rec, done = false;
     var finish = function (o) { if (done) return; done = true; onResult(o); };
-    /* in Chrome il riconoscimento manda l'audio ai server: senza rete non ci si prova nemmeno */
-    if (navigator.onLine === false) { finish({ ok: false, heard: "", error: "offline" }); return null; }
+    /* in Chrome il riconoscimento manda l'audio ai server: senza rete non ci si prova nemmeno (nell'app Android sì: il
+       riconoscitore di sistema può avere la lingua scaricata sul telefono) */
+    if (navigator.onLine === false && !window.MandarinoAndroid) { finish({ ok: false, heard: "", error: "offline" }); return null; }
     /* su molti Android, se il flusso dell'oscilloscopio è ancora aperto, il riconoscimento fallisce (audio-capture / no-speech) */
     if (CP.micInfo && CP.micInfo().live && !CP.micInfo().users && CP.micClose) CP.micClose();
     try {
       rec = new SR();
       rec.lang = "zh-CN"; rec.interimResults = false; rec.maxAlternatives = 3; rec.continuous = false;
       rec.onresult = function (ev) {
-        var clean = function (s) { return s.replace(/[^㐀-鿿]/g, ""); };
-        var goal = clean(targetHz), alts = [], ok = false;
+        /* si confronta il suono, non il carattere: 他/她/它 o 在/再 sono la stessa pronuncia, e il riconoscitore sceglie a caso */
+        var alts = [], best = { level: -1 }, heard = "";
         for (var i = 0; i < ev.results[0].length; i++) {
-          var tr = ev.results[0][i].transcript;
+          var tr = ev.results[0][i].transcript, m = CP.soundMatch ? CP.soundMatch(targetHz, tr) : { level: tr.indexOf(targetHz) >= 0 ? 2 : 0 };
           alts.push(tr);
-          if (goal && clean(tr).indexOf(goal) >= 0) ok = true;
+          if (m.level > best.level || (m.level === best.level && m.exact && !best.exact)) { best = m; heard = tr; }
         }
-        finish({ ok: ok, heard: alts[0] || "", alts: alts, goal: targetHz });
+        finish({ ok: best.level === 2, near: best.level === 1, homophone: best.level === 2 && !best.exact, heard: heard || alts[0] || "", alts: alts, goal: targetHz });
       };
       rec.onerror = function (ev) { finish({ ok: false, heard: "", error: (ev && ev.error) || "error" }); };
       rec.onnomatch = function () { finish({ ok: false, heard: "", error: "no-speech" }); };
@@ -16187,19 +16204,29 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   CP.audioBtns = function (hz, noMic) { return '<span class="btns">' + CP.sayBtn(hz) + (noMic ? "" : CP.micBtn(hz)) + "</span>"; };
   var MIC_ERR = {
     "not-allowed": "Il microfono è bloccato in questa pagina. Consentilo nelle impostazioni del browser, oppure scarica la pagina e aprila a sé.",
-    "service-not-allowed": "Il microfono è bloccato in questa pagina. Consentilo nelle impostazioni del browser.",
+    "service-not-allowed": "Il riconoscimento vocale non è disponibile su questo dispositivo: qui guardiamo il tono, che funziona senza.",
     "audio-capture": "Non trovo nessun microfono.",
-    "network": "Il riconoscimento vocale ha bisogno di internet. Usa 〰️ Tono, funziona senza rete.",
-    "offline": "Il riconoscimento vocale ha bisogno di internet. Usa 〰️ Tono, funziona senza rete.",
+    "network": "Il riconoscimento vocale ha bisogno di internet: qui guardiamo il tono, che funziona senza rete.",
+    "offline": "Il riconoscimento vocale ha bisogno di internet: qui guardiamo il tono, che funziona senza rete.",
+    "language-not-supported": "Il riconoscimento vocale del telefono non ha il cinese: qui guardiamo il tono, che funziona senza.",
     "no-speech": "Non ho sentito niente. Avvicinati al microfono e riprova.",
     "start": "Non riesco ad attivare il microfono da qui."
   };
+  var SR_DOWN = /^(network|offline|language-not-supported|service-not-allowed|audio-capture|start)$/;
+  window.addEventListener("online", function () { if (CP._srDown === "network" || CP._srDown === "offline") CP._srDown = null; });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-vp-open]") : null; if (!b || !CP.voicePanel) return;
+    var h = b.closest(".heard"), host = h ? h.parentNode : b.parentNode; if (h) h.parentNode.removeChild(h);
+    CP.voicePanel(host, b.getAttribute("data-vp-open"), {});
+  });
   CP.micErrText = function (code) { return MIC_ERR[code] || "Qualcosa non ha funzionato con il microfono. Riprova."; };
   function micClick(b) {
     if (b._rec) { b._abort = true; try { b._rec.abort(); } catch (e) {} b._rec = null; b.classList.remove("listening"); return; }
     CP.stopSpeak();
     var goal = b.getAttribute("data-mic"), host = b.closest("[data-heard-host], .ln, .fc, .fw") || (b.closest(".acts") ? b.closest(".acts").parentNode : b.parentNode);
-    if ((!SR || navigator.onLine === false) && CP.canRecord() && CP.recordCompare) { CP.recordCompare(host, goal, !SR ? "" : MIC_ERR.offline); return; }
+    /* senza riconoscimento (o se qui non funziona) si apre il pannello «Parla», che va anche offline */
+    var down = !SR ? "" : CP._srDown ? MIC_ERR[CP._srDown] || "" : navigator.onLine === false && !window.MandarinoAndroid ? MIC_ERR.offline : null;
+    if (down !== null && CP.canScope && CP.canScope() && CP.voicePanel) { CP.voicePanel(host, goal, { note: down }); return; }
     var out = host.querySelector(".heard");
     if (!out) { out = document.createElement("div"); out.setAttribute("aria-live", "polite"); host.appendChild(out); }
     out.className = "heard"; out.textContent = "🎤 Ti ascolto… di' «" + goal.replace(/[^㐀-鿿]/g, "") + "»";
@@ -16208,14 +16235,22 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     b._rec = CP.listen(goal, function (r) {
       b.classList.remove("listening"); b._rec = null;
       if (b._abort) { b._abort = false; if (out.parentNode) out.parentNode.removeChild(out); return; }
+      if (r.error && SR_DOWN.test(r.error) && CP.canScope && CP.canScope() && CP.voicePanel) {
+        /* il riconoscimento qui non va (rete, lingua non installata, servizio assente): per questa sessione si usa il pannello */
+        CP._srDown = r.error; if (out.parentNode) out.parentNode.removeChild(out);
+        CP.voicePanel(host, goal, { note: CP.micErrText(r.error) }); return;
+      }
       if (r.error) {
         out.className = "heard ko"; out.textContent = "🎤 " + CP.micErrText(r.error); CP.sfx("ko");
-        if (CP.micBlocked && (r.error === "not-allowed" || r.error === "service-not-allowed")) CP.micBlocked();
-        if (CP.inFrame && (r.error === "not-allowed" || r.error === "service-not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
+        if (CP.micBlocked && r.error === "not-allowed") CP.micBlocked();
+        if (CP.inFrame && (r.error === "not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
         return;
       }
-      if (r.ok) { out.className = "heard ok"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard) + "</span>» — Pronuncia perfetta!"; CP.sfx("ok"); }
-      else { out.className = "heard ko"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
+      var said = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — ";
+      if (r.ok) { out.className = "heard ok"; out.innerHTML = said + (r.homophone ? "si pronuncia proprio così (il riconoscitore ha scelto un carattere con lo stesso suono). Bene!" : "Pronuncia perfetta!"); CP.sfx("ok"); if (CP.game && CP.game.xp) CP.game.xp(1); }
+      else if (r.near) { out.className = "heard ko"; out.innerHTML = said + "le sillabe ci sono, ma un tono è diverso. Guarda la curva:"; CP.sfx("tap"); }
+      else { out.className = "heard ko"; out.innerHTML = said + "non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
+      if (!r.ok && CP.canScope && CP.canScope() && CP.voicePanel) out.insertAdjacentHTML("beforeend", ' <button type="button" class="btn-s" data-vp-open="' + CP.attr(goal) + '">〰️ Il mio tono</button>');
     });
     if (!b._rec) b.classList.remove("listening");
   }
@@ -16820,7 +16855,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     cardEl.style.touchAction = "pan-y"; cardEl.style.cursor = "grab"; cardEl.style.userSelect = "none";
     var sx = 0, sy = 0, dx = 0, drag = false, down = false, pid = null;
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    function ignore(t) { return !!(t && t.closest && t.closest("button, canvas, .pad, .scope, .rec, a, input, select, textarea, .say, .wd, [role=\"button\"], [data-fam]")); }
+    function ignore(t) { return !!(t && t.closest && t.closest("button, canvas, .pad, .vp, a, input, select, textarea, .say, .wd, [role=\"button\"], [data-fam]")); }
     /* l'esito si vede prima del rilascio: etichetta «La so» / «Non la so» che compare con il trascinamento */
     function paint(x) {
       var k = Math.max(-1, Math.min(1, x / 140)), col = x > 0 ? "var(--accent)" : "var(--seal)";
@@ -17979,37 +18014,42 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 })();
 </script>
 <script>
-/* ---- voice/pitch-scope.js ---- */
-/* ===== V4c: oscilloscopio dei toni (microfono + autocorrelazione, funziona offline) ===== */
+/* ---- voice/pitch.js ---- */
+/* ===== màndarínō · altezza della voce, offline: il motore sotto il pannello «Parla» (voice-panel.js).
+   Microfono → AnalyserNode del contesto audio dell'app → NSDF (McLeod) su un segnale ridotto a ~12 kHz.
+   Robusto per i telefoni veri: soglia del rumore misurata all'inizio (niente soglia fissa: con il guadagno automatico
+   spento molti microfoni danno una voce 5-10 volte più bassa), inizio solo dopo qualche fotogramma di voce di fila
+   (un colpo di tosse non avvia niente), fine dopo una pausa vera, errori d'ottava corretti sulla mediana recente. ===== */
 (function () {
-  var CP = window.CP, esc = CP.esc;
-  CP.canScope = function () { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); };
+  var CP = window.CP;
+  CP.canScope = function () { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext)); };
 
-  /* altezza della voce con la funzione NSDF (McLeod): evita la maggior parte degli errori d'ottava */
-  function detect(buf, sr) {
-    var n = buf.length, W = n >> 1, i, sum = 0;
-    for (i = 0; i < n; i++) sum += buf[i] * buf[i];
-    var rms = Math.sqrt(sum / n);
-    if (rms < 0.015) return { f: 0, c: 0, rms: rms };
-    var minLag = Math.floor(sr / 420), maxLag = Math.min(Math.floor(sr / 60), W - 1), nsdf = new Float32Array(maxLag + 2), tau;
+  /* frequenza fondamentale di un blocco di campioni; gate = livello minimo (RMS) per considerarlo voce */
+  function detect(buf, sr, gate) {
+    var k = Math.max(1, Math.round(sr / 12000)), n = Math.floor(buf.length / k), x = new Float32Array(n), i, j, mean = 0, sum = 0;
+    for (i = 0; i < n; i++) { var s = 0; for (j = 0; j < k; j++) s += buf[i * k + j]; x[i] = s / k; mean += x[i]; }
+    mean /= n || 1;
+    for (i = 0; i < n; i++) { x[i] -= mean; sum += x[i] * x[i]; }
+    var rms = Math.sqrt(sum / (n || 1)), r = sr / k;
+    if (rms < (gate == null ? 0.004 : gate)) return { f: 0, c: 0, rms: rms };
+    var W = n >> 1, minLag = Math.max(2, Math.floor(r / 500)), maxLag = Math.min(Math.floor(r / 65), W - 2), nsdf = new Float32Array(maxLag + 2), tau;
     for (tau = minLag - 1; tau <= maxLag + 1; tau++) {
       var acf = 0, m = 0;
-      for (i = 0; i < W; i++) { var a = buf[i], b = buf[i + tau]; acf += a * b; m += a * a + b * b; }
+      for (i = 0; i < W; i++) { var a = x[i], b = x[i + tau]; acf += a * b; m += a * a + b * b; }
       nsdf[tau] = m > 0 ? 2 * acf / m : 0;
     }
     var peaks = [], best = 0;
-    for (tau = minLag; tau <= maxLag; tau++) {
-      if (nsdf[tau] > 0 && nsdf[tau] > nsdf[tau - 1] && nsdf[tau] >= nsdf[tau + 1]) { peaks.push(tau); if (nsdf[tau] > best) best = nsdf[tau]; }
-    }
-    if (!peaks.length || best < 0.55) return { f: 0, c: best, rms: rms };
+    for (tau = minLag; tau <= maxLag; tau++) if (nsdf[tau] > 0 && nsdf[tau] > nsdf[tau - 1] && nsdf[tau] >= nsdf[tau + 1]) { peaks.push(tau); if (nsdf[tau] > best) best = nsdf[tau]; }
+    if (!peaks.length || best < 0.5) return { f: 0, c: best, rms: rms };
     var pk = peaks[0];
-    for (i = 0; i < peaks.length; i++) if (nsdf[peaks[i]] >= 0.9 * best) { pk = peaks[i]; break; }
-    var y0 = nsdf[pk - 1], y1 = nsdf[pk], y2 = nsdf[pk + 1], den = y0 - 2 * y1 + y2, shift = den ? 0.5 * (y0 - y2) / den : 0;
-    return { f: sr / (pk + shift), c: y1, rms: rms };
+    for (i = 0; i < peaks.length; i++) if (nsdf[peaks[i]] >= 0.88 * best) { pk = peaks[i]; break; }
+    var y0 = nsdf[pk - 1], y1 = nsdf[pk], y2 = nsdf[pk + 1], den = y0 - 2 * y1 + y2, sh = den ? 0.5 * (y0 - y2) / den : 0;
+    return { f: r / (pk + sh), c: y1, rms: rms };
   }
   CP._detect = detect;
   function semis(f, ref) { return 12 * Math.log(f / ref) / Math.LN2; }
   function median(a) { var b = a.slice().sort(function (x, y) { return x - y; }); return b.length ? b[b.length >> 1] : 0; }
+  CP._semis = semis;
 
   /* forma ideale di ogni tono, in semitoni attorno alla voce di chi parla */
   var IDEAL = { 1: [[0, 2], [1, 2]], 2: [[0, -2], [1, 3]], 3: [[0, -2.5], [0.4, -5], [1, 1]], 4: [[0, 4], [1, -4]], 5: [[0, 0], [1, -0.5]] };
@@ -18020,161 +18060,332 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     }
     return pts[pts.length - 1][1];
   }
+  CP._idealAt = idealAt;
 
-  /* classifica il tono di una sillaba isolata: giudizio indicativo, mai una certezza */
-  function classify(track) {
-    if (track.length < 8) return null;
-    var v = track.map(function (p) { return p.s; });
-    var k = Math.max(2, Math.floor(v.length / 3)), avg = function (a) { return a.reduce(function (x, y) { return x + y; }, 0) / a.length; };
+  /* tono di una sillaba isolata da una curva in semitoni: giudizio indicativo, mai una certezza */
+  function classify(v) {
+    if (v.length < 8) return null;
+    var avg = function (a) { return a.reduce(function (x, y) { return x + y; }, 0) / a.length; }, k = Math.max(2, Math.floor(v.length / 3));
     var a = avg(v.slice(0, k)), m = avg(v.slice(k, v.length - k)), z = avg(v.slice(v.length - k));
-    var mn = Math.min.apply(null, v), mx = Math.max.apply(null, v), range = mx - mn, rise = z - a;
+    var range = Math.max.apply(null, v) - Math.min.apply(null, v), rise = z - a;
     if (range < 2.6) return 1;
-    /* 3° tono: una discesa iniziale seguita da una risalita, con il punto più basso verso l'interno della sillaba */
-    var sm = v.map(function (x, i) { var p = v[Math.max(0, i - 1)], q = v[Math.min(v.length - 1, i + 1)]; return (p + x + q) / 3; });
-    var smn = Math.min.apply(null, sm), mi = sm.indexOf(smn), pos = mi / (sm.length - 1), k0 = Math.max(2, Math.floor(v.length / 6));
-    var head = avg(sm.slice(0, k0)), tail = avg(sm.slice(sm.length - k0));
-    if (pos > 0.12 && pos < 0.75 && head - smn >= 1.5 && tail - smn >= 2.0) return 3;
-    var dipMid = Math.min(a, z) - m;
-    if (dipMid >= 1.3 && z - m >= 1.3) return 3;
+    var sm = v.map(function (x, i) { return (v[Math.max(0, i - 1)] + x + v[Math.min(v.length - 1, i + 1)]) / 3; });
+    var smn = Math.min.apply(null, sm), pos = sm.indexOf(smn) / (sm.length - 1), k0 = Math.max(2, Math.floor(v.length / 6));
+    if (pos > 0.12 && pos < 0.75 && avg(sm.slice(0, k0)) - smn >= 1.5 && avg(sm.slice(sm.length - k0)) - smn >= 2.0) return 3;
+    if (Math.min(a, z) - m >= 1.3 && z - m >= 1.3) return 3;
     if (rise >= 2.4) return 2;
     if (rise <= -3.6) return 4;
     if (rise <= -1.5) return 3;
     return rise > 0 ? 2 : (range > 4 ? 4 : 1);
   }
-  CP._classify = classify;
-  CP._idealAt = idealAt;
+  CP._classify = function (track) { return classify(track.map(function (p) { return p.s; })); };
 
-  CP.startPitchScope = function (canvas, targetTone, onStop) {
-    var tones = [].concat(targetTone || [5]), ctx2 = canvas.getContext("2d"), dpr = window.devicePixelRatio || 1;
-    var stream = null, src0 = null, ac = null, an = null, raf = 0, stopped = false, buf, pts = [], t0 = 0, lastVoiced = 0, tStart = 0, prev = 0, hist = [];
-    function size() {
-      var r = canvas.getBoundingClientRect(), w = Math.max(200, r.width), h = Math.max(120, r.height);
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
-      return { w: w, h: h };
-    }
-    function css(v, fb) { return (getComputedStyle(document.documentElement).getPropertyValue(v) || fb).trim() || fb; }
-    function draw(final) {
-      var d = size(), W = d.w, H = d.h, voiced = pts.filter(function (p) { return p.s !== null; });
-      ctx2.clearRect(0, 0, W, H);
-      ctx2.strokeStyle = "rgba(128,128,128,0.25)"; ctx2.lineWidth = 1; ctx2.beginPath(); ctx2.moveTo(0, H / 2); ctx2.lineTo(W, H / 2); ctx2.stroke();
-      var dur = final ? Math.max(0.35, (pts.length ? pts[pts.length - 1].t : 0.35)) : 1.5, span = 14;
-      var yOf = function (s) { return H / 2 - (s / span) * H; };
-      /* curva ideale tratteggiata */
-      ctx2.setLineDash([6, 6]); ctx2.strokeStyle = css("--muted", "#888"); ctx2.lineWidth = 2.5; ctx2.beginPath();
-      for (var i = 0; i <= 60; i++) { var x = i / 60, y = yOf(idealAt(tones, x)); if (i) ctx2.lineTo(x * W, y); else ctx2.moveTo(x * W, y); }
-      ctx2.stroke(); ctx2.setLineDash([]);
-      /* la tua voce */
-      ctx2.strokeStyle = css("--t2", "#1F7A3E"); ctx2.lineWidth = 4; ctx2.lineJoin = "round"; ctx2.lineCap = "round";
-      var open = false; ctx2.beginPath();
-      pts.forEach(function (p) {
-        if (p.s === null) { open = false; return; }
-        var x = Math.min(1, p.t / dur) * W, y = Math.max(4, Math.min(H - 4, yOf(p.s)));
-        if (open) ctx2.lineTo(x, y); else { ctx2.moveTo(x, y); open = true; }
-      });
-      ctx2.stroke();
-      ctx2.fillStyle = css("--muted", "#888"); ctx2.font = "13px sans-serif"; ctx2.fillText("tratteggio = forma del tono; verde = la tua voce", 8, H - 8);
-    }
-    function frame() {
-      if (stopped) return;
-      raf = requestAnimationFrame(frame);
-      an.getFloatTimeDomainData(buf);
-      var now = performance.now() / 1000, r = detect(buf, ac.sampleRate);
-      if (r.f > 0) {
-        var f = r.f;
-        if (prev) {
-          var cands = [f, f * 2, f / 2], bestC = f, bd = 99;
-          cands.forEach(function (c) { var dd = Math.abs(semis(c, prev)); if (dd < bd) { bd = dd; bestC = c; } });
-          f = bestC; if (bd > 5) { f = 0; }
-        }
-        if (f > 0) {
-          hist.push(f); if (hist.length > 3) hist.shift();
-          var fm = median(hist); prev = fm;
-          if (!t0) { t0 = now; }
-          pts.push({ t: now - t0, f: fm, s: null }); lastVoiced = now;
-        }
-      }
-      if (t0 && now - lastVoiced > 0.45 && now - t0 > 0.2) { finish(); return; }
-      if (t0 && now - t0 > 3.2) { finish(); return; }
-      if (!t0 && now - tStart > 8) { finish(); return; }
-      if (pts.length) {
-        var med = median(pts.map(function (p) { return p.f; }));
-        pts.forEach(function (p) { p.s = semis(p.f, med); });
-      }
-      draw(false);
-    }
-    var held = false;
-    function cleanup() {
-      stopped = true; cancelAnimationFrame(raf);
-      /* V6: il flusso del microfono NON si chiude (niente nuovo permesso a ogni parola): si rilascia in modo morbido */
-      if (held) { held = false; if (CP.micRelease) CP.micRelease(); if (CP.musicHold) CP.musicHold(false); }
-      try { if (src0) src0.disconnect(); } catch (e) {}
-      try { if (ac && ac.close) ac.close(); } catch (e) {}
-    }
-    function finish() {
-      if (stopped) return; cleanup();
-      var med = median(pts.map(function (p) { return p.f; }));
-      pts.forEach(function (p) { p.s = semis(p.f, med); });
-      draw(true);
-      var res = { pts: pts, tone: tones.length === 1 ? classify(pts) : null, voiced: pts.length, median: med };
-      onStop(res);
-    }
-    var api = { stop: function () { if (!stopped) { if (pts.length) finish(); else { cleanup(); onStop({ pts: [], tone: null, voiced: 0, median: 0 }); } } } };
-    var getS = CP.micStream ? CP.micStream() : navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
-    held = !!CP.micStream; if (held && CP.musicHold) CP.musicHold(true);
-    getS.then(function (s) {
-      if (stopped) { if (held) { held = false; CP.micRelease(); if (CP.musicHold) CP.musicHold(false); } return; }
-      stream = s;
-      var AC = window.AudioContext || window.webkitAudioContext; ac = new AC();
-      if (ac.resume) ac.resume();
-      src0 = ac.createMediaStreamSource(s); an = ac.createAnalyser(); an.fftSize = 2048; src0.connect(an);
-      buf = new Float32Array(an.fftSize); tStart = performance.now() / 1000; draw(false); raf = requestAnimationFrame(frame);
-    }).catch(function (err) {
-      if (held) { held = false; if (CP.musicHold) CP.musicHold(false); }
-      stopped = true; onStop({ error: (err && err.name) || "error", pts: [] });
+  /* da una registrazione (punti {t, f}) alla curva da mostrare: tempo normalizzato sulla parte con voce, semitoni attorno
+     alla voce di chi parla, lisciata, spostata in verticale dove combacia meglio con la forma ideale; aderenza = quota dei
+     punti a meno di 2,5 semitoni dalla forma */
+  function fit(pts, tones) { return { off: Math.max(-3, Math.min(3, median(pts.map(function (p) { return idealAt(tones, Math.min(0.999, p.x)) - p.s; })))) }; }
+  CP.pitchAnalyze = function (pts, tones) {
+    var v = pts.filter(function (p) { return p.f > 0; });
+    if (v.length < 6) return { voiced: v.length, pts: [], score: 0, tone: null };
+    var t0 = v[0].t, t1 = v[v.length - 1].t, dur = Math.max(0.05, t1 - t0), med = median(v.map(function (p) { return p.f; }));
+    var raw = v.map(function (p) { return { x: (p.t - t0) / dur, s: semis(p.f, med), gap: false }; });
+    for (var i = 1; i < raw.length; i++) if (v[i].t - v[i - 1].t > 0.12) raw[i].gap = true;   /* consonanti sorde: la linea si interrompe */
+    var out = raw.map(function (p, i) {
+      var w = raw.slice(Math.max(0, i - 2), i + 3).map(function (q) { return q.s; });
+      return { x: p.x, s: median(w), gap: p.gap };
     });
-    return api;
+    var tone = tones && tones.length === 1 ? classify(out.map(function (p) { return p.s; })) : null;
+    var off = 0;
+    if (tones && tones.length) {
+      off = fit(out, tones).off;
+      out.forEach(function (p) { p.s += off; p.ok = Math.abs(p.s - idealAt(tones, Math.min(0.999, p.x))) <= 2.5; });
+    }
+    var score = tones && tones.length ? Math.round(100 * out.filter(function (p) { return p.ok; }).length / out.length) : 0;
+    return { voiced: v.length, pts: out, score: score, tone: tone, median: med, dur: dur };
   };
 
-  /* pannello dentro una scheda */
-  var NAMES = { 1: "alto e piatto (1°)", 2: "che sale (2°)", 3: "che scende e risale (3°)", 4: "che cade (4°)" };
-  CP.scopePanel = function (host, w) {
-    var old = host.querySelector(".scope");
-    if (old) { if (old._api) old._api.stop(); old.parentNode.removeChild(old); return; }
-    var tones = CP.syllables(w.py).map(CP.tone), d = document.createElement("div"); d.className = "scope"; d.setAttribute("data-heard-host", "");
-    d.innerHTML = '<canvas aria-label="Curva dell\'altezza della tua voce"></canvas><div class="acts" style="margin-top:0"><button type="button" data-sgo>🎙️ Parla ora: ' + CP.pinyinHTML(w.py) + '</button></div><div class="sverdict" aria-live="polite"></div>';
-    host.appendChild(d);
-    var cv = d.querySelector("canvas"), vd = d.querySelector(".sverdict"), btn = d.querySelector("[data-sgo]"), running = false;
-    var idle = cv.getContext("2d"); cv.width = 600; cv.height = 340;
-    function run() {
-      if (running) { if (d._api) d._api.stop(); return; }
-      running = true; btn.textContent = "⏹ Ferma"; vd.className = "sverdict"; vd.textContent = "Ti ascolto… di' la parola.";
-      CP.stopSpeak();
-      d._api = CP.startPitchScope(cv, tones, function (r) {
-        running = false; btn.innerHTML = "🎙️ Riprova";
-        if (r.error) {
-          vd.className = "sverdict heard ko";
-          if (CP.micBlocked && (r.error === "NotAllowedError" || r.error === "SecurityError")) CP.micBlocked();
-          vd.innerHTML = r.error === "NotAllowedError" || r.error === "SecurityError" ? "Il microfono è bloccato in questa pagina. " + CP.frameBtn() : "Non riesco a usare il microfono (" + esc(r.error) + ").";
-          return;
+  /* una sessione d'ascolto. o.onFrame({level, voiced, pts, state}) a ogni fotogramma; o.onEnd({pts, blob, error}).
+     Va chiamata dentro il gesto (tocco) che la avvia: lì il contesto audio si sveglia. */
+  CP.pitchSession = function (o) {
+    var maxSec = o.maxSec || 3.5, c = CP.getCtx ? CP.getCtx() : null, S = { stopped: false };
+    if (c && c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
+    var src = null, an = null, sink = null, raf = 0, iv = 0, buf, rec = null, chunks = [], held = false;
+    var pts = [], noise = [], gate = 0.004, floor = 0, started = 0, lastV = 0, runV = 0, tStart = 0, prev = 0, hist = [], state = "wait";
+    if (CP.musicHold) CP.musicHold(true);
+    function release() {
+      if (held) { held = false; if (CP.micRelease) CP.micRelease(); }
+      if (CP.musicHold) CP.musicHold(false);
+    }
+    function cleanup() {
+      S.stopped = true; cancelAnimationFrame(raf); clearInterval(iv);
+      try { if (src) src.disconnect(); } catch (e) {}
+      try { if (sink) sink.disconnect(); } catch (e) {}
+    }
+    function end(err) {
+      if (S.stopped) return; cleanup();
+      var fin = function (blob) { release(); o.onEnd({ pts: pts, blob: blob || null, error: err || null }); };
+      if (rec && rec.state !== "inactive") {
+        rec.onstop = function () { fin(chunks.length ? new Blob(chunks, { type: (chunks[0] && chunks[0].type) || rec.mimeType || "audio/webm" }) : null); };
+        try { rec.stop(); } catch (e) { fin(null); }
+      } else fin(null);
+    }
+    function step() {
+      if (S.stopped) return;
+      an.getFloatTimeDomainData(buf);
+      var now = performance.now() / 1000, el = now - tStart;
+      if (el < 0.25) {   /* i primi 250 ms: si misura il rumore della stanza */
+        var r0 = detect(buf, c.sampleRate, 1); noise.push(r0.rms);
+        floor = median(noise); gate = Math.max(0.0025, Math.min(0.05, floor * 2.4));
+        o.onFrame({ level: 0, voiced: false, pts: pts, state: "calib", t: el }); return;
+      }
+      var r = detect(buf, c.sampleRate, gate), f = r.f;
+      if (f > 0 && prev) {
+        var best = f, bd = 99;
+        [f, f * 2, f / 2].forEach(function (cand) { var d = Math.abs(semis(cand, prev)); if (d < bd) { bd = d; best = cand; } });
+        f = bd > 6 ? 0 : best;
+      }
+      if (f > 0) {
+        hist.push(f); if (hist.length > 5) hist.shift();
+        runV++; lastV = now;
+        if (!started && runV >= 3) { started = now - 0.06; state = "voice"; }
+        if (started) { prev = median(hist); pts.push({ t: now - started, f: prev }); }
+        else prev = f;
+      } else {
+        runV = 0;
+        if (r.rms < gate) { floor = floor * 0.97 + r.rms * 0.03; gate = Math.max(0.0025, Math.min(0.05, floor * 2.4)); }
+        if (!started && now - lastV > 0.3) { prev = 0; hist = []; }
+      }
+      var level = Math.max(0, Math.min(1, (Math.log(Math.max(r.rms, 1e-5)) / Math.LN10 + 3.4) / 2.6));
+      o.onFrame({ level: level, voiced: f > 0, pts: pts, state: state, t: started ? now - started : 0 });
+      if (started) {
+        var quiet = now - lastV;
+        if (quiet > 0.6) {
+          if (pts.length >= 8) { end(); return; }
+          started = 0; pts = []; state = "wait"; hist = []; prev = 0;   /* era solo un rumore: si ricomincia ad aspettare */
         }
-        if (!r.voiced || r.voiced < 6) { vd.className = "sverdict heard ko"; vd.textContent = "Non ho sentito abbastanza voce. Avvicinati al microfono e dì la parola con calma."; return; }
-        if (tones.length === 1) {
-          var ok = r.tone === tones[0];
-          vd.className = "sverdict heard " + (ok ? "ok" : "ko");
-          vd.innerHTML = r.tone ? ("La tua voce sembra " + NAMES[r.tone] + ". " + (ok ? "È il tono giusto." : "Il tono giusto è " + NAMES[tones[0]] + ": segui il tratteggio.") + ' <span class="muted">Giudizio indicativo: dipende da microfono e rumore.</span>') : "Curva poco chiara: riprova.";
-          CP.sfx(ok ? "ok" : "ko");
-        } else {
-          vd.className = "sverdict heard"; vd.innerHTML = 'Confronta la linea verde con il tratteggio, sillaba per sillaba. <span class="muted">Il giudizio automatico vale solo per una sillaba.</span>';
+        if (started && now - started > maxSec) { end(); return; }
+      }
+      if (!started && el > (o.waitSec || 7)) end("silence");
+    }
+    function loop() { if (S.stopped) return; raf = requestAnimationFrame(loop); step(); }
+    var gs = CP.micStream();
+    held = true;
+    gs.then(function (stream) {
+      if (S.stopped) { release(); return; }
+      if (!c) { cleanup(); release(); o.onEnd({ pts: [], error: "NotSupportedError" }); return; }
+      if (c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
+      src = c.createMediaStreamSource(stream); an = c.createAnalyser(); an.fftSize = 2048;
+      sink = c.createGain(); sink.gain.value = 0;   /* il grafo resta «vivo» anche nei browser che non elaborano i nodi senza uscita */
+      src.connect(an); an.connect(sink); sink.connect(c.destination);
+      buf = new Float32Array(an.fftSize);
+      if (window.MediaRecorder) { try { rec = new MediaRecorder(stream); rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); }; rec.start(); } catch (e) { rec = null; } }
+      tStart = performance.now() / 1000;
+      raf = requestAnimationFrame(loop);
+      iv = setInterval(function () { if (document.hidden) step(); }, 50);   /* rAF si ferma a schermo spento: si continua comunque */
+    }, function (err) {
+      held = false; cleanup(); if (CP.musicHold) CP.musicHold(false);
+      o.onEnd({ pts: [], error: (err && err.name) || "error" });
+    });
+    S.stop = function (discard) { if (S.stopped) return; if (discard) { cleanup(); try { if (rec && rec.state !== "inactive") { rec.onstop = null; rec.stop(); } } catch (e) {} release(); return; } end(pts.length >= 6 ? null : "silence"); };
+    return S;
+  };
+})();
+</script>
+<script>
+/* ---- voice/voice-panel.js ---- */
+/* ===== màndarínō · pannello «Parla»: un solo posto per dire una parola o una frase e vedere il proprio tono.
+   Prende il posto di «Registra e confronta» e dell'oscilloscopio 〰️ (prima erano due pannelli diversi, con due logiche).
+   Funziona offline: tocchi il microfono, parli, si ferma da solo quando smetti. Poi mostra la tua curva sopra la forma
+   dei toni, sillaba per sillaba, con l'aderenza (giudizio indicativo), e fa riascoltare te e la voce guida.
+   Il cerchio intorno al microfono si allarga con il volume: si vede subito se il microfono ti sente. ===== */
+(function () {
+  var CP = window.CP, esc = CP.esc, T = CP.t;
+  var CJK = /[㐀-鿿]/;
+
+  /* sillabe e toni di un testo, dalle parole del vocabolario */
+  function sylOf(hz) {
+    var out = [];
+    (CP.segment ? CP.segment(hz) : []).forEach(function (t) {
+      if (t.p) return;
+      if (t.w) CP.syllables(t.w.py).forEach(function (s) { out.push({ py: s, t: CP.tone(s) }); });
+      else Array.from(t.raw).forEach(function (ch) { if (CJK.test(ch)) { var r = CP.readings(ch)[0]; out.push({ py: r || "?", t: r ? CP.tone(r) : 5 }); } });
+    });
+    return out;
+  }
+  /* letture di un carattere, ricavate dal vocabolario (都 → dōu, dū) */
+  var RD = null;
+  CP.readings = function (ch) {
+    if (!RD) {
+      RD = {};
+      CP.ORDER.forEach(function (k) {
+        var w = CP.WORDS[k], cs = Array.from(w.hz).filter(function (c) { return CJK.test(c); }), sy = CP.syllables(w.py);
+        if (cs.length !== sy.length) return;
+        cs.forEach(function (c, i) { var s = sy[i].toLowerCase().replace(/[^a-zǜ-ͯāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g, ""); var a = RD[c] || (RD[c] = []); if (s && a.indexOf(s) < 0) a.push(s); });
+      });
+    }
+    return RD[ch] || [];
+  };
+  function bare(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ü/g, "v"); }
+
+  /* confronto del riconoscimento vocale per suono, non per carattere: 他/她/它 sono la stessa pronuncia.
+     2 = stesso carattere o stessa sillaba con lo stesso tono, 1 = stessa sillaba con un altro tono, 0 = diverso */
+  CP.soundMatch = function (goal, heard) {
+    var g = Array.from(goal).filter(function (c) { return CJK.test(c); }), h = Array.from(heard).filter(function (c) { return CJK.test(c); });
+    if (!g.length || h.length < g.length) return { level: 0 };
+    var best = null;
+    for (var o = 0; o + g.length <= h.length; o++) {
+      var per = g.map(function (c, i) {
+        var d = h[o + i]; if (c === d) return 2;
+        var a = CP.readings(c), b = CP.readings(d);
+        if (a.some(function (x) { return b.indexOf(x) >= 0; })) return 2;
+        if (a.some(function (x) { return b.some(function (y) { return bare(x) === bare(y); }); })) return 1;
+        return 0;
+      });
+      var sum = per.reduce(function (x, y) { return x + y; }, 0);
+      if (!best || sum > best.sum) best = { sum: sum, per: per, text: h.slice(o, o + g.length).join("") };
+    }
+    var min = Math.min.apply(null, best.per);
+    return { level: min, exact: best.text === g.join(""), text: best.text };
+  };
+
+  function css(v, fb) { return (getComputedStyle(document.documentElement).getPropertyValue(v) || fb).trim() || fb; }
+  var ease = function (x) { return 1 - Math.pow(1 - x, 3); };
+
+  /* disegno: sillabe in colonne, forma ideale come nastro (±2,5 semitoni), la tua voce sopra */
+  function paint(cv, syl, live, res, prog) {
+    var dpr = window.devicePixelRatio || 1, r = cv.getBoundingClientRect(), W = Math.max(220, r.width), H = Math.max(120, r.height), x = cv.getContext("2d");
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    var top = 22, ph = H - top - 6, span = 15, yOf = function (s) { return top + ph / 2 - (s / span) * ph; }, n = syl.length || 1, tones = syl.map(function (s) { return s.t; }), i;
+    /* colonne delle sillabe, con il pinyin colorato per tono */
+    x.font = "600 13px system-ui, sans-serif"; x.textAlign = "center"; x.textBaseline = "top";
+    for (i = 0; i < n; i++) {
+      if (i % 2) { x.fillStyle = "rgba(128,128,128,0.07)"; x.fillRect(i / n * W, top, W / n, ph); }
+      if (syl[i]) { x.fillStyle = css("--t" + syl[i].t, "#888"); x.fillText(syl[i].py, (i + 0.5) / n * W, 3); }
+    }
+    if (tones.length) {
+      var band = function (lw, col) {
+        x.strokeStyle = col; x.lineWidth = lw; x.lineCap = "round"; x.lineJoin = "round"; x.beginPath();
+        for (var j = 0; j <= 80; j++) { var y = yOf(CP._idealAt(tones, Math.min(0.999, j / 80))); if (j) x.lineTo(j / 80 * W, y); else x.moveTo(0, y); }
+        x.stroke();
+      };
+      band(Math.max(6, (5 / span) * ph), "rgba(128,128,128,0.16)");
+      x.setLineDash([5, 6]); band(1.5, css("--muted", "#888")); x.setLineDash([]);
+    }
+    var okC = css("--t2", "#1F7A3E"), koC = css("--warn", "#C77700");
+    if (res && res.pts.length) {
+      var last = Math.max(1, Math.floor(res.pts.length * (prog == null ? 1 : ease(prog))));
+      x.lineWidth = 4; x.lineCap = "round";
+      for (i = 1; i < last; i++) {
+        var a = res.pts[i - 1], b = res.pts[i]; if (b.gap) continue;
+        x.strokeStyle = tones.length && !b.ok ? koC : okC; x.beginPath();
+        x.moveTo(a.x * W, Math.max(top, Math.min(H - 4, yOf(a.s)))); x.lineTo(b.x * W, Math.max(top, Math.min(H - 4, yOf(b.s)))); x.stroke();
+      }
+    } else if (live && live.length) {
+      /* in diretta: la voce scorre nel tempo, attorno alla sua mediana */
+      var fs = live.map(function (p) { return p.f; }).sort(function (p, q) { return p - q; }), med = fs[fs.length >> 1], dur = Math.max(1.6, live[live.length - 1].t + 0.2);
+      x.strokeStyle = okC; x.lineWidth = 4; x.lineCap = "round"; x.lineJoin = "round"; x.beginPath();
+      live.forEach(function (p, k) { var px = p.t / dur * W, py = Math.max(top, Math.min(H - 4, yOf(CP._semis(p.f, med)))); if (k && p.t - live[k - 1].t < 0.12) x.lineTo(px, py); else x.moveTo(px, py); });
+      x.stroke();
+      var e = live[live.length - 1]; x.fillStyle = okC; x.beginPath(); x.arc(e.t / dur * W, Math.max(top, Math.min(H - 4, yOf(CP._semis(e.f, med)))), 6, 0, 7); x.fill();
+    }
+  }
+
+  var NAMES = { 1: "alto e piatto (1°)", 2: "che sale (2°)", 3: "che scende e risale (3°)", 4: "che cade (4°)" };
+  var MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+
+  /* host: dove appendere il pannello; hz: la parola o la frase; o.note: una riga sopra (es. perché non c'è il riconoscimento) */
+  CP.voicePanel = function (host, hz, o) {
+    o = o || {};
+    var old = host.querySelector(".vp");
+    if (old) { if (old._close) old._close(); return null; }
+    var clean = String(hz).replace(/[^㐀-鿿]/g, ""), w = o.w || CP.homographs(hz)[0] || null, say = w ? CP.sayHz(w) : hz;
+    var syl = w ? CP.syllables(w.py).map(function (s) { return { py: s, t: CP.tone(s) }; }) : sylOf(hz);
+    var d = document.createElement("div"); d.className = "vp"; d.setAttribute("data-heard-host", "");
+    d.innerHTML = '<div class="vp-top"><span class="han" lang="zh-CN">' + esc(clean) + "</span>" + (o.note ? '<span class="vp-note small">' + esc(o.note) + "</span>" : "") +
+      '<button type="button" class="vp-x" data-vp-x aria-label="' + CP.attr(T("common.close")) + '">✕</button></div>' +
+      '<canvas class="vp-cv" aria-label="Curva dell\'altezza della tua voce, sopra la forma dei toni"></canvas>' +
+      '<div class="vp-ctl"><button type="button" class="vp-mic" data-vp-go aria-label="Parla">' + MIC_SVG + '</button>' +
+      '<div class="vp-side"><p class="vp-st" aria-live="polite"></p><div class="vp-meter" aria-hidden="true"><i></i></div></div></div>' +
+      '<div class="acts vp-acts"><button type="button" class="btn-s" data-vp-me disabled>▶ La tua voce</button><button type="button" class="btn-s" data-vp-tts>🔊 Voce guida</button><button type="button" class="btn-s" data-vp-both disabled>⇄ Una dopo l\'altra</button></div>';
+    host.appendChild(d);
+    var cv = d.querySelector("canvas"), st = d.querySelector(".vp-st"), go = d.querySelector("[data-vp-go]"), meter = d.querySelector(".vp-meter i");
+    var me = d.querySelector("[data-vp-me]"), both = d.querySelector("[data-vp-both]"), ses = null, url = "", audio = null, res = null, anim = 0;
+    function status(t, cls) { st.className = "vp-st" + (cls ? " " + cls : ""); st.innerHTML = t; }
+    status("Tocca il microfono e di' <b lang=\"zh-CN\">" + esc(clean) + "</b>. Mi fermo da solo quando smetti.");
+    paint(cv, syl, null, null);
+    function level(v) { go.style.setProperty("--lv", v.toFixed(3)); meter.style.transform = "scaleX(" + v.toFixed(3) + ")"; }
+    function playMe(then) {
+      if (!url) { if (then) then(); return; }
+      CP.stopSpeak(); try { if (audio) audio.pause(); } catch (e) {}
+      audio = new Audio(url); var done = function () { audio.onended = audio.onerror = null; if (then) then(); };
+      audio.onended = done; audio.onerror = done;
+      try { var pr = audio.play(); if (pr && pr.catch) pr.catch(done); } catch (e) { done(); }
+    }
+    function verdict(r) {
+      if (r.voiced < 6) { status("Ho sentito poca voce. Avvicina il telefono alla bocca e parla un po' più forte.", "ko"); CP.sfx("ko"); return; }
+      var tag = r.score >= 70 ? "ok" : r.score >= 45 ? "mid" : "ko", h = '<span class="vp-score ' + tag + '">' + r.score + "%</span> ";
+      if (syl.length === 1 && r.tone && NAMES[r.tone]) {
+        var good = r.tone === syl[0].t || (syl[0].t === 5 && r.tone === 1) || r.score >= 85;   /* la curva sta nel nastro: vale più della regola */
+        h += (good ? "È il tono giusto: " + (NAMES[syl[0].t] || "neutro") + "." : "La tua voce sembra " + NAMES[r.tone] + ". " + "Qui serve " + (NAMES[syl[0].t] || "un tono neutro") + ": segui il nastro grigio.");
+        if (good && tag === "ko") tag = "mid";
+      } else h += tag === "ok" ? "La forma combacia bene con i toni." : tag === "mid" ? "Ci sei quasi: guarda dove la linea esce dal nastro (in arancione)." : "La forma è lontana dai toni: ascolta la voce guida e riprova con calma.";
+      status(h + ' <span class="muted">Giudizio indicativo.</span>', tag);
+      CP.sfx(tag === "ok" ? "ok" : tag === "mid" ? "tap" : "ko");
+      if (tag === "ok") { CP.haptic && CP.haptic(18); if (CP.game && CP.game.xp) CP.game.xp(1); }
+    }
+    function start() {
+      if (ses) { ses.stop(); return; }
+      CP.stopSpeak(); try { if (audio) audio.pause(); } catch (e) {}
+      cancelAnimationFrame(anim); res = null;
+      d.classList.add("on"); go.classList.add("listening"); go.setAttribute("aria-label", "Ferma");
+      status("Un attimo: ascolto il silenzio della stanza…");
+      ses = CP.pitchSession({
+        maxSec: Math.min(8, 1.2 + 0.45 * syl.length),
+        onFrame: function (f) {
+          level(f.level);
+          if (f.state === "wait") status("🔴 Ti ascolto: parla pure.");
+          else if (f.state === "voice") status("🔴 Ti sento…");
+          paint(cv, syl, f.pts, null);
+        },
+        onEnd: function (e) {
+          ses = null; level(0); d.classList.remove("on"); go.classList.remove("listening"); go.setAttribute("aria-label", "Parla di nuovo");
+          if (e.blob) { if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(e.blob); me.disabled = false; both.disabled = false; }
+          if (e.error && e.error !== "silence") {
+            var n = e.error;
+            status(n === "NotAllowedError" || n === "SecurityError" ? "Il microfono è bloccato per questa pagina. Consentilo nelle impostazioni del browser (o dell'app). " + CP.frameBtn() : n === "NotFoundError" ? "Non trovo nessun microfono su questo dispositivo." : "Non riesco a usare il microfono (" + esc(n) + ").", "ko");
+            if (CP.micBlocked && (n === "NotAllowedError" || n === "SecurityError")) CP.micBlocked();
+            CP.sfx("ko"); return;
+          }
+          if (e.error === "silence") { status("Non ho sentito la voce. Controlla che il microfono non sia coperto e riprova: il cerchio si muove quando ti sente.", "ko"); return; }
+          res = CP.pitchAnalyze(e.pts, syl.map(function (s) { return s.t; }));
+          var t0 = performance.now();
+          (function grow() { var p = Math.min(1, (performance.now() - t0) / 450); paint(cv, syl, null, res, p); if (p < 1) anim = requestAnimationFrame(grow); })();
+          verdict(res);
         }
       });
     }
-    btn.addEventListener("click", run);
-    d.scrollIntoView({ block: "nearest" });
+    d._close = function () { if (ses) ses.stop(true); ses = null; cancelAnimationFrame(anim); try { if (audio) audio.pause(); } catch (e) {} if (url) URL.revokeObjectURL(url); if (d.parentNode) d.parentNode.removeChild(d); };
+    d.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+      if (b.hasAttribute("data-vp-go")) { CP.sfx("tap"); start(); }
+      else if (b.hasAttribute("data-vp-x")) d._close();
+      else if (b.hasAttribute("data-vp-me")) playMe(null);
+      else if (b.hasAttribute("data-vp-tts")) CP.say(say, b);
+      else if (b.hasAttribute("data-vp-both")) playMe(function () { setTimeout(function () { CP.speak(say, {}); }, 250); });
+    });
+    window.addEventListener("resize", function rs() { if (!d.parentNode) { window.removeEventListener("resize", rs); return; } if (!ses) paint(cv, syl, null, res, 1); });
+    if (d.scrollIntoView) d.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (o.auto !== false) start();
+    return d;
   };
+  /* i nomi di prima restano, così i pulsanti esistenti aprono tutti lo stesso pannello */
+  CP.recordCompare = function (host, hz, note) { return CP.voicePanel(host, hz, { note: note }); };
+  CP.scopePanel = function (host, w) { return CP.voicePanel(host, w.hz, { w: w }); };
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-scope]") : null; if (!b) return;
     var w = CP.WORDS[b.getAttribute("data-scope")]; if (!w) return;
-    var host = b.closest(".fc") || b.parentNode; CP.scopePanel(host, w);
+    CP.scopePanel(b.closest(".fc") || b.parentNode, w);
   });
 })();
 </script>
@@ -19236,6 +19447,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   var IDLE_MS = 45 * 1000;      /* V6.7: era 5 minuti, con l'indicatore del microfono del telefono sempre acceso */
 
   /* ---- 1. microfono: un solo permesso per sessione. Il flusso resta aperto finche' la scheda e' viva ---- */
+  /* V6.8: guadagno automatico ACCESO. Spento, su molti telefoni la voce arrivava 5-10 volte più bassa e l'altezza non si
+     trovava quasi mai. La cancellazione dell'eco resta spenta: su Android la accende passando in «modalità chiamata»,
+     e la voce guida e la musica finiscono nell'altoparlante del telefono, bassissime. */
+  var AUDIO = { echoCancellation: false, noiseSuppression: false, autoGainControl: true, channelCount: 1 };
   var M = { stream: null, pending: null, users: 0, idle: 0, opened: 0 };
   function live(s) { return !!(s && s.getAudioTracks && s.getAudioTracks().some(function (t) { return t.readyState === "live"; })); }
   /* 🎙️ nella barra finché il flusso è aperto: un tocco lo chiude */
@@ -19258,7 +19473,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (M.pending) { M.users++; return M.pending; }
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return Promise.reject({ name: "NotSupportedError" });
     M.users++;
-    M.pending = navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }).then(function (s) {
+    M.pending = navigator.mediaDevices.getUserMedia({ audio: AUDIO }).then(function (s) {
       M.pending = null; M.stream = s; M.opened++; CP._micStream = s;
       s.getTracks().forEach(function (t) { t.addEventListener("ended", function () { if (M.stream === s) { M.stream = null; CP._micStream = null; paintLive(); } }); });
       paintLive();
@@ -19273,102 +19488,6 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   window.addEventListener("pagehide", drop);
   document.addEventListener("visibilitychange", function () { if (document.hidden && !M.users) drop(); });
 
-  /* ---- 1b. «Registra e confronta»: funziona ovunque ci sia getUserMedia, anche offline.
-     Registra 3 secondi, poi fa sentire la tua voce e subito dopo quella sintetica, con la curva del tono.
-     Il giudizio lo dai tu (Simile / Da rifare): niente valutazioni automatiche finte. ---- */
-  var REC_MS = 3000;
-  function wordOf(hz) { for (var i = 0; i < CP.ORDER.length; i++) { var w = CP.WORDS[CP.ORDER[i]]; if (w.hz === hz) return w; } return null; }
-  function trackOf(buf, sr) {
-    var win = 1024, hop = 256, out = [], t, prev = 0;
-    for (t = 0; t + win <= buf.length; t += hop) {
-      var r = CP._detect(buf.subarray(t, t + win), sr), f = r.f;
-      if (f > 0 && prev) { var c = [f, f * 2, f / 2].sort(function (a, b) { return Math.abs(Math.log(a / prev)) - Math.abs(Math.log(b / prev)); })[0]; f = Math.abs(12 * Math.log(c / prev) / Math.LN2) > 5 ? 0 : c; }
-      if (f > 0) prev = f;
-      out.push(f);
-    }
-    var i0 = 0, i1 = out.length - 1; while (i0 < out.length && !out[i0]) i0++; while (i1 > i0 && !out[i1]) i1--;
-    var seg = out.slice(i0, i1 + 1), voiced = seg.filter(Boolean).sort(function (a, b) { return a - b; }), med = voiced.length ? voiced[voiced.length >> 1] : 0;
-    return { pts: seg.map(function (f, i) { return { x: seg.length > 1 ? i / (seg.length - 1) : 0, s: f && med ? 12 * Math.log(f / med) / Math.LN2 : null }; }), voiced: voiced.length };
-  }
-  function drawRec(cv, tones, tr) {
-    var dpr = window.devicePixelRatio || 1, r = cv.getBoundingClientRect(), W = Math.max(200, r.width), H = Math.max(110, r.height), x = cv.getContext("2d");
-    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
-    var css = function (v, fb) { return (getComputedStyle(document.documentElement).getPropertyValue(v) || fb).trim() || fb; }, yOf = function (s) { return H / 2 - (s / 14) * H; }, i;
-    x.strokeStyle = "rgba(128,128,128,0.25)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, H / 2); x.lineTo(W, H / 2); x.stroke();
-    if (tones && tones.length && CP._idealAt) {
-      x.setLineDash([6, 6]); x.strokeStyle = css("--muted", "#888"); x.lineWidth = 2.5; x.beginPath();
-      for (i = 0; i <= 60; i++) { var y = yOf(CP._idealAt(tones, i / 60)); if (i) x.lineTo(i / 60 * W, y); else x.moveTo(0, y); }
-      x.stroke(); x.setLineDash([]);
-    }
-    if (tr) {
-      x.strokeStyle = css("--t2", "#1F7A3E"); x.lineWidth = 4; x.lineCap = "round"; x.lineJoin = "round"; x.beginPath(); var open = false;
-      tr.pts.forEach(function (p) { if (p.s === null) { open = false; return; } var px = p.x * W, py = Math.max(4, Math.min(H - 4, yOf(p.s))); if (open) x.lineTo(px, py); else { x.moveTo(px, py); open = true; } });
-      x.stroke();
-    }
-    x.fillStyle = css("--muted", "#888"); x.font = "13px sans-serif"; x.fillText(tones && tones.length ? "tratteggio = forma del tono; verde = la tua voce" : "verde = la tua voce", 8, H - 8);
-  }
-  CP.recordCompare = function (host, hz, note) {
-    var old = host.querySelector(".rec");
-    if (old) { if (old._stop) old._stop(); old.parentNode.removeChild(old); return; }
-    var w = wordOf(hz), tones = w ? CP.syllables(w.py).map(CP.tone) : null, say = w ? CP.sayHz(w) : hz;
-    var d = document.createElement("div"); d.className = "rec"; d.setAttribute("data-heard-host", "");
-    d.innerHTML = '<div class="rec-h">🎙️ Registra e confronta</div>' + (note ? '<p class="small muted" style="margin:0">' + esc(note) + "</p>" : "") +
-      '<canvas aria-label="Curva dell\'altezza della tua voce"></canvas><p class="rec-st small" aria-live="polite">Tocca «Registra», di\' <span class="han" lang="zh-CN">' + esc(hz.replace(/[^㐀-鿿]/g, "")) + "</span> e ascolta il confronto.</p>" +
-      '<div class="acts" style="margin-top:0"><button type="button" class="btn-s" data-rec-go>🎙️ Registra 3 s</button><button type="button" class="btn-s" data-rec-me disabled>▶ La tua voce</button><button type="button" class="btn-s" data-rec-tts>🔊 La voce guida</button></div>' +
-      '<div class="acts rec-judge" style="margin-top:0" hidden><button type="button" class="btn-s" data-rec-ok>👍 Simile</button><button type="button" class="btn-s" data-rec-ko>🔁 Da rifare</button></div>';
-    host.appendChild(d);
-    var cv = d.querySelector("canvas"), st = d.querySelector(".rec-st"), go = d.querySelector("[data-rec-go]"), me = d.querySelector("[data-rec-me]"), judge = d.querySelector(".rec-judge");
-    var url = "", audio = null, recd = null, timer = 0, busy = false;
-    drawRec(cv, tones, null);
-    function playMe(then) {
-      if (!url) return; CP.stopSpeak(); try { if (audio) audio.pause(); } catch (e) {}
-      audio = new Audio(url); audio.onended = function () { if (then) then(); }; audio.onerror = function () { if (then) then(); };
-      try { var pr = audio.play(); if (pr && pr.catch) pr.catch(function () { if (then) then(); }); } catch (e) { if (then) then(); }
-    }
-    function stopAll() { clearTimeout(timer); try { if (recd && recd.state !== "inactive") recd.stop(); } catch (e) {} try { if (audio) audio.pause(); } catch (e) {} }
-    d._stop = function () { stopAll(); if (url) URL.revokeObjectURL(url); };
-    function record() {
-      if (busy) return; busy = true; stopAll(); CP.stopSpeak(); judge.hidden = true;
-      go.disabled = true; st.textContent = "Chiedo il microfono…";
-      if (CP.musicHold) CP.musicHold(true);
-      CP.micStream().then(function (stream) {
-        var chunks = [], t0 = Date.now();
-        try { recd = new MediaRecorder(stream); } catch (e) { throw { name: "NotSupportedError" }; }
-        recd.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
-        recd.onstop = function () {
-          CP.micRelease(); if (CP.musicHold) CP.musicHold(false); busy = false; go.disabled = false; go.textContent = "🎙️ Registra di nuovo";
-          var blob = new Blob(chunks, { type: (chunks[0] && chunks[0].type) || recd.mimeType || "audio/webm" });
-          if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(blob); me.disabled = false;
-          st.textContent = "Ascolta: prima tu, poi la voce guida. Poi decidi tu.";
-          var c = CP.getCtx();
-          blob.arrayBuffer().then(function (ab) { return c ? new Promise(function (res, rej) { c.decodeAudioData(ab, res, rej); }) : null; }).then(function (buf) {
-            if (!buf) return; var tr = trackOf(buf.getChannelData(0), buf.sampleRate); drawRec(cv, tones, tr);
-            if (tr.voiced < 6) st.textContent = "Ho sentito poca voce: avvicinati al microfono. Puoi comunque ascoltarti.";
-          }).catch(function () { drawRec(cv, tones, null); });
-          playMe(function () { CP.speak(say, { onEnd: function () { judge.hidden = false; } }); });
-          judge.hidden = false;
-        };
-        recd.start();
-        var tick = function () { var left = Math.max(0, REC_MS - (Date.now() - t0)); st.textContent = "🔴 Registro… " + Math.ceil(left / 1000) + " s"; if (left > 0) timer = setTimeout(tick, 200); else { try { recd.stop(); } catch (e) {} } };
-        tick();
-      }).catch(function (err) {
-        busy = false; go.disabled = false; if (CP.musicHold) CP.musicHold(false);
-        var n = err && err.name;
-        st.className = "rec-st small heard ko";
-        st.innerHTML = n === "NotAllowedError" || n === "SecurityError" ? "Il microfono è bloccato in questa pagina. " + CP.frameBtn() : "Non riesco a registrare qui (" + esc(n || "errore") + ").";
-        if (CP.micBlocked && (n === "NotAllowedError" || n === "SecurityError")) CP.micBlocked();
-      });
-    }
-    d.addEventListener("click", function (e) {
-      var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
-      if (b.hasAttribute("data-rec-go") || b.hasAttribute("data-rec-ko")) { CP.sfx("tap"); record(); }
-      else if (b.hasAttribute("data-rec-me")) playMe(null);
-      else if (b.hasAttribute("data-rec-tts")) CP.say(say, b);
-      else if (b.hasAttribute("data-rec-ok")) { CP.sfx("ok"); if (CP.game && CP.game.xp) CP.game.xp(1); judge.hidden = true; st.className = "rec-st small"; st.textContent = "👍 Bene. Se vuoi, prova con 〰️ Tono per vedere la curva dal vivo."; }
-    });
-    if (d.scrollIntoView) d.scrollIntoView({ block: "nearest" });
-    record();
-  };
 })();
 </script>
 <script>

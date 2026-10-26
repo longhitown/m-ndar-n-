@@ -509,22 +509,23 @@
     if (!SR) return null;
     var rec, done = false;
     var finish = function (o) { if (done) return; done = true; onResult(o); };
-    /* in Chrome il riconoscimento manda l'audio ai server: senza rete non ci si prova nemmeno */
-    if (navigator.onLine === false) { finish({ ok: false, heard: "", error: "offline" }); return null; }
+    /* in Chrome il riconoscimento manda l'audio ai server: senza rete non ci si prova nemmeno (nell'app Android sì: il
+       riconoscitore di sistema può avere la lingua scaricata sul telefono) */
+    if (navigator.onLine === false && !window.MandarinoAndroid) { finish({ ok: false, heard: "", error: "offline" }); return null; }
     /* su molti Android, se il flusso dell'oscilloscopio è ancora aperto, il riconoscimento fallisce (audio-capture / no-speech) */
     if (CP.micInfo && CP.micInfo().live && !CP.micInfo().users && CP.micClose) CP.micClose();
     try {
       rec = new SR();
       rec.lang = "zh-CN"; rec.interimResults = false; rec.maxAlternatives = 3; rec.continuous = false;
       rec.onresult = function (ev) {
-        var clean = function (s) { return s.replace(/[^㐀-鿿]/g, ""); };
-        var goal = clean(targetHz), alts = [], ok = false;
+        /* si confronta il suono, non il carattere: 他/她/它 o 在/再 sono la stessa pronuncia, e il riconoscitore sceglie a caso */
+        var alts = [], best = { level: -1 }, heard = "";
         for (var i = 0; i < ev.results[0].length; i++) {
-          var tr = ev.results[0][i].transcript;
+          var tr = ev.results[0][i].transcript, m = CP.soundMatch ? CP.soundMatch(targetHz, tr) : { level: tr.indexOf(targetHz) >= 0 ? 2 : 0 };
           alts.push(tr);
-          if (goal && clean(tr).indexOf(goal) >= 0) ok = true;
+          if (m.level > best.level || (m.level === best.level && m.exact && !best.exact)) { best = m; heard = tr; }
         }
-        finish({ ok: ok, heard: alts[0] || "", alts: alts, goal: targetHz });
+        finish({ ok: best.level === 2, near: best.level === 1, homophone: best.level === 2 && !best.exact, heard: heard || alts[0] || "", alts: alts, goal: targetHz });
       };
       rec.onerror = function (ev) { finish({ ok: false, heard: "", error: (ev && ev.error) || "error" }); };
       rec.onnomatch = function () { finish({ ok: false, heard: "", error: "no-speech" }); };
@@ -542,19 +543,29 @@
   CP.audioBtns = function (hz, noMic) { return '<span class="btns">' + CP.sayBtn(hz) + (noMic ? "" : CP.micBtn(hz)) + "</span>"; };
   var MIC_ERR = {
     "not-allowed": "Il microfono è bloccato in questa pagina. Consentilo nelle impostazioni del browser, oppure scarica la pagina e aprila a sé.",
-    "service-not-allowed": "Il microfono è bloccato in questa pagina. Consentilo nelle impostazioni del browser.",
+    "service-not-allowed": "Il riconoscimento vocale non è disponibile su questo dispositivo: qui guardiamo il tono, che funziona senza.",
     "audio-capture": "Non trovo nessun microfono.",
-    "network": "Il riconoscimento vocale ha bisogno di internet. Usa 〰️ Tono, funziona senza rete.",
-    "offline": "Il riconoscimento vocale ha bisogno di internet. Usa 〰️ Tono, funziona senza rete.",
+    "network": "Il riconoscimento vocale ha bisogno di internet: qui guardiamo il tono, che funziona senza rete.",
+    "offline": "Il riconoscimento vocale ha bisogno di internet: qui guardiamo il tono, che funziona senza rete.",
+    "language-not-supported": "Il riconoscimento vocale del telefono non ha il cinese: qui guardiamo il tono, che funziona senza.",
     "no-speech": "Non ho sentito niente. Avvicinati al microfono e riprova.",
     "start": "Non riesco ad attivare il microfono da qui."
   };
+  var SR_DOWN = /^(network|offline|language-not-supported|service-not-allowed|audio-capture|start)$/;
+  window.addEventListener("online", function () { if (CP._srDown === "network" || CP._srDown === "offline") CP._srDown = null; });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-vp-open]") : null; if (!b || !CP.voicePanel) return;
+    var h = b.closest(".heard"), host = h ? h.parentNode : b.parentNode; if (h) h.parentNode.removeChild(h);
+    CP.voicePanel(host, b.getAttribute("data-vp-open"), {});
+  });
   CP.micErrText = function (code) { return MIC_ERR[code] || "Qualcosa non ha funzionato con il microfono. Riprova."; };
   function micClick(b) {
     if (b._rec) { b._abort = true; try { b._rec.abort(); } catch (e) {} b._rec = null; b.classList.remove("listening"); return; }
     CP.stopSpeak();
     var goal = b.getAttribute("data-mic"), host = b.closest("[data-heard-host], .ln, .fc, .fw") || (b.closest(".acts") ? b.closest(".acts").parentNode : b.parentNode);
-    if ((!SR || navigator.onLine === false) && CP.canRecord() && CP.recordCompare) { CP.recordCompare(host, goal, !SR ? "" : MIC_ERR.offline); return; }
+    /* senza riconoscimento (o se qui non funziona) si apre il pannello «Parla», che va anche offline */
+    var down = !SR ? "" : CP._srDown ? MIC_ERR[CP._srDown] || "" : navigator.onLine === false && !window.MandarinoAndroid ? MIC_ERR.offline : null;
+    if (down !== null && CP.canScope && CP.canScope() && CP.voicePanel) { CP.voicePanel(host, goal, { note: down }); return; }
     var out = host.querySelector(".heard");
     if (!out) { out = document.createElement("div"); out.setAttribute("aria-live", "polite"); host.appendChild(out); }
     out.className = "heard"; out.textContent = "🎤 Ti ascolto… di' «" + goal.replace(/[^㐀-鿿]/g, "") + "»";
@@ -563,14 +574,22 @@
     b._rec = CP.listen(goal, function (r) {
       b.classList.remove("listening"); b._rec = null;
       if (b._abort) { b._abort = false; if (out.parentNode) out.parentNode.removeChild(out); return; }
+      if (r.error && SR_DOWN.test(r.error) && CP.canScope && CP.canScope() && CP.voicePanel) {
+        /* il riconoscimento qui non va (rete, lingua non installata, servizio assente): per questa sessione si usa il pannello */
+        CP._srDown = r.error; if (out.parentNode) out.parentNode.removeChild(out);
+        CP.voicePanel(host, goal, { note: CP.micErrText(r.error) }); return;
+      }
       if (r.error) {
         out.className = "heard ko"; out.textContent = "🎤 " + CP.micErrText(r.error); CP.sfx("ko");
-        if (CP.micBlocked && (r.error === "not-allowed" || r.error === "service-not-allowed")) CP.micBlocked();
-        if (CP.inFrame && (r.error === "not-allowed" || r.error === "service-not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
+        if (CP.micBlocked && r.error === "not-allowed") CP.micBlocked();
+        if (CP.inFrame && (r.error === "not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
         return;
       }
-      if (r.ok) { out.className = "heard ok"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard) + "</span>» — Pronuncia perfetta!"; CP.sfx("ok"); }
-      else { out.className = "heard ko"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
+      var said = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — ";
+      if (r.ok) { out.className = "heard ok"; out.innerHTML = said + (r.homophone ? "si pronuncia proprio così (il riconoscitore ha scelto un carattere con lo stesso suono). Bene!" : "Pronuncia perfetta!"); CP.sfx("ok"); if (CP.game && CP.game.xp) CP.game.xp(1); }
+      else if (r.near) { out.className = "heard ko"; out.innerHTML = said + "le sillabe ci sono, ma un tono è diverso. Guarda la curva:"; CP.sfx("tap"); }
+      else { out.className = "heard ko"; out.innerHTML = said + "non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
+      if (!r.ok && CP.canScope && CP.canScope() && CP.voicePanel) out.insertAdjacentHTML("beforeend", ' <button type="button" class="btn-s" data-vp-open="' + CP.attr(goal) + '">〰️ Il mio tono</button>');
     });
     if (!b._rec) b.classList.remove("listening");
   }

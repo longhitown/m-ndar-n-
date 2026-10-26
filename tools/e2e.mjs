@@ -102,11 +102,15 @@ try {
     await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload();
     await p.click("#tab-words"); await p.waitForTimeout(200);
     const lbl = await p.evaluate(() => { const m = document.querySelector("#frasi .ln .mic"); if (!m) return null; m.scrollIntoView(); m.click(); return m.getAttribute("aria-label"); });
-    check("Senza riconoscimento vocale il 🎤 resta: «Registra e confronta»", lbl === "Registra e confronta", lbl);
+    check("Senza riconoscimento vocale il 🎤 resta e apre il pannello «Parla»", lbl === "Registra e confronta" && await p.evaluate(() => !!document.querySelector(".vp")), lbl);
     await p.waitForTimeout(500);
     check("Indicatore 🎙️ col microfono aperto", await p.evaluate(() => !document.getElementById("mic-live").hidden));
-    await p.waitForTimeout(4200);
-    check("Dopo 3 s la registrazione si riascolta", await p.evaluate(() => { const b = document.querySelector("[data-rec-me]"); return !!b && !b.disabled; }));
+    await p.waitForFunction(() => !document.querySelector(".vp.on"), null, { timeout: 12000 }).catch(() => {});
+    check("Il pannello «Parla» si ferma da solo e la registrazione si riascolta", await p.evaluate(() => { const b = document.querySelector("[data-vp-me]"); return !!b && !b.disabled; }));
+    /* voce sintetica: un 4° tono (240 → 140 Hz) deve risultare «che cade» */
+    const tone = await p.evaluate(() => { const sr = 48000, pts = []; for (let i = 0; i < 40; i++) pts.push({ t: i * 0.015, f: 240 * Math.pow(140 / 240, i / 39) }); const r = CP.pitchAnalyze(pts, [4]); return r.tone + "/" + r.score; });
+    check("Analisi del tono: una curva che cade è un 4° tono", tone === "4/100", tone);
+    check("Riconoscimento per suono: 她 vale come 他, 妈 vs 马 è «quasi»", await p.evaluate(() => CP.soundMatch("他", "她").level === 2 && CP.soundMatch("妈", "马").level === 1 && CP.soundMatch("你好", "我说你好吗").level === 2));
     await p.click("#mic-live", { force: true });
     check("Un tocco sull'indicatore chiude il microfono", await p.evaluate(() => !CP.micInfo().live && document.getElementById("mic-live").hidden));
     check("Registra e confronta: nessun errore JavaScript", !errs.length, errs[0]);
