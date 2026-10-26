@@ -30,14 +30,20 @@
     this.relearningSteps = o.relearningSteps || [10 * MIN];
     this.maxInterval = o.maxInterval || 36500;
     this.fuzz = !!o.fuzz; this.rng = o.rng || Math.random;
+    /* giorni trascorsi: di default giorni interi da 24 ore, come py-fsrs. Con dayOf (tempo -> numero del giorno) si contano
+       i giorni del calendario, come Anki: la sera e la mattina dopo sono due giorni diversi anche se passano meno di 24 ore */
+    this.dayOf = typeof o.dayOf === "function" ? o.dayOf : null;
     this.decay = -this.w[20];
     this.factor = Math.pow(0.9, 1 / this.decay) - 1;
   }
   var P = Scheduler.prototype;
   P.newCard = function (now) { return { state: LEARNING, step: 0, st: null, df: null, due: now || 0, last: null }; };
+  P.elapsed = function (last, now) {
+    return Math.max(0, this.dayOf ? this.dayOf(now) - this.dayOf(last) : Math.floor((now - last) / DAY));
+  };
   P.retrievability = function (c, now) {
     if (c.last == null || c.st == null) return 0;
-    var el = Math.max(0, Math.floor((now - c.last) / DAY));
+    var el = this.elapsed(c.last, now);
     return Math.pow(1 + this.factor * el / c.st, this.decay);
   };
   /* R in funzione del tempo trascorso in giorni (anche frazionari): per grafici e ordinamento */
@@ -83,7 +89,7 @@
   /* un ripasso: restituisce una NUOVA carta */
   P.review = function (card, rating, now) {
     var c = { state: card.state, step: card.step, st: card.st, df: card.df, due: card.due, last: card.last };
-    var since = c.last != null ? Math.floor((now - c.last) / DAY) : null;
+    var since = c.last != null ? this.elapsed(c.last, now) : null;
     var interval; /* ms */
     var self = this;
     function days(d) { return d * DAY; }
@@ -152,7 +158,10 @@
     return { n: n, observed: obs, predicted: pred, bins: bins, k: best.k };
   }
 
-  var FSRS = { Scheduler: Scheduler, DEFAULT_W: DEFAULT_W, LB: LB, UB: UB, LEARNING: LEARNING, REVIEW: REVIEW, RELEARNING: RELEARNING,
+  /* il giorno di studio cambia alle 4 del mattino (ora locale), come in Anki */
+  function studyDay(t) { var d = new Date(t - 4 * 3600000); return Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY); }
+
+  var FSRS = { studyDay: studyDay, Scheduler: Scheduler, DEFAULT_W: DEFAULT_W, LB: LB, UB: UB, LEARNING: LEARNING, REVIEW: REVIEW, RELEARNING: RELEARNING,
     AGAIN: AGAIN, HARD: HARD, GOOD: GOOD, EASY: EASY, DAY: DAY, pround: pround, calibrate: calibrate, VERSION: "FSRS-6 (port di py-fsrs)" };
   root.FSRS = FSRS;
   if (typeof module !== "undefined" && module.exports) module.exports = FSRS;

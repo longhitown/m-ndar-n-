@@ -20,9 +20,9 @@
     CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (PUNCT[s.raw]) { if (out.length) out[out.length - 1] += PUNCT[s.raw]; } });
     var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
   }
-  function zhHTML(z, cls) { var py = pyOf(z); return '<div class="' + (cls || "ls-zh") + '"><div class="lp">' + CP.pinyinHTML(py) + '</div><div class="lh">' + CP.hanziHTML(z, py) + "</div></div>"; }
+  function zhHTML(z, cls) { var py = pyOf(z); return '<div class="' + (cls || "ls-zh") + '"><div class="lp">' + CP.pinyinHTML(py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(z, py) + "</div></div>"; }
   /* testo della spiegazione: **grassetto**, caratteri cinesi in evidenza */
-  function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([㐀-鿿，。？！、]+)/g, '<span class="han">$1</span>'); }
+  function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([㐀-鿿，。？！、]+)/g, '<span class="han" lang="zh-CN">$1</span>'); }
   function isZh(o) { return /[㐀-鿿]/.test(o) && !/[a-zàèéìòù]{3}/i.test(o); }
 
   /* ---- elenco ---- */
@@ -49,12 +49,12 @@
       "<h3>" + rich(l.title) + "</h3>" +
       '<p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
-      (l.pattern ? '<div class="ls-pat" aria-label="Schema">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
+      (l.pattern ? '<div class="ls-pat" aria-label="Schema">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
       "<h4>Esempi</h4>" + (l.ex || []).map(function (e) {
         return '<div class="ls-ex">' + zhHTML(e[0]) + '<div class="small muted" lang="it">' + esc(e[1]) + "</div>" + CP.audioBtns(e[0].replace(/[。？！，]/g, "")) + "</div>";
       }).join("") +
       ((l.traps || []).length ? "<h4>Errori tipici</h4>" + l.traps.map(function (t) {
-        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han">' + esc(t[1]) + '</span></div><div class="small">' + rich(t[2]) + "</div></div>";
+        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han" lang="zh-CN">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han" lang="zh-CN">' + esc(t[1]) + '</span></div><div class="small">' + rich(t[2]) + "</div></div>";
       }).join("") : "") +
       '<div class="acts">' + (qn ? '<button type="button" class="btn-main" data-ls-quiz style="margin:0">✏️ Esercitati (' + qn + " domande)</button>" : "") +
       ((l.ex || []).length ? '<button type="button" class="btn-s" data-ls-lab>🧪 Prova nel laboratorio</button>' : "") + "</div></article>";

@@ -14,7 +14,7 @@
   function seq(m) { var e = ex(); return m === "it" ? e.order : e.blocks.map(function (_, i) { return i; }); }
   function blockHTML(i, tag, extra) {
     var b = ex().blocks[i];
-    var inner = (tag === false ? "" : '<span class="tg ' + b[0] + '">' + (TAGN[b[0]] || b[0]) + "</span>") + '<span class="bp">' + CP.pinyinHTML(b[1]) + '</span><span class="bh">' + CP.hanziHTML(b[2], b[1]) + '</span><span class="bi">' + esc(b[3]) + "</span>";
+    var inner = (tag === false ? "" : '<span class="tg ' + b[0] + '">' + (TAGN[b[0]] || b[0]) + "</span>") + '<span class="bp">' + CP.pinyinHTML(b[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(b[2], b[1]) + '</span><span class="bi">' + esc(b[3]) + "</span>";
     return '<div class="tb ' + b[0] + '" data-b="' + i + '">' + inner + "</div>";
   }
   function zhLine(e) { return { py: e.blocks.map(function (b) { return b[1]; }).join(" "), hz: e.blocks.map(function (b) { return b[2]; }).join("") }; }
@@ -43,7 +43,7 @@
       '<div class="tdir"><span class="badge' + (mode === "it" ? " on" : "") + '" id="td-it">🇮🇹 ordine italiano</span><span aria-hidden="true">⇄</span><span class="badge' + (mode === "zh" ? " on" : "") + '" id="td-zh">🇨🇳 ordine cinese</span></div>' +
       '<div class="tbox" id="tbox" aria-live="polite">' + seq(mode).map(function (i) { return blockHTML(i); }).join("") + "</div>" +
       '<div class="dlg-bar"><button type="button" class="btn-main" id="tk-flip" style="margin:0">🔄 Inverti Pensiero (IT ⇄ ZH)</button></div>' +
-      '<div class="sbox"><div class="lp">' + CP.pinyinHTML(z.py) + "</div>" + CP.toneCurveHTML(z.py) + '<div class="lh">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="li">' + esc(e.zh) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div></div>" +
+      '<div class="sbox"><div class="lp">' + CP.pinyinHTML(z.py) + "</div>" + CP.toneCurveHTML(z.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="li">' + esc(e.zh) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div></div>" +
       (e.note ? '<p class="tnote"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") +
       (e.q ? '<p class="tnote">Le domande non spostano nulla: la parola interrogativa va dove andrebbe la risposta.</p>' : "") + nextBar();
   }
@@ -79,7 +79,7 @@
       return '<button type="button" class="tb pzb" data-pzpick="' + b + '">' + inner(b, false) + "</button>";
     }).join("");
     var msg = "";
-    if (pz.state === "ok") msg = '<div class="done-card" id="pz-done"><b>' + (pz.miss ? "Giusto, al tentativo " + (pz.miss + 1) + "." : "Giusto al primo colpo.") + "</b><span>" + esc(e.zh) + '</span><div class="lp">' + CP.pinyinHTML(z.py) + '</div><div class="lh">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div>" + (e.note ? '<p class="tnote" style="margin:8px 0 0"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") + '<div class="acts" style="margin:8px 0 0"><button type="button" class="btn-main" data-pznext style="margin:0">Prossimo ›</button></div></div>';
+    if (pz.state === "ok") msg = '<div class="done-card" id="pz-done"><b>' + (pz.miss ? "Giusto, al tentativo " + (pz.miss + 1) + "." : "Giusto al primo colpo.") + "</b><span>" + esc(e.zh) + '</span><div class="lp">' + CP.pinyinHTML(z.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div>" + (e.note ? '<p class="tnote" style="margin:8px 0 0"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") + '<div class="acts" style="margin:8px 0 0"><button type="button" class="btn-main" data-pznext style="margin:0">Prossimo ›</button></div></div>';
     else if (pz.state === "ko") {
       var w = pz.bad[0], want = e.blocks[w][0];
       msg = '<div class="warn" role="alert">Non ancora. Al posto n° ' + (w + 1) + ' il blocco non va bene: lì dovrebbe esserci «' + esc(TAGN[want] || want) + '». Tocca un blocco per toglierlo, oppure usa «Aiuto».</div>';
@@ -92,7 +92,7 @@
       '<p class="small muted" style="margin-top:10px">Puzzle risolti: <b>' + pzScore.ok + "</b> su " + pzScore.tot + " provati in questa sessione.</p>";
     function inner(b, withTag) {
       var bl = e.blocks[b];
-      return (withTag ? '<span class="tg ' + bl[0] + '">' + (TAGN[bl[0]] || bl[0]) + "</span>" : "") + '<span class="bp">' + CP.pinyinHTML(bl[1]) + '</span><span class="bh">' + CP.hanziHTML(bl[2], bl[1]) + '</span><span class="bi">' + esc(bl[3]) + "</span>";
+      return (withTag ? '<span class="tg ' + bl[0] + '">' + (TAGN[bl[0]] || bl[0]) + "</span>" : "") + '<span class="bp">' + CP.pinyinHTML(bl[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(bl[2], bl[1]) + '</span><span class="bi">' + esc(bl[3]) + "</span>";
     }
   }
   function pzCheck() {

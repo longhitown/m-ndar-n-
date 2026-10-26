@@ -72,7 +72,9 @@ try {
   check("Backup salvato in Download, UTF-8 intatto", /àèìòù 你好/.test(saved), saved.trim().slice(0, 60));
 
   const mic = await p.ev("() => navigator.mediaDevices.getUserMedia({ audio: true }).then(s => { s.getTracks().forEach(t => t.stop()); return 'ok'; }, e => e.name + ': ' + e.message)", null, 30000).catch((e) => e.message);
-  check("Microfono dalla pagina (getUserMedia)", mic === "ok", mic);
+  /* NotReadableError = il permesso c'è ma il dispositivo non ha un microfono da aprire (emulatore senza audio) */
+  const noDevice = /^NotReadableError/.test(mic) && (adb("shell", "getprop", "ro.boot.qemu").trim() === "1" || /sdk_gphone|emulator|Android SDK built/i.test(adb("shell", "getprop", "ro.product.model")));
+  check("Microfono dalla pagina (getUserMedia)" + (noDevice ? ": permesso concesso, l'emulatore non ha un microfono" : ""), mic === "ok" || noDevice, mic);
   const tts = await p.ev("() => ({ ready: MandarinoAndroid.ttsReady(), it: MandarinoAndroid.ttsHasLang('it-IT'), zh: MandarinoAndroid.ttsHasLang('zh-CN'), voices: speechSynthesis.getVoices().length, sr: typeof SpeechRecognition })");
   console.log("  (voce del dispositivo: " + JSON.stringify(tts) + ")");
   p.close();

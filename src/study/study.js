@@ -88,7 +88,7 @@
   function parts(w, set) {
     var h = "";
     if (set.py) h += '<div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" + CP.toneCurveHTML(w.py);
-    if (set.hz) h += '<div class="cd-hz">' + CP.hanziHTML(w.hz, w.py) + "</div>";
+    if (set.hz) h += '<div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + "</div>";
     if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (w.mine ? '<div class="cd-note mine-tag">✏️ tua correzione</div>' : "") + (set.py ? CP.polyNote(w) : "");
     return h;
   }
@@ -214,7 +214,7 @@
     if (e.kind === "intro") {
       var ex = example(w.hz);
       h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
-        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
+        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
@@ -255,7 +255,7 @@
     var moreNew = keysOf().some(function (k) { return !S[k] || !S[k].n; }), moreDue = dueKeys().length > 0;
     var list = miss.slice(0, 12).map(function (k) {
       var w = CP.WORDS[k];
-      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="muted small">' + esc(w.it) + "</div></div></div>";
+      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="muted small">' + esc(w.it) + "</div></div></div>";
     }).join("");
     root.innerHTML = '<div class="panel done">' + (CP.stamp && CP.game ? CP.stamp(CP.game.rank(), true).replace('class="seal stamp', 'class="seal stamp done-seal') : "") +
       "<h2>" + T("done.title") + "</h2>" +
