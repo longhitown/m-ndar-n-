@@ -40,6 +40,9 @@ public class MainActivity extends Activity {
     static final String HOST = "appassets.androidplatform.net";
     static final String START = "https://" + HOST + "/index.html";
     private static final int REQ_FILE = 1, REQ_MIC = 2;
+    static final int REQ_SYNC = 3;
+    private static final int REQ_CAM = 4;
+    private PermissionRequest pendingCamera;
 
     WebView web;
     private Bridge bridge;
@@ -145,9 +148,20 @@ public class MainActivity extends Activity {
         /* il microfono della pagina (getUserMedia): si chiede il permesso di Android, poi si concede alla pagina */
         @Override
         public void onPermissionRequest(final PermissionRequest request) {
-            boolean audio = false;
-            for (String r : request.getResources()) if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(r)) audio = true;
-            if (!audio || !HOST.equals(request.getOrigin().getHost())) { request.deny(); return; }
+            /* microfono (pronuncia) e fotocamera (passaggio dei progressi con i QR): solo per la pagina dell'app */
+            boolean audio = false, video = false;
+            for (String r : request.getResources()) {
+                if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(r)) audio = true;
+                if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)) video = true;
+            }
+            if ((!audio && !video) || !HOST.equals(request.getOrigin().getHost())) { request.deny(); return; }
+            if (video) {
+                if (hasCamera()) { request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE}); return; }
+                if (pendingCamera != null) pendingCamera.deny();
+                pendingCamera = request;
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, REQ_CAM);
+                return;
+            }
             if (hasMic()) { request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE}); return; }
             if (pendingWebPermission != null) pendingWebPermission.deny();
             pendingWebPermission = request;
@@ -157,6 +171,7 @@ public class MainActivity extends Activity {
         @Override
         public void onPermissionRequestCanceled(PermissionRequest request) {
             if (pendingWebPermission == request) pendingWebPermission = null;
+            if (pendingCamera == request) pendingCamera = null;
         }
 
         /* <input type="file">: ripristino di un backup */
@@ -177,6 +192,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    boolean hasCamera() {
+        return checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+    }
+
     boolean hasMic() {
         return checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
@@ -191,6 +210,11 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int code, String[] perms, int[] results) {
         super.onRequestPermissionsResult(code, perms, results);
+        if (code == REQ_CAM) {
+            boolean cam = results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED;
+            if (pendingCamera != null) { if (cam) pendingCamera.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE}); else pendingCamera.deny(); pendingCamera = null; }
+            return;
+        }
         if (code != REQ_MIC) return;
         boolean ok = results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED;
         if (pendingWebPermission != null) {
@@ -207,6 +231,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int code, int result, Intent data) {
         super.onActivityResult(code, result, data);
+        if (code == REQ_SYNC) { bridge.syncPicked(result == RESULT_OK && data != null ? data.getData() : null); return; }
         if (code == REQ_FILE && fileCallback != null) {
             fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result, data));
             fileCallback = null;

@@ -19,10 +19,17 @@
     { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" }
   ];
   function rankName(r) { return LANG === "zh" ? r.z : r.n; }
-  var G = { xp: 0, goal: 10, days: {}, best: 0 };
+  /* V6.8: i punti sono contati per dispositivo (xpBy) sopra una base comune (base = i punti di prima della divisione):
+     unendo due dispositivi (sincronizzazione, backup) per ognuno vale il conteggio più alto e la somma non conta mai due
+     volte la stessa cosa. L'identità del dispositivo sta in «md-device», fuori dai dati che si esportano. */
+  var DEV = (function () { var d = lsGet("md-device"); if (!d) { d = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); lsSet("md-device", d); } return d; })();
+  var G = { xp: 0, base: 0, xpBy: {}, goal: 10, days: {}, best: 0 };
   function adopt(o) {
     if (!o || typeof o !== "object") return;
-    G.xp = Math.max(0, o.xp | 0); G.goal = [5, 10, 15, 20].indexOf(o.goal) >= 0 ? o.goal : 10;
+    G.xpBy = (o.xpBy && typeof o.xpBy === "object") ? o.xpBy : {};
+    G.base = Math.max(0, (o.xpBy ? o.base : o.xp) | 0);
+    G.xp = G.base; Object.keys(G.xpBy).forEach(function (k) { G.xp += Math.max(0, G.xpBy[k] | 0); });
+    G.goal = [5, 10, 15, 20].indexOf(o.goal) >= 0 ? o.goal : 10;
     G.days = (o.days && typeof o.days === "object") ? o.days : {}; G.best = Math.max(0, o.best | 0);
   }
   try { adopt(JSON.parse(lsGet(GK) || "null")); } catch (e) {}
@@ -52,7 +59,7 @@
   }
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
-    var b = rankIdx(G.xp); G.xp += n; var a = rankIdx(G.xp);
+    var b = rankIdx(G.xp); G.xp += n; G.xpBy[DEV] = (G.xpBy[DEV] | 0) + n; var a = rankIdx(G.xp);
     if (a > b) { CP.toast(CP.t("rank.toast", { r: rankName(RANKS[a]) })); CP.sfx("level"); }
   }
   function rankInfo() {
