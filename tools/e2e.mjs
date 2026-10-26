@@ -5,6 +5,7 @@
       «Nuova versione disponibile · Aggiorna» compare quando cambia APP_VERSION e rinnova la cache.
    3. Backup → ripristino su un secondo profilo: cp-community-contribs unito per id, cp-srs-v1 dell'altro profilo
       intatto, registro dei ripassi sommato.
+   5. Corso di italiano per chi parla cinese: si sceglie dal benvenuto, le lezioni si superano con le risposte giuste, il ripasso salva.
    4. Senza riconoscimento vocale il 🎤 resta e registra e confronta (microfono finto di Chromium);
       l'indicatore 🎙️ compare e un tocco chiude il flusso.
    Restano da fare a mano, su un telefono vero: tap udibile a volume 50% e 10 tap di fila non fastidiosi, la musica
@@ -108,6 +109,36 @@ try {
     await p.click("#mic-live", { force: true });
     check("Un tocco sull'indicatore chiude il microfono", await p.evaluate(() => !CP.micInfo().live && document.getElementById("mic-live").hidden));
     check("Registra e confronta: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 5. corso di italiano per chi parla cinese */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(pathToFileURL(file).href); await p.waitForTimeout(700);
+    const btn = await p.$('#fam [data-course-set="it"]');
+    check("Benvenuto: «我是中国人，我想学意大利语»", !!btn);
+    if (btn) { await Promise.all([p.waitForNavigation(), btn.click()]); await p.waitForTimeout(700); }
+    check("Corso di italiano: interfaccia cinese e schede proprie", await p.evaluate(() => CP.course() === "it" && LANG === "zh" && document.body.classList.contains("course-it") && document.querySelectorAll(".dock-it [data-it-tab]").length === 5));
+    const res = await p.evaluate(() => {
+      const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
+      try { document.getElementById("fam").hidden = true; } catch (e) {}
+      for (const l of ITLESSONS) {
+        CP.itShow("lessons"); if (document.querySelector("[data-itl-back]")) click("[data-itl-back]");
+        click('[data-itl-open="' + l.id + '"]'); click("[data-itl-quiz]");
+        for (const q of l.quiz) {
+          if (q.k === "order") { for (const w of q.it.replace(/[.,!?]/g, "").split(/\s+/)) { const t = [...document.querySelectorAll("[data-itl-pick]:not([disabled])")].find((x) => x.textContent === w); if (!t) return ["tessera " + w]; t.click(); } click("[data-itl-check]"); }
+          else click('[data-itl-opt="' + q.a + '"]');
+          if (!document.querySelector(".verdict.ok")) return [l.id + ": risposta giusta segnata sbagliata"];
+          click("[data-itl-next]");
+        }
+        out.push(l.id);
+      }
+      return out;
+    }).catch((e) => ["ERR " + e.message]);
+    check("Corso di italiano: le " + res.length + " lezioni si superano con le risposte giuste", res.length >= 10 && res.every((x) => !/ /.test(x)), res.join(" "));
+    await p.evaluate(() => CP.itShow("review")); await p.click("[data-itr-show]"); await p.click('[data-itr-grade="3"]');
+    check("Corso di italiano: ripasso FSRS in cp-it-srs-v1", await p.evaluate(() => { const s = JSON.parse(localStorage.getItem("cp-it-srs-v1") || "{}"); return Object.keys(s).filter((k) => k !== "__meta").length === 1; }));
+    check("Corso di italiano: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
 } finally {

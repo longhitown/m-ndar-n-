@@ -15,6 +15,7 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import vm from "vm";
 import { fileURLToPath } from "url";
 import { assets, load, check } from "./lib/data.mjs";
 import { lab, verify, checkLessons } from "./lib/lab.mjs";
@@ -37,12 +38,17 @@ if (gv.bad.length) fail("frasi verificate che le regole non traducono più così
 /* 2. ogni file è elencato */
 const { html, scripts, styles } = assets(SRC);
 const listed = new Set(scripts.map((s) => s.src));
-for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "audio/tracks"]) {
+for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "data/it/lessons", "audio/tracks"]) {
   for (const f of fs.readdirSync(path.join(SRC, dir)).filter((x) => x.endsWith(".js"))) {
     if (!listed.has(dir + "/" + f)) fail(`src/${dir}/${f} non è elencato in src/index.html (aggiungi <script src="${dir}/${f}"></script>)`);
   }
 }
 for (const s of scripts) if (!fs.existsSync(path.join(SRC, s.src))) fail("src/index.html elenca un file che non c'è: " + s.src);
+/* ogni script deve almeno compilare: un errore di sintassi fermerebbe tutta l'app */
+for (const s of scripts) {
+  try { new vm.Script(fs.readFileSync(path.join(SRC, s.src), "utf8"), { filename: "src/" + s.src }); }
+  catch (e) { fail("errore di sintassi in src/" + s.src + ": " + e.message); }
+}
 
 /* 3. un file unico */
 let out = html;
@@ -71,4 +77,4 @@ if (onlyCheck) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 for (const [f, data] of Object.entries(files)) fs.writeFileSync(path.join(OUT, f), data);
-console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate, ${(D.LESSONS || []).length} lezioni · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);
+console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate, ${(D.LESSONS || []).length} lezioni + ${(D.ITLESSONS || []).length} 意大利语 · ${scripts.length} script, ${styles.length} fogli di stile · versione ${version}`);

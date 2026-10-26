@@ -364,6 +364,8 @@ var VERIFIED = [
   ["我马上来","Vengo subito."],
   ["我从来不喝咖啡","Non bevo mai caffè."],
   ["有时候我喝茶","A volte bevo tè."],
+  ["我吃了一个鸡蛋","Ho mangiato un uovo."],
+  ["我买了两个鸡蛋","Ho comprato due uova."],
   ["我很好你呢","Sto bene, e tu?","memoria"],
   ["我们是好朋友","Siamo buoni amici.","memoria"],
   ["你给我打电话吧","Telefonami!","memoria"],

@@ -81,3 +81,24 @@ input[type="range"]{accent-color:var(--accent)}
 .ls-opt.right{border-color:var(--accent);border-width:2px;background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
 .ls-opt.wrong{border-style:dashed;opacity:.85}
 .ls-opt.off{opacity:.55}
+/* corso di italiano (src/it/course.js): al posto delle quattro schede del corso di cinese */
+body.course-it #view-path, body.course-it #view-words, body.course-it #view-study, body.course-it #view-build, body.course-it nav.dock:not(.dock-it), body.course-it #guide-btn { display: none !important; }
+body:not(.course-it) .dock-it { display: none; }
+.dock-it .dtab { gap: 2px; }
+.dock-it .it-ico { font-size: 20px; line-height: 1; }
+.it-big { font-size: 1.15rem; font-weight: 600; }
+.it-zh .lp { font-weight: 600; }
+.it-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.it-row .it-w { display: grid; gap: 2px; text-align: left; background: none; border: 0; padding: 4px 0; min-height: 44px; }
+.it-topic { margin: 18px 0 4px; }
+.it-card { text-align: center; }
+.it-front { font-size: 2rem; font-weight: 700; margin: 14px 0 6px; }
+.it-back { font-size: 1.4rem; margin: 12px 0; }
+.it-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.it-grades button { min-height: 48px; }
+.it-conj { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.it-conj th, .it-conj td { text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); }
+.it-line { padding: 10px 12px; margin: 8px 0; border-radius: 12px; border: 1px solid var(--line); display: grid; gap: 4px; }
+.it-line.it-b { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.it-tile .th { font-family: inherit; font-size: 18px; }
+.dock.dock-it { grid-template-columns: repeat(5, 1fr); }

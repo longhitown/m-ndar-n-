@@ -136,7 +136,9 @@ async function openPage(browser, file, vw, vh, theme, seed) {
   await page.evaluate(PAGE_LIB);
   return { ctx, page, errors };
 }
-const tab = async (page, name) => { await page.click("#tab-" + name); await page.waitForTimeout(250); await page.evaluate(() => window.scrollTo(0, 0)); await page.evaluate(PAGE_LIB); };
+/* dopo il cambio di scheda si misura lo stato finale: si aspetta che transizioni e animazioni CSS siano finite */
+const settle = (page) => page.evaluate(() => Promise.race([Promise.all(document.getAnimations().map((a) => a.finished.catch(() => null))), new Promise((r) => setTimeout(r, 3000))]));
+const tab = async (page, name) => { await page.click("#tab-" + name); await page.waitForTimeout(250); await settle(page); await page.evaluate(() => window.scrollTo(0, 0)); await page.evaluate(PAGE_LIB); };
 
 async function auditView(browser, file, vw, vh, theme) {
   const fails = [], m = {};
