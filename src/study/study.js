@@ -237,6 +237,25 @@
       '<button type="button" data-g="2" class="g-good">' + G(2) + '<span class="sub">' + sub(2) + "</span></button>" +
       '<button type="button" data-g="3">' + G(3) + '<span class="sub">' + sub(3) + "</span></button></div>";
   }
+  /* carte ambigue: 322 gruppi di parole hanno lo stesso italiano (爸爸/爸 = papà, 但是/但 = ma, però). Nella carta
+     italiano → cinese un indizio dice quale si chiede (quanti caratteri, da che tappa); dopo la risposta compaiono
+     anche le altre, così chi ha pensato al sinonimo impara la coppia invece di sentirsi in errore. */
+  var SAME = null;
+  function sameAs(w) {
+    if (!SAME) { SAME = {}; CP.ORDER.forEach(function (k) { var x = CP.WORDS[k], f = String(x.it).trim().toLowerCase(); (SAME[f] = SAME[f] || []).push(x); }); }
+    return (SAME[String(w.it).trim().toLowerCase()] || []).filter(function (x) { return x !== w && x.hz !== w.hz; });
+  }
+  CP.sameMeaning = sameAs;
+  function ambigHint(w) {
+    var o = sameAs(w), T = CP.t, esc = CP.esc; if (!o.length) return "";
+    var n = Array.from(w.hz).length, same = o.filter(function (x) { return Array.from(x.hz).length === n; }).length;
+    var t = T("amb.len", { n: n }) + (same ? " · " + T("amb.sec", { s: '<span lang="it">' + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" }) : "");
+    return '<p class="amb-hint small">💡 ' + T("amb.hint") + " " + t + "</p>";
+  }
+  function ambigAlso(w) {
+    var o = sameAs(w), T = CP.t, esc = CP.esc; if (!o.length) return "";
+    return '<p class="amb-hint small">' + T("amb.also") + " " + o.slice(0, 4).map(function (x) { return '<span class="han" lang="zh-CN">' + esc(x.hz) + "</span> " + CP.pinyinHTML(x.py); }).join(" · ") + "</p>";
+  }
   function render() {
     if (!sess.q.length) return done();
     var e = sess.q[0], w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
@@ -248,10 +267,10 @@
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
-      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, PROMPT[e.type]) + cardTools(w, false) + "</div>" +
+      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, PROMPT[e.type]) + (e.type === "ip" ? ambigHint(w) : "") + cardTools(w, false) + "</div>" +
         '<div class="actbar"><button type="button" class="btn-main" id="reveal">' + T("sess.reveal") + "</button>" + kbd() + "</div>";
     } else {
-      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) + "</div>" +
+      h += open + '<span class="tag">' + T(TAGS[e.type]) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + (e.type === "ip" ? ambigAlso(w) : "") + cardTools(w, true) + "</div>" +
         '<div class="actbar">' + gradesHTML(e) + hint + kbd() + "</div>";
     }
     root.innerHTML = h; root.classList.add("is-card");

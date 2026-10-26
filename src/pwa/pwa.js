@@ -56,14 +56,37 @@
   var swNote = document.getElementById("sw-notice"), reloading = false;
   function offerUpdate(reg) {
     if (!swNote || !reg || !reg.waiting || !navigator.serviceWorker.controller) return;
-    swNote.innerHTML = '<p><b>Nuova versione disponibile.</b> I tuoi progressi restano dove sono.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn-s" data-sw-update>Aggiorna</button><button type="button" class="btn-s" data-sw-later>Più tardi</button></div>';
+    swNote.innerHTML = "<p><b>" + CP.t("upd.title") + "</b> " + CP.t("upd.keep") + '</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn-s" data-sw-update>' + CP.t("upd.go") + '</button><button type="button" class="btn-s" data-sw-later>' + CP.t("common.later") + "</button></div>";
     swNote.hidden = false;
     swNote.onclick = function (e) {
       var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
       if (t.hasAttribute("data-sw-later")) { swNote.hidden = true; return; }
-      if (t.hasAttribute("data-sw-update") && reg.waiting) { t.disabled = true; t.textContent = "Aggiorno…"; if (window.Store) Store.flush(); reg.waiting.postMessage({ type: "SKIP_WAITING" }); }
+      if (t.hasAttribute("data-sw-update") && reg.waiting) { t.disabled = true; t.textContent = CP.t("upd.going"); if (window.Store) Store.flush(); reg.waiting.postMessage({ type: "SKIP_WAITING" }); }
     };
   }
+  /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
+     con lo stesso avviso della PWA. Si spegne in ⚙️ → Voce e audio → App Android. */
+  var REPO = "longhitown/m-ndar-n-";   /* se il repository cambia nome, GitHub reindirizza anche le API */
+  CP.apkUpdates = { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
+  function vnum(v) { return String(v || "").replace(/^v/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
+  function newer(a, b) { a = vnum(a); b = vnum(b); for (var i = 0; i < Math.max(a.length, b.length); i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); } return false; }
+  function apkCheck() {
+    var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
+    var last = 0; try { last = +localStorage.getItem("md-apkcheck-t") || 0; } catch (e) {}
+    if (Date.now() - last < 86400000) return;
+    try { localStorage.setItem("md-apkcheck-t", String(Date.now())); } catch (e) {}
+    fetch("https://api.github.com/repos/" + REPO + "/releases/latest", { headers: { Accept: "application/vnd.github+json" } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rel) {
+      if (!rel || !rel.tag_name || !newer(rel.tag_name, cur)) return;
+      var skip = ""; try { skip = localStorage.getItem("md-apkskip") || ""; } catch (e) {}
+      if (skip === rel.tag_name) return;
+      var asset = (rel.assets || []).filter(function (a) { return /\.apk$/.test(a.name); })[0], href = asset ? asset.browser_download_url : rel.html_url;
+      swNote.innerHTML = "<p><b>" + CP.t("upd.apk", { v: CP.esc(rel.tag_name.replace(/^v/, "")) }) + "</b> " + CP.t("upd.apkKeep") + '</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-s" href="' + CP.attr(href) + '" target="_blank" rel="noopener">' + CP.t("upd.dl") + '</a><button type="button" class="btn-s" data-apk-later>' + CP.t("common.later") + "</button></div>";
+      swNote.hidden = false;
+      swNote.onclick = function (e) { var t = e.target.closest ? e.target.closest("[data-apk-later]") : null; if (t) { swNote.hidden = true; try { localStorage.setItem("md-apkskip", rel.tag_name); } catch (er) {} } };
+    }).catch(function () {});
+  }
+  if (window.__MD_APK) setTimeout(apkCheck, 4000);
+  document.addEventListener("change", function (e) { if (e.target && e.target.id === "opt-apkcheck") CP.apkUpdates.set(e.target.checked); });
   /* nell'APK l'app è già dentro il pacchetto: niente service worker (gli aggiornamenti arrivano con un APK nuovo) */
   if (http && "serviceWorker" in navigator && !window.__MD_APK) {
     navigator.serviceWorker.addEventListener("controllerchange", function () { if (reloading || !swNote || swNote.hidden) return; reloading = true; location.reload(); });

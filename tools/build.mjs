@@ -143,4 +143,7 @@ if (onlyCheck) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 for (const [f, data] of Object.entries(files)) { fs.mkdirSync(path.dirname(path.join(OUT, f)), { recursive: true }); fs.writeFileSync(path.join(OUT, f), data); }
+/* parole con lo stesso significato italiano: nelle carte italiano → cinese lo studio mette un indizio (study.js) */
+{ const by = {}; for (const s of D.SECTIONS) for (const w of s.words) { const f = String(w[2]).trim().toLowerCase(); by[f] = (by[f] || 0) + 1; }
+  const n = Object.values(by).filter((x) => x > 1).length; if (n) console.log("  · " + n + " gruppi di parole con lo stesso italiano: indizio nelle carte italiano → cinese"); }
 console.log(`✓ dist/index.html · ${(out.length / 1024).toFixed(0)} KB · ${c.sections} sezioni, ${c.words} parole, ${c.dialogs} dialoghi, ${gv.total} frasi verificate, ${(D.LESSONS || []).length} lezioni + ${(D.ITLESSONS || []).length} 意大利语 · ${scripts.length} script, ${styles.length} fogli di stile, ${ogg.length} brani · versione ${version}`);
