@@ -47,15 +47,16 @@
     (typeof VERIFIED !== "undefined" ? VERIFIED : []).forEach(function (v) { add(null, v[0], v[1]); });
     return EXIDX;
   }
-  function pyOf(z) {
-    var P = { "，": ",", "。": ".", "？": "?", "！": "!" }, out = [];
-    CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (P[s.raw] && out.length) out[out.length - 1] += P[s.raw]; });
+  /* k: la parola della carta; se nella frase compare un suo omografo (只 zhǐ / 只 zhī) vale la lettura della carta */
+  function pyOf(z, k) {
+    var P = { "，": ",", "。": ".", "？": "?", "！": "!" }, out = [], me = k && CP.WORDS[k];
+    CP.segment(z).forEach(function (s) { if (s.w) out.push(me && s.w.hz === me.hz ? me.py : s.w.py); else if (P[s.raw] && out.length) out[out.length - 1] += P[s.raw]; });
     var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
   }
   /* prima la frase scritta apposta per la parola (src/data/examples), poi quella trovata nel resto dell'app */
   function example(k) {
     var x = typeof EXAMPLES !== "undefined" && EXAMPLES[k];
-    if (x) return [pyOf(x[0]), x[0], x[1]];
+    if (x) return [pyOf(x[0], k), x[0], x[1]];
     var e = exIndex()[k]; if (!e) return null;
     return e[0] ? e : [pyOf(e[1]), e[1], e[2]];
   }
