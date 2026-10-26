@@ -103,3 +103,4 @@ body:not(.course-it) .dock-it { display: none; }
 .it-tile .th { font-family: inherit; font-size: 18px; }
 .dock.dock-it { grid-template-columns: repeat(5, 1fr); }
 body.course-it #set-contrib { display: none !important; }
+body.course-it #find-btn { display: none !important; }   /* la ricerca universale per ora copre il corso di cinese */

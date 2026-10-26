@@ -87,4 +87,13 @@ td.hz .m-hz, .cd-hz, .fam-card .lh { -webkit-touch-callout: none; -webkit-user-s
 .fw .btns { grid-column: 2; grid-row: 1 / span 3; }
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.16s; }
+  /* cambio di scheda: la pagina scivola di lato, nella direzione del dock (core.js mette data-dir) */
+  html[data-dir="next"]::view-transition-old(root) { animation: vt-out-l .22s ease both; }
+  html[data-dir="next"]::view-transition-new(root) { animation: vt-in-r .22s ease both; }
+  html[data-dir="prev"]::view-transition-old(root) { animation: vt-out-r .22s ease both; }
+  html[data-dir="prev"]::view-transition-new(root) { animation: vt-in-l .22s ease both; }
+  @keyframes vt-out-l { to { transform: translateX(-28px); opacity: 0; } }
+  @keyframes vt-out-r { to { transform: translateX(28px); opacity: 0; } }
+  @keyframes vt-in-r { from { transform: translateX(28px); opacity: 0; } }
+  @keyframes vt-in-l { from { transform: translateX(-28px); opacity: 0; } }
 }

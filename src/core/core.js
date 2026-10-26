@@ -911,6 +911,9 @@
   /* ---- schede ---- */
   var TABS = ["path", "words", "study", "build"];
   function show(name, instant) {
+    /* la pagina nuova entra dal lato della scheda: da destra se è più avanti nel dock, da sinistra se è prima */
+    var from = TABS.filter(function (t) { return !document.getElementById("view-" + t).hidden; })[0], di = TABS.indexOf(name) - TABS.indexOf(from);
+    if (from && di) document.documentElement.setAttribute("data-dir", di > 0 ? "next" : "prev");
     var run = function () {
       if (name !== "study") CP.focusMode(false);
       TABS.forEach(function (t) {
@@ -928,7 +931,7 @@
       try { localStorage.setItem("cp-tab", name); } catch (e) {}
     };
     if (!instant && document.startViewTransition && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-      try { document.startViewTransition(run); } catch (e) { run(); }
+      try { var vt = document.startViewTransition(run); if (vt && vt.finished) vt.finished.then(function () { document.documentElement.removeAttribute("data-dir"); }, function () {}); } catch (e) { run(); }
     } else run();
   }
   CP.show = show;

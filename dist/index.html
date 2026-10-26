@@ -446,6 +446,15 @@ td.hz .m-hz, .cd-hz, .fam-card .lh { -webkit-touch-callout: none; -webkit-user-s
 .fw .btns { grid-column: 2; grid-row: 1 / span 3; }
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.16s; }
+  /* cambio di scheda: la pagina scivola di lato, nella direzione del dock (core.js mette data-dir) */
+  html[data-dir="next"]::view-transition-old(root) { animation: vt-out-l .22s ease both; }
+  html[data-dir="next"]::view-transition-new(root) { animation: vt-in-r .22s ease both; }
+  html[data-dir="prev"]::view-transition-old(root) { animation: vt-out-r .22s ease both; }
+  html[data-dir="prev"]::view-transition-new(root) { animation: vt-in-l .22s ease both; }
+  @keyframes vt-out-l { to { transform: translateX(-28px); opacity: 0; } }
+  @keyframes vt-out-r { to { transform: translateX(28px); opacity: 0; } }
+  @keyframes vt-in-r { from { transform: translateX(28px); opacity: 0; } }
+  @keyframes vt-in-l { from { transform: translateX(-28px); opacity: 0; } }
 }
 
 /* ---- styles/components.css ---- */
@@ -752,6 +761,17 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 .hsk-b { display: inline-block; vertical-align: middle; font: 700 13px/1 var(--f-body); letter-spacing: .02em; padding: 3px 6px; border-radius: 6px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); white-space: nowrap; }
 .hsk-b.out { background: var(--chip); color: var(--muted); }
 .fc .hsk-b { margin-left: 6px; }
+/* «Cerca ovunque» (ui/finder.js) */
+.fd { display: grid; gap: 10px; }
+.fd-q { width: 100%; min-height: 48px; font-size: 17px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.fd-res { display: grid; gap: 6px; }
+.fd-g { margin: 8px 2px 0; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.fd-it { display: grid; grid-template-columns: 44px 1fr; gap: 10px; align-items: center; text-align: left; width: 100%; min-height: 52px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.fd-it:active { transform: scale(.985); }
+.fd-ico { font-size: 22px; text-align: center; } .fd-hz { font-family: var(--f-han); font-size: 24px; text-align: center; }
+.fd-t { display: grid; gap: 2px; min-width: 0; } .fd-t b { font-size: 16px; } .fd-t i { font-style: normal; font-size: 14px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stop.flash .scard { animation: fd-flash 1.6s ease; }
+@keyframes fd-flash { 0%, 60% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--seal) 35%, transparent); } 100% { box-shadow: var(--shadow); } }
 
 /* ---- styles/brand-audio.css ---- */
 /* ===== V5: componenti nuovi ===== */
@@ -923,6 +943,7 @@ body:not(.course-it) .dock-it { display: none; }
 .it-tile .th { font-family: inherit; font-size: 18px; }
 .dock.dock-it { grid-template-columns: repeat(5, 1fr); }
 body.course-it #set-contrib { display: none !important; }
+body.course-it #find-btn { display: none !important; }   /* la ricerca universale per ora copre il corso di cinese */
 
 /* ---- styles/categories.css ---- */
 /* ===== V6.5: categorie (pills), Pensiero esteso, Puzzle ===== */
@@ -1250,6 +1271,7 @@ tr.flash > td { background: var(--chip); transition: background .3s; }
     <button type="button" id="mini-logo" class="mini-logo" aria-label="Torna in cima" hidden><svg viewBox="300 30 200 200" aria-hidden="true" focusable="false"><use href="#mandarin-symbol"/></svg></button>
     <button type="button" class="gpill" id="game-pill" aria-label="Il tuo cammino"></button>
     <div class="grp" role="group" aria-label="Strumenti" data-i18n-aria="bar.tools">
+      <button type="button" id="find-btn" class="iconbtn" aria-label="Cerca ovunque: strumenti, lezioni, dialoghi, tappe e parole" title="Cerca ovunque" data-i18n-aria="bar.find"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
       <button type="button" id="guide-btn" class="iconbtn" aria-label="Modalità guida: ascolta camminando" title="Modalità guida" data-i18n-aria="bar.guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 15h-3v5h2a1 1 0 0 0 1-1z"/></svg></button>
       <button type="button" id="settings-btn" class="iconbtn" aria-label="Impostazioni: tema, caratteri, audio, voce, backup" title="Impostazioni" data-i18n-aria="bar.settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
@@ -14045,7 +14067,7 @@ I18N.it = {
   "wel.title": "Benvenuto in màndarínō", "wel.intro": "{n} parole per parlare, nell'ordine in cui servono. Ogni parola si impara in tre passi: come si legge, come si scrive, cosa vuol dire.",
   "wel.read": "1 · si legge", "wel.write": "2 · si scrive", "wel.mean": "3 · significa", "wel.tones": "I colori sono i toni: rosso alto e piatto, verde sale, blu scende e risale, viola cade.",
   "wel.goal": "Quante parole nuove al giorno?", "wel.goalHint": "Si cambia quando vuoi in Studia → Personalizza. Meglio poche ogni giorno che tante una volta.", "wel.start": "Inizia con {n} parole",
-  "pill.aria": "Il tuo cammino: {r}, {s} giorni di fila, {x} punti. Apri il percorso.", "rank.toast": "Nuovo grado: {r}", "goal.toast": "Obiettivo di oggi raggiunto: {n} parole.", "jk.aria": "Jukebox: {s}. Tocca per scegliere la musica", "jk.on": "acceso", "jk.off": "spento", "jk.title": "🎵 Musica per studiare", "jk.hint": "22 brani originali in loop. Si fermano da soli quando usi il microfono.", "jk.loading": "Carico {t}…", "jk.errFile": "Aperta da file, l'app non può leggere i brani: usa l'app Android o il sito.", "jk.err": "Brano non disponibile: controlla la connessione e riprova.", "jk.off1": "Offline: {n} di {tot} brani salvati sul telefono.", "jk.offAll": "Offline: tutti i {tot} brani sono sul telefono.", "jk.dl": "⬇ Scarica tutta la musica ({mb} MB)", "jk.dling": "Scarico {n} di {tot}…", "jk.dlFail": "{n} brani non scaricati: riprova con la connessione.", "jk.mAll": "Tutte", "jk.mCalm": "🧘 Calma", "jk.mFocus": "🎯 Concentrazione", "jk.mEnergy": "⚡ Energia", "jk.choose": "Scegli la musica", "jk.stop": "⏸ Spegni", "jk.start": "▶ Accendi", "jk.stopLong": "⏸ Spegni la musica", "jk.startLong": "▶ Accendi la musica", "jk.next": "⏭ Prossima", "jk.all": "Tutte, in ordine casuale", "jk.rand": "Casuali · {m}", "jk.cycle": "Ogni brano suona per intero, poi parte il successivo; finito il giro si rimescola", "jk.nowOff": "Spento.", "jk.nowHold": "In pausa: il microfono è aperto.", "jk.nowWait": "Si avvia al prossimo tocco…", "jk.now": "In ascolto: {t}", "jk.left": "prossima tra {t}", "jk.music": "🎵 Musica", "jk.fx": "🔔 Effetti", "jk.auto": "Abbina la musica all'attività (⚡ nella Sfida, 🎯 nello studio)", "snd.title": "Suono del dispositivo", "snd.state": "Audio: {s}.", "snd.running": "attivo", "snd.none": "non ancora avviato (tocca un pulsante)", "snd.susp": "in pausa: tocca «Prova il suono»", "snd.test": "🔔 Prova il suono", "snd.ok": "attivo. Se non hai sentito il suono, controlla volume e tasto silenzioso del telefono.", "snd.mute": "Sei in modalità muto: tocca 🔇 in alto per riattivare gli effetti.", "apk.title": "App Android", "apk.ver": "Versione {v}. Gli aggiornamenti si installano sopra questa, senza perdere i progressi.", "mic.line": "Microfono: {p}. {o}", "mic.granted": "permesso dato", "mic.denied": "bloccato: consentilo dalle impostazioni del browser", "mic.prompt": "lo chiedo la prima volta che serve", "mic.unknown": "stato del permesso sconosciuto", "mic.open": "Adesso è aperto (si chiude da solo dopo 45 secondi di inattività).", "mic.closed": "Adesso è chiuso.", "mic.sr": " Riconoscimento vocale presente (serve internet).", "mic.nosr": " Riconoscimento vocale assente: il 🎤 registra e confronta.", "mic.closedToast": "Microfono chiuso.", "set.credits": "Crediti e licenze",
+  "pill.aria": "Il tuo cammino: {r}, {s} giorni di fila, {x} punti. Apri il percorso.", "rank.toast": "Nuovo grado: {r}", "goal.toast": "Obiettivo di oggi raggiunto: {n} parole.", "bar.find": "Cerca ovunque: strumenti, lezioni, dialoghi, tappe e parole", "find.title": "Cerca ovunque", "find.ph": "Una parola, una lezione, uno strumento…", "find.none": "Niente. Prova con una parola italiana, il pinyin senza toni o un carattere.", "jk.aria": "Jukebox: {s}. Tocca per scegliere la musica", "jk.on": "acceso", "jk.off": "spento", "jk.title": "🎵 Musica per studiare", "jk.hint": "22 brani originali in loop. Si fermano da soli quando usi il microfono.", "jk.loading": "Carico {t}…", "jk.errFile": "Aperta da file, l'app non può leggere i brani: usa l'app Android o il sito.", "jk.err": "Brano non disponibile: controlla la connessione e riprova.", "jk.off1": "Offline: {n} di {tot} brani salvati sul telefono.", "jk.offAll": "Offline: tutti i {tot} brani sono sul telefono.", "jk.dl": "⬇ Scarica tutta la musica ({mb} MB)", "jk.dling": "Scarico {n} di {tot}…", "jk.dlFail": "{n} brani non scaricati: riprova con la connessione.", "jk.mAll": "Tutte", "jk.mCalm": "🧘 Calma", "jk.mFocus": "🎯 Concentrazione", "jk.mEnergy": "⚡ Energia", "jk.choose": "Scegli la musica", "jk.stop": "⏸ Spegni", "jk.start": "▶ Accendi", "jk.stopLong": "⏸ Spegni la musica", "jk.startLong": "▶ Accendi la musica", "jk.next": "⏭ Prossima", "jk.all": "Tutte, in ordine casuale", "jk.rand": "Casuali · {m}", "jk.cycle": "Ogni brano suona per intero, poi parte il successivo; finito il giro si rimescola", "jk.nowOff": "Spento.", "jk.nowHold": "In pausa: il microfono è aperto.", "jk.nowWait": "Si avvia al prossimo tocco…", "jk.now": "In ascolto: {t}", "jk.left": "prossima tra {t}", "jk.music": "🎵 Musica", "jk.fx": "🔔 Effetti", "jk.auto": "Abbina la musica all'attività (⚡ nella Sfida, 🎯 nello studio)", "snd.title": "Suono del dispositivo", "snd.state": "Audio: {s}.", "snd.running": "attivo", "snd.none": "non ancora avviato (tocca un pulsante)", "snd.susp": "in pausa: tocca «Prova il suono»", "snd.test": "🔔 Prova il suono", "snd.ok": "attivo. Se non hai sentito il suono, controlla volume e tasto silenzioso del telefono.", "snd.mute": "Sei in modalità muto: tocca 🔇 in alto per riattivare gli effetti.", "apk.title": "App Android", "apk.ver": "Versione {v}. Gli aggiornamenti si installano sopra questa, senza perdere i progressi.", "mic.line": "Microfono: {p}. {o}", "mic.granted": "permesso dato", "mic.denied": "bloccato: consentilo dalle impostazioni del browser", "mic.prompt": "lo chiedo la prima volta che serve", "mic.unknown": "stato del permesso sconosciuto", "mic.open": "Adesso è aperto (si chiude da solo dopo 45 secondi di inattività).", "mic.closed": "Adesso è chiuso.", "mic.sr": " Riconoscimento vocale presente (serve internet).", "mic.nosr": " Riconoscimento vocale assente: il 🎤 registra e confronta.", "mic.closedToast": "Microfono chiuso.", "set.credits": "Crediti e licenze",
   "bk.done": "Backup creato: {n}. Conservalo in un posto sicuro.", "bk.bad": "Il file non è un backup valido.", "bk.old": "Progressi del vecchio formato uniti. Ricarico…", "bk.imported": "{n} voci importate. Ricarico…", "bk.unknown": "File non riconosciuto.", "course.aria": "Corso"
 };
 </script>
@@ -14090,7 +14112,7 @@ I18N.zh = {
   "wel.title": "欢迎使用 màndarínō", "wel.intro": "{n} 个常用词，按需要的顺序排列。每个词分三步学：怎么读，怎么写，是什么意思。",
   "wel.read": "1 · 读音", "wel.write": "2 · 写法", "wel.mean": "3 · 意思", "wel.tones": "颜色代表声调：红色高平，绿色上升，蓝色降升，紫色下降。",
   "wel.goal": "每天学几个新词？", "wel.goalHint": "随时可以在「学习 → 自定义」里修改。每天少学一点，比一次学很多更好。", "wel.start": "从 {n} 个词开始",
-  "pill.aria": "我的进度：{r}，连续学习 {s} 天，{x} 分。", "rank.toast": "新等级：{r}", "goal.toast": "今天的目标完成了：{n} 个词。", "jk.aria": "音乐：{s}。点一下选择音乐", "jk.on": "开", "jk.off": "关", "jk.title": "🎵 学习时的音乐", "jk.hint": "22 首原创曲目，循环播放。使用麦克风时会自动暂停。", "jk.loading": "正在加载{t}…", "jk.errFile": "从本地文件打开时无法读取音乐：请使用安卓应用或网站。", "jk.err": "无法播放这首曲目：请检查网络后重试。", "jk.off1": "离线：{tot} 首中已保存 {n} 首。", "jk.offAll": "离线：{tot} 首曲目都已保存在手机上。", "jk.dl": "⬇ 下载全部音乐（{mb} MB）", "jk.dling": "正在下载第 {n} 首，共 {tot} 首…", "jk.dlFail": "有 {n} 首没有下载成功：请联网后重试。", "jk.mAll": "全部", "jk.mCalm": "🧘 平静", "jk.mFocus": "🎯 专注", "jk.mEnergy": "⚡ 活力", "jk.choose": "选择音乐", "jk.stop": "⏸ 关闭", "jk.start": "▶ 打开", "jk.stopLong": "⏸ 关闭音乐", "jk.startLong": "▶ 打开音乐", "jk.next": "⏭ 下一首", "jk.all": "全部随机播放", "jk.rand": "随机 · {m}", "jk.cycle": "每首完整播放一遍后换下一首，全部播完后重新打乱", "jk.nowOff": "已关闭。", "jk.nowHold": "已暂停：麦克风正在使用。", "jk.nowWait": "下一次点击时开始播放……", "jk.now": "正在播放：{t}", "jk.left": "{t} 后换下一首", "jk.music": "🎵 音乐", "jk.fx": "🔔 音效", "jk.auto": "音乐配合当前活动（⚡ 挑战，🎯 学习）", "snd.title": "设备声音", "snd.state": "音频：{s}。", "snd.running": "已开启", "snd.none": "还没有启动（点任意按钮）", "snd.susp": "已暂停：请点「测试声音」", "snd.test": "🔔 测试声音", "snd.ok": "已开启。如果没有听到声音，请检查手机音量和静音键。", "snd.mute": "现在是静音模式：点上方的 🔇 重新打开音效。", "apk.title": "安卓应用", "apk.ver": "版本 {v}。新版本会直接覆盖安装，学习记录不会丢失。", "mic.line": "麦克风：{p}。{o}", "mic.granted": "已允许", "mic.denied": "已被阻止：请在浏览器设置里允许", "mic.prompt": "第一次需要时会询问你", "mic.unknown": "权限状态未知", "mic.open": "现在是打开的（45 秒不用会自动关闭）。", "mic.closed": "现在是关闭的。", "mic.sr": "有语音识别（需要联网）。", "mic.nosr": "没有语音识别：🎤 会录音并对比。", "mic.closedToast": "麦克风已关闭。", "set.credits": "致谢与许可",
+  "pill.aria": "我的进度：{r}，连续学习 {s} 天，{x} 分。", "rank.toast": "新等级：{r}", "goal.toast": "今天的目标完成了：{n} 个词。", "bar.find": "全局搜索：工具、课程、对话、关卡和词语", "find.title": "全局搜索", "find.ph": "一个词、一节课、一个工具……", "find.none": "没有找到。试试意大利语词、不带声调的拼音或汉字。", "jk.aria": "音乐：{s}。点一下选择音乐", "jk.on": "开", "jk.off": "关", "jk.title": "🎵 学习时的音乐", "jk.hint": "22 首原创曲目，循环播放。使用麦克风时会自动暂停。", "jk.loading": "正在加载{t}…", "jk.errFile": "从本地文件打开时无法读取音乐：请使用安卓应用或网站。", "jk.err": "无法播放这首曲目：请检查网络后重试。", "jk.off1": "离线：{tot} 首中已保存 {n} 首。", "jk.offAll": "离线：{tot} 首曲目都已保存在手机上。", "jk.dl": "⬇ 下载全部音乐（{mb} MB）", "jk.dling": "正在下载第 {n} 首，共 {tot} 首…", "jk.dlFail": "有 {n} 首没有下载成功：请联网后重试。", "jk.mAll": "全部", "jk.mCalm": "🧘 平静", "jk.mFocus": "🎯 专注", "jk.mEnergy": "⚡ 活力", "jk.choose": "选择音乐", "jk.stop": "⏸ 关闭", "jk.start": "▶ 打开", "jk.stopLong": "⏸ 关闭音乐", "jk.startLong": "▶ 打开音乐", "jk.next": "⏭ 下一首", "jk.all": "全部随机播放", "jk.rand": "随机 · {m}", "jk.cycle": "每首完整播放一遍后换下一首，全部播完后重新打乱", "jk.nowOff": "已关闭。", "jk.nowHold": "已暂停：麦克风正在使用。", "jk.nowWait": "下一次点击时开始播放……", "jk.now": "正在播放：{t}", "jk.left": "{t} 后换下一首", "jk.music": "🎵 音乐", "jk.fx": "🔔 音效", "jk.auto": "音乐配合当前活动（⚡ 挑战，🎯 学习）", "snd.title": "设备声音", "snd.state": "音频：{s}。", "snd.running": "已开启", "snd.none": "还没有启动（点任意按钮）", "snd.susp": "已暂停：请点「测试声音」", "snd.test": "🔔 测试声音", "snd.ok": "已开启。如果没有听到声音，请检查手机音量和静音键。", "snd.mute": "现在是静音模式：点上方的 🔇 重新打开音效。", "apk.title": "安卓应用", "apk.ver": "版本 {v}。新版本会直接覆盖安装，学习记录不会丢失。", "mic.line": "麦克风：{p}。{o}", "mic.granted": "已允许", "mic.denied": "已被阻止：请在浏览器设置里允许", "mic.prompt": "第一次需要时会询问你", "mic.unknown": "权限状态未知", "mic.open": "现在是打开的（45 秒不用会自动关闭）。", "mic.closed": "现在是关闭的。", "mic.sr": "有语音识别（需要联网）。", "mic.nosr": "没有语音识别：🎤 会录音并对比。", "mic.closedToast": "麦克风已关闭。", "set.credits": "致谢与许可",
   "bk.done": "备份已创建：{n}。请保存在安全的地方。", "bk.bad": "这个文件不是有效的备份。", "bk.old": "旧格式的学习记录已合并。正在重新加载……", "bk.imported": "已导入 {n} 项。正在重新加载……", "bk.unknown": "无法识别这个文件。", "course.aria": "课程"
 };
 </script>
@@ -15748,6 +15770,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   /* ---- schede ---- */
   var TABS = ["path", "words", "study", "build"];
   function show(name, instant) {
+    /* la pagina nuova entra dal lato della scheda: da destra se è più avanti nel dock, da sinistra se è prima */
+    var from = TABS.filter(function (t) { return !document.getElementById("view-" + t).hidden; })[0], di = TABS.indexOf(name) - TABS.indexOf(from);
+    if (from && di) document.documentElement.setAttribute("data-dir", di > 0 ? "next" : "prev");
     var run = function () {
       if (name !== "study") CP.focusMode(false);
       TABS.forEach(function (t) {
@@ -15765,7 +15790,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       try { localStorage.setItem("cp-tab", name); } catch (e) {}
     };
     if (!instant && document.startViewTransition && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-      try { document.startViewTransition(run); } catch (e) { run(); }
+      try { var vt = document.startViewTransition(run); if (vt && vt.finished) vt.finished.then(function () { document.documentElement.removeAttribute("data-dir"); }, function () {}); } catch (e) { run(); }
     } else run();
   }
   CP.show = show;
@@ -16564,6 +16589,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       var d = document.getElementById("pat-" + i);
       if (d) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: "center" }); }, 30); }
     },
+    setSlot: function () { sub = "lab"; labMode = "slot"; render(); },
     labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); },
     labLoad: function (t, p) { lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
     openLesson: function (id) { sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); }
@@ -16939,6 +16965,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       chapNav(sel) + '<div class="path">' + list + "</div>";
   }
   CP.pathDirty = function () { dirty = true; };
+  /* apre una tappa (dalla ricerca universale): il suo capitolo, la tappa aperta, centrata sullo schermo */
+  CP.pathOpen = function (id) {
+    var i = -1; SECTIONS.forEach(function (s, j) { if (s.id === id) i = j; }); if (i < 0) return;
+    var k = chapOf(i); chap = k; open[id] = true; if (isList(SECTIONS[i])) open["list" + k] = true; render();
+    var el = document.getElementById("stop-" + id); if (el) { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); setTimeout(function () { el.classList.remove("flash"); }, 1600); }
+  };
   CP.onPath = function () { render(); };
 
   function goWords(id) {
@@ -21423,6 +21455,145 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   });
   /* U7: toni anche con la forma (per chi non distingue il rosso dal verde) */
   try { if (localStorage.getItem("cp-toneshapes") === "1") document.body.classList.add("tone-shapes"); } catch (e) {}
+})();
+</script>
+<script>
+/* ---- ui/finder.js ---- */
+/* ===== màndarínō · «Cerca ovunque»: un solo campo per arrivare a tutto, da qualunque scheda (🔍 in alto, o il tasto /).
+   Cerca tra gli strumenti, le lezioni di grammatica, i dialoghi, le tappe del Percorso e le parole, e porta lì con un tocco.
+   Così lezioni, dialoghi e strumenti non sono più «nascosti» dentro Frasi o Studia: basta scriverne il nome. ===== */
+(function () {
+  var CP = window.CP, esc = CP.esc, T = CP.t;
+  var btn = document.getElementById("find-btn");
+  function norm(s) { return " " + String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9㐀-鿿]+/g, " ").trim() + " "; }
+  function go(tab, fn) { CP.closeSheet(); CP.show(tab); if (fn) setTimeout(fn, 60); }
+  /* strumenti: [icona, nome, parole chiave, azione] */
+  var TOOLS = [
+    ["🎴", "Studia adesso", "ripasso carte flashcard sessione oggi fsrs", function () { go("study", function () { if (CP.studyStart) CP.studyStart(); }); }],
+    ["🎧", "Allena l'orecchio", "toni ascolto orecchio ear", function () { go("study", function () { if (CP.mode) CP.mode.ear(); }); }],
+    ["⚡", "Sfida 60 secondi", "sfida gara veloce sprint tempo", function () { go("study", function () { if (CP.mode) CP.mode.sprint(); }); }],
+    ["📊", "I miei progressi", "progressi statistiche memoria dottore dei toni confusioni", function () { go("study"); }],
+    ["📘", "Lezioni di grammatica", "lezioni grammatica regole", function () { go("build", function () { CP.build.setSub("lessons"); }); }],
+    ["📐", "Modelli di frase", "modelli strutture schemi pattern", function () { go("build", function () { CP.build.setSub("pat"); }); }],
+    ["🧩", "Esercizi: ricomponi la frase", "esercizi traduci ordine frasi puzzle", function () { go("build", function () { CP.build.setSub("ex"); }); }],
+    ["🔬", "Laboratorio di frasi", "laboratorio traduttore costruisci frase correttore", function () { go("build", function () { CP.build.setSub("lab"); }); }],
+    ["🎰", "Slot delle frasi", "slot macchina combinazioni", function () { go("build", function () { CP.build.setSub("lab"); if (CP.build.setSlot) CP.build.setSlot(); }); }],
+    ["💬", "Dialoghi", "dialoghi conversazione parla roleplay", function () { go("build", function () { CP.build.setSub("dlg"); }); }],
+    ["🧠", "Ordine del pensiero", "pensiero ordine cinese italiano", function () { go("build", function () { CP.build.setSub("thought"); }); }],
+    ["📖", "Lettore", "lettore leggi testo raggi x incolla", function () { go("build", function () { CP.build.setSub("reader"); }); }],
+    ["🗺️", "Il percorso", "percorso tappe capitoli livelli hsk", function () { go("path"); }],
+    ["🔎", "Tutte le parole", "parole dizionario vocabolario tabella", function () { go("words"); }],
+    ["🚶", "Modalità guida", "guida ascolta camminando cuffie", function () { CP.closeSheet(); var g = document.getElementById("guide-btn"); if (g) g.click(); }],
+    ["🎵", "Musica (jukebox)", "musica jukebox brani tracce", function () { CP.closeSheet(); if (CP.jukeboxOpen) setTimeout(CP.jukeboxOpen, 60); }],
+    ["⚙️", "Impostazioni", "impostazioni tema voce audio caratteri backup ripristino lingua", function () { CP.closeSheet(); setTimeout(function () { var s = document.getElementById("settings-btn"); if (s) s.click(); }, 60); }]
+  ];
+  var IDX = null;
+  function index() {
+    if (IDX) return IDX;
+    IDX = [];
+    TOOLS.forEach(function (t) { IDX.push({ g: 0, ico: t[0], t: t[1], sub: "", k: norm(t[1] + " " + t[2]), run: t[3] }); });
+    (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) {
+      IDX.push({ g: 1, ico: "📘", t: l.title, sub: l.goal || "", k: norm(l.title + " " + (l.goal || "") + " " + (l.id || "")), run: function () { go("build", function () { CP.build.openLesson(l.id); }); } });
+    });
+    (typeof DIALOGS !== "undefined" ? DIALOGS : []).forEach(function (d) {
+      IDX.push({ g: 2, ico: "💬", t: d.title, sub: d.sub || "", k: norm(d.title + " " + (d.sub || "")), run: function () { go("build", function () { CP.dlg.open(d.id); }); } });
+    });
+    SECTIONS.forEach(function (s) {
+      var t = s.title.replace(/^\d+\.\s*/, "");
+      IDX.push({ g: 3, ico: "🚩", t: t, sub: s.words.length + " parole", k: norm(t), run: function () { go("path", function () { if (CP.pathOpen) CP.pathOpen(s.id); }); } });
+    });
+    return IDX;
+  }
+  var GN = ["Strumenti", "Lezioni", "Dialoghi", "Tappe", "Parole"];
+  function results(q) {
+    var n = norm(q).trim(), out = [];
+    if (!n) return index().filter(function (x) { return x.g === 0; }).slice(0, 8);
+    var w = " " + n;
+    index().forEach(function (x) { var p = x.k.indexOf(w); if (p >= 0) out.push({ x: x, r: (p === 0 ? 0 : 1) + x.g * 0.01 }); });
+    out.sort(function (a, b) { return a.r - b.r; });
+    var res = out.slice(0, 14).map(function (o) { return o.x; });
+    /* le parole, con la stessa ricerca della scheda Parole (pinyin senza toni, caratteri, italiano) */
+    var sq = CP.search.query(q), Q = CP.ensureQ(), best = [];
+    for (var i = 0; i < CP.ORDER.length && best.length < 40; i++) { var r = CP.search.rank(Q[i], sq); if (r >= 0) best.push([r, i]); }
+    best.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+    best.slice(0, 8).forEach(function (b) {
+      var k = CP.ORDER[b[1]], wd = CP.WORDS[k];
+      res.push({ g: 4, ico: "", hz: wd.hz, py: wd.py, t: CP.gloss(wd), sub: "", run: function () { go("words", function () { CP.resetFilters(); var tr = CP.reveal(k); if (tr) { tr.classList.add("flash"); setTimeout(function () { tr.classList.remove("flash"); }, 1600); } }); } });
+    });
+    return res;
+  }
+  var cur = [];
+  function paint(q) {
+    cur = results(q);
+    var box = document.getElementById("fd-res"); if (!box) return;
+    if (!cur.length) { box.innerHTML = '<p class="muted small" style="margin:8px 2px">' + esc(T("find.none")) + "</p>"; return; }
+    var h = "", last = -1;
+    cur.forEach(function (x, i) {
+      if (x.g !== last) { h += '<div class="fd-g">' + GN[x.g] + "</div>"; last = x.g; }
+      h += '<button type="button" class="fd-it" data-fd="' + i + '">' +
+        (x.hz ? '<span class="fd-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="fd-t"><b>' + CP.pinyinHTML(x.py) + "</b><i>" + esc(x.t) + "</i></span>"
+              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"><b>' + esc(x.t) + "</b>" + (x.sub ? "<i>" + esc(x.sub) + "</i>" : "") + "</span>") + "</button>";
+    });
+    box.innerHTML = h;
+  }
+  function open() {
+    CP.openSheet('<div class="fd"><div class="fam-head"><div class="meta"><b>' + esc(T("find.title")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + '</button></div>' +
+      '<input type="search" id="fd-q" class="fd-q" autocomplete="off" placeholder="' + CP.attr(T("find.ph")) + '" aria-label="' + CP.attr(T("find.title")) + '" aria-controls="fd-res">' +
+      '<div id="fd-res" class="fd-res" role="list"></div></div>');
+    var q = document.getElementById("fd-q"); paint("");
+    q.focus();
+    q.addEventListener("input", function () { paint(q.value); });
+    q.addEventListener("keydown", function (e) { if (e.key === "Enter" && cur[0]) { e.preventDefault(); cur[0].run(); } });
+    document.getElementById("fd-res").addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("[data-fd]") : null; if (!b) return;
+      var x = cur[+b.getAttribute("data-fd")]; if (x) { CP.sfx("tap"); x.run(); }
+    });
+  }
+  CP.finder = open;
+  if (btn) btn.addEventListener("click", function () { CP.sfx("tap"); open(); });
+  document.addEventListener("keydown", function (e) {
+    var a = document.activeElement, typing = a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
+    if (typing || e.altKey) return;
+    if ((e.key === "k" && (e.ctrlKey || e.metaKey)) || (e.key === "/" && document.getElementById("view-words").hidden && !e.ctrlKey && !e.metaKey)) { e.preventDefault(); open(); }
+  });
+})();
+</script>
+<script>
+/* ---- ui/gestures.js ---- */
+/* ===== màndarínō · gesti: uno scorrimento orizzontale deciso sulla pagina passa alla scheda accanto (come le app di
+   sistema). Non scatta dove lo scorrimento ha già un altro senso: carte da girare, lavagna, cursori, campi di testo, righe
+   che scorrono di lato, fogli aperti, sessione di studio, corso di italiano. ===== */
+(function () {
+  var CP = window.CP, TABS = ["path", "words", "study", "build"], x0 = 0, y0 = 0, t0 = 0, ok = false;
+  function scrollsX(el) {
+    for (; el && el !== document.body; el = el.parentElement) {
+      if (el.scrollWidth > el.clientWidth + 4) { var o = getComputedStyle(el).overflowX; if (o === "auto" || o === "scroll") return true; }
+    }
+    return false;
+  }
+  function blocked(t) {
+    if (document.body.classList.contains("course-it") || document.body.classList.contains("in-session")) return true;
+    if (CP.studyActive && CP.studyActive()) return true;
+    if (CP.mode && CP.mode.active && CP.mode.active()) return true;
+    var fam = document.getElementById("fam"), jk = document.getElementById("jk-pop"), set = document.getElementById("settings");
+    if ((fam && !fam.hidden) || (jk && !jk.hidden) || (set && !set.hidden)) return true;
+    if (!t.closest || t.closest("input, textarea, select, canvas, .fc, .pad, [data-noswipe], .dock, .bar")) return true;
+    return scrollsX(t);
+  }
+  document.addEventListener("touchstart", function (e) {
+    ok = false; if (e.touches.length !== 1 || blocked(e.target)) return;
+    ok = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now();
+  }, { passive: true });
+  document.addEventListener("touchend", function (e) {
+    if (!ok) return; ok = false;
+    var p = e.changedTouches[0], dx = p.clientX - x0, dy = p.clientY - y0, dt = Date.now() - t0;
+    if (dt > 700 || Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 2.2) return;
+    /* dal bordo sinistro è il gesto «indietro» del sistema: non lo si contende */
+    if (x0 < 24 && dx > 0) return;
+    var cur = TABS.filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0], i = TABS.indexOf(cur), j = i + (dx < 0 ? 1 : -1);
+    if (i < 0 || j < 0 || j >= TABS.length) { if (CP.haptic) CP.haptic(6); return; }
+    CP.show(TABS[j]); if (CP.haptic) CP.haptic(10);
+  }, { passive: true });
 })();
 </script>
 <script>

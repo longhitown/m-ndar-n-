@@ -118,6 +118,12 @@
       chapNav(sel) + '<div class="path">' + list + "</div>";
   }
   CP.pathDirty = function () { dirty = true; };
+  /* apre una tappa (dalla ricerca universale): il suo capitolo, la tappa aperta, centrata sullo schermo */
+  CP.pathOpen = function (id) {
+    var i = -1; SECTIONS.forEach(function (s, j) { if (s.id === id) i = j; }); if (i < 0) return;
+    var k = chapOf(i); chap = k; open[id] = true; if (isList(SECTIONS[i])) open["list" + k] = true; render();
+    var el = document.getElementById("stop-" + id); if (el) { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); setTimeout(function () { el.classList.remove("flash"); }, 1600); }
+  };
   CP.onPath = function () { render(); };
 
   function goWords(id) {

@@ -364,6 +364,7 @@
       var d = document.getElementById("pat-" + i);
       if (d) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: "center" }); }, 30); }
     },
+    setSlot: function () { sub = "lab"; labMode = "slot"; render(); },
     labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); },
     labLoad: function (t, p) { lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
     openLesson: function (id) { sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); }
