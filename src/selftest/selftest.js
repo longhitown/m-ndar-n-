@@ -1,7 +1,7 @@
 /* ===== V5: #selftest — controlli automatici dentro l'app (apri la pagina con #selftest in fondo all'indirizzo) ===== */
 (function () {
   var CP = window.CP, esc = CP.esc;
-  var box = document.createElement("div"); box.id = "selftest"; box.hidden = true; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Autodiagnosi");
+  var box = document.createElement("div"); box.id = "selftest"; box.hidden = true; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Autodiagnosi"); box.setAttribute("lang", "it");   /* strumento per lo sviluppo: il rapporto resta in italiano */
   document.body.appendChild(box);
   var R = [];
   function add(name, ok, detail) { R.push({ name: name, ok: ok, detail: detail || "" }); }

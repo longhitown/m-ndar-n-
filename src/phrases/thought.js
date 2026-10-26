@@ -1,7 +1,8 @@
 /* ===== V6: Ordine del Pensiero (30 esempi in 6 categorie, animazione dei blocchi, modalità Puzzle) ===== */
 (function () {
   var CP = window.CP, esc = CP.esc, U = CP.u;
-  var TAGN = { chi: "Chi", when: "Quando", with: "Con chi", where: "Dove", do: "Fai", what: "Cosa", mod: "Com'è / di chi", qty: "Quanti", ba: "Oggetto (把)", ask: "Richiesta", how: "Come / con cosa", dur: "Quanto dura / volte", cause: "Causa", cond: "Se…", res: "Risultato" };
+  var T = CP.t, TAGN = {};
+  ["chi", "when", "with", "where", "do", "what", "mod", "qty", "ba", "ask", "how", "dur", "cause", "cond", "res"].forEach(function (k) { TAGN[k] = T("tg." + k); });
   var idx = 0, mode = "zh", tcat = "", tview = "study";   /* mode: ordine mostrato; tview: studia / puzzle */
   try { tcat = localStorage.getItem("cp-tcat") || ""; tview = localStorage.getItem("cp-tview") || "study"; } catch (e) {}
   if (tcat && !THINK_CATS.some(function (c) { return c[0] === tcat; })) tcat = "";
@@ -14,23 +15,23 @@
   function seq(m) { var e = ex(); return m === "it" ? e.order : e.blocks.map(function (_, i) { return i; }); }
   function blockHTML(i, tag, extra) {
     var b = ex().blocks[i];
-    var inner = (tag === false ? "" : '<span class="tg ' + b[0] + '">' + (TAGN[b[0]] || b[0]) + "</span>") + '<span class="bp">' + CP.pinyinHTML(b[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(b[2], b[1]) + '</span><span class="bi">' + esc(b[3]) + "</span>";
+    var inner = (tag === false ? "" : '<span class="tg ' + b[0] + '">' + (TAGN[b[0]] || b[0]) + "</span>") + '<span class="bp">' + CP.pinyinHTML(b[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(b[2], b[1]) + '</span><span class="bi" lang="it">' + esc(b[3]) + "</span>";
     return '<div class="tb ' + b[0] + '" data-b="' + i + '">' + inner + "</div>";
   }
   function zhLine(e) { return { py: e.blocks.map(function (b) { return b[1]; }).join(" "), hz: e.blocks.map(function (b) { return b[2]; }).join("") }; }
   function pills() {
-    var all = '<button type="button" data-tcat=""' + (!tcat ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">Tutti · " + THINK.length + "</button>";
-    return '<div class="cpills" role="group" aria-label="Categorie di Pensiero">' + all + THINK_CATS.map(function (c) {
+    var all = '<button type="button" data-tcat=""' + (!tcat ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + T("path.all") + " · " + THINK.length + "</button>";
+    return '<div class="cpills" role="group" aria-label="' + CP.attr(T("th.cats")) + '">' + all + THINK_CATS.map(function (c) {
       var n = THINK.filter(function (x) { return x.cat === c[0]; }).length;
-      return '<button type="button" data-tcat="' + c[0] + '"' + (tcat === c[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '><span aria-hidden="true">' + c[1] + "</span> " + esc(c[2]) + " · " + n + "</button>";
+      return '<button type="button" data-tcat="' + c[0] + '"' + (tcat === c[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '><span aria-hidden="true">' + c[1] + '</span> <span lang="it">' + esc(c[2]) + "</span> · " + n + "</button>";
     }).join("") + "</div>";
   }
   function viewSwitch() {
-    return '<div class="seg inner" role="group" aria-label="Modalità"><button type="button" data-tview="study"' + (tview === "study" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>👁 Studia</button><button type="button" data-tview="puzzle"' + (tview === "puzzle" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🧩 Puzzle</button></div>";
+    return '<div class="seg inner" role="group" aria-label="' + CP.attr(T("th.mode")) + '"><button type="button" data-tview="study"' + (tview === "study" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">👁 " + T("th.study") + '</button><button type="button" data-tview="puzzle"' + (tview === "puzzle" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🧩 " + T("th.puzzle") + "</button></div>";
   }
   function dots() {
     var l = list();
-    return '<div class="mpick" role="group" aria-label="Esempi">' + l.map(function (g, i) { return '<button type="button" data-tk="' + g + '"' + (g === idx ? ' class="on"' : "") + ' aria-label="Esempio ' + (i + 1) + '">' + (i + 1) + "</button>"; }).join("") + "</div>";
+    return '<div class="mpick" role="group" aria-label="' + CP.attr(T("ls.examples")) + '">' + l.map(function (g, i) { return '<button type="button" data-tk="' + g + '"' + (g === idx ? ' class="on"' : "") + ' aria-label="' + CP.attr(T("th.exN", { n: i + 1 })) + '">' + (i + 1) + "</button>"; }).join("") + "</div>";
   }
   function legend(e) {
     var seen = []; e.blocks.forEach(function (b) { if (seen.indexOf(b[0]) < 0) seen.push(b[0]); });
@@ -38,18 +39,18 @@
   }
   function renderStudy() {
     var e = ex(), z = zhLine(e);
-    return '<p class="intro" style="margin-top:12px">In italiano la frase parte da chi agisce e si chiude con i dettagli. In cinese si va per cornici: prima chi e quando, poi dove, per ultima l\'azione.</p>' + legend(e) + dots() +
-      '<div class="sitbox"><span class="small muted" style="font-weight:700">PENSI COSÌ, IN ITALIANO</span><span class="stx">' + esc(e.it) + "</span></div>" +
-      '<div class="tdir"><span class="badge' + (mode === "it" ? " on" : "") + '" id="td-it">🇮🇹 ordine italiano</span><span aria-hidden="true">⇄</span><span class="badge' + (mode === "zh" ? " on" : "") + '" id="td-zh">🇨🇳 ordine cinese</span></div>' +
+    return '<p class="intro" style="margin-top:12px">' + T("th.lede") + "</p>" + legend(e) + dots() +
+      '<div class="sitbox"><span class="small muted" style="font-weight:700">' + T("th.thinkIt") + '</span><span class="stx" lang="it">' + esc(e.it) + "</span></div>" +
+      '<div class="tdir"><span class="badge' + (mode === "it" ? " on" : "") + '" id="td-it">🇮🇹 ' + T("th.itOrder") + '</span><span aria-hidden="true">⇄</span><span class="badge' + (mode === "zh" ? " on" : "") + '" id="td-zh">🇨🇳 ' + T("th.zhOrder") + "</span></div>" +
       '<div class="tbox" id="tbox" aria-live="polite">' + seq(mode).map(function (i) { return blockHTML(i); }).join("") + "</div>" +
-      '<div class="dlg-bar"><button type="button" class="btn-main" id="tk-flip" style="margin:0">🔄 Inverti Pensiero (IT ⇄ ZH)</button></div>' +
-      '<div class="sbox"><div class="lp">' + CP.pinyinHTML(z.py) + "</div>" + CP.toneCurveHTML(z.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="li">' + esc(e.zh) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div></div>" +
-      (e.note ? '<p class="tnote"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") +
-      (e.q ? '<p class="tnote">Le domande non spostano nulla: la parola interrogativa va dove andrebbe la risposta.</p>' : "") + nextBar();
+      '<div class="dlg-bar"><button type="button" class="btn-main" id="tk-flip" style="margin:0">🔄 ' + T("th.flip") + "</button></div>" +
+      '<div class="sbox"><div class="lp">' + CP.pinyinHTML(z.py) + "</div>" + CP.toneCurveHTML(z.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="li" lang="it">' + esc(e.zh) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div></div>" +
+      (e.note ? '<p class="tnote"><b>' + T("th.note") + '</b> <span lang="it">' + esc(e.note) + "</span></p>" : "") +
+      (e.q ? '<p class="tnote">' + T("th.q") + "</p>" : "") + nextBar();
   }
   function nextBar() {
     var l = list(), p = l.indexOf(idx);
-    return '<div class="acts tk-nav"><button type="button" data-tnav="-1"' + (p <= 0 ? " disabled" : "") + '>‹ Prima</button><button type="button" data-tnav="1"' + (p >= l.length - 1 ? " disabled" : "") + '>Dopo ›</button></div>';
+    return '<div class="acts tk-nav"><button type="button" data-tnav="-1"' + (p <= 0 ? " disabled" : "") + ">‹ " + T("th.prev") + '</button><button type="button" data-tnav="1"' + (p >= l.length - 1 ? " disabled" : "") + ">" + T("th.next") + " ›</button></div>";
   }
   /* ---- puzzle ---- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -72,27 +73,27 @@
     var e = ex(), n = e.blocks.length, z = zhLine(e);
     var ans = pz.ans.map(function (b, pos) {
       var cls = pz.state === "ko" && pz.bad.indexOf(pos) >= 0 ? " wrong" : (pz.state === "ok" ? " right" : "");
-      return '<button type="button" class="tb pzb' + cls + '" data-pzun="' + pos + '"' + (pz.state === "ok" ? " disabled" : "") + ' aria-label="Togli ' + CP.attr(e.blocks[b][2]) + '">' + inner(b, pz.hint || pz.state !== "play") + "</button>";
+      return '<button type="button" class="tb pzb' + cls + '" data-pzun="' + pos + '"' + (pz.state === "ok" ? " disabled" : "") + ' aria-label="' + CP.attr(T("th.remove", { t: e.blocks[b][2] })) + '">' + inner(b, pz.hint || pz.state !== "play") + "</button>";
     }).join("");
     var slots = ""; for (var k = pz.ans.length; k < n; k++) slots += '<span class="pz-slot" aria-hidden="true">' + (k + 1) + "</span>";
     var pool = pz.pool.filter(function (b) { return pz.ans.indexOf(b) < 0; }).map(function (b) {
       return '<button type="button" class="tb pzb" data-pzpick="' + b + '">' + inner(b, false) + "</button>";
     }).join("");
     var msg = "";
-    if (pz.state === "ok") msg = '<div class="done-card" id="pz-done"><b>' + (pz.miss ? "Giusto, al tentativo " + (pz.miss + 1) + "." : "Giusto al primo colpo.") + "</b><span>" + esc(e.zh) + '</span><div class="lp">' + CP.pinyinHTML(z.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div>" + (e.note ? '<p class="tnote" style="margin:8px 0 0"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") + '<div class="acts" style="margin:8px 0 0"><button type="button" class="btn-main" data-pznext style="margin:0">Prossimo ›</button></div></div>';
+    if (pz.state === "ok") msg = '<div class="done-card" id="pz-done"><b>' + (pz.miss ? T("th.okN", { n: pz.miss + 1 }) : T("th.ok1")) + '</b><span lang="it">' + esc(e.zh) + '</span><div class="lp">' + CP.pinyinHTML(z.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div>" + (e.note ? '<p class="tnote" style="margin:8px 0 0"><b>' + T("th.note") + '</b> <span lang="it">' + esc(e.note) + "</span></p>" : "") + '<div class="acts" style="margin:8px 0 0"><button type="button" class="btn-main" data-pznext style="margin:0">' + T("th.nextOne") + " ›</button></div></div>";
     else if (pz.state === "ko") {
       var w = pz.bad[0], want = e.blocks[w][0];
-      msg = '<div class="warn" role="alert">Non ancora. Al posto n° ' + (w + 1) + ' il blocco non va bene: lì dovrebbe esserci «' + esc(TAGN[want] || want) + '». Tocca un blocco per toglierlo, oppure usa «Aiuto».</div>';
+      msg = '<div class="warn" role="alert">' + T("th.wrongAt", { n: w + 1, t: esc(TAGN[want] || want) }) + "</div>";
     }
-    return '<p class="intro" style="margin-top:12px">Ti do la frase in italiano. Tocca i blocchi nell\'<b>ordine cinese</b>: quando e dove prima, l\'azione dopo.</p>' + dots() +
-      '<div class="sitbox"><span class="small muted" style="font-weight:700">COSTRUISCI IN CINESE</span><span class="stx">' + esc(e.it) + "</span></div>" +
-      '<div class="tbox pz-ans" id="pz-ans" aria-live="polite" aria-label="La tua frase">' + ans + slots + "</div>" +
-      (pz.state === "ok" ? "" : '<div class="tbox pz-pool" id="pz-pool" aria-label="Blocchi da mettere in ordine">' + pool + "</div>") + msg +
-      (pz.state === "ok" ? "" : '<div class="acts"><button type="button" data-pzundo' + (pz.ans.length ? "" : " disabled") + '>↩ Annulla</button><button type="button" data-pzhint' + (pz.hint ? " disabled" : "") + '>💡 Aiuto</button><button type="button" data-pzreset>🔀 Rimescola</button></div>') +
-      '<p class="small muted" style="margin-top:10px">Puzzle risolti: <b>' + pzScore.ok + "</b> su " + pzScore.tot + " provati in questa sessione.</p>";
+    return '<p class="intro" style="margin-top:12px">' + T("th.pzLede") + "</p>" + dots() +
+      '<div class="sitbox"><span class="small muted" style="font-weight:700">' + T("th.build") + '</span><span class="stx" lang="it">' + esc(e.it) + "</span></div>" +
+      '<div class="tbox pz-ans" id="pz-ans" aria-live="polite" aria-label="' + CP.attr(T("lab.yours")) + '">' + ans + slots + "</div>" +
+      (pz.state === "ok" ? "" : '<div class="tbox pz-pool" id="pz-pool" aria-label="' + CP.attr(T("th.pool")) + '">' + pool + "</div>") + msg +
+      (pz.state === "ok" ? "" : '<div class="acts"><button type="button" data-pzundo' + (pz.ans.length ? "" : " disabled") + ">↩ " + T("th.undo") + '</button><button type="button" data-pzhint' + (pz.hint ? " disabled" : "") + ">💡 " + T("th.hint") + '</button><button type="button" data-pzreset>🔀 ' + T("th.shuffle") + "</button></div>") +
+      '<p class="small muted" style="margin-top:10px">' + T("th.score", { n: "<b>" + pzScore.ok + "</b>", tot: pzScore.tot }) + "</p>";
     function inner(b, withTag) {
       var bl = e.blocks[b];
-      return (withTag ? '<span class="tg ' + bl[0] + '">' + (TAGN[bl[0]] || bl[0]) + "</span>" : "") + '<span class="bp">' + CP.pinyinHTML(bl[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(bl[2], bl[1]) + '</span><span class="bi">' + esc(bl[3]) + "</span>";
+      return (withTag ? '<span class="tg ' + bl[0] + '">' + (TAGN[bl[0]] || bl[0]) + "</span>" : "") + '<span class="bp">' + CP.pinyinHTML(bl[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(bl[2], bl[1]) + '</span><span class="bi" lang="it">' + esc(bl[3]) + "</span>";
     }
   }
   function pzCheck() {

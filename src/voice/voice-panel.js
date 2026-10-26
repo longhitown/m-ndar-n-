@@ -96,7 +96,7 @@
     }
   }
 
-  var NAMES = { 1: "alto e piatto (1°)", 2: "che sale (2°)", 3: "che scende e risale (3°)", 4: "che cade (4°)" };
+  var NAMES = { 1: T("vp.t1"), 2: T("vp.t2"), 3: T("vp.t3"), 4: T("vp.t4") };
   var MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
 
   /* host: dove appendere il pannello; hz: la parola o la frase; o.note: una riga sopra (es. perché non c'è il riconoscimento) */
@@ -109,15 +109,15 @@
     var d = document.createElement("div"); d.className = "vp"; d.setAttribute("data-heard-host", "");
     d.innerHTML = '<div class="vp-top"><span class="han" lang="zh-CN">' + esc(clean) + "</span>" + (o.note ? '<span class="vp-note small">' + esc(o.note) + "</span>" : "") +
       '<button type="button" class="vp-x" data-vp-x aria-label="' + CP.attr(T("common.close")) + '">✕</button></div>' +
-      '<canvas class="vp-cv" aria-label="Curva dell\'altezza della tua voce, sopra la forma dei toni"></canvas>' +
-      '<div class="vp-ctl"><button type="button" class="vp-mic" data-vp-go aria-label="Parla">' + MIC_SVG + '</button>' +
+      '<canvas class="vp-cv" aria-label="' + CP.attr(T("vp.cv")) + '"></canvas>' +
+      '<div class="vp-ctl"><button type="button" class="vp-mic" data-vp-go aria-label="' + CP.attr(T("vp.speak")) + '">' + MIC_SVG + '</button>' +
       '<div class="vp-side"><p class="vp-st" aria-live="polite"></p><div class="vp-meter" aria-hidden="true"><i></i></div></div></div>' +
-      '<div class="acts vp-acts"><button type="button" class="btn-s" data-vp-me disabled>▶ La tua voce</button><button type="button" class="btn-s" data-vp-tts>🔊 Voce guida</button><button type="button" class="btn-s" data-vp-both disabled>⇄ Una dopo l\'altra</button></div>';
+      '<div class="acts vp-acts"><button type="button" class="btn-s" data-vp-me disabled>▶ ' + T("vp.me") + '</button><button type="button" class="btn-s" data-vp-tts>🔊 ' + T("vp.guide") + '</button><button type="button" class="btn-s" data-vp-both disabled>⇄ ' + T("vp.both") + "</button></div>";
     host.appendChild(d);
     var cv = d.querySelector("canvas"), st = d.querySelector(".vp-st"), go = d.querySelector("[data-vp-go]"), meter = d.querySelector(".vp-meter i");
     var me = d.querySelector("[data-vp-me]"), both = d.querySelector("[data-vp-both]"), ses = null, url = "", audio = null, res = null, anim = 0;
     function status(t, cls) { st.className = "vp-st" + (cls ? " " + cls : ""); st.innerHTML = t; }
-    status("Tocca il microfono e di' <b lang=\"zh-CN\">" + esc(clean) + "</b>. Mi fermo da solo quando smetti.");
+    status(T("vp.start", { w: '<b lang="zh-CN">' + esc(clean) + "</b>" }));
     paint(cv, syl, null, null);
     function level(v) { go.style.setProperty("--lv", v.toFixed(3)); meter.style.transform = "scaleX(" + v.toFixed(3) + ")"; }
     function playMe(then) {
@@ -128,14 +128,14 @@
       try { var pr = audio.play(); if (pr && pr.catch) pr.catch(done); } catch (e) { done(); }
     }
     function verdict(r) {
-      if (r.voiced < 6) { status("Ho sentito poca voce. Avvicina il telefono alla bocca e parla un po' più forte.", "ko"); CP.sfx("ko"); return; }
+      if (r.voiced < 6) { status(T("vp.little"), "ko"); CP.sfx("ko"); return; }
       var tag = r.score >= 70 ? "ok" : r.score >= 45 ? "mid" : "ko", h = '<span class="vp-score ' + tag + '">' + r.score + "%</span> ";
       if (syl.length === 1 && r.tone && NAMES[r.tone]) {
         var good = r.tone === syl[0].t || (syl[0].t === 5 && r.tone === 1) || r.score >= 85;   /* la curva sta nel nastro: vale più della regola */
-        h += (good ? "È il tono giusto: " + (NAMES[syl[0].t] || "neutro") + "." : "La tua voce sembra " + NAMES[r.tone] + ". " + "Qui serve " + (NAMES[syl[0].t] || "un tono neutro") + ": segui il nastro grigio.");
+        h += good ? T("vp.good", { t: NAMES[syl[0].t] || T("vp.t5") }) : T("vp.bad", { t: NAMES[r.tone], want: NAMES[syl[0].t] || T("vp.t5") });
         if (good && tag === "ko") tag = "mid";
-      } else h += tag === "ok" ? "La forma combacia bene con i toni." : tag === "mid" ? "Ci sei quasi: guarda dove la linea esce dal nastro (in arancione)." : "La forma è lontana dai toni: ascolta la voce guida e riprova con calma.";
-      status(h + ' <span class="muted">Giudizio indicativo.</span>', tag);
+      } else h += T(tag === "ok" ? "vp.ok" : tag === "mid" ? "vp.mid" : "vp.ko");
+      status(h + ' <span class="muted">' + T("vp.indic") + "</span>", tag);
       CP.sfx(tag === "ok" ? "ok" : tag === "mid" ? "tap" : "ko");
       if (tag === "ok") { CP.haptic && CP.haptic(18); if (CP.game && CP.game.xp) CP.game.xp(1); }
     }
@@ -143,26 +143,26 @@
       if (ses) { ses.stop(); return; }
       CP.stopSpeak(); try { if (audio) audio.pause(); } catch (e) {}
       cancelAnimationFrame(anim); res = null;
-      d.classList.add("on"); go.classList.add("listening"); go.setAttribute("aria-label", "Ferma");
-      status("Un attimo: ascolto il silenzio della stanza…");
+      d.classList.add("on"); go.classList.add("listening"); go.setAttribute("aria-label", T("vp.stop"));
+      status(T("vp.calib"));
       ses = CP.pitchSession({
         maxSec: Math.min(8, 1.2 + 0.45 * syl.length),
         onFrame: function (f) {
           level(f.level);
-          if (f.state === "wait") status("🔴 Ti ascolto: parla pure.");
-          else if (f.state === "voice") status("🔴 Ti sento…");
+          if (f.state === "wait") status("🔴 " + T("vp.wait"));
+          else if (f.state === "voice") status("🔴 " + T("vp.hear"));
           paint(cv, syl, f.pts, null);
         },
         onEnd: function (e) {
-          ses = null; level(0); d.classList.remove("on"); go.classList.remove("listening"); go.setAttribute("aria-label", "Parla di nuovo");
+          ses = null; level(0); d.classList.remove("on"); go.classList.remove("listening"); go.setAttribute("aria-label", T("vp.again"));
           if (e.blob) { if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(e.blob); me.disabled = false; both.disabled = false; }
           if (e.error && e.error !== "silence") {
             var n = e.error;
-            status(n === "NotAllowedError" || n === "SecurityError" ? "Il microfono è bloccato per questa pagina. Consentilo nelle impostazioni del browser (o dell'app). " + CP.frameBtn() : n === "NotFoundError" ? "Non trovo nessun microfono su questo dispositivo." : "Non riesco a usare il microfono (" + esc(n) + ").", "ko");
+            status(n === "NotAllowedError" || n === "SecurityError" ? T("vp.blocked") + " " + CP.frameBtn() : n === "NotFoundError" ? T("vp.nomic") : T("vp.err", { e: esc(n) }), "ko");
             if (CP.micBlocked && (n === "NotAllowedError" || n === "SecurityError")) CP.micBlocked();
             CP.sfx("ko"); return;
           }
-          if (e.error === "silence") { status("Non ho sentito la voce. Controlla che il microfono non sia coperto e riprova: il cerchio si muove quando ti sente.", "ko"); return; }
+          if (e.error === "silence") { status(T("vp.silence"), "ko"); return; }
           res = CP.pitchAnalyze(e.pts, syl.map(function (s) { return s.t; }));
           var t0 = performance.now();
           (function grow() { var p = Math.min(1, (performance.now() - t0) / 450); paint(cv, syl, null, res, p); if (p < 1) anim = requestAnimationFrame(grow); })();

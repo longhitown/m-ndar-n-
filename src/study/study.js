@@ -97,8 +97,8 @@
       '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
       (CP.homeNotice ? CP.homeNotice() : "") +
       '<details class="panel progress"><summary>' + T("study.progress") + "</summary>" +
-      '<p class="muted small" style="margin:0">Ogni parola passa prima sotto gli occhi, poi ti viene chiesta. Se la sbagli torna subito; se la sai, torna quando sta per sfuggirti (obiettivo: ricordarne il ' + Math.round(CP.srs.retention() * 100) + "%).</p>" +
-      '<div class="stats"><div class="stat"><b>' + c[0] + '</b><span>da imparare</span></div><div class="stat"><b>' + c[1] + '</b><span>in corso</span></div><div class="stat"><b>' + c[2] + "</b><span>le so già</span></div></div>" +
+      '<p class="muted small" style="margin:0">' + T("study.how", { p: Math.round(CP.srs.retention() * 100) }) + "</p>" +
+      '<div class="stats"><div class="stat"><b>' + c[0] + "</b><span>" + T("study.toLearn") + '</span></div><div class="stat"><b>' + c[1] + "</b><span>" + T("study.learning") + '</span></div><div class="stat"><b>' + c[2] + "</b><span>" + T("study.known") + "</span></div></div>" +
       '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
       (CP.homeProgress ? CP.homeProgress() : "") + "</details>" +
       (CP.homeBackup ? CP.homeBackup() : "");
@@ -119,7 +119,7 @@
     var h = "";
     if (set.py) h += '<div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" + CP.toneCurveHTML(w.py);
     if (set.hz) h += '<div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + "</div>";
-    if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (w.mine ? '<div class="cd-note mine-tag">✏️ tua correzione</div>' : "") + (set.py ? CP.polyNote(w) : "");
+    if (set.it) h += '<div class="cd-it" lang="it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note" lang="it">' + esc(w.note) + "</div>" : "") + (w.mine ? '<div class="cd-note mine-tag">✏️ ' + T("w.mine") + "</div>" : "") + (set.py ? CP.polyNote(w) : "");
     return h;
   }
   var TAGS = { pi: "sess.qPi", ip: "sess.qIp", hp: "sess.qHp" };
@@ -243,8 +243,8 @@
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
       var ex = example(w.key);
-      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + CP.hskBadge(w.hz) + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
-        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
+      h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + ' · <span lang="it">' + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span></span>" + CP.hskBadge(w.hz) + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
+        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();

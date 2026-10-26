@@ -76,18 +76,18 @@
       if (!AB.a || !vs.some(function (v) { return v.voiceURI === AB.a; })) AB.a = vs[0].voiceURI;
       if (!AB.b || !vs.some(function (v) { return v.voiceURI === AB.b; }) || AB.b === AB.a) AB.b = (vs.filter(function (v) { return v.voiceURI !== AB.a; })[0] || vs[1]).voiceURI;
       var opt = function (cur) { return vs.map(function (v) { return '<option value="' + CP.attr(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join(""); };
-      h += '<div class="small" style="font-weight:700;margin-top:12px">Confronta due voci</div>' +
+      h += '<div class="small" style="font-weight:700;margin-top:12px">' + CP.t("vo.ab") + "</div>" +
         '<div class="ab"><label>A<select id="ab-a">' + opt(AB.a) + '</select></label><label>B<select id="ab-b">' + opt(AB.b) + "</select></label></div>" +
-        '<div class="acts"><button type="button" class="btn-s" data-ab="a">▶ Ascolta A</button><button type="button" class="btn-s" data-ab="b">▶ Ascolta B</button></div>' +
-        '<div class="acts"><button type="button" class="btn-s" data-abpick="a">Usa A</button><button type="button" class="btn-s" data-abpick="b">Usa B</button></div>';
-    } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.</p>';
+        '<div class="acts"><button type="button" class="btn-s" data-ab="a">▶ ' + CP.t("vo.play", { x: "A" }) + '</button><button type="button" class="btn-s" data-ab="b">▶ ' + CP.t("vo.play", { x: "B" }) + "</button></div>" +
+        '<div class="acts"><button type="button" class="btn-s" data-abpick="a">' + CP.t("vo.use", { x: "A" }) + '</button><button type="button" class="btn-s" data-abpick="b">' + CP.t("vo.use", { x: "B" }) + "</button></div>";
+    } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">' + CP.t("vo.one") + "</p>";
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
     if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p></div>"; return h; }
     if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
-    h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App sul telefono (PWA)</div>' +
-      '<p class="small muted" style="margin:2px 0 6px">' + (ps && ps.standalone ? "Stai usando l'app installata." : ps && ps.http ? "Su https puoi aggiungerla alla schermata Home e usarla offline." : "Per installarla e avere il microfono senza richieste ripetute serve un indirizzo https: scarica il pacchetto e caricalo su GitHub + Cloudflare Pages.") + "</p>" +
-      '<button type="button" class="btn-s" id="pwa-dl">📦 Scarica pacchetto PWA per GitHub</button></div>';
+    h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">' + CP.t("pwa.title") + "</div>" +
+      '<p class="small muted" style="margin:2px 0 6px">' + CP.t(ps && ps.standalone ? "pwa.installed" : ps && ps.http ? "pwa.https" : "pwa.need") + "</p>" +
+      '<button type="button" class="btn-s" id="pwa-dl">📦 ' + CP.t("pwa.dl") + "</button></div>";
     return h;
   };
   function playVoice(uri) {

@@ -6,7 +6,7 @@
   var mode = null;      /* "ear" | "sprint" | null */
 
   /* ================= orecchio ================= */
-  var ROUNDS = 10, ear = null, TONE_NAMES = { 1: "alto e piatto", 2: "sale", 3: "scende e risale", 4: "cade secco" };
+  var ROUNDS = 10, ear = null, TONE_NAMES = { 1: CP.t("tone.1"), 2: CP.t("tone.2"), 3: CP.t("tone.3"), 4: CP.t("tone.4") }, T = CP.t;
   function earPool() {
     return CP.ORDER.map(function (k) { return W[k]; }).filter(function (w) {
       return Array.from(w.hz).length === 1 && CP.syllables(w.py).length === 1 && CP.tone(w.py) <= 4 && !(CP.POLY && CP.POLY.has(w.hz));
@@ -33,29 +33,29 @@
       var sample = ["mā", "má", "mǎ", "mà"][t - 1];
       var st = "";
       if (ear.answered) st = (t === CP.tone(ear.q.py)) ? " right" : (t === ear.picked ? " wrong" : "");
-      return '<button type="button" class="t' + t + st + '" data-etone="' + t + '"' + (ear.answered ? " disabled" : "") + ' aria-label="Tono ' + t + ", " + TONE_NAMES[t] + '">' + CP.toneCurveHTML(sample) + "<span>" + t + "° · " + TONE_NAMES[t] + "</span></button>";
+      return '<button type="button" class="t' + t + st + '" data-etone="' + t + '"' + (ear.answered ? " disabled" : "") + ' aria-label="' + CP.attr(T("ear.toneN", { n: t }) + ", " + TONE_NAMES[t]) + '">' + CP.toneCurveHTML(sample) + "<span>" + t + "° · " + TONE_NAMES[t] + "</span></button>";
     }).join("");
   }
   function earRender() {
-    var w = ear.q, pct = Math.round(ear.n / ROUNDS * 100), h = '<div class="sess"><button type="button" class="btn-quiet" id="m-quit">Esci</button>' +
+    var w = ear.q, pct = Math.round(ear.n / ROUNDS * 100), h = '<div class="sess"><button type="button" class="btn-quiet" id="m-quit">' + T("fx.leave") + "</button>" +
       '<div class="meter" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i class="k" style="width:' + pct + '%"></i></div><span class="cnt">' + ear.n + " / " + ROUNDS + "</span></div>";
-    h += '<div class="panel fc"><span class="tag">Che tono senti?</span>' +
-      '<button type="button" class="btn-main" style="margin:0;max-width:260px" data-eplay>🔊 Ascolta ancora</button>';
+    h += '<div class="panel fc"><span class="tag">' + T("ear.q") + "</span>" +
+      '<button type="button" class="btn-main" style="margin:0;max-width:260px" data-eplay>🔊 ' + T("ear.again") + "</button>";
     if (ear.answered) {
       var t = CP.tone(w.py), right = ear.picked === t;
-      h += '<p class="verdict ' + (right ? "ok" : "ko") + '" style="width:100%;text-align:left">' + (right ? "Giusto." : "Era il " + t + "° tono (" + TONE_NAMES[t] + ").") + "</p>" +
-        '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-it" style="font-size:20px">' + esc(w.it) + "</div>";
+      h += '<p class="verdict ' + (right ? "ok" : "ko") + '" style="width:100%;text-align:left">' + (right ? T("ex.right") : T("ear.was", { n: t, name: TONE_NAMES[t] })) + "</p>" +
+        '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-it" style="font-size:20px" lang="it">' + esc(w.it) + "</div>";
       var mates = (ear.groups[baseOf(w)] || []).filter(function (o) { return CP.tone(o.py) !== t; }).slice(0, 3);
       if (mates.length) {
-        h += '<div class="cd-ex"><span class="tag">Stessa sillaba, altro tono</span>' + mates.map(function (o) {
-          return '<div class="fw"><div class="lp">' + CP.pinyinHTML(o.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(o.hz, o.py) + '</div><div class="small muted">' + esc(o.it) + "</div>" + CP.audioBtns(o.hz, true) + "</div>";
+        h += '<div class="cd-ex"><span class="tag">' + T("ear.mates") + "</span>" + mates.map(function (o) {
+          return '<div class="fw"><div class="lp">' + CP.pinyinHTML(o.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(o.hz, o.py) + '</div><div class="small muted" lang="it">' + esc(o.it) + "</div>" + CP.audioBtns(o.hz, true) + "</div>";
         }).join("") + "</div>";
       }
     }
     h += '<div class="tonebtns">' + toneBtns() + "</div>";
     if (ear.answered) {
-      h += '<div class="acts cardacts">' + (CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + CP.attr(w.key) + '">〰️ Ripeti e guarda la curva</button>' : "") + "</div>" +
-        '<button type="button" class="btn-main" id="e-next" style="margin-top:0">' + (ear.n >= ROUNDS ? "Vedi il risultato" : "Avanti") + "</button>";
+      h += '<div class="acts cardacts">' + (CP.canScope && CP.canScope() ? '<button type="button" data-scope="' + CP.attr(w.key) + '">〰️ ' + T("ear.scope") + "</button>" : "") + "</div>" +
+        '<button type="button" class="btn-main" id="e-next" style="margin-top:0">' + T(ear.n >= ROUNDS ? "ear.result" : "common.next") + "</button>";
     }
     h += "</div>";
     root.innerHTML = h; window.scrollTo(0, 0);
@@ -70,9 +70,9 @@
   }
   function earDone() {
     mode = null; CP.focusMode(false);
-    root.innerHTML = '<h2 style="margin-top:20px">Orecchio ai toni</h2><div class="stats"><div class="stat"><b>' + ear.ok + "/" + ROUNDS + "</b><span>toni giusti</span></div></div>" +
-      '<p class="muted">' + (ear.ok >= 9 ? "Ottimo orecchio." : ear.ok >= 6 ? "Buon inizio: i toni 2 e 3 sono i più facili da confondere." : "Normale all'inizio. Ripeti ogni giorno: bastano due minuti.") + "</p>" +
-      '<button type="button" class="btn-main" id="ear-open">Un altro giro</button><button type="button" class="btn-main btn-quiet" id="m-quit" style="margin-top:10px">Torna a Studia</button>';
+    root.innerHTML = '<h2 style="margin-top:20px">' + T("ear.title") + '</h2><div class="stats"><div class="stat"><b>' + ear.ok + "/" + ROUNDS + "</b><span>" + T("ear.okN") + "</span></div></div>" +
+      '<p class="muted">' + T(ear.ok >= 9 ? "ear.r9" : ear.ok >= 6 ? "ear.r6" : "ear.r0") + "</p>" +
+      '<button type="button" class="btn-main" id="ear-open">' + T("ex.again") + '</button><button type="button" class="btn-main btn-quiet" id="m-quit" style="margin-top:10px">' + T("ear.back") + "</button>";
     window.scrollTo(0, 0);
   }
 
@@ -107,12 +107,12 @@
   }
   function sprintRender() {
     var left = Math.max(0, SP.dur - (Date.now() - SP.t0)), w = SP.q.w, m = mult();
-    root.innerHTML = '<div class="sprint-top"><button type="button" class="btn-quiet" id="m-quit" style="min-height:44px">Esci</button><span class="pts" id="sp-pts">' + SP.pts + '</span><span class="combo" id="sp-combo">' + (m > 1 ? "×" + m : "") + '</span><span id="sp-time">' + Math.ceil(left / 1000) + ' s</span></div>' +
+    root.innerHTML = '<div class="sprint-top"><button type="button" class="btn-quiet" id="m-quit" style="min-height:44px">' + T("fx.leave") + '</button><span class="pts" id="sp-pts">' + SP.pts + '</span><span class="combo" id="sp-combo">' + (m > 1 ? "×" + m : "") + '</span><span id="sp-time">' + Math.ceil(left / 1000) + ' s</span></div>' +
       '<div class="timebar" aria-hidden="true"><i id="sp-bar" style="width:' + (left / SP.dur * 100) + '%"></i></div>' +
       '<div class="panel fc"><div class="cd-hz" lang="zh-CN" style="font-size:calc(var(--hz)*2.4)">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" +
       '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + '</div>' +
-      '<div class="choices">' + SP.q.opts.map(function (o, i) { return '<button type="button" data-sp="' + i + '">' + esc(shortGloss(o)) + "</button>"; }).join("") + "</div></div>" +
-      '<p class="kbd-hint">Tastiera: <kbd>1</kbd>–<kbd>4</kbd> per rispondere</p>';
+      '<div class="choices">' + SP.q.opts.map(function (o, i) { return '<button type="button" data-sp="' + i + '">' + '<span lang="it">' + esc(shortGloss(o)) + "</span></button>"; }).join("") + "</div></div>" +
+      '<p class="kbd-hint">' + T("sp.kbd") + "</p>";
   }
   function sprintTick() {
     if (mode !== "sprint" || !SP) { clearInterval(sprintTimer); return; }
@@ -143,9 +143,9 @@
     clearInterval(sprintTimer); if (!SP || mode !== "sprint") return;
     mode = null; CP.focusMode(false); var s = SP; CP.stopSpeak();
     var rec = CP.game.setBest(s.pts); CP.game.xp(s.ok * 2);
-    root.innerHTML = '<h2 style="margin-top:20px">Tempo</h2><div class="stats"><div class="stat"><b>' + s.pts + "</b><span>punti</span></div><div class=\"stat\"><b>" + s.ok + "</b><span>giuste</span></div><div class=\"stat\"><b>" + s.bestStreak + "</b><span>serie migliore</span></div></div>" +
-      '<p class="' + (rec ? "verdict ok" : "muted") + '">' + (rec ? "Nuovo record: " + s.pts + " punti." : "Il tuo record è " + CP.game.best() + " punti.") + " Hai guadagnato " + (s.ok * 2) + " XP.</p>" +
-      '<button type="button" class="btn-main" id="sprint-open">Un\'altra sfida</button><button type="button" class="btn-main btn-quiet" id="m-quit" style="margin-top:10px">Torna a Studia</button>';
+    root.innerHTML = '<h2 style="margin-top:20px">' + T("sp.time") + '</h2><div class="stats"><div class="stat"><b>' + s.pts + "</b><span>" + T("sp.pts") + '</span></div><div class="stat"><b>' + s.ok + "</b><span>" + T("sp.ok") + '</span></div><div class="stat"><b>' + s.bestStreak + "</b><span>" + T("sp.best") + "</span></div></div>" +
+      '<p class="' + (rec ? "verdict ok" : "muted") + '">' + (rec ? T("sp.rec", { n: s.pts }) : T("sp.recOld", { n: CP.game.best() })) + " " + T("sp.xp", { n: s.ok * 2 }) + "</p>" +
+      '<button type="button" class="btn-main" id="sprint-open">' + T("sp.again") + '</button><button type="button" class="btn-main btn-quiet" id="m-quit" style="margin-top:10px">' + T("ear.back") + "</button>";
     SP = null; window.scrollTo(0, 0);
   }
   function quit() { clearInterval(sprintTimer); mode = null; SP = null; CP.stopSpeak(); CP.studyHome(); }

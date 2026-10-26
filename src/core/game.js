@@ -197,7 +197,7 @@
   CP.baseSyl = baseSyl;
   function matches(b) { return IT_PHONETICS.filter(function (r) { return r[0].test(b); }); }
   function trapHTML(list) {
-    return list.map(function (r) { return '<div class="trap"><b>⚠️ ' + esc(r[1]) + "</b>" + esc(r[2]) + "</div>"; }).join("");
+    return list.map(function (r) { return '<div class="trap" lang="it"><b>⚠️ ' + esc(r[1]) + "</b>" + esc(r[2]) + "</div>"; }).join("");
   }
   CP.phonBlock = function (py) {
     var seen = {}, all = [];
@@ -206,17 +206,17 @@
       matches(b).forEach(function (r) { if (all.indexOf(r) < 0) all.push(r); });
     });
     if (!all.length) return "";
-    return "<h4>Trappole di pronuncia</h4>" + trapHTML(all.slice(0, 4)) +
-      (all.length > 4 ? '<p class="small muted">Tocca le sillabe del pinyin nella tabella per vedere le altre.</p>' : "");
+    return "<h4>" + CP.t("ph.traps") + "</h4>" + trapHTML(all.slice(0, 4)) +
+      (all.length > 4 ? '<p class="small muted">' + CP.t("ph.more") + "</p>" : "");
   };
   CP.openPhon = function (syl, ctxHz) {
     var b = baseSyl(syl), t = CP.tone(syl), ms = matches(b);
     var ini = (b.match(/^(zh|ch|sh|[bpmfdtnlgkhjqxrzcsyw])?/) || ["", ""])[0], fin = b.slice(ini.length);
     var h = '<div class="phon"><div class="fam-head"><div class="meta"><h3>' + CP.pinyinHTML(syl) + "</h3>" +
-      '<div class="small muted">' + (ini ? "iniziale <b>" + esc(ini) + "</b> + " : "") + "finale <b>" + esc(fin || "—") + "</b></div></div>" +
-      (ctxHz ? CP.audioBtns(ctxHz, true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
-      CP.toneCurveHTML(syl) + '<p style="margin:6px 0 0">' + esc(TONE_TXT[t]) + "</p>";
-    h += ms.length ? "<h4>Radiologia fonetica</h4>" + trapHTML(ms) : '<div class="trap soft"><b>Nessuna trappola particolare</b>Questa sillaba si pronuncia più o meno come si legge. Cura soprattutto il tono.</div>';
+      '<div class="small muted">' + (ini ? CP.t("ph.ini") + " <b>" + esc(ini) + "</b> + " : "") + CP.t("ph.fin") + " <b>" + esc(fin || "—") + "</b></div></div>" +
+      (ctxHz ? CP.audioBtns(ctxHz, true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' +
+      CP.toneCurveHTML(syl) + '<p style="margin:6px 0 0" lang="it">' + esc(TONE_TXT[t]) + "</p>";
+    h += ms.length ? "<h4>" + CP.t("ph.xray") + "</h4>" + trapHTML(ms) : '<div class="trap soft"><b>' + CP.t("ph.none") + "</b>" + CP.t("ph.noneSub") + "</div>";
     h += "</div>";
     CP.openSheet(h);
   };

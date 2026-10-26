@@ -127,7 +127,7 @@
     return CP.t("jk.now", { t: t.ico + " " + esc(nm(t)) }) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· ' + CP.t("jk.left", { t: left() }) + "</span>" : "");
   }
   function popHTML() {
-    return '<div class="jk-card"><div class="jk-h"><b>🎵 Jukebox</b><button type="button" class="btn-s" data-jk-close aria-label="Chiudi">✕</button></div>' +
+    return '<div class="jk-card"><div class="jk-h"><b>' + CP.t("jk.music") + '</b><button type="button" class="btn-s" data-jk-close aria-label="' + CP.attr(CP.t("common.close")) + '">✕</button></div>' +
       '<p class="small muted jk-now" id="jk-now" aria-live="polite">' + nowLine() + "</p>" +
       '<div class="acts" style="margin:0 0 8px"><button type="button" class="btn-main" data-jk-toggle style="flex:1">' + (J.want ? CP.t("jk.stopLong") : CP.t("jk.startLong")) + '</button><button type="button" class="btn-s" data-jk-next' + (J.want ? "" : " disabled") + '>' + CP.t("jk.next") + '</button></div>' +
       '<label class="jk-vol small muted">' + CP.t("jk.music") + ' <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +

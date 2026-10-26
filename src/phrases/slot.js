@@ -1,6 +1,6 @@
 /* ===== V4d: slot machine di frasi + situazione casuale a tempo ===== */
 (function () {
-  var CP = window.CP, esc = CP.esc, U = CP.u;
+  var CP = window.CP, esc = CP.esc, U = CP.u, T = CP.t;
   var mi = 0, pick = [], sit = null, tick = 0, t0 = 0, LIMIT = 15, result = null, spinning = false;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function M() { return SLOTS[mi]; }
@@ -47,30 +47,30 @@
   function reelHTML(ci) {
     var c = M().cols[ci], o = c.o[pick[ci]];
     var okc = sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci]);
-    return '<div class="reel' + (okc ? " ok" : "") + '" data-col="' + ci + '"><span class="rl">' + esc(c.label) + ' <span class="hintc">· ' + (pick[ci] + 1) + "/" + c.o.length + '</span></span>' +
-      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
-      '<button type="button" data-spin="' + ci + '" aria-label="Sorteggia ' + CP.attr(c.label) + '">🎲</button></div>';
+    return '<div class="reel' + (okc ? " ok" : "") + '" data-col="' + ci + '"><span class="rl"><span lang="it">' + esc(c.label) + '</span> <span class="hintc">· ' + (pick[ci] + 1) + "/" + c.o.length + '</span></span>' +
+      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". " + T("slot.next")) + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi" lang="it">' + esc(o[2]) + "</span></button>" +
+      '<button type="button" data-spin="' + ci + '" aria-label="' + CP.attr(T("slot.spin1", { c: c.label })) + '">🎲</button></div>';
   }
   function outHTML() {
     var cmp = compose(), sd = sandhi(cmp.py);
     return '<div class="lp">' + CP.pinyinHTML(cmp.py) + "</div>" + CP.toneCurveHTML(cmp.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(cmp.hz, cmp.py) + "</div>" +
-      '<div class="li">Blocco per blocco: ' + esc(cmp.it) + "</div>" +
-      (sd ? '<div class="spoken" style="margin-top:4px"><span class="tag">Come si dice davvero</span><div class="sp">' + CP.pinyinHTML(sd) + '</div><div class="snote">Due 3° toni vicini: il primo sale, come un 2° tono.</div></div>' : "") +
+      '<div class="li">' + T("slot.blocks") + ' <span lang="it">' + esc(cmp.it) + "</span></div>" +
+      (sd ? '<div class="spoken" style="margin-top:4px"><span class="tag">' + T("ex.spoken") + '</span><div class="sp">' + CP.pinyinHTML(sd) + '</div><div class="snote">' + T("slot.sandhi") + "</div></div>" : "") +
       '<div class="acts">' + CP.audioBtns(cmp.hz) + "</div>";
   }
   function sitHTML() {
-    if (!sit && !result) return '<div class="sitbox"><span class="stx">Vuoi una prova? Ti do una situazione e 15 secondi per comporre la frase giusta.</span><div class="acts" style="margin:0"><button type="button" class="btn-main" data-sit style="margin:0">🎯 Genera situazione casuale</button></div></div>';
-    if (result) return '<div class="sitbox"><span class="stx">' + result.html + '</span><div class="acts" style="margin:0"><button type="button" class="btn-main" data-sit style="margin:0">🎯 Un\'altra situazione</button></div></div>';
-    return '<div class="sitbox"><span class="small muted" style="font-weight:700">SITUAZIONE · ' + LIMIT + ' SECONDI</span><span class="stx">' + esc(sit.t) + '</span><div class="timebar"><i id="sit-bar"></i></div><div class="acts" style="margin:0"><button type="button" class="btn-s" data-sit-give>Mi arrendo</button></div></div>';
+    if (!sit && !result) return '<div class="sitbox"><span class="stx">' + T("slot.sitAsk", { n: LIMIT }) + '</span><div class="acts" style="margin:0"><button type="button" class="btn-main" data-sit style="margin:0">🎯 ' + T("slot.sitGo") + "</button></div></div>";
+    if (result) return '<div class="sitbox"><span class="stx">' + result.html + '</span><div class="acts" style="margin:0"><button type="button" class="btn-main" data-sit style="margin:0">🎯 ' + T("slot.sitAgain") + "</button></div></div>";
+    return '<div class="sitbox"><span class="small muted" style="font-weight:700">' + T("slot.sitHead", { n: LIMIT }) + '</span><span class="stx" lang="it">' + esc(sit.t) + '</span><div class="timebar"><i id="sit-bar"></i></div><div class="acts" style="margin:0"><button type="button" class="btn-s" data-sit-give>' + T("slot.give") + "</button></div></div>";
   }
   function boxHTML() {
     var m = M();
-    return '<div class="mpick" role="group" aria-label="Matrici">' + SLOTS.map(function (s, i) { return '<button type="button" data-matrix="' + i + '"' + (i === mi ? ' class="on"' : "") + ">" + s.icon + " " + esc(s.title) + "</button>"; }).join("") + "</div>" +
-      '<p class="small muted" style="margin:10px 0 0">Tocca un blocco per cambiarlo, 🎲 per sorteggiarlo. La frase si ricompone da sola.</p>' +
+    return '<div class="mpick" role="group" aria-label="' + CP.attr(T("slot.matrices")) + '">' + SLOTS.map(function (s, i) { return '<button type="button" data-matrix="' + i + '"' + (i === mi ? ' class="on"' : "") + ">" + s.icon + ' <span lang="it">' + esc(s.title) + "</span></button>"; }).join("") + "</div>" +
+      '<p class="small muted" style="margin:10px 0 0">' + T("slot.howto") + "</p>" +
       sitHTML() +
       '<div class="reels">' + m.cols.map(function (_, i) { return reelHTML(i); }).join("") + "</div>" +
       '<div class="sbox" id="slot-out">' + outHTML() + "</div>" +
-      '<div class="dlg-bar"><button type="button" class="btn-main" data-spin-all style="margin:0">🎰 Gira tutto</button></div>';
+      '<div class="dlg-bar"><button type="button" class="btn-main" data-spin-all style="margin:0">🎰 ' + T("slot.spinAll") + "</button></div>";
   }
   function paint() {
     var b = document.getElementById("slot-box"); if (!b) return;
@@ -82,8 +82,8 @@
     Array.prototype.forEach.call(document.querySelectorAll("#slot-box .reel"), function (r) {
       var ci = +r.getAttribute("data-col"), c = M().cols[ci], o = c.o[pick[ci]];
       r.querySelector(".hintc").textContent = "· " + (pick[ci] + 1) + "/" + c.o.length;
-      var rc = r.querySelector(".rc"); rc.setAttribute("aria-label", c.label + ": " + o[2] + ". Tocca per il prossimo");
-      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
+      var rc = r.querySelector(".rc"); rc.setAttribute("aria-label", c.label + ": " + o[2] + ". " + T("slot.next"));
+      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi" lang="it">' + esc(o[2]) + "</span>";
       r.classList.toggle("ok", !!(sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci])));
     });
   }
@@ -103,12 +103,12 @@
   }
   function timeUp(give) {
     clearInterval(tick); if (!sit) return;
-    result = { html: (give ? "" : "Tempo scaduto. ") + "Ti serviva: " + esc(solution()) + "." }; sit = null; CP.sfx("ko"); paint();
+    result = { html: (give ? "" : T("slot.timeUp") + " ") + T("slot.needed", { s: '<span lang="it">' + esc(solution()) + "</span>" }) }; sit = null; CP.sfx("ko"); paint();
   }
   function win() {
     clearInterval(tick);
     var el = ((performance.now() - t0) / 1000).toFixed(1);
-    result = { html: "Giusto, in " + el + " secondi. +15 XP." }; sit = null;
+    result = { html: T("slot.win", { s: el }) }; sit = null;
     if (CP.game) CP.game.sentence();
     CP.sfx("ok", 4); paintParts();
     var cmp = compose(); CP.speak(cmp.hz, {});
@@ -129,7 +129,7 @@
     var iv = setInterval(function () {
       n++;
       var o = c.o[rnd(c.o.length)];
-      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
+      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi" lang="it">' + esc(o[2]) + "</span>";
       if (n % 2 === 0) CP.sfx("tap");      /* un tap ogni due giri: sei in 420 ms erano troppi */
       if (n >= 6) { clearInterval(iv); r.classList.remove("spin"); pick[ci] = final; paintParts(); afterChange(); if (done) done(); }
     }, 70);

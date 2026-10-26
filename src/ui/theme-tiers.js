@@ -34,8 +34,8 @@
   /* ---- filtro per livello (scheda Parole) ---- */
   /* i livelli sono i capitoli del Percorso (path/path.js, data/levels.js): stessi nomi, stesse tappe */
   var ICO = ["🌱", "🌿", "🍃", "🌳", "🏔️", "🔭"];
-  var TIERS = [{ k: "all", t: "🗂️ Tutte" }].concat((CP.chapters || []).map(function (c, i) {
-    return { k: i, t: ICO[i] + " " + (i + 1) + " · " + c.t + (/^HSK/.test(c.hsk) ? " (" + c.hsk + ")" : ""), ids: c.idx.map(function (j) { return SECTIONS[j].id; }) };
+  var TIERS = [{ k: "all", t: "🗂️ " + CP.t("path.all") }].concat((CP.chapters || []).map(function (c, i) {
+    return { k: i, t: ICO[i] + " " + (i + 1) + " · " + CP.t("chap." + i) + (/^HSK/.test(c.hsk) ? " (" + c.hsk + ")" : ""), ids: c.idx.map(function (j) { return SECTIONS[j].id; }) };
   }));
   var tierEl = document.getElementById("tiers"), tier = "all";
   function paintTiers() {

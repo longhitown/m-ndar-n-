@@ -22,7 +22,7 @@
   }
   function enter(o) {
     o = o || {};
-    bar.querySelector(".fx-t").textContent = o.title || "";
+    var tt = bar.querySelector(".fx-t"); tt.textContent = o.title || ""; tt.setAttribute("lang", o.lang || uiLang());
     S.onExit = o.onExit || null;
     if (!S.on) {
       S.on = true; body.classList.add("in-focus"); bar.hidden = false;

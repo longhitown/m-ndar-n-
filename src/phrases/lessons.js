@@ -2,7 +2,7 @@
    ed esercizi corretti subito. I contenuti stanno in src/data/lessons/ (un file per lezione).
    Progressi: cp-lessons-v1 = { id: { best: 0-100, done: ts della prima volta superata, seen: ts } }. */
 (function () {
-  var CP = window.CP, esc = CP.esc, W = CP.WORDS, root = document.getElementById("build-root");
+  var CP = window.CP, esc = CP.esc, W = CP.WORDS, root = document.getElementById("build-root"), T = CP.t;
   var KEY = "cp-lessons-v1", PASS = 80;
   var view = "list", cur = null, quiz = null;
   function load() { try { var o = JSON.parse(localStorage.getItem(KEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
@@ -32,32 +32,31 @@
       var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
       return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-ls-open="' + CP.attr(l.id) + '">' +
         '<span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + "</span>" +
-        '<span class="ls-t"><b>' + rich(l.title) + "</b><span class=\"small muted\">" + esc(l.goal) + "</span></span>" +
-        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? "letta" : "") + "</span></button>";
+        '<span class="ls-t" lang="it"><b>' + rich(l.title) + "</b><span class=\"small muted\">" + esc(l.goal) + "</span></span>" +
+        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? T("ls.read") : "") + "</span></button>";
     }).join("");
-    return '<p class="lede" style="margin:14px 0 4px">Studia la grammatica una regola alla volta: leggi la spiegazione, ascolta gli esempi, guarda gli errori tipici e mettiti alla prova. ' +
-      "Una lezione è superata con almeno " + PASS + "% di risposte giuste.</p>" +
-      '<p class="small muted" style="margin:0 0 10px">' + done + " lezioni superate su " + LESSONS.length + ".</p>" +
+    return '<p class="lede" style="margin:14px 0 4px">' + T("ls.lede", { p: PASS }) + "</p>" +
+      '<p class="small muted" style="margin:0 0 10px">' + T("ls.passed", { n: done, tot: LESSONS.length }) + "</p>" +
       '<div class="ls-list">' + cards + "</div>";
   }
 
   /* ---- lezione ---- */
   function lessonHTML(l) {
     var p = prog(l.id), qn = (l.quiz || []).length;
-    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-back>← Lezioni</button></div>' +
-      '<article class="panel ls-lesson"><span class="tag muted small">Lezione ' + l.n + (p.best != null ? " · migliore: " + p.best + "%" : "") + "</span>" +
-      "<h3>" + rich(l.title) + "</h3>" +
-      '<p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
-      l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
-      (l.pattern ? '<div class="ls-pat" aria-label="Schema">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
-      "<h4>Esempi</h4>" + (l.ex || []).map(function (e) {
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-back>← ' + T("sub.lessons") + "</button></div>" +
+      '<article class="panel ls-lesson"><span class="tag muted small">' + T("ls.n", { n: l.n }) + (p.best != null ? " · " + T("ls.best", { p: p.best }) : "") + "</span>" +
+      '<h3 lang="it">' + rich(l.title) + "</h3>" +
+      '<p class="ls-goal" lang="it">🎯 ' + esc(l.goal) + "</p>" +
+      l.body.map(function (b) { return '<p lang="it">' + rich(b) + "</p>"; }).join("") +
+      (l.pattern ? '<div class="ls-pat" lang="it" aria-label="' + CP.attr(T("ls.pattern")) + '">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
+      "<h4>" + T("ls.examples") + "</h4>" + (l.ex || []).map(function (e) {
         return '<div class="ls-ex">' + zhHTML(e[0]) + '<div class="small muted" lang="it">' + esc(e[1]) + "</div>" + CP.audioBtns(e[0].replace(/[。？！，]/g, "")) + "</div>";
       }).join("") +
-      ((l.traps || []).length ? "<h4>Errori tipici</h4>" + l.traps.map(function (t) {
-        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han" lang="zh-CN">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han" lang="zh-CN">' + esc(t[1]) + '</span></div><div class="small">' + rich(t[2]) + "</div></div>";
+      ((l.traps || []).length ? "<h4>" + T("ls.traps") + "</h4>" + l.traps.map(function (t) {
+        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han" lang="zh-CN">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han" lang="zh-CN">' + esc(t[1]) + '</span></div><div class="small" lang="it">' + rich(t[2]) + "</div></div>";
       }).join("") : "") +
-      '<div class="acts">' + (qn ? '<button type="button" class="btn-main" data-ls-quiz style="margin:0">✏️ Esercitati (' + qn + " domande)</button>" : "") +
-      ((l.ex || []).length ? '<button type="button" class="btn-s" data-ls-lab>🧪 Prova nel laboratorio</button>' : "") + "</div></article>";
+      '<div class="acts">' + (qn ? '<button type="button" class="btn-main" data-ls-quiz style="margin:0">✏️ ' + T("ls.quiz", { n: qn }) + "</button>" : "") +
+      ((l.ex || []).length ? '<button type="button" class="btn-s" data-ls-lab>🧪 ' + T("pat.try") + "</button>" : "") + "</div></article>";
   }
 
   /* ---- esercizi ---- */
@@ -77,40 +76,40 @@
   function tileHTML(b, attr, used) { var w = W[b.k]; return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(w.py) + '</span><span class="th">' + CP.hanziHTML(w.hz, w.py) + "</span></button>"; }
   function quizHTML() {
     var l = quiz.l, q = l.quiz[quiz.i], n = l.quiz.length, h = "";
-    h += '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">← ' + rich(l.title) + "</button></div>";
+    h += '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">← <span lang="it">' + rich(l.title) + "</span></button></div>";
     h += '<div class="panel ls-quiz"><div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(quiz.i * 100 / n) + '%"></i></div>' +
-      '<span class="tag muted small">Domanda ' + (quiz.i + 1) + " di " + n + " · giuste: " + quiz.score + "</span>";
+      '<span class="tag muted small">' + T("ls.qn", { n: quiz.i + 1, tot: n, ok: quiz.score }) + "</span>";
     if (q.k === "order") {
       var o = quiz.order, byId = {};
       o.bank.forEach(function (b) { byId[b.id] = b; });
-      h += '<p class="ask">Metti in ordine: «' + esc(q.it) + "»</p>" +
-        '<div class="slot" aria-live="polite" data-empty="Tocca le tessere nell\'ordine giusto">' + o.pick.map(function (id) { return tileHTML(byId[id], 'data-ls-un="' + id + '"' + (quiz.state !== "play" ? " disabled" : "")); }).join("") + "</div>";
+      h += '<p class="ask">' + T("ls.order") + ' <span lang="it">«' + esc(q.it) + "»</span></p>" +
+        '<div class="slot" aria-live="polite" data-empty="' + CP.attr(T("ls.slotEmpty")) + '">' + o.pick.map(function (id) { return tileHTML(byId[id], 'data-ls-un="' + id + '"' + (quiz.state !== "play" ? " disabled" : "")); }).join("") + "</div>";
       if (quiz.state === "play") {
         h += '<div class="bank">' + o.bank.map(function (b) { return tileHTML(b, 'data-ls-pick="' + b.id + '"', o.pick.indexOf(b.id) >= 0); }).join("") + "</div>" +
-          '<div class="acts"><button type="button" data-ls-undo' + (o.pick.length ? "" : " disabled") + '>Cancella</button><button type="button" class="btn-main" data-ls-check style="margin:0"' + (o.pick.length === o.bank.length ? "" : " disabled") + ">Controlla</button></div>";
+          '<div class="acts"><button type="button" data-ls-undo' + (o.pick.length ? "" : " disabled") + ">" + T("ex.undo") + '</button><button type="button" class="btn-main" data-ls-check style="margin:0"' + (o.pick.length === o.bank.length ? "" : " disabled") + ">" + T("ex.check") + "</button></div>";
       } else {
-        h += quiz.state === "ok" ? '<p class="verdict ok">Giusto!</p>' : '<p class="verdict ko">Non ancora. La frase giusta è:</p>' + zhHTML(q.zh.replace(/[。？！]$/, "")) ;
-        h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? "Avanti" : "Risultato") + "</button></div>";
+        h += quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") + "</p>" : '<p class="verdict ko">' + T("ls.wrongOrder") + "</p>" + zhHTML(q.zh.replace(/[。？！]$/, "")) ;
+        h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
       }
     } else {
-      h += '<p class="ask">' + rich(q.q) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
-      h += '<div class="ls-opts" role="group" aria-label="Risposte">' + q.opts.map(function (op, j) {
+      h += '<p class="ask" lang="it">' + rich(q.q) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
+      h += '<div class="ls-opts" role="group" aria-label="' + CP.attr(T("ls.answers")) + '">' + q.opts.map(function (op, j) {
         var cls = quiz.state === "play" ? "" : j === q.a ? " right" : j === quiz.choice ? " wrong" : " off";
         return '<button type="button" class="ls-opt' + cls + '" data-ls-opt="' + j + '"' + (quiz.state !== "play" ? " disabled" : "") + ">" + (isZh(op) ? zhHTML(op, "ls-zh in") : '<span lang="it">' + rich(op) + "</span>") + "</button>";
       }).join("") + "</div>";
       if (quiz.state !== "play") {
-        h += (quiz.state === "ok" ? '<p class="verdict ok">Giusto!' : '<p class="verdict ko">Non è questa.') + (q.why ? " " + rich(q.why) : "") + "</p>" +
-          '<div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? "Avanti" : "Risultato") + "</button></div>";
+        h += (quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") : '<p class="verdict ko">' + T("ls.notThis")) + (q.why ? ' <span lang="it">' + rich(q.why) + "</span>" : "") + "</p>" +
+          '<div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
       }
     }
     return h + "</div>";
   }
   function resultHTML() {
     var l = quiz.l, n = l.quiz.length, pct = Math.round(quiz.score * 100 / n), ok = pct >= PASS;
-    return '<div class="panel ls-quiz" style="margin-top:14px"><h3>' + (ok ? "🎉 Lezione superata!" : "Quasi!") + "</h3>" +
-      "<p>" + quiz.score + " risposte giuste su " + n + " (" + pct + "%)." + (ok ? "" : " Per superare la lezione ne servono almeno " + PASS + "%: rileggi la spiegazione e riprova.") + "</p>" +
-      '<div class="acts"><button type="button" class="btn-main" data-ls-quiz style="margin:0">🔁 Rifai gli esercizi</button><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">📘 Rileggi la lezione</button>' +
-      '<button type="button" class="btn-s" data-ls-back>Tutte le lezioni</button>' + (ok && nextOf(l) ? '<button type="button" class="btn-s" data-ls-open="' + CP.attr(nextOf(l).id) + '">Lezione dopo →</button>' : "") + "</div></div>";
+    return '<div class="panel ls-quiz" style="margin-top:14px"><h3>' + (ok ? "🎉 " + T("ls.passedOne") : T("ls.almost")) + "</h3>" +
+      "<p>" + T("ls.score", { n: quiz.score, tot: n, p: pct }) + (ok ? "" : " " + T("ls.needP", { p: PASS })) + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" data-ls-quiz style="margin:0">🔁 ' + T("ls.redo") + '</button><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">📘 ' + T("ls.reread") + "</button>" +
+      '<button type="button" class="btn-s" data-ls-back>' + T("ls.all") + "</button>" + (ok && nextOf(l) ? '<button type="button" class="btn-s" data-ls-open="' + CP.attr(nextOf(l).id) + '">' + T("ls.nextL") + " →</button>" : "") + "</div></div>";
   }
   function nextOf(l) { var s = sorted(), i = s.indexOf(l); return s[i + 1] || null; }
   function finish() {
@@ -152,7 +151,7 @@
     if (t.hasAttribute("data-ls-quiz")) {
       startQuiz(cur || quiz.l); cur = quiz.l; view = "quiz"; CP.sfx("tap");
       /* gli esercizi di una lezione si fanno a schermo pieno */
-      if (CP.immerse && !CP.immerse.active()) CP.immerse.enter({ title: quiz.l.title.replace(/<[^>]+>/g, ""), onExit: function () { if (CP.build) CP.build.render(); } });
+      if (CP.immerse && !CP.immerse.active()) CP.immerse.enter({ title: quiz.l.title.replace(/<[^>]+>/g, ""), lang: "it", onExit: function () { if (CP.build) CP.build.render(); } });
       paint(true); return;
     }
     if (t.hasAttribute("data-ls-lab")) { var ex0 = cur.ex[0][0]; if (CP.build && CP.build.labLoad) CP.build.labLoad(toks(ex0), /？$/.test(ex0) ? "?" : /！$/.test(ex0) ? "!" : "."); return; }

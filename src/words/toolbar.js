@@ -30,7 +30,7 @@
     }).join("") || '<p class="muted">Nessuna sezione con questo nome.</p>';
   }
   gb.addEventListener("click", function () {
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>Vai a…</b><div class="small muted">' + CP.SEC.length + ' sezioni · % di parole già iniziate</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>Vai a…</b><div class="small muted">' + CP.SEC.length + ' sezioni · % di parole già iniziate</div></div><button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' +
       '<label for="goto-q" class="sr">Cerca una sezione</label><input id="goto-q" type="search" placeholder="Cerca una sezione" autocomplete="off" style="margin-top:10px"><div class="goto-list" id="goto-list">' + gotoList("") + "</div>");
     var gq = document.getElementById("goto-q"); if (gq) gq.focus({ preventScroll: true });
   });
