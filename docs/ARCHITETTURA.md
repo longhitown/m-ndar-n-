@@ -16,6 +16,7 @@ Ci sono quattro modi di agganciarsi, sempre gli stessi.
 | `CP.S`, `CP.state`, `CP.setS`, `CP.save`, `CP.pref`, `CP.setPref` | `core/core.js` | stato delle parole e preferenze (chiavi `cp-*`, vedi `core/store.js`) |
 | `CP.srs`, `CP.grade`, `CP.mark`, `CP.dueList` | `core/core.js` (+ `core/fsrs.js`) | ripasso FSRS: voto a una carta, salvataggio, carte in scadenza |
 | `CP.game` (`addWord`, `sentence`, `ear`, `xp`, `streak`, `goal`…), `CP.toast` | `core/game.js` | punti, serie di giorni, obiettivo; `xpBy` per dispositivo (la sincronizzazione li unisce) |
+| `CP.ita`, `CP.itLexicon`, `CP.itCheck` | `phrases/italian.js`, `it/course.js`, `it/checker.js` | morfologia italiana, lessico del corso di italiano, correttore di frasi |
 | `CP.say`, `CP.speak`, `CP.stopSpeak`, `CP.listen`, `CP.canListen` | `core/core.js` | voce del telefono, voce online solo se l'utente l'ha permessa, riconoscimento vocale |
 | `CP.sfx`, `CP.bus`, `CP.master`, `CP.getCtx` | `core/core.js` | effetti e grafo Web Audio: bus `sfx`, bus `music`, `bus.duck()` abbassa la musica sotto la voce |
 | `CP.openSheet`, `CP.closeSheet`, `CP.topSheet`, `CP.trap`/`CP.untrap` | `core/core.js` | fogli modali con il focus intrappolato (Esc e Indietro li chiudono) |

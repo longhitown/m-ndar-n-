@@ -377,7 +377,7 @@
       return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itp-back>' + Z.back + "</button></div><h2>" + esc(DLG_ZH[d.id] || d.title) + '</h2><p class="small muted" lang="it">' + esc(d.title + " — " + d.sub) + "</p>" +
         d.lines.map(function (l) { return '<div class="it-line it-' + (l[0] === "B" ? "b" : "a") + '"><div class="it-big" lang="it">' + esc(l[3]) + '</div><div class="small">' + zhHTML(l[2], l[1]) + "</div>" + sayBtn(l[3], true) + "</div>"; }).join("");
     }
-    var h = pxHTML() + '<h2 style="margin-top:20px">常用句子</h2><p class="small muted" style="margin:0 0 10px">意大利语在上，中文在下。点 🔊 听意大利语。</p>';
+    var h = pxHTML() + (CP.itCheckHTML ? CP.itCheckHTML() : "") + '<h2 style="margin-top:20px">常用句子</h2><p class="small muted" style="margin:0 0 10px">意大利语在上，中文在下。点 🔊 听意大利语。</p>';
     h += PHRASES.map(function (g, gi) {
       return '<details class="pat"><summary>' + esc(PHR_ZH[gi] || g.title) + "</summary>" + g.items.map(function (p) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(p[2]) + '</div><div class="small">' + zhHTML(p[1], p[0]) + "</div><div>" + sayBtn(p[2], true) + "</div></div>"; }).join("") + "</details>";
     }).join("");

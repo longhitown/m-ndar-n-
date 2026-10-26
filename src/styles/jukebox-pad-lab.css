@@ -104,3 +104,4 @@ body:not(.course-it) .dock-it { display: none; }
 .dock.dock-it { grid-template-columns: repeat(5, 1fr); }
 body.course-it #set-contrib { display: none !important; }
 body.course-it #find-btn { display: none !important; }   /* la ricerca universale per ora copre il corso di cinese */
+.itc-bad { background: color-mix(in srgb, var(--t1) 22%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; text-decoration: underline wavy var(--t1); text-underline-offset: 3px; }
