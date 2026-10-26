@@ -148,6 +148,11 @@ node tools/e2e.mjs          # 22 prove su dist/ (anche il corso di italiano), ~1
 node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
 ```
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi).
+
+**Sul dispositivo Android:** a ogni push GitHub Actions avvia anche un emulatore Android 14 vero (job «dispositivo») e
+`tools/android-smoke.mjs` controlla dentro la WebView dell'APK: caricamento all'origine dell'app, `#selftest`, backup in
+Download con UTF-8 intatto, permesso del microfono, dati che restano dopo la chiusura forzata, tasto Indietro, nessun crash.
+In locale, con un telefono collegato in debug USB: `node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk`.
 Per il controllo «nessun attributo senza CP.attr», in revisione: `grep -rnP "[a-z-]+=\"' \+ (?!CP\.attr)" src`
 deve mostrare solo numeri, id interni e classi.
 
@@ -188,3 +193,18 @@ suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-
 - La modalità a schermo pieno vale per la sessione di studio, l'Orecchio e la Sfida; per gli esercizi di Frasi
   (puzzle, laboratorio, dialoghi) non è ancora attiva.
 - Facoltativa: una GitHub Action che lanci `merge-contrib.mjs` sulle issue con etichetta `contributo`.
+- Lezioni intermedie (把, 被, complementi di risultato e di direzione, connettivi): il vocabolario non ha ancora parole
+  di base che servono a scriverle (完, 被, 从, 打, 虽然, 看见, 出来, 进来, 回来…). Vanno aggiunte prima, controllate con CC-CEDICT.
+- Ordine dei tratti nella lavagna: servirebbe un archivio dei tratti (Make Me a Hanzi), ma la sua licenza (Arphic) chiede
+  di citarla; per ora la lavagna valuta la forma, non l'ordine.
+- Sincronizzazione tra telefono e computer: senza un server non c'è; si passa il file di backup (il ripristino unisce).
+
+**Come si comportano adesso alcune parti delicate:**
+- FSRS: il giorno di studio cambia alle 4 del mattino (come Anki); la ripetizione di una carta nella stessa sessione la
+  aggiorna solo se chiude un «Non la so», non dopo un «Quasi».
+- Ricerca: l'italiano combacia dall'inizio delle parole, il pinyin dall'inizio delle sillabe; sopra i risultati, le
+  corrispondenze esatte da toccare.
+- Lettore: gli omografi (花 fiore / spendere) mostrano tutti i significati; un carattere noto solo dentro altre parole
+  (泳 in 游泳) mostra la lettura e dove compare.
+- Voce: la prima lettura aspetta 6 secondi prima di ripiegare sulla voce online (3 le successive; nell'APK nessun timer),
+  e la voce online legge i testi lunghi a pezzi sotto i 180 caratteri.
