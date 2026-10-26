@@ -16,6 +16,7 @@
 <script id="theme-boot">(function(){try{var t=localStorage.getItem("cp-theme");if(t==="light"||t==="dark"||t==="sepia")document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
 <!-- Stili: l'ordine conta (cascata). In dist/index.html diventano un unico file. -->
 <link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/splash.css">
 <link rel="stylesheet" href="styles/search-review.css">
 <link rel="stylesheet" href="styles/voice.css">
 <link rel="stylesheet" href="styles/components.css">
@@ -26,6 +27,8 @@
 <link rel="stylesheet" href="styles/ux.css">
 </head>
 <body>
+<div id="splash" aria-hidden="true"><svg class="sp-logo" viewBox="300 10 200 210"><use href="#mandarin-symbol"/></svg><div class="sp-word">m<span class="t4">à</span>ndar<span class="t2">í</span>n<span class="t1">ō</span></div><div class="sp-sk"><i></i><i></i><i></i></div><p class="sp-tip" id="sp-tip"></p></div>
+<script id="splash-boot">(function(){var T={it:[["妈","mā · 1° tono: alto e piatto, mamma"],["麻","má · 2° tono: sale, canapa"],["马","mǎ · 3° tono: scende e risale, cavallo"],["骂","mà · 4° tono: cade secco, sgridare"],["你好","nǐ hǎo · due terzi toni: il primo diventa 2°"]],zh:[["ciao","意大利语里最常用的问候"],["grazie","谢谢：重音在 gra 上"],["buongiorno","早上好：bu-on-giór-no"],["prego","不客气 / 请"]]},L="it";try{if(localStorage.getItem("cp-lang")==="zh"||localStorage.getItem("cp-course")==="it")L="zh"}catch(e){}var a=T[L],i=Math.floor(Math.random()*a.length),el=document.getElementById("sp-tip");function show(){var x=a[i++%a.length];el.innerHTML="<b>"+x[0]+"</b> "+x[1];el.classList.add("on")}window.__spT=setTimeout(function(){show();window.__spI=setInterval(function(){el.classList.remove("on");setTimeout(show,400)},2600)},1200);window.__spX=setTimeout(function(){var s=document.getElementById("splash");if(s)s.classList.add("gone")},15000)})();</script>
 
 
 <main>

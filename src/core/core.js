@@ -829,8 +829,11 @@
   }
   CP.search = { key: sKey, query: sQuery, rank: sRank };
   var Q = CP.Q = new Array(ORDER.length);
-  CP.reindex = function () { ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = sKey(w.py, w.hz, w.it, w.note); }); };
-  CP.reindex();
+  /* l'indice si costruisce alla prima ricerca o appena il telefono è libero dopo l'avvio, non durante l'avvio */
+  var qDirty = true;
+  CP.reindex = function () { qDirty = true; };
+  CP.ensureQ = function () { if (!qDirty) return Q; qDirty = false; ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = sKey(w.py, w.hz, w.it, w.note); }); return Q; };
+  (window.requestIdleCallback || function (f) { return setTimeout(f, 1500); })(function () { CP.ensureQ(); });
   var lines = document.querySelectorAll("#sections .ln");
   Array.prototype.forEach.call(lines, function (ln) {
     ln._q = sKey(ln.querySelector(".lp").textContent, ln.querySelector(".lh").textContent, ln.querySelector(".li").textContent);
@@ -847,6 +850,7 @@
     secsEl0.classList.toggle("searching", active);
     CP.setSearching(active);
     var OK = CP.OK, SEC = CP.SEC, shownBy = new Array(SEC.length), favs = CP.favs;
+    if (q) CP.ensureQ();
     SEC.forEach(function (S, si) {
       var secOk = !topic || topic.indexOf(S.id) >= 0, n = 0;
       for (var i = S.i0; i < S.i1; i++) {
