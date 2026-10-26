@@ -33,7 +33,7 @@ jobs:
           node-version: 20
 
       - name: dist/ aggiornato e frasi verificate
-        run: node tools/build.mjs --check && node tools/grammar.mjs
+        run: node tools/build.mjs --check && node tools/grammar.mjs && node tools/unit.mjs
 
       - name: File pesanti di dist/ (brani, nomi e termini), che non stanno nel repository
         run: node tools/build.mjs

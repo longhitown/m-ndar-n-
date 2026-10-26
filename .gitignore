@@ -12,3 +12,7 @@ android/app/build/
 # file pesanti di dist/: si generano con «node tools/build.mjs» (gli originali sono in src/)
 /dist/audio/
 /dist/data/
+
+# dipendenze di sviluppo (Playwright, solo per le prove)
+/node_modules/
+/package-lock.json
