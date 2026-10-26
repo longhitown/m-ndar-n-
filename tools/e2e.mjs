@@ -192,6 +192,62 @@ try {
     check("Lezioni di cinese: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 7. interfaccia in cinese: nessun testo dell'interfaccia rimasto in italiano. Regola: ogni testo latino visibile è
+     pinyin, un nome proprio noto, oppure sta dentro un elemento lang="it" (contenuto di studio: traduzioni, titoli, lezioni). */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 400, height: 900 }, permissions: ["microphone"] });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-lang", "zh"); }); await p.reload();
+    await p.waitForFunction(() => window.CP && CP.build);
+    await p.evaluate(() => {
+      const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
+      const OK = new Set("pages public complete vocabulary javascript hsk xp fsrs pwa github wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
+        const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
+      window.__leaks = function () {
+        const out = [], tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+        while ((n = tw.nextNode())) {
+          const s = n.nodeValue.replace(/\s+/g, " ").trim(); if (!s) continue;
+          const el = n.parentElement; if (!el || el.closest("script,style,[hidden],.lp,.tp,.py,.bp,.sp,.xp,.cd-py,.g-py,kbd,code,pre,[data-noi18n]") || !el.getClientRects().length) continue;
+          const l = el.closest("[lang]"); if (l && /^(it|en)/.test(l.getAttribute("lang"))) continue;
+          if ((s.match(/[A-Za-zÀ-ÿĀ-ž']{3,}/g) || []).some((w) => !OK.has(w.toLowerCase()) && !isPy(w))) out.push(s.slice(0, 70));
+        }
+        return [...new Set(out)];
+      };
+    });
+    const areas = [
+      ["Percorso", () => document.getElementById("tab-path").click()],
+      ["Parole", () => document.getElementById("tab-words").click()],
+      ["Studia", () => document.getElementById("tab-study").click()],
+      ["Esercizi", () => { document.getElementById("tab-build").click(); CP.build.setSub("ex"); }],
+      ["Laboratorio", () => CP.build.labLoad(CP.segment("我是学生").map((x) => x.w.key), ".")],
+      ["Slot", () => CP.build.setSlot()],
+      ["Modelli", () => CP.build.setSub("pat")],
+      ["Lezione", () => CP.build.openLesson(CP.lessons.list()[0].id)],
+      ["Esercizi della lezione", () => document.querySelector("[data-ls-quiz]").click()],
+      ["Dialogo", () => { CP.immerse.leave(); CP.build.setSub("dlg"); document.querySelector("[data-dlg]").click(); }],
+      ["Pensiero", () => CP.build.setSub("thought")],
+      ["Lettore", () => CP.build.setSub("reader")],
+      ["Impostazioni", () => document.getElementById("settings-btn").click()],
+      ["Cerca ovunque", () => { CP.closeSheet(); document.getElementById("settings").hidden = true; CP.finder(); }],
+      ["Scheda della parola", () => { CP.closeSheet(); CP.openFamily("好"); }],
+      ["Contributi", () => { CP.closeSheet(); CP.contribOpen({ op: "tr", target: "你好", old: "ciao" }); }],
+      ["Crediti", () => { CP.closeSheet(); CP.credits(); }],
+      ["Guida", () => { CP.closeSheet(); CP.guide.open(); }],
+      ["Orecchio", () => { CP.guide.close(); document.getElementById("tab-study").click(); CP.mode.ear(); }],
+      ["Pannello Parla", () => { const h = document.createElement("div"); document.getElementById("study-root").appendChild(h); CP.voicePanel(h, "你好", { auto: false }); }]
+    ];
+    const bad = [];
+    for (const [name, fn] of areas) {
+      try { await p.evaluate(fn); } catch (e) { bad.push(name + ": " + e.message.split("\n")[0]); continue; }
+      await p.waitForTimeout(120);
+      const L = await p.evaluate(() => window.__leaks());
+      if (L.length) bad.push(name + ": " + L.slice(0, 3).join(" | "));
+    }
+    check("Interfaccia in cinese: nessun testo rimasto in italiano in " + areas.length + " schermate", !bad.length, bad.slice(0, 4).join(" ‖ "));
+    check("Interfaccia in cinese: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
 } finally {
   await browser.close(); server.close();
 }

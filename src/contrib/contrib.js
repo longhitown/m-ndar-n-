@@ -1,6 +1,6 @@
 /* ===== V6.7 · §6 contributi della community: correggi, segnala, proponi; invia senza account ===== */
 (function () {
-  var CP = window.CP, esc = CP.esc, fam = document.getElementById("fam");
+  var CP = window.CP, esc = CP.esc, T = CP.t, fam = document.getElementById("fam");
   /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).
      form = URL «viewform» di un Modulo Google con un campo testo lungo; formEntry = il suo numero (entry.<N>).
      repo = repository PUBBLICO dei contributi (es. «utente/mandarino-contributi»): su uno privato gli estranei non aprono issue. */
@@ -15,7 +15,7 @@
   }
   function label(it) {
     var w = CP.WORDS[it.target], ln = !w && it.target ? CP.contrib.lineOf(it.target) : null, who = w ? w.hz : ln ? ln.hz : it.target || "";
-    var F = { py: "pinyin", it: "italiano", note: "nota" };
+    var F = { py: "pinyin", it: T("ct.fIt"), note: T("ct.fNote") };
     if (it.op === "fix") return "✏️ " + who + " · " + F[it.field] + ": «" + it.new + "»";
     if (it.op === "add") return "➕ " + it.hz + " " + it.py + " · " + it.it;
     if (it.op === "tr") return "🈯 " + it.target + " → «" + it.new + "»";
@@ -29,34 +29,34 @@
 
   /* ---- il modulo ---- */
   var form = null;
-  function secOpts(sel) { return CP.SEC.map(function (S) { return '<option value="' + CP.attr(S.id) + '"' + (S.id === sel ? " selected" : "") + ">" + esc(S.title) + "</option>"; }).join(""); }
+  function secOpts(sel) { return CP.SEC.map(function (S) { return '<option value="' + CP.attr(S.id) + '"' + (S.id === sel ? " selected" : "") + " lang=\"it\">" + esc(S.title) + "</option>"; }).join(""); }
   function formHTML(errs) {
     var f = form, w = CP.WORDS[f.target], ln = !w && f.target ? CP.contrib.lineOf(f.target) : null, cur = w || ln, h;
-    var head = f.op === "add" ? "Proponi una parola nuova" : f.op === "tr" ? esc(f.target) : (w ? "«" + esc(w.hz) + "» " + esc(w.py) : ln ? esc(ln.hz) : "");
-    h = '<div class="fam-head"><div class="meta"><b>' + (f.op === "add" ? head : f.op === "tr" ? "La traduzione giusta" : "Correggi o segnala") + "</b>" + (f.op !== "add" ? '<div class="small muted han">' + head + "</div>" : "") + '</div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>';
-    if (f.op !== "add" && f.op !== "tr") h += '<div class="seg" role="group" aria-label="Tipo"><button type="button" data-ct-op="fix"' + (f.op === "fix" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>✏️ Correggi</button><button type="button" data-ct-op="flag"' + (f.op === "flag" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🚩 Segnala</button></div>";
+    var head = f.op === "add" ? T("ct.addTitle") : f.op === "tr" ? esc(f.target) : (w ? "«" + esc(w.hz) + "» " + esc(w.py) : ln ? esc(ln.hz) : "");
+    h = '<div class="fam-head"><div class="meta"><b>' + (f.op === "add" ? head : f.op === "tr" ? T("ct.trTitle") : T("fam.fix")) + "</b>" + (f.op !== "add" ? '<div class="small muted han">' + head + "</div>" : "") + '</div><button type="button" class="fam-x btn-s" data-famclose>' + T("common.close") + "</button></div>";
+    if (f.op !== "add" && f.op !== "tr") h += '<div class="seg" role="group" aria-label="' + CP.attr(T("ct.type")) + '"><button type="button" data-ct-op="fix"' + (f.op === "fix" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">✏️ " + T("ct.fix") + '</button><button type="button" data-ct-op="flag"' + (f.op === "flag" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🚩 " + T("ct.flag") + "</button></div>";
     h += '<div class="ct-form">';
     if (f.op === "fix") {
-      var fields = w ? [["py", "Pinyin"], ["it", "Italiano"], ["note", "Nota"]] : [["py", "Pinyin"], ["it", "Italiano"]];
-      h += '<label>Che cosa<select id="ct-field">' + fields.map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === f.field ? " selected" : "") + ">" + x[1] + "</option>"; }).join("") + "</select></label>" +
-        '<p class="small muted" style="margin:0">Adesso: <b>' + esc((cur && cur[f.field]) || "—") + "</b></p>" +
-        '<label>Diventa<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : (cur && cur[f.field]) || "") + '" autocomplete="off" spellcheck="false"></label>' +
-        '<p class="small muted" style="margin:0">I caratteri non si correggono da qui (sono la chiave dei tuoi progressi): se sono sbagliati usa «Segnala».</p>';
+      var fields = w ? [["py", "Pinyin"], ["it", T("w.colIt")], ["note", T("ct.fNoteU")]] : [["py", "Pinyin"], ["it", T("w.colIt")]];
+      h += "<label>" + T("ct.what") + '<select id="ct-field">' + fields.map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === f.field ? " selected" : "") + ">" + x[1] + "</option>"; }).join("") + "</select></label>" +
+        '<p class="small muted" style="margin:0">' + T("ct.now") + ' <b lang="it">' + esc((cur && cur[f.field]) || "—") + "</b></p>" +
+        "<label>" + T("ct.becomes") + '<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : (cur && cur[f.field]) || "") + '" autocomplete="off" spellcheck="false"></label>' +
+        '<p class="small muted" style="margin:0">' + T("ct.noHz") + "</p>";
     } else if (f.op === "tr") {
-      h += '<p class="small muted" style="margin:0">Il laboratorio dice: <b>' + esc(f.old || CP.lab.NOPE) + "</b></p>" +
-        '<label>Come si dice in italiano<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : f.old || "") + '" autocomplete="off"></label>' +
-        '<p class="small muted" style="margin:0">La tua traduzione vale subito nel tuo laboratorio. Se la mandi all\'autore, viene riletta e poi diventa una frase verificata per tutti.</p>';
+      h += '<p class="small muted" style="margin:0">' + T("ct.labSays") + ' <b lang="it">' + esc(f.old || CP.lab.NOPE) + "</b></p>" +
+        "<label>" + T("ct.howIt") + '<input type="text" id="ct-new" maxlength="200" value="' + CP.attr(f.new != null ? f.new : f.old || "") + '" autocomplete="off"></label>' +
+        '<p class="small muted" style="margin:0">' + T("ct.trHint") + "</p>";
     } else if (f.op === "add") {
-      h += '<label>Sezione<select id="ct-sec">' + secOpts(f.section) + "</select></label>" +
-        '<label>Caratteri<input type="text" id="ct-hz" maxlength="8" value="' + CP.attr(f.hz || "") + '" autocomplete="off" lang="zh"></label>' +
-        '<label>Pinyin, con i toni (sillabe separate da un punto: ni.hao)<input type="text" id="ct-py" maxlength="200" value="' + CP.attr(f.py || "") + '" autocomplete="off" spellcheck="false"></label>' +
-        '<label>Italiano<input type="text" id="ct-it" maxlength="200" value="' + CP.attr(f.it || "") + '" autocomplete="off"></label>';
+      h += "<label>" + T("ct.section") + '<select id="ct-sec">' + secOpts(f.section) + "</select></label>" +
+        "<label>" + T("fam.chars") + '<input type="text" id="ct-hz" maxlength="8" value="' + CP.attr(f.hz || "") + '" autocomplete="off" lang="zh"></label>' +
+        "<label>" + T("ct.py") + '<input type="text" id="ct-py" maxlength="200" value="' + CP.attr(f.py || "") + '" autocomplete="off" spellcheck="false"></label>' +
+        "<label>" + T("w.colIt") + '<input type="text" id="ct-it" maxlength="200" value="' + CP.attr(f.it || "") + '" autocomplete="off"></label>';
     }
-    h += '<label>' + (f.op === "flag" ? "Che cosa non va" : "Perché (facoltativo)") + '<textarea id="ct-why" maxlength="200" rows="2">' + esc(f.why || "") + "</textarea></label>" +
-      '<label>Nickname (facoltativo)<input type="text" id="ct-nick" maxlength="40" value="' + CP.attr(nick()) + '" autocomplete="nickname"></label>' +
+    h += "<label>" + (f.op === "flag" ? T("ct.wrong") : T("ct.why")) + '<textarea id="ct-why" maxlength="200" rows="2">' + esc(f.why || "") + "</textarea></label>" +
+      "<label>" + T("ct.nick") + '<input type="text" id="ct-nick" maxlength="40" value="' + CP.attr(nick()) + '" autocomplete="nickname"></label>' +
       (errs && errs.length ? '<div class="warn" role="alert">' + errs.map(esc).join("<br>") + "</div>" : "") +
-      '<p class="small muted" style="margin:0">🔒 Cosa invii: solo questa correzione e, se lo scrivi, un nickname. A chi: all\'autore dell\'app, quando scegli tu un canale (messaggio, email, modulo). Verrà pubblicata nel dizionario dell\'app. Nessun altro dato.</p>' +
-      '<button type="button" class="btn-main" id="ct-save" style="margin-top:0">' + (f.op === "fix" || f.op === "tr" ? "Salva e prova nella mia copia" : "Salva") + "</button></div>";
+      '<p class="small muted" style="margin:0">🔒 ' + T("ct.privacy") + "</p>" +
+      '<button type="button" class="btn-main" id="ct-save" style="margin-top:0">' + (f.op === "fix" || f.op === "tr" ? T("ct.saveTry") : T("lab.save")) + "</button></div>";
     return h;
   }
   function read() {
@@ -90,20 +90,20 @@
     l.push(it); saveList(l);
     if (it.op === "tr" && CP.labRefresh) CP.labRefresh();
     CP.sfx("ok");
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>Grazie!</b><div class="small muted">' + esc(label(it)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
-      (it.op === "fix" && w ? '<p style="margin:0">La vedi già nella tua copia, con l\'etichetta «✏️ tua correzione». La puoi annullare da ⚙️ → Contributi.</p>' : it.op === "tr" ? '<p style="margin:0">La vedi già nel laboratorio, con l\'etichetta «✏️ tua traduzione». La puoi annullare da ⚙️ → Contributi.</p>' : '<p style="margin:0">È salvata in questo dispositivo (e nel backup).</p>') +
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + T("ct.thanks") + '</b><div class="small muted">' + esc(label(it)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' +
+      '<p style="margin:0">' + T(it.op === "fix" && w ? "ct.seenFix" : it.op === "tr" ? "ct.seenTr" : "ct.saved") + "</p>" +
       sendHTML());
   }
 
   /* ---- invio: dal più semplice al più tecnico ---- */
   function sendHTML() {
     var n = pending().length; if (!n) return "";
-    return '<div class="ct-send"><b>Manda ' + (n === 1 ? "il contributo" : "i " + n + " contributi") + " all'autore</b>" +
-      '<div class="acts" style="margin:0">' + (navigator.share ? '<button type="button" class="btn-s" data-ct-send="share">📤 Condividi (WeChat, WhatsApp…)</button>' : "") +
+    return '<div class="ct-send"><b>' + T(n === 1 ? "ct.send1" : "ct.sendN", { n: n }) + "</b>" +
+      '<div class="acts" style="margin:0">' + (navigator.share ? '<button type="button" class="btn-s" data-ct-send="share">📤 ' + T("ct.share") + "</button>" : "") +
       '<button type="button" class="btn-s" data-ct-send="mail">✉️ Email</button>' +
-      (CFG.form && CFG.formEntry ? '<button type="button" class="btn-s" data-ct-send="form">📝 Modulo Google</button>' : "") +
+      (CFG.form && CFG.formEntry ? '<button type="button" class="btn-s" data-ct-send="form">📝 ' + T("ct.form") + "</button>" : "") +
       (CFG.repo ? '<button type="button" class="btn-s" data-ct-send="gh">🐙 GitHub</button>' : "") +
-      '<button type="button" class="btn-s" data-ct-send="file">⬇ Scarica .json</button></div></div>';
+      '<button type="button" class="btn-s" data-ct-send="file">⬇ ' + T("ct.file") + "</button></div></div>";
   }
   function send(how) {
     var items = pending(); if (!items.length) return;
@@ -112,13 +112,13 @@
     var open = function (u) { try { window.open(u, "_blank", "noopener"); } catch (e) { location.href = u; } };
     if (how === "share" && navigator.share) navigator.share({ title: subj, text: text }).then(done, function () {});
     else if (how === "mail") {
-      if (pretty.length > 1800) { CP.toast("Troppo lungo per un'email: scarico il file, allegalo tu."); Store.download("mandarino-contributi.json", pretty); }
+      if (pretty.length > 1800) { CP.toast(T("ct.tooLongMail")); Store.download("mandarino-contributi.json", pretty); }
       else open("mailto:" + encodeURIComponent(CFG.email) + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(pretty));
       done();
     } else if (how === "form" && CFG.form) { open(CFG.form + (CFG.form.indexOf("?") < 0 ? "?" : "&") + "usp=pp_url&entry." + CFG.formEntry + "=" + encodeURIComponent(text)); done(); }
     else if (how === "gh" && CFG.repo) {
       var body = "```json\n" + pretty + "\n```\n";
-      if (body.length > 7000) { CP.toast("Troppo lungo per GitHub: scarico il file."); Store.download("mandarino-contributi.json", pretty); }
+      if (body.length > 7000) { CP.toast(T("ct.tooLongGh")); Store.download("mandarino-contributi.json", pretty); }
       else open("https://github.com/" + CFG.repo + "/issues/new?labels=contributo&title=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body));
       done();
     } else if (how === "file") { Store.download("mandarino-contributi-" + Date.now() + ".json", pretty); done(); }
@@ -127,17 +127,17 @@
   /* ---- ⚙️ → Contributi ---- */
   (CP.settingsExtras = CP.settingsExtras || []).push(function () {
     var l = list().slice().reverse();
-    return '<details class="set-sec" id="set-contrib"><summary>✏️ Contributi' + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
-      '<p class="small muted" style="margin:0">Hai trovato un errore? Correggilo: lo vedi subito nella tua copia e lo puoi mandare all\'autore, senza account.</p>' +
-      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-ct-find>✏️ Correggi o segnala…</button><button type="button" class="btn-s" data-ct-add>➕ Parola nuova</button></div>' +
+    return '<details class="set-sec" id="set-contrib"><summary>✏️ ' + T("ct.title") + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
+      '<p class="small muted" style="margin:0">' + T("ct.lede") + "</p>" +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-ct-find>✏️ ' + T("fam.fix") + '…</button><button type="button" class="btn-s" data-ct-add>➕ ' + T("ct.newWord") + "</button></div>" +
       (l.length ? '<ul class="ct-list">' + l.map(function (it) {
-        return '<li class="' + (it.undone ? "undone" : "") + '"><span>' + esc(label(it)) + (it.sent ? ' <span class="muted small">· inviato</span>' : "") + "</span>" +
-          (it.op === "fix" || it.op === "tr" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + (it.undone ? "Riapplica" : "Annulla") + "</button>" : "") +
-          '<button type="button" class="btn-s" data-ct-del="' + CP.attr(it.id) + '" aria-label="Elimina">×</button></li>';
+        return '<li class="' + (it.undone ? "undone" : "") + '"><span>' + esc(label(it)) + (it.sent ? ' <span class="muted small">· ' + T("ct.sent") + "</span>" : "") + "</span>" +
+          (it.op === "fix" || it.op === "tr" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + T(it.undone ? "ct.redo" : "ct.undo") + "</button>" : "") +
+          '<button type="button" class="btn-s" data-ct-del="' + CP.attr(it.id) + '" aria-label="' + CP.attr(T("lab.del")) + '">×</button></li>';
       }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
   });
   function finder(q) {
-    var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
+    var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">' + T("ct.findHint") + "</p>";
     var out = [];
     CP.ensureQ();
     CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.search.rank(CP.Q[i], sq) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
@@ -146,14 +146,14 @@
     return out.length ? out.map(function (x) { return '<button type="button" class="goto-row ct-hit" data-ct-target="' + CP.attr(x[0]) + '"><span class="han" lang="zh-CN">' + esc(x[1]) + "</span></button>"; }).join("") : '<p class="muted">Niente trovato.</p>';
   }
   CP.contribFind = function () {
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>Che cosa vuoi correggere?</b></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
-      '<label for="ct-q" class="sr">Cerca</label><input id="ct-q" type="search" placeholder="Cerca in pinyin, 汉字 o italiano" autocomplete="off" style="margin-top:10px"><div class="goto-list" id="ct-hits">' + finder("") + "</div>");
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + T("ct.findTitle") + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' +
+      '<label for="ct-q" class="sr">' + T("ct.search") + '</label><input id="ct-q" type="search" placeholder="' + CP.attr(T("lab.searchPh")) + '" autocomplete="off" style="margin-top:10px"><div class="goto-list" id="ct-hits">' + finder("") + "</div>");
     var q = document.getElementById("ct-q"); if (q) q.focus({ preventScroll: true });
   };
   /* battute di un dialogo: si sceglie la riga */
   CP.contribDialog = function (id) {
     var d = DIALOGS.filter(function (x) { return x.id === id; })[0]; if (!d) return;
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>Quale battuta?</b><div class="small muted">' + esc(d.title) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div><div class="goto-list">' +
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + T("ct.whichLine") + '</b><div class="small muted" lang="it">' + esc(d.title) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div><div class="goto-list">' +
       d.lines.map(function (l, i) { return '<button type="button" class="goto-row ct-hit" data-ct-target="dlg:' + CP.attr(d.id) + ":" + i + '"><span><span class="han" lang="zh-CN">' + esc(l[2]) + '</span><br><span class="small muted">' + esc(l[1]) + "</span></span></button>"; }).join("") + "</div>");
   };
 

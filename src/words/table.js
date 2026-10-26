@@ -128,14 +128,14 @@
   overlay(cLoad());
   var N = ORDER.length, OK = CP.OK = new Uint8Array(N); OK.fill(1);
 
-  var STAR = '<button type="button" class="fav%ON%" aria-pressed="%PR%" aria-label="Segna come preferita o difficile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 17l-5.4 3 1.2-6L3.3 9.8l6.1-.7z"/></svg></button>';
+  var STAR = '<button type="button" class="fav%ON%" aria-pressed="%PR%" aria-label="' + attr(t("w.fav")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 17l-5.4 3 1.2-6L3.3 9.8l6.1-.7z"/></svg></button>';
   function rowHTML(i) {
     var k = ORDER[i], w = WORDS[k], st = CP.state ? CP.state(k) : 0, fav = !!(CP.favs && CP.favs.has(k));
-    var note = (w.note ? '<span class="note">' + esc(w.note) + "</span>" : "") + (w.mine ? '<span class="note mine-tag">✏️ tua correzione</span>' : "");
+    var note = (w.note ? '<span class="note">' + esc(w.note) + "</span>" : "") + (w.mine ? '<span class="note mine-tag">✏️ ' + t("w.mine") + '</span>' : "");
     return '<tr data-k="' + attr(k) + '"' + (st ? ' class="st-' + st + '"' : "") + ">" +
       '<td class="py"><span class="m m-py">' + pinyinHTML(w.py) + "</span></td>" +
       '<td class="hz" lang="zh-CN"><span class="m m-hz" lang="zh-CN">' + hanziHTML(w.hz, w.py) + "</span></td>" +
-      '<td class="it"><div class="itw"><span class="m m-it">' + esc(w.it) + note + "</span>" +
+      '<td class="it"><div class="itw"><span class="m m-it" lang="it">' + esc(w.it) + note + "</span>" +
       STAR.replace("%ON%", fav ? " on" : "").replace("%PR%", fav ? "true" : "false") + "</div></td></tr>";
   }
 
@@ -146,19 +146,19 @@
   if (narrow()) { THEAD = 0; ROWH = 84; }
   var chips = "", html = "", total = N;
   SEC.forEach(function (S, si) {
-    chips += '<a href="#' + S.id + '">' + esc(S.title) + "</a>";
-    html += '<section id="' + S.id + '" data-si="' + si + '"><h2><button type="button" class="sech" aria-expanded="true"><span>' + esc(S.title) + '</span> <span class="n">' + S.shown + '</span><span class="chev" aria-hidden="true"></span></button></h2>' +
-      '<div class="tw" style="min-height:' + (THEAD + S.shown * ROWH) + 'px"><table><thead><tr><th>Pinyin</th><th>汉字</th><th>Italiano</th></tr></thead><tbody></tbody></table></div></section>';
+    chips += '<a href="#' + S.id + '" lang="it">' + esc(S.title) + "</a>";
+    html += '<section id="' + S.id + '" data-si="' + si + '"><h2><button type="button" class="sech" aria-expanded="true"><span lang="it">' + esc(S.title) + '</span> <span class="n">' + S.shown + '</span><span class="chev" aria-hidden="true"></span></button></h2>' +
+      '<div class="tw" style="min-height:' + (THEAD + S.shown * ROWH) + 'px"><table><thead><tr><th>Pinyin</th><th>汉字</th><th>' + t("w.colIt") + '</th></tr></thead><tbody></tbody></table></div></section>';
   });
-  chips += '<a href="#frasi">Frasi corte</a>';
+  chips += '<a href="#frasi">' + t("w.phrases") + "</a>";
 
-  var ph = '<section id="frasi"><h2><button type="button" class="sech" aria-expanded="true"><span>Frasi corte</span><span class="chev" aria-hidden="true"></span></button></h2><p class="intro">Frasi di tutti i giorni, in dodici situazioni. Leggi il pinyin ad alta voce, poi copri l\'italiano e prova a ricordare.</p>';
+  var ph = '<section id="frasi"><h2><button type="button" class="sech" aria-expanded="true"><span>' + t("w.phrases") + '</span><span class="chev" aria-hidden="true"></span></button></h2><p class="intro">' + t("w.phrasesIntro") + "</p>";
   PHRASES.forEach(function (g) {
-    ph += '<div class="ph"><h3>' + esc(g.title) + "</h3>" + g.items.map(function (p) {
+    ph += '<div class="ph"><h3 lang="it">' + esc(g.title) + "</h3>" + g.items.map(function (p) {
       return '<div class="ln">' +
         '<div class="lp"><span class="m m-py">' + pinyinHTML(p[0]) + "</span></div>" +
         '<div class="lh" lang="zh-CN"><span class="m m-hz" lang="zh-CN">' + hanziHTML(p[1], p[0]) + "</span></div>" +
-        '<div class="li"><span class="m m-it">' + esc(p[2]) + "</span></div></div>";
+        '<div class="li"><span class="m m-it" lang="it">' + esc(p[2]) + "</span></div></div>";
     }).join("") + "</div>";
   });
   ph += "</section>";
@@ -166,7 +166,7 @@
   var secsEl = document.getElementById("sections");
   document.getElementById("chips").innerHTML = chips;
   secsEl.innerHTML = html + ph;
-  var countEl = document.getElementById("count"); if (countEl) countEl.textContent = total;
+  var aboutEl = document.getElementById("about-lede"); if (aboutEl) aboutEl.innerHTML = t("set.aboutLede", { n: total });
   document.title = "màndarínō · " + total + " parole di cinese";
   SEC.forEach(function (S) { S.el = document.getElementById(S.id); S.tw = S.el.querySelector(".tw"); S.tb = S.el.querySelector("tbody"); S.nEl = S.el.querySelector("h2 .n"); });
   secsEl.style.overflowAnchor = "none";

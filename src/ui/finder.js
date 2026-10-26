@@ -8,29 +8,29 @@
   function go(tab, fn) { CP.closeSheet(); CP.show(tab); if (fn) setTimeout(fn, 60); }
   /* strumenti: [icona, nome, parole chiave, azione] */
   var TOOLS = [
-    ["🎴", "Studia adesso", "ripasso carte flashcard sessione oggi fsrs", function () { go("study", function () { if (CP.studyStart) CP.studyStart(); }); }],
-    ["🎧", "Allena l'orecchio", "toni ascolto orecchio ear", function () { go("study", function () { if (CP.mode) CP.mode.ear(); }); }],
-    ["⚡", "Sfida 60 secondi", "sfida gara veloce sprint tempo", function () { go("study", function () { if (CP.mode) CP.mode.sprint(); }); }],
-    ["📊", "I miei progressi", "progressi statistiche memoria dottore dei toni confusioni", function () { go("study"); }],
-    ["📘", "Lezioni di grammatica", "lezioni grammatica regole", function () { go("build", function () { CP.build.setSub("lessons"); }); }],
-    ["📐", "Modelli di frase", "modelli strutture schemi pattern", function () { go("build", function () { CP.build.setSub("pat"); }); }],
-    ["🧩", "Esercizi: ricomponi la frase", "esercizi traduci ordine frasi puzzle", function () { go("build", function () { CP.build.setSub("ex"); }); }],
-    ["🔬", "Laboratorio di frasi", "laboratorio traduttore costruisci frase correttore", function () { go("build", function () { CP.build.setSub("lab"); }); }],
-    ["🎰", "Slot delle frasi", "slot macchina combinazioni", function () { go("build", function () { CP.build.setSub("lab"); if (CP.build.setSlot) CP.build.setSlot(); }); }],
-    ["💬", "Dialoghi", "dialoghi conversazione parla roleplay", function () { go("build", function () { CP.build.setSub("dlg"); }); }],
-    ["🧠", "Ordine del pensiero", "pensiero ordine cinese italiano", function () { go("build", function () { CP.build.setSub("thought"); }); }],
-    ["📖", "Lettore", "lettore leggi testo raggi x incolla", function () { go("build", function () { CP.build.setSub("reader"); }); }],
-    ["🗺️", "Il percorso", "percorso tappe capitoli livelli hsk", function () { go("path"); }],
-    ["🔎", "Tutte le parole", "parole dizionario vocabolario tabella", function () { go("words"); }],
-    ["🚶", "Modalità guida", "guida ascolta camminando cuffie", function () { CP.closeSheet(); var g = document.getElementById("guide-btn"); if (g) g.click(); }],
-    ["🎵", "Musica (jukebox)", "musica jukebox brani tracce", function () { CP.closeSheet(); if (CP.jukeboxOpen) setTimeout(CP.jukeboxOpen, 60); }],
-    ["⚙️", "Impostazioni", "impostazioni tema voce audio caratteri backup ripristino lingua", function () { CP.closeSheet(); setTimeout(function () { var s = document.getElementById("settings-btn"); if (s) s.click(); }, 60); }]
+    ["🎴", "fd.t0", "ripasso carte flashcard sessione oggi fsrs", function () { go("study", function () { if (CP.studyStart) CP.studyStart(); }); }],
+    ["🎧", "fd.t1", "toni ascolto orecchio ear", function () { go("study", function () { if (CP.mode) CP.mode.ear(); }); }],
+    ["⚡", "fd.t2", "sfida gara veloce sprint tempo", function () { go("study", function () { if (CP.mode) CP.mode.sprint(); }); }],
+    ["📊", "fd.t3", "progressi statistiche memoria dottore dei toni confusioni", function () { go("study"); }],
+    ["📘", "fd.t4", "lezioni grammatica regole", function () { go("build", function () { CP.build.setSub("lessons"); }); }],
+    ["📐", "fd.t5", "modelli strutture schemi pattern", function () { go("build", function () { CP.build.setSub("pat"); }); }],
+    ["🧩", "fd.t6", "esercizi traduci ordine frasi puzzle", function () { go("build", function () { CP.build.setSub("ex"); }); }],
+    ["🔬", "fd.t7", "laboratorio traduttore costruisci frase correttore", function () { go("build", function () { CP.build.setSub("lab"); }); }],
+    ["🎰", "fd.t8", "slot macchina combinazioni", function () { go("build", function () { CP.build.setSub("lab"); if (CP.build.setSlot) CP.build.setSlot(); }); }],
+    ["💬", "fd.t9", "dialoghi conversazione parla roleplay", function () { go("build", function () { CP.build.setSub("dlg"); }); }],
+    ["🧠", "fd.t10", "pensiero ordine cinese italiano", function () { go("build", function () { CP.build.setSub("thought"); }); }],
+    ["📖", "fd.t11", "lettore leggi testo raggi x incolla", function () { go("build", function () { CP.build.setSub("reader"); }); }],
+    ["🗺️", "fd.t12", "percorso tappe capitoli livelli hsk", function () { go("path"); }],
+    ["🔎", "fd.t13", "parole dizionario vocabolario tabella", function () { go("words"); }],
+    ["🚶", "fd.t14", "guida ascolta camminando cuffie", function () { CP.closeSheet(); var g = document.getElementById("guide-btn"); if (g) g.click(); }],
+    ["🎵", "fd.t15", "musica jukebox brani tracce", function () { CP.closeSheet(); if (CP.jukeboxOpen) setTimeout(CP.jukeboxOpen, 60); }],
+    ["⚙️", "fd.t16", "impostazioni tema voce audio caratteri backup ripristino lingua", function () { CP.closeSheet(); setTimeout(function () { var s = document.getElementById("settings-btn"); if (s) s.click(); }, 60); }]
   ];
   var IDX = null;
   function index() {
     if (IDX) return IDX;
     IDX = [];
-    TOOLS.forEach(function (t) { IDX.push({ g: 0, ico: t[0], t: t[1], sub: "", k: norm(t[1] + " " + t[2]), run: t[3] }); });
+    TOOLS.forEach(function (t) { var n = T(t[1]); IDX.push({ g: 0, ico: t[0], t: n, sub: "", k: norm(n + " " + I18N.it[t[1]] + " " + t[2]), run: t[3] }); });
     (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) {
       IDX.push({ g: 1, ico: "📘", t: l.title, sub: l.goal || "", k: norm(l.title + " " + (l.goal || "") + " " + (l.id || "")), run: function () { go("build", function () { CP.build.openLesson(l.id); }); } });
     });
@@ -39,11 +39,11 @@
     });
     SECTIONS.forEach(function (s) {
       var t = s.title.replace(/^\d+\.\s*/, "");
-      IDX.push({ g: 3, ico: "🚩", t: t, sub: s.words.length + " parole", k: norm(t), run: function () { go("path", function () { if (CP.pathOpen) CP.pathOpen(s.id); }); } });
+      IDX.push({ g: 3, ico: "🚩", t: t, sub: T("fd.words", { n: s.words.length }), k: norm(t), run: function () { go("path", function () { if (CP.pathOpen) CP.pathOpen(s.id); }); } });
     });
     return IDX;
   }
-  var GN = ["Strumenti", "Lezioni", "Dialoghi", "Tappe", "Parole"];
+  var GN = ["fd.gTools", "sub.lessons", "sub.dlg", "fd.gStops", "lab.words"].map(function (k) { return T(k); });
   function results(q) {
     var n = norm(q).trim(), out = [];
     if (!n) return index().filter(function (x) { return x.g === 0; }).slice(0, 8);
@@ -70,8 +70,8 @@
     cur.forEach(function (x, i) {
       if (x.g !== last) { h += '<div class="fd-g">' + GN[x.g] + "</div>"; last = x.g; }
       h += '<button type="button" class="fd-it" data-fd="' + i + '">' +
-        (x.hz ? '<span class="fd-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="fd-t"><b>' + CP.pinyinHTML(x.py) + "</b><i>" + esc(x.t) + "</i></span>"
-              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"><b>' + esc(x.t) + "</b>" + (x.sub ? "<i>" + esc(x.sub) + "</i>" : "") + "</span>") + "</button>";
+        (x.hz ? '<span class="fd-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="fd-t"><b>' + CP.pinyinHTML(x.py) + "</b><i lang=\"it\">" + esc(x.t) + "</i></span>"
+              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"' + (x.g ? ' lang="it"' : "") + "><b>" + esc(x.t) + "</b>" + (x.sub ? "<i>" + esc(x.sub) + "</i>" : "") + "</span>") + "</button>";
     });
     box.innerHTML = h;
   }

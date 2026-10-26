@@ -25,11 +25,12 @@
   /* §5 fase 1: lingua dei menu */
   function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
   CP.setLang = function (l) {
-    LANG = l === "zh" ? "zh" : "it"; try { localStorage.setItem("cp-lang", LANG); } catch (e) {}
+    var nl = l === "zh" ? "zh" : "it"; if (nl === LANG) return;
+    LANG = nl; try { localStorage.setItem("cp-lang", LANG); } catch (e) {}
     applyI18n(); paintLang(); CP.sfx("tap");
-    if (CP.studyActive && CP.studyActive()) CP.studyRefresh(); else if (CP.studyHome) CP.studyHome();
-    if (CP.pathDirty) CP.pathDirty(); if (CP.onPath && !document.getElementById("view-path").hidden) CP.onPath();
-    if (CP.build) CP.build.render(); if (CP.badge) CP.badge(); if (CP.refilter) CP.refilter();
+    /* molte parti si disegnano una volta sola all'avvio (tabella delle parole, filtri, voce): si riparte da capo,
+       così ogni testo è nella lingua nuova. I progressi sono già salvati. */
+    setTimeout(function () { location.reload(); }, 150);
   };
   paintLang();
   CP.openSettings = function (sec) {

@@ -177,26 +177,26 @@
       if (sum) sum.textContent = "non disponibile";
       return;
     }
-    var h = '<div class="seg" role="group" aria-label="Velocità della voce">' +
-      '<button type="button" data-rate="0.8"' + (pref.rate === 0.8 ? ' class="on"' : "") + '>🐢 Lento</button>' +
-      '<button type="button" data-rate="1"' + (pref.rate === 1 ? ' class="on"' : "") + ">🐇 Normale</button></div>";
+    var h = '<div class="seg" role="group" aria-label="' + CP.attr(t("vo.rate")) + '">' +
+      '<button type="button" data-rate="0.8"' + (pref.rate === 0.8 ? ' class="on"' : "") + ">🐢 " + t("vo.slow") + "</button>" +
+      '<button type="button" data-rate="1"' + (pref.rate === 1 ? ' class="on"' : "") + ">🐇 " + t("vo.normal") + "</button></div>";
     if (voices.length > 1) {
-      h += '<label class="small muted" for="voice-sel" style="display:grid;gap:4px;font-weight:600">Voce<select id="voice-sel">' + voices.map(function (v) {
+      h += '<label class="small muted" for="voice-sel" style="display:grid;gap:4px;font-weight:600">' + t("set.voice") + '<select id="voice-sel">' + voices.map(function (v) {
         return '<option value="' + CP.attr(v.voiceURI) + '"' + (voice && v.voiceURI === voice.voiceURI ? " selected" : "") + ">" + (vscore(v) >= 10 ? "★ " : "") + CP.esc(v.name) + " (" + CP.esc(v.lang) + ")</option>";
       }).join("") + "</select></label>";
     } else {
-      h += '<p class="small muted" style="margin:0">' + (voice ? "Voce: " + CP.esc(voice.name) + "." : "Il dispositivo non elenca voci cinesi: provo comunque con quella predefinita (zh-CN).") + "</p>";
+      h += '<p class="small muted" style="margin:0">' + (voice ? t("vo.cur", { v: CP.esc(voice.name) }) : t("vo.none")) + "</p>";
     }
-    h += '<label class="chk"><input type="checkbox" id="opt-auto"' + (pref.auto ? " checked" : "") + '> Audio automatico nella scheda Studia</label>' +
-      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (pref.sfx ? " checked" : "") + '> Suoni al tocco</label>' +
-      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (pref.haptics ? " checked" : "") + '> Vibrazione</label>' +
-      '<label class="chk"><input type="checkbox" id="opt-alt"' + (pref.alt ? " checked" : "") + '> Usa la voce alternativa (richiede internet)</label>' +
-      '<p class="small muted" style="margin:0">Se la voce del dispositivo resta muta, provo da solo un servizio vocale online non ufficiale. Può smettere di funzionare in ogni momento.</p>' +
-      (CP.inFrame ? '<div class="notice"><p>Dentro questa pagina il browser può bloccare microfono e audio. Scarica il file e aprilo come pagina a sé: funziona anche senza internet.</p>' + CP.frameBtn() + "</div>" : "") +
+    h += '<label class="chk"><input type="checkbox" id="opt-auto"' + (pref.auto ? " checked" : "") + "> " + t("vo.auto") + "</label>" +
+      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (pref.sfx ? " checked" : "") + "> " + t("vo.sfx") + "</label>" +
+      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (pref.haptics ? " checked" : "") + "> " + t("vo.haptics") + "</label>" +
+      '<label class="chk"><input type="checkbox" id="opt-alt"' + (pref.alt ? " checked" : "") + "> " + t("vo.alt") + "</label>" +
+      '<p class="small muted" style="margin:0">' + t("vo.altHint") + "</p>" +
+      (CP.inFrame ? '<div class="notice"><p>' + t("vo.frame") + "</p>" + CP.frameBtn() + "</div>" : "") +
       (CP.voiceExtra ? CP.voiceExtra() : "") +
-      '<button type="button" class="btn-main" id="voice-test" style="margin-top:4px">Prova la voce: 你好</button>';
+      '<button type="button" class="btn-main" id="voice-test" style="margin-top:4px">' + t("vo.test") + "</button>";
     body.innerHTML = h;
-    if (sum) sum.textContent = pref.rate === 1 ? "🐇 normale" : "🐢 lento";
+    if (sum) sum.textContent = pref.rate === 1 ? "🐇 " + t("vo.normal") : "🐢 " + t("vo.slow");
   }
   document.getElementById("vset-body").addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("button") : null;
@@ -385,11 +385,11 @@
   CP.sayHz = function (w) { var p = polyOf(w); return p && p.ex ? p.ex.hz : (w ? w.hz : ""); };
   CP.polyNote = function (w) {
     var p = polyOf(w); if (!p || (!p.others.length && !p.ex)) return "";
-    return '<div class="cd-note poly-note">⚠️ ' + (p.others.length ? "Si legge anche " + p.others.map(function (s) { return "<b>" + CP.pinyinHTML(s) + "</b>"; }).join(", ") + ". " : "") +
-      (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\" lang=\"zh-CN\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
+    return '<div class="cd-note poly-note">⚠️ ' + (p.others.length ? t("fam.alsoRead", { p: p.others.map(function (s) { return "<b>" + CP.pinyinHTML(s) + "</b>"; }).join(", ") }) + " " : "") +
+      (p.ex ? "🔊 " + t("fam.readIn", { w: '<span class="han" lang="zh-CN">' + CP.esc(p.ex.hz) + "</span>" }) : "") + "</div>";
   };
   CP.sayBtn = function (text) {
-    return '<button class="say" type="button" data-say="' + CP.attr(text) + '" aria-label="Ascolta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
+    return '<button class="say" type="button" data-say="' + CP.attr(text) + '" aria-label="' + CP.attr(t("fam.listen")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
   };
   document.body.classList.add("can-say");
   var sh = document.getElementById("sayhint"); if (sh) sh.hidden = false;
@@ -538,19 +538,11 @@
   CP.canRecord = function () { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); };
   CP.micBtn = function (hz) {
     if (!SR && !CP.canRecord()) return "";
-    return '<button class="mic" type="button" data-mic="' + CP.attr(hz) + '" aria-label="' + (SR ? "Parla e verifica" : "Registra e confronta") + '" title="' + (SR ? "Parla e verifica" : "🎙️ Registra e confronta") + '"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>';
+    return '<button class="mic" type="button" data-mic="' + CP.attr(hz) + '" aria-label="' + CP.attr(t(SR ? "mic.check" : "mic.rec")) + '" title="' + CP.attr(t(SR ? "mic.check" : "mic.rec")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>';
   };
   CP.audioBtns = function (hz, noMic) { return '<span class="btns">' + CP.sayBtn(hz) + (noMic ? "" : CP.micBtn(hz)) + "</span>"; };
-  var MIC_ERR = {
-    "not-allowed": "Il microfono è bloccato in questa pagina. Consentilo nelle impostazioni del browser, oppure scarica la pagina e aprila a sé.",
-    "service-not-allowed": "Il riconoscimento vocale non è disponibile su questo dispositivo: qui guardiamo il tono, che funziona senza.",
-    "audio-capture": "Non trovo nessun microfono.",
-    "network": "Il riconoscimento vocale ha bisogno di internet: qui guardiamo il tono, che funziona senza rete.",
-    "offline": "Il riconoscimento vocale ha bisogno di internet: qui guardiamo il tono, che funziona senza rete.",
-    "language-not-supported": "Il riconoscimento vocale del telefono non ha il cinese: qui guardiamo il tono, che funziona senza.",
-    "no-speech": "Non ho sentito niente. Avvicinati al microfono e riprova.",
-    "start": "Non riesco ad attivare il microfono da qui."
-  };
+  /* messaggi per i codici d'errore del riconoscimento vocale (chiavi mic.e.*) */
+  var MIC_ERR = {}; ["not-allowed", "service-not-allowed", "audio-capture", "network", "offline", "language-not-supported", "no-speech", "start"].forEach(function (c) { MIC_ERR[c] = t("mic.e." + c); });
   var SR_DOWN = /^(network|offline|language-not-supported|service-not-allowed|audio-capture|start)$/;
   window.addEventListener("online", function () { if (CP._srDown === "network" || CP._srDown === "offline") CP._srDown = null; });
   document.addEventListener("click", function (e) {
@@ -558,7 +550,7 @@
     var h = b.closest(".heard"), host = h ? h.parentNode : b.parentNode; if (h) h.parentNode.removeChild(h);
     CP.voicePanel(host, b.getAttribute("data-vp-open"), {});
   });
-  CP.micErrText = function (code) { return MIC_ERR[code] || "Qualcosa non ha funzionato con il microfono. Riprova."; };
+  CP.micErrText = function (code) { return MIC_ERR[code] || t("mic.e.other"); };
   function micClick(b) {
     if (b._rec) { b._abort = true; try { b._rec.abort(); } catch (e) {} b._rec = null; b.classList.remove("listening"); return; }
     CP.stopSpeak();
@@ -568,7 +560,7 @@
     if (down !== null && CP.canScope && CP.canScope() && CP.voicePanel) { CP.voicePanel(host, goal, { note: down }); return; }
     var out = host.querySelector(".heard");
     if (!out) { out = document.createElement("div"); out.setAttribute("aria-live", "polite"); host.appendChild(out); }
-    out.className = "heard"; out.textContent = "🎤 Ti ascolto… di' «" + goal.replace(/[^㐀-鿿]/g, "") + "»";
+    out.className = "heard"; out.textContent = "🎤 " + t("mic.listen", { w: goal.replace(/[^㐀-鿿]/g, "") });
     b.classList.add("listening"); b._abort = false;
     CP.sfx("tap");
     b._rec = CP.listen(goal, function (r) {
@@ -585,11 +577,11 @@
         if (CP.inFrame && (r.error === "not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
         return;
       }
-      var said = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — ";
-      if (r.ok) { out.className = "heard ok"; out.innerHTML = said + (r.homophone ? "si pronuncia proprio così (il riconoscitore ha scelto un carattere con lo stesso suono). Bene!" : "Pronuncia perfetta!"); CP.sfx("ok"); if (CP.game && CP.game.xp) CP.game.xp(1); }
-      else if (r.near) { out.className = "heard ko"; out.innerHTML = said + "le sillabe ci sono, ma un tono è diverso. Guarda la curva:"; CP.sfx("tap"); }
-      else { out.className = "heard ko"; out.innerHTML = said + "non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
-      if (!r.ok && CP.canScope && CP.canScope() && CP.voicePanel) out.insertAdjacentHTML("beforeend", ' <button type="button" class="btn-s" data-vp-open="' + CP.attr(goal) + '">〰️ Il mio tono</button>');
+      var said = "🎤 " + t("mic.said", { w: '<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>" }) + " — ";
+      if (r.ok) { out.className = "heard ok"; out.innerHTML = said + t(r.homophone ? "mic.homophone" : "mic.perfect"); CP.sfx("ok"); if (CP.game && CP.game.xp) CP.game.xp(1); }
+      else if (r.near) { out.className = "heard ko"; out.innerHTML = said + t("mic.near"); CP.sfx("tap"); }
+      else { out.className = "heard ko"; out.innerHTML = said + t("mic.wrong"); CP.sfx("ko"); }
+      if (!r.ok && CP.canScope && CP.canScope() && CP.voicePanel) out.insertAdjacentHTML("beforeend", ' <button type="button" class="btn-s" data-vp-open="' + CP.attr(goal) + '">〰️ ' + t("mic.myTone") + "</button>");
     });
     if (!b._rec) b.classList.remove("listening");
   }
@@ -711,7 +703,7 @@
     if (!HSKMAP) { HSKMAP = {}; if (typeof HSK_LEVEL !== "undefined") Object.keys(HSK_LEVEL).forEach(function (l) { HSK_LEVEL[l].split("|").forEach(function (w) { if (w) HSKMAP[w] = +l; }); }); }
     return HSKMAP[hz] || 0;
   };
-  CP.hskBadge = function (hz) { var l = CP.hsk(hz); return '<span class="hsk-b' + (l ? "" : " out") + '" title="' + (l ? "Parola del livello HSK " + l : "Fuori dalle liste HSK 1–6") + '">' + (l ? "HSK " + l : "HSK+") + "</span>"; };
+  CP.hskBadge = function (hz) { var l = CP.hsk(hz); return '<span class="hsk-b' + (l ? "" : " out") + '" title="' + CP.attr(l ? t("hsk.in", { n: l }) : t("hsk.out")) + '">' + (l ? "HSK " + l : "HSK+") + "</span>"; };
 
   /* ---- famiglia del carattere ---- */
   CP.familyOf = function (ch) {
@@ -722,24 +714,24 @@
     var ch = fam.cur, selves = CP.homographs(ch), selfW = selves[0];
     var list = CP.familyOf(ch), h;
     h = '<div class="fam-head"><div class="big" lang="zh-CN">' + CP.esc(ch) + '</div><div class="meta">' +
-      (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + " " + CP.hskBadge(w.hz) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>"; }).join("")
-             : '<div class="small muted">Da solo non è una parola del vocabolario: compare dentro altre parole.</div>') +
-      "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
-      (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ Correggi o segnala</button></div>' : "");
+      (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + " " + CP.hskBadge(w.hz) + '</div><div class="small muted" lang="it">' + CP.esc(w.it) + "</div>"; }).join("")
+             : '<div class="small muted">' + t("fam.part") + "</div>") +
+      "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
+      (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ ' + t("fam.fix") + "</button></div>" : "");
     if (fam.chars.length > 1) {
-      h += '<div class="fam-chars" role="group" aria-label="Caratteri">' + fam.chars.map(function (c) {
+      h += '<div class="fam-chars" role="group" aria-label="' + CP.attr(t("fam.chars")) + '">' + fam.chars.map(function (c) {
         return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
       }).join("") + "</div>";
     }
     var ex = selfW && CP.exampleFor && CP.exampleFor(selfW.key);
-    if (ex) h += '<div class="cd-ex"><span class="tag">' + CP.t("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + CP.esc(ex[2]) + "</div>" + CP.audioBtns(ex[1], true) + "</div>";
+    if (ex) h += '<div class="cd-ex"><span class="tag">' + CP.t("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + CP.esc(ex[2]) + "</div>" + CP.audioBtns(ex[1], true) + "</div>";
     if (selfW && CP.phonBlock) h += CP.phonBlock(selfW.py);
-    h += "<h4>Parole che contengono " + CP.esc(ch) + "</h4>";
-    if (!list.length) h += '<p class="muted small">Nessun\'altra parola del vocabolario contiene questo carattere.</p>';
+    h += "<h4>" + t("fam.contain", { c: CP.esc(ch) }) + "</h4>";
+    if (!list.length) h += '<p class="muted small">' + t("fam.noOther") + "</p>";
     list.slice(0, 14).forEach(function (w) {
-      h += '<div class="fw"><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>" + CP.audioBtns(w.hz, true) + "</div>";
+      h += '<div class="fw"><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="small muted" lang="it">' + CP.esc(w.it) + "</div>" + CP.audioBtns(w.hz, true) + "</div>";
     });
-    if (list.length > 14) h += '<p class="small muted">Altre ' + (list.length - 14) + " parole: cercale nella scheda Parole.</p>";
+    if (list.length > 14) h += '<p class="small muted">' + t("fam.more", { n: list.length - 14 }) + "</p>";
     famCard.innerHTML = h;
   }
   CP.openFamily = function (text) {
