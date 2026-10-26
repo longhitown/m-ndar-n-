@@ -91,3 +91,48 @@ jobs:
             gh release create "$TAG" mandarino.apk --title "màndarínō $VERSION" --notes-file notes.md --target "$GITHUB_SHA" --latest
           fi
           echo "Scarica: https://github.com/${{ github.repository }}/releases/latest/download/mandarino.apk" >> "$GITHUB_STEP_SUMMARY"
+
+  # Prova sul dispositivo: l'APK di prova gira in un emulatore Android 14 vero (con l'accelerazione KVM dei runner
+  # Linux di GitHub) e tools/android-smoke.mjs controlla dentro la WebView: caricamento, #selftest, backup in
+  # Download, microfono, dati che restano, tasto Indietro, nessun crash.
+  dispositivo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22   # WebSocket integrato, per parlare con la WebView
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Costruisci l'APK di prova
+        run: gradle -p android --no-daemon assembleDebug
+
+      - name: Abilita KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Prova nell'emulatore Android 14
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk
