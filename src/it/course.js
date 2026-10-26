@@ -338,13 +338,45 @@
 
   /* ---------------- 句子: frasi e dialoghi ---------------- */
   var ph = { dlg: null };
+  /* 句子练习: una delle 5754 frasi d'esempio (data/examples), da ricomporre in italiano partendo dal cinese */
+  var px = null;
+  function pxNew() {
+    var E = typeof EXAMPLES !== "undefined" ? EXAMPLES : {}, ks = Object.keys(E), x = null;
+    for (var n = 0; n < 40 && !x; n++) { var e = E[ks[Math.floor(Math.random() * ks.length)]]; if (e && words(e[1]).length >= 3 && words(e[1]).length <= 8) x = e; }
+    if (!x) return null;
+    var t = words(x[1]), bank = t.map(function (w, i) { return { id: i, w: w }; }), sh = bank;
+    for (var k = 0; k < 6; k++) { sh = shuffle(bank); if (sh.map(function (b) { return b.w; }).join(" ") !== t.join(" ")) break; }
+    return { zh: x[0], it: x[1], t: t, bank: sh, pick: [], state: "play" };
+  }
+  function pxHTML() {
+    if (!px) px = pxNew(); if (!px) return "";
+    var by = {}; px.bank.forEach(function (b) { by[b.id] = b; });
+    var tile = function (b, attr, used) { return '<button type="button" class="tile it-tile' + (used ? " used" : "") + '" ' + attr + (used || px.state !== "play" ? " disabled" : "") + ' lang="it"><span class="th">' + esc(b.w) + "</span></button>"; };
+    var h = '<div class="panel ls-quiz" id="it-px" style="margin-top:20px"><span class="tag muted small">句子练习 · 把意大利语排好</span><p class="ask" lang="zh-CN">' + esc(px.zh) + "</p>" +
+      '<div class="slot" data-empty="点下面的词">' + px.pick.map(function (id) { return tile(by[id], 'data-itx-un="' + id + '"'); }).join("") + "</div>";
+    if (px.state === "play") h += '<div class="bank">' + px.bank.map(function (b) { return tile(b, 'data-itx-pick="' + b.id + '"', px.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" class="btn-main" data-itx-check' + (px.pick.length === px.t.length ? "" : " disabled") + ">" + Z.check + '</button><button type="button" class="btn-s" data-itx-next>换一句</button></div>';
+    else h += (px.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(px.it) + "</span></p>") + '<div class="acts">' + sayBtn(px.it, true) + '<button type="button" class="btn-main" data-itx-next>' + Z.next + "</button></div>";
+    return h + "</div>";
+  }
+  function pxPaint() { var el = document.getElementById("it-px"); if (el) el.outerHTML = pxHTML(); }
+  view.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-itx-pick],[data-itx-un],[data-itx-check],[data-itx-next]") : null; if (!b || !px) return;
+    if (b.hasAttribute("data-itx-pick")) px.pick.push(+b.getAttribute("data-itx-pick"));
+    else if (b.hasAttribute("data-itx-un")) px.pick.splice(px.pick.indexOf(+b.getAttribute("data-itx-un")), 1);
+    else if (b.hasAttribute("data-itx-check")) {
+      var by = {}; px.bank.forEach(function (x) { by[x.id] = x.w; });
+      var got = px.pick.map(function (id) { return by[id]; }).join(" ").toLowerCase(), ok = got === px.t.join(" ").toLowerCase();
+      px.state = ok ? "ok" : "ko"; CP.sfx(ok ? "ok" : "ko"); if (ok) CP.speak(px.it, { lang: "it-IT", voiceURI: CP.itVoiceURI() });
+    } else if (b.hasAttribute("data-itx-next")) px = pxNew();
+    CP.sfx("tap"); pxPaint();
+  });
   function phrasesView() {
     if (ph.dlg) {
       var d = DIALOGS.filter(function (x) { return x.id === ph.dlg; })[0];
       return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itp-back>' + Z.back + "</button></div><h2>" + esc(DLG_ZH[d.id] || d.title) + '</h2><p class="small muted" lang="it">' + esc(d.title + " — " + d.sub) + "</p>" +
         d.lines.map(function (l) { return '<div class="it-line it-' + (l[0] === "B" ? "b" : "a") + '"><div class="it-big" lang="it">' + esc(l[3]) + '</div><div class="small">' + zhHTML(l[2], l[1]) + "</div>" + sayBtn(l[3], true) + "</div>"; }).join("");
     }
-    var h = '<h2 style="margin-top:20px">常用句子</h2><p class="small muted" style="margin:0 0 10px">意大利语在上，中文在下。点 🔊 听意大利语。</p>';
+    var h = pxHTML() + '<h2 style="margin-top:20px">常用句子</h2><p class="small muted" style="margin:0 0 10px">意大利语在上，中文在下。点 🔊 听意大利语。</p>';
     h += PHRASES.map(function (g, gi) {
       return '<details class="pat"><summary>' + esc(PHR_ZH[gi] || g.title) + "</summary>" + g.items.map(function (p) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(p[2]) + '</div><div class="small">' + zhHTML(p[1], p[0]) + "</div><div>" + sayBtn(p[2], true) + "</div></div>"; }).join("") + "</details>";
     }).join("");
