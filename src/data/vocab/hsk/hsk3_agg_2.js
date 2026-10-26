@@ -4,7 +4,7 @@ SECTIONS.push({
   "id": "hsk3_agg_2",
   "title": "HSK 3 · Aggettivi e avverbi (2 di 3)",
   "words": [
-    ["Zhí","直","dritto, diretto"],
+    ["zhí","直","dritto, diretto"],
     ["měi.hǎo","美好","bello, felice"],
     ["lè","乐","felice; ridere","乐 yuè = musica"],
     ["chāo.jí","超级","super-"],
@@ -43,13 +43,13 @@ SECTIONS.push({
     ["shēn.kè","深刻","profondo"],
     ["quán.miàn","全面","completo, a tutto tondo"],
     ["jiān.qiáng","坚强","forte (di carattere)"],
-    ["Gǔ","古","antico"],
+    ["gǔ","古","antico"],
     ["yín","银","argento"],
     ["hé.fǎ","合法","legale"],
     ["gǎn.kuài","赶快","presto, subito"],
     ["fēng.fù","丰富","ricco, abbondante"],
     ["wēn.nuǎn","温暖","caldo, accogliente"],
-    ["Qí","齐","ordinato; tutti insieme; completo"],
+    ["qí","齐","ordinato; tutti insieme; completo"],
     ["wán.zhěng","完整","completo, intatto"]
   ]
 });

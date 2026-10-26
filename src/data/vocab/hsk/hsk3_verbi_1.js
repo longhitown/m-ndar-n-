@@ -29,7 +29,7 @@ SECTIONS.push({
     ["lì.yòng","利用","utilizzare, sfruttare"],
     ["zhuā","抓","afferrare; arrestare"],
     ["xià.qù","下去","scendere; continuare (dopo un verbo)","说下去 = continua a parlare"],
-    ["Tán","谈","parlare, discutere"],
+    ["tán","谈","parlare, discutere"],
     ["fù.zé","负责","essere responsabile di"],
     ["lǐ.jiě","理解","capire, comprendere"],
     ["gǎn","敢","osare"],
@@ -45,6 +45,6 @@ SECTIONS.push({
     ["biǎo.yǎn","表演","esibirsi; spettacolo"],
     ["zhào","照","secondo; illuminare; fotografare"],
     ["jiàn.lì","建立","stabilire, fondare"],
-    ["Zhù","祝","augurare","祝你生日快乐 = buon compleanno"]
+    ["zhù","祝","augurare","祝你生日快乐 = buon compleanno"]
   ]
 });

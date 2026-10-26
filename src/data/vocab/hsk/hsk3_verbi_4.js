@@ -14,7 +14,7 @@ SECTIONS.push({
     ["chǎo","吵","rumoroso; litigare"],
     ["lǐng.xiān","领先","essere in testa"],
     ["shàng.shēng","上升","salire, aumentare"],
-    ["Wéi","围","circondare"],
+    ["wéi","围","circondare"],
     ["fēi.xíng","飞行","volo; volare"],
     ["jì.niàn","纪念","commemorare; ricordo"],
     ["bǔ","补","riparare; recuperare"],

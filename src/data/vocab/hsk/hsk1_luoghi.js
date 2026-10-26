@@ -30,7 +30,7 @@ SECTIONS.push({
     ["lóu.shàng","楼上","al piano di sopra"],
     ["lǐ.bian","里边","dentro"],
     ["wài.bian","外边","fuori"],
-    ["Xīng.qī.rì","星期日","domenica"],
+    ["xīng.qī.rì","星期日","domenica"],
     ["hòu.bian","后边","dietro"],
     ["xī.biān","西边","a ovest"],
     ["shàng.bian","上边","sopra"],

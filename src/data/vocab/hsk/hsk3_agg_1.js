@@ -20,7 +20,7 @@ SECTIONS.push({
     ["dào.dǐ","到底","insomma (nelle domande); fino in fondo","你到底去不去? = insomma, vieni o no?"],
     ["hǎo.hǎo","好好","per bene"],
     ["yuē","约","dare appuntamento; circa"],
-    ["Jīn","金","oro"],
+    ["jīn","金","oro"],
     ["què.shí","确实","davvero, effettivamente"],
     ["zhì.shǎo","至少","almeno"],
     ["shǒu.xiān","首先","prima di tutto"],

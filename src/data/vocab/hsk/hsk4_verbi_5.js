@@ -14,7 +14,7 @@ SECTIONS.push({
     ["tì.dài","替代","sostituire"],
     ["ān.zhì","安置","sistemare, collocare"],
     ["xiū.lǐ","修理","riparare"],
-    ["Yán.cháng","延长","prolungare"],
+    ["yán.cháng","延长","prolungare"],
     ["zhēng.fú","征服","conquistare"],
     ["yán.xù","延续","continuare, protrarsi"],
     ["kǎo.chá","考察","ispezionare, studiare sul posto"],

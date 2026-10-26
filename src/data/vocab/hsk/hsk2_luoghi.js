@@ -23,7 +23,7 @@ SECTIONS.push({
     ["jīn.hòu","今后","d'ora in poi"],
     ["Xī.fāng","西方","l'Occidente"],
     ["běi.fāng","北方","il Nord"],
-    ["Dōng.fāng","东方","l'Oriente; est"],
+    ["dōng.fāng","东方","l'Oriente; est"],
     ["yuè.fèn","月份","mese"],
     ["tiān.shàng","天上","in cielo"],
     ["lù.biān","路边","ciglio della strada"],

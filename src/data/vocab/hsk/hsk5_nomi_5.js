@@ -32,7 +32,7 @@ SECTIONS.push({
     ["bèi","辈","generazione","长辈 = gli anziani della famiglia"],
     ["ér.nǚ","儿女","figli e figlie"],
     ["tǐ.jī","体积","volume"],
-    ["Yǔ.shuǐ","雨水","acqua piovana"],
+    ["yǔ.shuǐ","雨水","acqua piovana"],
     ["dì.xíng","地形","morfologia del terreno"],
     ["guì.zi","柜子","armadio"],
     ["yà.jūn","亚军","secondo classificato"],

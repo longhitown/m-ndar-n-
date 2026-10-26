@@ -6,9 +6,9 @@ SECTIONS.push({
   "words": [
     ["xiào.guǒ","效果","effetto, risultato"],
     ["zhuàng.kuàng","状况","condizione, situazione"],
-    ["Shì","室","stanza, ufficio","办公室"],
-    ["Shí.dài","时代","epoca"],
-    ["Pí","皮","pelle; buccia"],
+    ["shì","室","stanza, ufficio","办公室"],
+    ["shí.dài","时代","epoca"],
+    ["pí","皮","pelle; buccia"],
     ["chéng.yuán","成员","membro"],
     ["nián.dài","年代","decennio, epoca","八十年代 = gli anni Ottanta"],
     ["lǐng.dǎo","领导","dirigente, capo; guidare"],
@@ -30,7 +30,7 @@ SECTIONS.push({
     ["duì.xiàng","对象","oggetto; fidanzato/a"],
     ["wén.zhāng","文章","articolo, testo"],
     ["nèi.xīn","内心","nel profondo, interiore"],
-    ["Fèi","费","spesa, tariffa; consumare"],
+    ["fèi","费","spesa, tariffa; consumare"],
     ["wǔ.tái","舞台","palcoscenico"],
     ["yáng.guāng","阳光","sole, luce del sole; solare (carattere)"],
     ["yìn.xiàng","印象","impressione"],
@@ -40,14 +40,14 @@ SECTIONS.push({
     ["zhǔ.rèn","主任","direttore, responsabile"],
     ["jī.chǔ","基础","base, fondamenta"],
     ["gōng.néng","功能","funzione"],
-    ["Tiě","铁","ferro"],
+    ["tiě","铁","ferro"],
     ["nǚ.zǐ","女子","donna"],
     ["zī.gé","资格","requisiti, titolo"],
     ["gōng.jù","工具","strumento, attrezzo"],
     ["chǎng","厂","fabbrica"],
     ["fèi.yòng","费用","spese, costi"],
     ["nán.zǐ","男子","uomo"],
-    ["Tǔ","土","terra, terreno"],
+    ["tǔ","土","terra, terreno"],
     ["cūn","村","villaggio"]
   ]
 });

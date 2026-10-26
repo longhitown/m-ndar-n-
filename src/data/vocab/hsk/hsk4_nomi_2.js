@@ -6,7 +6,7 @@ SECTIONS.push({
   "words": [
     ["hūn.lǐ","婚礼","matrimonio (cerimonia)"],
     ["féi","肥","grasso (animali, carne); largo (vestiti)"],
-    ["Shī","诗","poesia"],
+    ["shī","诗","poesia"],
     ["lèi.xíng","类型","tipo, genere"],
     ["biāo.zhì","标志","simbolo, segno; logo"],
     ["huǒ.bàn","伙伴","compagno, partner"],
@@ -41,11 +41,11 @@ SECTIONS.push({
     ["fù.dān","负担","peso, onere; sostenere (una spesa)"],
     ["dà.gē","大哥","fratello maggiore"],
     ["jiǎng.jīn","奖金","premio in denaro, bonus"],
-    ["Dà.zhòng","大众","il pubblico, le masse"],
+    ["dà.zhòng","大众","il pubblico, le masse"],
     ["xíng.shì","形势","situazione"],
     ["dà.lóu","大楼","palazzo, edificio"],
     ["jì.qiǎo","技巧","tecnica, abilità"],
-    ["Dà.lù","大陆","continente; Cina continentale"],
+    ["dà.lù","大陆","continente; Cina continentale"],
     ["míng.rén","名人","personaggio famoso"],
     ["zhèn","阵","classificatore per raffiche, momenti","一阵风 = una folata"],
     ["tǐ.zhòng","体重","peso corporeo"]
