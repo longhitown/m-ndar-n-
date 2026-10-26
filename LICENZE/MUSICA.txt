@@ -1,0 +1,9 @@
+Musica di màndarínō (src/audio/music/*.ogg) · © 2026 Claudio Longhitano
+Licenza: Creative Commons Attribuzione 4.0 Internazionale (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/deed.it · testo legale: https://creativecommons.org/licenses/by/4.0/legalcode.it
+
+Puoi condividere e modificare i brani per qualsiasi scopo, anche commerciale, a condizione di citare l'autore
+(«Musica di Claudio Longhitano per màndarínō») e di indicare se hai fatto modifiche.
+
+I brani sono composizioni originali. Gli strumenti campionati vengono da librerie libere CC0 o di pubblico dominio
+(nessun credito obbligatorio, li citiamo volentieri): vedi src/audio/CREDITI-MUSICA.md.

@@ -167,7 +167,7 @@
     return out.slice(0, 40);
   }
   /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
-  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-toneshapes", "cp-contrib-nick", "cp-lang"];
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-lang"];
   function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
   function mergeKey(k, a, b) {
     if (k === "cp-srs-v1") return mergeSrs(a, b);

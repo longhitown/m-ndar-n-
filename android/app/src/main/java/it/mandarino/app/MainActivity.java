@@ -315,6 +315,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         bridge.shutdown();
+        MusicService.stop(this);
         if (web != null) { web.removeJavascriptInterface("MandarinoAndroid"); web.destroy(); }
         super.onDestroy();
     }

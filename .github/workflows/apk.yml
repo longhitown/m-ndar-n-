@@ -35,6 +35,9 @@ jobs:
       - name: dist/ aggiornato e frasi verificate
         run: node tools/build.mjs --check && node tools/grammar.mjs
 
+      - name: File pesanti di dist/ (brani, nomi e termini), che non stanno nel repository
+        run: node tools/build.mjs
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -117,7 +120,7 @@ jobs:
           gradle-version: "8.14.3"
 
       - name: Costruisci l'APK di prova
-        run: gradle -p android --no-daemon assembleDebug
+        run: node tools/build.mjs && gradle -p android --no-daemon assembleDebug
 
       - name: Abilita KVM
         run: |

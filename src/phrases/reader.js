@@ -26,7 +26,7 @@
     if (WK.p) return WK.p;
     if (location.protocol === "file:") { WK.err = true; return Promise.resolve(null); }
     WK.err = false;
-    return (WK.p = fetch("data/wiki/zh-it.txt").then(function (r) { if (!r.ok) throw new Error("http"); return r.text(); }).then(function (t) {
+    return (WK.p = fetch(window.WIKI_FILE || "data/wiki/zh-it.txt").then(function (r) { if (!r.ok) throw new Error("http"); return r.text(); }).then(function (t) {
       var m = new Map(); t.split("\n").forEach(function (l) { var i = l.indexOf("\t"); if (i > 0) m.set(l.slice(0, i), l.slice(i + 1)); });
       WK.map = m; try { localStorage.setItem("md-wiki", "1"); } catch (e) {} return m;
     }).catch(function () { WK.err = true; WK.p = null; return null; }));

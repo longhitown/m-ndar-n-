@@ -11,6 +11,9 @@
     <!-- promemoria giornaliero, solo se acceso in ⚙️ (il permesso si chiede in quel momento, non all'avvio) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- musica con lo schermo spento, solo se scelta nel pannello 🎵 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <!-- solo per la voce di riserva online e i link esterni: l'app funziona senza rete -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -52,6 +55,8 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_small_info" />
         </receiver>
+
+        <service android:name=".MusicService" android:exported="false" android:foregroundServiceType="mediaPlayback" />
 
         <receiver android:name=".Reminder" android:exported="false">
             <intent-filter>

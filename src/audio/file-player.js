@@ -1,55 +1,68 @@
-/* màndarínō · riproduttore dei brani registrati (audio/music/<id>.ogg, Opus): li scarica, li decodifica con Web Audio e li
-   suona in loop senza interruzioni. Interfaccia come ogni traccia: CP.audioFile.player(c, bus, id) → { step, stop }.
-   In memoria resta decodificato un solo brano alla volta (circa 90 MB per 4 minuti stereo).
-   I file non stanno dentro index.html: li serve lo stesso posto dell'app (sito, APK). Il service worker li tiene in una cache
-   a parte (mandarino-music), che sopravvive agli aggiornamenti dell'app; da file:// il browser non li lascia leggere. */
+/* màndarínō · riproduttore dei brani registrati (audio/music/<id>.<impronta>.ogg, Opus).
+   V6.8: non si decodifica più tutto il brano in memoria (circa 90 MB per 4 minuti stereo): il file compresso (3-5 MB)
+   diventa la sorgente di un elemento <audio> in loop, collegato al grafo Web Audio dell'app (MediaElementSource), così
+   volume, abbassamento sotto la voce e silenzio col microfono restano gli stessi. Il loop è quello del lettore del
+   browser, senza stacchi. Interfaccia come ogni traccia: CP.audioFile.player(c, bus, id) → { step, stop }.
+   I nomi dei file e le dimensioni li scrive la build in window.MUSIC_FILES; il service worker li tiene in una cache a
+   parte (mandarino-music), che sopravvive agli aggiornamenti. Da file:// il browser non li lascia leggere. */
 (function () {
   var CP = window.CP, BASE = "audio/music/", MCACHE = "mandarino-music";
-  var CACHE = {}, STATE = {}, listeners = [];
+  var STATE = {}, listeners = [];
   function set(id, s) { STATE[id] = s; listeners.forEach(function (f) { try { f(id, s); } catch (e) {} }); }
-  function url(id) { return BASE + id + ".ogg"; }
+  function info(id) { return (window.MUSIC_FILES || {})[id] || null; }
+  function url(id) { var m = info(id); return BASE + (m ? m[0] : id + ".ogg"); }
   var fileProto = location.protocol === "file:";
-  function bytes(id) {
+  /* il file intero come Blob (dalla cache del service worker quando c'è): sorgente locale, si può riavvolgere senza rete */
+  function blob(id) {
     if (fileProto) return Promise.reject(new Error("file"));
-    return fetch(url(id)).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); });
-  }
-  function decode(c, ab) { return new Promise(function (ok, ko) { var p = c.decodeAudioData(ab, ok, ko); if (p && p.then) p.then(ok, ko); }); }
-  function load(c, id) {
-    Object.keys(CACHE).forEach(function (k) { if (k !== id) delete CACHE[k]; });
-    if (!CACHE[id]) {
-      set(id, "loading");
-      CACHE[id] = bytes(id).then(function (ab) { return decode(c, ab); });
-      CACHE[id].then(function () { set(id, "ok"); }, function (e) { delete CACHE[id]; set(id, fileProto || (e && e.message === "file") ? "file" : "err"); });
-    }
-    return CACHE[id];
+    return fetch(url(id)).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); });
   }
   CP.audioFile = {
     state: function (id) { return STATE[id] || ""; },
     onState: function (f) { listeners.push(f); },
     fileProto: fileProto,
+    url: url,
+    /* MB dei brani, dal catalogo della build (prima era un numero fisso) */
+    mb: function (ids) { var b = 0; (ids || Object.keys(window.MUSIC_FILES || {})).forEach(function (id) { var m = info(id); if (m) b += m[1]; }); return b / 1048576; },
     player: function (c, bus, id) {
-      var stopped = false, src = null, g = c.createGain();
+      var stopped = false, g = c.createGain(), el = new Audio(), src = null, obj = "";
       g.gain.value = 0; g.connect(bus);
-      load(c, id).then(function (buf) {
+      el.loop = true; el.preload = "auto";
+      set(id, "loading");
+      blob(id).then(function (b) {
         if (stopped) return;
-        src = c.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(g);
-        var t = c.currentTime + 0.05; src.start(t); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + 1.5);
-      }).catch(function () {});
+        obj = URL.createObjectURL(b); el.src = obj;
+        src = c.createMediaElementSource(el); src.connect(g);
+        el.addEventListener("playing", function () { set(id, "ok"); }, { once: true });
+        return el.play().then(function () {
+          var t = c.currentTime; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + 1.5);
+        });
+      }).catch(function (e) { if (!stopped) set(id, fileProto || (e && e.message === "file") ? "file" : "err"); });
       return {
         step: function () {},
+        el: el,
+        pause: function (on) { try { if (on) el.pause(); else el.play(); } catch (e) {} },
         stop: function () {
           if (stopped) return; stopped = true;
           var t = c.currentTime;
           try { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + 0.6); } catch (e) {}
-          setTimeout(function () { try { if (src) src.stop(); } catch (e) {} try { g.disconnect(); } catch (e) {} src = null; }, 700);
+          setTimeout(function () { try { el.pause(); el.removeAttribute("src"); el.load(); } catch (e) {} try { if (src) src.disconnect(); g.disconnect(); } catch (e) {} if (obj) URL.revokeObjectURL(obj); }, 700);
         }
       };
     },
-    /* offline: quali brani sono già nella cache del telefono, e lo scaricamento di tutti (il service worker li mette da parte) */
+    /* offline: quali brani (con il nome di adesso) sono già nella cache del telefono; via quelli vecchi */
     offline: function () {
       if (fileProto || !window.caches) return Promise.resolve(null);
-      return caches.open(MCACHE).then(function (ch) { return ch.keys(); }).then(function (ks) {
-        var have = {}; ks.forEach(function (r) { var m = /\/audio\/music\/([\w-]+)\.ogg$/.exec(r.url); if (m) have[m[1]] = 1; }); return have;
+      var cur = {}; Object.keys(window.MUSIC_FILES || {}).forEach(function (id) { cur[url(id)] = id; });
+      return caches.open(MCACHE).then(function (ch) {
+        return ch.keys().then(function (ks) {
+          var have = {};
+          ks.forEach(function (r) {
+            var p = new URL(r.url).pathname, m = /audio\/music\/[^/]+$/.exec(p); if (!m) return;
+            var id = cur[m[0]]; if (id) have[id] = 1; else ch.delete(r);   /* un brano sostituito: la copia vecchia se ne va */
+          });
+          return have;
+        });
       }).catch(function () { return null; });
     },
     downloadAll: function (ids, progress) {
