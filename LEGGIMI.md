@@ -222,8 +222,14 @@ Da fare a mano, su un telefono vero (non si possono simulare qui):
 Chi usa l'app corregge pinyin, italiano o nota di una parola, di una frase o di una battuta (mai i caratteri: sono la
 chiave dei progressi), segnala un errore o propone una parola nuova. La correzione si vede subito nella sua copia
 («✏️ tua correzione») e si annulla da ⚙️ → Contributi. Si manda con Condividi (WeChat, WhatsApp…), email o file `.json`;
-Modulo Google e GitHub Issue compaiono quando li configuri in `src/contrib/contrib.js`, cerca `var CFG = { email: "", form: "", formEntry: "", repo: "" }`
-(per le issue basta il nome di questo repository, ora che è pubblico).
+GitHub Issue è attivo (`repo` in `var CFG` di `src/contrib/contrib.js`); email e Modulo Google compaiono quando li configuri lì.
+
+**Le issue si controllano da sole** (`.github/workflows/contrib.yml`): a ogni issue che contiene una patch, l'Action mette
+l'etichetta `contributo`, lancia `merge-contrib.mjs` a secco e risponde con il riepilogo (da applicare, segnalazioni,
+doppioni, conflitti, scartati). Se aggiungi tu l'etichetta `applica`, applica le voci valide, ricostruisce `dist/`, controlla
+la grammatica e apre una pull request dal ramo `contributo/issue-N`: niente entra nel ramo principale senza che tu la unisca.
+Una volta sola: Settings → Actions → General → «Allow GitHub Actions to create and approve pull requests».
+(Le pull request aperte da un'Action non fanno partire le altre Action: per le prove, chiudi e riapri la PR o lancia i workflow a mano.)
 
 ```
 node tools/merge-contrib.mjs arrivati/*.json            # riepilogo: da applicare, segnalazioni, doppioni, conflitti, scartati
@@ -258,7 +264,6 @@ jsQR (Apache 2.0), wikidict-it/Wikidata (CC0).
 
 - Corso di italiano: 30 lezioni; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
   Correttore di frasi italiane: da fare.
-- Facoltativa: una GitHub Action che lanci `merge-contrib.mjs` sulle issue con etichetta `contributo`.
 - 有一些 è l'unica parola senza frase d'esempio (il taglio la legge sempre come 有|一些, che è corretto).
 - Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi:
   `node tools/review-sample.mjs --out revisione.md` prepara il modulo (circa 300 righe, istruzioni in cinese).
