@@ -1,7 +1,7 @@
 # màndarínō · il cinese per italiani, l'italiano per cinesi (V6.7)
 
 Due corsi in un'app: **il cinese per italiani** e, scelto dal benvenuto o da ⚙️ → Corso, **意大利语课程, l'italiano per
-chi parla cinese**. Un'app che si pubblica come file unico (`dist/index.html`, generato da `src/`): 3500 parole in 155 sezioni, pinyin davanti, toni a colori, ripasso FSRS-6,
+chi parla cinese**. Un'app che si pubblica come file unico (`dist/index.html`, generato da `src/`): 6385 parole in 220 sezioni (con le liste HSK 3.0), una frase d'esempio per parola, pinyin davanti, toni a colori, ripasso FSRS-6,
 dialoghi, laboratorio di frasi, oscilloscopio dei toni. Nessuna libreria esterna, nessuna richiesta di rete
 all'avvio; i progressi restano nel browser (localStorage + copia in IndexedDB) e si salvano su file.
 
@@ -14,12 +14,16 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   main.js                  ultimo script: avvio finale
   data/vocab/NNN-<id>.js   il vocabolario, una sezione per file, una parola per riga
   data/dialogs/<id>.js     un dialogo per file (+ _categorie.js)
-  data/lessons/NN-<id>.js  le lezioni di grammatica, una per file (spiegazione, esempi, errori tipici, esercizi)
+  data/lessons/NN-<id>.js  le 30 lezioni di grammatica, una per file (spiegazione, esempi, errori tipici, esercizi)
+  data/examples/*.js       una frase d'esempio per parola: chiave → [cinese, italiano] (il pinyin si ricava dal vocabolario)
+  data/freq.js             ordine di frequenza delle parole (lo usa il taglio in parole); data/path-hsk.js = tappe HSK
+  data/strokes.js          l'ordine dei tratti (Make Me a Hanzi, licenza Arphic: vedi LICENZE/ e ⚙️ → Crediti)
   data/grammar.js          le schede grammaticali del traduttore (nomi, luoghi, nazionalità, verbi, aggettivi…)
   data/verified.js         le frasi verificate: traduzioni sicure e, insieme, prove per le regole
   data/*.js                frasi, Pensiero, esercizi, modelli, slot, percorso
   i18n/                    i18n.js (t, applyI18n) + it.js + zh.js
-  core/                    fsrs.js (ripasso), store.js (salvataggi e backup), core.js (stato condiviso, voce, fogli), game.js
+  core/                    fsrs.js (ripasso), store.js (salvataggi e backup), core.js (stato condiviso, voce, fogli), game.js,
+                           segment.js (taglio di una frase in parole: lo stesso codice nella pagina e negli strumenti)
   words/ study/ path/ phrases/ voice/ ui/ contrib/ selftest/ pwa/   le schede e le funzioni, un modulo per file
   audio/synth.js           attrezzi sonori + registro delle tracce (CP.audioTracks.add)
   audio/tracks/<id>.js     una traccia per file;  audio/tracks/index.js = catalogo (ordine)
@@ -34,6 +38,7 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/apk.yml  costruisce l'APK su GitHub e lo pubblica come Release
 tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+                           freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
 
@@ -48,6 +53,10 @@ I caratteri sono la chiave dei progressi: una parola esistente non cambia mai i 
 **Aggiungere una lezione:** un file nuovo in `src/data/lessons/` (il formato è spiegato in cima a `01-essere.js`) e una riga
 `<script src="data/lessons/…">` in `src/index.html`. La build controlla che ogni frase cinese sia fatta di parole del
 vocabolario e che gli esercizi siano ben formati. Il campo `path` la fa comparire nella tappa giusta del Percorso.
+
+**Frasi d'esempio:** in `src/data/examples/` una riga `"chiave": ["中文句子。", "Frase italiana."]`. La build controlla che
+la frase usi solo parole del vocabolario e che il taglio in parole la restituisca come parola (中 non vale dentro 中国).
+Se il taglio sbaglia una frase giusta, si corregge `core/segment.js` (WEAK, CTX, BOUND), non la frase.
 
 **Aggiungere o sostituire una traccia:** `src/audio/tracks/<id>.js` chiama
 `CP.audioTracks.add({ id, ico, name, desc, mood: "calm" | "focus" | "energy", make(c, bus) })`; `make` restituisce
@@ -144,7 +153,7 @@ Primo giro: nessuna forma sbagliata nelle regole; trovato un errore nei dati (�
 ```
 node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
-node tools/e2e.mjs          # 22 prove su dist/ (anche il corso di italiano), ~1 minuto
+node tools/e2e.mjs          # 24 prove su dist/ (anche il corso di italiano), ~1 minuto
 node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
 ```
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi).
@@ -186,18 +195,20 @@ suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-
 
 ## Che cosa resta aperto
 
-- Corso di italiano: il pannello ⚙️ (voce, contributi, backup) è ancora in buona parte in italiano; le lezioni sono 10:
-  se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato). Correttore di frasi italiane: da fare.
+- Corso di italiano: le lezioni sono 10; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
+  Correttore di frasi italiane: da fare.
 - I testi interni dei moduli più vecchi del corso di cinese (esercizi, dialoghi, lettore, guida, Pensiero, laboratorio,
   oscilloscopio, contributi) sono ancora solo in italiano e vanno portati su `t()` un po' alla volta.
 - La modalità a schermo pieno vale per la sessione di studio, l'Orecchio e la Sfida; per gli esercizi di Frasi
   (puzzle, laboratorio, dialoghi) non è ancora attiva.
 - Facoltativa: una GitHub Action che lanci `merge-contrib.mjs` sulle issue con etichetta `contributo`.
-- Lezioni intermedie (把, 被, complementi di risultato e di direzione, connettivi): il vocabolario non ha ancora parole
-  di base che servono a scriverle (完, 被, 从, 打, 虽然, 看见, 出来, 进来, 回来…). Vanno aggiunte prima, controllate con CC-CEDICT.
-- Ordine dei tratti nella lavagna: servirebbe un archivio dei tratti (Make Me a Hanzi), ma la sua licenza (Arphic) chiede
-  di citarla; per ora la lavagna valuta la forma, non l'ordine.
-- Sincronizzazione tra telefono e computer: senza un server non c'è; si passa il file di backup (il ripristino unisce).
+- 有一些 è l'unica parola senza frase d'esempio (il taglio la legge sempre come 有|一些, che è corretto).
+- Sincronizzazione tra telefono e computer: oggi si passa il file di backup (il ripristino unisce). Senza server e senza
+  dati personali presso terzi le strade possibili sono due: (1) un file di sincronizzazione scelto dall'utente nella propria
+  cartella cloud (Drive, Dropbox, OneDrive…: su Android con il selettore di documenti del sistema, sul computer con
+  l'API File System Access), che l'app riscrive dopo ogni sessione e riunisce all'avvio con le regole del ripristino;
+  (2) passaggio diretto da telefono a telefono con una sequenza di codici QR animati, del tutto offline. La (1) è la più
+  comoda e non porta nessun dato su server nostri; la (2) non richiede nessun account. Nessuna delle due è ancora fatta.
 
 **Come si comportano adesso alcune parti delicate:**
 - FSRS: il giorno di studio cambia alle 4 del mattino (come Anki); la ripetizione di una carta nella stessa sessione la
