@@ -1178,6 +1178,11 @@ body.tone-shapes .tone .tshape { display: inline; }
 body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 @keyframes cp-stamp { from { opacity: 0; transform: scale(1.5) rotate(-12deg); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: no-preference) { .done-seal { animation: cp-stamp 0.25s ease-out both; } }
+/* ricerca: le corrispondenze esatte, da toccare per arrivare alla riga */
+.chip-best { display: inline-flex; align-items: baseline; gap: 4px; margin: 4px 2px 0; padding: 4px 10px; min-height: 32px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.chip-best .han { font-size: 18px; }
+tr.flash > td { background: var(--chip); transition: background .3s; }
+.xw.part .xh { text-decoration: underline dotted var(--muted); text-underline-offset: 4px; }
 </style>
 </head>
 <body>
@@ -1290,9 +1295,9 @@ body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
   <details>
     <summary>Tre regole che cambiano i toni</summary>
     <ul>
-      <li><b>3° + 3°:</b> il primo sale. <span class="han">你好</span> si scrive <i>nǐ hǎo</i> ma si dice <i>ní hǎo</i>.</li>
-      <li><b><span class="han">不</span> diventa bú</b> davanti a un 4° tono: <span class="han">不是</span> bú shì, <span class="han">不客气</span> bú kèqi.</li>
-      <li><b><span class="han">一</span> cambia:</b> yí davanti a un 4° tono (<span class="han">一次</span> yí cì), yì davanti a 1°, 2° e 3° (<span class="han">一点</span> yìdiǎn).</li>
+      <li><b>3° + 3°:</b> il primo sale. <span class="han" lang="zh-CN">你好</span> si scrive <i>nǐ hǎo</i> ma si dice <i>ní hǎo</i>.</li>
+      <li><b><span class="han" lang="zh-CN">不</span> diventa bú</b> davanti a un 4° tono: <span class="han" lang="zh-CN">不是</span> bú shì, <span class="han" lang="zh-CN">不客气</span> bú kèqi.</li>
+      <li><b><span class="han" lang="zh-CN">一</span> cambia:</b> yí davanti a un 4° tono (<span class="han" lang="zh-CN">一次</span> yí cì), yì davanti a 1°, 2° e 3° (<span class="han" lang="zh-CN">一点</span> yìdiǎn).</li>
     </ul>
   </details>
     </section>
@@ -9581,14 +9586,20 @@ I18N.zh = {
     this.relearningSteps = o.relearningSteps || [10 * MIN];
     this.maxInterval = o.maxInterval || 36500;
     this.fuzz = !!o.fuzz; this.rng = o.rng || Math.random;
+    /* giorni trascorsi: di default giorni interi da 24 ore, come py-fsrs. Con dayOf (tempo -> numero del giorno) si contano
+       i giorni del calendario, come Anki: la sera e la mattina dopo sono due giorni diversi anche se passano meno di 24 ore */
+    this.dayOf = typeof o.dayOf === "function" ? o.dayOf : null;
     this.decay = -this.w[20];
     this.factor = Math.pow(0.9, 1 / this.decay) - 1;
   }
   var P = Scheduler.prototype;
   P.newCard = function (now) { return { state: LEARNING, step: 0, st: null, df: null, due: now || 0, last: null }; };
+  P.elapsed = function (last, now) {
+    return Math.max(0, this.dayOf ? this.dayOf(now) - this.dayOf(last) : Math.floor((now - last) / DAY));
+  };
   P.retrievability = function (c, now) {
     if (c.last == null || c.st == null) return 0;
-    var el = Math.max(0, Math.floor((now - c.last) / DAY));
+    var el = this.elapsed(c.last, now);
     return Math.pow(1 + this.factor * el / c.st, this.decay);
   };
   /* R in funzione del tempo trascorso in giorni (anche frazionari): per grafici e ordinamento */
@@ -9634,7 +9645,7 @@ I18N.zh = {
   /* un ripasso: restituisce una NUOVA carta */
   P.review = function (card, rating, now) {
     var c = { state: card.state, step: card.step, st: card.st, df: card.df, due: card.due, last: card.last };
-    var since = c.last != null ? Math.floor((now - c.last) / DAY) : null;
+    var since = c.last != null ? this.elapsed(c.last, now) : null;
     var interval; /* ms */
     var self = this;
     function days(d) { return d * DAY; }
@@ -9703,7 +9714,10 @@ I18N.zh = {
     return { n: n, observed: obs, predicted: pred, bins: bins, k: best.k };
   }
 
-  var FSRS = { Scheduler: Scheduler, DEFAULT_W: DEFAULT_W, LB: LB, UB: UB, LEARNING: LEARNING, REVIEW: REVIEW, RELEARNING: RELEARNING,
+  /* il giorno di studio cambia alle 4 del mattino (ora locale), come in Anki */
+  function studyDay(t) { var d = new Date(t - 4 * 3600000); return Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY); }
+
+  var FSRS = { studyDay: studyDay, Scheduler: Scheduler, DEFAULT_W: DEFAULT_W, LB: LB, UB: UB, LEARNING: LEARNING, REVIEW: REVIEW, RELEARNING: RELEARNING,
     AGAIN: AGAIN, HARD: HARD, GOOD: GOOD, EASY: EASY, DAY: DAY, pround: pround, calibrate: calibrate, VERSION: "FSRS-6 (port di py-fsrs)" };
   root.FSRS = FSRS;
   if (typeof module !== "undefined" && module.exports) module.exports = FSRS;
@@ -9881,6 +9895,15 @@ I18N.zh = {
     }
     return pr.then(function () { return flush(); }).then(function () { return { ok: true, msg: n + " voci importate.", n: n }; });
   }
+  /* «Azzera»: progressi del corso di cinese (carte, punti e serie, lezioni, gara d'ascolto) e registro dei ripassi.
+     Con personal anche preferiti e frasi salvate. Le impostazioni e i contributi restano. La copia interna in IndexedDB
+     viene riscritta subito, così il ripristino automatico non riporta indietro ciò che si è appena cancellato. */
+  var PROGRESS = ["cp-game-v1", "cp-lessons-v1", "cp-ear-v1"], PERSONAL = ["cp-fav-v1", "cp-mine"];
+  function resetProgress(personal) {
+    lset("cp-srs-v1", "{}");
+    PROGRESS.concat(personal ? PERSONAL : []).forEach(function (k) { try { if (LS) LS.removeItem(k); } catch (e) {} });
+    return logClear().then(function () { return flush(); });
+  }
   function download(name, text) {
     var cl = window.claude;
     var fb = function () { try { var u = URL.createObjectURL(new Blob([text], { type: "application/json" })), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1500); } catch (e) {} };
@@ -9901,7 +9924,7 @@ I18N.zh = {
 
   window.Store = { status: function () { return { ls: st.ls, idb: st.idb, restored: st.restored }; }, get: lget, set: lset, snapshot: snapshot, flush: flush,
     log: logAdd, logAll: logAll, logClear: logClear, recent: function () { return buf; },
-    exportObj: exportObj, importObj: importObj, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
+    exportObj: exportObj, importObj: importObj, resetProgress: resetProgress, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
 })();
 </script>
 <script>
@@ -10042,7 +10065,7 @@ I18N.zh = {
     var note = (w.note ? '<span class="note">' + esc(w.note) + "</span>" : "") + (w.mine ? '<span class="note mine-tag">✏️ tua correzione</span>' : "");
     return '<tr data-k="' + attr(k) + '"' + (st ? ' class="st-' + st + '"' : "") + ">" +
       '<td class="py"><span class="m m-py">' + pinyinHTML(w.py) + "</span></td>" +
-      '<td class="hz"><span class="m m-hz">' + hanziHTML(w.hz, w.py) + "</span></td>" +
+      '<td class="hz" lang="zh-CN"><span class="m m-hz" lang="zh-CN">' + hanziHTML(w.hz, w.py) + "</span></td>" +
       '<td class="it"><div class="itw"><span class="m m-it">' + esc(w.it) + note + "</span>" +
       STAR.replace("%ON%", fav ? " on" : "").replace("%PR%", fav ? "true" : "false") + "</div></td></tr>";
   }
@@ -10065,7 +10088,7 @@ I18N.zh = {
     ph += '<div class="ph"><h3>' + esc(g.title) + "</h3>" + g.items.map(function (p) {
       return '<div class="ln">' +
         '<div class="lp"><span class="m m-py">' + pinyinHTML(p[0]) + "</span></div>" +
-        '<div class="lh"><span class="m m-hz">' + hanziHTML(p[1], p[0]) + "</span></div>" +
+        '<div class="lh" lang="zh-CN"><span class="m m-hz" lang="zh-CN">' + hanziHTML(p[1], p[0]) + "</span></div>" +
         '<div class="li"><span class="m m-it">' + esc(p[2]) + "</span></div></div>";
     }).join("") + "</div>";
   });
@@ -10112,11 +10135,24 @@ I18N.zh = {
           if (r.bottom > -MARG && r.top < vh + MARG) { if (!S.m) work.push([S, r, 1]); }
           else if (S.m && (r.bottom < -FAR || r.top > vh + FAR)) work.push([S, r, 0]);
         }
-        work.reverse().forEach(function (it) {
-          var S = it[0], r = it[1];
-          if (it[2]) { var d = mat(S); if (d !== 0 && r.bottom < 0) window.scrollBy(0, d); changed++; }
-          else { unmat(S); changed++; }
+        /* tre fasi per passata, non una per sezione: prima si leggono tutte le altezze, poi si scrive il DOM, poi si rilegge
+           una volta sola. Così il browser ricalcola l'impaginazione 2 volte per passata invece di 2 per ogni sezione. */
+        work = work.filter(function (it) { return !it[2] || (!it[0].m && !(it[0].el.classList.contains("closed") && !searching)); });
+        work.forEach(function (it) { it[3] = it[0].tw.offsetHeight; });
+        work.forEach(function (it) {
+          var S = it[0];
+          if (it[2]) { fill(S); S.tw.style.minHeight = "0px"; }
+          else { S.tb.innerHTML = ""; S.m = false; S.tw.style.minHeight = it[3] + "px"; }
+          changed++;
         });
+        var shift = 0;
+        work.forEach(function (it) {
+          if (!it[2]) return;
+          var S = it[0], h = S.tw.offsetHeight; S.h = h;
+          if (S.shown > 2) { var per = (h - THEAD) / S.shown; if (per > 24 && per < 220) ROWH = ROWH * 0.6 + per * 0.4; }
+          if (it[1].bottom < 0) shift += h - it[3];     /* sezioni sopra lo schermo: si compensa lo scorrimento, una volta */
+        });
+        if (shift) window.scrollBy(0, shift);
         if (!changed) break;
       }
     } finally { busy = false; }
@@ -10163,7 +10199,7 @@ I18N.zh = {
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function applySize() {
     root.style.setProperty("--hz", size + "px");
-    valEl.innerHTML = '<span class="han">字</span> ' + size;
+    valEl.innerHTML = '<span class="han" lang="zh-CN">字</span> ' + size;
     if (CP.invalidateHeights) { SEC.forEach(function (S) { if (S.m) S.h = 0; }); setTimeout(function () { ROWH = narrow() ? 60 + size * 0.95 : 40 + size * 0.6; CP.invalidateHeights(); }, 60); }
   }
   function applyMode() {
@@ -10196,6 +10232,11 @@ I18N.zh = {
   var CP = window.CP;
   var WORDS = CP.WORDS, ORDER = CP.ORDER;
   var MAXL = 1; ORDER.forEach(function (k) { MAXL = Math.max(MAXL, Array.from(WORDS[k].hz).length); });
+  /* omografi: stessi caratteri, più voci (花 fiore e 花 spendere: la seconda ha la chiave 花#huā). WORDS[hz] è la prima;
+     alts le elenca tutte, così chi mostra la parola può dare ogni significato */
+  var HOMO = {};
+  ORDER.forEach(function (k) { var h = WORDS[k].hz; if (k !== h) (HOMO[h] = HOMO[h] || [WORDS[h]]).push(WORDS[k]); });
+  CP.homographs = function (hz) { return HOMO[hz] || (WORDS[hz] ? [WORDS[hz]] : []); };
   /* Taglia un testo cinese nelle parole del vocabolario (la più lunga che combacia). */
   CP.segmentText = CP.segment = function (raw) {
     var s = Array.from(String(raw)), out = [], i = 0, cjk = /[㐀-鿿]/;
@@ -10209,8 +10250,8 @@ I18N.zh = {
         var sub = s.slice(i, i + L).join("");
         if (Object.prototype.hasOwnProperty.call(WORDS, sub)) { m = WORDS[sub]; break; }
       }
-      if (m) { out.push({ w: m, raw: m.hz }); i += L; }
-      else { out.push({ w: null, raw: s[i] }); i++; }
+      if (m) { out.push(HOMO[m.hz] ? { w: m, raw: m.hz, alts: HOMO[m.hz] } : { w: m, raw: m.hz }); i += L; }
+      else { out.push({ w: null, raw: s[i], part: CP.charHint ? CP.charHint(s[i]) : null }); i++; }
     }
     return out;
   };
@@ -10247,11 +10288,11 @@ I18N.zh = {
   try { S = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { S = {}; }
   var RETKEY = "cp-ret", ret = parseFloat((function () { try { return localStorage.getItem(RETKEY); } catch (e) { return null; } })());
   if (!(ret >= 0.7 && ret <= 0.97)) ret = 0.9;
-  var SCH = new FSRS.Scheduler({ retention: ret, fuzz: true });
+  var SCH = new FSRS.Scheduler({ retention: ret, fuzz: true, dayOf: FSRS.studyDay });
   CP.srs = {
     scheduler: SCH,
     retention: function () { return ret; },
-    setRetention: function (x) { ret = x; SCH = new FSRS.Scheduler({ retention: ret, fuzz: true }); CP.srs.scheduler = SCH; try { localStorage.setItem(RETKEY, String(x)); } catch (e) {} },
+    setRetention: function (x) { ret = x; SCH = new FSRS.Scheduler({ retention: ret, fuzz: true, dayOf: FSRS.studyDay }); CP.srs.scheduler = SCH; try { localStorage.setItem(RETKEY, String(x)); } catch (e) {} },
     version: FSRS.VERSION
   };
   /* V4 {b,d,n} -> record FSRS plausibile: S dalla scatola, D neutra, nulla va perso */
@@ -10293,7 +10334,9 @@ I18N.zh = {
     migrate(r);
     if (r.st != null) pred = CP.retr(k, now);
     r.n = (r.n || 0) + 1;
-    var apply = !retry || g >= 2;     /* sulla ripetizione solo una risposta positiva chiude il ciclo di riapprendimento */
+    /* la ripetizione nella stessa sessione è esercizio: aggiorna la carta solo se chiude un riapprendimento (dopo «Non la so»).
+       Dopo «Quasi» la carta è già stata valutata: un secondo ripasso a pochi secondi gonfierebbe la stabilità */
+    var apply = !retry || (g >= 2 && r.sd != null && r.sd !== FSRS.REVIEW);
     if (apply) {
       var card = r.st == null ? SCH.newCard(now) : toCard(r);
       wasReview = card.state === FSRS.REVIEW;
@@ -10404,19 +10447,42 @@ I18N.zh = {
   });
 
   function clearLive() { live.forEach(function (el) { el.classList.remove("speaking"); }); live = []; clearTimeout(liveTimer); }
-  var token = 0, curAudio = null, curStop = null;
-  function stopAudio() { if (curAudio) { try { curAudio.onended = curAudio.onerror = null; curAudio.pause(); } catch (e) {} curAudio = null; } }
-  /* Voce online di riserva (servizio non ufficiale: può smettere di funzionare). */
+  var token = 0, curAudio = null, curChain = null, curStop = null, spoken = 0;
+  function stopAudio() { curChain = null; if (curAudio) { try { curAudio.onended = curAudio.onerror = null; curAudio.pause(); } catch (e) {} curAudio = null; } }
+  /* Voce online di riserva (servizio non ufficiale: può smettere di funzionare). Accetta circa 200 caratteri per richiesta:
+     un testo lungo (il lettore «Leggi tutto») si divide in frasi, e le frasi troppo lunghe alle virgole, poi si leggono in fila. */
+  var TTSMAX = 180;
+  function ttsChunks(text) {
+    var out = [];
+    String(text).replace(/([。！？!?；;\n])/g, "$1\u0000").split("\u0000").forEach(function (sen) {
+      sen = sen.trim(); if (!sen) return;
+      while (sen.length > TTSMAX) {
+        var cut = Math.max(sen.lastIndexOf("，", TTSMAX), sen.lastIndexOf(",", TTSMAX), sen.lastIndexOf("、", TTSMAX), sen.lastIndexOf(" ", TTSMAX));
+        if (cut < 20) cut = TTSMAX - 1;
+        out.push(sen.slice(0, cut + 1)); sen = sen.slice(cut + 1).trim();
+      }
+      if (sen) out.push(sen);
+    });
+    /* frasi corte vicine si rimettono insieme (meno richieste, intonazione più naturale) */
+    return out.reduce(function (a, x) { if (a.length && (a[a.length - 1] + x).length <= TTSMAX) a[a.length - 1] += x; else a.push(x); return a; }, []);
+  }
+  CP.ttsChunks = ttsChunks;
   function fallbackAudioTTS(text, rate, onEnd) {
     stopAudio();
-    var a;
-    try {
-      a = new Audio("https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&ttsspeed=" + (rate < 1 ? "0.24" : "1") + "&q=" + encodeURIComponent(text));
-    } catch (e) { onEnd(); return; }
-    curAudio = a;
-    var done = false, fin = function () { if (done) return; done = true; if (curAudio === a) curAudio = null; onEnd(); };
-    a.onended = fin; a.onerror = fin;
-    try { var p = a.play(); if (p && p.catch) p.catch(fin); } catch (e) { fin(); }
+    var parts = ttsChunks(text), i = 0, done = false, chain = {};
+    curChain = chain;
+    var fin = function () { if (done) return; done = true; if (curChain === chain) curChain = null; onEnd(); };
+    (function next() {
+      if (done || curChain !== chain) return;
+      if (i >= parts.length) { fin(); return; }
+      var a;
+      try { a = new Audio("https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&ttsspeed=" + (rate < 1 ? "0.24" : "1") + "&q=" + encodeURIComponent(parts[i++])); }
+      catch (e) { fin(); return; }
+      curAudio = a;
+      var step = function (ok) { a.onended = a.onerror = null; if (curAudio === a) curAudio = null; if (ok) next(); else fin(); };
+      a.onended = function () { step(true); }; a.onerror = function () { step(false); };
+      try { var p = a.play(); if (p && p.catch) p.catch(function () { step(false); }); } catch (e) { step(false); }
+    })();
   }
   CP.fallbackAudioTTS = fallbackAudioTTS;
   CP.canSay = function () { return true; };
@@ -10449,7 +10515,7 @@ I18N.zh = {
       if (o.onEnd) o.onEnd();
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
-    failTimer = setTimeout(finish, 2500 + text.length * 900);
+    failTimer = setTimeout(finish, 6500 + text.length * 900);
     var cloud = function () {
       if (finished || token !== mine) return;
       clearTimeout(startTimer);
@@ -10473,7 +10539,10 @@ I18N.zh = {
         if (err === "canceled" || err === "interrupted") { finish(); return; }
         if (zh && !started) cloud(); else finish();
       };
-      if (zh) startTimer = setTimeout(function () { if (!started && !finished) cloud(); }, 2200);
+      /* se la voce del dispositivo non parte, si passa a quella online. La prima lettura aspetta di più: su Android il motore
+         vocale può metterci 3-4 secondi a svegliarsi. Nell'APK il ponte nativo segnala sempre gli errori: niente timer. */
+      if (zh && !window.__MD_APK) startTimer = setTimeout(function () { if (!started && !finished) cloud(); }, spoken ? 3000 : 6000);
+      spoken++;
       if (busy) setTimeout(function () { if (token === mine) synth.speak(u); }, 60); else synth.speak(u);
     } catch (e) { if (zh) cloud(); else finish(); }
   };
@@ -10509,6 +10578,14 @@ I18N.zh = {
     if (Object.keys(bases).length > 1 || Object.keys(toned).length > 1) POLY.add(c);
   });
   Object.keys(POLY_MANUAL).forEach(function (c) { POLY.add(c); });
+  /* un carattere che da solo non è nel vocabolario ma sta dentro parole note (泳 in 游泳): la sua lettura, se è una sola,
+     e le parole dove compare. Serve al lettore per non dire «non so» davanti a 泳池. */
+  CP.charHint = function (ch) {
+    var r = READ[ch]; if (!r) return null;
+    var sy = Object.keys(r), keys = [];
+    sy.forEach(function (x) { r[x].forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); }); });
+    return { py: sy.length === 1 && !POLY.has(ch) ? sy[0] : null, words: keys.slice(0, 3).map(function (k) { return WORDS[k]; }) };
+  };
   CP.POLY = POLY;
   function readingsOf(c) {
     var out = [], seen = {};
@@ -10542,7 +10619,7 @@ I18N.zh = {
   CP.polyNote = function (w) {
     var p = polyOf(w); if (!p || (!p.others.length && !p.ex)) return "";
     return '<div class="cd-note poly-note">⚠️ ' + (p.others.length ? "Si legge anche " + p.others.map(function (s) { return "<b>" + CP.pinyinHTML(s) + "</b>"; }).join(", ") + ". " : "") +
-      (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
+      (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\" lang=\"zh-CN\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
   };
   CP.sayBtn = function (text) {
     return '<button class="say" type="button" data-say="' + CP.attr(text) + '" aria-label="Ascolta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
@@ -10725,8 +10802,8 @@ I18N.zh = {
         if (CP.inFrame && (r.error === "not-allowed" || r.error === "service-not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
         return;
       }
-      if (r.ok) { out.className = "heard ok"; out.innerHTML = '🎤 Hai detto: «<span class="han">' + CP.esc(r.heard) + "</span>» — Pronuncia perfetta!"; CP.sfx("ok"); }
-      else { out.className = "heard ko"; out.innerHTML = '🎤 Hai detto: «<span class="han">' + CP.esc(r.heard || "…") + "</span>» — non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
+      if (r.ok) { out.className = "heard ok"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard) + "</span>» — Pronuncia perfetta!"; CP.sfx("ok"); }
+      else { out.className = "heard ko"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
     });
     if (!b._rec) b.classList.remove("listening");
   }
@@ -10848,10 +10925,10 @@ I18N.zh = {
   };
   var famEl = document.getElementById("fam"), famCard = document.getElementById("fam-card"), fam = null;
   function famRender() {
-    var ch = fam.cur, selfW = ORDER.filter(function (k) { return WORDS[k].hz === ch; }).map(function (k) { return WORDS[k]; })[0];
+    var ch = fam.cur, selves = CP.homographs(ch), selfW = selves[0];
     var list = CP.familyOf(ch), h;
-    h = '<div class="fam-head"><div class="big">' + CP.esc(ch) + '</div><div class="meta">' +
-      (selfW ? '<div class="lp">' + CP.pinyinHTML(selfW.py) + '</div><div class="small muted">' + CP.esc(selfW.it) + "</div>"
+    h = '<div class="fam-head"><div class="big" lang="zh-CN">' + CP.esc(ch) + '</div><div class="meta">' +
+      (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>"; }).join("")
              : '<div class="small muted">Da solo non è una parola del vocabolario: compare dentro altre parole.</div>') +
       "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
       (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ Correggi o segnala</button></div>' : "");
@@ -10864,7 +10941,7 @@ I18N.zh = {
     h += "<h4>Parole che contengono " + CP.esc(ch) + "</h4>";
     if (!list.length) h += '<p class="muted small">Nessun\'altra parola del vocabolario contiene questo carattere.</p>';
     list.slice(0, 14).forEach(function (w) {
-      h += '<div class="fw"><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>" + CP.audioBtns(w.hz, true) + "</div>";
+      h += '<div class="fw"><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>" + CP.audioBtns(w.hz, true) + "</div>";
     });
     if (list.length > 14) h += '<p class="small muted">Altre ' + (list.length - 14) + " parole: cercale nella scheda Parole.</p>";
     famCard.innerHTML = h;
@@ -10952,12 +11029,42 @@ I18N.zh = {
   });
 
   /* ---- indice di ricerca (sui dati, non sul DOM) ---- */
+  /* Ogni voce: il pinyin attaccato (si cerca «nihao» o «ni hao») con le posizioni d'inizio delle sillabe, i caratteri, e le
+     parole italiane separate da spazi. Il pinyin combacia solo dall'inizio di una sillaba, l'italiano solo dall'inizio di una
+     parola: «re» trova «regalo» ma non «studente», «rea» non nasce più da «andare a». rank: 0 uguale, 1 inizio, 2 dentro. */
+  function words(s) { return " " + String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9㐀-鿿]+/g, " ").trim() + " "; }
+  function sKey(py, hz, it, note) {
+    var syl = String(py).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().split(/[^a-zü]+/).filter(Boolean), st = [], p = "";
+    syl.forEach(function (x) { st.push(p.length); p += x; });
+    return { py: p, st: st, hz: String(hz), it: words(it), note: words(note || ""), g: words(String(it).split(/[;,(:]/)[0]) };
+  }
+  function sQuery(raw) {
+    var r = String(raw).replace(/[0-9|]/g, "");
+    return { c: norm(r).replace(/[^a-zü㐀-鿿]/g, ""), w: words(r).trim(), raw: r.trim() };
+  }
+  function sRank(e, q) {
+    if (!q.c && !q.w) return 0;
+    if (/[㐀-鿿]/.test(q.raw)) { var hq = q.raw.replace(/[^㐀-鿿]/g, ""); return e.hz === hq ? 0 : e.hz.indexOf(hq) === 0 ? 1 : e.hz.indexOf(hq) >= 0 ? 2 : -1; }
+    var best = -1;
+    if (q.c && e.py) {
+      if (e.py === q.c) return 0;
+      for (var i = 0; i < e.st.length; i++) if (e.py.indexOf(q.c, e.st[i]) === e.st[i]) { best = i === 0 ? 1 : 2; break; }
+    }
+    if (q.w) {
+      var w = " " + q.w;
+      if (e.g === w + " ") return 0;
+      if (e.it.indexOf(w + " ") >= 0) best = best < 0 ? 1 : Math.min(best, 1);
+      else if (e.it.indexOf(w) >= 0 || e.note.indexOf(w) >= 0) best = best < 0 ? 2 : best;
+    }
+    return best;
+  }
+  CP.search = { key: sKey, query: sQuery, rank: sRank };
   var Q = CP.Q = new Array(ORDER.length);
-  CP.reindex = function () { ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = norm(w.py) + "|" + w.hz + "|" + norm(w.it + w.note); }); };
+  CP.reindex = function () { ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = sKey(w.py, w.hz, w.it, w.note); }); };
   CP.reindex();
   var lines = document.querySelectorAll("#sections .ln");
   Array.prototype.forEach.call(lines, function (ln) {
-    ln._q = norm(ln.querySelector(".lp").textContent) + "|" + ln.querySelector(".lh").textContent + "|" + norm(ln.querySelector(".li").textContent);
+    ln._q = sKey(ln.querySelector(".lp").textContent, ln.querySelector(".lh").textContent, ln.querySelector(".li").textContent);
     ln.insertAdjacentHTML("beforeend", CP.audioBtns(ln.querySelector(".lh").textContent));
   });
 
@@ -10966,7 +11073,7 @@ I18N.zh = {
   var secsEl0 = document.getElementById("sections"), chipOf = {};
   Array.prototype.forEach.call(document.querySelectorAll("#chips a"), function (a) { chipOf[(a.getAttribute("href") || "").slice(1)] = a; });
   function refilter() {
-    var raw = qEl.value, q = norm(raw.replace(/[0-9|]/g, "")), st = stEl.value, total = 0, topic = CP.topic || null;
+    var raw = qEl.value, sq = sQuery(raw), q = sq.c || sq.w, st = stEl.value, total = 0, topic = CP.topic || null, best = [];
     var active = !!q || st !== "" || !!topic;
     secsEl0.classList.toggle("searching", active);
     CP.setSearching(active);
@@ -10975,7 +11082,9 @@ I18N.zh = {
       var secOk = !topic || topic.indexOf(S.id) >= 0, n = 0;
       for (var i = S.i0; i < S.i1; i++) {
         var kk = CP.ORDER[i];
-        var ok = secOk && (!q || Q[i].indexOf(q) >= 0) && (st === "" || (st === "fav" ? !!(favs && favs.has(kk)) : String(CP.state(kk)) === st));
+        var rk = q ? sRank(Q[i], sq) : 0;
+        var ok = secOk && rk >= 0 && (st === "" || (st === "fav" ? !!(favs && favs.has(kk)) : String(CP.state(kk)) === st));
+        if (ok && q && rk === 0) best.push(kk);
         OK[i] = ok ? 1 : 0; if (ok) n++;
       }
       shownBy[si] = n; total += n;
@@ -10988,7 +11097,7 @@ I18N.zh = {
     if (fr) {
       var shown = 0;
       Array.prototype.forEach.call(fr.querySelectorAll(".ln"), function (ln) {
-        var ok = !q || ln._q.indexOf(q) >= 0;
+        var ok = !q || sRank(ln._q, sq) >= 0;
         if (st !== "" || topic) ok = false;
         ln.hidden = !ok; if (ok) shown++;
       });
@@ -11001,10 +11110,19 @@ I18N.zh = {
       info.hidden = false;
       info.textContent = total ? (total === 1 ? "1 risultato" : total + " risultati") :
         "Nessun risultato. Prova senza toni (es. ni hao), con un carattere o con una parola italiana.";
+      /* le corrispondenze esatte prima di tutto: la tabella resta nell'ordine delle sezioni, queste si toccano per arrivarci */
+      if (best.length && total > best.length) info.insertAdjacentHTML("beforeend", ' · <span class="muted">proprio questa:</span> ' + best.slice(0, 6).map(function (k) {
+        var w = WORDS[k]; return '<button type="button" class="chip-best" data-best="' + CP.attr(k) + '"><span class="han" lang="zh-CN">' + CP.esc(w.hz) + "</span> " + CP.esc(CP.gloss(w)) + "</button>";
+      }).join(" "));
     } else info.hidden = true;
     CP.kick();
   }
   CP.refilter = refilter;
+  info.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-best]"); if (!b) return;
+    var tr = CP.reveal(b.getAttribute("data-best"));
+    if (tr) { tr.classList.add("flash"); setTimeout(function () { tr.classList.remove("flash"); }, 1600); }
+  });
   var qTimer = 0;
   qEl.addEventListener("input", function () { clearTimeout(qTimer); qTimer = setTimeout(refilter, 70); });
   stEl.addEventListener("change", refilter);
@@ -11183,7 +11301,7 @@ I18N.zh = {
   function parts(w, set) {
     var h = "";
     if (set.py) h += '<div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" + CP.toneCurveHTML(w.py);
-    if (set.hz) h += '<div class="cd-hz">' + CP.hanziHTML(w.hz, w.py) + "</div>";
+    if (set.hz) h += '<div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + "</div>";
     if (set.it) h += '<div class="cd-it">' + esc(w.it) + "</div>" + (w.note ? '<div class="cd-note">' + esc(w.note) + "</div>" : "") + (w.mine ? '<div class="cd-note mine-tag">✏️ tua correzione</div>' : "") + (set.py ? CP.polyNote(w) : "");
     return h;
   }
@@ -11309,7 +11427,7 @@ I18N.zh = {
     if (e.kind === "intro") {
       var ex = example(w.hz);
       h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
-        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
+        (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";
     } else if (!sess.revealed) {
       sess.t0 = Date.now();
@@ -11350,7 +11468,7 @@ I18N.zh = {
     var moreNew = keysOf().some(function (k) { return !S[k] || !S[k].n; }), moreDue = dueKeys().length > 0;
     var list = miss.slice(0, 12).map(function (k) {
       var w = CP.WORDS[k];
-      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="muted small">' + esc(w.it) + "</div></div></div>";
+      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="muted small">' + esc(w.it) + "</div></div></div>";
     }).join("");
     root.innerHTML = '<div class="panel done">' + (CP.stamp && CP.game ? CP.stamp(CP.game.rank(), true).replace('class="seal stamp', 'class="seal stamp done-seal') : "") +
       "<h2>" + T("done.title") + "</h2>" +
@@ -11456,7 +11574,7 @@ I18N.zh = {
   }
   function hzOf(t, p) { return t.map(hz).join("") + (FW[p] || ""); }
   function full(t, p, noGloss) {
-    return '<div class="full"><div class="lp">' + CP.pinyinHTML(pyOf(t, p)) + "</div>" + CP.toneCurveHTML(pyOf(t, "")) + '<div class="lh">' + CP.hanziHTML(hzOf(t, p), pyOf(t, p)) +
+    return '<div class="full"><div class="lp">' + CP.pinyinHTML(pyOf(t, p)) + "</div>" + CP.toneCurveHTML(pyOf(t, "")) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(t, p), pyOf(t, p)) +
       "</div>" + (noGloss ? "" : '<div class="gloss">' + esc(t.map(gloss).join(" · ")) + "</div>") + "</div>";
   }
 
@@ -11572,7 +11690,7 @@ I18N.zh = {
   }
   function exFull(e) {
     if (e.disp) {
-      return '<div class="full"><div class="lp">' + CP.pinyinHTML(e.disp.py) + "</div>" + CP.toneCurveHTML(e.disp.py.replace(/[!?,.]/g, "")) + '<div class="lh">' + CP.hanziHTML(e.disp.hz, e.disp.py.replace(/[!?,.]/g, "")) +
+      return '<div class="full"><div class="lp">' + CP.pinyinHTML(e.disp.py) + "</div>" + CP.toneCurveHTML(e.disp.py.replace(/[!?,.]/g, "")) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(e.disp.hz, e.disp.py.replace(/[!?,.]/g, "")) +
         '</div><div class="gloss">' + esc(e.t.map(gloss).join(" · ")) + "</div></div>";
     }
     return full(e.t, e.p) + spokenBlock(e.t, e.p);
@@ -11618,8 +11736,8 @@ I18N.zh = {
   function fixBox(chk, p) {
     if (!chk || chk.ok) return "";
     var bad = hzOf(lab.t, p), good = hzOf(chk.fixed, p), fl = CP.lab.translate(chk.fixed, p === "?" ? "?" : p === "!" ? "!" : "."), why = chk.issues[0] === "Ordine non valido." ? "Ordine non valido in cinese" : chk.issues[0].replace(/\.$/, "");
-    return '<div class="fixbox" role="group" aria-label="Correzione della frase"><div class="fx-bad">⚠️ <b>Come l\'hai scritta:</b> <span class="han">' + esc(bad) + '</span> <span class="muted small">(' + esc(why) + ")</span></div>" +
-      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.sure ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
+    return '<div class="fixbox" role="group" aria-label="Correzione della frase"><div class="fx-bad">⚠️ <b>Come l\'hai scritta:</b> <span class="han" lang="zh-CN">' + esc(bad) + '</span> <span class="muted small">(' + esc(why) + ")</span></div>" +
+      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han" lang="zh-CN">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.sure ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
       '<button type="button" class="btn-main" data-labfix>✨ Correggi automaticamente la mia frase</button></div>';
   }
   function fixLogBox() {
@@ -11637,7 +11755,7 @@ I18N.zh = {
       if (fl.sure) ct = '<div class="fluid"><div class="fl-it" lang="it">' + esc(fl.it) + "</div>" + badge + (chk && !chk.ok ? '<div class="small muted">Traduzione della versione corretta.</div>' : "") +
         fl.notes.map(function (n) { return '<div class="snote">' + esc(n) + "</div>"; }).join("") + "</div>";
       else ct = '<div class="fluid unsure"><div class="fl-it" lang="it">' + esc(CP.lab.NOPE) + "</div>" +
-        '<div class="fl-words"><span class="small muted">Parola per parola:</span> ' + fl.words.map(function (w) { return '<span class="flw"><span class="han">' + esc(w[0]) + "</span> " + esc(w[1]) + "</span>"; }).join(" · ") + "</div>" +
+        '<div class="fl-words"><span class="small muted">Parola per parola:</span> ' + fl.words.map(function (w) { return '<span class="flw"><span class="han" lang="zh-CN">' + esc(w[0]) + "</span> " + esc(w[1]) + "</span>"; }).join(" · ") + "</div>" +
         (fl.reason ? '<div class="snote">Perché: ' + esc(fl.reason) + ".</div>" : "") + "</div>";
       ct += CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-labtr>' + (fl.sure ? "✏️ La traduzione è sbagliata?" : "✏️ Proponi la traduzione giusta") + "</button></div>" : "";
       body = full(lab.t, p, true) + ct;
@@ -11667,7 +11785,7 @@ I18N.zh = {
   function mineHTML() {
     if (!mine.length) return "";
     return '<div class="panel mine"><h3>Le mie frasi</h3>' + mine.map(function (m, i) {
-      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(pyOf(m.t, m.p)) + '</div><div class="lh">' + CP.hanziHTML(hzOf(m.t, m.p), pyOf(m.t, m.p)) + '</div><div class="small muted">' + esc(m.t.map(gloss).join(" · ")) + "</div></div>" +
+      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(pyOf(m.t, m.p)) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(m.t, m.p), pyOf(m.t, m.p)) + '</div><div class="small muted">' + esc(m.t.map(gloss).join(" · ")) + "</div></div>" +
         '<button type="button" data-load="' + i + '" aria-label="Riprendi nel laboratorio">Apri</button><button type="button" data-del="' + i + '" aria-label="Elimina">×</button></div>';
     }).join("") + "</div>";
   }
@@ -11695,11 +11813,11 @@ I18N.zh = {
     return '<p class="lede" style="margin:14px 0 0">' + PATTERNS.length + ' schemi che coprono quasi tutto quello che dirai nelle prime settimane. Aprine uno, leggi gli esempi, poi provalo nel laboratorio.</p>' +
       PATTERNS.map(function (p, i) {
         return '<details class="pat" id="pat-' + i + '"><summary>' + esc(p.t) + "</summary>" +
-          '<p style="margin:0 0 10px">' + p.f.map(function (f, j) { return (j ? "+ " : "") + '<span class="fx">' + (/[一-鿿]/.test(f) ? '<span class="han">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join(" ") + "</p>" +
+          '<p style="margin:0 0 10px">' + p.f.map(function (f, j) { return (j ? "+ " : "") + '<span class="fx">' + (/[一-鿿]/.test(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join(" ") + "</p>" +
           '<p class="muted" style="margin:0 0 8px">' + esc(p.n) + "</p>" +
           p.ex.map(function (e) {
             if (typeof e[0] === "string") e = [CP.segment(e[0]).filter(function (s) { return s.w; }).map(function (s) { return s.w.key; }), e[1], e[2]];
-            return '<div class="ex"><div class="lp">' + CP.pinyinHTML(pyOf(e[0], e[1])) + '</div><div class="lh">' + CP.hanziHTML(hzOf(e[0], e[1]), pyOf(e[0], e[1])) + '</div><div class="small muted">' + esc(e[2]) + "</div></div>";
+            return '<div class="ex"><div class="lp">' + CP.pinyinHTML(pyOf(e[0], e[1])) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(e[0], e[1]), pyOf(e[0], e[1])) + '</div><div class="small muted">' + esc(e[2]) + "</div></div>";
           }).join("") +
           '<div class="acts"><button type="button" data-pat="' + i + '">Provalo nel laboratorio</button></div></details>';
       }).join("");
@@ -12234,11 +12352,11 @@ I18N.zh = {
     if (ear.answered) {
       var t = CP.tone(w.py), right = ear.picked === t;
       h += '<p class="verdict ' + (right ? "ok" : "ko") + '" style="width:100%;text-align:left">' + (right ? "Giusto." : "Era il " + t + "° tono (" + TONE_NAMES[t] + ").") + "</p>" +
-        '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-it" style="font-size:20px">' + esc(w.it) + "</div>";
+        '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-it" style="font-size:20px">' + esc(w.it) + "</div>";
       var mates = (ear.groups[baseOf(w)] || []).filter(function (o) { return CP.tone(o.py) !== t; }).slice(0, 3);
       if (mates.length) {
         h += '<div class="cd-ex"><span class="tag">Stessa sillaba, altro tono</span>' + mates.map(function (o) {
-          return '<div class="fw"><div class="lp">' + CP.pinyinHTML(o.py) + '</div><div class="lh">' + CP.hanziHTML(o.hz, o.py) + '</div><div class="small muted">' + esc(o.it) + "</div>" + CP.audioBtns(o.hz, true) + "</div>";
+          return '<div class="fw"><div class="lp">' + CP.pinyinHTML(o.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(o.hz, o.py) + '</div><div class="small muted">' + esc(o.it) + "</div>" + CP.audioBtns(o.hz, true) + "</div>";
         }).join("") + "</div>";
       }
     }
@@ -12299,7 +12417,7 @@ I18N.zh = {
     var left = Math.max(0, SP.dur - (Date.now() - SP.t0)), w = SP.q.w, m = mult();
     root.innerHTML = '<div class="sprint-top"><button type="button" class="btn-quiet" id="m-quit" style="min-height:44px">Esci</button><span class="pts" id="sp-pts">' + SP.pts + '</span><span class="combo" id="sp-combo">' + (m > 1 ? "×" + m : "") + '</span><span id="sp-time">' + Math.ceil(left / 1000) + ' s</span></div>' +
       '<div class="timebar" aria-hidden="true"><i id="sp-bar" style="width:' + (left / SP.dur * 100) + '%"></i></div>' +
-      '<div class="panel fc"><div class="cd-hz" style="font-size:calc(var(--hz)*2.4)">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" +
+      '<div class="panel fc"><div class="cd-hz" lang="zh-CN" style="font-size:calc(var(--hz)*2.4)">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" +
       '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + '</div>' +
       '<div class="choices">' + SP.q.opts.map(function (o, i) { return '<button type="button" data-sp="' + i + '">' + esc(shortGloss(o)) + "</button>"; }).join("") + "</div></div>" +
       '<p class="kbd-hint">Tastiera: <kbd>1</kbd>–<kbd>4</kbd> per rispondere</p>';
@@ -12606,7 +12724,7 @@ I18N.zh = {
     var l = d.lines[i], who = l[0] === "A" ? "a" : "b";
     return '<div class="bub ' + who + (extra || "") + '" data-i="' + i + '"><div class="who">' + (who === "a" ? "A · l'altra persona" : "B · tu") + "</div>" +
       '<div class="lp">' + CP.pinyinHTML(l[1]) + "</div>" +
-      '<div class="lh">' + U.lineHTML(l[2], l[1]) + "</div>" +
+      '<div class="lh" lang="zh-CN">' + U.lineHTML(l[2], l[1]) + "</div>" +
       '<div class="li">' + esc(l[3]) + "</div>" +
       '<span class="btns">' + CP.sayBtn(l[2]) + "</span></div>";
   }
@@ -12698,7 +12816,7 @@ I18N.zh = {
     var mic = CP.canListen() ? '<button type="button" data-rp-mic class="mic-btn">🎤 Dillo tu, a voce</button>' : "";
     box.innerHTML = h + '<div class="choice-card" id="rp-card"><div class="small muted" style="font-weight:700">Tocca ciò che diresti tu (' + (rp.ok + 1) + "/" + rp.nb + ")</div>" +
       rp.opts.map(function (o, k) {
-        return '<button type="button" class="opt" data-rp-opt="' + k + '"><span class="lp">' + CP.pinyinHTML(o.l[1]) + '</span><span class="lh">' + U.lineHTML(o.l[2], o.l[1]).replace(/ data-fam="[^"]*"/g, "").replace(/role="button" tabindex="0"/g, "") + '</span><span class="li">' + esc(o.l[3]) + "</span></button>";
+        return '<button type="button" class="opt" data-rp-opt="' + k + '"><span class="lp">' + CP.pinyinHTML(o.l[1]) + '</span><span class="lh" lang="zh-CN">' + U.lineHTML(o.l[2], o.l[1]).replace(/ data-fam="[^"]*"/g, "").replace(/role="button" tabindex="0"/g, "") + '</span><span class="li">' + esc(o.l[3]) + "</span></button>";
       }).join("") + '<div class="acts" style="margin:0">' + mic + '<button type="button" class="btn-s" data-rp-show>Non lo so: mostrami</button><button type="button" class="btn-s" data-rp-exit>Esci</button></div><div class="heard" id="rp-heard" aria-live="polite"></div></div>';
     scrollLast(box);
   }
@@ -12755,7 +12873,7 @@ I18N.zh = {
         if (r.error) { out.className = "heard ko"; out.textContent = "🎤 " + (r.error === "no-speech" ? "Non ho sentito niente. Riprova." : r.error === "offline" || r.error === "network" ? CP.micErrText(r.error) : "Il microfono non risponde da qui.") ; if (CP.inFrame && r.error !== "no-speech") out.insertAdjacentHTML("beforeend", "<div style='margin-top:8px'>" + CP.frameBtn() + "</div>"); CP.sfx("ko"); return; }
         var best = 0; (r.alts && r.alts.length ? r.alts : [r.heard]).forEach(function (a) { best = Math.max(best, U.sim(a, l[2])); });
         if (r.ok || best >= 0.6) rolePass(true);
-        else { rp.miss = true; out.className = "heard ko"; out.innerHTML = '🎤 Ho sentito «<span class="han">' + esc(r.heard || "…") + "</span>». Riprova, o scegli tra le due frasi."; CP.sfx("ko"); }
+        else { rp.miss = true; out.className = "heard ko"; out.innerHTML = '🎤 Ho sentito «<span class="han" lang="zh-CN">' + esc(r.heard || "…") + "</span>». Riprova, o scegli tra le due frasi."; CP.sfx("ko"); }
       });
       if (!btn._rec) btn.classList.remove("listening");
       return;
@@ -12792,7 +12910,7 @@ I18N.zh = {
   function seq(m) { var e = ex(); return m === "it" ? e.order : e.blocks.map(function (_, i) { return i; }); }
   function blockHTML(i, tag, extra) {
     var b = ex().blocks[i];
-    var inner = (tag === false ? "" : '<span class="tg ' + b[0] + '">' + (TAGN[b[0]] || b[0]) + "</span>") + '<span class="bp">' + CP.pinyinHTML(b[1]) + '</span><span class="bh">' + CP.hanziHTML(b[2], b[1]) + '</span><span class="bi">' + esc(b[3]) + "</span>";
+    var inner = (tag === false ? "" : '<span class="tg ' + b[0] + '">' + (TAGN[b[0]] || b[0]) + "</span>") + '<span class="bp">' + CP.pinyinHTML(b[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(b[2], b[1]) + '</span><span class="bi">' + esc(b[3]) + "</span>";
     return '<div class="tb ' + b[0] + '" data-b="' + i + '">' + inner + "</div>";
   }
   function zhLine(e) { return { py: e.blocks.map(function (b) { return b[1]; }).join(" "), hz: e.blocks.map(function (b) { return b[2]; }).join("") }; }
@@ -12821,7 +12939,7 @@ I18N.zh = {
       '<div class="tdir"><span class="badge' + (mode === "it" ? " on" : "") + '" id="td-it">🇮🇹 ordine italiano</span><span aria-hidden="true">⇄</span><span class="badge' + (mode === "zh" ? " on" : "") + '" id="td-zh">🇨🇳 ordine cinese</span></div>' +
       '<div class="tbox" id="tbox" aria-live="polite">' + seq(mode).map(function (i) { return blockHTML(i); }).join("") + "</div>" +
       '<div class="dlg-bar"><button type="button" class="btn-main" id="tk-flip" style="margin:0">🔄 Inverti Pensiero (IT ⇄ ZH)</button></div>' +
-      '<div class="sbox"><div class="lp">' + CP.pinyinHTML(z.py) + "</div>" + CP.toneCurveHTML(z.py) + '<div class="lh">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="li">' + esc(e.zh) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div></div>" +
+      '<div class="sbox"><div class="lp">' + CP.pinyinHTML(z.py) + "</div>" + CP.toneCurveHTML(z.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="li">' + esc(e.zh) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div></div>" +
       (e.note ? '<p class="tnote"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") +
       (e.q ? '<p class="tnote">Le domande non spostano nulla: la parola interrogativa va dove andrebbe la risposta.</p>' : "") + nextBar();
   }
@@ -12857,7 +12975,7 @@ I18N.zh = {
       return '<button type="button" class="tb pzb" data-pzpick="' + b + '">' + inner(b, false) + "</button>";
     }).join("");
     var msg = "";
-    if (pz.state === "ok") msg = '<div class="done-card" id="pz-done"><b>' + (pz.miss ? "Giusto, al tentativo " + (pz.miss + 1) + "." : "Giusto al primo colpo.") + "</b><span>" + esc(e.zh) + '</span><div class="lp">' + CP.pinyinHTML(z.py) + '</div><div class="lh">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div>" + (e.note ? '<p class="tnote" style="margin:8px 0 0"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") + '<div class="acts" style="margin:8px 0 0"><button type="button" class="btn-main" data-pznext style="margin:0">Prossimo ›</button></div></div>';
+    if (pz.state === "ok") msg = '<div class="done-card" id="pz-done"><b>' + (pz.miss ? "Giusto, al tentativo " + (pz.miss + 1) + "." : "Giusto al primo colpo.") + "</b><span>" + esc(e.zh) + '</span><div class="lp">' + CP.pinyinHTML(z.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(z.hz, z.py) + '</div><div class="acts">' + CP.audioBtns(z.hz) + "</div>" + (e.note ? '<p class="tnote" style="margin:8px 0 0"><b>Nota.</b> ' + esc(e.note) + "</p>" : "") + '<div class="acts" style="margin:8px 0 0"><button type="button" class="btn-main" data-pznext style="margin:0">Prossimo ›</button></div></div>';
     else if (pz.state === "ko") {
       var w = pz.bad[0], want = e.blocks[w][0];
       msg = '<div class="warn" role="alert">Non ancora. Al posto n° ' + (w + 1) + ' il blocco non va bene: lì dovrebbe esserci «' + esc(TAGN[want] || want) + '». Tocca un blocco per toglierlo, oppure usa «Aiuto».</div>';
@@ -12870,7 +12988,7 @@ I18N.zh = {
       '<p class="small muted" style="margin-top:10px">Puzzle risolti: <b>' + pzScore.ok + "</b> su " + pzScore.tot + " provati in questa sessione.</p>";
     function inner(b, withTag) {
       var bl = e.blocks[b];
-      return (withTag ? '<span class="tg ' + bl[0] + '">' + (TAGN[bl[0]] || bl[0]) + "</span>" : "") + '<span class="bp">' + CP.pinyinHTML(bl[1]) + '</span><span class="bh">' + CP.hanziHTML(bl[2], bl[1]) + '</span><span class="bi">' + esc(bl[3]) + "</span>";
+      return (withTag ? '<span class="tg ' + bl[0] + '">' + (TAGN[bl[0]] || bl[0]) + "</span>" : "") + '<span class="bp">' + CP.pinyinHTML(bl[1]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(bl[2], bl[1]) + '</span><span class="bi">' + esc(bl[3]) + "</span>";
     }
   }
   function pzCheck() {
@@ -12991,12 +13109,12 @@ I18N.zh = {
     var c = M().cols[ci], o = c.o[pick[ci]];
     var okc = sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci]);
     return '<div class="reel' + (okc ? " ok" : "") + '" data-col="' + ci + '"><span class="rl">' + esc(c.label) + ' <span class="hintc">· ' + (pick[ci] + 1) + "/" + c.o.length + '</span></span>' +
-      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
+      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
       '<button type="button" data-spin="' + ci + '" aria-label="Sorteggia ' + CP.attr(c.label) + '">🎲</button></div>';
   }
   function outHTML() {
     var cmp = compose(), sd = sandhi(cmp.py);
-    return '<div class="lp">' + CP.pinyinHTML(cmp.py) + "</div>" + CP.toneCurveHTML(cmp.py) + '<div class="lh">' + CP.hanziHTML(cmp.hz, cmp.py) + "</div>" +
+    return '<div class="lp">' + CP.pinyinHTML(cmp.py) + "</div>" + CP.toneCurveHTML(cmp.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(cmp.hz, cmp.py) + "</div>" +
       '<div class="li">Blocco per blocco: ' + esc(cmp.it) + "</div>" +
       (sd ? '<div class="spoken" style="margin-top:4px"><span class="tag">Come si dice davvero</span><div class="sp">' + CP.pinyinHTML(sd) + '</div><div class="snote">Due 3° toni vicini: il primo sale, come un 2° tono.</div></div>' : "") +
       '<div class="acts">' + CP.audioBtns(cmp.hz) + "</div>";
@@ -13026,7 +13144,7 @@ I18N.zh = {
       var ci = +r.getAttribute("data-col"), c = M().cols[ci], o = c.o[pick[ci]];
       r.querySelector(".hintc").textContent = "· " + (pick[ci] + 1) + "/" + c.o.length;
       var rc = r.querySelector(".rc"); rc.setAttribute("aria-label", c.label + ": " + o[2] + ". Tocca per il prossimo");
-      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
+      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
       r.classList.toggle("ok", !!(sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci])));
     });
   }
@@ -13072,7 +13190,7 @@ I18N.zh = {
     var iv = setInterval(function () {
       n++;
       var o = c.o[rnd(c.o.length)];
-      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
+      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
       if (n % 2 === 0) CP.sfx("tap");      /* un tap ogni due giri: sei in 420 ms erano troppi */
       if (n >= 6) { clearInterval(iv); r.classList.remove("spin"); pick[ci] = final; paintParts(); afterChange(); if (done) done(); }
     }, 70);
@@ -13114,33 +13232,40 @@ I18N.zh = {
     ["Fa caldo", "今天很热，我想喝冰水。"]
   ];
   function analyse(raw) {
-    var segs = CP.segment(raw), chars = 0, known = 0, unk = {}, parts = [];
-    raw.split("\n").forEach(function () {});
+    var segs = CP.segment(raw), chars = 0, known = 0, inside = 0, unk = {};
     segs.forEach(function (s) {
       if (s.w) { var n = Array.from(s.w.hz).length; chars += n; known += n; return; }
       if (s.p) return;
-      chars++; unk[s.raw] = 1;
+      chars++; if (s.part) inside++; else unk[s.raw] = 1;
     });
-    return { segs: segs, chars: chars, known: known, unk: Object.keys(unk) };
+    return { segs: segs, chars: chars, known: known, inside: inside, unk: Object.keys(unk) };
   }
   function outHTML(raw) {
     if (!raw.trim()) return '<p class="xr-stat">Incolla o scrivi qui sopra un testo in cinese. Per ogni parola che conosco vedi pinyin, carattere e significato.</p>';
     var a = analyse(raw), h = "";
     a.segs.forEach(function (s) {
       if (s.w) {
-        h += '<button type="button" class="xw" data-fam="' + CP.attr(s.w.hz) + '"><span class="xp">' + CP.pinyinHTML(s.w.py) + '</span><span class="xh">' + CP.hanziHTML(s.w.hz, s.w.py) + '</span><span class="xi">' + esc(CP.gloss(s.w)) + "</span></button>";
+        /* omografi (花 fiore / spendere): tutti i significati, il contesto lo sceglie chi legge */
+        var all = s.alts || [s.w], pys = [];
+        all.forEach(function (w) { if (pys.indexOf(w.py) < 0) pys.push(w.py); });
+        h += '<button type="button" class="xw" data-fam="' + CP.attr(s.w.hz) + '"' + (s.alts ? ' title="' + CP.attr(all.map(function (w) { return w.py + " " + w.it; }).join(" · ")) + '"' : "") + '><span class="xp">' + pys.map(CP.pinyinHTML).join(" / ") + '</span><span class="xh" lang="zh-CN">' + CP.hanziHTML(s.w.hz, s.w.py) + '</span><span class="xi">' + esc(all.map(CP.gloss).join(" / ")) + "</span></button>";
       } else if (s.p) {
         s.raw.split(/(\n)/).forEach(function (part) {
           if (part === "\n") h += '<span class="xr-break"></span>';
           else if (part.trim()) h += '<span class="xp-punct">' + esc(part.replace(/ +/g, " ")) + "</span>";
         });
+      } else if (s.part) {
+        /* da solo non è nel vocabolario, ma compare dentro parole note: lettura (se è una sola) e dove l'hai già visto */
+        var pw = s.part.words[0];
+        h += '<button type="button" class="xw part" data-fam="' + CP.attr(s.raw) + '" title="' + CP.attr("Compare in: " + s.part.words.map(function (w) { return w.hz + " " + CP.gloss(w); }).join(", ")) + '"><span class="xp">' + (s.part.py ? CP.pinyinHTML(s.part.py) : "?") + '</span><span class="xh" lang="zh-CN">' + esc(s.raw) + '</span><span class="xi">in ' + esc(pw.hz) + "</span></button>";
       } else {
-        h += '<span class="xw unk" title="Non è nel vocabolario"><span class="xp">?</span><span class="xh">' + esc(s.raw) + '</span><span class="xi">non ancora</span></span>';
+        h += '<span class="xw unk" title="Non è nel vocabolario"><span class="xp">?</span><span class="xh" lang="zh-CN">' + esc(s.raw) + '</span><span class="xi">non ancora</span></span>';
       }
     });
     var pct = a.chars ? Math.round(a.known / a.chars * 100) : 0;
     return '<div class="xr-out">' + h + '</div><p class="xr-stat">Riconosco <b>' + a.known + " caratteri su " + a.chars + "</b> (" + pct + "%)." +
-      (a.unk.length ? " Non ancora nel vocabolario: <span class=\"han\">" + esc(a.unk.slice(0, 20).join(" ")) + "</span>." : "") + "</p>" +
+      (a.inside ? " Altri " + a.inside + " li conosci dentro parole del vocabolario (tocca per vederle)." : "") +
+      (a.unk.length ? " Non ancora nel vocabolario: <span class=\"han\" lang=\"zh-CN\">" + esc(a.unk.slice(0, 20).join(" ")) + "</span>." : "") + "</p>" +
       '<div class="acts"><button type="button" class="btn-main" data-xr-play style="margin:0">▶️ Leggi tutto il testo</button></div>';
   }
   CP.subs = CP.subs || {};
@@ -13208,7 +13333,7 @@ I18N.zh = {
   }
   function playHTML() {
     return '<div class="g-top"><h2>🎧 In ascolto</h2><button type="button" id="g-close" aria-label="Chiudi">✕</button></div>' +
-      '<div class="g-main"><div class="g-phase" id="g-phase"></div><div class="g-it" id="g-it"></div><div class="g-py" id="g-py"></div><div class="g-hz" id="g-hz"></div><div class="g-bar" aria-hidden="true"><i id="g-bar"></i></div><div class="g-count" id="g-count"></div></div>' +
+      '<div class="g-main"><div class="g-phase" id="g-phase"></div><div class="g-it" id="g-it"></div><div class="g-py" id="g-py"></div><div class="g-hz" lang="zh-CN" id="g-hz"></div><div class="g-bar" aria-hidden="true"><i id="g-bar"></i></div><div class="g-count" id="g-count"></div></div>' +
       '<div class="g-ctl"><button type="button" id="g-prev" aria-label="Frase precedente">⏮</button><button type="button" class="btn-main" id="g-pp" style="margin:0" aria-label="Pausa">⏸ Pausa</button><button type="button" id="g-next" aria-label="Frase successiva">⏭</button></div>';
   }
   function $(id) { return document.getElementById(id); }
@@ -13407,7 +13532,9 @@ I18N.zh = {
       '<input type="file" id="bk-file" accept="application/json,.json,.txt" hidden>' +
       '<p class="small muted" id="bk-msg" aria-live="polite">' + (ts ? "Ultimo backup: " + new Date(ts).toLocaleDateString("it-IT") + "." : "Nessun backup ancora.") +
       (st.idb ? " Copia di sicurezza interna attiva." : "") + "</p>" +
-      '<div class="acts"><button type="button" id="bk-reset" class="btn-quiet">Azzera tutti i progressi</button></div></details>';
+      '<div class="acts"><button type="button" id="bk-reset" class="btn-quiet">Azzera tutti i progressi</button></div>' +
+      '<p class="small muted" style="margin:4px 0 0">Cancella ripassi, punti e serie di giorni, lezioni e registro. Restano impostazioni e correzioni.</p>' +
+      '<label class="chk small"><input type="checkbox" id="bk-reset-all"> Cancella anche preferiti e frasi salvate nel laboratorio</label></details>';
   }
   CP.homeProgress = function () { setTimeout(fillMem, 30); return memHTML() + doctorHTML(); };
   CP.homeBackup = backupHTML;
@@ -13441,7 +13568,12 @@ I18N.zh = {
     if (t.id === "bk-down" || t.id === "bk-down2") { var msg = document.getElementById("bk-msg"); Store.backup().then(function (n) { if (msg) msg.textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; CP.toast("Backup creato: " + n); }); }
     if (t.id === "bk-reset") {
       if (!t._arm) { t._arm = true; t.textContent = "Tocca ancora per confermare: si perdono tutti i progressi"; setTimeout(function () { t._arm = false; t.textContent = "Azzera tutti i progressi"; }, 4000); }
-      else { t._arm = false; CP.setS({}); CP.studyHome(); CP.toast("Progressi azzerati."); }
+      else {
+        t._arm = false; t.disabled = true;
+        var all = document.getElementById("bk-reset-all");
+        /* si ricarica la pagina: punti, serie e preferiti in memoria ripartono dai dati appena azzerati */
+        Store.resetProgress(!!(all && all.checked)).then(function () { CP.toast("Progressi azzerati."); setTimeout(function () { location.reload(); }, 600); });
+      }
     }
     if (t.id === "bk-up") { var fi = document.getElementById("bk-file"); if (fi) fi.click(); }
   });
@@ -13684,7 +13816,7 @@ I18N.zh = {
     var w = wordOf(hz), tones = w ? CP.syllables(w.py).map(CP.tone) : null, say = w ? CP.sayHz(w) : hz;
     var d = document.createElement("div"); d.className = "rec"; d.setAttribute("data-heard-host", "");
     d.innerHTML = '<div class="rec-h">🎙️ Registra e confronta</div>' + (note ? '<p class="small muted" style="margin:0">' + esc(note) + "</p>" : "") +
-      '<canvas aria-label="Curva dell\'altezza della tua voce"></canvas><p class="rec-st small" aria-live="polite">Tocca «Registra», di\' <span class="han">' + esc(hz.replace(/[^㐀-鿿]/g, "")) + "</span> e ascolta il confronto.</p>" +
+      '<canvas aria-label="Curva dell\'altezza della tua voce"></canvas><p class="rec-st small" aria-live="polite">Tocca «Registra», di\' <span class="han" lang="zh-CN">' + esc(hz.replace(/[^㐀-鿿]/g, "")) + "</span> e ascolta il confronto.</p>" +
       '<div class="acts" style="margin-top:0"><button type="button" class="btn-s" data-rec-go>🎙️ Registra 3 s</button><button type="button" class="btn-s" data-rec-me disabled>▶ La tua voce</button><button type="button" class="btn-s" data-rec-tts>🔊 La voce guida</button></div>' +
       '<div class="acts rec-judge" style="margin-top:0" hidden><button type="button" class="btn-s" data-rec-ok>👍 Simile</button><button type="button" class="btn-s" data-rec-ko>🔁 Da rifare</button></div>';
     host.appendChild(d);
@@ -14038,7 +14170,9 @@ I18N.zh = {
   });
   CP.selftest = show;
   function check() { if (location.hash === "#selftest") show(); }
-  window.addEventListener("hashchange", check); check();
+  /* aperto con #selftest nell'indirizzo: si aspetta che tutti i moduli siano caricati (il traduttore viene dopo questo file) */
+  window.addEventListener("hashchange", check);
+  if (document.readyState === "complete") check(); else window.addEventListener("load", check);
 })();
 </script>
 <!-- Jukebox: attrezzi sonori, una traccia per file, catalogo, lettore -->
@@ -14703,7 +14837,7 @@ I18N.zh = {
   function glyphMask(ch) {
     if (maskCache[ch]) return maskCache[ch];
     var c = document.createElement("canvas"); c.width = c.height = SC; var x = c.getContext("2d");
-    x.font = "500 " + Math.round(SC * 0.86) + "px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#000";
+    if ("lang" in x) x.lang = "zh-CN"; x.font = "500 " + Math.round(SC * 0.86) + "px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#000";
     x.fillText(ch, SC / 2, SC / 2 + SC * 0.04);
     var d = x.getImageData(0, 0, SC, SC).data, m = new Uint8Array(SC * SC), i, n = 0;
     for (i = 0; i < SC * SC; i++) if (d[i * 4 + 3] > 80) { m[i] = 1; n++; }
@@ -14820,7 +14954,7 @@ I18N.zh = {
     var el = document.createElement("div"); el.className = "pad pad2";
     var h = "";
     if (n > 1) {
-      h += '<div class="pad-chars" role="group" aria-label="Scegli il carattere da scrivere">' + chars.map(function (c, i) { return '<button type="button" class="han" data-pc="' + i + '" aria-label="Carattere ' + (i + 1) + ': ' + CP.attr(c) + '">' + esc(c) + "</button>"; }).join("") + '<button type="button" data-pc="all">Tutti</button></div>';
+      h += '<div class="pad-chars" role="group" aria-label="Scegli il carattere da scrivere">' + chars.map(function (c, i) { return '<button type="button" class="han" lang="zh-CN" data-pc="' + i + '" aria-label="Carattere ' + (i + 1) + ': ' + CP.attr(c) + '">' + esc(c) + "</button>"; }).join("") + '<button type="button" data-pc="all">Tutti</button></div>';
     }
     h += '<div class="pad-stage"><canvas class="pad-bg" aria-hidden="true"></canvas><canvas class="pad-ink" role="img" aria-label="Lavagna per scrivere il carattere con il dito"></canvas><i class="pad-dot" hidden></i></div>' +
       '<p class="pad-info small muted" aria-live="polite"></p>' +
@@ -14849,7 +14983,7 @@ I18N.zh = {
       if (c > 1) { bx.strokeStyle = acc; bx.globalAlpha = 0.35; for (i = 1; i < c; i++) { bx.beginPath(); bx.moveTo(L * i / c, 0); bx.lineTo(L * i / c, L); bx.stroke(); } bx.globalAlpha = 1; }
       if (S.guide) {
         var fs = c > 1 ? Math.min(L * 0.8 / 1, L / c * 0.86) : L * 0.86;
-        bx.font = "500 " + Math.round(fs) + "px " + FONT; bx.textAlign = "center"; bx.textBaseline = "middle";
+        if ("lang" in bx) bx.lang = "zh-CN"; bx.font = "500 " + Math.round(fs) + "px " + FONT; bx.textAlign = "center"; bx.textBaseline = "middle";
         bx.fillStyle = css("--ink", "#222"); bx.globalAlpha = S.assist ? 0.3 : 0.12;
         for (i = 0; i < c; i++) bx.fillText(cellChar(i), L * (i + 0.5) / c, L / 2 + fs * 0.04);
         bx.globalAlpha = 1;
@@ -14934,8 +15068,8 @@ I18N.zh = {
       var avg = Math.round(total / cnt), lab = avg >= 85 ? "Ottimo tratto!" : avg >= 70 ? "Buono, ci sei quasi." : avg >= 50 ? "Si riconosce, ma si può migliorare." : "Ancora lontano: riprova con la guida attiva.";
       html += '<div class="pad-score ' + (avg >= 70 ? "ok" : "ko") + '"><b>Precisione: ' + avg + "%</b> — " + lab + "</div>";
       parts.forEach(function (p) {
-        if (p.empty) { html += '<p class="small muted"><span class="han">' + esc(p.ch) + "</span>: non scritto.</p>"; return; }
-        if (parts.length > 1) html += '<p class="small"><span class="han">' + esc(p.ch) + "</span> · " + p.cmp.score + "% (copertura " + Math.round(p.cmp.coverage * 100) + "%, pulizia " + Math.round(p.cmp.precision * 100) + "%)</p>";
+        if (p.empty) { html += '<p class="small muted"><span class="han" lang="zh-CN">' + esc(p.ch) + "</span>: non scritto.</p>"; return; }
+        if (parts.length > 1) html += '<p class="small"><span class="han" lang="zh-CN">' + esc(p.ch) + "</span> · " + p.cmp.score + "% (copertura " + Math.round(p.cmp.coverage * 100) + "%, pulizia " + Math.round(p.cmp.precision * 100) + "%)</p>";
       });
       var one = parts.filter(function (p) { return !p.empty; })[0];
       if (one) {
@@ -16204,9 +16338,9 @@ I18N.zh = {
     CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (PUNCT[s.raw]) { if (out.length) out[out.length - 1] += PUNCT[s.raw]; } });
     var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
   }
-  function zhHTML(z, cls) { var py = pyOf(z); return '<div class="' + (cls || "ls-zh") + '"><div class="lp">' + CP.pinyinHTML(py) + '</div><div class="lh">' + CP.hanziHTML(z, py) + "</div></div>"; }
+  function zhHTML(z, cls) { var py = pyOf(z); return '<div class="' + (cls || "ls-zh") + '"><div class="lp">' + CP.pinyinHTML(py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(z, py) + "</div></div>"; }
   /* testo della spiegazione: **grassetto**, caratteri cinesi in evidenza */
-  function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([㐀-鿿，。？！、]+)/g, '<span class="han">$1</span>'); }
+  function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([㐀-鿿，。？！、]+)/g, '<span class="han" lang="zh-CN">$1</span>'); }
   function isZh(o) { return /[㐀-鿿]/.test(o) && !/[a-zàèéìòù]{3}/i.test(o); }
 
   /* ---- elenco ---- */
@@ -16233,12 +16367,12 @@ I18N.zh = {
       "<h3>" + rich(l.title) + "</h3>" +
       '<p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
-      (l.pattern ? '<div class="ls-pat" aria-label="Schema">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
+      (l.pattern ? '<div class="ls-pat" aria-label="Schema">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
       "<h4>Esempi</h4>" + (l.ex || []).map(function (e) {
         return '<div class="ls-ex">' + zhHTML(e[0]) + '<div class="small muted" lang="it">' + esc(e[1]) + "</div>" + CP.audioBtns(e[0].replace(/[。？！，]/g, "")) + "</div>";
       }).join("") +
       ((l.traps || []).length ? "<h4>Errori tipici</h4>" + l.traps.map(function (t) {
-        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han">' + esc(t[1]) + '</span></div><div class="small">' + rich(t[2]) + "</div></div>";
+        return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han" lang="zh-CN">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han" lang="zh-CN">' + esc(t[1]) + '</span></div><div class="small">' + rich(t[2]) + "</div></div>";
       }).join("") : "") +
       '<div class="acts">' + (qn ? '<button type="button" class="btn-main" data-ls-quiz style="margin:0">✏️ Esercitati (' + qn + " domande)</button>" : "") +
       ((l.ex || []).length ? '<button type="button" class="btn-s" data-ls-lab>🧪 Prova nel laboratorio</button>' : "") + "</div></article>";
@@ -16718,12 +16852,12 @@ I18N.zh = {
       }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
   });
   function finder(q) {
-    q = CP.norm(q || ""); if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
+    var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
     var out = [];
-    CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.Q[i].indexOf(q) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
-    PHRASES.forEach(function (g, gi) { g.items.forEach(function (p, ri) { if (out.length < 40 && (CP.norm(p[0]) + p[1] + CP.norm(p[2])).indexOf(q) >= 0) out.push(["phr:" + gi + ":" + ri, "💬 " + p[1] + " · " + p[2]]); }); });
-    DIALOGS.forEach(function (d) { d.lines.forEach(function (l, li) { if (out.length < 55 && (CP.norm(l[1]) + l[2] + CP.norm(l[3])).indexOf(q) >= 0) out.push(["dlg:" + d.id + ":" + li, "🗨️ " + l[2] + " · " + l[3]]); }); });
-    return out.length ? out.map(function (x) { return '<button type="button" class="goto-row ct-hit" data-ct-target="' + CP.attr(x[0]) + '"><span class="han">' + esc(x[1]) + "</span></button>"; }).join("") : '<p class="muted">Niente trovato.</p>';
+    CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.search.rank(CP.Q[i], sq) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
+    PHRASES.forEach(function (g, gi) { g.items.forEach(function (p, ri) { if (out.length < 40 && S.rank(S.key(p[0], p[1], p[2]), sq) >= 0) out.push(["phr:" + gi + ":" + ri, "💬 " + p[1] + " · " + p[2]]); }); });
+    DIALOGS.forEach(function (d) { d.lines.forEach(function (l, li) { if (out.length < 55 && S.rank(S.key(l[1], l[2], l[3]), sq) >= 0) out.push(["dlg:" + d.id + ":" + li, "🗨️ " + l[2] + " · " + l[3]]); }); });
+    return out.length ? out.map(function (x) { return '<button type="button" class="goto-row ct-hit" data-ct-target="' + CP.attr(x[0]) + '"><span class="han" lang="zh-CN">' + esc(x[1]) + "</span></button>"; }).join("") : '<p class="muted">Niente trovato.</p>';
   }
   CP.contribFind = function () {
     CP.openSheet('<div class="fam-head"><div class="meta"><b>Che cosa vuoi correggere?</b></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
@@ -16734,7 +16868,7 @@ I18N.zh = {
   CP.contribDialog = function (id) {
     var d = DIALOGS.filter(function (x) { return x.id === id; })[0]; if (!d) return;
     CP.openSheet('<div class="fam-head"><div class="meta"><b>Quale battuta?</b><div class="small muted">' + esc(d.title) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div><div class="goto-list">' +
-      d.lines.map(function (l, i) { return '<button type="button" class="goto-row ct-hit" data-ct-target="dlg:' + CP.attr(d.id) + ":" + i + '"><span><span class="han">' + esc(l[2]) + '</span><br><span class="small muted">' + esc(l[1]) + "</span></span></button>"; }).join("") + "</div>");
+      d.lines.map(function (l, i) { return '<button type="button" class="goto-row ct-hit" data-ct-target="dlg:' + CP.attr(d.id) + ":" + i + '"><span><span class="han" lang="zh-CN">' + esc(l[2]) + '</span><br><span class="small muted">' + esc(l[1]) + "</span></span></button>"; }).join("") + "</div>");
   };
 
   fam.addEventListener("input", function (e) { if (e.target.id === "ct-q") document.getElementById("ct-hits").innerHTML = finder(e.target.value); });
@@ -16768,7 +16902,7 @@ I18N.zh = {
     return '<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">' + T("wel.title") + '</h2><button type="button" class="fam-x btn-s" data-famclose id="w-later">' + T("common.later") + "</button></div>" +
       '<p style="margin:0">' + CP.esc(T("wel.intro", { n: CP.ORDER.length })) + "</p>" +
       '<div class="fc"><div class="order"><span>' + T("wel.read") + "</span><span>" + T("wel.write") + "</span><span>" + T("wel.mean") + "</span></div>" +
-      '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
+      '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" lang="zh-CN" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
       '<p class="small muted" style="margin:0">' + T("wel.tones") + "</p></div>" +
       "<div><b>" + T("wel.goal") + '</b><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("wel.goal")) + '" style="margin-top:8px">' +
       [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +
@@ -16892,7 +17026,7 @@ I18N.zh = {
       rows.map(function (r) { return "<tr><th>" + esc(r[0]) + "</th><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td></tr>"; }).join("") + "</tbody></table>" +
       (aux === "e" || /rsi(\s|$)/.test(inf) ? '<p class="small muted" style="margin:4px 0 0">用 essere：分词要和主语一致（andato / andata / andati / andate）。</p>' : "");
   }
-  function zhHTML(hz, py) { return '<span class="it-zh"><span class="lp">' + CP.pinyinHTML(py) + '</span> <span class="lh han">' + CP.hanziHTML(hz, py) + "</span></span>"; }
+  function zhHTML(hz, py) { return '<span class="it-zh"><span class="lp">' + CP.pinyinHTML(py) + '</span> <span class="lh han" lang="zh-CN">' + CP.hanziHTML(hz, py) + "</span></span>"; }
   function sayBtn(text, small) { return '<button type="button" class="say' + (small ? " btn-s" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr("听：" + text) + '">🔊</button>'; }
   function detailHTML(e) {
     var h = '<div class="fam-head"><div class="meta"><b lang="it" style="font-size:1.35rem">' + esc(e.it) + "</b><div class=\"small muted\">" + esc(gLabel(e)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>关闭</button></div>' +
@@ -17013,7 +17147,7 @@ I18N.zh = {
   }
 
   /* ---------------- 复习: ripasso FSRS ---------------- */
-  var SCH = new FSRS.Scheduler({ retention: 0.9, fuzz: true }), DAY = 86400000;
+  var SCH = new FSRS.Scheduler({ retention: 0.9, fuzz: true, dayOf: FSRS.studyDay }), DAY = 86400000;
   function sload() { try { var o = JSON.parse(lsGet(SRSKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
   function ssave(o) { lsSet(SRSKEY, JSON.stringify(o)); }
   function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }

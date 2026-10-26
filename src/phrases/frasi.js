@@ -22,7 +22,7 @@
   }
   function hzOf(t, p) { return t.map(hz).join("") + (FW[p] || ""); }
   function full(t, p, noGloss) {
-    return '<div class="full"><div class="lp">' + CP.pinyinHTML(pyOf(t, p)) + "</div>" + CP.toneCurveHTML(pyOf(t, "")) + '<div class="lh">' + CP.hanziHTML(hzOf(t, p), pyOf(t, p)) +
+    return '<div class="full"><div class="lp">' + CP.pinyinHTML(pyOf(t, p)) + "</div>" + CP.toneCurveHTML(pyOf(t, "")) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(t, p), pyOf(t, p)) +
       "</div>" + (noGloss ? "" : '<div class="gloss">' + esc(t.map(gloss).join(" · ")) + "</div>") + "</div>";
   }
 
@@ -138,7 +138,7 @@
   }
   function exFull(e) {
     if (e.disp) {
-      return '<div class="full"><div class="lp">' + CP.pinyinHTML(e.disp.py) + "</div>" + CP.toneCurveHTML(e.disp.py.replace(/[!?,.]/g, "")) + '<div class="lh">' + CP.hanziHTML(e.disp.hz, e.disp.py.replace(/[!?,.]/g, "")) +
+      return '<div class="full"><div class="lp">' + CP.pinyinHTML(e.disp.py) + "</div>" + CP.toneCurveHTML(e.disp.py.replace(/[!?,.]/g, "")) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(e.disp.hz, e.disp.py.replace(/[!?,.]/g, "")) +
         '</div><div class="gloss">' + esc(e.t.map(gloss).join(" · ")) + "</div></div>";
     }
     return full(e.t, e.p) + spokenBlock(e.t, e.p);
@@ -184,8 +184,8 @@
   function fixBox(chk, p) {
     if (!chk || chk.ok) return "";
     var bad = hzOf(lab.t, p), good = hzOf(chk.fixed, p), fl = CP.lab.translate(chk.fixed, p === "?" ? "?" : p === "!" ? "!" : "."), why = chk.issues[0] === "Ordine non valido." ? "Ordine non valido in cinese" : chk.issues[0].replace(/\.$/, "");
-    return '<div class="fixbox" role="group" aria-label="Correzione della frase"><div class="fx-bad">⚠️ <b>Come l\'hai scritta:</b> <span class="han">' + esc(bad) + '</span> <span class="muted small">(' + esc(why) + ")</span></div>" +
-      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.sure ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
+    return '<div class="fixbox" role="group" aria-label="Correzione della frase"><div class="fx-bad">⚠️ <b>Come l\'hai scritta:</b> <span class="han" lang="zh-CN">' + esc(bad) + '</span> <span class="muted small">(' + esc(why) + ")</span></div>" +
+      '<div class="fx-ok">✅ <b>Frase corretta suggerita:</b> <span class="han" lang="zh-CN">' + esc(good) + '</span> <span class="muted small">(' + esc(pyOf(chk.fixed, "").toLowerCase()) + (fl.sure ? " — «" + esc(fl.it.replace(/[.!?]$/, "")) + "»" : "") + ")</span></div>" +
       '<button type="button" class="btn-main" data-labfix>✨ Correggi automaticamente la mia frase</button></div>';
   }
   function fixLogBox() {
@@ -203,7 +203,7 @@
       if (fl.sure) ct = '<div class="fluid"><div class="fl-it" lang="it">' + esc(fl.it) + "</div>" + badge + (chk && !chk.ok ? '<div class="small muted">Traduzione della versione corretta.</div>' : "") +
         fl.notes.map(function (n) { return '<div class="snote">' + esc(n) + "</div>"; }).join("") + "</div>";
       else ct = '<div class="fluid unsure"><div class="fl-it" lang="it">' + esc(CP.lab.NOPE) + "</div>" +
-        '<div class="fl-words"><span class="small muted">Parola per parola:</span> ' + fl.words.map(function (w) { return '<span class="flw"><span class="han">' + esc(w[0]) + "</span> " + esc(w[1]) + "</span>"; }).join(" · ") + "</div>" +
+        '<div class="fl-words"><span class="small muted">Parola per parola:</span> ' + fl.words.map(function (w) { return '<span class="flw"><span class="han" lang="zh-CN">' + esc(w[0]) + "</span> " + esc(w[1]) + "</span>"; }).join(" · ") + "</div>" +
         (fl.reason ? '<div class="snote">Perché: ' + esc(fl.reason) + ".</div>" : "") + "</div>";
       ct += CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-labtr>' + (fl.sure ? "✏️ La traduzione è sbagliata?" : "✏️ Proponi la traduzione giusta") + "</button></div>" : "";
       body = full(lab.t, p, true) + ct;
@@ -233,7 +233,7 @@
   function mineHTML() {
     if (!mine.length) return "";
     return '<div class="panel mine"><h3>Le mie frasi</h3>' + mine.map(function (m, i) {
-      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(pyOf(m.t, m.p)) + '</div><div class="lh">' + CP.hanziHTML(hzOf(m.t, m.p), pyOf(m.t, m.p)) + '</div><div class="small muted">' + esc(m.t.map(gloss).join(" · ")) + "</div></div>" +
+      return '<div class="it2"><div><div class="lp">' + CP.pinyinHTML(pyOf(m.t, m.p)) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(m.t, m.p), pyOf(m.t, m.p)) + '</div><div class="small muted">' + esc(m.t.map(gloss).join(" · ")) + "</div></div>" +
         '<button type="button" data-load="' + i + '" aria-label="Riprendi nel laboratorio">Apri</button><button type="button" data-del="' + i + '" aria-label="Elimina">×</button></div>';
     }).join("") + "</div>";
   }
@@ -261,11 +261,11 @@
     return '<p class="lede" style="margin:14px 0 0">' + PATTERNS.length + ' schemi che coprono quasi tutto quello che dirai nelle prime settimane. Aprine uno, leggi gli esempi, poi provalo nel laboratorio.</p>' +
       PATTERNS.map(function (p, i) {
         return '<details class="pat" id="pat-' + i + '"><summary>' + esc(p.t) + "</summary>" +
-          '<p style="margin:0 0 10px">' + p.f.map(function (f, j) { return (j ? "+ " : "") + '<span class="fx">' + (/[一-鿿]/.test(f) ? '<span class="han">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join(" ") + "</p>" +
+          '<p style="margin:0 0 10px">' + p.f.map(function (f, j) { return (j ? "+ " : "") + '<span class="fx">' + (/[一-鿿]/.test(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join(" ") + "</p>" +
           '<p class="muted" style="margin:0 0 8px">' + esc(p.n) + "</p>" +
           p.ex.map(function (e) {
             if (typeof e[0] === "string") e = [CP.segment(e[0]).filter(function (s) { return s.w; }).map(function (s) { return s.w.key; }), e[1], e[2]];
-            return '<div class="ex"><div class="lp">' + CP.pinyinHTML(pyOf(e[0], e[1])) + '</div><div class="lh">' + CP.hanziHTML(hzOf(e[0], e[1]), pyOf(e[0], e[1])) + '</div><div class="small muted">' + esc(e[2]) + "</div></div>";
+            return '<div class="ex"><div class="lp">' + CP.pinyinHTML(pyOf(e[0], e[1])) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(e[0], e[1]), pyOf(e[0], e[1])) + '</div><div class="small muted">' + esc(e[2]) + "</div></div>";
           }).join("") +
           '<div class="acts"><button type="button" data-pat="' + i + '">Provalo nel laboratorio</button></div></details>';
       }).join("");

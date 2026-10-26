@@ -36,7 +36,7 @@
   }
   function playHTML() {
     return '<div class="g-top"><h2>🎧 In ascolto</h2><button type="button" id="g-close" aria-label="Chiudi">✕</button></div>' +
-      '<div class="g-main"><div class="g-phase" id="g-phase"></div><div class="g-it" id="g-it"></div><div class="g-py" id="g-py"></div><div class="g-hz" id="g-hz"></div><div class="g-bar" aria-hidden="true"><i id="g-bar"></i></div><div class="g-count" id="g-count"></div></div>' +
+      '<div class="g-main"><div class="g-phase" id="g-phase"></div><div class="g-it" id="g-it"></div><div class="g-py" id="g-py"></div><div class="g-hz" lang="zh-CN" id="g-hz"></div><div class="g-bar" aria-hidden="true"><i id="g-bar"></i></div><div class="g-count" id="g-count"></div></div>' +
       '<div class="g-ctl"><button type="button" id="g-prev" aria-label="Frase precedente">⏮</button><button type="button" class="btn-main" id="g-pp" style="margin:0" aria-label="Pausa">⏸ Pausa</button><button type="button" id="g-next" aria-label="Frase successiva">⏭</button></div>';
   }
   function $(id) { return document.getElementById(id); }

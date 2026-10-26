@@ -38,7 +38,7 @@
     var l = d.lines[i], who = l[0] === "A" ? "a" : "b";
     return '<div class="bub ' + who + (extra || "") + '" data-i="' + i + '"><div class="who">' + (who === "a" ? "A · l'altra persona" : "B · tu") + "</div>" +
       '<div class="lp">' + CP.pinyinHTML(l[1]) + "</div>" +
-      '<div class="lh">' + U.lineHTML(l[2], l[1]) + "</div>" +
+      '<div class="lh" lang="zh-CN">' + U.lineHTML(l[2], l[1]) + "</div>" +
       '<div class="li">' + esc(l[3]) + "</div>" +
       '<span class="btns">' + CP.sayBtn(l[2]) + "</span></div>";
   }
@@ -130,7 +130,7 @@
     var mic = CP.canListen() ? '<button type="button" data-rp-mic class="mic-btn">🎤 Dillo tu, a voce</button>' : "";
     box.innerHTML = h + '<div class="choice-card" id="rp-card"><div class="small muted" style="font-weight:700">Tocca ciò che diresti tu (' + (rp.ok + 1) + "/" + rp.nb + ")</div>" +
       rp.opts.map(function (o, k) {
-        return '<button type="button" class="opt" data-rp-opt="' + k + '"><span class="lp">' + CP.pinyinHTML(o.l[1]) + '</span><span class="lh">' + U.lineHTML(o.l[2], o.l[1]).replace(/ data-fam="[^"]*"/g, "").replace(/role="button" tabindex="0"/g, "") + '</span><span class="li">' + esc(o.l[3]) + "</span></button>";
+        return '<button type="button" class="opt" data-rp-opt="' + k + '"><span class="lp">' + CP.pinyinHTML(o.l[1]) + '</span><span class="lh" lang="zh-CN">' + U.lineHTML(o.l[2], o.l[1]).replace(/ data-fam="[^"]*"/g, "").replace(/role="button" tabindex="0"/g, "") + '</span><span class="li">' + esc(o.l[3]) + "</span></button>";
       }).join("") + '<div class="acts" style="margin:0">' + mic + '<button type="button" class="btn-s" data-rp-show>Non lo so: mostrami</button><button type="button" class="btn-s" data-rp-exit>Esci</button></div><div class="heard" id="rp-heard" aria-live="polite"></div></div>';
     scrollLast(box);
   }
@@ -187,7 +187,7 @@
         if (r.error) { out.className = "heard ko"; out.textContent = "🎤 " + (r.error === "no-speech" ? "Non ho sentito niente. Riprova." : r.error === "offline" || r.error === "network" ? CP.micErrText(r.error) : "Il microfono non risponde da qui.") ; if (CP.inFrame && r.error !== "no-speech") out.insertAdjacentHTML("beforeend", "<div style='margin-top:8px'>" + CP.frameBtn() + "</div>"); CP.sfx("ko"); return; }
         var best = 0; (r.alts && r.alts.length ? r.alts : [r.heard]).forEach(function (a) { best = Math.max(best, U.sim(a, l[2])); });
         if (r.ok || best >= 0.6) rolePass(true);
-        else { rp.miss = true; out.className = "heard ko"; out.innerHTML = '🎤 Ho sentito «<span class="han">' + esc(r.heard || "…") + "</span>». Riprova, o scegli tra le due frasi."; CP.sfx("ko"); }
+        else { rp.miss = true; out.className = "heard ko"; out.innerHTML = '🎤 Ho sentito «<span class="han" lang="zh-CN">' + esc(r.heard || "…") + "</span>». Riprova, o scegli tra le due frasi."; CP.sfx("ko"); }
       });
       if (!btn._rec) btn.classList.remove("listening");
       return;

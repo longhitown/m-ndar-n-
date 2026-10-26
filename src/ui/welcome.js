@@ -6,7 +6,7 @@
     return '<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">' + T("wel.title") + '</h2><button type="button" class="fam-x btn-s" data-famclose id="w-later">' + T("common.later") + "</button></div>" +
       '<p style="margin:0">' + CP.esc(T("wel.intro", { n: CP.ORDER.length })) + "</p>" +
       '<div class="fc"><div class="order"><span>' + T("wel.read") + "</span><span>" + T("wel.write") + "</span><span>" + T("wel.mean") + "</span></div>" +
-      '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
+      '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" lang="zh-CN" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
       '<p class="small muted" style="margin:0">' + T("wel.tones") + "</p></div>" +
       "<div><b>" + T("wel.goal") + '</b><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("wel.goal")) + '" style="margin-top:8px">' +
       [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +

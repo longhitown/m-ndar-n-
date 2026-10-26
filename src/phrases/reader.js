@@ -9,33 +9,40 @@
     ["Fa caldo", "今天很热，我想喝冰水。"]
   ];
   function analyse(raw) {
-    var segs = CP.segment(raw), chars = 0, known = 0, unk = {}, parts = [];
-    raw.split("\n").forEach(function () {});
+    var segs = CP.segment(raw), chars = 0, known = 0, inside = 0, unk = {};
     segs.forEach(function (s) {
       if (s.w) { var n = Array.from(s.w.hz).length; chars += n; known += n; return; }
       if (s.p) return;
-      chars++; unk[s.raw] = 1;
+      chars++; if (s.part) inside++; else unk[s.raw] = 1;
     });
-    return { segs: segs, chars: chars, known: known, unk: Object.keys(unk) };
+    return { segs: segs, chars: chars, known: known, inside: inside, unk: Object.keys(unk) };
   }
   function outHTML(raw) {
     if (!raw.trim()) return '<p class="xr-stat">Incolla o scrivi qui sopra un testo in cinese. Per ogni parola che conosco vedi pinyin, carattere e significato.</p>';
     var a = analyse(raw), h = "";
     a.segs.forEach(function (s) {
       if (s.w) {
-        h += '<button type="button" class="xw" data-fam="' + CP.attr(s.w.hz) + '"><span class="xp">' + CP.pinyinHTML(s.w.py) + '</span><span class="xh">' + CP.hanziHTML(s.w.hz, s.w.py) + '</span><span class="xi">' + esc(CP.gloss(s.w)) + "</span></button>";
+        /* omografi (花 fiore / spendere): tutti i significati, il contesto lo sceglie chi legge */
+        var all = s.alts || [s.w], pys = [];
+        all.forEach(function (w) { if (pys.indexOf(w.py) < 0) pys.push(w.py); });
+        h += '<button type="button" class="xw" data-fam="' + CP.attr(s.w.hz) + '"' + (s.alts ? ' title="' + CP.attr(all.map(function (w) { return w.py + " " + w.it; }).join(" · ")) + '"' : "") + '><span class="xp">' + pys.map(CP.pinyinHTML).join(" / ") + '</span><span class="xh" lang="zh-CN">' + CP.hanziHTML(s.w.hz, s.w.py) + '</span><span class="xi">' + esc(all.map(CP.gloss).join(" / ")) + "</span></button>";
       } else if (s.p) {
         s.raw.split(/(\n)/).forEach(function (part) {
           if (part === "\n") h += '<span class="xr-break"></span>';
           else if (part.trim()) h += '<span class="xp-punct">' + esc(part.replace(/ +/g, " ")) + "</span>";
         });
+      } else if (s.part) {
+        /* da solo non è nel vocabolario, ma compare dentro parole note: lettura (se è una sola) e dove l'hai già visto */
+        var pw = s.part.words[0];
+        h += '<button type="button" class="xw part" data-fam="' + CP.attr(s.raw) + '" title="' + CP.attr("Compare in: " + s.part.words.map(function (w) { return w.hz + " " + CP.gloss(w); }).join(", ")) + '"><span class="xp">' + (s.part.py ? CP.pinyinHTML(s.part.py) : "?") + '</span><span class="xh" lang="zh-CN">' + esc(s.raw) + '</span><span class="xi">in ' + esc(pw.hz) + "</span></button>";
       } else {
-        h += '<span class="xw unk" title="Non è nel vocabolario"><span class="xp">?</span><span class="xh">' + esc(s.raw) + '</span><span class="xi">non ancora</span></span>';
+        h += '<span class="xw unk" title="Non è nel vocabolario"><span class="xp">?</span><span class="xh" lang="zh-CN">' + esc(s.raw) + '</span><span class="xi">non ancora</span></span>';
       }
     });
     var pct = a.chars ? Math.round(a.known / a.chars * 100) : 0;
     return '<div class="xr-out">' + h + '</div><p class="xr-stat">Riconosco <b>' + a.known + " caratteri su " + a.chars + "</b> (" + pct + "%)." +
-      (a.unk.length ? " Non ancora nel vocabolario: <span class=\"han\">" + esc(a.unk.slice(0, 20).join(" ")) + "</span>." : "") + "</p>" +
+      (a.inside ? " Altri " + a.inside + " li conosci dentro parole del vocabolario (tocca per vederle)." : "") +
+      (a.unk.length ? " Non ancora nel vocabolario: <span class=\"han\" lang=\"zh-CN\">" + esc(a.unk.slice(0, 20).join(" ")) + "</span>." : "") + "</p>" +
       '<div class="acts"><button type="button" class="btn-main" data-xr-play style="margin:0">▶️ Leggi tutto il testo</button></div>';
   }
   CP.subs = CP.subs || {};

@@ -137,12 +137,12 @@
       }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
   });
   function finder(q) {
-    q = CP.norm(q || ""); if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
+    var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
     var out = [];
-    CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.Q[i].indexOf(q) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
-    PHRASES.forEach(function (g, gi) { g.items.forEach(function (p, ri) { if (out.length < 40 && (CP.norm(p[0]) + p[1] + CP.norm(p[2])).indexOf(q) >= 0) out.push(["phr:" + gi + ":" + ri, "💬 " + p[1] + " · " + p[2]]); }); });
-    DIALOGS.forEach(function (d) { d.lines.forEach(function (l, li) { if (out.length < 55 && (CP.norm(l[1]) + l[2] + CP.norm(l[3])).indexOf(q) >= 0) out.push(["dlg:" + d.id + ":" + li, "🗨️ " + l[2] + " · " + l[3]]); }); });
-    return out.length ? out.map(function (x) { return '<button type="button" class="goto-row ct-hit" data-ct-target="' + CP.attr(x[0]) + '"><span class="han">' + esc(x[1]) + "</span></button>"; }).join("") : '<p class="muted">Niente trovato.</p>';
+    CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.search.rank(CP.Q[i], sq) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
+    PHRASES.forEach(function (g, gi) { g.items.forEach(function (p, ri) { if (out.length < 40 && S.rank(S.key(p[0], p[1], p[2]), sq) >= 0) out.push(["phr:" + gi + ":" + ri, "💬 " + p[1] + " · " + p[2]]); }); });
+    DIALOGS.forEach(function (d) { d.lines.forEach(function (l, li) { if (out.length < 55 && S.rank(S.key(l[1], l[2], l[3]), sq) >= 0) out.push(["dlg:" + d.id + ":" + li, "🗨️ " + l[2] + " · " + l[3]]); }); });
+    return out.length ? out.map(function (x) { return '<button type="button" class="goto-row ct-hit" data-ct-target="' + CP.attr(x[0]) + '"><span class="han" lang="zh-CN">' + esc(x[1]) + "</span></button>"; }).join("") : '<p class="muted">Niente trovato.</p>';
   }
   CP.contribFind = function () {
     CP.openSheet('<div class="fam-head"><div class="meta"><b>Che cosa vuoi correggere?</b></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' +
@@ -153,7 +153,7 @@
   CP.contribDialog = function (id) {
     var d = DIALOGS.filter(function (x) { return x.id === id; })[0]; if (!d) return;
     CP.openSheet('<div class="fam-head"><div class="meta"><b>Quale battuta?</b><div class="small muted">' + esc(d.title) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div><div class="goto-list">' +
-      d.lines.map(function (l, i) { return '<button type="button" class="goto-row ct-hit" data-ct-target="dlg:' + CP.attr(d.id) + ":" + i + '"><span><span class="han">' + esc(l[2]) + '</span><br><span class="small muted">' + esc(l[1]) + "</span></span></button>"; }).join("") + "</div>");
+      d.lines.map(function (l, i) { return '<button type="button" class="goto-row ct-hit" data-ct-target="dlg:' + CP.attr(d.id) + ":" + i + '"><span><span class="han" lang="zh-CN">' + esc(l[2]) + '</span><br><span class="small muted">' + esc(l[1]) + "</span></span></button>"; }).join("") + "</div>");
   };
 
   fam.addEventListener("input", function (e) { if (e.target.id === "ct-q") document.getElementById("ct-hits").innerHTML = finder(e.target.value); });

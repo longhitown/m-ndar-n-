@@ -168,6 +168,15 @@
     }
     return pr.then(function () { return flush(); }).then(function () { return { ok: true, msg: n + " voci importate.", n: n }; });
   }
+  /* «Azzera»: progressi del corso di cinese (carte, punti e serie, lezioni, gara d'ascolto) e registro dei ripassi.
+     Con personal anche preferiti e frasi salvate. Le impostazioni e i contributi restano. La copia interna in IndexedDB
+     viene riscritta subito, così il ripristino automatico non riporta indietro ciò che si è appena cancellato. */
+  var PROGRESS = ["cp-game-v1", "cp-lessons-v1", "cp-ear-v1"], PERSONAL = ["cp-fav-v1", "cp-mine"];
+  function resetProgress(personal) {
+    lset("cp-srs-v1", "{}");
+    PROGRESS.concat(personal ? PERSONAL : []).forEach(function (k) { try { if (LS) LS.removeItem(k); } catch (e) {} });
+    return logClear().then(function () { return flush(); });
+  }
   function download(name, text) {
     var cl = window.claude;
     var fb = function () { try { var u = URL.createObjectURL(new Blob([text], { type: "application/json" })), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1500); } catch (e) {} };
@@ -188,6 +197,6 @@
 
   window.Store = { status: function () { return { ls: st.ls, idb: st.idb, restored: st.restored }; }, get: lget, set: lset, snapshot: snapshot, flush: flush,
     log: logAdd, logAll: logAll, logClear: logClear, recent: function () { return buf; },
-    exportObj: exportObj, importObj: importObj, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
+    exportObj: exportObj, importObj: importObj, resetProgress: resetProgress, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
 })();
 

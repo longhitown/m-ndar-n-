@@ -199,3 +199,8 @@ body.tone-shapes .tone .tshape { display: inline; }
 body.in-session #toast { bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 @keyframes cp-stamp { from { opacity: 0; transform: scale(1.5) rotate(-12deg); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: no-preference) { .done-seal { animation: cp-stamp 0.25s ease-out both; } }
+/* ricerca: le corrispondenze esatte, da toccare per arrivare alla riga */
+.chip-best { display: inline-flex; align-items: baseline; gap: 4px; margin: 4px 2px 0; padding: 4px 10px; min-height: 32px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.chip-best .han { font-size: 18px; }
+tr.flash > td { background: var(--chip); transition: background .3s; }
+.xw.part .xh { text-decoration: underline dotted var(--muted); text-underline-offset: 4px; }

@@ -134,7 +134,7 @@
     var note = (w.note ? '<span class="note">' + esc(w.note) + "</span>" : "") + (w.mine ? '<span class="note mine-tag">✏️ tua correzione</span>' : "");
     return '<tr data-k="' + attr(k) + '"' + (st ? ' class="st-' + st + '"' : "") + ">" +
       '<td class="py"><span class="m m-py">' + pinyinHTML(w.py) + "</span></td>" +
-      '<td class="hz"><span class="m m-hz">' + hanziHTML(w.hz, w.py) + "</span></td>" +
+      '<td class="hz" lang="zh-CN"><span class="m m-hz" lang="zh-CN">' + hanziHTML(w.hz, w.py) + "</span></td>" +
       '<td class="it"><div class="itw"><span class="m m-it">' + esc(w.it) + note + "</span>" +
       STAR.replace("%ON%", fav ? " on" : "").replace("%PR%", fav ? "true" : "false") + "</div></td></tr>";
   }
@@ -157,7 +157,7 @@
     ph += '<div class="ph"><h3>' + esc(g.title) + "</h3>" + g.items.map(function (p) {
       return '<div class="ln">' +
         '<div class="lp"><span class="m m-py">' + pinyinHTML(p[0]) + "</span></div>" +
-        '<div class="lh"><span class="m m-hz">' + hanziHTML(p[1], p[0]) + "</span></div>" +
+        '<div class="lh" lang="zh-CN"><span class="m m-hz" lang="zh-CN">' + hanziHTML(p[1], p[0]) + "</span></div>" +
         '<div class="li"><span class="m m-it">' + esc(p[2]) + "</span></div></div>";
     }).join("") + "</div>";
   });
@@ -204,11 +204,24 @@
           if (r.bottom > -MARG && r.top < vh + MARG) { if (!S.m) work.push([S, r, 1]); }
           else if (S.m && (r.bottom < -FAR || r.top > vh + FAR)) work.push([S, r, 0]);
         }
-        work.reverse().forEach(function (it) {
-          var S = it[0], r = it[1];
-          if (it[2]) { var d = mat(S); if (d !== 0 && r.bottom < 0) window.scrollBy(0, d); changed++; }
-          else { unmat(S); changed++; }
+        /* tre fasi per passata, non una per sezione: prima si leggono tutte le altezze, poi si scrive il DOM, poi si rilegge
+           una volta sola. Così il browser ricalcola l'impaginazione 2 volte per passata invece di 2 per ogni sezione. */
+        work = work.filter(function (it) { return !it[2] || (!it[0].m && !(it[0].el.classList.contains("closed") && !searching)); });
+        work.forEach(function (it) { it[3] = it[0].tw.offsetHeight; });
+        work.forEach(function (it) {
+          var S = it[0];
+          if (it[2]) { fill(S); S.tw.style.minHeight = "0px"; }
+          else { S.tb.innerHTML = ""; S.m = false; S.tw.style.minHeight = it[3] + "px"; }
+          changed++;
         });
+        var shift = 0;
+        work.forEach(function (it) {
+          if (!it[2]) return;
+          var S = it[0], h = S.tw.offsetHeight; S.h = h;
+          if (S.shown > 2) { var per = (h - THEAD) / S.shown; if (per > 24 && per < 220) ROWH = ROWH * 0.6 + per * 0.4; }
+          if (it[1].bottom < 0) shift += h - it[3];     /* sezioni sopra lo schermo: si compensa lo scorrimento, una volta */
+        });
+        if (shift) window.scrollBy(0, shift);
         if (!changed) break;
       }
     } finally { busy = false; }
@@ -255,7 +268,7 @@
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function applySize() {
     root.style.setProperty("--hz", size + "px");
-    valEl.innerHTML = '<span class="han">字</span> ' + size;
+    valEl.innerHTML = '<span class="han" lang="zh-CN">字</span> ' + size;
     if (CP.invalidateHeights) { SEC.forEach(function (S) { if (S.m) S.h = 0; }); setTimeout(function () { ROWH = narrow() ? 60 + size * 0.95 : 40 + size * 0.6; CP.invalidateHeights(); }, 60); }
   }
   function applyMode() {

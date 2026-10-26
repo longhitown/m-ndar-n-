@@ -12,7 +12,7 @@
   function glyphMask(ch) {
     if (maskCache[ch]) return maskCache[ch];
     var c = document.createElement("canvas"); c.width = c.height = SC; var x = c.getContext("2d");
-    x.font = "500 " + Math.round(SC * 0.86) + "px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#000";
+    if ("lang" in x) x.lang = "zh-CN"; x.font = "500 " + Math.round(SC * 0.86) + "px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#000";
     x.fillText(ch, SC / 2, SC / 2 + SC * 0.04);
     var d = x.getImageData(0, 0, SC, SC).data, m = new Uint8Array(SC * SC), i, n = 0;
     for (i = 0; i < SC * SC; i++) if (d[i * 4 + 3] > 80) { m[i] = 1; n++; }
@@ -129,7 +129,7 @@
     var el = document.createElement("div"); el.className = "pad pad2";
     var h = "";
     if (n > 1) {
-      h += '<div class="pad-chars" role="group" aria-label="Scegli il carattere da scrivere">' + chars.map(function (c, i) { return '<button type="button" class="han" data-pc="' + i + '" aria-label="Carattere ' + (i + 1) + ': ' + CP.attr(c) + '">' + esc(c) + "</button>"; }).join("") + '<button type="button" data-pc="all">Tutti</button></div>';
+      h += '<div class="pad-chars" role="group" aria-label="Scegli il carattere da scrivere">' + chars.map(function (c, i) { return '<button type="button" class="han" lang="zh-CN" data-pc="' + i + '" aria-label="Carattere ' + (i + 1) + ': ' + CP.attr(c) + '">' + esc(c) + "</button>"; }).join("") + '<button type="button" data-pc="all">Tutti</button></div>';
     }
     h += '<div class="pad-stage"><canvas class="pad-bg" aria-hidden="true"></canvas><canvas class="pad-ink" role="img" aria-label="Lavagna per scrivere il carattere con il dito"></canvas><i class="pad-dot" hidden></i></div>' +
       '<p class="pad-info small muted" aria-live="polite"></p>' +
@@ -158,7 +158,7 @@
       if (c > 1) { bx.strokeStyle = acc; bx.globalAlpha = 0.35; for (i = 1; i < c; i++) { bx.beginPath(); bx.moveTo(L * i / c, 0); bx.lineTo(L * i / c, L); bx.stroke(); } bx.globalAlpha = 1; }
       if (S.guide) {
         var fs = c > 1 ? Math.min(L * 0.8 / 1, L / c * 0.86) : L * 0.86;
-        bx.font = "500 " + Math.round(fs) + "px " + FONT; bx.textAlign = "center"; bx.textBaseline = "middle";
+        if ("lang" in bx) bx.lang = "zh-CN"; bx.font = "500 " + Math.round(fs) + "px " + FONT; bx.textAlign = "center"; bx.textBaseline = "middle";
         bx.fillStyle = css("--ink", "#222"); bx.globalAlpha = S.assist ? 0.3 : 0.12;
         for (i = 0; i < c; i++) bx.fillText(cellChar(i), L * (i + 0.5) / c, L / 2 + fs * 0.04);
         bx.globalAlpha = 1;
@@ -243,8 +243,8 @@
       var avg = Math.round(total / cnt), lab = avg >= 85 ? "Ottimo tratto!" : avg >= 70 ? "Buono, ci sei quasi." : avg >= 50 ? "Si riconosce, ma si può migliorare." : "Ancora lontano: riprova con la guida attiva.";
       html += '<div class="pad-score ' + (avg >= 70 ? "ok" : "ko") + '"><b>Precisione: ' + avg + "%</b> — " + lab + "</div>";
       parts.forEach(function (p) {
-        if (p.empty) { html += '<p class="small muted"><span class="han">' + esc(p.ch) + "</span>: non scritto.</p>"; return; }
-        if (parts.length > 1) html += '<p class="small"><span class="han">' + esc(p.ch) + "</span> · " + p.cmp.score + "% (copertura " + Math.round(p.cmp.coverage * 100) + "%, pulizia " + Math.round(p.cmp.precision * 100) + "%)</p>";
+        if (p.empty) { html += '<p class="small muted"><span class="han" lang="zh-CN">' + esc(p.ch) + "</span>: non scritto.</p>"; return; }
+        if (parts.length > 1) html += '<p class="small"><span class="han" lang="zh-CN">' + esc(p.ch) + "</span> · " + p.cmp.score + "% (copertura " + Math.round(p.cmp.coverage * 100) + "%, pulizia " + Math.round(p.cmp.precision * 100) + "%)</p>";
       });
       var one = parts.filter(function (p) { return !p.empty; })[0];
       if (one) {

@@ -107,7 +107,9 @@
       '<input type="file" id="bk-file" accept="application/json,.json,.txt" hidden>' +
       '<p class="small muted" id="bk-msg" aria-live="polite">' + (ts ? "Ultimo backup: " + new Date(ts).toLocaleDateString("it-IT") + "." : "Nessun backup ancora.") +
       (st.idb ? " Copia di sicurezza interna attiva." : "") + "</p>" +
-      '<div class="acts"><button type="button" id="bk-reset" class="btn-quiet">Azzera tutti i progressi</button></div></details>';
+      '<div class="acts"><button type="button" id="bk-reset" class="btn-quiet">Azzera tutti i progressi</button></div>' +
+      '<p class="small muted" style="margin:4px 0 0">Cancella ripassi, punti e serie di giorni, lezioni e registro. Restano impostazioni e correzioni.</p>' +
+      '<label class="chk small"><input type="checkbox" id="bk-reset-all"> Cancella anche preferiti e frasi salvate nel laboratorio</label></details>';
   }
   CP.homeProgress = function () { setTimeout(fillMem, 30); return memHTML() + doctorHTML(); };
   CP.homeBackup = backupHTML;
@@ -141,7 +143,12 @@
     if (t.id === "bk-down" || t.id === "bk-down2") { var msg = document.getElementById("bk-msg"); Store.backup().then(function (n) { if (msg) msg.textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; CP.toast("Backup creato: " + n); }); }
     if (t.id === "bk-reset") {
       if (!t._arm) { t._arm = true; t.textContent = "Tocca ancora per confermare: si perdono tutti i progressi"; setTimeout(function () { t._arm = false; t.textContent = "Azzera tutti i progressi"; }, 4000); }
-      else { t._arm = false; CP.setS({}); CP.studyHome(); CP.toast("Progressi azzerati."); }
+      else {
+        t._arm = false; t.disabled = true;
+        var all = document.getElementById("bk-reset-all");
+        /* si ricarica la pagina: punti, serie e preferiti in memoria ripartono dai dati appena azzerati */
+        Store.resetProgress(!!(all && all.checked)).then(function () { CP.toast("Progressi azzerati."); setTimeout(function () { location.reload(); }, 600); });
+      }
     }
     if (t.id === "bk-up") { var fi = document.getElementById("bk-file"); if (fi) fi.click(); }
   });

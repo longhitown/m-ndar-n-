@@ -81,7 +81,7 @@
     var w = wordOf(hz), tones = w ? CP.syllables(w.py).map(CP.tone) : null, say = w ? CP.sayHz(w) : hz;
     var d = document.createElement("div"); d.className = "rec"; d.setAttribute("data-heard-host", "");
     d.innerHTML = '<div class="rec-h">🎙️ Registra e confronta</div>' + (note ? '<p class="small muted" style="margin:0">' + esc(note) + "</p>" : "") +
-      '<canvas aria-label="Curva dell\'altezza della tua voce"></canvas><p class="rec-st small" aria-live="polite">Tocca «Registra», di\' <span class="han">' + esc(hz.replace(/[^㐀-鿿]/g, "")) + "</span> e ascolta il confronto.</p>" +
+      '<canvas aria-label="Curva dell\'altezza della tua voce"></canvas><p class="rec-st small" aria-live="polite">Tocca «Registra», di\' <span class="han" lang="zh-CN">' + esc(hz.replace(/[^㐀-鿿]/g, "")) + "</span> e ascolta il confronto.</p>" +
       '<div class="acts" style="margin-top:0"><button type="button" class="btn-s" data-rec-go>🎙️ Registra 3 s</button><button type="button" class="btn-s" data-rec-me disabled>▶ La tua voce</button><button type="button" class="btn-s" data-rec-tts>🔊 La voce guida</button></div>' +
       '<div class="acts rec-judge" style="margin-top:0" hidden><button type="button" class="btn-s" data-rec-ok>👍 Simile</button><button type="button" class="btn-s" data-rec-ko>🔁 Da rifare</button></div>';
     host.appendChild(d);

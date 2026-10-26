@@ -44,11 +44,11 @@
     if (ear.answered) {
       var t = CP.tone(w.py), right = ear.picked === t;
       h += '<p class="verdict ' + (right ? "ok" : "ko") + '" style="width:100%;text-align:left">' + (right ? "Giusto." : "Era il " + t + "° tono (" + TONE_NAMES[t] + ").") + "</p>" +
-        '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-it" style="font-size:20px">' + esc(w.it) + "</div>";
+        '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-it" style="font-size:20px">' + esc(w.it) + "</div>";
       var mates = (ear.groups[baseOf(w)] || []).filter(function (o) { return CP.tone(o.py) !== t; }).slice(0, 3);
       if (mates.length) {
         h += '<div class="cd-ex"><span class="tag">Stessa sillaba, altro tono</span>' + mates.map(function (o) {
-          return '<div class="fw"><div class="lp">' + CP.pinyinHTML(o.py) + '</div><div class="lh">' + CP.hanziHTML(o.hz, o.py) + '</div><div class="small muted">' + esc(o.it) + "</div>" + CP.audioBtns(o.hz, true) + "</div>";
+          return '<div class="fw"><div class="lp">' + CP.pinyinHTML(o.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(o.hz, o.py) + '</div><div class="small muted">' + esc(o.it) + "</div>" + CP.audioBtns(o.hz, true) + "</div>";
         }).join("") + "</div>";
       }
     }
@@ -109,7 +109,7 @@
     var left = Math.max(0, SP.dur - (Date.now() - SP.t0)), w = SP.q.w, m = mult();
     root.innerHTML = '<div class="sprint-top"><button type="button" class="btn-quiet" id="m-quit" style="min-height:44px">Esci</button><span class="pts" id="sp-pts">' + SP.pts + '</span><span class="combo" id="sp-combo">' + (m > 1 ? "×" + m : "") + '</span><span id="sp-time">' + Math.ceil(left / 1000) + ' s</span></div>' +
       '<div class="timebar" aria-hidden="true"><i id="sp-bar" style="width:' + (left / SP.dur * 100) + '%"></i></div>' +
-      '<div class="panel fc"><div class="cd-hz" style="font-size:calc(var(--hz)*2.4)">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" +
+      '<div class="panel fc"><div class="cd-hz" lang="zh-CN" style="font-size:calc(var(--hz)*2.4)">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="cd-py">' + CP.pinyinHTML(w.py) + "</div>" +
       '<div class="btns">' + CP.sayBtn(CP.sayHz(w)) + '</div>' +
       '<div class="choices">' + SP.q.opts.map(function (o, i) { return '<button type="button" data-sp="' + i + '">' + esc(shortGloss(o)) + "</button>"; }).join("") + "</div></div>" +
       '<p class="kbd-hint">Tastiera: <kbd>1</kbd>–<kbd>4</kbd> per rispondere</p>';

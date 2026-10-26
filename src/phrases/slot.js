@@ -48,12 +48,12 @@
     var c = M().cols[ci], o = c.o[pick[ci]];
     var okc = sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci]);
     return '<div class="reel' + (okc ? " ok" : "") + '" data-col="' + ci + '"><span class="rl">' + esc(c.label) + ' <span class="hintc">· ' + (pick[ci] + 1) + "/" + c.o.length + '</span></span>' +
-      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
+      '<button type="button" class="rc" data-next="' + ci + '" aria-label="' + CP.attr(c.label + ": " + o[2] + ". Tocca per il prossimo") + '"><span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span></button>" +
       '<button type="button" data-spin="' + ci + '" aria-label="Sorteggia ' + CP.attr(c.label) + '">🎲</button></div>';
   }
   function outHTML() {
     var cmp = compose(), sd = sandhi(cmp.py);
-    return '<div class="lp">' + CP.pinyinHTML(cmp.py) + "</div>" + CP.toneCurveHTML(cmp.py) + '<div class="lh">' + CP.hanziHTML(cmp.hz, cmp.py) + "</div>" +
+    return '<div class="lp">' + CP.pinyinHTML(cmp.py) + "</div>" + CP.toneCurveHTML(cmp.py) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(cmp.hz, cmp.py) + "</div>" +
       '<div class="li">Blocco per blocco: ' + esc(cmp.it) + "</div>" +
       (sd ? '<div class="spoken" style="margin-top:4px"><span class="tag">Come si dice davvero</span><div class="sp">' + CP.pinyinHTML(sd) + '</div><div class="snote">Due 3° toni vicini: il primo sale, come un 2° tono.</div></div>' : "") +
       '<div class="acts">' + CP.audioBtns(cmp.hz) + "</div>";
@@ -83,7 +83,7 @@
       var ci = +r.getAttribute("data-col"), c = M().cols[ci], o = c.o[pick[ci]];
       r.querySelector(".hintc").textContent = "· " + (pick[ci] + 1) + "/" + c.o.length;
       var rc = r.querySelector(".rc"); rc.setAttribute("aria-label", c.label + ": " + o[2] + ". Tocca per il prossimo");
-      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
+      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
       r.classList.toggle("ok", !!(sit && sit.need[ci] !== undefined && needOk(ci, sit.need[ci])));
     });
   }
@@ -129,7 +129,7 @@
     var iv = setInterval(function () {
       n++;
       var o = c.o[rnd(c.o.length)];
-      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
+      rc.innerHTML = '<span class="bp">' + CP.pinyinHTML(o[0]) + '</span><span class="bh" lang="zh-CN">' + CP.hanziHTML(o[1], o[0]) + '</span><span class="bi">' + esc(o[2]) + "</span>";
       if (n % 2 === 0) CP.sfx("tap");      /* un tap ogni due giri: sei in 420 ms erano troppi */
       if (n >= 6) { clearInterval(iv); r.classList.remove("spin"); pick[ci] = final; paintParts(); afterChange(); if (done) done(); }
     }, 70);

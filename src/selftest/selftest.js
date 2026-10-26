@@ -145,6 +145,8 @@
   });
   CP.selftest = show;
   function check() { if (location.hash === "#selftest") show(); }
-  window.addEventListener("hashchange", check); check();
+  /* aperto con #selftest nell'indirizzo: si aspetta che tutti i moduli siano caricati (il traduttore viene dopo questo file) */
+  window.addEventListener("hashchange", check);
+  if (document.readyState === "complete") check(); else window.addEventListener("load", check);
 })();
 

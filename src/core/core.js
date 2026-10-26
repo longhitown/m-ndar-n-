@@ -4,6 +4,11 @@
   var CP = window.CP;
   var WORDS = CP.WORDS, ORDER = CP.ORDER;
   var MAXL = 1; ORDER.forEach(function (k) { MAXL = Math.max(MAXL, Array.from(WORDS[k].hz).length); });
+  /* omografi: stessi caratteri, più voci (花 fiore e 花 spendere: la seconda ha la chiave 花#huā). WORDS[hz] è la prima;
+     alts le elenca tutte, così chi mostra la parola può dare ogni significato */
+  var HOMO = {};
+  ORDER.forEach(function (k) { var h = WORDS[k].hz; if (k !== h) (HOMO[h] = HOMO[h] || [WORDS[h]]).push(WORDS[k]); });
+  CP.homographs = function (hz) { return HOMO[hz] || (WORDS[hz] ? [WORDS[hz]] : []); };
   /* Taglia un testo cinese nelle parole del vocabolario (la più lunga che combacia). */
   CP.segmentText = CP.segment = function (raw) {
     var s = Array.from(String(raw)), out = [], i = 0, cjk = /[㐀-鿿]/;
@@ -17,8 +22,8 @@
         var sub = s.slice(i, i + L).join("");
         if (Object.prototype.hasOwnProperty.call(WORDS, sub)) { m = WORDS[sub]; break; }
       }
-      if (m) { out.push({ w: m, raw: m.hz }); i += L; }
-      else { out.push({ w: null, raw: s[i] }); i++; }
+      if (m) { out.push(HOMO[m.hz] ? { w: m, raw: m.hz, alts: HOMO[m.hz] } : { w: m, raw: m.hz }); i += L; }
+      else { out.push({ w: null, raw: s[i], part: CP.charHint ? CP.charHint(s[i]) : null }); i++; }
     }
     return out;
   };
@@ -55,11 +60,11 @@
   try { S = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { S = {}; }
   var RETKEY = "cp-ret", ret = parseFloat((function () { try { return localStorage.getItem(RETKEY); } catch (e) { return null; } })());
   if (!(ret >= 0.7 && ret <= 0.97)) ret = 0.9;
-  var SCH = new FSRS.Scheduler({ retention: ret, fuzz: true });
+  var SCH = new FSRS.Scheduler({ retention: ret, fuzz: true, dayOf: FSRS.studyDay });
   CP.srs = {
     scheduler: SCH,
     retention: function () { return ret; },
-    setRetention: function (x) { ret = x; SCH = new FSRS.Scheduler({ retention: ret, fuzz: true }); CP.srs.scheduler = SCH; try { localStorage.setItem(RETKEY, String(x)); } catch (e) {} },
+    setRetention: function (x) { ret = x; SCH = new FSRS.Scheduler({ retention: ret, fuzz: true, dayOf: FSRS.studyDay }); CP.srs.scheduler = SCH; try { localStorage.setItem(RETKEY, String(x)); } catch (e) {} },
     version: FSRS.VERSION
   };
   /* V4 {b,d,n} -> record FSRS plausibile: S dalla scatola, D neutra, nulla va perso */
@@ -101,7 +106,9 @@
     migrate(r);
     if (r.st != null) pred = CP.retr(k, now);
     r.n = (r.n || 0) + 1;
-    var apply = !retry || g >= 2;     /* sulla ripetizione solo una risposta positiva chiude il ciclo di riapprendimento */
+    /* la ripetizione nella stessa sessione è esercizio: aggiorna la carta solo se chiude un riapprendimento (dopo «Non la so»).
+       Dopo «Quasi» la carta è già stata valutata: un secondo ripasso a pochi secondi gonfierebbe la stabilità */
+    var apply = !retry || (g >= 2 && r.sd != null && r.sd !== FSRS.REVIEW);
     if (apply) {
       var card = r.st == null ? SCH.newCard(now) : toCard(r);
       wasReview = card.state === FSRS.REVIEW;
@@ -212,19 +219,42 @@
   });
 
   function clearLive() { live.forEach(function (el) { el.classList.remove("speaking"); }); live = []; clearTimeout(liveTimer); }
-  var token = 0, curAudio = null, curStop = null;
-  function stopAudio() { if (curAudio) { try { curAudio.onended = curAudio.onerror = null; curAudio.pause(); } catch (e) {} curAudio = null; } }
-  /* Voce online di riserva (servizio non ufficiale: può smettere di funzionare). */
+  var token = 0, curAudio = null, curChain = null, curStop = null, spoken = 0;
+  function stopAudio() { curChain = null; if (curAudio) { try { curAudio.onended = curAudio.onerror = null; curAudio.pause(); } catch (e) {} curAudio = null; } }
+  /* Voce online di riserva (servizio non ufficiale: può smettere di funzionare). Accetta circa 200 caratteri per richiesta:
+     un testo lungo (il lettore «Leggi tutto») si divide in frasi, e le frasi troppo lunghe alle virgole, poi si leggono in fila. */
+  var TTSMAX = 180;
+  function ttsChunks(text) {
+    var out = [];
+    String(text).replace(/([。！？!?；;\n])/g, "$1\u0000").split("\u0000").forEach(function (sen) {
+      sen = sen.trim(); if (!sen) return;
+      while (sen.length > TTSMAX) {
+        var cut = Math.max(sen.lastIndexOf("，", TTSMAX), sen.lastIndexOf(",", TTSMAX), sen.lastIndexOf("、", TTSMAX), sen.lastIndexOf(" ", TTSMAX));
+        if (cut < 20) cut = TTSMAX - 1;
+        out.push(sen.slice(0, cut + 1)); sen = sen.slice(cut + 1).trim();
+      }
+      if (sen) out.push(sen);
+    });
+    /* frasi corte vicine si rimettono insieme (meno richieste, intonazione più naturale) */
+    return out.reduce(function (a, x) { if (a.length && (a[a.length - 1] + x).length <= TTSMAX) a[a.length - 1] += x; else a.push(x); return a; }, []);
+  }
+  CP.ttsChunks = ttsChunks;
   function fallbackAudioTTS(text, rate, onEnd) {
     stopAudio();
-    var a;
-    try {
-      a = new Audio("https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&ttsspeed=" + (rate < 1 ? "0.24" : "1") + "&q=" + encodeURIComponent(text));
-    } catch (e) { onEnd(); return; }
-    curAudio = a;
-    var done = false, fin = function () { if (done) return; done = true; if (curAudio === a) curAudio = null; onEnd(); };
-    a.onended = fin; a.onerror = fin;
-    try { var p = a.play(); if (p && p.catch) p.catch(fin); } catch (e) { fin(); }
+    var parts = ttsChunks(text), i = 0, done = false, chain = {};
+    curChain = chain;
+    var fin = function () { if (done) return; done = true; if (curChain === chain) curChain = null; onEnd(); };
+    (function next() {
+      if (done || curChain !== chain) return;
+      if (i >= parts.length) { fin(); return; }
+      var a;
+      try { a = new Audio("https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&ttsspeed=" + (rate < 1 ? "0.24" : "1") + "&q=" + encodeURIComponent(parts[i++])); }
+      catch (e) { fin(); return; }
+      curAudio = a;
+      var step = function (ok) { a.onended = a.onerror = null; if (curAudio === a) curAudio = null; if (ok) next(); else fin(); };
+      a.onended = function () { step(true); }; a.onerror = function () { step(false); };
+      try { var p = a.play(); if (p && p.catch) p.catch(function () { step(false); }); } catch (e) { step(false); }
+    })();
   }
   CP.fallbackAudioTTS = fallbackAudioTTS;
   CP.canSay = function () { return true; };
@@ -257,7 +287,7 @@
       if (o.onEnd) o.onEnd();
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
-    failTimer = setTimeout(finish, 2500 + text.length * 900);
+    failTimer = setTimeout(finish, 6500 + text.length * 900);
     var cloud = function () {
       if (finished || token !== mine) return;
       clearTimeout(startTimer);
@@ -281,7 +311,10 @@
         if (err === "canceled" || err === "interrupted") { finish(); return; }
         if (zh && !started) cloud(); else finish();
       };
-      if (zh) startTimer = setTimeout(function () { if (!started && !finished) cloud(); }, 2200);
+      /* se la voce del dispositivo non parte, si passa a quella online. La prima lettura aspetta di più: su Android il motore
+         vocale può metterci 3-4 secondi a svegliarsi. Nell'APK il ponte nativo segnala sempre gli errori: niente timer. */
+      if (zh && !window.__MD_APK) startTimer = setTimeout(function () { if (!started && !finished) cloud(); }, spoken ? 3000 : 6000);
+      spoken++;
       if (busy) setTimeout(function () { if (token === mine) synth.speak(u); }, 60); else synth.speak(u);
     } catch (e) { if (zh) cloud(); else finish(); }
   };
@@ -317,6 +350,14 @@
     if (Object.keys(bases).length > 1 || Object.keys(toned).length > 1) POLY.add(c);
   });
   Object.keys(POLY_MANUAL).forEach(function (c) { POLY.add(c); });
+  /* un carattere che da solo non è nel vocabolario ma sta dentro parole note (泳 in 游泳): la sua lettura, se è una sola,
+     e le parole dove compare. Serve al lettore per non dire «non so» davanti a 泳池. */
+  CP.charHint = function (ch) {
+    var r = READ[ch]; if (!r) return null;
+    var sy = Object.keys(r), keys = [];
+    sy.forEach(function (x) { r[x].forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); }); });
+    return { py: sy.length === 1 && !POLY.has(ch) ? sy[0] : null, words: keys.slice(0, 3).map(function (k) { return WORDS[k]; }) };
+  };
   CP.POLY = POLY;
   function readingsOf(c) {
     var out = [], seen = {};
@@ -350,7 +391,7 @@
   CP.polyNote = function (w) {
     var p = polyOf(w); if (!p || (!p.others.length && !p.ex)) return "";
     return '<div class="cd-note poly-note">⚠️ ' + (p.others.length ? "Si legge anche " + p.others.map(function (s) { return "<b>" + CP.pinyinHTML(s) + "</b>"; }).join(", ") + ". " : "") +
-      (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
+      (p.ex ? "🔊 La voce lo legge dentro <span class=\"han\" lang=\"zh-CN\">" + CP.esc(p.ex.hz) + "</span>, con questa lettura." : "") + "</div>";
   };
   CP.sayBtn = function (text) {
     return '<button class="say" type="button" data-say="' + CP.attr(text) + '" aria-label="Ascolta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>';
@@ -533,8 +574,8 @@
         if (CP.inFrame && (r.error === "not-allowed" || r.error === "service-not-allowed" || r.error === "start")) out.insertAdjacentHTML("beforeend", '<div style="margin-top:8px">' + CP.frameBtn() + "</div>");
         return;
       }
-      if (r.ok) { out.className = "heard ok"; out.innerHTML = '🎤 Hai detto: «<span class="han">' + CP.esc(r.heard) + "</span>» — Pronuncia perfetta!"; CP.sfx("ok"); }
-      else { out.className = "heard ko"; out.innerHTML = '🎤 Hai detto: «<span class="han">' + CP.esc(r.heard || "…") + "</span>» — non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
+      if (r.ok) { out.className = "heard ok"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard) + "</span>» — Pronuncia perfetta!"; CP.sfx("ok"); }
+      else { out.className = "heard ko"; out.innerHTML = '🎤 Hai detto: «<span class="han" lang="zh-CN">' + CP.esc(r.heard || "…") + "</span>» — non è proprio questa. Ascolta e riprova, con calma."; CP.sfx("ko"); }
     });
     if (!b._rec) b.classList.remove("listening");
   }
@@ -656,10 +697,10 @@
   };
   var famEl = document.getElementById("fam"), famCard = document.getElementById("fam-card"), fam = null;
   function famRender() {
-    var ch = fam.cur, selfW = ORDER.filter(function (k) { return WORDS[k].hz === ch; }).map(function (k) { return WORDS[k]; })[0];
+    var ch = fam.cur, selves = CP.homographs(ch), selfW = selves[0];
     var list = CP.familyOf(ch), h;
-    h = '<div class="fam-head"><div class="big">' + CP.esc(ch) + '</div><div class="meta">' +
-      (selfW ? '<div class="lp">' + CP.pinyinHTML(selfW.py) + '</div><div class="small muted">' + CP.esc(selfW.it) + "</div>"
+    h = '<div class="fam-head"><div class="big" lang="zh-CN">' + CP.esc(ch) + '</div><div class="meta">' +
+      (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>"; }).join("")
              : '<div class="small muted">Da solo non è una parola del vocabolario: compare dentro altre parole.</div>') +
       "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>Chiudi</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
       (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ Correggi o segnala</button></div>' : "");
@@ -672,7 +713,7 @@
     h += "<h4>Parole che contengono " + CP.esc(ch) + "</h4>";
     if (!list.length) h += '<p class="muted small">Nessun\'altra parola del vocabolario contiene questo carattere.</p>';
     list.slice(0, 14).forEach(function (w) {
-      h += '<div class="fw"><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>" + CP.audioBtns(w.hz, true) + "</div>";
+      h += '<div class="fw"><div class="lp">' + CP.pinyinHTML(w.py) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + '</div><div class="small muted">' + CP.esc(w.it) + "</div>" + CP.audioBtns(w.hz, true) + "</div>";
     });
     if (list.length > 14) h += '<p class="small muted">Altre ' + (list.length - 14) + " parole: cercale nella scheda Parole.</p>";
     famCard.innerHTML = h;
@@ -760,12 +801,42 @@
   });
 
   /* ---- indice di ricerca (sui dati, non sul DOM) ---- */
+  /* Ogni voce: il pinyin attaccato (si cerca «nihao» o «ni hao») con le posizioni d'inizio delle sillabe, i caratteri, e le
+     parole italiane separate da spazi. Il pinyin combacia solo dall'inizio di una sillaba, l'italiano solo dall'inizio di una
+     parola: «re» trova «regalo» ma non «studente», «rea» non nasce più da «andare a». rank: 0 uguale, 1 inizio, 2 dentro. */
+  function words(s) { return " " + String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9㐀-鿿]+/g, " ").trim() + " "; }
+  function sKey(py, hz, it, note) {
+    var syl = String(py).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().split(/[^a-zü]+/).filter(Boolean), st = [], p = "";
+    syl.forEach(function (x) { st.push(p.length); p += x; });
+    return { py: p, st: st, hz: String(hz), it: words(it), note: words(note || ""), g: words(String(it).split(/[;,(:]/)[0]) };
+  }
+  function sQuery(raw) {
+    var r = String(raw).replace(/[0-9|]/g, "");
+    return { c: norm(r).replace(/[^a-zü㐀-鿿]/g, ""), w: words(r).trim(), raw: r.trim() };
+  }
+  function sRank(e, q) {
+    if (!q.c && !q.w) return 0;
+    if (/[㐀-鿿]/.test(q.raw)) { var hq = q.raw.replace(/[^㐀-鿿]/g, ""); return e.hz === hq ? 0 : e.hz.indexOf(hq) === 0 ? 1 : e.hz.indexOf(hq) >= 0 ? 2 : -1; }
+    var best = -1;
+    if (q.c && e.py) {
+      if (e.py === q.c) return 0;
+      for (var i = 0; i < e.st.length; i++) if (e.py.indexOf(q.c, e.st[i]) === e.st[i]) { best = i === 0 ? 1 : 2; break; }
+    }
+    if (q.w) {
+      var w = " " + q.w;
+      if (e.g === w + " ") return 0;
+      if (e.it.indexOf(w + " ") >= 0) best = best < 0 ? 1 : Math.min(best, 1);
+      else if (e.it.indexOf(w) >= 0 || e.note.indexOf(w) >= 0) best = best < 0 ? 2 : best;
+    }
+    return best;
+  }
+  CP.search = { key: sKey, query: sQuery, rank: sRank };
   var Q = CP.Q = new Array(ORDER.length);
-  CP.reindex = function () { ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = norm(w.py) + "|" + w.hz + "|" + norm(w.it + w.note); }); };
+  CP.reindex = function () { ORDER.forEach(function (k, i) { var w = WORDS[k]; Q[i] = sKey(w.py, w.hz, w.it, w.note); }); };
   CP.reindex();
   var lines = document.querySelectorAll("#sections .ln");
   Array.prototype.forEach.call(lines, function (ln) {
-    ln._q = norm(ln.querySelector(".lp").textContent) + "|" + ln.querySelector(".lh").textContent + "|" + norm(ln.querySelector(".li").textContent);
+    ln._q = sKey(ln.querySelector(".lp").textContent, ln.querySelector(".lh").textContent, ln.querySelector(".li").textContent);
     ln.insertAdjacentHTML("beforeend", CP.audioBtns(ln.querySelector(".lh").textContent));
   });
 
@@ -774,7 +845,7 @@
   var secsEl0 = document.getElementById("sections"), chipOf = {};
   Array.prototype.forEach.call(document.querySelectorAll("#chips a"), function (a) { chipOf[(a.getAttribute("href") || "").slice(1)] = a; });
   function refilter() {
-    var raw = qEl.value, q = norm(raw.replace(/[0-9|]/g, "")), st = stEl.value, total = 0, topic = CP.topic || null;
+    var raw = qEl.value, sq = sQuery(raw), q = sq.c || sq.w, st = stEl.value, total = 0, topic = CP.topic || null, best = [];
     var active = !!q || st !== "" || !!topic;
     secsEl0.classList.toggle("searching", active);
     CP.setSearching(active);
@@ -783,7 +854,9 @@
       var secOk = !topic || topic.indexOf(S.id) >= 0, n = 0;
       for (var i = S.i0; i < S.i1; i++) {
         var kk = CP.ORDER[i];
-        var ok = secOk && (!q || Q[i].indexOf(q) >= 0) && (st === "" || (st === "fav" ? !!(favs && favs.has(kk)) : String(CP.state(kk)) === st));
+        var rk = q ? sRank(Q[i], sq) : 0;
+        var ok = secOk && rk >= 0 && (st === "" || (st === "fav" ? !!(favs && favs.has(kk)) : String(CP.state(kk)) === st));
+        if (ok && q && rk === 0) best.push(kk);
         OK[i] = ok ? 1 : 0; if (ok) n++;
       }
       shownBy[si] = n; total += n;
@@ -796,7 +869,7 @@
     if (fr) {
       var shown = 0;
       Array.prototype.forEach.call(fr.querySelectorAll(".ln"), function (ln) {
-        var ok = !q || ln._q.indexOf(q) >= 0;
+        var ok = !q || sRank(ln._q, sq) >= 0;
         if (st !== "" || topic) ok = false;
         ln.hidden = !ok; if (ok) shown++;
       });
@@ -809,10 +882,19 @@
       info.hidden = false;
       info.textContent = total ? (total === 1 ? "1 risultato" : total + " risultati") :
         "Nessun risultato. Prova senza toni (es. ni hao), con un carattere o con una parola italiana.";
+      /* le corrispondenze esatte prima di tutto: la tabella resta nell'ordine delle sezioni, queste si toccano per arrivarci */
+      if (best.length && total > best.length) info.insertAdjacentHTML("beforeend", ' · <span class="muted">proprio questa:</span> ' + best.slice(0, 6).map(function (k) {
+        var w = WORDS[k]; return '<button type="button" class="chip-best" data-best="' + CP.attr(k) + '"><span class="han" lang="zh-CN">' + CP.esc(w.hz) + "</span> " + CP.esc(CP.gloss(w)) + "</button>";
+      }).join(" "));
     } else info.hidden = true;
     CP.kick();
   }
   CP.refilter = refilter;
+  info.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-best]"); if (!b) return;
+    var tr = CP.reveal(b.getAttribute("data-best"));
+    if (tr) { tr.classList.add("flash"); setTimeout(function () { tr.classList.remove("flash"); }, 1600); }
+  });
   var qTimer = 0;
   qEl.addEventListener("input", function () { clearTimeout(qTimer); qTimer = setTimeout(refilter, 70); });
   stEl.addEventListener("change", refilter);

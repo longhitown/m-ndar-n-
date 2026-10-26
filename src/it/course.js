@@ -91,7 +91,7 @@
       rows.map(function (r) { return "<tr><th>" + esc(r[0]) + "</th><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td></tr>"; }).join("") + "</tbody></table>" +
       (aux === "e" || /rsi(\s|$)/.test(inf) ? '<p class="small muted" style="margin:4px 0 0">用 essere：分词要和主语一致（andato / andata / andati / andate）。</p>' : "");
   }
-  function zhHTML(hz, py) { return '<span class="it-zh"><span class="lp">' + CP.pinyinHTML(py) + '</span> <span class="lh han">' + CP.hanziHTML(hz, py) + "</span></span>"; }
+  function zhHTML(hz, py) { return '<span class="it-zh"><span class="lp">' + CP.pinyinHTML(py) + '</span> <span class="lh han" lang="zh-CN">' + CP.hanziHTML(hz, py) + "</span></span>"; }
   function sayBtn(text, small) { return '<button type="button" class="say' + (small ? " btn-s" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr("听：" + text) + '">🔊</button>'; }
   function detailHTML(e) {
     var h = '<div class="fam-head"><div class="meta"><b lang="it" style="font-size:1.35rem">' + esc(e.it) + "</b><div class=\"small muted\">" + esc(gLabel(e)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>关闭</button></div>' +
@@ -212,7 +212,7 @@
   }
 
   /* ---------------- 复习: ripasso FSRS ---------------- */
-  var SCH = new FSRS.Scheduler({ retention: 0.9, fuzz: true }), DAY = 86400000;
+  var SCH = new FSRS.Scheduler({ retention: 0.9, fuzz: true, dayOf: FSRS.studyDay }), DAY = 86400000;
   function sload() { try { var o = JSON.parse(lsGet(SRSKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
   function ssave(o) { lsSet(SRSKEY, JSON.stringify(o)); }
   function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
