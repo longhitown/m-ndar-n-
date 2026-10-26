@@ -25,8 +25,9 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   core/                    fsrs.js (ripasso), store.js (salvataggi e backup), core.js (stato condiviso, voce, fogli), game.js,
                            segment.js (taglio di una frase in parole: lo stesso codice nella pagina e negli strumenti)
   words/ study/ path/ phrases/ voice/ ui/ contrib/ selftest/ pwa/   le schede e le funzioni, un modulo per file
-  audio/synth.js           attrezzi sonori + registro delle tracce (CP.audioTracks.add)
-  audio/tracks/<id>.js     una traccia per file;  audio/tracks/index.js = catalogo (ordine)
+  audio/synth.js           attrezzi sonori per gli effetti + registro delle tracce (CP.audioTracks.add)
+  audio/music/<id>.ogg     i 22 brani originali del jukebox;  audio/file-player.js = il loro riproduttore
+  audio/tracks/<id>.js     un modulo per brano;  audio/tracks/index.js = catalogo (ordine)
   audio/player.js          motore del jukebox e interfaccia;  audio/audio-ui.js = audio a tre stati, voci, microfono
   styles/*.css             stili, in ordine di cascata
   pwa/                     manifest.json, sw.js (modello), _headers, icone
@@ -58,10 +59,13 @@ vocabolario e che gli esercizi siano ben formati. Il campo `path` la fa comparir
 la frase usi solo parole del vocabolario e che il taglio in parole la restituisca come parola (中 non vale dentro 中国).
 Se il taglio sbaglia una frase giusta, si corregge `core/segment.js` (WEAK, CTX, BOUND), non la frase.
 
-**Aggiungere o sostituire una traccia:** `src/audio/tracks/<id>.js` chiama
-`CP.audioTracks.add({ id, ico, name, desc, mood: "calm" | "focus" | "energy", make(c, bus) })`; `make` restituisce
-`{ step(until, now), stop() }`. Gli attrezzi (pluck, partials, flute, groove…) arrivano da `CP.synth`. Poi l'id va in
-`audio/tracks/index.js` e il file in `src/index.html`.
+**Aggiungere o sostituire un brano del jukebox:** il file in `src/audio/music/<id>.ogg` (Opus, in loop senza stacchi, sotto i
+25 MB) e un modulo `src/audio/tracks/<id>.js` come gli altri (`CP.audioTracks.add({ id, ico, name, desc, mood, zh: [nome, descrizione],
+file: true, sec, make })`, dove `make` chiama `CP.audioFile.player`). Poi l'id in `audio/tracks/index.js` e il modulo in
+`src/index.html`. La build copia i brani in `dist/audio/music/` e si ferma se un modulo non trova il suo file.
+I brani non stanno dentro `index.html`: nell'APK sono nel pacchetto; sul sito il service worker li salva nella cache
+`mandarino-music` al primo ascolto (o tutti insieme con «Scarica tutta la musica» nel pannello 🎵), che resta tra un
+aggiornamento e l'altro. Aperta da `file://` l'app funziona, ma il browser non le lascia leggere i brani e il pannello lo dice.
 
 ## La grammatica del laboratorio: come si migliora
 
