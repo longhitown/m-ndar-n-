@@ -116,6 +116,23 @@ try {
     check("Registra e confronta: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4b. Immersione: gli esercizi di Frasi a schermo pieno */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 380, height: 800 } });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload();
+    await p.click("#tab-build"); await p.waitForTimeout(200);
+    await p.click(".fx-go"); await p.waitForTimeout(200);
+    check("Immersione: ⛶ nasconde schede e menu, resta la barra con l'avanzamento", await p.evaluate(() => document.body.classList.contains("in-focus") && getComputedStyle(document.querySelector(".dock")).display === "none" && !document.getElementById("fx-bar").hidden && document.querySelector("#fx-bar .fx-n").textContent === "0/10"));
+    await p.keyboard.press("Escape"); await p.waitForTimeout(150);
+    check("Immersione: Esc esce", await p.evaluate(() => !document.body.classList.contains("in-focus") && document.getElementById("fx-bar").hidden));
+    await p.evaluate(() => CP.build.openLesson(CP.lessons.list()[0].id)); await p.click("[data-ls-quiz]"); await p.waitForTimeout(150);
+    check("Immersione: gli esercizi di una lezione partono a schermo pieno", await p.evaluate(() => document.body.classList.contains("in-focus")));
+    await p.goBack(); await p.waitForTimeout(200);
+    check("Immersione: il tasto Indietro esce", await p.evaluate(() => !document.body.classList.contains("in-focus")));
+    check("Immersione: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));

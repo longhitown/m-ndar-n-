@@ -167,6 +167,7 @@
   document.documentElement.setAttribute("lang", "zh-CN");
   var main = document.querySelector("main") || document.body;
   var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
+  if (CP.immerse) CP.immerse.watch(view);
   var TABS = [["lessons", "📘", Z.lessons], ["words", "📖", Z.words], ["review", "🎴", Z.review], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
   var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", "意大利语课程");
   dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");

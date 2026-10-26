@@ -6,6 +6,9 @@
   var ADJ = ["大", "小", "多", "少", "贵", "便宜", "热", "冷", "漂亮", "好吃", "好喝", "好"];
   var FW = { ".": "。", "?": "？", "!": "！" };
   var sub = "ex", ex = null, queue = [], score = 0, tries = 0, exFilter = "", labMode = "build";
+  /* un giro = 10 frasi: avanzamento, serie di risposte giuste al primo colpo, riepilogo alla fine */
+  var ROUND = 10, round = { n: 0, ok: 0, run: 0, best: 0, done: false };
+  function newRound() { round = { n: 0, ok: 0, run: 0, best: 0, done: false }; }
   var lab = { t: [], p: "auto", q: "", sec: "", view: "fluid", fixLog: null }, showIt = true, mine = [];
   try { mine = JSON.parse(localStorage.getItem("cp-mine") || "[]") || []; } catch (e) { mine = []; }
   mine = mine.filter(function (m) { return m && m.t && m.t.length && m.t.every(function (k) { return W[k]; }); });
@@ -143,7 +146,14 @@
     }
     return full(e.t, e.p) + spokenBlock(e.t, e.p);
   }
+  function roundHTML() {
+    var pct = Math.round(round.ok * 100 / ROUND), msg = pct >= 90 ? "Impeccabile." : pct >= 70 ? "Ottimo giro." : pct >= 40 ? "Buon allenamento: l'ordine delle parole sta entrando." : "Giro difficile: riprova, la seconda volta va meglio.";
+    return '<div class="panel fx-sum"><div class="fx-sum-n">' + round.ok + "<small>/" + ROUND + '</small></div><p class="ask" style="margin:4px 0">' + esc(msg) + "</p>" +
+      '<p class="muted small" style="margin:0">Giuste al primo colpo · serie migliore: 🔥 ' + round.best + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" id="ex-again" style="margin:0">🔁 Un altro giro</button>' + (CP.immerse && CP.immerse.active() ? '<button type="button" class="btn-s" data-fx-leave>Esci</button>' : "") + "</div></div>";
+  }
   function renderEx() {
+    if (round.done) return roundHTML();
     if (!ex) nextEx();
     var byId = {}; ex.bank.forEach(function (b) { byId[b.id] = b; });
     var slot = ex.pick.map(function (id) { return tile(byId[id].k, 'data-un="' + id + '"'); }).join("");
@@ -153,7 +163,8 @@
     }).join("");
     var fl = exFilter ? SECTIONS.filter(function (s) { return s.id === exFilter; })[0] : null;
     var h = '<div class="panel">' + (fl ? '<div class="acts" style="margin:0 0 10px"><span class="gpl">Tappa: ' + esc(fl.title.replace(/^\d+\.\s*/, "")) + '</span><button type="button" class="btn-s" id="exf-clear">Tutte le frasi</button></div>' : "") +
-      '<span class="tag muted small">Traduci · giuste: ' + score + "</span>" +
+      '<div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(round.n * 100 / ROUND) + '%"></i></div>' +
+      '<span class="tag muted small">Traduci · frase ' + Math.min(ROUND, round.n + 1) + " di " + ROUND + (round.run >= 2 ? " · 🔥 " + round.run + " di fila" : "") + "</span>" +
       '<p class="ask">' + esc(ex.it) + "</p>" +
       '<div class="slot" aria-live="polite" data-empty="Tocca le parole nell\'ordine giusto">' + slot + "</div>";
     var spk = function () { return CP.audioBtns(ex.disp ? ex.disp.hz : hzOf(ex.t, ex.p)); };
@@ -166,14 +177,17 @@
         (ex.tries >= 2 ? '<button type="button" id="ex-show">Mostra la soluzione</button>' : "") +
         '<button type="button" id="ex-check"' + (ex.pick.length ? "" : " disabled") + ">Controlla</button></div>";
     }
-    h += '<label class="small muted" style="display:flex;gap:8px;align-items:center;margin-top:14px;min-height:44px"><input type="checkbox" id="opt-it"' + (showIt ? " checked" : "") + '> Mostra l\'italiano sulle tessere</label></div>';
+    h += '<div class="ex-foot"><label class="small muted"><input type="checkbox" id="opt-it"' + (showIt ? " checked" : "") + '> Mostra l\'italiano sulle tessere</label>' +
+      (CP.immerse && !CP.immerse.active() ? '<button type="button" class="btn-s" data-fx-go>⛶ ' + esc(CP.t("fx.enter")) + "</button>" : "") + "</div></div>";
     return h;
   }
   function checkEx() {
     var byId = {}; ex.bank.forEach(function (b) { byId[b.id] = b; });
     var got = ex.pick.map(function (id) { return hz(byId[id].k); }).join("");
-    if (ex.alts.indexOf(got) >= 0) { ex.state = "ok"; score++; ex.t = ex.pick.map(function (id) { return byId[id].k; }); if (ex.disp && ex.alts[0] !== got) ex.disp = null; if (CP.game) CP.game.sentence(); }
-    else ex.tries++;
+    if (ex.alts.indexOf(got) >= 0) {
+      ex.state = "ok"; score++;
+      if (!ex.tries) { round.ok++; round.run++; round.best = Math.max(round.best, round.run); } ex.t = ex.pick.map(function (id) { return byId[id].k; }); if (ex.disp && ex.alts[0] !== got) ex.disp = null; if (CP.game) CP.game.sentence(); }
+    else { ex.tries++; round.run = 0; }
   }
 
   /* ---- laboratorio ---- */
@@ -282,9 +296,9 @@
     var segs = GROUPS.map(function (x) {
       return '<button type="button" role="tab" data-group="' + x[0] + '"' + (x === g ? ' class="on" aria-selected="true"' : ' aria-selected="false"') + ">" + CP.t(x[1]) + "</button>";
     }).join("");
-    var inner = '<div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
+    var inner = '<div class="fx-row"><div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
       return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.t(s[1]) + "</button>";
-    }).join("") + "</div>";
+    }).join("") + '</div><button type="button" class="fx-go" data-fx-go title="' + CP.attr(CP.t("fx.enter")) + '" aria-label="' + CP.attr(CP.t("fx.enter")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>';
     var body;
     if (sub === "ex") body = renderEx();
     else if (sub === "lab") body = labMode === "slot" && CP.subs && CP.subs.slot ? CP.subs.slot.render() : renderLab();
@@ -293,6 +307,9 @@
     root.innerHTML = '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><div class="pills groups" role="tablist" aria-label="' + CP.attr(CP.t("build.tools")) + '">' + segs + "</div>" + inner + body;
     if (CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
     if (sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
+    if (CP.immerse && CP.immerse.active()) {
+      if (sub === "ex") { CP.immerse.progress(round.n, ROUND); CP.immerse.combo(round.run); }
+    }
     var on = root.querySelector(".pills .on"); if (on && on.scrollIntoView) { try { on.scrollIntoView({ block: "nearest", inline: "center" }); } catch (e) {} }
   }
 
@@ -308,8 +325,15 @@
     if (a("data-un") !== null && sub === "ex") { if (ex.state === "play") { CP.sfx("tap"); ex.pick = ex.pick.filter(function (id) { return id !== parseInt(a("data-un"), 10); }); render(); } return; }
     if (t.id === "ex-back") { CP.sfx("tap"); ex.pick.pop(); render(); return; }
     if (t.id === "ex-check") { checkEx(); CP.sfx(ex.state === "ok" ? "ok" : "ko"); render(); return; }
-    if (t.id === "ex-show") { ex.state = "show"; render(); return; }
-    if (t.id === "ex-next") { ex = null; render(); return; }
+    if (t.id === "ex-show") { ex.state = "show"; round.run = 0; render(); return; }
+    if (t.id === "ex-next") {
+      ex = null; round.n++;
+      if (round.n >= ROUND) { round.done = true; CP.sfx("ok", 5); if (CP.game && CP.game.xp) CP.game.xp(Math.max(1, Math.round(round.ok / 2))); }
+      render(); return;
+    }
+    if (t.id === "ex-again") { newRound(); ex = null; CP.sfx("tap"); render(); return; }
+    if (t.hasAttribute("data-fx-leave")) { if (CP.immerse) CP.immerse.leave(); return; }
+    if (t.hasAttribute("data-fx-go")) { CP.sfx("tap"); immerse(); return; }
     if (a("data-labtr") !== null && lab.tr) { CP.contribOpen({ op: "tr", target: lab.tr.zh, old: lab.tr.it, fromId: lab.tr.id }); return; }
     if (a("data-labview")) { lab.view = a("data-labview"); CP.sfx("tap"); updLab(); return; }
     if (a("data-labfix") !== null) {
@@ -348,10 +372,19 @@
     else if (id === "lab-p") { lab.p = ev.target.value; updLab(); }
     else if (id === "opt-it") { showIt = ev.target.checked; render(); }
   });
+  /* ⛶: l'attività aperta a schermo pieno; all'uscita Frasi torna com'era */
+  function immerse() {
+    if (!CP.immerse) return;
+    var cs = curSub(), name = ""; subList().forEach(function (x) { if (x[0] === cs) name = CP.t(x[1]); });
+    if (sub === "ex" && round.done) newRound();
+    CP.immerse.enter({ title: name, onExit: function () { render(); } });
+    render();
+  }
   CP.lint = lint; CP.spoken = spokenPinyin; CP._lab = lab;
   CP.labRefresh = function () { if (sub === "lab" && labMode !== "slot") updLab(); };
   CP.build = {
     render: function () { render(); },
+    immerse: immerse,
     setSub: function (s) { sub = s; render(); },
     practice: function (secId) {
       exFilter = secId || ""; ex = null; queue = []; sub = "ex";

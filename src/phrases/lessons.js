@@ -129,6 +129,7 @@
   function paint(top) {
     var box = document.getElementById("ls-root"); if (!box) return;
     box.innerHTML = html();
+    if (CP.immerse && CP.immerse.active() && quiz) CP.immerse.progress(view === "result" ? quiz.l.quiz.length : quiz.i + (quiz.state === "play" ? 0 : 1), quiz.l.quiz.length);
     if (top) { try { box.scrollIntoView({ block: "start" }); } catch (e) {} }
   }
   function open(id) { var l = byId(id); if (!l) return; cur = l; view = "lesson"; quiz = null; mark(l.id, { seen: Date.now() }); }
@@ -146,8 +147,14 @@
     var t = e.target.closest ? e.target.closest("button") : null; if (!t || !document.getElementById("ls-root") || !document.getElementById("ls-root").contains(t)) return;
     var a = function (n) { return t.getAttribute(n); };
     if (a("data-ls-open") !== null) { open(a("data-ls-open")); CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-back") && CP.immerse && CP.immerse.active()) { view = "list"; cur = null; quiz = null; CP.immerse.leave(); return; }
     if (t.hasAttribute("data-ls-back")) { view = "list"; cur = null; quiz = null; paint(true); return; }
-    if (t.hasAttribute("data-ls-quiz")) { startQuiz(cur || quiz.l); cur = quiz.l; view = "quiz"; CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-quiz")) {
+      startQuiz(cur || quiz.l); cur = quiz.l; view = "quiz"; CP.sfx("tap");
+      /* gli esercizi di una lezione si fanno a schermo pieno */
+      if (CP.immerse && !CP.immerse.active()) CP.immerse.enter({ title: quiz.l.title.replace(/<[^>]+>/g, ""), onExit: function () { if (CP.build) CP.build.render(); } });
+      paint(true); return;
+    }
     if (t.hasAttribute("data-ls-lab")) { var ex0 = cur.ex[0][0]; if (CP.build && CP.build.labLoad) CP.build.labLoad(toks(ex0), /？$/.test(ex0) ? "?" : /！$/.test(ex0) ? "!" : "."); return; }
     if (!quiz) return;
     var q = quiz.l.quiz[quiz.i];

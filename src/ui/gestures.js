@@ -10,7 +10,7 @@
     return false;
   }
   function blocked(t) {
-    if (document.body.classList.contains("course-it") || document.body.classList.contains("in-session")) return true;
+    if (document.body.classList.contains("course-it") || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return true;
     if (CP.studyActive && CP.studyActive()) return true;
     if (CP.mode && CP.mode.active && CP.mode.active()) return true;
     var fam = document.getElementById("fam"), jk = document.getElementById("jk-pop"), set = document.getElementById("settings");
