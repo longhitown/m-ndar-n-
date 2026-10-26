@@ -54,6 +54,7 @@ tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
+                           icons.mjs (rigenera le icone PWA e Android, mandarino + wordmark, con Playwright),
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
 
