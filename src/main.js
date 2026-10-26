@@ -32,3 +32,9 @@
   var vp = document.getElementById("view-path");
   if (vp && !vp.hidden && CP.onPath) CP.onPath();
 })();
+/* via la schermata d'avvio (index.html, styles/splash.css): l'app è pronta */
+(function () {
+  var s = document.getElementById("splash"); if (!s) return;
+  clearTimeout(window.__spT); clearInterval(window.__spI); clearTimeout(window.__spX);
+  requestAnimationFrame(function () { s.classList.add("gone"); setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 500); });
+})();

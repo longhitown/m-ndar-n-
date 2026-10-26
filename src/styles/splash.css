@@ -1,0 +1,19 @@
+/* ===== schermata d'avvio: copre la pagina mentre il telefono legge l'app (su un telefono lento anche 2-3 secondi).
+   Logo e wordmark animati, righe «scheletro» che scorrono e, se l'attesa si allunga, un suggerimento. La toglie main.js. ===== */
+#splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  background: var(--bg); color: var(--ink); transition: opacity .35s ease, visibility .35s; padding: 24px; }
+#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+#splash .sp-logo { width: 132px; height: 120px; cursor: pointer; animation: sp-bob 1.8s ease-in-out infinite; transform-origin: 50% 90%; -webkit-tap-highlight-color: transparent; }
+#splash .sp-logo:active { animation: sp-squash .35s ease; }
+#splash .sp-word { font-family: var(--f-display); font-size: 40px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+#splash .sp-word .t4 { color: var(--t4); } #splash .sp-word .t2 { color: var(--t2); } #splash .sp-word .t1 { color: var(--t1); }
+#splash .sp-sk { width: min(280px, 72vw); display: grid; gap: 10px; margin-top: 6px; }
+#splash .sp-sk i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--chip) 0%, var(--line, rgba(0,0,0,.08)) 50%, var(--chip) 100%); background-size: 200% 100%; animation: sp-sh 1.3s linear infinite; }
+#splash .sp-sk i:nth-child(2) { width: 82%; } #splash .sp-sk i:nth-child(3) { width: 64%; }
+#splash .sp-tip { min-height: 2.6em; max-width: 300px; text-align: center; font-size: 15px; color: var(--muted); opacity: 0; transition: opacity .4s; }
+#splash .sp-tip.on { opacity: 1; }
+#splash .sp-tip b { color: var(--ink); font-family: var(--f-han); font-size: 20px; font-weight: 600; margin-right: 4px; }
+@keyframes sp-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-3deg); } }
+@keyframes sp-squash { 0% { transform: scale(1, 1); } 40% { transform: scale(1.12, .86); } 100% { transform: scale(1, 1); } }
+@keyframes sp-sh { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { #splash .sp-logo, #splash .sp-sk i { animation: none; } }

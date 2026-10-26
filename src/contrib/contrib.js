@@ -139,6 +139,7 @@
   function finder(q) {
     var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.</p>';
     var out = [];
+    CP.ensureQ();
     CP.ORDER.forEach(function (k, i) { if (out.length < 25 && CP.search.rank(CP.Q[i], sq) >= 0) { var w = CP.WORDS[k]; out.push([k, w.hz + " · " + w.py + " · " + CP.gloss(w)]); } });
     PHRASES.forEach(function (g, gi) { g.items.forEach(function (p, ri) { if (out.length < 40 && S.rank(S.key(p[0], p[1], p[2]), sq) >= 0) out.push(["phr:" + gi + ":" + ri, "💬 " + p[1] + " · " + p[2]]); }); });
     DIALOGS.forEach(function (d) { d.lines.forEach(function (l, li) { if (out.length < 55 && S.rank(S.key(l[1], l[2], l[3]), sq) >= 0) out.push(["dlg:" + d.id + ":" + li, "🗨️ " + l[2] + " · " + l[3]]); }); });

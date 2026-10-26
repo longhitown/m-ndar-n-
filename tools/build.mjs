@@ -37,6 +37,11 @@ if (c.err.length) fail("dati non validi:\n  " + c.err.slice(0, 30).join("\n  ") 
        le lezioni (src/data/lessons) devono usare solo parole del vocabolario e avere esercizi ben fatti */
 const LAB = lab(SRC), gv = verify(LAB), le = checkLessons(LAB), ee = checkExamples(LAB);
 if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
+/* la lavagna deve avere ordine e direzione dei tratti per ogni carattere del vocabolario (si rigenerano con tools/strokes.mjs) */
+{ const sctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/strokes.js"), "utf8"), sctx);
+  const ST = vm.runInContext("STROKES", sctx), miss = new Set();
+  D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !ST[ch]) miss.add(ch); })));
+  if (miss.size) fail(`caratteri senza tratti in src/data/strokes.js: ${[...miss].join("")} (lancia node tools/strokes.mjs graphics.txt)`); }
 if (ee.length) fail("frasi d'esempio non valide:\n  " + ee.slice(0, 20).join("\n  "));
 if (gv.bad.length) fail("frasi verificate che le regole non traducono più così (dettagli: node tools/grammar.mjs):\n  " + gv.bad.slice(0, 10).map((b) => b.zh + " → «" + b.got + "», attesa «" + b.want + "»").join("\n  "));
 
@@ -60,6 +65,22 @@ let out = html;
 const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, "") + " ---- */\n" + fs.readFileSync(path.join(SRC, s.href), "utf8").trimEnd()).join("\n\n");
 styles.forEach((s, i) => { out = out.replace(s.tag + "\n", i ? "" : "<style>\n" + css + "\n</style>\n"); });
 out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
+/* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
+   compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES o
+   STROKES. Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"]];
+for (const [name, test] of LAZY) {
+  const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
+  const lctx = vm.createContext({});
+  group.forEach((s) => vm.runInContext(fs.readFileSync(path.join(SRC, s.src), "utf8"), lctx));
+  const val = vm.runInContext(name, lctx), extra = name === "STROKES" ? "var STROKES_A = " + JSON.stringify(vm.runInContext("STROKES_A", lctx)) + ";\n" : "";
+  const json = JSON.stringify(val).replace(/</g, "\\u003c");
+  const id = "lazy-" + name.toLowerCase();
+  const block = '<script type="application/json" id="' + id + '">' + json + "</script>\n<script>\n/* ---- " + name + " (lazy, da " + group.map((s) => s.src).join(", ") + ") ---- */\n" + extra +
+    "(function () { var v; Object.defineProperty(window, " + JSON.stringify(name) + ", { configurable: true, get: function () { if (v === undefined) { var el = document.getElementById(" + JSON.stringify(id) + "); v = el ? JSON.parse(el.textContent) : {}; if (el) el.parentNode.removeChild(el); } return v; } }); })();\n</script>";
+  group.forEach((s, i) => { out = out.replace(s.tag + "\n", i ? "" : block + "\n"); });
+  scripts.splice(0, scripts.length, ...scripts.filter((s) => !test(s.src)));
+}
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
   out = out.replace(s.tag, "<script" + (s.id ? ' id="' + s.id + '"' : "") + ">\n/* ---- " + s.src + " ---- */\n" + code + "\n</script>");
