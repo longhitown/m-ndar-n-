@@ -14,7 +14,7 @@ SECTIONS.push({
     ["qǐ.fēi","起飞","decollo"],
     ["jiàng.luò","降落","atterraggio"],
     ["yán.wù","延误","ritardo"],
-    ["qǔ.xiāo","取消","volo cancellato"],
+    ["qǔ.xiāo","取消","annullare, cancellare (un volo)"],
     ["zhuǎn.jī","转机","fare scalo"],
     ["jī.cāng","机舱","cabina passeggeri"],
     ["kōng.jiě","空姐","hostess"],

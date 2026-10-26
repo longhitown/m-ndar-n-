@@ -18,7 +18,7 @@ SECTIONS.push({
     ["liáng.xīn","良心","coscienza morale"],
     ["zì.lǜ","自律","autodisciplina"],
     ["wěi.tuō","委托","incaricare"],
-    ["bǎo.shǒu mì.mì","保守秘密","segreto d'ufficio"],
+    ["bǎo.shǒu mì.mì","保守秘密","mantenere il segreto, la riservatezza"],
     ["xiè.lòu","泄露","divulgare"],
     ["wèn.zé","问责","chiedere conto"],
     ["gōng.dào","公道","giustizia"],

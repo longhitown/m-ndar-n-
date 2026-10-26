@@ -13,7 +13,7 @@ SECTIONS.push({
     ["fēng.wèi","风味","sapore tipico"],
     ["shāo.cài","烧菜","cucinare un piatto","stufare, arrostire"],
     ["chǎo.cài","炒菜","saltare in padella"],
-    ["zhēng.cài","蒸菜","cuocere al vapore"],
+    ["zhēng.cài","蒸菜","piatto cotto al vapore"],
     ["zhá.cài","炸菜","frittura"],
     ["yǐn.liào","饮料","bevanda, bibita"],
     ["jiǔ.shuǐ","酒水","bevande"],
