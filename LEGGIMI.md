@@ -2,8 +2,12 @@
 
 Due corsi in un'app: **il cinese per italiani** e, scelto dal benvenuto o da ⚙️ → Corso, **意大利语课程, l'italiano per
 chi parla cinese**. Un'app che si pubblica come file unico (`dist/index.html`, generato da `src/`): 6385 parole in 220 sezioni (con le liste HSK 3.0), una frase d'esempio per parola, pinyin davanti, toni a colori, ripasso FSRS-6,
-dialoghi, laboratorio di frasi, oscilloscopio dei toni. Nessuna libreria esterna, nessuna richiesta di rete
-all'avvio; i progressi restano nel browser (localStorage + copia in IndexedDB) e si salvano su file.
+dialoghi, laboratorio di frasi, pannello «Parla» con la curva dei toni, jukebox di 22 brani originali. Nessuna richiesta di
+rete all'avvio, nessuna libreria caricata da fuori (l'unica di terzi, jsQR, è dentro il file); i progressi restano sul
+telefono (localStorage + copia in IndexedDB), si salvano su file e si sincronizzano senza server (file nel proprio cloud o QR).
+Su Android c'è anche l'APK, con scorciatoie, widget «Oggi», promemoria facoltativo e musica in secondo piano.
+
+Come i moduli si agganciano tra loro (l'oggetto `CP`, i registri, i richiami, il ponte Android): **[docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)**.
 
 ## Com'è fatto il repository
 
@@ -26,24 +30,35 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
                            segment.js (taglio di una frase in parole: lo stesso codice nella pagina e negli strumenti)
   words/ study/ path/ phrases/ voice/ ui/ contrib/ selftest/ pwa/   le schede e le funzioni, un modulo per file
   audio/synth.js           attrezzi sonori per gli effetti + registro delle tracce (CP.audioTracks.add)
-  audio/music/<id>.ogg     i 22 brani originali del jukebox;  audio/file-player.js = il loro riproduttore
+  audio/music/<id>.ogg     i 22 brani originali del jukebox (la build li copia come <id>.<impronta>.ogg);
+                           audio/file-player.js = il loro riproduttore (a flusso: <audio> collegato al grafo Web Audio)
   audio/tracks/<id>.js     un modulo per brano;  audio/tracks/index.js = catalogo (ordine)
   audio/player.js          motore del jukebox e interfaccia;  audio/audio-ui.js = audio a tre stati, voci, microfono
   styles/*.css             stili, in ordine di cascata
-  pwa/                     manifest.json, sw.js (modello), _headers, icone
+  pwa/                     manifest.json (con le scorciatoie), sw.js (modello), _headers, icone; pwa.js (aggiornamenti, anche dell'APK),
+                           android.js (ponte), sync.js (sincronizzazione), qr.js + qr-transfer.js (passaggio con i QR),
+                           widget.js (stato del widget Android), reminder.js (promemoria)
+  ui/launch.js             ?go=<azione>: apre l'app su un'azione (scorciatoie, widget)
+  data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
+  vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
+docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
   phrases/translate.js     il traduttore del laboratorio (regole); phrases/italian.js = coniugazioni e articoli
   it/course.js             il corso di italiano per chi parla cinese; data/it/lessons/ = le sue lezioni (in cinese)
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
-.github/workflows/apk.yml  costruisce l'APK su GitHub e lo pubblica come Release
+.github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
+.github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
 tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
+                           unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
+                           review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
 
-**Dopo ogni modifica in `src/`:** `node tools/build.mjs`, poi committa anche `dist/`.
+**Dopo ogni modifica in `src/`:** `node tools/build.mjs`, poi committa anche `dist/index.html` (i file pesanti di `dist/` li rigenera la build e non
+stanno nel repository). Prima di un push: `npm test` (serve una volta `npm install`, che porta solo Playwright).
 La build si ferma se i dati non sono validi (chiavi doppie, sillabe ≠ caratteri, HTML) o se un file di
 vocabolario, dialogo o traccia non è elencato in `src/index.html`. `node tools/build.mjs --check` dice se `dist/` è aggiornato.
 
@@ -117,7 +132,8 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 «Nuova versione disponibile · Aggiorna». **Scaricare l'app come file:** `dist/index.html` funziona da solo, anche offline.
 
 **Nome del repository:** GitHub ha tolto gli accenti e il repository si chiama `m-ndar-n-`. Conviene rinominarlo
-`mandarino` (Settings → General → Repository name): i vecchi indirizzi vengono reindirizzati.
+`mandarino` (Settings → General → Repository name): i vecchi indirizzi, le release e le API vengono reindirizzati.
+Dopo, per ordine, aggiorna `REPO` in `src/pwa/pwa.js` (controllo aggiornamenti dell'APK) e il link qui sotto.
 
 ## L'APK per Android (gratis, senza Play Store)
 
@@ -142,6 +158,17 @@ più sopra le vecchie (bisognerebbe disinstallare, dopo aver fatto il backup dei
 Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype PKCS12 -alias mandarino -keyalg RSA -keysize 4096 -validity 18250`.
 
 **In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleRelease lintRelease`.
+
+**Cosa c'è in più nell'APK** (tutto calcolato sul telefono, nessun server):
+- **scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Jukebox; aprono `?go=study|ear|music`;
+- **widget «Oggi»** 2×1 e 4×2: serie di giorni, ripassi in scadenza (dall'istogramma delle prossime 168 ore che l'app
+  passa con `setWidgetState`), parola del giorno (tocca per il significato), un messaggio gentile la sera se oggi manca lo studio;
+- **promemoria** facoltativo, spento finché non lo accendi da ⚙️ → 🔔 (il permesso delle notifiche si chiede solo allora;
+  `AlarmManager`, nessuna libreria); si riprogramma dopo un riavvio;
+- **musica in secondo piano** con notifica (pausa, avanti, stop) se la scegli nel pannello 🎵;
+- **aggiornamenti**: una volta al giorno l'app guarda l'ultima Release su GitHub e propone «Nuova versione disponibile»
+  (si spegne da ⚙️, nel riquadro dell'app Android).
+Sul web (anche su iPhone) widget e promemoria non ci sono: la scorciatoia `?go=` e la card del giorno da condividere sì.
 
 Come funziona dentro: la pagina è servita all'indirizzo `https://appassets.androidplatform.net/` (sempre lo stesso: è lì che
 la WebView tiene i progressi). `src/pwa/android.js` ricostruisce sopra il ponte nativo le API web standard che la WebView
@@ -169,14 +196,18 @@ Primo giro: nessuna forma sbagliata nelle regole; trovato un errore nei dati (�
 ```
 node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
-node tools/e2e.mjs          # 24 prove su dist/ (anche il corso di italiano), ~1 minuto
+node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
+node tools/e2e.mjs          # 44 prove su dist/ (corso di italiano, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
 node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
 ```
-In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi).
+Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
+In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi). `#dev` accende il modo sviluppatore
+(in ⚙️ compare «Scarica pacchetto PWA per GitHub»), `#nodev` lo spegne.
 
 **Sul dispositivo Android:** a ogni push GitHub Actions avvia anche un emulatore Android 14 vero (job «dispositivo») e
 `tools/android-smoke.mjs` controlla dentro la WebView dell'APK: caricamento all'origine dell'app, `#selftest`, backup in
-Download con UTF-8 intatto, permesso del microfono, dati che restano dopo la chiusura forzata, tasto Indietro, nessun crash.
+Download con UTF-8 intatto, permesso del microfono, dati che restano dopo la chiusura forzata, tasto Indietro, scorciatoie,
+apertura su un'azione, stato del widget, promemoria, nessun crash.
 In locale, con un telefono collegato in debug USB: `node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk`.
 Per il controllo «nessun attributo senza CP.attr», in revisione: `grep -rnP "[a-z-]+=\"' \+ (?!CP\.attr)" src`
 deve mostrare solo numeri, id interni e classi.
@@ -209,22 +240,28 @@ suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-
 `cp-lang` (preferenze del dispositivo: vince quello corrente). `cp-game-v1.days[giorno]` ha due campi nuovi:
 `nw` (parole nuove introdotte) e `nx` (permesso extra «Ancora 5 parole»). Il formato del backup resta `{app:"mandarino", v:5, kv, log}`.
 
+## Sincronizzare e cambiare telefono
+
+⚙️ → Sincronizza. **File nel proprio cloud:** si sceglie (o si crea) un file `mandarino-sync.json` in una cartella di Drive,
+Dropbox, OneDrive…; l'app lo riscrive dopo ogni sessione e lo riunisce all'avvio con le regole del ripristino «unisci»
+(su Android con il selettore di documenti del sistema, sul computer con l'API File System Access; altrove a mano).
+**Passaggio con i QR:** il telefono vecchio mostra una sequenza di QR, il nuovo la inquadra: nessuna rete, nessun account.
+I punti si sommano per dispositivo (`xpBy`), così le due copie non si contano due volte.
+
+## Licenze
+
+Codice: MIT (`LICENSE`), © 2026 Claudio Longhitano. Brani del jukebox: CC BY 4.0 (`LICENZE/MUSICA.txt`, crediti in
+`src/audio/CREDITI-MUSICA.md`). Terze parti, con le loro licenze in `LICENZE/` e in ⚙️ → Crediti: Make Me a Hanzi (Arphic),
+jsQR (Apache 2.0), wikidict-it/Wikidata (CC0).
+
 ## Che cosa resta aperto
 
 - Corso di italiano: 30 lezioni; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
   Correttore di frasi italiane: da fare.
-- I testi interni dei moduli più vecchi del corso di cinese (esercizi, dialoghi, lettore, guida, Pensiero, laboratorio,
-  oscilloscopio, contributi) sono ancora solo in italiano e vanno portati su `t()` un po' alla volta.
-- La modalità a schermo pieno vale per la sessione di studio, l'Orecchio e la Sfida; per gli esercizi di Frasi
-  (puzzle, laboratorio, dialoghi) non è ancora attiva.
 - Facoltativa: una GitHub Action che lanci `merge-contrib.mjs` sulle issue con etichetta `contributo`.
 - 有一些 è l'unica parola senza frase d'esempio (il taglio la legge sempre come 有|一些, che è corretto).
-- Sincronizzazione tra telefono e computer: oggi si passa il file di backup (il ripristino unisce). Senza server e senza
-  dati personali presso terzi le strade possibili sono due: (1) un file di sincronizzazione scelto dall'utente nella propria
-  cartella cloud (Drive, Dropbox, OneDrive…: su Android con il selettore di documenti del sistema, sul computer con
-  l'API File System Access), che l'app riscrive dopo ogni sessione e riunisce all'avvio con le regole del ripristino;
-  (2) passaggio diretto da telefono a telefono con una sequenza di codici QR animati, del tutto offline. La (1) è la più
-  comoda e non porta nessun dato su server nostri; la (2) non richiede nessun account. Nessuna delle due è ancora fatta.
+- Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi:
+  `node tools/review-sample.mjs --out revisione.md` prepara il modulo (circa 300 righe, istruzioni in cinese).
 
 **Come si comportano adesso alcune parti delicate:**
 - FSRS: il giorno di studio cambia alle 4 del mattino (come Anki); la ripetizione di una carta nella stessa sessione la
@@ -233,5 +270,5 @@ suggerimenti; unione), `cp-haptics`, `cp-sfxvol`, `cp-jkmood`, `cp-jkauto`, `cp-
   corrispondenze esatte da toccare.
 - Lettore: gli omografi (花 fiore / spendere) mostrano tutti i significati; un carattere noto solo dentro altre parole
   (泳 in 游泳) mostra la lettura e dove compare.
-- Voce: la prima lettura aspetta 6 secondi prima di ripiegare sulla voce online (3 le successive; nell'APK nessun timer),
-  e la voce online legge i testi lunghi a pezzi sotto i 180 caratteri.
+- Voce: si usa la voce del telefono. La voce online (che manda il testo a un servizio esterno) parte solo se l'hai
+  permessa in ⚙️; altrimenti, se manca una voce cinese, un avviso spiega come installarla. Legge i testi lunghi a pezzi sotto i 180 caratteri.

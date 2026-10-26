@@ -1,0 +1,81 @@
+# Come si agganciano i moduli: l'oggetto `CP`
+
+màndarínō non ha un framework né un sistema di moduli: `src/index.html` elenca gli script **nell'ordine di esecuzione**
+(lo stesso ordine che la build usa per il file unico) e ogni file è una funzione `(function () { … })()` che legge e
+scrive un solo oggetto globale, `window.CP`. Un modulo può quindi usare soltanto ciò che i file **prima di lui** hanno messo
+in `CP`; ciò che arriva dopo lo si chiama con un controllo (`if (CP.x) CP.x()`), così ogni modulo si può togliere
+dall'elenco senza rompere gli altri.
+
+Ci sono quattro modi di agganciarsi, sempre gli stessi.
+
+## 1. Funzioni di servizio (definite una volta, chiamate da tutti)
+
+| Che cosa | Dove nasce | A cosa serve |
+|---|---|---|
+| `CP.t`, `CP.esc`, `CP.attr`, `CP.pinyinHTML`, `CP.hanziHTML` | `words/table.js` (è qui che nasce `window.CP`; `t` viene da `i18n/i18n.js`) | testi tradotti (`it.js`/`zh.js`), escape per HTML e per gli attributi |
+| `CP.S`, `CP.state`, `CP.setS`, `CP.save`, `CP.pref`, `CP.setPref` | `core/core.js` | stato delle parole e preferenze (chiavi `cp-*`, vedi `core/store.js`) |
+| `CP.srs`, `CP.grade`, `CP.mark`, `CP.dueList` | `core/core.js` (+ `core/fsrs.js`) | ripasso FSRS: voto a una carta, salvataggio, carte in scadenza |
+| `CP.game` (`addWord`, `sentence`, `ear`, `xp`, `streak`, `goal`…), `CP.toast` | `core/game.js` | punti, serie di giorni, obiettivo; `xpBy` per dispositivo (la sincronizzazione li unisce) |
+| `CP.say`, `CP.speak`, `CP.stopSpeak`, `CP.listen`, `CP.canListen` | `core/core.js` | voce del telefono, voce online solo se l'utente l'ha permessa, riconoscimento vocale |
+| `CP.sfx`, `CP.bus`, `CP.master`, `CP.getCtx` | `core/core.js` | effetti e grafo Web Audio: bus `sfx`, bus `music`, `bus.duck()` abbassa la musica sotto la voce |
+| `CP.openSheet`, `CP.closeSheet`, `CP.topSheet`, `CP.trap`/`CP.untrap` | `core/core.js` | fogli modali con il focus intrappolato (Esc e Indietro li chiudono) |
+| `CP.segmentText`, `CP.gloss`, `CP.search` | `core/core.js` (+ `core/segment.js`) | taglio in parole, significato, ricerca |
+| `CP.show(nome)` | `core/core.js` | cambia scheda (`words`, `study`, `build`, `path`) |
+
+## 2. Richiami di scheda (uno per scheda: chi arriva dopo lo può avvolgere)
+
+`CP.show` chiama, aprendo la scheda, `CP.onStudy` (`study/study.js`), `CP.onBuild` (`phrases/frasi.js`),
+`CP.onPath` (`path/path.js`). `CP.grade` chiama `CP.onGrade(k, g, retry)` (`core/game.js`: conta la parola nuova).
+
+Per aggiungere un comportamento senza toccare il modulo di origine si **avvolge** la funzione, tenendo la vecchia:
+
+```js
+var prima = CP.onStudy;
+CP.onStudy = function () { if (!modoMio) return prima(); /* … */ };
+```
+
+Lo fanno oggi: `study/ear-sprint.js` (`CP.onStudy`, per Orecchio e Sfida), `ui/immerse.js` (`CP.show`: cambiare scheda
+chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo ogni cambiamento aggiorna il widget Android),
+`audio/player.js` (`CP.listen`: la musica tace mentre il microfono ascolta).
+
+## 3. Registri (liste e mappe a cui ogni modulo aggiunge la sua voce)
+
+| Registro | Chi lo legge | Chi ci scrive |
+|---|---|---|
+| `CP.settingsExtras` (array di funzioni → HTML) | `ui/settings.js`, in fondo a ⚙️ | `pwa/sync.js` (Sincronizza), `it/course.js` (Corso), `contrib/contrib.js`, `pwa/reminder.js` (🔔) |
+| `CP.subs[id] = { render, after }` | `phrases/frasi.js`, i sottomenu di Frasi | `dialogs.js`, `lessons.js`, `reader.js`, `slot.js`, `thought.js` |
+| `CP.audioTracks.add({ id, … make })` | `audio/player.js` (jukebox) | ogni `audio/tracks/<id>.js`; l'ordine è `audio/tracks/index.js` |
+| `SECTIONS`, `DIALOGS` (globali di `boot.js`) | vocabolario, dialoghi | `data/vocab/*.js`, `data/dialogs/*.js` |
+| `window.__mdEvt(type, id, data)` (catena) | eventi dal ponte Android | `pwa/android.js`, poi `pwa/sync.js`, `pwa/reminder.js`: ognuno gestisce i suoi tipi e passa gli altri al precedente |
+
+Pezzi di HTML che altre schede inseriscono se ci sono: `CP.homeProgress`, `CP.homeBackup`, `CP.homeNotice`
+(`study/memory.js`, nella home di Studio), `CP.voiceExtra` (`audio/audio-ui.js`, nel pannello voce).
+
+## 4. Punti d'ingresso dall'esterno
+
+| Ingresso | Dove | Chi lo usa |
+|---|---|---|
+| `?go=<azione>` nell'indirizzo, `CP.go(azione)` | `ui/launch.js` | scorciatoie del manifest web e dell'APK (`study`, `ear`, `sprint`, `music`, `words`, `frasi`, `path`) |
+| `window.__mdGo(azione)` | `ui/launch.js` | `MainActivity.onNewIntent` (scorciatoia o widget con l'app già aperta) |
+| `window.__mdBack()` | `pwa/android.js`, `it/course.js` | tasto Indietro di Android: chiude foglio, immersione, sottomenu, poi esce |
+| `window.__mdWidget()` = `CP.widgetPush` | `pwa/widget.js` | `MainActivity.onPause`: lo stato «Oggi» va al widget prima che l'app vada in pausa |
+| `CP.jukebox.remote(cmd)` | `audio/player.js` | pulsanti della notifica della musica (`MusicService.java`) e Media Session |
+| `#selftest`, `#dev` / `#nodev` | `selftest/selftest.js`, `audio/audio-ui.js` (`CP.dev()`) | controlli dentro l'app; modo sviluppatore (mostra il «pacchetto PWA per GitHub») |
+
+## Il ponte Android
+
+`android/…/Bridge.java` espone `window.MandarinoAndroid`. Il codice web non lo chiama quasi mai direttamente:
+`pwa/android.js` lo trasforma nelle API web standard (`speechSynthesis`, `SpeechRecognition`, download, condivisione) e i
+pochi moduli solo-APK (`pwa/sync.js`, `pwa/widget.js`, `pwa/reminder.js`, `pwa/pwa.js` per gli aggiornamenti, `audio/player.js`
+per la notifica della musica) controllano prima `if (window.MandarinoAndroid)`. Le risposte asincrone tornano da
+`window.__mdEvt`.
+
+## Regole che tengono insieme il tutto
+
+- **Le chiavi dei progressi** sono i caratteri della parola (`hz`): non cambiano mai. Ogni chiave salvata è `cp-*` e ha una
+  regola d'unione in `core/store.js` (`mergeKey`), usata da ripristino, sincronizzazione e QR.
+- **Testi:** mai scritti nel codice; `t("gruppo.chiave")` con le due lingue in `i18n/it.js` e `i18n/zh.js`. Il contenuto
+  italiano mostrato a chi usa l'app in cinese si marca `lang="it"`; `tools/e2e.mjs` cerca parole latine «scappate».
+- **Niente rete all'avvio**, niente librerie esterne caricate da fuori: quelle poche (jsQR) stanno in `src/vendor/` e la
+  build le inserisce come testo che si esegue solo al primo uso.
+- **Prove:** `npm test` (unit, build, e2e, ux-audit) gira anche in GitHub Actions (`.github/workflows/web.yml`).
