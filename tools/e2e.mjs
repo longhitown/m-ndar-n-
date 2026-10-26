@@ -160,6 +160,22 @@ try {
     check("Corso di italiano: le " + res.length + " lezioni si superano con le risposte giuste", res.length >= 10 && res.every((x) => !/ /.test(x)), res.join(" "));
     await p.evaluate(() => CP.itShow("review")); await p.click("[data-itr-show]"); await p.click('[data-itr-grade="3"]');
     check("Corso di italiano: ripasso FSRS in cp-it-srs-v1", await p.evaluate(() => { const s = JSON.parse(localStorage.getItem("cp-it-srs-v1") || "{}"); return Object.keys(s).filter((k) => k !== "__meta").length === 1; }));
+    /* correttore di frasi (it/checker.js): nessuna segnalazione sulle frasi giuste dell'app, gli errori tipici trovati */
+    const itc = await p.evaluate(() => {
+      const S = [];
+      ITLESSONS.forEach((l) => { l.ex.forEach((e) => S.push(e[0])); l.traps.forEach((t) => S.push(t[1])); });
+      Object.values(EXAMPLES).forEach((x) => S.push(x[1])); PHRASES.forEach((g) => g.items.forEach((i) => S.push(i[2]))); DIALOGS.forEach((d) => d.lines.forEach((l) => S.push(l[3])));
+      const fp = S.filter((s) => CP.itCheck(s).issues.length).map((s) => s + " ⇒ " + CP.itCheck(s).fixed);
+      const BAD = [["La libro è rosso.", "Il libro è rosso."], ["Il ragazza è alto.", "La ragazza è alta."], ["Io parla italiano.", "Io parlo italiano."], ["I ragazzi parla molto.", "I ragazzi parlano molto."],
+        ["il studente", "lo studente"], ["la acqua", "l'acqua"], ["Un amica", "Un'amica"], ["due libri nuovo", "due libri nuovi"], ["Vado a il ristorante.", "Vado al ristorante."], ["In la borsa.", "Nella borsa."],
+        ["Ho andato.", "Sono andato."], ["Lei è andato.", "Lei è andata."], ["Mi ho alzato.", "Mi sono alzato."], ["Sono fame.", "Ho fame."], ["Io piace il tè.", "Mi piace il tè."], ["Mi piace i cani.", "Mi piacciono i cani."],
+        ["Il suo casa.", "La sua casa."], ["Quello libro.", "Quel libro."], ["La mia madre.", "Mia madre."], ["Io sono Cinese.", "Io sono cinese."], ["citta", "città"], ["Io parlare cinese.", "Io parlo cinese."]];
+      const miss = BAD.filter(([w, r]) => CP.itCheck(w).fixed !== r).map(([w, r]) => w + " → " + CP.itCheck(w).fixed + " (atteso " + r + ")");
+      CP.itShow("phrases"); const inp = document.getElementById("itc-in"); inp.value = "La casa bianco"; inp.form.requestSubmit();
+      return { n: S.length, fp, miss, ui: /bianca/.test(document.getElementById("itc-out").textContent) && !!document.querySelector("#itc-out mark") };
+    });
+    check("Corso di italiano: il correttore non segnala nessuna delle " + itc.n + " frasi giuste dell'app", !itc.fp.length, itc.fp.slice(0, 3).join(" · "));
+    check("Corso di italiano: il correttore trova e corregge gli errori tipici", !itc.miss.length && itc.ui, itc.miss.slice(0, 3).join(" · ") + (itc.ui ? "" : " · pannello"));
     check("Corso di italiano: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }

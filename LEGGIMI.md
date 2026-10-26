@@ -183,7 +183,17 @@ Si sceglie dal benvenuto («我是中国人，我想学意大利语») o da ⚙�
 I due corsi hanno progressi separati. Le schede: 课程 (30 lezioni in cinese, `src/data/it/lessons/`), 单词 (4780 parole: quelle delle schede di
 `src/data/grammar.js`, con coniugazioni complete, più `src/data/it/lexicon.js` generato da `node tools/itlex.mjs morph-it.txt`:
 nomi con genere e plurale, aggettivi, verbi, espressioni; ogni parola con una frase d'esempio italiano → cinese), 复习
-(ripasso FSRS), 变位 (coniugazioni), 句子 (frasi, dialoghi bilingui ed esercizio 句子练习 sulle frasi d'esempio).
+(ripasso FSRS), 变位 (coniugazioni), 句子 (frasi, dialoghi bilingui, esercizio 句子练习 sulle frasi d'esempio e **句子检查**,
+il correttore di frasi italiane, `src/it/checker.js`).
+
+**Il correttore** controlla solo ciò che sa controllare con sicurezza, con il lessico del corso e la morfologia di
+`phrases/italian.js`: articolo e nome (la libro → il libro, il studente → lo studente), preposizioni articolate (a il → al),
+numero e nome (due libro → due libri), possessivi e dimostrativi (il suo casa → la sua casa, la mia madre → mia madre),
+aggettivi (la casa bianco, lei è alto), soggetto e verbo (io parla, io parlare, i ragazzi parla), «piacere» (io piace il tè →
+mi piace il tè), ausiliare e participio (ho andato, lei è andato, mi ho alzato, sono fame), nazionalità in minuscolo e accenti
+dimenticati (citta → città). Spiega l'errore in cinese e propone la frase corretta da ascoltare. Non giudica senso e ordine
+delle parole, e lo dice. La regola d'oro è non dare falsi allarmi: `tools/e2e.mjs` gli passa tutte le 6427 frasi italiane
+dell'app (giuste) e la prova fallisce se ne segnala anche una sola.
 
 **L'italiano è controllato due volte, in sviluppo** (i file esterni non entrano nel repository):
 ```
@@ -198,7 +208,7 @@ Primo giro: nessuna forma sbagliata nelle regole; trovato un errore nei dati (�
 node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
-node tools/e2e.mjs          # 44 prove su dist/ (corso di italiano, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
+node tools/e2e.mjs          # 46 prove su dist/ (corso di italiano e correttore, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
 node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
@@ -264,7 +274,8 @@ jsQR (Apache 2.0), wikidict-it/Wikidata (CC0).
 ## Che cosa resta aperto
 
 - Corso di italiano: 30 lezioni; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
-  Correttore di frasi italiane: da fare.
+- Correttore di frasi italiane: controlla gli accordi, non il senso. Trova 26 degli 88 «errori tipici» delle lezioni; gli altri
+  (tempi verbali, ordine delle parole, preposizioni con città e paesi, scelta delle parole) richiedono più che regole d'accordo.
 - 有一些 è l'unica parola senza frase d'esempio (il taglio la legge sempre come 有|一些, che è corretto).
 - Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi:
   `node tools/review-sample.mjs --out revisione.md` prepara il modulo (circa 300 righe, istruzioni in cinese).
