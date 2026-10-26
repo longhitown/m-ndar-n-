@@ -172,7 +172,10 @@
   /* ---------------- voce mancante: link all'installazione delle voci del telefono ---------------- */
   window.__mdVoiceHelp = function (lang) {
     var has = false; try { has = A.ttsHasLang(lang || "zh-CN"); } catch (e) {}
-    return has ? "" : '<p class="small muted" style="margin:0">Il telefono non ha ancora la voce ' + (/^it/.test(lang || "") ? "italiana" : "cinese") + '. Si scarica gratis dal motore di sintesi vocale (di solito «Servizi di sintesi vocale di Google»).</p>' +
+    if (has) return "";
+    var it = /^it/.test(lang || ""), zh = typeof LANG !== "undefined" && LANG === "zh";
+    return zh ? '<p class="small muted" style="margin:0">手机还没有' + (it ? "意大利语" : "中文") + '语音。可以在手机的文字转语音引擎里免费下载（通常是「Google 语音服务」）。</p><button type="button" class="btn-s" data-md-tts-install>⬇ 安装语音</button>'
+      : '<p class="small muted" style="margin:0">Il telefono non ha ancora la voce ' + (it ? "italiana" : "cinese") + '. Si scarica gratis dal motore di sintesi vocale (di solito «Servizi di sintesi vocale di Google»).</p>' +
       '<button type="button" class="btn-s" data-md-tts-install>⬇ Installa la voce</button>';
   };
   document.addEventListener("click", function (e) {

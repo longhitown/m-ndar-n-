@@ -123,16 +123,16 @@
     {
       var rd = new FileReader();
       rd.onload = function () {
-        var o; try { o = JSON.parse(rd.result); } catch (x) { msg.textContent = "Il file non è un backup valido."; return; }
+        var o; try { o = JSON.parse(rd.result); } catch (x) { msg.textContent = CP.t("bk.bad"); return; }
         if (o && o.v === 2 && o.s && typeof o.s === "object" && !o.app) {
           /* formato del vecchio «Salva o sposta»: unione, come per il backup nuovo */
           CP.setS(Store.mergeSrs(CP.S(), o.s)); if (o.f && CP.favs) CP.favs.load(CP.favs.dump().concat(o.f)); if (o.g && CP.game && !CP.game.dump().xp) CP.game.load(o.g);
-          msg.textContent = "Progressi del vecchio formato uniti. Ricarico…"; setTimeout(function () { location.reload(); }, 700); return;
+          msg.textContent = CP.t("bk.old"); setTimeout(function () { location.reload(); }, 700); return;
         }
         var r = Store.importObj(o, "merge");
         Promise.resolve(r).then(function (res) {
-          if (!res.ok) { msg.textContent = res.msg; return; }
-          msg.textContent = res.msg + " Ricarico…"; setTimeout(function () { location.reload(); }, 700);
+          if (!res.ok) { msg.textContent = CP.t("bk.unknown"); return; }
+          msg.textContent = CP.t("bk.imported", { n: res.n }); setTimeout(function () { location.reload(); }, 700);
         });
       };
       rd.readAsText(f);

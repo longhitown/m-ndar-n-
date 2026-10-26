@@ -171,6 +171,7 @@
   function buildVoiceUI() {
     var body = document.getElementById("vset-body"), sum = document.getElementById("vsum");
     if (!body) return;
+    if (CP.voiceUIOverride && CP.voiceUIOverride(body, sum)) return;   /* corso di italiano: la voce italiana, in cinese */
     if (!synth) {
       body.innerHTML = '<p class="muted small" style="margin:0">Questo browser non ha la sintesi vocale: i pulsanti audio non sono disponibili.</p>';
       if (sum) sum.textContent = "non disponibile";
@@ -295,6 +296,7 @@
       var u = new SpeechSynthesisUtterance(text);
       u.lang = o.lang || (voice ? voice.lang : "zh-CN");
       if (zh && voice) u.voice = voice;
+      else if (!zh && o.voiceURI) { var ov = (synth.getVoices() || []).filter(function (v) { return v.voiceURI === o.voiceURI; })[0]; if (ov) u.voice = ov; }
       u.rate = rate;
       if (o.pitch) u.pitch = o.pitch;
       u.onstart = function () { started = true; clearTimeout(startTimer); };

@@ -20,7 +20,7 @@
   /* ⚙️ → Corso: in tutte e due le lingue, perché lo deve capire chi non legge l'altra */
   (CP.settingsExtras = CP.settingsExtras || []).unshift(function () {
     return '<details class="set-sec" id="set-course"><summary>🎓 Corso · 课程</summary><div class="vbody">' +
-      '<div class="seg" role="group" aria-label="Corso"><button type="button" data-course-set="zh"' + (course === "zh" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇮🇹 Impara il cinese</button>" +
+      '<div class="seg" role="group" aria-label="Corso · 课程"><button type="button" data-course-set="zh"' + (course === "zh" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇮🇹 Impara il cinese · 学中文</button>" +
       '<button type="button" data-course-set="it"' + (course === "it" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇨🇳 学意大利语</button></div>" +
       '<p class="small muted" style="margin:0">Due corsi, progressi separati: passare dall\'uno all\'altro non cancella niente. · 两个课程的学习记录分开保存，切换不会丢失任何内容。</p></div></details>';
   });
@@ -31,6 +31,36 @@
   if (course !== "it") return;
 
   /* ================= da qui: modalità corso di italiano ================= */
+  /* ⚙️ → 语音: la voce italiana (velocità, scelta della voce, prova), poi musica e suono */
+  var IVK = "cp-it-voice";
+  function itVoices() { var s = window.speechSynthesis; return s && s.getVoices ? (s.getVoices() || []).filter(function (v) { return /^it/i.test(v.lang || ""); }) : []; }
+  CP.itVoiceURI = function () { var u = lsGet(IVK) || "", vs = itVoices(); return vs.some(function (v) { return v.voiceURI === u; }) ? u : (vs[0] ? vs[0].voiceURI : ""); };
+  CP.voiceUIOverride = function (body, sum) {
+    var vs = itVoices(), cur = CP.itVoiceURI(), slow = CP.pref.rate !== 1;
+    var h = '<div class="seg" role="group" aria-label="语速"><button type="button" data-rate="0.8"' + (slow ? ' class="on"' : "") + '>🐢 慢</button><button type="button" data-rate="1"' + (!slow ? ' class="on"' : "") + ">🐇 正常</button></div>";
+    if (vs.length > 1) h += '<label class="small muted" for="it-voice-sel" style="display:grid;gap:4px;font-weight:600">意大利语语音<select id="it-voice-sel">' + vs.map(function (v) { return '<option value="' + CP.attr(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join("") + "</select></label>";
+    else h += '<p class="small muted" style="margin:0">' + (vs.length ? "意大利语语音：" + esc(vs[0].name) + "。" : "设备没有列出意大利语语音：会尝试用默认语音朗读（it-IT）。如果听不到，请在手机设置的「文字转语音」里安装意大利语。") + "</p>";
+    h += (window.__mdVoiceHelp ? window.__mdVoiceHelp("it-IT") : "") +
+      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (CP.pref.sfx ? " checked" : "") + '> 点击音效</label>' +
+      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (CP.pref.haptics ? " checked" : "") + '> 振动</label>' +
+      (CP.voiceExtra ? CP.voiceExtra() : "") +
+      '<button type="button" class="btn-main" id="it-voice-test" style="margin-top:4px">试听：Ciao! Come stai?</button>';
+    body.innerHTML = h;
+    if (sum) sum.textContent = slow ? "🐢 慢" : "🐇 正常";
+    return true;
+  };
+  (function () { var vb = document.getElementById("vset-body"); if (vb) CP.voiceUIOverride(vb, document.getElementById("vsum")); })();
+  document.addEventListener("change", function (e) { if (e.target && e.target.id === "it-voice-sel") { lsSet(IVK, e.target.value); CP.sfx("tap"); } });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("#it-voice-test") : null;
+    if (b) CP.speak("Ciao! Come stai?", { lang: "it-IT", el: b, voiceURI: CP.itVoiceURI() });
+  });
+  /* il «cammino» in alto porterebbe al Percorso del corso di cinese: qui porta al ripasso */
+  var pillEl = document.getElementById("game-pill");
+  if (pillEl) pillEl.addEventListener("click", function (e) { e.stopImmediatePropagation(); CP.itShow("review"); }, true);
+  /* ⚙️ → 使用说明 */
+  var about = document.querySelector("#set-about .lede");
+  if (about) about.innerHTML = "给说中文的人学意大利语：" + "<b>" + ITLESSONS.length + " 课语法</b>、常用词、动词变位和中意对照的句子。每个意大利语词都可以听发音，复习间隔由 FSRS 算法安排。所有内容都可以离线使用。";
   var Z = {
     lessons: "课程", words: "单词", review: "复习", conj: "变位", phrases: "句子",
     listen: "听", back: "← 返回", start: "开始", next: "下一题", result: "看结果", right: "答对了！", wrong: "不对。", answerIs: "正确答案：",
@@ -290,7 +320,7 @@
   view.addEventListener("input", function (e) { if (e.target.id === "it-q") { wq = e.target.value; var g = {}, o = []; var q = wq.trim().toLowerCase(); LEX.forEach(function (x) { if (q && (x.it + " " + x.zh + " " + x.py).toLowerCase().indexOf(q) < 0) return; var t = TOPIC[x.sec] || "其他"; if (!g[t]) { g[t] = []; o.push(t); } g[t].push(x); }); document.getElementById("it-wl").innerHTML = wordList(g, o); } });
   document.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("[data-it-say]") : null;
-    if (t) { CP.speak(t.getAttribute("data-it-say"), { lang: "it-IT", el: t }); }
+    if (t) { CP.speak(t.getAttribute("data-it-say"), { lang: "it-IT", el: t, voiceURI: CP.itVoiceURI() }); }
   });
   view.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.hasAttribute("data-it-say")) return;

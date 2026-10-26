@@ -7,9 +7,8 @@
     var p = document.getElementById("set-mic"), b = document.getElementById("set-mic-close"); if (!p) return;
     var info = CP.micInfo ? CP.micInfo() : { live: false };
     CP.micState().then(function (st) {
-      var perm = { granted: "permesso dato", denied: "bloccato: consentilo dalle impostazioni del browser", prompt: "lo chiedo la prima volta che serve" }[st] || "stato del permesso sconosciuto";
-      p.textContent = "Microfono: " + perm + ". " + (info.live ? "Adesso è aperto (si chiude da solo dopo 45 secondi di inattività)." : "Adesso è chiuso.") +
-        (CP.canListen() ? " Riconoscimento vocale presente (serve internet)." : " Riconoscimento vocale assente: il 🎤 registra e confronta.");
+      var perm = CP.t({ granted: "mic.granted", denied: "mic.denied", prompt: "mic.prompt" }[st] || "mic.unknown");
+      p.textContent = CP.t("mic.line", { p: perm, o: CP.t(info.live ? "mic.open" : "mic.closed") }) + CP.t(CP.canListen() ? "mic.sr" : "mic.nosr");
       if (b) b.disabled = !info.live;
     });
   }
@@ -46,8 +45,8 @@
     if (b.hasAttribute("data-set-close")) close();
     else if (b.hasAttribute("data-audio-set")) { CP.setAudioMode(b.getAttribute("data-audio-set")); paint(); }
     else if (b.id === "set-music") { close(); if (CP.jukeboxOpen) CP.jukeboxOpen(); }
-    else if (b.id === "set-mic-close") { if (CP.micClose) CP.micClose(); CP.toast("Microfono chiuso."); paintMic(); }
-    else if (b.id === "set-bk-down") { Store.backup().then(function (n) { document.getElementById("set-bk-msg").textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; }); }
+    else if (b.id === "set-mic-close") { if (CP.micClose) CP.micClose(); CP.toast(CP.t("mic.closedToast")); paintMic(); }
+    else if (b.id === "set-bk-down") { Store.backup().then(function (n) { document.getElementById("set-bk-msg").textContent = CP.t("bk.done", { n: n }); }); }
     else if (b.id === "set-bk-up") document.getElementById("set-bk-file").click();
     else if (b.id === "set-welcome") { close(); if (CP.welcome) CP.welcome(true); }
     else if (b.id === "set-selftest") { close(); location.hash = "#selftest"; }
