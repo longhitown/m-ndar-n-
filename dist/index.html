@@ -12731,6 +12731,566 @@ LESSONS.push({
 });
 </script>
 <script>
+/* ---- data/lessons/16-ba.js ---- */
+/* Lezione 16 · Che cosa fai a una cosa: 把. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "ba",
+  "n": 16,
+  "path": "hsk2_verbi_1",
+  "title": "Che cosa fai a una cosa: 把",
+  "goal": "Dire dove metti una cosa, che cosa ci fai e come la lasci.",
+  "body": [
+    "Quando conta **che cosa succede all'oggetto**, il cinese lo porta prima del verbo con 把 (bǎ): **chi + 把 + cosa + verbo + risultato**. 我把书放在桌子上 = metto il libro sul tavolo.",
+    "Dopo il verbo deve esserci **qualcosa in più**: dove va la cosa (放在桌子上), come finisce (喝完了, 关上), a chi va (给我). Un verbo da solo non basta: 我把书看 è sbagliato.",
+    "La cosa dopo 把 è **una cosa precisa**, che tutti e due sapete: il libro, la porta, quel caffè. Non si dice 我把一本书… quando il libro è uno qualunque.",
+    "La negazione e i verbi modali vanno **prima di 把**: 我没把门关上 = non ho chiuso la porta; 你要把作业做完 = devi finire i compiti.",
+    "In italiano basta l'ordine normale («metto il libro sul tavolo»); in cinese 把 serve proprio a dire «e il libro finisce lì»."
+  ],
+  "pattern": ["chi", "把", "cosa", "verbo", "risultato"],
+  "ex": [
+    ["我把书放在桌子上了。", "Ho messo il libro sul tavolo."],
+    ["请把门关上。", "Per favore, chiudi la porta."],
+    ["他把咖啡喝完了。", "Ha finito il caffè."],
+    ["你把手机给我。", "Dammi il telefono."],
+    ["我没把作业做完。", "Non ho finito i compiti."],
+    ["请把窗户打开。", "Per favore, apri la finestra."]
+  ],
+  "traps": [
+    ["我把书看。", "我把书看完了。", "Con 把 il verbo da solo non basta: serve un risultato (看完)."],
+    ["我把门没关上。", "我没把门关上。", "La negazione va prima di 把."],
+    ["我放书在桌子上。", "我把书放在桌子上。", "Per dire dove metti una cosa si usa 把 + cosa + 放在 + luogo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "请把门关上", "it": "Per favore, chiudi la porta."},
+    {"k": "pick", "q": "Come si dice «Ho messo il telefono sul tavolo»?", "opts": ["我把手机放在桌子上了。", "我放手机在桌子上了。", "我把手机放了。"], "a": 0},
+    {"k": "pick", "q": "Dove va 没 in «Non ho finito i compiti»?", "opts": ["我没把作业做完。", "我把作业没做完。", "我把没作业做完。"], "a": 0, "why": "Negazione e modali stanno prima di 把."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "他把咖啡喝完了。", "opts": ["Ha finito il caffè.", "Ha comprato un caffè.", "Non ha bevuto il caffè."], "a": 0},
+    {"k": "order", "zh": "我把书放在桌子上了", "it": "Ho messo il libro sul tavolo."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/17-bei.js ---- */
+/* Lezione 17 · Il passivo: 被. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "bei",
+  "n": 17,
+  "path": "hsk3_gram",
+  "title": "Il passivo: 被",
+  "goal": "Raccontare che cosa ti è successo: rubato, rotto, mangiato da qualcun altro.",
+  "body": [
+    "被 (bèi) mette al centro **chi subisce**: **cosa + 被 + chi lo fa + verbo + risultato**. 我的手机被偷了 = mi hanno rubato il telefono.",
+    "Chi fa l'azione si può dire o no: 蛋糕被弟弟吃了 = la torta l'ha mangiata mio fratello; 我的钱包被偷了 = mi hanno rubato il portafoglio (non si sa chi).",
+    "Come con 把, dopo il verbo serve **qualcosa in più**: di solito 了 o un risultato (打破了, 吃完了).",
+    "被 si usa soprattutto per **cose spiacevoli**: rubare, rompere, criticare. Per le cose belle il cinese preferisce la frase normale.",
+    "La negazione va prima di 被: 我的自行车没被偷 = la mia bici non è stata rubata."
+  ],
+  "pattern": ["cosa", "被", "chi", "verbo", "了"],
+  "ex": [
+    ["我的手机被偷了。", "Mi hanno rubato il telefono."],
+    ["蛋糕被弟弟吃了。", "La torta l'ha mangiata mio fratello."],
+    ["杯子被他打破了。", "Il bicchiere l'ha rotto lui."],
+    ["我的钱包被偷了。", "Mi hanno rubato il portafoglio."],
+    ["他被老师批评了。", "È stato rimproverato dall'insegnante."],
+    ["我的自行车没被偷。", "La mia bici non è stata rubata."]
+  ],
+  "traps": [
+    ["我的手机被偷。", "我的手机被偷了。", "Dopo il verbo serve 了 o un risultato."],
+    ["我的自行车被没偷。", "我的自行车没被偷。", "La negazione va prima di 被."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我的手机被偷了", "it": "Mi hanno rubato il telefono."},
+    {"k": "pick", "q": "Come si dice «La torta l'ha mangiata mio fratello»?", "opts": ["蛋糕被弟弟吃了。", "弟弟被蛋糕吃了。", "蛋糕被吃弟弟了。"], "a": 0, "why": "Prima chi subisce (la torta), poi 被 + chi fa."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "杯子被他打破了。", "opts": ["Il bicchiere l'ha rotto lui.", "Lui ha comprato un bicchiere.", "Il bicchiere è caduto da solo."], "a": 0},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["我的自行车没被偷。", "我的自行车被没偷。", "我的自行车被偷没。"], "a": 0},
+    {"k": "order", "zh": "他被老师批评了", "it": "È stato rimproverato dall'insegnante."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/18-risultato.js ---- */
+/* Lezione 18 · Il risultato dell'azione: 完, 懂, 见, 到, 错, 好. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "risultato",
+  "n": 18,
+  "path": "hsk2_verbi_2",
+  "title": "Il risultato: 看完, 听懂, 找到",
+  "goal": "Dire non solo che cosa hai fatto, ma come è andata a finire.",
+  "body": [
+    "In cinese il verbo dice l'azione, e **una seconda parola subito dopo dice il risultato**: 听 (ascoltare) + 懂 (capire) = 听懂, capire ascoltando.",
+    "I risultati più usati: **完** (finito: 吃完, 做完), **懂** (capito: 听懂, 看懂), **见** e **到** (percepito, raggiunto: 看见, 听到, 找到, 买到), **错** (sbagliato: 写错), **好** (fatto bene, pronto: 准备好).",
+    "Al passato si aggiunge 了: 我听懂了 = ho capito. Al negativo si usa **没** e **niente 了**: 我没听懂 = non ho capito.",
+    "La differenza con l'italiano: «ho cercato» (找了) non vuol dire che l'hai trovato; «l'ho trovato» è 找到了. «Ho ascoltato» (听了) non vuol dire che hai capito: 听懂了."
+  ],
+  "pattern": ["verbo", "risultato", "了"],
+  "ex": [
+    ["我听懂了。", "Ho capito (ascoltando)."],
+    ["我没听懂。", "Non ho capito."],
+    ["我吃完饭了。", "Ho finito di mangiare."],
+    ["你看见我的手机了吗？", "Hai visto il mio telefono?"],
+    ["我找到我的钥匙了。", "Ho trovato le mie chiavi."],
+    ["我写错了一个字。", "Ho sbagliato un carattere."],
+    ["我买到票了。", "Sono riuscito a comprare il biglietto."]
+  ],
+  "traps": [
+    ["我没听懂了。", "我没听懂。", "Con 没 non si mette 了."],
+    ["我找了我的钥匙。", "我找到我的钥匙了。", "找了 = ho cercato; per «ho trovato» serve il risultato 到."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我没听懂", "it": "Non ho capito."},
+    {"k": "pick", "q": "Come si dice «Ho trovato le chiavi»?", "opts": ["我找到钥匙了。", "我找钥匙了。", "我没找到钥匙。"], "a": 0, "why": "找 = cercare, 找到 = trovare."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我写错了一个字。", "opts": ["Ho sbagliato un carattere.", "Ho scritto un carattere.", "Non so scrivere questo carattere."], "a": 0},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["我没吃完。", "我没吃完了。", "我不吃完了。"], "a": 0},
+    {"k": "order", "zh": "你看见我的手机了吗", "it": "Hai visto il mio telefono?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/19-direzione.js ---- */
+/* Lezione 19 · Verso chi parla o lontano: 来 e 去 dopo il verbo. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "direzione",
+  "n": 19,
+  "path": "hsk1_verbi",
+  "title": "Di qua o di là: 进来, 出去, 回来",
+  "goal": "Dire entra, esci, torna, sali e scendi, dal punto di vista giusto.",
+  "body": [
+    "Dopo un verbo di movimento il cinese aggiunge **来** se il movimento viene **verso chi parla**, **去** se va **lontano da chi parla**.",
+    "进来 = entra (qui dove sono io); 进去 = entra (là). 出来 = esci (verso di me); 出去 = esci (via di qui). 回来 = torna qui; 回去 = torna là.",
+    "Lo stesso con 上 e 下: 上来 = sali (dove sono io), 下去 = scendi (via da me). Se sei al piano di sopra e chiami un amico: 你上来吧!",
+    "Il luogo va **prima di 来 / 去**: 他回家去了 = è tornato a casa; 请进房间来 = entra nella stanza.",
+    "L'italiano non distingue: «entra!» va bene sempre. In cinese chi parla dalla stanza dice 进来, chi sta fuori e indica la porta dice 进去."
+  ],
+  "pattern": ["verbo", "luogo", "来 / 去"],
+  "ex": [
+    ["请进来。", "Entra, prego (qui da me)."],
+    ["我们出去吧。", "Usciamo."],
+    ["他回家去了。", "È tornato a casa."],
+    ["你什么时候回来？", "Quando torni?"],
+    ["你上来吧！", "Sali (qui da me)!"],
+    ["老师进教室来了。", "L'insegnante è entrato in aula."]
+  ],
+  "traps": [
+    ["他回去家了。", "他回家去了。", "Il luogo va tra il verbo e 去."],
+    ["你什么时候回去？", "你什么时候回来？", "Se aspetti l'altro qui, è 回来 (verso di te)."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Sei in casa e qualcuno bussa. Che cosa dici?", "opts": ["请进来。", "请进去。", "请出来。"], "a": 0, "why": "Entra verso di te: 来."},
+    {"k": "pick", "q": "Sei al piano di sopra e chiami un amico che è giù. Che cosa dici?", "opts": ["你上来吧！", "你上去吧！", "你下来吧！"], "a": 0},
+    {"k": "order", "zh": "他回家去了", "it": "È tornato a casa."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我们出去吧。", "opts": ["Usciamo.", "Entriamo.", "Torniamo."], "a": 0},
+    {"k": "order", "zh": "你什么时候回来", "it": "Quando torni?"}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/20-direzione2.js ---- */
+/* Lezione 20 · Direzione composta: 拿出来, 站起来, 想起来. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "direzione2",
+  "n": 20,
+  "path": "hsk2_verbi_3",
+  "title": "Tirare fuori, alzarsi, ricordarsi: 出来, 起来",
+  "goal": "Usare le direzioni dopo un altro verbo, anche in senso figurato.",
+  "body": [
+    "Le direzioni della lezione precedente si attaccano anche **dopo altri verbi**: 拿 (prendere) + 出来 = 拿出来, tirare fuori; 站 (stare in piedi) + 起来 = 站起来, alzarsi in piedi.",
+    "Se c'è un oggetto, spesso va **tra le due parti**: 拿出手机来 = tira fuori il telefono. Con 把 diventa più semplice: 把手机拿出来.",
+    "Molte di queste forme hanno un **senso figurato** da imparare come parole: **想起来** = ricordarsi (il pensiero «sale» alla mente); **看起来** = sembrare (a guardarlo); **…下去** = continuare (说下去 = continua a parlare).",
+    "起来 dopo un aggettivo vuol dire **cominciare a**: 天气热起来了 = comincia a fare caldo."
+  ],
+  "pattern": ["verbo", "出 / 起 / 下", "来 / 去"],
+  "ex": [
+    ["她把书拿出来了。", "Ha tirato fuori il libro."],
+    ["请站起来。", "Alzatevi, per favore."],
+    ["我想起来了！", "Mi sono ricordato!"],
+    ["他看起来很累。", "Sembra molto stanco."],
+    ["你说下去。", "Continua (a parlare)."],
+    ["天气热起来了。", "Comincia a fare caldo."]
+  ],
+  "traps": [
+    ["他看来起很累。", "他看起来很累。", "看起来 è un blocco unico: 看 + 起来."],
+    ["我想来起了。", "我想起来了。", "Ricordarsi = 想起来."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Come si dice «Mi sono ricordato!»?", "opts": ["我想起来了！", "我想出来了！", "我想下去了！"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "他看起来很累。", "opts": ["Sembra molto stanco.", "Guarda una persona stanca.", "Si è stancato di guardare."], "a": 0},
+    {"k": "order", "zh": "她把书拿出来了", "it": "Ha tirato fuori il libro."},
+    {"k": "pick", "q": "Come si dice «Comincia a fare caldo»?", "opts": ["天气热起来了。", "天气热下去了。", "天气热出来了。"], "a": 0, "why": "Aggettivo + 起来 = cominciare a."},
+    {"k": "order", "zh": "请站起来", "it": "Alzatevi, per favore."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/21-grado.js ---- */
+/* Lezione 21 · Come lo fai: 得. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "grado",
+  "n": 21,
+  "path": "hsk2_gram_1",
+  "title": "Come lo fai: 说得很好",
+  "goal": "Dire come qualcuno fa una cosa: bene, in fretta, tardi.",
+  "body": [
+    "Per dire **come** si fa un'azione: **verbo + 得 (de) + giudizio**. 他说得很好 = parla bene; 你跑得很快 = corri veloce.",
+    "Il giudizio è un aggettivo, di solito con 很, 非常, 太 o 不: 我睡得不好 = ho dormito male.",
+    "Se c'è un oggetto, **il verbo si ripete** (oppure l'oggetto va prima): 他说中文说得很好 = 他中文说得很好 = parla bene il cinese. Non si dice 他说中文得很好.",
+    "Attenzione: in italiano l'avverbio sta dopo il verbo («parla bene»). In cinese anche, ma con 得 in mezzo: senza 得 la frase non regge."
+  ],
+  "pattern": ["chi", "verbo", "得", "come"],
+  "ex": [
+    ["他说得很好。", "Parla bene."],
+    ["你跑得很快。", "Corri veloce."],
+    ["我昨天睡得不好。", "Ieri ho dormito male."],
+    ["他中文说得很好。", "Parla bene il cinese."],
+    ["她唱歌唱得非常好。", "Canta benissimo."],
+    ["你来得太晚了。", "Sei arrivato troppo tardi."]
+  ],
+  "traps": [
+    ["他说中文得很好。", "他说中文说得很好。", "Con l'oggetto il verbo si ripete prima di 得."],
+    ["他说很好。", "他说得很好。", "Per dire come si fa una cosa serve 得."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "你跑得很快", "it": "Corri veloce."},
+    {"k": "pick", "q": "Come si dice «Parla bene il cinese»?", "opts": ["他中文说得很好。", "他说中文得很好。", "他说得中文很好。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我昨天睡得不好。", "opts": ["Ieri ho dormito male.", "Ieri non ho dormito.", "Ieri sono andato a letto tardi."], "a": 0},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["她唱歌唱得非常好。", "她唱歌得非常好。", "她唱得歌非常好。"], "a": 0},
+    {"k": "order", "zh": "你来得太晚了", "it": "Sei arrivato troppo tardi."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/22-potenziale.js ---- */
+/* Lezione 22 · Ce la fai o no: 听得懂, 买不到. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "potenziale",
+  "n": 22,
+  "path": "hsk3_verbi_1",
+  "title": "Ce la fai o no: 听得懂 / 听不懂",
+  "goal": "Dire se riesci o non riesci a fare una cosa: capire, finire, trovare.",
+  "body": [
+    "Mettendo **得** o **不** in mezzo a un verbo con risultato si dice se **è possibile** arrivare a quel risultato: 听懂 → 听得懂 (riesco a capire), 听不懂 (non riesco a capire).",
+    "È il modo più naturale per dire «non ci riesco» per un limite pratico: 我吃不完 = non riesco a finirlo (è troppo); 票买不到 = i biglietti non si trovano.",
+    "La domanda si fa con le due forme insieme: 你听得懂听不懂? oppure 你听得懂吗? = riesci a capire?",
+    "Differenza con 不会 e 不能: 我不会说中文 = non so il cinese (non l'ho imparato); 我听不懂 = ascolto ma non capisco; 我不能去 = non posso andare (non mi è permesso o ho un impegno)."
+  ],
+  "pattern": ["verbo", "得 / 不", "risultato"],
+  "ex": [
+    ["我听得懂。", "Riesco a capire."],
+    ["我听不懂。", "Non capisco (ascoltando)."],
+    ["太多了，我吃不完。", "È troppo, non riesco a finirlo."],
+    ["你看得见吗？", "Riesci a vedere?"],
+    ["我找不到我的手机。", "Non riesco a trovare il mio telefono."],
+    ["票买不到了。", "I biglietti non si trovano più."]
+  ],
+  "traps": [
+    ["我不听懂。", "我听不懂。", "Per «non riesco a capire» 不 va in mezzo: 听不懂."],
+    ["我不会听懂。", "我听不懂。", "不会 = non so fare; qui il problema è riuscire a capire."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Ascolti un cinese che parla velocissimo. Che cosa dici?", "opts": ["我听不懂。", "我不听懂。", "我没听。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "太多了，我吃不完。", "opts": ["È troppo, non riesco a finirlo.", "Non mi piace, non lo mangio.", "Ho già finito."], "a": 0},
+    {"k": "order", "zh": "我找不到我的手机", "it": "Non riesco a trovare il mio telefono."},
+    {"k": "pick", "q": "Come si dice «Riesci a vedere?»", "opts": ["你看得见吗？", "你看见得吗？", "你得看见吗？"], "a": 0},
+    {"k": "order", "zh": "我听得懂", "it": "Riesco a capire."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/23-zhe.js ---- */
+/* Lezione 23 · Uno stato che dura: 着. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "zhe",
+  "n": 23,
+  "path": "hsk3_verbi_2",
+  "title": "Uno stato che dura: 着",
+  "goal": "Descrivere come stanno le cose: la porta aperta, qualcuno seduto, fare due cose insieme.",
+  "body": [
+    "着 (zhe) dopo un verbo dice che **lo stato continua**: 门开着 = la porta è aperta (ed è rimasta così); 他坐着 = sta seduto.",
+    "Serve per **descrivere una scena**: 桌子上放着一本书 = sul tavolo c'è un libro (appoggiato). Il luogo va all'inizio, poi verbo + 着 + che cosa.",
+    "**Verbo 1 + 着 + verbo 2** = fare la seconda cosa nel modo della prima: 他笑着说 = dice sorridendo; 我们走着去吧 = andiamo a piedi.",
+    "Differenza con 正在: 正在 guarda l'azione **in corso** (他正在开门 = sta aprendo la porta); 着 guarda lo **stato** che ne risulta (门开着 = la porta è aperta).",
+    "La negazione è 没: 门没开着 = la porta non è aperta."
+  ],
+  "pattern": ["chi / luogo", "verbo", "着"],
+  "ex": [
+    ["门开着。", "La porta è aperta."],
+    ["他在那边坐着。", "È seduto là."],
+    ["桌子上放着一本书。", "Sul tavolo c'è un libro."],
+    ["他笑着说：「没关系。」", "Dice sorridendo: «Non fa niente.»"],
+    ["我们走着去吧。", "Andiamo a piedi."],
+    ["门没开着。", "La porta non è aperta."]
+  ],
+  "traps": [
+    ["门开了着。", "门开着。", "着 e 了 non vanno insieme sullo stesso verbo."],
+    ["门不开着。", "门没开着。", "La negazione di 着 è 没."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "桌子上放着一本书", "it": "Sul tavolo c'è un libro."},
+    {"k": "pick", "q": "Come si dice «La porta è aperta»?", "opts": ["门开着。", "门开了着。", "门正在开。"], "a": 0, "why": "È uno stato che dura: 着."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "他笑着说。", "opts": ["Dice sorridendo.", "Ride e poi parla.", "Ha smesso di ridere."], "a": 0},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["门没开着。", "门不开着。", "门开着没。"], "a": 0},
+    {"k": "order", "zh": "我们走着去吧", "it": "Andiamo a piedi."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/24-incorso.js ---- */
+/* Lezione 24 · Sto facendo: 正在 … 呢. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "incorso",
+  "n": 24,
+  "path": "hsk1_utili",
+  "title": "Sto facendo: 正在 … 呢",
+  "goal": "Dire che cosa stai facendo proprio adesso, o che cosa facevi in quel momento.",
+  "body": [
+    "Per un'azione **in corso** si mette **正在** (o solo **在**) prima del verbo: 我正在吃饭 = sto mangiando.",
+    "Spesso alla fine si aggiunge **呢**, che dà il tono di «proprio adesso»: 我在吃饭呢. Nel parlato basta anche solo 呢: 他睡觉呢 = sta dormendo.",
+    "Il tempo non cambia la forma: 昨天你给我打电话的时候，我正在洗澡 = quando ieri mi hai telefonato, stavo facendo la doccia.",
+    "Al negativo si dice semplicemente **没在** o **没**: 我没在看电视 = non sto guardando la TV.",
+    "Attenzione al doppio 在: 他在家 = è a casa (verbo «essere in»); 他在吃饭 = sta mangiando. Si possono anche unire: 他在家吃饭 = mangia a casa."
+  ],
+  "pattern": ["chi", "正在 / 在", "verbo", "呢"],
+  "ex": [
+    ["我正在吃饭。", "Sto mangiando."],
+    ["他睡觉呢。", "Sta dormendo."],
+    ["你在做什么呢？", "Che cosa stai facendo?"],
+    ["我在学中文呢。", "Sto studiando cinese."],
+    ["我没在看电视。", "Non sto guardando la TV."],
+    ["妈妈在做饭呢。", "La mamma sta cucinando."]
+  ],
+  "traps": [
+    ["我正在吃饭了。", "我正在吃饭。", "In corso: niente 了 (了 dice che è finita)."],
+    ["我不在看电视。", "我没在看电视。", "La negazione dell'azione in corso è 没在."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "你在做什么呢", "it": "Che cosa stai facendo?"},
+    {"k": "pick", "q": "Come si dice «Sta dormendo»?", "opts": ["他睡觉呢。", "他睡觉了。", "他不睡觉。"], "a": 0},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["我没在看电视。", "我不在看电视了。", "我正在没看电视。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "妈妈在做饭呢。", "opts": ["La mamma sta cucinando.", "La mamma ha cucinato.", "La mamma è a casa."], "a": 0},
+    {"k": "order", "zh": "我正在吃饭", "it": "Sto mangiando."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/25-connettivi.js ---- */
+/* Lezione 25 · Perché e anche se: 因为…所以, 虽然…但是. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "connettivi",
+  "n": 25,
+  "path": "hsk2_gram_2",
+  "title": "Perché e anche se: 因为…所以, 虽然…但是",
+  "goal": "Collegare due frasi: la causa e la conseguenza, il contrasto.",
+  "body": [
+    "Il cinese ama le **coppie di parole**: una apre la prima frase, l'altra apre la seconda. **因为… 所以…** = perché…, quindi…: 因为下雨，所以我没去 = siccome pioveva, non sono andato.",
+    "**虽然… 但是…** = anche se…, però…: 虽然很贵，但是很好吃 = è caro, però è buonissimo. In italiano «anche se… però» suona doppio; in cinese è normale, anzi il 但是 è quasi obbligatorio.",
+    "Si può tenere solo una delle due: 因为我很累，我想休息 oppure 我很累，所以想休息. Con 虽然 il secondo pezzo (但是 o 可是) resta quasi sempre.",
+    "L'ordine è: **prima la causa, poi l'effetto**; prima la concessione, poi il «però». La forma italiana «non sono andato perché pioveva» in cinese si gira."
+  ],
+  "pattern": ["因为 / 虽然", "…，", "所以 / 但是", "…"],
+  "ex": [
+    ["因为下雨，所以我没去。", "Siccome pioveva, non sono andato."],
+    ["虽然很贵，但是很好吃。", "È caro, però è buonissimo."],
+    ["因为我很累，所以想休息。", "Siccome sono stanco, voglio riposare."],
+    ["虽然他很忙，但是每天学中文。", "Anche se è molto impegnato, studia cinese ogni giorno."],
+    ["我今天不去，因为我有事。", "Oggi non vado, perché ho un impegno."]
+  ],
+  "traps": [
+    ["虽然很贵，所以很好吃。", "虽然很贵，但是很好吃。", "虽然 va con 但是 (o 可是), non con 所以."],
+    ["所以下雨，因为我没去。", "因为下雨，所以我没去。", "Prima la causa (因为), poi la conseguenza (所以)."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Come si dice «È caro, però è buono»?", "opts": ["虽然很贵，但是很好吃。", "因为很贵，所以很好吃。", "虽然很贵，所以很好吃。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "因为下雨，所以我没去。", "opts": ["Siccome pioveva, non sono andato.", "Anche se pioveva, sono andato.", "Se piove, non vado."], "a": 0},
+    {"k": "order", "zh": "因为我很累所以想休息", "it": "Siccome sono stanco, voglio riposare."},
+    {"k": "pick", "q": "Quale parola completa? 虽然他很忙，___每天学中文。", "opts": ["但是", "所以", "因为"], "a": 0},
+    {"k": "order", "zh": "虽然很贵但是很好吃", "it": "È caro, però è buonissimo."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/26-condizioni.js ---- */
+/* Lezione 26 · Se, basta che, solo se: 如果…就, 只要…就, 只有…才. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "condizioni",
+  "n": 26,
+  "path": "hsk3_agg_1",
+  "title": "Se, basta che, solo se: 如果…就",
+  "goal": "Fare ipotesi e porre condizioni.",
+  "body": [
+    "**如果… 就…** = se…, allora…: 如果明天下雨，我就不去了 = se domani piove, non vado. 就 va **dopo il soggetto** della seconda frase, prima del verbo.",
+    "Nel parlato al posto di 如果 si usa spesso **要是**, oppure si chiude la condizione con **的话**: 下雨的话，我就不去了.",
+    "**只要… 就…** = basta che…: 只要你努力，就能学好 = basta che ti impegni e lo impari bene. La condizione è **sufficiente**.",
+    "**只有… 才…** = solo se…: 只有多练习，才能说得好 = solo esercitandoti tanto parlerai bene. La condizione è **necessaria**: senza, niente.",
+    "Attenzione all'ordine: 我就不去, mai 就我不去."
+  ],
+  "pattern": ["如果 / 只要 / 只有", "…，", "chi", "就 / 才", "…"],
+  "ex": [
+    ["如果明天下雨，我就不去了。", "Se domani piove, non vado."],
+    ["下雨的话，我们就在家。", "Se piove, restiamo a casa."],
+    ["只要你努力，就能学好。", "Basta che ti impegni e lo imparerai bene."],
+    ["只有多练习，才能说得好。", "Solo esercitandoti tanto parlerai bene."],
+    ["如果你有时间，就来我家吧。", "Se hai tempo, vieni a casa mia."]
+  ],
+  "traps": [
+    ["如果明天下雨，就我不去了。", "如果明天下雨，我就不去了。", "就 va dopo il soggetto (我就)."],
+    ["只有多练习，就能说得好。", "只有多练习，才能说得好。", "只有 va con 才; 只要 va con 就."]
+  ],
+  "quiz": [
+    {"k": "pick", "q": "Come si dice «Se domani piove, non vado»?", "opts": ["如果明天下雨，我就不去了。", "如果明天下雨，就我不去了。", "明天下雨如果，我不去就。"], "a": 0},
+    {"k": "pick", "q": "Quale parola completa? 只有多练习，___能说得好。", "opts": ["才", "就", "也"], "a": 0, "why": "只有 (solo se) va con 才."},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "只要你努力，就能学好。", "opts": ["Basta che ti impegni e lo imparerai bene.", "Solo se ti impegni lo imparerai.", "Anche se ti impegni non lo imparerai."], "a": 0},
+    {"k": "order", "zh": "下雨的话我们就在家", "it": "Se piove, restiamo a casa."},
+    {"k": "order", "zh": "如果你有时间就来我家吧", "it": "Se hai tempo, vieni a casa mia."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/27-aggiunta.js ---- */
+/* Lezione 27 · Non solo… ma anche, mentre, sia… sia: 不但…而且, 一边…一边, 又…又. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "aggiunta",
+  "n": 27,
+  "path": "hsk2_agg",
+  "title": "Non solo… ma anche: 不但…而且",
+  "goal": "Aggiungere informazioni: due qualità, due azioni insieme.",
+  "body": [
+    "**不但… 而且…** = non solo…, ma anche…: 他不但会说中文，而且会写汉字 = non solo parla cinese, sa anche scrivere i caratteri.",
+    "**一边… 一边…** = fare due cose **nello stesso momento**: 我们一边吃饭一边聊天 = mangiamo e intanto chiacchieriamo. Tutte e due le parti sono verbi.",
+    "**又… 又…** = due **qualità** insieme: 这个苹果又大又甜 = questa mela è grande e dolce. Con 又…又 non serve 很.",
+    "Per due qualità in italiano basta «e»; in cinese 和 non collega gli aggettivi: 又大又甜, non 大和甜."
+  ],
+  "pattern": ["不但 / 一边 / 又", "…", "而且 / 一边 / 又", "…"],
+  "ex": [
+    ["他不但会说中文，而且会写汉字。", "Non solo parla cinese, sa anche scrivere i caratteri."],
+    ["我们一边吃饭一边聊天。", "Mangiamo e intanto chiacchieriamo."],
+    ["这个苹果又大又甜。", "Questa mela è grande e dolce."],
+    ["她一边听音乐一边做作业。", "Fa i compiti ascoltando la musica."],
+    ["这家饭馆又便宜又好吃。", "Questo ristorante è economico e buono."]
+  ],
+  "traps": [
+    ["这个苹果很大和很甜。", "这个苹果又大又甜。", "和 non collega gli aggettivi: si usa 又…又."],
+    ["他不但会说中文，但是会写汉字。", "他不但会说中文，而且会写汉字。", "不但 va con 而且 (o 也)."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "这个苹果又大又甜", "it": "Questa mela è grande e dolce."},
+    {"k": "pick", "q": "Come si dice «Mangiamo e intanto chiacchieriamo»?", "opts": ["我们一边吃饭一边聊天。", "我们又吃饭又聊天了。", "我们吃饭和聊天。"], "a": 0},
+    {"k": "pick", "q": "Quale parola completa? 他不但会说中文，___会写汉字。", "opts": ["而且", "但是", "所以"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "这家饭馆又便宜又好吃。", "opts": ["Questo ristorante è economico e buono.", "Questo ristorante è caro ma buono.", "Questo ristorante non è né economico né buono."], "a": 0},
+    {"k": "order", "zh": "她一边听音乐一边做作业", "it": "Fa i compiti ascoltando la musica."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/28-progressione.js ---- */
+/* Lezione 28 · Sempre più: 越来越, 越…越. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "progressione",
+  "n": 28,
+  "path": "hsk3_agg_2",
+  "title": "Sempre più: 越来越, 越…越",
+  "goal": "Dire che qualcosa cresce col tempo, o che una cosa cresce insieme a un'altra.",
+  "body": [
+    "**越来越 + aggettivo** = sempre più: 天气越来越热 = fa sempre più caldo; 你的中文越来越好了 = il tuo cinese migliora sempre di più.",
+    "**越 A 越 B** = più A, più B: 越快越好 = prima è, meglio è; 他越说越高兴 = più parlava, più era contento.",
+    "Come con il paragone, **niente 很** davanti all'aggettivo: 越来越很热 è sbagliato.",
+    "Spesso alla fine c'è **了**, perché la situazione è cambiata: 人越来越多了 = c'è sempre più gente."
+  ],
+  "pattern": ["chi", "越来越", "aggettivo", "了"],
+  "ex": [
+    ["天气越来越热了。", "Fa sempre più caldo."],
+    ["你的中文越来越好了。", "Il tuo cinese è sempre più bravo."],
+    ["越快越好。", "Prima è, meglio è."],
+    ["人越来越多了。", "C'è sempre più gente."],
+    ["他越说越高兴。", "Più parlava, più era contento."]
+  ],
+  "traps": [
+    ["天气越来越很热。", "天气越来越热。", "Niente 很 dopo 越来越."],
+    ["越好越快。", "越快越好。", "L'ordine conta: «più veloce, meglio è»."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "天气越来越热了", "it": "Fa sempre più caldo."},
+    {"k": "pick", "q": "Come si dice «Prima è, meglio è»?", "opts": ["越快越好。", "越好越快。", "越来越快好。"], "a": 0},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["你的中文越来越好了。", "你的中文越来越很好了。", "你的中文越好越来了。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "他越说越高兴。", "opts": ["Più parlava, più era contento.", "Parla sempre contento.", "È contento di parlare."], "a": 0},
+    {"k": "order", "zh": "人越来越多了", "it": "C'è sempre più gente."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/29-shide.js ---- */
+/* Lezione 29 · Quando, dove, come è successo: 是…的. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "shide",
+  "n": 29,
+  "path": "hsk3_nomi_1",
+  "title": "Quando, dove, come: 是…的",
+  "goal": "Chiedere e dire i dettagli di una cosa già successa: quando, dove, con chi, come.",
+  "body": [
+    "Quando si sa già che una cosa **è successa** e si vuole parlare di un **dettaglio** (quando, dove, come, con chi), si usa **是 … 的**: 我是昨天来的 = sono arrivato **ieri**.",
+    "Il dettaglio va **subito dopo 是**, il verbo prima di 的: 你是怎么来的? — 我是坐飞机来的 = come sei venuto? — In aereo.",
+    "Nel parlato il 是 si può togliere (我昨天来的), il **的 no**.",
+    "Al negativo: **不是…的**: 我不是一个人来的 = non sono venuto da solo.",
+    "Differenza con 了: 我昨天来了 = sono venuto ieri (la notizia è che sono venuto); 我是昨天来的 = che sono venuto si sa, la notizia è **ieri**."
+  ],
+  "pattern": ["chi", "是", "quando / dove / come", "verbo", "的"],
+  "ex": [
+    ["我是昨天来的。", "Sono arrivato ieri."],
+    ["你是怎么来的？", "Come sei venuto?"],
+    ["我是坐飞机来的。", "Sono venuto in aereo."],
+    ["你是在哪儿学的中文？", "Dove hai studiato il cinese?"],
+    ["我不是一个人来的。", "Non sono venuto da solo."],
+    ["他是跟朋友一起去的。", "Ci è andato con un amico."]
+  ],
+  "traps": [
+    ["我是昨天来了。", "我是昨天来的。", "Con 是 per il dettaglio, alla fine va 的, non 了."],
+    ["我是来昨天的。", "我是昨天来的。", "Il dettaglio va subito dopo 是, prima del verbo."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "我是坐飞机来的", "it": "Sono venuto in aereo."},
+    {"k": "pick", "q": "Come si dice «Sono arrivato ieri» (si sa che sei arrivato, conta quando)?", "opts": ["我是昨天来的。", "我是昨天来了。", "我昨天是来。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "我不是一个人来的。", "opts": ["Non sono venuto da solo.", "Non sono una persona che viene.", "Sono venuto da solo."], "a": 0},
+    {"k": "pick", "q": "Quale domanda chiede «come» sei venuto?", "opts": ["你是怎么来的？", "你是什么时候来的？", "你是跟谁来的？"], "a": 0},
+    {"k": "order", "zh": "他是跟朋友一起去的", "it": "Ci è andato con un amico."}
+  ]
+});
+</script>
+<script>
+/* ---- data/lessons/30-enfasi.js ---- */
+/* Lezione 30 · Perfino e tranne: 连…都, 除了…以外. Formato: vedi il commento in cima a 01-essere.js. */
+LESSONS.push({
+  "id": "enfasi",
+  "n": 30,
+  "path": "hsk3_agg_3",
+  "title": "Perfino e tranne: 连…都, 除了…以外",
+  "goal": "Sottolineare una cosa sorprendente e fare eccezioni.",
+  "body": [
+    "**连 … 都 / 也** = perfino: 他连一个汉字都不认识 = non conosce nemmeno un carattere; 这个问题连孩子都知道 = lo sa perfino un bambino.",
+    "La cosa sorprendente va **tra 连 e 都**, il verbo dopo. Con la negazione si usa spesso un numero piccolo: 连一 … 都不 / 也没 = neanche uno.",
+    "**除了 … 以外，都 …** = tranne: 除了他以外，我们都去了 = tranne lui, ci siamo andati tutti.",
+    "**除了 … 以外，还 / 也 …** = oltre a: 除了中文以外，我还学英语 = oltre al cinese, studio anche l'inglese. La parola dopo (都 o 还) decide il senso: escludere o aggiungere.",
+    "以外 si può togliere: 除了他，我们都去了."
+  ],
+  "pattern": ["连", "…", "都 / 也", "verbo"],
+  "ex": [
+    ["他连一个汉字都不认识。", "Non conosce nemmeno un carattere."],
+    ["这个问题连孩子都知道。", "Questa cosa la sa perfino un bambino."],
+    ["除了他以外，我们都去了。", "Tranne lui, ci siamo andati tutti."],
+    ["除了中文以外，我还学英语。", "Oltre al cinese, studio anche l'inglese."],
+    ["我忙得连饭都没吃。", "Ero così occupato che non ho nemmeno mangiato."]
+  ],
+  "traps": [
+    ["他连一个汉字不认识。", "他连一个汉字都不认识。", "连 vuole 都 (o 也) prima del verbo."],
+    ["除了他以外，我们还去了。", "除了他以外，我们都去了。", "Per escludere (tranne) si usa 都; 还 vuol dire «oltre a»."]
+  ],
+  "quiz": [
+    {"k": "order", "zh": "他连一个汉字都不认识", "it": "Non conosce nemmeno un carattere."},
+    {"k": "pick", "q": "Come si dice «Tranne lui, ci siamo andati tutti»?", "opts": ["除了他以外，我们都去了。", "除了他以外，我们还去了。", "连他以外，我们都去了。"], "a": 0},
+    {"k": "pick", "q": "Che cosa vuol dire?", "zh": "除了中文以外，我还学英语。", "opts": ["Oltre al cinese, studio anche l'inglese.", "Tranne il cinese, studio l'inglese.", "Studio solo il cinese."], "a": 0, "why": "除了…还 = oltre a."},
+    {"k": "pick", "q": "Quale frase è giusta?", "opts": ["这个问题连孩子都知道。", "这个问题连孩子知道。", "这个问题孩子连都知道。"], "a": 0},
+    {"k": "order", "zh": "除了他以外我们都去了", "it": "Tranne lui, ci siamo andati tutti."}
+  ]
+});
+</script>
+<script>
 /* ---- data/it/lessons/01-pronuncia.js ---- */
 /* Corso di italiano per chi parla cinese · lezione 1 · 发音：怎么写就怎么读.
    Formato: come src/data/lessons (vedi 01-essere.js), ma al contrario: spiegazioni in cinese, ex = [italiano, cinese],
@@ -13921,8 +14481,8 @@ var MDSegment = (function () {
     /* una parola che non è nella lista di frequenza (spesso una frase fatta come 你好 o 这个) vale quanto il suo
        carattere meno comune: non deve perdere contro i suoi stessi pezzi */
     function est(w) { var r = 0; Array.from(w).forEach(function (c) { r = Math.max(r, RANK[c] || RARE); }); return r; }
-    /* composti che nelle frasi sono più spesso due parole: 只要 «basta che» ma 我只要一杯水 = 只|要; 个人 ma 这个人 = 这个|人 */
-    var WEAK = { "只要": 3.5, "只有": 2, "还有": 2, "有时": 2, "从中": 2, "个人": 2 };
+    /* composti che nelle frasi sono più spesso due parole: 才能 «talento» ma 只有…才能… = 才|能; 个人 ma 这个人 = 这个|人 */
+    var WEAK = { "才能": 3, "只有": 2, "还有": 2, "有时": 2, "从中": 2, "个人": 2 };
     /* caratteri che oggi vivono quasi sempre dentro parole composte: da soli costano di più (中文|学 e non 中|文学) */
     var BOUND = { "中": 1.5, "国": 1.5, "文": 1.5, "时": 1.5, "间": 1.5, "日": 1, "语": 1.5 };
     function cost(w) { return Math.log((RANK[w] || est(w)) + 20) + TOK + (WEAK[w] || 0) + (BOUND[w] || 0); }
@@ -14969,12 +15529,38 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     do { t = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && t === prev);
     return t;
   }
-  function example(hz) {
-    for (var g = 0; g < PHRASES.length; g++) for (var i = 0; i < PHRASES[g].items.length; i++) {
-      if (PHRASES[g].items[i][1].indexOf(hz) >= 0) return PHRASES[g].items[i];
-    }
-    return null;
+  /* frase d'esempio per una parola nuova: la più corta tra tutte le frasi dell'app (frasi, dialoghi, lezioni, frasi
+     verificate) in cui la parola compare davvero come parola (taglio in parole, non ricerca di caratteri: 中 non
+     prende 中国). L'indice si costruisce una volta sola, alla prima carta. */
+  var EXIDX = null;
+  function exIndex() {
+    if (EXIDX) return EXIDX;
+    EXIDX = {};
+    var add = function (py, hz, it) {
+      if (!hz || !it || Array.from(hz).length > 24) return;
+      var seen = {};
+      CP.segment(hz).forEach(function (s) {
+        if (!s.w || seen[s.w.key]) return; seen[s.w.key] = 1;
+        var cur = EXIDX[s.w.key];
+        if (!cur || hz.length < cur[1].length) EXIDX[s.w.key] = [py, hz, it];
+      });
+    };
+    PHRASES.forEach(function (g) { g.items.forEach(function (x) { add(x[0], x[1], x[2]); }); });
+    (typeof DIALOGS !== "undefined" ? DIALOGS : []).forEach(function (d) { d.lines.forEach(function (l) { add(l[1], l[2], l[3]); }); });
+    (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (e) { add(null, e[0], e[1]); }); });
+    (typeof VERIFIED !== "undefined" ? VERIFIED : []).forEach(function (v) { add(null, v[0], v[1]); });
+    return EXIDX;
   }
+  function pyOf(z) {
+    var P = { "，": ",", "。": ".", "？": "?", "！": "!" }, out = [];
+    CP.segment(z).forEach(function (s) { if (s.w) out.push(s.w.py); else if (P[s.raw] && out.length) out[out.length - 1] += P[s.raw]; });
+    var py = out.join(" "); return py ? py.charAt(0).toUpperCase() + py.slice(1) : "";
+  }
+  function example(k) {
+    var e = exIndex()[k]; if (!e) return null;
+    return e[0] ? e : [pyOf(e[1]), e[1], e[2]];
+  }
+  CP.exampleFor = example;
   function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
 
   /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
@@ -15156,7 +15742,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var e = sess.q[0], w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
-      var ex = example(w.hz);
+      var ex = example(w.key);
       h += open + '<span class="seal new-seal" aria-hidden="true">新</span><span class="tag">' + T("sess.newWord") + " · " + esc(w.secTitle.replace(/^\d+\.\s*/, "")) + "</span>" + parts(w, { py: 1, hz: 1, it: 1 }) + cardTools(w, true) +
         (ex ? '<div class="cd-ex"><span class="tag">' + T("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note">' + esc(ex[2]) + "</div></div>" : "") +
         '</div><div class="actbar"><button type="button" class="btn-main" id="next">' + T("sess.next") + "</button>" + kbd() + "</div>";

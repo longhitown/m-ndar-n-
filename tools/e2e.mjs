@@ -6,6 +6,7 @@
    3. Backup → ripristino su un secondo profilo: cp-community-contribs unito per id, cp-srs-v1 dell'altro profilo
       intatto, registro dei ripassi sommato.
    5. Corso di italiano per chi parla cinese: si sceglie dal benvenuto, le lezioni si superano con le risposte giuste, il ripasso salva.
+   6. Le lezioni di grammatica del corso di cinese si superano tutte con le risposte giuste.
    4. Senza riconoscimento vocale il 🎤 resta e registra e confronta (microfono finto di Chromium);
       l'indicatore 🎙️ compare e un tocco chiude il flusso.
    Restano da fare a mano, su un telefono vero: tap udibile a volume 50% e 10 tap di fila non fastidiosi, la musica
@@ -139,6 +140,35 @@ try {
     await p.evaluate(() => CP.itShow("review")); await p.click("[data-itr-show]"); await p.click('[data-itr-grade="3"]');
     check("Corso di italiano: ripasso FSRS in cp-it-srs-v1", await p.evaluate(() => { const s = JSON.parse(localStorage.getItem("cp-it-srs-v1") || "{}"); return Object.keys(s).filter((k) => k !== "__meta").length === 1; }));
     check("Corso di italiano: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 6. lezioni di grammatica del corso di cinese: ognuna si supera con le risposte giuste (tessere e scelte) */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.addInitScript(() => { try { localStorage.setItem("cp-ux-v1", JSON.stringify({ onboarded: 1 })); } catch (e) {} });
+    await p.goto(pathToFileURL(file).href); await p.waitForTimeout(700);
+    const res = await p.evaluate(() => {
+      const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
+      CP.show("build", true);
+      for (const l of CP.lessons.list()) {
+        CP.build.openLesson(l.id); click("[data-ls-quiz]");
+        for (const q of l.quiz) {
+          if (q.k === "order") {
+            for (const s of CP.segment(q.zh).filter((x) => x.w)) {
+              const t = [...document.querySelectorAll("[data-ls-pick]:not([disabled])")].find((x) => x.querySelector(".th").textContent === s.w.hz);
+              if (!t) return [l.id + ": tessera " + s.w.hz]; t.click();
+            }
+            click("[data-ls-check]");
+          } else click('[data-ls-opt="' + q.a + '"]');
+          if (!document.querySelector("#ls-root .verdict.ok")) return [l.id + ": risposta giusta segnata sbagliata"];
+          click("[data-ls-next]");
+        }
+        out.push(l.id);
+      }
+      return out;
+    }).catch((e) => ["ERR " + e.message]);
+    check("Lezioni di cinese: le " + res.length + " lezioni si superano con le risposte giuste", res.length >= 30 && res.every((x) => !/ /.test(x)), res.join(" "));
+    check("Lezioni di cinese: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
 } finally {

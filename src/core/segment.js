@@ -12,8 +12,8 @@ var MDSegment = (function () {
     /* una parola che non è nella lista di frequenza (spesso una frase fatta come 你好 o 这个) vale quanto il suo
        carattere meno comune: non deve perdere contro i suoi stessi pezzi */
     function est(w) { var r = 0; Array.from(w).forEach(function (c) { r = Math.max(r, RANK[c] || RARE); }); return r; }
-    /* composti che nelle frasi sono più spesso due parole: 只要 «basta che» ma 我只要一杯水 = 只|要; 个人 ma 这个人 = 这个|人 */
-    var WEAK = { "只要": 3.5, "只有": 2, "还有": 2, "有时": 2, "从中": 2, "个人": 2 };
+    /* composti che nelle frasi sono più spesso due parole: 才能 «talento» ma 只有…才能… = 才|能; 个人 ma 这个人 = 这个|人 */
+    var WEAK = { "才能": 3, "只有": 2, "还有": 2, "有时": 2, "从中": 2, "个人": 2 };
     /* caratteri che oggi vivono quasi sempre dentro parole composte: da soli costano di più (中文|学 e non 中|文学) */
     var BOUND = { "中": 1.5, "国": 1.5, "文": 1.5, "时": 1.5, "间": 1.5, "日": 1, "语": 1.5 };
     function cost(w) { return Math.log((RANK[w] || est(w)) + 20) + TOK + (WEAK[w] || 0) + (BOUND[w] || 0); }
