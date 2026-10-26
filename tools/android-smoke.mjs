@@ -89,6 +89,25 @@ try {
   check("Indietro: chiude il foglio, poi torna al Percorso", !b1.sheet && !b1.path && b2, JSON.stringify([b1, b2]));
   p.close();
 
+  /* scorciatoie, apertura su un'azione, widget «Oggi», promemoria */
+  let sc = ""; try { sc = adb("shell", "dumpsys", "shortcut"); } catch (e) {}
+  check("Scorciatoie dell'icona registrate (study, ear, music)", /it\.mandarino\.app/.test(sc) && /study/.test(sc) && /music/.test(sc), "");
+  adb("shell", "am", "start", "-W", "-a", "android.intent.action.VIEW", "-d", "mandarino://go/ear", "-n", PKG + "/.MainActivity");
+  p = await connect(120000);
+  check("mandarino://go/ear apre l'orecchio ai toni", await p.until("() => window.CP && CP.mode && CP.mode.active() === 'ear'", 60000));
+  await p.ev("() => { const S = CP.S(); CP.ORDER.slice(0, 5).forEach((k) => { S[k] = { n: 1, lr: Date.now(), st: 1, sd: 2, df: 5, d: Date.now() - 1000 }; }); CP.save(); CP.widgetPush(); }");
+  await sleep(1500);
+  let wp = ""; try { wp = adb("shell", "run-as", PKG, "cat", "shared_prefs/mandarino.xml"); } catch (e) {}
+  check("Stato del widget salvato dal ponte (scadenze in 168 ore, parola del giorno)", /&quot;hist&quot;|"hist"/.test(wp) && /words/.test(wp), wp.length + " byte");
+  let wd = ""; try { wd = adb("shell", "dumpsys", "appwidget"); } catch (e) {}
+  check("Widget «Oggi» (4×2 e 2×1) disponibili", /it\.mandarino\.app\/\.TodayWidget\b|TodayWidget}/.test(wd) && /TodayWidgetSmall/.test(wd), "");
+  await p.ev("() => MandarinoAndroid.setReminder(true, 20, 30)");
+  await sleep(1000);
+  let al = ""; try { al = adb("shell", "dumpsys", "alarm"); } catch (e) {}
+  check("Promemoria programmato con AlarmManager quando lo si accende", /it\.mandarino\.app/.test(al) && /REMINDER/.test(al), "");
+  await p.ev("() => MandarinoAndroid.setReminder(false, 20, 30)");
+  p.close();
+
   const log = adb("logcat", "-d");
   const crashes = log.split("\n").filter((l) => /Renderer process .*crash|FATAL EXCEPTION.*|Process: it\.mandarino\.app/.test(l) && !/com\.android\.(phone|bluetooth|systemui|settings)/.test(l));
   check("Nessun crash dell'app o del motore della pagina", !crashes.length, crashes.slice(0, 3).join(" | "));
