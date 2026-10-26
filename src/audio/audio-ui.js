@@ -68,6 +68,8 @@
   /* ---- 4. pannello voce: prova suono, A/B tra due voci ---- */
   var AB = { a: "", b: "" };
   var PHR = "你好，我是你的新朋友。今天天气很好。";
+  /* strumenti per chi sviluppa o pubblica l'app (il pacchetto PWA): nascosti, si accendono con #dev nell'indirizzo */
+  CP.dev = function () { try { if (location.hash === "#dev") localStorage.setItem("md-dev", "1"); if (location.hash === "#nodev") localStorage.removeItem("md-dev"); return localStorage.getItem("md-dev") === "1"; } catch (e) { return false; } };
   CP.voiceExtra = function () {
     var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
       '<p class="small muted" style="margin:2px 0 6px" id="aud-state">' + CP.t("snd.state", { s: st === "running" ? CP.t("snd.running") : st === "none" ? CP.t("snd.none") : st === "suspended" ? CP.t("snd.susp") : esc(st) }) + "</p>" +
@@ -87,7 +89,7 @@
     if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">' + CP.t("pwa.title") + "</div>" +
       '<p class="small muted" style="margin:2px 0 6px">' + CP.t(ps && ps.standalone ? "pwa.installed" : ps && ps.http ? "pwa.https" : "pwa.need") + "</p>" +
-      '<button type="button" class="btn-s" id="pwa-dl">📦 ' + CP.t("pwa.dl") + "</button></div>";
+      (CP.dev() ? '<button type="button" class="btn-s" id="pwa-dl">📦 ' + CP.t("pwa.dl") + "</button>" : "") + "</div>";
     return h;
   };
   function playVoice(uri) {
