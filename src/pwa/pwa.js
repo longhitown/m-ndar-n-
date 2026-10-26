@@ -11,7 +11,7 @@
   }
   function manifestObj(base) {
     return {
-      name: "màndarínō · cinese per italiani", short_name: SHORT, description: "Il cinese per italiani: 3.500 parole, pinyin davanti, toni a colori, ripasso FSRS. Funziona offline.",
+      name: "màndarínō · cinese per italiani", short_name: SHORT, description: "Il cinese per italiani: oltre 6.300 parole (HSK 1–5), pinyin davanti, toni a colori, ripasso FSRS. Funziona offline.",
       id: "./", start_url: "./", scope: "./", display: "standalone", orientation: "portrait", lang: "it",
       background_color: "#F4EFE6", theme_color: "#14594A",
       icons: base ? [

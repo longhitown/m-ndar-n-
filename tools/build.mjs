@@ -27,6 +27,10 @@ const fail = (m) => { console.error("✗ " + m); process.exit(1); };
 
 /* 1. dati */
 const D = load(SRC), c = check(D);
+/* il conteggio atteso (VOCAB_EXPECT in src/data/path-hsk.js) è quello che #selftest controlla nella pagina */
+{ const ctx = vm.createContext({ PATH: {} }); vm.runInContext(fs.readFileSync(path.join(SRC, "data/path-hsk.js"), "utf8"), ctx);
+  const E = vm.runInContext("VOCAB_EXPECT", ctx);
+  if (E.words !== c.words || E.sections !== c.sections) c.err.push(`VOCAB_EXPECT dice ${E.words} parole e ${E.sections} sezioni, i dati ne hanno ${c.words} e ${c.sections}: aggiorna src/data/path-hsk.js`); }
 if (c.err.length) fail("dati non validi:\n  " + c.err.slice(0, 30).join("\n  ") + (c.err.length > 30 ? "\n  … e altri " + (c.err.length - 30) : ""));
 
 /* 1b. grammatica: le frasi verificate (src/data/verified.js) devono uscire identiche dalle regole;

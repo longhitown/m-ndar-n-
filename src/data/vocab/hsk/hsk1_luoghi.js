@@ -1,0 +1,43 @@
+/* HSK 1 · Luoghi e tempo · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "hsk1_luoghi",
+  "title": "HSK 1 · Luoghi e tempo",
+  "words": [
+    ["zhōng","中","in mezzo, dentro, centro","中间, 中国"],
+    ["lǐ","里","dentro (dopo un nome)","房间里 = nella stanza"],
+    ["hòu","后","dietro, dopo","三天后 = fra tre giorni"],
+    ["qián","前","davanti, prima","三天前 = tre giorni fa"],
+    ["zuì.hòu","最后","alla fine, ultimo"],
+    ["fēn","分","dividere; minuto; punto (voto)","五分 = cinque minuti / cinque punti"],
+    ["rì","日","sole; giorno (nelle date)","五月一日 = primo maggio"],
+    ["shēn.shang","身上","addosso, sul corpo"],
+    ["wài","外","fuori, esterno; straniero"],
+    ["jiā.lǐ","家里","a casa, in famiglia"],
+    ["zuǒ","左","sinistra"],
+    ["yòu","右","destra"],
+    ["lù.shang","路上","per strada, durante il viaggio"],
+    ["chē.shang","车上","in auto, sul mezzo"],
+    ["dì.shang","地上","per terra"],
+    ["xià.cì","下次","la prossima volta"],
+    ["wǎng.shàng","网上","in rete, online"],
+    ["mén.kǒu","门口","ingresso, davanti alla porta"],
+    ["shàng.cì","上次","l'ultima volta, la volta scorsa"],
+    ["xīn.nián","新年","Capodanno, anno nuovo"],
+    ["bái.tiān","白天","di giorno, giorno"],
+    ["guó.wài","国外","all'estero"],
+    ["lóu.xià","楼下","al piano di sotto"],
+    ["lóu.shàng","楼上","al piano di sopra"],
+    ["lǐ.bian","里边","dentro"],
+    ["wài.bian","外边","fuori"],
+    ["Xīng.qī.rì","星期日","domenica"],
+    ["hòu.bian","后边","dietro"],
+    ["xī.biān","西边","a ovest"],
+    ["shàng.bian","上边","sopra"],
+    ["dōng.bian","东边","a est"],
+    ["nán.bian","南边","a sud"],
+    ["běi.biān","北边","a nord"],
+    ["xià.bian","下边","sotto"],
+    ["qián.bian","前边","davanti"]
+  ]
+});

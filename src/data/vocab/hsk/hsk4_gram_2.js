@@ -1,0 +1,43 @@
+/* HSK 4 · Parole grammaticali e misure (2 di 2) · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "hsk4_gram_2",
+  "title": "HSK 4 · Parole grammaticali e misure (2 di 2)",
+  "words": [
+    ["pī","批","classificatore per gruppi, lotti; approvare","一批货 = una partita di merce"],
+    ["wàn.yī","万一","nel caso che"],
+    ["shì.de","似的","come se (像…似的)"],
+    ["wú.shù","无数","innumerevole"],
+    ["zǒng.zhī","总之","insomma"],
+    ["cǐ.wài","此外","inoltre"],
+    ["jiǎ.rú","假如","se"],
+    ["shòu.bù.liǎo","受不了","non sopportare"],
+    ["gè.gè","各个","ognuno, i vari"],
+    ["qí.yú","其余","il resto, gli altri"],
+    ["nǎ.pà","哪怕","anche se"],
+    ["huǒ","伙","gruppo, banda","一伙人"],
+    ["kē","棵","classificatore per alberi e piante","一棵树"],
+    ["duō.nián","多年","molti anni"],
+    ["chǐ","尺","righello; unità di lunghezza (un terzo di metro)"],
+    ["duō.cì","多次","molte volte"],
+    ["zhù.zuò","著作","opera (scritta)"],
+    ["měi.jīn","美金","dollaro americano"],
+    ["chuān.shang","穿上","indossare"],
+    ["duō.zhǒng","多种","vari tipi di"],
+    ["xià.lóu","下楼","scendere al piano di sotto"],
+    ["píng.fāng","平方","quadrato","平方米 = metro quadro"],
+    ["duō.yàng","多样","vario"],
+    ["háo.mǐ","毫米","millimetro"],
+    ["lí.mǐ","厘米","centimetro"],
+    ["háo.shēng","毫升","millilitro"],
+    ["wǔ.yán.liù.sè","五颜六色","variopinto"],
+    ["gé.kāi","隔开","separare"],
+    ["mó.tè.r","模特儿","modella, modello"],
+    ["méi.fǎ.r","没法儿","non c'è modo"],
+    ["fēn.zhī","分之","(nelle frazioni) su","三分之一 = un terzo"],
+    ["méi.xiǎng.dào","没想到","non me l'aspettavo"],
+    ["míng.pái.r","名牌儿","marca famosa"],
+    ["xià.gè.yuè","下个月","il mese prossimo"],
+    ["yǒu.jìn.r","有劲儿","forte; interessante"]
+  ]
+});

@@ -1,0 +1,43 @@
+/* HSK 4 · Parole grammaticali e misure (1 di 2) · 35 parole. Una parola per riga: [pinyin, caratteri, italiano, nota facoltativa].
+   Il pinyin separa le sillabe di una parola con il punto (péng.you); i caratteri sono la chiave dei progressi: non cambiarli. */
+SECTIONS.push({
+  "id": "hsk4_gram_1",
+  "title": "HSK 4 · Parole grammaticali e misure (1 di 2)",
+  "words": [
+    ["ér","而","e; ma (scritto)","不是…而是… = non… ma…"],
+    ["cǐ","此","questo (scritto)"],
+    ["zuò.wéi","作为","in qualità di, come"],
+    ["ya","呀","ah, eh (particella)"],
+    ["guān.yú","关于","riguardo a"],
+    ["yǐ.jí","以及","e anche"],
+    ["zì","自","da; se stesso"],
+    ["shǒu","首","classificatore per canzoni e poesie; primo","一首歌"],
+    ["gēn.jù","根据","in base a; fondamento"],
+    ["Xiàng","项","classificatore per voci, compiti; elemento"],
+    ["bù.guǎn","不管","non importa, comunque","不管怎样 = in ogni caso"],
+    ["zhī.yī","之一","uno di"],
+    ["Fāng","方","quadrato; parte, lato"],
+    ["ér.shì","而是","bensì"],
+    ["lún","轮","turno; ruota","轮到你了 = tocca a te"],
+    ["wú.lùn","无论","qualunque, non importa"],
+    ["yú.shì","于是","così, quindi"],
+    ["gēn","根","radice; classificatore per oggetti lunghi e sottili","一根香蕉"],
+    ["xíng","型","tipo, modello"],
+    ["bèi","倍","volte (doppio, triplo)","两倍 = il doppio"],
+    ["fǒu.zé","否则","altrimenti"],
+    ["liǎ","俩","due, entrambi (parlato)","我们俩 = noi due"],
+    ["zhù.míng","著名","famoso"],
+    ["quān","圈","cerchio; giro"],
+    ["Jì","季","stagione"],
+    ["jì.rán","既然","dato che"],
+    ["jì","既","sia (既…又…); dato che","既便宜又好"],
+    ["rán.ér","然而","tuttavia"],
+    ["tì","替","al posto di; per"],
+    ["rén.jia","人家","gli altri; io (scherzoso)"],
+    ["zhēn.duì","针对","rivolto a, nei confronti di"],
+    ["xiǎn.zhù","显著","notevole"],
+    ["juǎn","卷","arrotolare; rotolo"],
+    ["xì.liè","系列","serie"],
+    ["bù.rán","不然","altrimenti"]
+  ]
+});

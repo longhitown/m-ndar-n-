@@ -9,18 +9,9 @@ export function lab(srcDir) {
   const D = load(srcDir), W = {}, ORDER = [];
   const K = keysOf(D.SECTIONS);
   for (const k of Object.keys(K)) { const w = K[k].w; W[k] = { key: k, py: w[0], hz: w[1], it: w[2], note: w[3] || "", sec: K[k].sec }; ORDER.push(k); }
-  let MAXL = 1; ORDER.forEach((k) => { MAXL = Math.max(MAXL, Array.from(W[k].hz).length); });
-  /* stessa regola di CP.segment in src/core/core.js: la parola più lunga del vocabolario che combacia */
-  const segment = (raw) => {
-    const s = Array.from(String(raw)), out = [], cjk = /[㐀-鿿]/; let i = 0;
-    while (i < s.length) {
-      if (!cjk.test(s[i])) { let j = i; while (j < s.length && !cjk.test(s[j])) j++; out.push({ w: null, raw: s.slice(i, j).join(""), p: true }); i = j; continue; }
-      let m = null, L;
-      for (L = Math.min(MAXL, s.length - i); L >= 1; L--) { const sub = s.slice(i, i + L).join(""); if (Object.prototype.hasOwnProperty.call(W, sub)) { m = W[sub]; break; } }
-      if (m) { out.push({ w: m, raw: m.hz }); i += L; } else { out.push({ w: null, raw: s[i] }); i++; }
-    }
-    return out;
-  };
+  /* lo stesso taglio in parole della pagina (src/core/segment.js) */
+  const sctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(srcDir, "core/segment.js"), "utf8"), sctx, { filename: "core/segment.js" });
+  const segment = vm.runInContext("MDSegment", sctx).make(W, D.WORD_FREQ);
   const CP = { WORDS: W, ORDER, esc: (s) => String(s), segment, gloss: (w) => String(w.it).split(/[;,(:]/)[0].trim() };
   const ctx = vm.createContext({ CP, console });
   ctx.window = ctx;
