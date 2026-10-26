@@ -77,6 +77,10 @@ La proposta vale subito sul telefono di chi la scrive e si manda come gli altri 
 pinyin con CC-CEDICT e mette accanto all'italiano il significato inglese, per rileggere. Il file non entra né nell'app né nel
 repository: la sua licenza (CC BY-SA 4.0) obbligherebbe a ridistribuire i nostri dati con la stessa licenza. Nessuna
 correzione è automatica: il primo giro ha trovato 7 pinyin sbagliati (es. 答应 dā.ying, 接种 jiē.zhòng), corretti a mano.
+Lo stesso comando controlla anche il pinyin di **ogni frase** dell'app (frasi, dialoghi, Ordine del Pensiero, modelli, slot,
+percorso: 678 frasi) tagliandola con CC-CEDICT, e i classificatori del correttore (`NCLF` in `src/phrases/grammar.js`) contro
+le indicazioni «CL:». Con `--prova` aggiunge errori messi apposta, per vedere che il controllo li trova. Secondo giro: nessuna
+sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 5 significati italiani (取消, 信任, 清蒸, 蒸菜, 保守秘密).
 
 ## Pubblicare (Cloudflare Pages, il più semplice)
 

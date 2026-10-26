@@ -14,7 +14,7 @@ SECTIONS.push({
     ["chāo.shuǐ","焯水","sbollentare"],
     ["bào.chǎo","爆炒","saltare a fuoco vivo"],
     ["hóng.shāo","红烧","brasare in salsa di soia"],
-    ["qīng.zhēng","清蒸","cuocere al vapore"],
+    ["qīng.zhēng","清蒸","al vapore, al naturale (清蒸鱼 pesce al vapore)"],
     ["mèn","焖","stufare"],
     ["dùn","炖","cuocere a fuoco lento"],
     ["sū.cuì","酥脆","croccante"],

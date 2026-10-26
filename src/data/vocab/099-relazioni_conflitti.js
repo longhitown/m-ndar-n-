@@ -12,7 +12,7 @@ SECTIONS.push({
     ["shū.yuǎn","疏远","allontanarsi"],
     ["bèi.pàn","背叛","tradire"],
     ["kuān.shù","宽恕","perdonare"],
-    ["xìn.rèn","信任","fiducia riposta"],
+    ["xìn.rèn","信任","fidarsi; fiducia"],
     ["huái.yí","怀疑","dubitare"],
     ["fēn.qí","分歧","divergenza"],
     ["rěn.nài","忍耐","sopportare"],
