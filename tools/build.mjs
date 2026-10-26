@@ -73,9 +73,9 @@ const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, ""
 styles.forEach((s, i) => { out = out.replace(s.tag + "\n", i ? "" : "<style>\n" + css + "\n</style>\n"); });
 out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
-   compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES o
-   STROKES. Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
-const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"]];
+   compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
+   STROKES o IT_LEXICON (il lessico del corso di italiano). Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"]];
 for (const [name, test] of LAZY) {
   const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
   const lctx = vm.createContext({});

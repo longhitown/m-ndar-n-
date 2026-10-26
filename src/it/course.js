@@ -105,10 +105,34 @@
     var w = wordOf(k); if (!w) return;
     add({ id: "it:t:" + k, it: G.time[k][0], say: G.time[k][0], kind: "time", zh: w.hz, py: w.py, sec: w.sec });
   });
+  /* il resto del vocabolario (data/it/lexicon.js, da tools/itlex.mjs: controllato con Morph-it): nomi con genere e plurale,
+     aggettivi con le quattro forme, verbi all'infinito, avverbi ed espressioni */
+  (typeof IT_LEXICON !== "undefined" ? IT_LEXICON : []).forEach(function (r) {
+    var keys = r[0].split("|").filter(function (k) { return W[k]; }); if (!keys.length) return;
+    var w = W[keys[0]], zh = w.hz, py = w.py, alt = keys.slice(1).map(function (k) { return W[k].hz; });
+    if (r[1] === "n") {
+      var g = r[3], one = g === "mf" ? "m" : g, main = art(r[2], one, "s"), forms = [main, art(r[4], one, "p")];
+      if (g === "mf") forms = [main + " / " + art(r[2], "f", "s"), art(r[4], "m", "p") + " / " + art(r[4], "f", "p")];
+      add({ id: "it:n:" + keys[0], it: main, say: main, kind: "noun", g: g, forms: forms, zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
+    } else if (r[1] === "j") add({ id: "it:j:" + keys[0], it: r[3][0] === r[3][1] ? r[3][0] : r[3][0] + ", " + r[3][1], say: r[3][0], kind: "adj", forms: r[3], zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
+    else if (r[1] === "v") add({ id: "it:v:" + keys[0], it: r[2], say: r[2], kind: "verb", aux: null, zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
+    else add({ id: "it:x:" + keys[0], it: r[2], say: r[2], kind: "other", zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
+  });
   var SECIDX = {}; CP.SEC.forEach(function (s, i) { SECIDX[s.id] = i; });
   LEX.sort(function (a, b) { return (SECIDX[a.sec] || 0) - (SECIDX[b.sec] || 0); });
-  var KIND = { noun: "名词", place: "地名", nat: "国籍", verb: "动词", adj: "形容词", time: "时间词" };
-  function gLabel(e) { return e.kind === "noun" ? (e.g === "f" ? "名词 · 阴性" : "名词 · 阳性") : KIND[e.kind]; }
+  var KIND = { noun: "名词", place: "地名", nat: "国籍", verb: "动词", adj: "形容词", time: "时间词", other: "词语" };
+  function gLabel(e) { return e.kind === "noun" ? (e.g === "f" ? "名词 · 阴性" : e.g === "mf" ? "名词 · 阳性/阴性" : "名词 · 阳性") : KIND[e.kind]; }
+  /* frase d'esempio della parola: le stesse di data/examples, lette al contrario (italiano → cinese) */
+  function exOf(e) {
+    var k = e.ex || e.id.replace(/^it:\w:/, ""), x = typeof EXAMPLES !== "undefined" && EXAMPLES[k];
+    if (x) return { it: x[1], zh: x[0] };
+    var y = CP.exampleFor && W[k] ? CP.exampleFor(k) : null;   /* altrimenti la frase più corta dell'app che contiene la parola */
+    return y ? { it: y[2], zh: y[1] } : null;
+  }
+  function exHTML(e) {
+    var x = exOf(e); if (!x) return "";
+    return '<div class="it-ex"><span class="tag muted small">例句</span><div lang="it" class="it-ex-it">' + esc(x.it) + " " + sayBtn(x.it, true) + '</div><div class="small muted" lang="zh-CN">' + esc(x.zh) + "</div></div>";
+  }
   CP.itLexicon = function () { return LEX.slice(); };
 
   /* coniugazione in tabella: presente e passato prossimo */
@@ -125,13 +149,14 @@
   function sayBtn(text, small) { return '<button type="button" class="say' + (small ? " btn-s" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr("听：" + text) + '">🔊</button>'; }
   function detailHTML(e) {
     var h = '<div class="fam-head"><div class="meta"><b lang="it" style="font-size:1.35rem">' + esc(e.it) + "</b><div class=\"small muted\">" + esc(gLabel(e)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>关闭</button></div>' +
-      '<div class="acts" style="margin:6px 0">' + sayBtn(e.say) + "</div><p style=\"margin:6px 0\">" + zhHTML(e.zh, e.py) + "</p>";
+      '<div class="acts" style="margin:6px 0">' + sayBtn(e.say) + "</div><p style=\"margin:6px 0\">" + zhHTML(e.zh, e.py) + (e.alt && e.alt.length ? ' <span class="small muted">也说：<span lang="zh-CN">' + esc(e.alt.join("、")) + "</span></span>" : "") + "</p>";
     if (e.kind === "noun") h += "<p>" + e.forms.map(esc).join(" · ") + '</p><p class="small muted">单数 · 复数（带定冠词）。冠词说明见第 3 课。</p>';
     else if (e.kind === "adj") h += '<p lang="it">' + esc(e.forms.join(" · ")) + '</p><p class="small muted">阳性单数 · 阴性单数 · 阳性复数 · 阴性复数（见第 5 课）。</p>';
     else if (e.kind === "nat") h += '<p lang="it">' + esc(e.forms.join(" · ")) + '</p><p class="small muted">国籍是形容词：要配合性别和单复数，而且小写。</p>';
     else if (e.kind === "place") h += '<p lang="it">' + esc(e.forms[1]) + '</p><p class="small muted">去 / 在：' + esc(e.forms[1]) + "。</p>";
-    else if (e.kind === "verb") h += conjTable(e.it, e.aux);
-    return h;
+    else if (e.kind === "verb" && e.aux) h += conjTable(e.it, e.aux);
+    else if (e.kind === "verb") h += '<p lang="it">' + PRON.filter(function (p) { return p[0] !== "lei"; }).map(function (p) { return esc(p[0] === "lui" ? "lui/lei" : p[0]) + " " + esc(I.present(e.it, p[1])); }).join(" · ") + '</p><p class="small muted">现在时（见第 6 课）。</p>';
+    return h + exHTML(e);
   }
 
   /* ---------------- guscio: vista e schede ---------------- */
@@ -222,23 +247,35 @@
 
   /* ---------------- 单词: lessico ---------------- */
   var wq = "";
-  function wordsView() {
-    var q = wq.trim().toLowerCase(), groups = {}, order = [];
+  function groupsFor(q) {
+    var groups = {}, order = [];
     LEX.forEach(function (e) {
-      if (q && (e.it + " " + e.zh + " " + e.py).toLowerCase().indexOf(q) < 0) return;
-      var t = TOPIC[e.sec] || "其他"; if (!groups[t]) { groups[t] = []; order.push(t); } groups[t].push(e);
+      if (q && (e.it + " " + e.zh + " " + e.py + " " + (e.alt || []).join(" ")).toLowerCase().indexOf(q) < 0) return;
+      var ch = typeof SECTION_CHAPTER !== "undefined" ? SECTION_CHAPTER[e.sec] : 0;
+      var t = TOPIC[e.sec] || (ch && ch <= 5 ? "HSK " + ch + " 词汇" : "专业词汇"); if (!groups[t]) { groups[t] = []; order.push(t); } groups[t].push(e);
     });
+    return { g: groups, o: order };
+  }
+  function wordsView() {
+    var G2 = groupsFor(wq.trim().toLowerCase()), groups = G2.g, order = G2.o;
     return '<h2 style="margin-top:20px">意大利语单词</h2><p class="small muted" style="margin:0 0 8px">共 ' + LEX.length + ' 个词。名词带定冠词，点一个词可以看全部形式和动词变位。</p>' +
       '<label for="it-q" class="sr">搜索</label><input id="it-q" type="search" placeholder="搜索：意大利语、汉字或拼音" value="' + CP.attr(wq) + '" autocomplete="off" autocapitalize="off" spellcheck="false">' +
       '<div id="it-wl">' + wordList(groups, order) + "</div>";
   }
+  /* 4000 多个词不一次画完：先画 wmax 个，「显示更多」再加 */
+  var wmax = 200;
   function wordList(groups, order) {
     if (!order.length) return '<p class="muted">没有找到。</p>';
-    return order.map(function (t) {
-      return '<h3 class="it-topic">' + esc(t) + "</h3>" + groups[t].map(function (e) {
+    var left = wmax, total = 0; order.forEach(function (t) { total += groups[t].length; });
+    var html = order.map(function (t) {
+      if (left <= 0) return "";
+      var g = groups[t].slice(0, left); left -= g.length;
+      return '<h3 class="it-topic">' + esc(t) + "</h3>" + g.map(function (e) {
         return '<div class="it-row"><button type="button" class="it-w" data-it-word="' + CP.attr(e.id) + '"><b lang="it">' + esc(e.it) + '</b><span class="small muted">' + esc(gLabel(e)) + "</span></button>" + zhHTML(e.zh, e.py) + sayBtn(e.say) + "</div>";
       }).join("");
     }).join("");
+    if (total > wmax) html += '<div class="acts"><button type="button" class="btn-s" data-it-more>显示更多（还有 ' + (total - wmax) + " 个）</button></div>";
+    return html;
   }
 
   /* ---------------- 复习: ripasso FSRS ---------------- */
@@ -262,7 +299,7 @@
     var h = head + '<div class="panel it-card"><span class="tag muted small">' + (isNew ? "新词" : "复习") + " · " + esc(gLabel(e)) + '</span><div class="it-front" lang="it">' + esc(e.it) + "</div><div>" + sayBtn(e.say) + "</div>";
     if (!rv.shown) h += '<p class="small muted">先想一想它的中文意思，再看答案。</p><button type="button" class="btn-main" data-itr-show>' + Z.showAnswer + "</button>";
     else {
-      h += '<div class="it-back">' + zhHTML(e.zh, e.py) + "</div>" + (e.kind === "noun" || e.kind === "adj" || e.kind === "nat" ? '<p class="small" lang="it">' + esc((e.forms || []).join(" · ")) + "</p>" : e.kind === "verb" ? '<p class="small" lang="it">' + esc(I.present(e.it, 0) + " · " + I.present(e.it, 1) + " · " + I.present(e.it, 2)) + "…</p>" : "") +
+      h += '<div class="it-back">' + zhHTML(e.zh, e.py) + "</div>" + (e.kind === "noun" || e.kind === "adj" || e.kind === "nat" ? '<p class="small" lang="it">' + esc((e.forms || []).join(" · ")) + "</p>" : e.kind === "verb" ? '<p class="small" lang="it">' + esc(I.present(e.it, 0) + " · " + I.present(e.it, 1) + " · " + I.present(e.it, 2)) + "…</p>" : "") + exHTML(e) +
         '<div class="it-grades" role="group" aria-label="记得怎么样">' + [[1, Z.again], [2, Z.hard], [3, Z.good], [4, Z.easy]].map(function (g) { return '<button type="button" data-itr-grade="' + g[0] + '">' + g[1] + "</button>"; }).join("") + "</div>";
     }
     return h + "</div>";
@@ -277,7 +314,7 @@
   }
 
   /* ---------------- 变位: coniugazioni ---------------- */
-  var VERBS = (function () { var seen = {}, out = []; LEX.forEach(function (e) { if (e.kind === "verb" && !seen[e.it]) { seen[e.it] = 1; out.push(e); } }); return out; })();
+  var VERBS = (function () { var seen = {}, out = []; LEX.forEach(function (e) { if (e.kind === "verb" && e.aux && !seen[e.it]) { seen[e.it] = 1; out.push(e); } }); return out; })();
   var cj = { tense: "pres", q: null, state: "play", choice: null, score: 0, n: 0 };
   function formFor(e, p, tense) {
     var pi = p[1], num = pi >= 3 ? "p" : "s", g = p[0] === "lei" ? "f" : "m";
@@ -317,7 +354,9 @@
 
   /* ---------------- eventi ---------------- */
   dock.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-it-tab]") : null; if (b) { CP.sfx("tap"); show(b.getAttribute("data-it-tab")); } });
-  view.addEventListener("input", function (e) { if (e.target.id === "it-q") { wq = e.target.value; var g = {}, o = []; var q = wq.trim().toLowerCase(); LEX.forEach(function (x) { if (q && (x.it + " " + x.zh + " " + x.py).toLowerCase().indexOf(q) < 0) return; var t = TOPIC[x.sec] || "其他"; if (!g[t]) { g[t] = []; o.push(t); } g[t].push(x); }); document.getElementById("it-wl").innerHTML = wordList(g, o); } });
+  function repaintWords() { var G2 = groupsFor(wq.trim().toLowerCase()); document.getElementById("it-wl").innerHTML = wordList(G2.g, G2.o); }
+  view.addEventListener("input", function (e) { if (e.target.id === "it-q") { wq = e.target.value; wmax = 200; repaintWords(); } });
+  view.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("[data-it-more]")) { wmax += 300; repaintWords(); } });
   document.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("[data-it-say]") : null;
     if (t) { CP.speak(t.getAttribute("data-it-say"), { lang: "it-IT", el: t, voiceURI: CP.itVoiceURI() }); }

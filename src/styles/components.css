@@ -313,3 +313,6 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 .stop.flash .scard { animation: fd-flash 1.6s ease; }
 @keyframes fd-flash { 0%, 60% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--seal) 35%, transparent); } 100% { box-shadow: var(--shadow); } }
 .resume .next-steps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+/* corso di italiano: frase d'esempio della parola */
+.it-ex { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--chip); display: grid; gap: 4px; text-align: left; }
+.it-ex-it { font-size: 18px; font-weight: 600; }
