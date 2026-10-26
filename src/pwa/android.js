@@ -162,6 +162,7 @@
   window.__mdBack = function () {
     var CP = window.CP; if (!CP) return false;
     if (CP.topSheet && CP.topSheet()) { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return true; }
+    if (CP.immerse && CP.immerse.active()) { CP.immerse.leave(); return true; }
     var quit = Array.prototype.filter.call(document.querySelectorAll("#quit, #m-quit"), function (b) { return b.getClientRects().length > 0; })[0];
     if (quit) { quit.click(); return true; }
     var path = document.getElementById("view-path");

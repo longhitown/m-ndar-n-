@@ -109,11 +109,14 @@
     var d = D[cur]; stopAll();
     rp = { i: 0, ok: 0, nb: d.lines.filter(function (l) { return l[0] === "B"; }).length, miss: false, shown: -1, opts: null, token: ++runId, done: false };
     document.querySelector(".dlg-bar").hidden = true;
+    /* la recita si fa a schermo pieno: restano la chat e le risposte */
+    if (CP.immerse && !CP.immerse.active()) CP.immerse.enter({ title: "🎭 " + d.title, onExit: function () { stopAll(); rp = null; refresh(); } });
     roleStep();
   }
   function roleStep() {
     var d = D[cur], me = rp && rp.token; if (!rp || !chatBox()) return;
     var box = chatBox(), h = "", i;
+    if (CP.immerse && CP.immerse.active()) { CP.immerse.progress(rp.i, d.lines.length); CP.immerse.combo(rp.miss ? 0 : rp.ok); }
     if (rp.i >= d.lines.length) return roleEnd();
     for (i = 0; i < rp.i; i++) h += bubble(d, i);
     var l = d.lines[rp.i];
@@ -164,11 +167,11 @@
     var b;
     if ((b = t.closest("[data-dcat]"))) { dcat = b.getAttribute("data-dcat"); try { localStorage.setItem("cp-dcat", dcat); } catch (er) {} CP.sfx("tap"); refresh(); return; }
     if ((b = t.closest("[data-dlg]"))) { cur = b.getAttribute("data-dlg"); rp = null; refresh(); window.scrollTo(0, 0); CP.sfx("tap"); return; }
-    if (t.closest("[data-dlg-back]")) { stopAll(); cur = null; refresh(); CP.sfx("tap"); return; }
+    if (t.closest("[data-dlg-back]")) { stopAll(); cur = null; CP.sfx("tap"); if (CP.immerse && CP.immerse.active()) CP.immerse.leave(); else refresh(); return; }
     if (t.closest("[data-dlg-play]")) { var pb = t.closest("[data-dlg-play]"); if (pb.textContent.indexOf("Ferma") >= 0) stopAll(); else playAll(); return; }
     if (t.closest("[data-dlg-role]")) { roleStart(); return; }
     if (t.closest("[data-dlg-flag]")) { if (CP.contribDialog) CP.contribDialog(cur); return; }
-    if (t.closest("[data-rp-exit]")) { roleExit(); return; }
+    if (t.closest("[data-rp-exit]")) { roleExit(); if (CP.immerse && CP.immerse.active()) CP.immerse.leave(); return; }
     if (t.closest("[data-rp-again]")) { roleStart(); return; }
     if ((b = t.closest("[data-rp-opt]")) && rp) {
       var o = rp.opts[parseInt(b.getAttribute("data-rp-opt"), 10)];

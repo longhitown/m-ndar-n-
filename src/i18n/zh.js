@@ -28,7 +28,7 @@ I18N.zh = {
   "more.title": "更多", "more.card": "这张卡片", "more.pad": "描红", "more.padFull": "用手指写这个字，有提示", "more.padBlind": "先凭记忆写，再对照",
   "more.fam": "词族", "more.famSub": "含有这些字的其他词", "more.tone": "声调", "more.toneSub": "说一遍，看看你的音高曲线（不需要网络）",
   "more.contrib": "纠错或反馈", "more.contribSub": "拼音或翻译有错？在你的副本里改正，并发给作者",
-  "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读", "grp.learn": "📘 学语法", "sub.lessons": "课程",
+  "fx.enter": "全屏练习", "fx.exit": "退出全屏", "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读", "grp.learn": "📘 学语法", "sub.lessons": "课程",
   "sub.ex": "练习", "sub.lab": "实验室", "sub.slot": "老虎机", "sub.dlg": "对话", "sub.thought": "语序", "sub.reader": "阅读器", "sub.pat": "句型",
   "path.stage": "第 {n} 站", "path.continue": "继续 · 约 {min} 分钟", "path.explore": "看看第 {n} 站", "path.counts": "待复习 {due} · 新词 {nw}",
   "path.doneToday": "今天的复习做完了：可以看看这一站的词，或者练练句子。", "path.goto": "📍 在地图上找第 {n} 站",

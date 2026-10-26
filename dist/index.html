@@ -1270,6 +1270,48 @@ tr.flash > td { background: var(--chip); transition: background .3s; }
 /* crediti e licenze */
 .cred h4 { margin: 12px 0 4px; }
 .cred .lic { white-space: pre-wrap; font-size: 11px; line-height: 1.35; max-height: 40vh; overflow: auto; background: var(--chip); padding: 8px; border-radius: 8px; }
+
+/* ===== «Immersione»: esercizi di Frasi a schermo pieno (ui/immerse.js) ===== */
+.fx-row { display: flex; align-items: center; gap: 8px; }
+.fx-row > .seg.inner { flex: 1 1 auto; min-width: 0; }
+.fx-go { flex: none; width: 44px; height: 44px; padding: 0; border-radius: 12px; display: grid; place-items: center; color: var(--accent); }
+.fx-go svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ex-foot { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; margin-top: 14px; }
+.ex-foot label { display: flex; gap: 8px; align-items: center; min-height: 44px; }
+#fx-bar { position: fixed; z-index: 40; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: max(8px, env(safe-area-inset-top, 0px)) 12px 10px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); animation: fx-down .25s ease; }
+#fx-bar[hidden] { display: none; }
+@keyframes fx-down { from { transform: translateY(-100%); } }
+.fx-x { flex: none; width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 17px; }
+.fx-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; }
+.fx-n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.fx-combo { flex: none; font-weight: 700; font-size: 15px; padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, var(--t1) 14%, transparent); color: var(--t1); }
+.fx-combo.pop { animation: fx-pop .4s cubic-bezier(.3,1.7,.5,1); }
+@keyframes fx-pop { from { transform: scale(.5); } }
+.fx-prog { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; }
+.fx-prog i { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+body.in-focus header.hd, body.in-focus .bar, body.in-focus .vset, body.in-focus .dock, body.in-focus #totop, body.in-focus #find-btn { display: none !important; }
+body.in-focus { padding-top: calc(64px + env(safe-area-inset-top, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body.in-focus #build-root > h2, body.in-focus #build-root > .pills.groups, body.in-focus #build-root > .fx-row { display: none; }
+body.in-focus #build-root { max-width: 720px; margin-inline: auto; }
+body.in-focus #build-root .panel:first-of-type, body.in-focus #ls-root > .panel:first-child { margin-top: 4px; }
+body.in-focus #build-root .tile { min-height: 64px; }
+body.in-focus #build-root .ask { font-size: 20px; }
+.fx-sum { text-align: center; }
+.fx-sum-n { font-size: 56px; font-weight: 800; line-height: 1; color: var(--accent); animation: fx-pop .5s cubic-bezier(.3,1.6,.5,1); }
+.fx-sum-n small { font-size: 22px; color: var(--muted); font-weight: 600; }
+.fx-sum .acts { justify-content: center; }
+.fx-burst { position: fixed; z-index: 60; width: 0; height: 0; pointer-events: none; }
+.fx-burst i { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 2px; opacity: 0; animation: fx-fly .7s cubic-bezier(.15,.7,.3,1) forwards; }
+.fx-burst i:nth-child(3n) { border-radius: 50%; }
+@keyframes fx-fly { 0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.5) rotate(200deg); } }
+.verdict.ok { animation: fx-pop .35s cubic-bezier(.3,1.6,.5,1); }
+.tile { transition: transform .12s ease, opacity .2s; }
+.tile:active:not([disabled]) { transform: scale(.94); }
+.slot .tile { animation: fx-in .18s ease-out; }
+@keyframes fx-in { from { opacity: 0; transform: translateY(6px) scale(.96); } }
+@media (prefers-reduced-motion: reduce) { #fx-bar, .fx-combo.pop, .fx-sum-n, .verdict.ok, .slot .tile { animation: none; } .fx-prog i, .tile { transition: none; } }
+body.in-focus #ls-root > .acts:first-child, body.in-focus #build-root .ls-prog { display: none; }
 </style>
 </head>
 <body>
@@ -1589,6 +1631,7 @@ var SECTIONS = [], DIALOGS = [], LESSONS = [], ITLESSONS = [];
   window.__mdBack = function () {
     var CP = window.CP; if (!CP) return false;
     if (CP.topSheet && CP.topSheet()) { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return true; }
+    if (CP.immerse && CP.immerse.active()) { CP.immerse.leave(); return true; }
     var quit = Array.prototype.filter.call(document.querySelectorAll("#quit, #m-quit"), function (b) { return b.getClientRects().length > 0; })[0];
     if (quit) { quit.click(); return true; }
     var path = document.getElementById("view-path");
@@ -14860,7 +14903,7 @@ I18N.it = {
   "more.title": "Altro", "more.card": "per questa carta", "more.pad": "Traccia", "more.padFull": "Scrivi il carattere col dito, con la guida", "more.padBlind": "Prova a scriverlo a memoria, poi controlla",
   "more.fam": "Famiglia", "more.famSub": "Le altre parole che contengono questi caratteri", "more.tone": "Tono", "more.toneSub": "Parla e guarda la curva della tua voce, anche senza rete",
   "more.contrib": "Correggi o segnala", "more.contribSub": "Pinyin o traduzione sbagliati? Correggili nella tua copia e mandali all'autore",
-  "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi", "grp.learn": "📘 Impara", "sub.lessons": "Lezioni",
+  "fx.enter": "A schermo pieno", "fx.exit": "Esci dallo schermo pieno", "build.title": "Frasi", "build.tools": "Strumenti per le frasi", "grp.build": "🧩 Costruisci", "grp.talk": "💬 Parla", "grp.read": "📖 Leggi", "grp.learn": "📘 Impara", "sub.lessons": "Lezioni",
   "sub.ex": "Esercizi", "sub.lab": "Laboratorio", "sub.slot": "Slot", "sub.dlg": "Dialoghi", "sub.thought": "Pensiero", "sub.reader": "Lettore", "sub.pat": "Modelli",
   "path.stage": "Tappa {n}", "path.continue": "Continua · ≈ {min} min", "path.explore": "Esplora la tappa {n}", "path.counts": "{due} da ripassare · {nw} {new}",
   "path.doneToday": "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.", "path.goto": "📍 Vai alla tappa {n} sulla mappa",
@@ -14905,7 +14948,7 @@ I18N.zh = {
   "more.title": "更多", "more.card": "这张卡片", "more.pad": "描红", "more.padFull": "用手指写这个字，有提示", "more.padBlind": "先凭记忆写，再对照",
   "more.fam": "词族", "more.famSub": "含有这些字的其他词", "more.tone": "声调", "more.toneSub": "说一遍，看看你的音高曲线（不需要网络）",
   "more.contrib": "纠错或反馈", "more.contribSub": "拼音或翻译有错？在你的副本里改正，并发给作者",
-  "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读", "grp.learn": "📘 学语法", "sub.lessons": "课程",
+  "fx.enter": "全屏练习", "fx.exit": "退出全屏", "build.title": "句子", "build.tools": "句子工具", "grp.build": "🧩 造句", "grp.talk": "💬 对话", "grp.read": "📖 阅读", "grp.learn": "📘 学语法", "sub.lessons": "课程",
   "sub.ex": "练习", "sub.lab": "实验室", "sub.slot": "老虎机", "sub.dlg": "对话", "sub.thought": "语序", "sub.reader": "阅读器", "sub.pat": "句型",
   "path.stage": "第 {n} 站", "path.continue": "继续 · 约 {min} 分钟", "path.explore": "看看第 {n} 站", "path.counts": "待复习 {due} · 新词 {nw}",
   "path.doneToday": "今天的复习做完了：可以看看这一站的词，或者练练句子。", "path.goto": "📍 在地图上找第 {n} 站",
@@ -17043,6 +17086,99 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 })();
 </script>
 <script>
+/* ---- ui/immerse.js ---- */
+/* ===== màndarínō · «Immersione»: gli esercizi di Frasi a schermo pieno.
+   Spariscono intestazione, barra degli strumenti, schede in basso e menu di Frasi: resta l'esercizio, con una barra
+   sottile in alto (✕, titolo, avanzamento, serie di risposte giuste di fila). Si esce con ✕, Esc o il tasto Indietro.
+   Dove il browser lo permette si chiede anche il vero schermo intero (Android, computer); su iPhone e nell'app basta il
+   layout. Le risposte giuste fanno partire un piccolo sbuffo di particelle (niente librerie: una decina di <i> in CSS). ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, body = document.body;
+  var S = { on: false, onExit: null, hist: false };
+  var bar = document.createElement("div");
+  bar.id = "fx-bar"; bar.hidden = true;
+  bar.innerHTML = '<button type="button" class="fx-x" data-fx-x aria-label="' + CP.attr(T("fx.exit")) + '">✕</button><b class="fx-t"></b>' +
+    '<span class="fx-combo" aria-live="polite" hidden></span><span class="fx-n small"></span><div class="fx-prog" aria-hidden="true"><i></i></div>';
+  body.appendChild(bar);
+  var reduce = function () { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; };
+  function realFull(on) {
+    if (window.MandarinoAndroid) return;   /* nella WebView dell'app lo schermo intero vero non serve e non è supportato */
+    try {
+      if (on && !document.fullscreenElement && document.fullscreenEnabled && CP.pref.immerseFull !== false) {
+        var p = document.documentElement.requestFullscreen({ navigationUI: "hide" }); if (p && p.catch) p.catch(function () {});
+      } else if (!on && document.fullscreenElement) { var q = document.exitFullscreen(); if (q && q.catch) q.catch(function () {}); }
+    } catch (e) {}
+  }
+  function enter(o) {
+    o = o || {};
+    bar.querySelector(".fx-t").textContent = o.title || "";
+    S.onExit = o.onExit || null;
+    if (!S.on) {
+      S.on = true; body.classList.add("in-focus"); bar.hidden = false;
+      try { history.pushState({ mdFocus: 1 }, ""); S.hist = true; } catch (e) { S.hist = false; }
+      realFull(true); window.scrollTo(0, 0);
+    }
+    progress(null); combo(0);
+  }
+  function leave(fromPop) {
+    if (!S.on) return;
+    S.on = false; body.classList.remove("in-focus"); bar.hidden = true; realFull(false);
+    if (S.hist && !fromPop) { S.hist = false; try { history.back(); } catch (e) {} }
+    S.hist = false;
+    var cb = S.onExit; S.onExit = null; if (cb) cb();
+  }
+  function progress(done, total) {
+    var p = bar.querySelector(".fx-prog i"), n = bar.querySelector(".fx-n");
+    if (done == null) { p.style.transform = "scaleX(0)"; n.textContent = ""; return; }
+    p.style.transform = "scaleX(" + Math.max(0, Math.min(1, done / (total || 1))).toFixed(3) + ")"; n.textContent = done + "/" + total;
+  }
+  function combo(k) {
+    var c = bar.querySelector(".fx-combo");
+    if (k < 2) { c.hidden = true; return; }
+    c.hidden = false; c.textContent = "🔥 " + k;
+    c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop");
+  }
+  /* sbuffo di particelle dal centro di un elemento */
+  function burst(el, big) {
+    if (!el || reduce() || !el.getBoundingClientRect) return;
+    var r = el.getBoundingClientRect(), box = document.createElement("div"), n = big ? 22 : 12, cols = ["--t1", "--t2", "--t3", "--t4", "--accent"];
+    box.className = "fx-burst"; box.style.left = (r.left + r.width / 2) + "px"; box.style.top = (r.top + Math.min(r.height / 2, 40)) + "px";
+    for (var i = 0; i < n; i++) {
+      var a = (i / n) * Math.PI * 2 + Math.random() * 0.5, d = (big ? 70 : 44) + Math.random() * (big ? 60 : 30), p = document.createElement("i");
+      p.style.setProperty("--dx", (Math.cos(a) * d).toFixed(1) + "px"); p.style.setProperty("--dy", (Math.sin(a) * d - 10).toFixed(1) + "px");
+      p.style.background = "var(" + cols[i % cols.length] + ")"; p.style.animationDelay = (Math.random() * 60) + "ms";
+      box.appendChild(p);
+    }
+    body.appendChild(box); setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 900);
+  }
+  bar.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("[data-fx-x]")) { CP.sfx("tap"); leave(false); } });
+  window.addEventListener("popstate", function () { if (S.on) leave(true); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && S.on && !(CP.topSheet && CP.topSheet())) { e.preventDefault(); leave(false); }
+  });
+  /* uscendo dallo schermo intero con il gesto di sistema si resta nell'immersione: è solo il layout */
+
+  /* ogni risposta giusta che compare dentro Frasi o nel corso di italiano fa il suo sbuffo, senza toccare i moduli */
+  var seen = typeof WeakSet === "function" ? new WeakSet() : null;
+  function watch(root) {
+    if (!root || !window.MutationObserver || !seen) return;
+    new MutationObserver(function () {
+      var v = root.querySelector(".verdict.ok, .ls-opt.right, .bub.ok");
+      if (v && !seen.has(v)) { seen.add(v); burst(v, /superata|🎉/.test(v.textContent || "")); if (CP.haptic) CP.haptic(12); }
+      var w = root.querySelector(".ls-quiz h3");
+      if (w && !seen.has(w) && /🎉/.test(w.textContent)) { seen.add(w); burst(w, true); }
+    }).observe(root, { childList: true, subtree: true });
+  }
+  watch(document.getElementById("build-root"));
+
+  /* cambiare scheda (dal «Cerca ovunque», da un collegamento) chiude l'immersione */
+  var show0 = CP.show;
+  if (show0) CP.show = function () { if (S.on) leave(false); return show0.apply(this, arguments); };
+
+  CP.immerse = { watch: watch, enter: enter, leave: function () { leave(false); }, active: function () { return S.on; }, progress: progress, combo: combo, burst: burst };
+})();
+</script>
+<script>
 /* ---- phrases/frasi.js ---- */
 
 /* Scheda "Frasi": esercizi, laboratorio libero, modelli. */
@@ -17052,6 +17188,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   var ADJ = ["大", "小", "多", "少", "贵", "便宜", "热", "冷", "漂亮", "好吃", "好喝", "好"];
   var FW = { ".": "。", "?": "？", "!": "！" };
   var sub = "ex", ex = null, queue = [], score = 0, tries = 0, exFilter = "", labMode = "build";
+  /* un giro = 10 frasi: avanzamento, serie di risposte giuste al primo colpo, riepilogo alla fine */
+  var ROUND = 10, round = { n: 0, ok: 0, run: 0, best: 0, done: false };
+  function newRound() { round = { n: 0, ok: 0, run: 0, best: 0, done: false }; }
   var lab = { t: [], p: "auto", q: "", sec: "", view: "fluid", fixLog: null }, showIt = true, mine = [];
   try { mine = JSON.parse(localStorage.getItem("cp-mine") || "[]") || []; } catch (e) { mine = []; }
   mine = mine.filter(function (m) { return m && m.t && m.t.length && m.t.every(function (k) { return W[k]; }); });
@@ -17189,7 +17328,14 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     }
     return full(e.t, e.p) + spokenBlock(e.t, e.p);
   }
+  function roundHTML() {
+    var pct = Math.round(round.ok * 100 / ROUND), msg = pct >= 90 ? "Impeccabile." : pct >= 70 ? "Ottimo giro." : pct >= 40 ? "Buon allenamento: l'ordine delle parole sta entrando." : "Giro difficile: riprova, la seconda volta va meglio.";
+    return '<div class="panel fx-sum"><div class="fx-sum-n">' + round.ok + "<small>/" + ROUND + '</small></div><p class="ask" style="margin:4px 0">' + esc(msg) + "</p>" +
+      '<p class="muted small" style="margin:0">Giuste al primo colpo · serie migliore: 🔥 ' + round.best + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" id="ex-again" style="margin:0">🔁 Un altro giro</button>' + (CP.immerse && CP.immerse.active() ? '<button type="button" class="btn-s" data-fx-leave>Esci</button>' : "") + "</div></div>";
+  }
   function renderEx() {
+    if (round.done) return roundHTML();
     if (!ex) nextEx();
     var byId = {}; ex.bank.forEach(function (b) { byId[b.id] = b; });
     var slot = ex.pick.map(function (id) { return tile(byId[id].k, 'data-un="' + id + '"'); }).join("");
@@ -17199,7 +17345,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     }).join("");
     var fl = exFilter ? SECTIONS.filter(function (s) { return s.id === exFilter; })[0] : null;
     var h = '<div class="panel">' + (fl ? '<div class="acts" style="margin:0 0 10px"><span class="gpl">Tappa: ' + esc(fl.title.replace(/^\d+\.\s*/, "")) + '</span><button type="button" class="btn-s" id="exf-clear">Tutte le frasi</button></div>' : "") +
-      '<span class="tag muted small">Traduci · giuste: ' + score + "</span>" +
+      '<div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(round.n * 100 / ROUND) + '%"></i></div>' +
+      '<span class="tag muted small">Traduci · frase ' + Math.min(ROUND, round.n + 1) + " di " + ROUND + (round.run >= 2 ? " · 🔥 " + round.run + " di fila" : "") + "</span>" +
       '<p class="ask">' + esc(ex.it) + "</p>" +
       '<div class="slot" aria-live="polite" data-empty="Tocca le parole nell\'ordine giusto">' + slot + "</div>";
     var spk = function () { return CP.audioBtns(ex.disp ? ex.disp.hz : hzOf(ex.t, ex.p)); };
@@ -17212,14 +17359,17 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
         (ex.tries >= 2 ? '<button type="button" id="ex-show">Mostra la soluzione</button>' : "") +
         '<button type="button" id="ex-check"' + (ex.pick.length ? "" : " disabled") + ">Controlla</button></div>";
     }
-    h += '<label class="small muted" style="display:flex;gap:8px;align-items:center;margin-top:14px;min-height:44px"><input type="checkbox" id="opt-it"' + (showIt ? " checked" : "") + '> Mostra l\'italiano sulle tessere</label></div>';
+    h += '<div class="ex-foot"><label class="small muted"><input type="checkbox" id="opt-it"' + (showIt ? " checked" : "") + '> Mostra l\'italiano sulle tessere</label>' +
+      (CP.immerse && !CP.immerse.active() ? '<button type="button" class="btn-s" data-fx-go>⛶ ' + esc(CP.t("fx.enter")) + "</button>" : "") + "</div></div>";
     return h;
   }
   function checkEx() {
     var byId = {}; ex.bank.forEach(function (b) { byId[b.id] = b; });
     var got = ex.pick.map(function (id) { return hz(byId[id].k); }).join("");
-    if (ex.alts.indexOf(got) >= 0) { ex.state = "ok"; score++; ex.t = ex.pick.map(function (id) { return byId[id].k; }); if (ex.disp && ex.alts[0] !== got) ex.disp = null; if (CP.game) CP.game.sentence(); }
-    else ex.tries++;
+    if (ex.alts.indexOf(got) >= 0) {
+      ex.state = "ok"; score++;
+      if (!ex.tries) { round.ok++; round.run++; round.best = Math.max(round.best, round.run); } ex.t = ex.pick.map(function (id) { return byId[id].k; }); if (ex.disp && ex.alts[0] !== got) ex.disp = null; if (CP.game) CP.game.sentence(); }
+    else { ex.tries++; round.run = 0; }
   }
 
   /* ---- laboratorio ---- */
@@ -17328,9 +17478,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var segs = GROUPS.map(function (x) {
       return '<button type="button" role="tab" data-group="' + x[0] + '"' + (x === g ? ' class="on" aria-selected="true"' : ' aria-selected="false"') + ">" + CP.t(x[1]) + "</button>";
     }).join("");
-    var inner = '<div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
+    var inner = '<div class="fx-row"><div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
       return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.t(s[1]) + "</button>";
-    }).join("") + "</div>";
+    }).join("") + '</div><button type="button" class="fx-go" data-fx-go title="' + CP.attr(CP.t("fx.enter")) + '" aria-label="' + CP.attr(CP.t("fx.enter")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>';
     var body;
     if (sub === "ex") body = renderEx();
     else if (sub === "lab") body = labMode === "slot" && CP.subs && CP.subs.slot ? CP.subs.slot.render() : renderLab();
@@ -17339,6 +17489,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     root.innerHTML = '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><div class="pills groups" role="tablist" aria-label="' + CP.attr(CP.t("build.tools")) + '">' + segs + "</div>" + inner + body;
     if (CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
     if (sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
+    if (CP.immerse && CP.immerse.active()) {
+      if (sub === "ex") { CP.immerse.progress(round.n, ROUND); CP.immerse.combo(round.run); }
+    }
     var on = root.querySelector(".pills .on"); if (on && on.scrollIntoView) { try { on.scrollIntoView({ block: "nearest", inline: "center" }); } catch (e) {} }
   }
 
@@ -17354,8 +17507,15 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (a("data-un") !== null && sub === "ex") { if (ex.state === "play") { CP.sfx("tap"); ex.pick = ex.pick.filter(function (id) { return id !== parseInt(a("data-un"), 10); }); render(); } return; }
     if (t.id === "ex-back") { CP.sfx("tap"); ex.pick.pop(); render(); return; }
     if (t.id === "ex-check") { checkEx(); CP.sfx(ex.state === "ok" ? "ok" : "ko"); render(); return; }
-    if (t.id === "ex-show") { ex.state = "show"; render(); return; }
-    if (t.id === "ex-next") { ex = null; render(); return; }
+    if (t.id === "ex-show") { ex.state = "show"; round.run = 0; render(); return; }
+    if (t.id === "ex-next") {
+      ex = null; round.n++;
+      if (round.n >= ROUND) { round.done = true; CP.sfx("ok", 5); if (CP.game && CP.game.xp) CP.game.xp(Math.max(1, Math.round(round.ok / 2))); }
+      render(); return;
+    }
+    if (t.id === "ex-again") { newRound(); ex = null; CP.sfx("tap"); render(); return; }
+    if (t.hasAttribute("data-fx-leave")) { if (CP.immerse) CP.immerse.leave(); return; }
+    if (t.hasAttribute("data-fx-go")) { CP.sfx("tap"); immerse(); return; }
     if (a("data-labtr") !== null && lab.tr) { CP.contribOpen({ op: "tr", target: lab.tr.zh, old: lab.tr.it, fromId: lab.tr.id }); return; }
     if (a("data-labview")) { lab.view = a("data-labview"); CP.sfx("tap"); updLab(); return; }
     if (a("data-labfix") !== null) {
@@ -17394,10 +17554,19 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     else if (id === "lab-p") { lab.p = ev.target.value; updLab(); }
     else if (id === "opt-it") { showIt = ev.target.checked; render(); }
   });
+  /* ⛶: l'attività aperta a schermo pieno; all'uscita Frasi torna com'era */
+  function immerse() {
+    if (!CP.immerse) return;
+    var cs = curSub(), name = ""; subList().forEach(function (x) { if (x[0] === cs) name = CP.t(x[1]); });
+    if (sub === "ex" && round.done) newRound();
+    CP.immerse.enter({ title: name, onExit: function () { render(); } });
+    render();
+  }
   CP.lint = lint; CP.spoken = spokenPinyin; CP._lab = lab;
   CP.labRefresh = function () { if (sub === "lab" && labMode !== "slot") updLab(); };
   CP.build = {
     render: function () { render(); },
+    immerse: immerse,
     setSub: function (s) { sub = s; render(); },
     practice: function (secId) {
       exFilter = secId || ""; ex = null; queue = []; sub = "ex";
@@ -18502,11 +18671,14 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var d = D[cur]; stopAll();
     rp = { i: 0, ok: 0, nb: d.lines.filter(function (l) { return l[0] === "B"; }).length, miss: false, shown: -1, opts: null, token: ++runId, done: false };
     document.querySelector(".dlg-bar").hidden = true;
+    /* la recita si fa a schermo pieno: restano la chat e le risposte */
+    if (CP.immerse && !CP.immerse.active()) CP.immerse.enter({ title: "🎭 " + d.title, onExit: function () { stopAll(); rp = null; refresh(); } });
     roleStep();
   }
   function roleStep() {
     var d = D[cur], me = rp && rp.token; if (!rp || !chatBox()) return;
     var box = chatBox(), h = "", i;
+    if (CP.immerse && CP.immerse.active()) { CP.immerse.progress(rp.i, d.lines.length); CP.immerse.combo(rp.miss ? 0 : rp.ok); }
     if (rp.i >= d.lines.length) return roleEnd();
     for (i = 0; i < rp.i; i++) h += bubble(d, i);
     var l = d.lines[rp.i];
@@ -18557,11 +18729,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var b;
     if ((b = t.closest("[data-dcat]"))) { dcat = b.getAttribute("data-dcat"); try { localStorage.setItem("cp-dcat", dcat); } catch (er) {} CP.sfx("tap"); refresh(); return; }
     if ((b = t.closest("[data-dlg]"))) { cur = b.getAttribute("data-dlg"); rp = null; refresh(); window.scrollTo(0, 0); CP.sfx("tap"); return; }
-    if (t.closest("[data-dlg-back]")) { stopAll(); cur = null; refresh(); CP.sfx("tap"); return; }
+    if (t.closest("[data-dlg-back]")) { stopAll(); cur = null; CP.sfx("tap"); if (CP.immerse && CP.immerse.active()) CP.immerse.leave(); else refresh(); return; }
     if (t.closest("[data-dlg-play]")) { var pb = t.closest("[data-dlg-play]"); if (pb.textContent.indexOf("Ferma") >= 0) stopAll(); else playAll(); return; }
     if (t.closest("[data-dlg-role]")) { roleStart(); return; }
     if (t.closest("[data-dlg-flag]")) { if (CP.contribDialog) CP.contribDialog(cur); return; }
-    if (t.closest("[data-rp-exit]")) { roleExit(); return; }
+    if (t.closest("[data-rp-exit]")) { roleExit(); if (CP.immerse && CP.immerse.active()) CP.immerse.leave(); return; }
     if (t.closest("[data-rp-again]")) { roleStart(); return; }
     if ((b = t.closest("[data-rp-opt]")) && rp) {
       var o = rp.opts[parseInt(b.getAttribute("data-rp-opt"), 10)];
@@ -22264,6 +22436,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   function paint(top) {
     var box = document.getElementById("ls-root"); if (!box) return;
     box.innerHTML = html();
+    if (CP.immerse && CP.immerse.active() && quiz) CP.immerse.progress(view === "result" ? quiz.l.quiz.length : quiz.i + (quiz.state === "play" ? 0 : 1), quiz.l.quiz.length);
     if (top) { try { box.scrollIntoView({ block: "start" }); } catch (e) {} }
   }
   function open(id) { var l = byId(id); if (!l) return; cur = l; view = "lesson"; quiz = null; mark(l.id, { seen: Date.now() }); }
@@ -22281,8 +22454,14 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var t = e.target.closest ? e.target.closest("button") : null; if (!t || !document.getElementById("ls-root") || !document.getElementById("ls-root").contains(t)) return;
     var a = function (n) { return t.getAttribute(n); };
     if (a("data-ls-open") !== null) { open(a("data-ls-open")); CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-back") && CP.immerse && CP.immerse.active()) { view = "list"; cur = null; quiz = null; CP.immerse.leave(); return; }
     if (t.hasAttribute("data-ls-back")) { view = "list"; cur = null; quiz = null; paint(true); return; }
-    if (t.hasAttribute("data-ls-quiz")) { startQuiz(cur || quiz.l); cur = quiz.l; view = "quiz"; CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-quiz")) {
+      startQuiz(cur || quiz.l); cur = quiz.l; view = "quiz"; CP.sfx("tap");
+      /* gli esercizi di una lezione si fanno a schermo pieno */
+      if (CP.immerse && !CP.immerse.active()) CP.immerse.enter({ title: quiz.l.title.replace(/<[^>]+>/g, ""), onExit: function () { if (CP.build) CP.build.render(); } });
+      paint(true); return;
+    }
     if (t.hasAttribute("data-ls-lab")) { var ex0 = cur.ex[0][0]; if (CP.build && CP.build.labLoad) CP.build.labLoad(toks(ex0), /？$/.test(ex0) ? "?" : /！$/.test(ex0) ? "!" : "."); return; }
     if (!quiz) return;
     var q = quiz.l.quiz[quiz.i];
@@ -22598,7 +22777,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     return false;
   }
   function blocked(t) {
-    if (document.body.classList.contains("course-it") || document.body.classList.contains("in-session")) return true;
+    if (document.body.classList.contains("course-it") || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return true;
     if (CP.studyActive && CP.studyActive()) return true;
     if (CP.mode && CP.mode.active && CP.mode.active()) return true;
     var fam = document.getElementById("fam"), jk = document.getElementById("jk-pop"), set = document.getElementById("settings");
@@ -23080,6 +23259,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   document.documentElement.setAttribute("lang", "zh-CN");
   var main = document.querySelector("main") || document.body;
   var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
+  if (CP.immerse) CP.immerse.watch(view);
   var TABS = [["lessons", "📘", Z.lessons], ["words", "📖", Z.words], ["review", "🎴", Z.review], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
   var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", "意大利语课程");
   dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");
