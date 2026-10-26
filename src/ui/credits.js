@@ -10,7 +10,8 @@
     ["cr.mmh", "cr.mmhT", APL],
     ["cr.hsk", "cr.hskT", MIT_HSK],
     ["cr.fsrs", "cr.fsrsT", MIT_FSRS],
-    ["cr.jsqr", "cr.jsqrT", APACHE]
+    ["cr.jsqr", "cr.jsqrT", APACHE],
+    ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."]
   ];
   var DEV = "cr.dev";
   CP.credits = function () {

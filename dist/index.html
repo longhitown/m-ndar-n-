@@ -792,6 +792,11 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 /* corso di italiano: frase d'esempio della parola */
 .it-ex { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--chip); display: grid; gap: 4px; text-align: left; }
 .it-ex-it { font-size: 18px; font-weight: 600; }
+/* Lettore: nomi e termini (Wikipedia) */
+.xr-wiki { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--chip); }
+.xr-wiki ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.xr-wiki li { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.xw-w { border: 0; background: transparent; padding: 2px 0; min-height: 32px; font-size: 18px; color: var(--accent); }
 
 /* ---- styles/brand-audio.css ---- */
 /* ===== V5: componenti nuovi ===== */
@@ -14972,6 +14977,8 @@ Object.assign(I18N.it, { "mic.e.not-allowed": "Il microfono è bloccato in quest
 Object.assign(I18N.it, { "sy.title": "Sincronizzazione", "sy.lede": "Studi su più dispositivi? Scegli un file nel tuo cloud (Google Drive, OneDrive, Dropbox, iCloud…): ogni dispositivo ci scrive i suoi progressi e li unisce a quelli degli altri. Nessun account, nessun server: il file è tuo.", "sy.manual": "Questo browser non può tenere collegato un file: salva il file di sincronizzazione e, sull'altro dispositivo, uniscilo. Le regole di unione sono le stesse: nessun progresso si perde.", "sy.saveFile": "Salva il file di sincronizzazione", "sy.mergeFile": "Unisci un file", "sy.new": "Crea il file nel cloud", "sy.open": "Usa un file esistente", "sy.hintA": "Nel selettore scegli Drive, OneDrive o Dropbox nel menu a sinistra. Sul secondo telefono usa «Usa un file esistente» e scegli lo stesso file.", "sy.hintF": "Salva il file in una cartella sincronizzata (OneDrive, Dropbox, Google Drive per computer). Sugli altri dispositivi scegli lo stesso file.", "sy.last": "Ultima sincronizzazione: {t}", "sy.never": "mai", "sy.now": "Sincronizza ora", "sy.unlink": "Scollega", "sy.unlinked": "File scollegato. I progressi restano su questo dispositivo.", "sy.running": "Sincronizzo…", "sy.updated": "Arrivati progressi da un altro dispositivo: aggiorno.", "sy.done": "Sincronizzato.", "sy.later": "Finisci la sessione, poi sincronizza.", "sy.perm": "Serve il permesso per il file: tocca «Sincronizza ora».", "sy.bad": "Il file scelto non è un file di màndarínō.", "sy.none": "Nessun file collegato.", "sy.err": "Non riesco a leggere o scrivere il file. Controlla la connessione e riprova." });
 /* Passaggio con i QR */
 Object.assign(I18N.it, { "qr.send": "Passa a un altro telefono", "qr.recv": "Ricevi con la fotocamera", "qr.sendHint": "Sull'altro telefono apri ⚙️ → Sincronizzazione → «Ricevi con la fotocamera» e inquadra questi codici: cambiano da soli, aspetta finché tutti i quadratini diventano verdi. Non serve internet.", "qr.cvAria": "Codice QR dei tuoi progressi, cambia da solo", "qr.preparing": "Preparo i dati…", "qr.frame": "Codice {n} di {tot} · {kb} KB", "qr.err": "Non riesco a preparare i dati.", "qr.recvHint": "Sull'altro telefono apri ⚙️ → Sincronizzazione → «Passa a un altro telefono» e inquadra i codici nel riquadro. I progressi si uniscono a quelli di questo telefono.", "qr.camOpen": "Apro la fotocamera…", "qr.aim": "Inquadra i codici dell'altro telefono.", "qr.progress": "Ricevuti {n} di {tot}: continua a inquadrare.", "qr.joining": "Unisco i progressi…", "qr.bad": "I dati non tornano: ricomincio a raccogliere i codici.", "qr.ok": "Progressi ricevuti. Riavvio l'app…", "qr.noCam": "Non trovo una fotocamera utilizzabile.", "qr.camBlocked": "La fotocamera è bloccata: consentila nelle impostazioni del browser o dell'app.", "cr.jsqr": "Lettura dei codici QR", "cr.jsqrT": "<b>jsQR</b> (github.com/cozmo/jsQR), licenza Apache 2.0: legge i QR dalla fotocamera quando il browser non sa farlo da solo, per passare i progressi a un altro telefono. I QR li scrive invece l'app stessa." });
+/* Nomi e termini */
+Object.assign(I18N.it, { "rd.wikiGet": "Cerca anche nomi e termini (Wikipedia, 2,5 MB, si scarica una volta sola)", "rd.wikiErr": "Serve internet la prima volta.", "rd.wikiLoading": "Scarico…", "rd.wikiTitle": "Nomi e termini", "cr.wiki": "Nomi e termini del Lettore", "cr.wikiT": "<b>wikidict-it</b> (github.com/open-dict-data/wikidict-it): i titoli delle voci di Wikipedia in cinese collegati a quelli in italiano, dai dati di <b>Wikidata</b>, rilasciati in pubblico dominio (CC0). Non servono crediti, ma li diamo volentieri." });
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15057,6 +15064,8 @@ Object.assign(I18N.zh, { "mic.e.not-allowed": "这个页面的麦克风被阻止
 Object.assign(I18N.zh, { "sy.title": "同步", "sy.lede": "在多台设备上学习？在你的云盘里选一个文件（Google Drive、OneDrive、Dropbox、iCloud……）：每台设备都把进度写进去，并和其他设备的进度合并。不需要账号，没有服务器：文件是你自己的。", "sy.manual": "这个浏览器不能一直连接文件：保存同步文件，再在另一台设备上合并。合并规则相同：不会丢失任何进度。", "sy.saveFile": "保存同步文件", "sy.mergeFile": "合并文件", "sy.new": "在云盘里新建文件", "sy.open": "使用已有文件", "sy.hintA": "在选择器左侧菜单里选择 Drive、OneDrive 或 Dropbox。在第二部手机上用「使用已有文件」选择同一个文件。", "sy.hintF": "把文件保存在同步文件夹里（OneDrive、Dropbox、电脑版 Google Drive）。在其他设备上选择同一个文件。", "sy.last": "上次同步：{t}", "sy.never": "从未", "sy.now": "立即同步", "sy.unlink": "断开", "sy.unlinked": "已断开文件。学习进度保留在这台设备上。", "sy.running": "正在同步……", "sy.updated": "收到了其他设备的进度：正在更新。", "sy.done": "已同步。", "sy.later": "先完成这次学习，再同步。", "sy.perm": "需要文件权限：点「立即同步」。", "sy.bad": "选择的文件不是 màndarínō 的文件。", "sy.none": "没有连接文件。", "sy.err": "无法读写文件。请检查网络后重试。" });
 /* Passaggio con i QR */
 Object.assign(I18N.zh, { "qr.send": "传到另一部手机", "qr.recv": "用摄像头接收", "qr.sendHint": "在另一部手机上打开 ⚙️ → 同步 →「用摄像头接收」，对准这些二维码：它们会自动切换，等到所有小方块都变绿。不需要网络。", "qr.cvAria": "你的学习进度二维码，会自动切换", "qr.preparing": "正在准备数据……", "qr.frame": "第 {n} 个，共 {tot} 个 · {kb} KB", "qr.err": "无法准备数据。", "qr.recvHint": "在另一部手机上打开 ⚙️ → 同步 →「传到另一部手机」，把二维码对准框内。学习进度会和这部手机上的合并。", "qr.camOpen": "正在打开摄像头……", "qr.aim": "对准另一部手机上的二维码。", "qr.progress": "已收到 {n}/{tot}：继续对准。", "qr.joining": "正在合并学习进度……", "qr.bad": "数据校验失败：重新开始接收。", "qr.ok": "已收到学习进度。正在重启应用……", "qr.noCam": "找不到可用的摄像头。", "qr.camBlocked": "摄像头被阻止了：请在浏览器或应用的设置里允许。", "cr.jsqr": "二维码识别", "cr.jsqrT": "<b>jsQR</b>（github.com/cozmo/jsQR），Apache 2.0 许可：当浏览器自己不能识别时，用它读取摄像头里的二维码，把学习进度传到另一部手机。二维码由应用自己生成。" });
+/* Nomi e termini */
+Object.assign(I18N.zh, { "rd.wikiGet": "同时查找人名、地名和术语（维基百科，2.5 MB，只下载一次）", "rd.wikiErr": "第一次需要联网。", "rd.wikiLoading": "正在下载……", "rd.wikiTitle": "人名、地名和术语", "cr.wiki": "阅读器里的人名、地名和术语", "cr.wikiT": "<b>wikidict-it</b>（github.com/open-dict-data/wikidict-it）：维基百科中文词条标题与意大利语标题的对应，来自 <b>Wikidata</b> 数据，以公有领域（CC0）发布。不要求署名，但我们乐意注明。" });
 </script>
 <!-- Nucleo: ripasso FSRS, archivio, tabella delle parole (crea window.CP), stato condiviso -->
 <script>
@@ -19274,6 +19283,45 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     });
     return { segs: segs, chars: chars, known: known, inside: inside, unk: Object.keys(unk) };
   }
+  /* ---- «nomi e termini» (data/wiki/zh-it.txt, da Wikidata, CC0): città, persone, termini tecnici fuori dal vocabolario.
+     Il file (~2,5 MB) si scarica solo la prima volta e poi resta offline; nell'app Android è già dentro. Un titolo conta solo
+     se comincia e finisce dove comincia e finisce una parola del taglio (学|中文 non diventa «学中»). ---- */
+  var WK = { map: null, p: null, err: false };
+  function wikiOK() { try { return !!window.MandarinoAndroid || localStorage.getItem("md-wiki") === "1"; } catch (e) { return false; } }
+  function wikiLoad() {
+    if (WK.p) return WK.p;
+    if (location.protocol === "file:") { WK.err = true; return Promise.resolve(null); }
+    WK.err = false;
+    return (WK.p = fetch("data/wiki/zh-it.txt").then(function (r) { if (!r.ok) throw new Error("http"); return r.text(); }).then(function (t) {
+      var m = new Map(); t.split("\n").forEach(function (l) { var i = l.indexOf("\t"); if (i > 0) m.set(l.slice(0, i), l.slice(i + 1)); });
+      WK.map = m; try { localStorage.setItem("md-wiki", "1"); } catch (e) {} return m;
+    }).catch(function () { WK.err = true; WK.p = null; return null; }));
+  }
+  function wikiHits(segs) {
+    var text = "", cuts = { 0: 1 };
+    segs.forEach(function (s) { text += s.raw; cuts[text.length] = 1; });
+    var out = [], seen = {};
+    for (var i = 0; i < text.length; i++) {
+      if (!cuts[i]) continue;
+      for (var n = 6; n >= 2; n--) {
+        var w = text.substr(i, n); if (w.length < n || !cuts[i + n] || !WK.map.has(w)) continue;
+        if (!seen[w]) { seen[w] = 1; out.push([w, WK.map.get(w)]); }
+        i += n - 1; break;
+      }
+    }
+    return out.slice(0, 30);
+  }
+  function wikiHTML(segs) {
+    if (location.protocol === "file:") return "";
+    if (!WK.map) {
+      if (wikiOK() && !WK.err) { wikiLoad().then(paint); return ""; }
+      return '<div class="xr-wiki"><button type="button" class="btn-s" data-xr-wiki>📚 ' + T("rd.wikiGet") + "</button>" + (WK.err ? ' <span class="small muted">' + T("rd.wikiErr") + "</span>" : "") + "</div>";
+    }
+    var h = wikiHits(segs); if (!h.length) return "";
+    return '<div class="xr-wiki"><b>📚 ' + T("rd.wikiTitle") + '</b><span class="small muted"> · Wikipedia</span><ul>' + h.map(function (x) {
+      return '<li><button type="button" class="xw-w" data-fam="' + CP.attr(x[0]) + '"><span class="han" lang="zh-CN">' + esc(x[0]) + '</span></button> <span lang="it">' + esc(x[1]) + "</span></li>";
+    }).join("") + "</ul></div>";
+  }
   function outHTML(raw) {
     if (!raw.trim()) return '<p class="xr-stat">' + T("rd.empty") + "</p>";
     var a = analyse(raw), h = "";
@@ -19300,8 +19348,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     return '<div class="xr-out">' + h + '</div><p class="xr-stat">' + T("rd.known", { n: "<b>" + a.known, tot: a.chars + "</b>", p: pct }) +
       (a.inside ? " " + T("rd.insideN", { n: a.inside }) : "") +
       (a.unk.length ? " " + T("rd.unkList", { l: "<span class=\"han\" lang=\"zh-CN\">" + esc(a.unk.slice(0, 20).join(" ")) + "</span>" }) : "") + "</p>" +
-      '<div class="acts"><button type="button" class="btn-main" data-xr-play style="margin:0">▶️ ' + T("rd.play") + "</button></div>";
+      wikiHTML(a.segs) + '<div class="acts"><button type="button" class="btn-main" data-xr-play style="margin:0">▶️ ' + T("rd.play") + "</button></div>";
   }
+  CP.wiki = { load: wikiLoad, hits: function (raw) { return WK.map ? wikiHits(CP.segment(raw)) : []; } };
   CP.subs = CP.subs || {};
   CP.subs.reader = {
     render: function () {
@@ -19323,6 +19372,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var b = t.closest("[data-xr-sample]");
     if (b) { text = SAMPLES[+b.getAttribute("data-xr-sample")][1]; var ta = document.getElementById("xr-in"); if (ta) ta.value = text; paint(); CP.sfx("tap"); return; }
     if (t.closest("[data-xr-clear]")) { text = ""; var ta2 = document.getElementById("xr-in"); if (ta2) { ta2.value = ""; ta2.focus(); } paint(); return; }
+    if (t.closest("[data-xr-wiki]")) { var wb = t.closest("[data-xr-wiki]"); wb.disabled = true; wb.textContent = "📚 " + T("rd.wikiLoading"); wikiLoad().then(paint); return; }
     if (t.closest("[data-xr-play]")) { CP.speak(U.chars(text) ? text.replace(/\s+/g, "，") : "", {}); return; }
   });
 })();
@@ -19854,13 +19904,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     "self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });\n" +
     "self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('mandarino-') && k !== CACHE && k !== MUSIC).map(k => caches.delete(k)))).then(() => self.clients.claim())); });\n" +
     "self.addEventListener('fetch', e => {\n  const r = e.request; if (r.method !== 'GET' || new URL(r.url).origin !== location.origin) return;\n" +
-    "  if (new URL(r.url).pathname.includes('/audio/music/')) {\n    e.respondWith(caches.open(MUSIC).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));\n    return;\n  }\n" +
+    "  if (/\\/(audio\\/music|data\\/wiki)\\//.test(new URL(r.url).pathname)) {\n    e.respondWith(caches.open(MUSIC).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));\n    return;\n  }\n" +
     "  if (r.mode === 'navigate') {\n    e.respondWith(fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return res; }).catch(() => caches.match('./index.html').then(m => m || caches.match('./'))));\n    return;\n  }\n" +
     "  e.respondWith(caches.match(r).then(m => m || fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); return res; })));\n});\n";
   }
   function buildStamp() { var d = new Date(), z = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()); }
   /* intestazioni per Cloudflare Pages (file _headers) */
-  var HEADERS = "/*\n  Permissions-Policy: microphone=(self)\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: same-origin\n/sw.js\n  Cache-Control: no-cache\n/manifest.json\n  Cache-Control: no-cache\n/audio/music/*\n  Cache-Control: public, max-age=604800\n";
+  var HEADERS = "/*\n  Permissions-Policy: microphone=(self), camera=(self)\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: same-origin\n/sw.js\n  Cache-Control: no-cache\n/manifest.json\n  Cache-Control: no-cache\n/audio/music/*\n  Cache-Control: public, max-age=604800\n/data/wiki/*\n  Cache-Control: public, max-age=604800\n";
   CP.pwaFiles = { sw: swSource, headers: HEADERS, stamp: buildStamp, manifest: function () { return JSON.stringify(manifestObj(true), null, 2); } };
 
   /* il <link rel="manifest" href="manifest.json"> è statico nel <head>: su https Chrome lo legge subito.
@@ -23227,7 +23277,8 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     ["cr.mmh", "cr.mmhT", APL],
     ["cr.hsk", "cr.hskT", MIT_HSK],
     ["cr.fsrs", "cr.fsrsT", MIT_FSRS],
-    ["cr.jsqr", "cr.jsqrT", APACHE]
+    ["cr.jsqr", "cr.jsqrT", APACHE],
+    ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."]
   ];
   var DEV = "cr.dev";
   CP.credits = function () {

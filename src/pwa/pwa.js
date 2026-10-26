@@ -34,13 +34,13 @@
     "self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });\n" +
     "self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('mandarino-') && k !== CACHE && k !== MUSIC).map(k => caches.delete(k)))).then(() => self.clients.claim())); });\n" +
     "self.addEventListener('fetch', e => {\n  const r = e.request; if (r.method !== 'GET' || new URL(r.url).origin !== location.origin) return;\n" +
-    "  if (new URL(r.url).pathname.includes('/audio/music/')) {\n    e.respondWith(caches.open(MUSIC).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));\n    return;\n  }\n" +
+    "  if (/\\/(audio\\/music|data\\/wiki)\\//.test(new URL(r.url).pathname)) {\n    e.respondWith(caches.open(MUSIC).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));\n    return;\n  }\n" +
     "  if (r.mode === 'navigate') {\n    e.respondWith(fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return res; }).catch(() => caches.match('./index.html').then(m => m || caches.match('./'))));\n    return;\n  }\n" +
     "  e.respondWith(caches.match(r).then(m => m || fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); return res; })));\n});\n";
   }
   function buildStamp() { var d = new Date(), z = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()); }
   /* intestazioni per Cloudflare Pages (file _headers) */
-  var HEADERS = "/*\n  Permissions-Policy: microphone=(self)\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: same-origin\n/sw.js\n  Cache-Control: no-cache\n/manifest.json\n  Cache-Control: no-cache\n/audio/music/*\n  Cache-Control: public, max-age=604800\n";
+  var HEADERS = "/*\n  Permissions-Policy: microphone=(self), camera=(self)\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: same-origin\n/sw.js\n  Cache-Control: no-cache\n/manifest.json\n  Cache-Control: no-cache\n/audio/music/*\n  Cache-Control: public, max-age=604800\n/data/wiki/*\n  Cache-Control: public, max-age=604800\n";
   CP.pwaFiles = { sw: swSource, headers: HEADERS, stamp: buildStamp, manifest: function () { return JSON.stringify(manifestObj(true), null, 2); } };
 
   /* il <link rel="manifest" href="manifest.json"> è statico nel <head>: su https Chrome lo legge subito.
