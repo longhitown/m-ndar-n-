@@ -370,5 +370,21 @@ var VERIFIED = [
   ["我们是好朋友","Siamo buoni amici.","memoria"],
   ["你给我打电话吧","Telefonami!","memoria"],
   ["我们都喜欢中国","A tutti noi piace la Cina.","memoria"],
-  ["我饿了你呢","Ho fame, e tu?","memoria"]
+  ["我饿了你呢","Ho fame, e tu?","memoria"],
+  /* verbi «a perno» (请/让/叫/帮 + persona + azione) e relative con 的 */
+  ["我请你帮我告诉他", "Ti chiedo di aiutarmi a dirglielo."],
+  ["老师叫我们回家", "L'insegnante ci dice di tornare a casa."],
+  ["他帮我做饭", "Lui mi aiuta a cucinare."],
+  ["我昨天请他吃饭了", "Ieri l'ho invitato a mangiare."],
+  ["我帮妈妈做饭", "Aiuto la mia mamma a cucinare."],
+  ["我让他去买水果", "Gli dico di andare a comprare della frutta."],
+  ["我请朋友吃饭", "Invito un amico a mangiare."],
+  ["我让朋友去买水果", "Dico a un amico di andare a comprare della frutta."],
+  ["我昨天买的书很好看", "Il libro che ho comprato ieri è bello."],
+  ["他买的苹果很甜", "La mela che lui ha comprato è dolce."],
+  ["我看过你买的书", "Ho già letto il libro che hai comprato."],
+  ["你喜欢的人是谁", "Chi è la persona che ti piace?"],
+  ["我认识写这本书的人", "Conosco la persona che ha scritto questo libro."],
+  ["买书的人是我哥哥", "La persona che compra dei libri è mio fratello maggiore."],
+  ["喝茶的人很高兴", "La persona che beve tè è contenta."]
 ];

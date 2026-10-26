@@ -47,6 +47,7 @@
   Parser.prototype.np = function () {
     var h = this.h(), k = this.key(), np;
     if (h == null) return null;
+    if (!this.noRel) { var rel = this.rel(); if (rel) return rel; }
     if (G.pron[h]) {
       var nk = this.key(1), nh = this.h(1);
       if (nh === "的" && this.key(2) && isNoun(this.key(2))) { this.i += 3; return { t: "poss", pron: h, head: this.k[this.i - 1] }; }
@@ -96,6 +97,30 @@
     if (isPlace(k)) { this.i++; return { t: "place", head: k }; }
     return null;
   };
+  /* relativa col 的: «我昨天买的书» = il libro che ho comprato ieri (manca l'oggetto), «买书的人» = la persona che compra
+     libri (manca il soggetto). Solo la forma semplice: [persona] [tempo] verbo [oggetto] 的 nome. Altrimenti null, e si
+     prosegue come prima. */
+  Parser.prototype.rel = function () {
+    var save = this.i, r = { t: "rel", time: [] }, self = this;
+    function simple() { self.noRel = true; try { return self.np(); } finally { self.noRel = false; } }
+    if (!isVerb(this.key())) { var sj = simple(); if (sj && /^(pron|noun|poss)$/.test(sj.t)) r.subj = sj; else { this.i = save; return null; } }
+    while (this.key() && lex(G.time, this.key()) !== undefined) { r.time.push(this.h()); this.i++; }
+    var vk = this.key(), vh = this.h();
+    if (!vk || !(isVerb(vk) || vh === "喜欢" || vh === "爱")) { this.i = save; return null; }
+    r.v = vk; this.i++;
+    if (this.h() === "了") { r.le = true; this.i++; }
+    if (this.h() !== "的" && !r.subj) {
+      var so = this.i, ob = simple();
+      /* 买书的人: il nome semplice ha già preso «书的人» come «il 人 di 书»: lo si rimette a posto */
+      if (ob && ob.t === "of" && ob.owner.t === "noun") { r.obj = ob.owner; r.head = ob.head; return r; }
+      if (ob && /^(noun|dem|count|poss)$/.test(ob.t)) r.obj = ob; else this.i = so;
+    }
+    if (this.h() !== "的" || !this.key(1) || !isNoun(this.key(1))) { this.i = save; return null; }
+    if (!r.subj && !r.obj) { this.i = save; return null; }
+    if (r.subj && r.obj) { this.i = save; return null; }
+    this.i++; r.head = this.key(); this.i++;
+    return r;
+  };
   Parser.prototype.numSeq = function () { var hs = []; while (isNum(this.h())) { hs.push(this.h()); this.i++; } return hs.length ? zhNum(hs) : null; };
   Parser.prototype.place = function () {
     var k = this.key();
@@ -112,8 +137,9 @@
     function times() { while (p.key() && lex(G.time, p.key()) !== undefined) { S.time.push(p.h()); p.i++; } }
     times();
     /* soggetto */
-    var h0 = p.h();
-    if (h0 === "谁") { p.i++; S.subj = { t: "q", q: "谁" }; }
+    var h0 = p.h(), relS = isVerb(p.key()) ? p.rel() : null;
+    if (relS) S.subj = relS;
+    else if (h0 === "谁") { p.i++; S.subj = { t: "q", q: "谁" }; }
     else if (h0 && !isVerb(p.key()) && !MODAL[h0] && !NEG[h0] && !isAdj(p.key()) && h0 !== "是" && h0 !== "有" && h0 !== "在" && !ADVS[h0]) {
       var save = p.i, np = p.np();
       if (np) S.subj = np; else p.i = save;
@@ -192,6 +218,8 @@
       if (h === "想" && mn.t === "pron") S.pred = { t: "like", np: mn, miss: true };
       else if (h === "想") fail("«想 + cosa» vuol dire «mi manca, penso a»: non lo traduco ancora. Per «ho voglia di» usa 想 + verbo (想喝茶)");
       else S.pred = { t: "want", np: mn, cond: h === "想要" };
+    } else if (PIVOT[h] && (S.pred = pivotPred(p))) {
+      /* 我请你帮我… : il verbo «a perno» e la sua catena */
     } else if (isVerb(k)) {
       S.pred = verbPred(p);
       /* 坐地铁去机场: il mezzo, poi il verbo di movimento */
@@ -209,6 +237,19 @@
     if (p.h() && FINAL[p.h()]) { S.fin = p.h(); p.i++; }
     if (!p.end()) fail(W[p.key()] ? "non so dove mettere «" + p.h() + "» in questa frase" : "non riconosco «" + p.h() + "»", p.key());
     return S;
+  }
+  /* verbi «a perno» (兼语): 请/让/叫/帮 + persona + azione. La persona è l'oggetto del primo verbo e il soggetto del secondo:
+     我请你帮我 = ti chiedo di aiutarmi; 老师叫我们回家 = l'insegnante ci dice di tornare a casa; 他帮我做饭 = mi aiuta a cucinare */
+  var PIVOT = { "请": 1, "让": 1, "叫": 1, "帮": 1, "帮助": 1 };
+  function pivotPred(p) {
+    var save = p.i, h = p.h(); if (!PIVOT[h]) return null;
+    p.i++;
+    var sv = p.i, who = p.np();
+    if (who && !(who.t === "pron" || (who.t === "noun" || who.t === "poss") && /[rkjuN]/.test(lex(G.nouns, who.head)[3] || ""))) { who = null; p.i = sv; }
+    if (!who || !p.key()) { p.i = save; return null; }
+    var inner = PIVOT[p.h()] ? pivotPred(p) : null;
+    if (!inner) { if (!isVerb(p.key())) { p.i = save; return null; } inner = verbPred(p); }
+    return { t: "pivot", v: h, who: who, vp: inner };
   }
   /* verbo [了/过/着] [oggetto | luogo | verbo] */
   function verbPred(p) {
@@ -334,12 +375,36 @@
         return { it: defNP(hd, "s") + " " + I.withPrep("di", ow.it), P: [3, "s", gOf(hd, "s")] };
       }
       case "place": { var pl = lex(G.places, np.head); if (!pl[0]) fail("«" + hz(np.head) + "» qui non lo so usare", np.head); var gpl = /^(la|l'[A-Z]?)/.test(pl[0]) && /a$/.test(pl[0]) ? "f" : /^(gli|i) /.test(pl[0]) ? "m" : "m"; return { it: pl[0], P: [3, /^(gli|i|le) /.test(pl[0]) ? "p" : "s", /^la /.test(pl[0]) || /^l'.*a$/.test(pl[0]) ? "f" : "m"], place: true }; }
+      case "rel": return relIt(np);
       case "q": return { it: np.q === "谁" ? "chi" : "che cosa", q: np.q };
       case "time": return { it: G.time[np.h][0] };
       case "qwhich": { n = noun(np.head); return { it: "che " + n.s, q: "什么", P: [3, "s", n.g] }; }
       case "qnum": { n = ctx.have ? haveNoun(np.head) : noun(np.head); var gq = gOf(n, "p"); return { it: (gq === "f" ? "quante " : "quanti ") + n.p, q: "几", P: [3, "p", gq] }; }
       default: fail("questa costruzione non la conosco ancora");
     }
+  }
+  /* «il libro che ho comprato ieri», «la persona che compra i libri», «il film che mi piace» */
+  function relIt(r) {
+    var n = noun(r.head), num = /p/.test(n.fl) && !/m/.test(n.fl) ? "p" : "s", head = defNP(n, num), vh = hz(r.v);
+    /* un'azione nella relativa senza altre indicazioni è di solito già avvenuta (你买的书 = il libro che hai comprato);
+       gli stati restano al presente (我喜欢的电影 = il film che mi piace) */
+    var state = /^(喜欢|爱|知道|认识|想|要|住|会|用|需要|觉得)$/.test(vh), present = r.time.some(function (t) { return G.time[t][1] !== "past"; });
+    var past = r.le || r.time.some(function (t) { return G.time[t][1] === "past"; }) || (!state && !present && (!!r.subj || !!r.obj && /^(dem|count)$/.test(r.obj.t))), tense = past ? "past" : "pres";
+    var timeIt = r.time.map(function (t) { return G.time[t][0]; }).join(" "), cl;
+    if (r.subj) {
+      var sj = npIt(r.subj, "subj", {}), SP = sj.P;
+      if (vh === "喜欢" || vh === "爱") cl = vh === "爱" ? conj("amare", "a", SP, tense) : likeVerb(SP, r.subj, false, false, num, gOf(n, num), past ? "past" : "pres", sj.it);
+      else { var info = lex(G.verbs, r.v); if (/n/.test(info[2] || "")) fail("«" + vh + "» non ha un oggetto: la relativa con 的 non torna"); cl = conj(info[0], info[1], SP, tense, SP[2]); }
+      /* io/tu/noi/voi si capiscono dal verbo; lui, lei, loro restano, perché «che ha comprato» non direbbe chi */
+      var keep = !sj.pron || SP[0] === 3;
+      cl = (keep && vh !== "喜欢" ? sj.it + " " : "") + cl;
+    } else {
+      if (vh === "喜欢" || vh === "爱") fail("«喜欢/爱 … 的» senza chi ama non lo traduco ancora");
+      var v = { t: "verb", k: r.v, info: lex(G.verbs, r.v), obj: r.obj, le: r.le }, S2 = { pred: v, time: r.time, adv: [], pp: [] };
+      var vr = verbIt(S2, [3, num, gOf(n, num)], false, false, [], { past: past });
+      cl = [vr.vp].concat(vr.tail).join(" ");
+    }
+    return { it: head + " che " + cl + (timeIt ? " " + timeIt : ""), P: [3, num, gOf(n, num)], n: n };
   }
   function quel(w, g, num) {
     if (num === "p") return g === "f" ? "quelle" : (I.vowel(w) || /^(s[^aeiou]|z|gn|ps)/i.test(w) ? "quegli" : "quei");
@@ -561,6 +626,12 @@
         vp = lm[1] + " molto" + lm[2];
       }
       S.le = false;
+    } else if (pr.t === "pivot") {
+      if (S.modal) fail("verbo modale + «" + pr.v + "» non lo traduco ancora");
+      var ptense = S.le || pr.vp.le || S.neg === "没" || S.neg === "没有" || past ? "past" : "pres";
+      var pv = pivotFinite(pr, P, ptense, neg, subj, notes);
+      vp = pv.vp; tail = tail.concat(pv.tail); S.le = false;
+      if (yijing) vp = afterFinite(vp, "già"); if (tutti) vp = afterFinite(vp, tutti); if (hai) vp = afterFinite(vp, "ancora");
     } else if (pr.t === "verb") {
       var r = verbIt(S, P, neg, isQ, notes, { yijing: yijing, hai: hai, zhi: zhi, tutti: tutti, past: past });
       vp = r.vp; tail = tail.concat(r.tail); if (r.q) { q = r.q; qWord = r.qWord; } if (r.front) front = r.front;
@@ -640,6 +711,47 @@
     if (ye) return (neg ? "neanche a " : "anche a ") + STRONG[pk] + " " + (neg ? "" : n) + pv;
     return n + CL_IND[pk] + " " + pv;
   }
+  /* il verbo «a perno» in italiano: 请 = invitare a (mangiare, bere, venire…) o chiedere di; 让/叫 = dire di; 帮 = aiutare a.
+     [verbo italiano, persona come oggetto diretto (d) o indiretto (i), preposizione davanti al secondo verbo] */
+  var INVITE = /^(吃饭|吃|喝|喝茶|喝咖啡|来|玩|看电影|唱歌|跳舞|吃早饭|吃午饭|吃晚饭)$/;
+  function pivotSpec(pv) {
+    var inner = pv.vp.t === "pivot" ? null : hz(pv.vp.k);
+    if (pv.v === "请") return inner && INVITE.test(inner) ? ["invitare", "d", "a"] : ["chiedere", "i", "di"];
+    if (pv.v === "让" || pv.v === "叫") return ["dire", "i", "di"];
+    return ["aiutare", "d", "a"];
+  }
+  /* la persona come nome: «un amico» (indefinito) se è un nome comune, «mia madre» se è un parente */
+  function whoIt(pv, dir) {
+    var w = npIt(pv.who, dir ? "obj" : "to", {});
+    if (pv.who.t === "noun" && !/k/.test(noun(pv.who.head).fl) && !/^(爸爸|妈妈|父母)$/.test(hz(pv.who.head))) { var n = noun(pv.who.head), g = gOf(n, "s"); w = { it: I.join(I.indef(n.s, g), n.s), P: [3, "s", g] }; }
+    return dir ? w.it : I.withPrep("a", w.it);
+  }
+  function whoOf(pv) { return pv.who.t === "pron" ? G.pron[pv.who.pron] : (npIt(pv.who, "obj", {}).P || [3, "s", "m"]); }
+  /* la forma all'infinito: aiutarmi a dirglielo, chiedergli di venire */
+  function pivotInf(pv, notes) {
+    var sp = pivotSpec(pv), base = sp[0], wp = whoOf(pv), np = "";
+    if (pv.who.t === "pron") base = base.replace(/e$/, "") + (sp[1] === "d" ? CL_DIR : CL_IND)[personKey(wp)];
+    else np = " " + whoIt(pv, sp[1] === "d");
+    var rest = pv.vp.t === "pivot" ? pivotInf(pv.vp, notes) : verbPhraseInf(pv.vp, wp, notes, false).it;
+    return base + np + " " + (sp[2] === "a" ? aPrep(rest) : "di " + rest);
+  }
+  function pivotFinite(pv, P, tense, neg, subj, notes) {
+    var sp = pivotSpec(pv), wp = whoOf(pv);
+    if ((pv.v === "让" || pv.v === "叫") && subj && subj.t === "pron" && subj.pron === "你" && pv.who.t === "pron" && pv.who.pron === "我") fail("«你让我…» di solito vuol dire «lasciami…» (un permesso): non lo traduco ancora");
+    var fin = conj(sp[0], "a", P, tense, P[2]), tail = [];
+    if (pv.who.t === "pron") {
+      var cl = (sp[1] === "d" ? CL_DIR : CL_IND)[personKey(wp)];
+      if (tense === "past" && sp[1] === "d" && /^(lo|la|li|le|La)$/.test(cl)) {
+        var part = I.pp(sp[0]); fin = fin.replace(part, I.agreeO(part, wp[2] === "x" ? "m" : wp[2], wp[1]));
+        fin = (/^(lo|la|La)$/.test(cl) && /^h/.test(fin) ? "l'" : cl + " ") + fin;
+      } else fin = cl + " " + fin;
+    } else tail.push(whoIt(pv, sp[1] === "d"));
+    var rest = pv.vp.t === "pivot" ? pivotInf(pv.vp, notes) : verbPhraseInf(pv.vp, wp, notes, false).it;
+    tail.push(sp[2] === "a" ? aPrep(rest) : "di " + rest);
+    if (pv.v === "让" || pv.v === "叫") notes.push(pv.v + " + persona + verbo: «dire (o far fare) a qualcuno di…». A volte vuol dire anche «lasciare».");
+    if (pv.v === "请" && sp[0] === "invitare") notes.push("请 + persona + 吃饭 vuol dire spesso «offrire»: chi invita, paga.");
+    return { vp: (neg ? "non " : "") + fin, tail: tail };
+  }
   /* verbo all'infinito con il suo oggetto (dopo 喜欢, 想, 会…) */
   function verbPhraseInf(v, P, notes, afterGo) {
     var info = v.info, k = v.k, inf = afterGo && info[4] ? info[4] : info[0], out = { it: "" };
@@ -649,6 +761,8 @@
     if (vo && v.obj && v.obj.head) { var nf = lex(G.nouns, v.obj.head), alt = vo[hz(v.obj.head)] || (nf && /t/.test(nf[3] || "") ? vo.t : null); if (alt) inf = alt[0]; }
     if (vo && vo.t && inf === info[0] && /^坐$/.test(hz(k)) && v.obj) fail("«坐» con questo oggetto non lo so tradurre");
     var base = infFor(inf, P);
+    /* 告诉他 senza la cosa detta: «dirglielo» (gli + lo) */
+    if (hz(k) === "告诉" && v.obj && v.obj.t === "pron" && !v.io) { var TP = G.pron[v.obj.pron]; o.clitic = { "1s": "me", "2s": "te", "1p": "ce", "2p": "ve" }[personKey(TP)] || "glie"; o.clitic += "lo"; }
     if (o.clitic) base = base.replace(/e$/, "") + o.clitic;
     out.it = [base].concat(o.tail).join(" ");
     if (v.then) { var t2 = verbPhraseInf(v.then, P, notes); out.it += " " + aPrep(t2.it); if (t2.q) { out.q = t2.q; out.qWord = t2.qWord; } }
