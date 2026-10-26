@@ -15,9 +15,10 @@
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
   var GK = "cp-game-v1";
   var RANKS = [
-    { n: "Viaggiatore Curioso", x: 0, c: "游" }, { n: "Apprendista dei Toni", x: 200, c: "调" }, { n: "Custode di Caratteri", x: 600, c: "字" },
-    { n: "Mercante di Seta", x: 1500, c: "丝" }, { n: "Poeta del Bambù", x: 3000, c: "竹" }, { n: "Maestro di Giada", x: 6000, c: "玉" }, { n: "Saggio Mandarino", x: 10000, c: "贤" }
+    { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
+    { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" }
   ];
+  function rankName(r) { return LANG === "zh" ? r.z : r.n; }
   var G = { xp: 0, goal: 10, days: {}, best: 0 };
   function adopt(o) {
     if (!o || typeof o !== "object") return;
@@ -52,11 +53,11 @@
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
     var b = rankIdx(G.xp); G.xp += n; var a = rankIdx(G.xp);
-    if (a > b) { CP.toast("Nuovo grado: " + RANKS[a].n); CP.sfx("level"); }
+    if (a > b) { CP.toast(CP.t("rank.toast", { r: rankName(RANKS[a]) })); CP.sfx("level"); }
   }
   function rankInfo() {
     var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null;
-    return { i: i, name: r.n, ch: r.c, xp: G.xp, next: nx ? nx.x : null, nextName: nx ? nx.n : null, pct: nx ? Math.round((G.xp - r.x) / (nx.x - r.x) * 100) : 100 };
+    return { i: i, name: rankName(r), ch: r.c, xp: G.xp, next: nx ? nx.x : null, nextName: nx ? rankName(nx) : null, pct: nx ? Math.round((G.xp - r.x) / (nx.x - r.x) * 100) : 100 };
   }
   CP.stamp = function (r, lg) {
     return '<span class="seal stamp' + (lg ? " lg" : "") + (r.i === RANKS.length - 1 ? " max" : "") + '" aria-hidden="true"><svg viewBox="300 30 200 200" focusable="false"><use href="#mandarin-symbol"/></svg><b>' + r.ch + "</b></span>";
@@ -66,7 +67,7 @@
     addWord: function (k) {
       var r = rec(true); if (r.w.indexOf(k) >= 0) return;
       var was = r.w.length; r.w.push(k); award(10); save();
-      if (was < G.goal && r.w.length >= G.goal) { CP.toast("Obiettivo di oggi raggiunto: " + G.goal + " parole."); CP.sfx("level"); }
+      if (was < G.goal && r.w.length >= G.goal) { CP.toast(CP.t("goal.toast", { n: G.goal })); CP.sfx("level"); }
       ui();
     },
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
@@ -91,7 +92,7 @@
   function ui() {
     var r = rankInfo(), s = streak();
     pill.innerHTML = CP.stamp(r) + "<span>🔥 <b>" + s + "</b></span><span class=\"muted\">" + r.xp + " XP</span>";
-    pill.setAttribute("aria-label", "Il tuo cammino: " + r.name + ", " + s + " giorni di fila, " + r.xp + " punti. Apri il percorso.");
+    pill.setAttribute("aria-label", CP.t("pill.aria", { r: r.name, s: s, x: r.xp }));
     if (CP.pathDirty) CP.pathDirty();
   }
   pill.addEventListener("click", function () { CP.show("path"); });

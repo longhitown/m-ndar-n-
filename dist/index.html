@@ -880,6 +880,7 @@ body:not(.course-it) .dock-it { display: none; }
 .it-line.it-b { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
 .it-tile .th { font-family: inherit; font-size: 18px; }
 .dock.dock-it { grid-template-columns: repeat(5, 1fr); }
+body.course-it #set-contrib { display: none !important; }
 
 /* ---- styles/categories.css ---- */
 /* ===== V6.5: categorie (pills), Pensiero esteso, Puzzle ===== */
@@ -1201,10 +1202,10 @@ tr.flash > td { background: var(--chip); transition: background .3s; }
   <div class="notice" id="sw-notice" role="status" hidden></div>
 
 
-  <div class="bar" role="toolbar" aria-label="Strumenti">
+  <div class="bar" role="toolbar" aria-label="Strumenti" data-i18n-aria="bar.tools">
     <button type="button" id="mini-logo" class="mini-logo" aria-label="Torna in cima" hidden><svg viewBox="300 30 200 200" aria-hidden="true" focusable="false"><use href="#mandarin-symbol"/></svg></button>
     <button type="button" class="gpill" id="game-pill" aria-label="Il tuo cammino"></button>
-    <div class="grp" role="group" aria-label="Strumenti">
+    <div class="grp" role="group" aria-label="Strumenti" data-i18n-aria="bar.tools">
       <button type="button" id="guide-btn" class="iconbtn" aria-label="Modalità guida: ascolta camminando" title="Modalità guida" data-i18n-aria="bar.guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 15h-3v5h2a1 1 0 0 0 1-1z"/></svg></button>
       <button type="button" id="settings-btn" class="iconbtn" aria-label="Impostazioni: tema, caratteri, audio, voce, backup" title="Impostazioni" data-i18n-aria="bar.settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
@@ -1310,21 +1311,21 @@ tr.flash > td { background: var(--chip); transition: background .3s; }
   <div class="fam-card set-card">
     <div class="fam-head"><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
     <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look" data-i18n="set.look">Aspetto</h3>
-      <div class="seg" id="set-theme" role="group" aria-label="Tema"><button type="button" data-theme-set="light" data-i18n="theme.light">☀️ Chiaro</button><button type="button" data-theme-set="sepia" data-i18n="theme.sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark" data-i18n="theme.dark">🌙 Notte</button></div>
+      <div class="seg" id="set-theme" role="group" aria-label="Tema" data-i18n-aria="set.theme"><button type="button" data-theme-set="light" data-i18n="theme.light">☀️ Chiaro</button><button type="button" data-theme-set="sepia" data-i18n="theme.sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark" data-i18n="theme.dark">🌙 Notte</button></div>
       <div class="hzrow"><span data-i18n="set.hz">Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli" data-i18n-aria="set.hzMinus">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi" data-i18n-aria="set.hzPlus">A+</button></div>
       <label class="chk"><input type="checkbox" id="opt-toneshapes"> <span data-i18n="set.toneshapes">Toni anche con un segno, non solo col colore</span></label>
     </section>
     <section class="set-sec" aria-labelledby="set-h-audio"><h3 id="set-h-audio" data-i18n="set.audio">Audio</h3>
-      <div class="seg" id="set-audio" role="group" aria-label="Audio"><button type="button" data-audio-set="all" data-i18n="audio.all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx" data-i18n="audio.fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute" data-i18n="audio.mute">🔇 Muto</button></div>
+      <div class="seg" id="set-audio" role="group" aria-label="Audio" data-i18n-aria="set.audio"><button type="button" data-audio-set="all" data-i18n="audio.all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx" data-i18n="audio.fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute" data-i18n="audio.mute">🔇 Muto</button></div>
       <label class="jk-vol small muted"><span data-i18n="set.sfxvol">🔔 Volume effetti</span> <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
       <button type="button" class="btn-s" id="set-music" data-i18n="set.music">🎵 Musica per studiare…</button>
     </section>
     <details class="set-sec" id="vset"><summary data-i18n="set.voice">Voce</summary><div class="vbody" id="vset-body"></div></details>
     <details class="set-sec" id="set-mic-box"><summary data-i18n="set.mic">Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></details>
     <details class="set-sec" id="set-data"><summary data-i18n="set.data">Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
-    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua"><button type="button" data-lang-set="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
+    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
     <div id="set-extra"></div>
-    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits>Crediti e licenze</button></div></div></details>
+    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div></details>
   </div>
 </div>
 
@@ -1512,7 +1513,10 @@ var SECTIONS = [], DIALOGS = [], LESSONS = [], ITLESSONS = [];
   /* ---------------- voce mancante: link all'installazione delle voci del telefono ---------------- */
   window.__mdVoiceHelp = function (lang) {
     var has = false; try { has = A.ttsHasLang(lang || "zh-CN"); } catch (e) {}
-    return has ? "" : '<p class="small muted" style="margin:0">Il telefono non ha ancora la voce ' + (/^it/.test(lang || "") ? "italiana" : "cinese") + '. Si scarica gratis dal motore di sintesi vocale (di solito «Servizi di sintesi vocale di Google»).</p>' +
+    if (has) return "";
+    var it = /^it/.test(lang || ""), zh = typeof LANG !== "undefined" && LANG === "zh";
+    return zh ? '<p class="small muted" style="margin:0">手机还没有' + (it ? "意大利语" : "中文") + '语音。可以在手机的文字转语音引擎里免费下载（通常是「Google 语音服务」）。</p><button type="button" class="btn-s" data-md-tts-install>⬇ 安装语音</button>'
+      : '<p class="small muted" style="margin:0">Il telefono non ha ancora la voce ' + (it ? "italiana" : "cinese") + '. Si scarica gratis dal motore di sintesi vocale (di solito «Servizi di sintesi vocale di Google»).</p>' +
       '<button type="button" class="btn-s" data-md-tts-install>⬇ Installa la voce</button>';
   };
   document.addEventListener("click", function (e) {
@@ -15906,7 +15910,9 @@ I18N.it = {
   "sess.kbd": "Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti",
   "wel.title": "Benvenuto in màndarínō", "wel.intro": "{n} parole per parlare, nell'ordine in cui servono. Ogni parola si impara in tre passi: come si legge, come si scrive, cosa vuol dire.",
   "wel.read": "1 · si legge", "wel.write": "2 · si scrive", "wel.mean": "3 · significa", "wel.tones": "I colori sono i toni: rosso alto e piatto, verde sale, blu scende e risale, viola cade.",
-  "wel.goal": "Quante parole nuove al giorno?", "wel.goalHint": "Si cambia quando vuoi in Studia → Personalizza. Meglio poche ogni giorno che tante una volta.", "wel.start": "Inizia con {n} parole"
+  "wel.goal": "Quante parole nuove al giorno?", "wel.goalHint": "Si cambia quando vuoi in Studia → Personalizza. Meglio poche ogni giorno che tante una volta.", "wel.start": "Inizia con {n} parole",
+  "pill.aria": "Il tuo cammino: {r}, {s} giorni di fila, {x} punti. Apri il percorso.", "rank.toast": "Nuovo grado: {r}", "goal.toast": "Obiettivo di oggi raggiunto: {n} parole.", "jk.aria": "Jukebox: {s}. Tocca per scegliere la musica", "jk.on": "acceso", "jk.off": "spento", "jk.title": "🎵 Musica per studiare", "jk.hint": "Ambienti generati al momento, senza file. Si fermano da soli quando usi il microfono.", "jk.choose": "Scegli la musica", "jk.stop": "⏸ Spegni", "jk.start": "▶ Accendi", "jk.stopLong": "⏸ Spegni la musica", "jk.startLong": "▶ Accendi la musica", "jk.next": "⏭ Prossima", "jk.all": "Tutte, in ordine casuale", "jk.rand": "Casuali · {m}", "jk.cycle": "Cambia traccia ogni 7 minuti e mezzo, poi si rimescola", "jk.nowOff": "Spento.", "jk.nowHold": "In pausa: il microfono è aperto.", "jk.nowWait": "Si avvia al prossimo tocco…", "jk.now": "In ascolto: {t}", "jk.left": "prossima tra {t}", "jk.music": "🎵 Musica", "jk.fx": "🔔 Effetti", "jk.auto": "Abbina la musica all'attività (⚡ nella Sfida, 🎯 nello studio)", "snd.title": "Suono del dispositivo", "snd.state": "Audio: {s}.", "snd.running": "attivo", "snd.none": "non ancora avviato (tocca un pulsante)", "snd.susp": "in pausa: tocca «Prova il suono»", "snd.test": "🔔 Prova il suono", "snd.ok": "attivo. Se non hai sentito il suono, controlla volume e tasto silenzioso del telefono.", "snd.mute": "Sei in modalità muto: tocca 🔇 in alto per riattivare gli effetti.", "apk.title": "App Android", "apk.ver": "Versione {v}. Gli aggiornamenti si installano sopra questa, senza perdere i progressi.", "mic.line": "Microfono: {p}. {o}", "mic.granted": "permesso dato", "mic.denied": "bloccato: consentilo dalle impostazioni del browser", "mic.prompt": "lo chiedo la prima volta che serve", "mic.unknown": "stato del permesso sconosciuto", "mic.open": "Adesso è aperto (si chiude da solo dopo 45 secondi di inattività).", "mic.closed": "Adesso è chiuso.", "mic.sr": " Riconoscimento vocale presente (serve internet).", "mic.nosr": " Riconoscimento vocale assente: il 🎤 registra e confronta.", "mic.closedToast": "Microfono chiuso.", "set.credits": "Crediti e licenze",
+  "bk.done": "Backup creato: {n}. Conservalo in un posto sicuro.", "bk.bad": "Il file non è un backup valido.", "bk.old": "Progressi del vecchio formato uniti. Ricarico…", "bk.imported": "{n} voci importate. Ricarico…", "bk.unknown": "File non riconosciuto.", "course.aria": "Corso"
 };
 </script>
 <script>
@@ -15949,7 +15955,9 @@ I18N.zh = {
   "sess.kbd": "键盘：<kbd>空格</kbd> 显示或朗读 · <kbd>1</kbd>–<kbd>4</kbd> 评分 · <kbd>回车</kbd> 下一个",
   "wel.title": "欢迎使用 màndarínō", "wel.intro": "{n} 个常用词，按需要的顺序排列。每个词分三步学：怎么读，怎么写，是什么意思。",
   "wel.read": "1 · 读音", "wel.write": "2 · 写法", "wel.mean": "3 · 意思", "wel.tones": "颜色代表声调：红色高平，绿色上升，蓝色降升，紫色下降。",
-  "wel.goal": "每天学几个新词？", "wel.goalHint": "随时可以在「学习 → 自定义」里修改。每天少学一点，比一次学很多更好。", "wel.start": "从 {n} 个词开始"
+  "wel.goal": "每天学几个新词？", "wel.goalHint": "随时可以在「学习 → 自定义」里修改。每天少学一点，比一次学很多更好。", "wel.start": "从 {n} 个词开始",
+  "pill.aria": "我的进度：{r}，连续学习 {s} 天，{x} 分。", "rank.toast": "新等级：{r}", "goal.toast": "今天的目标完成了：{n} 个词。", "jk.aria": "音乐：{s}。点一下选择音乐", "jk.on": "开", "jk.off": "关", "jk.title": "🎵 学习时的音乐", "jk.hint": "音乐由程序实时生成，不需要任何文件。使用麦克风时会自动暂停。", "jk.choose": "选择音乐", "jk.stop": "⏸ 关闭", "jk.start": "▶ 打开", "jk.stopLong": "⏸ 关闭音乐", "jk.startLong": "▶ 打开音乐", "jk.next": "⏭ 下一首", "jk.all": "全部随机播放", "jk.rand": "随机 · {m}", "jk.cycle": "每七分半钟换一首，全部播完后重新打乱", "jk.nowOff": "已关闭。", "jk.nowHold": "已暂停：麦克风正在使用。", "jk.nowWait": "下一次点击时开始播放……", "jk.now": "正在播放：{t}", "jk.left": "{t} 后换下一首", "jk.music": "🎵 音乐", "jk.fx": "🔔 音效", "jk.auto": "音乐配合当前活动（⚡ 挑战，🎯 学习）", "snd.title": "设备声音", "snd.state": "音频：{s}。", "snd.running": "已开启", "snd.none": "还没有启动（点任意按钮）", "snd.susp": "已暂停：请点「测试声音」", "snd.test": "🔔 测试声音", "snd.ok": "已开启。如果没有听到声音，请检查手机音量和静音键。", "snd.mute": "现在是静音模式：点上方的 🔇 重新打开音效。", "apk.title": "安卓应用", "apk.ver": "版本 {v}。新版本会直接覆盖安装，学习记录不会丢失。", "mic.line": "麦克风：{p}。{o}", "mic.granted": "已允许", "mic.denied": "已被阻止：请在浏览器设置里允许", "mic.prompt": "第一次需要时会询问你", "mic.unknown": "权限状态未知", "mic.open": "现在是打开的（45 秒不用会自动关闭）。", "mic.closed": "现在是关闭的。", "mic.sr": "有语音识别（需要联网）。", "mic.nosr": "没有语音识别：🎤 会录音并对比。", "mic.closedToast": "麦克风已关闭。", "set.credits": "致谢与许可",
+  "bk.done": "备份已创建：{n}。请保存在安全的地方。", "bk.bad": "这个文件不是有效的备份。", "bk.old": "旧格式的学习记录已合并。正在重新加载……", "bk.imported": "已导入 {n} 项。正在重新加载……", "bk.unknown": "无法识别这个文件。", "course.aria": "课程"
 };
 </script>
 <!-- Nucleo: ripasso FSRS, archivio, tabella delle parole (crea window.CP), stato condiviso -->
@@ -16857,6 +16865,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function buildVoiceUI() {
     var body = document.getElementById("vset-body"), sum = document.getElementById("vsum");
     if (!body) return;
+    if (CP.voiceUIOverride && CP.voiceUIOverride(body, sum)) return;   /* corso di italiano: la voce italiana, in cinese */
     if (!synth) {
       body.innerHTML = '<p class="muted small" style="margin:0">Questo browser non ha la sintesi vocale: i pulsanti audio non sono disponibili.</p>';
       if (sum) sum.textContent = "non disponibile";
@@ -16981,6 +16990,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       var u = new SpeechSynthesisUtterance(text);
       u.lang = o.lang || (voice ? voice.lang : "zh-CN");
       if (zh && voice) u.voice = voice;
+      else if (!zh && o.voiceURI) { var ov = (synth.getVoices() || []).filter(function (v) { return v.voiceURI === o.voiceURI; })[0]; if (ov) u.voice = ov; }
       u.rate = rate;
       if (o.pitch) u.pitch = o.pitch;
       u.onstart = function () { started = true; clearTimeout(startTimer); };
@@ -18422,9 +18432,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
   var GK = "cp-game-v1";
   var RANKS = [
-    { n: "Viaggiatore Curioso", x: 0, c: "游" }, { n: "Apprendista dei Toni", x: 200, c: "调" }, { n: "Custode di Caratteri", x: 600, c: "字" },
-    { n: "Mercante di Seta", x: 1500, c: "丝" }, { n: "Poeta del Bambù", x: 3000, c: "竹" }, { n: "Maestro di Giada", x: 6000, c: "玉" }, { n: "Saggio Mandarino", x: 10000, c: "贤" }
+    { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
+    { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" }
   ];
+  function rankName(r) { return LANG === "zh" ? r.z : r.n; }
   var G = { xp: 0, goal: 10, days: {}, best: 0 };
   function adopt(o) {
     if (!o || typeof o !== "object") return;
@@ -18459,11 +18470,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
     var b = rankIdx(G.xp); G.xp += n; var a = rankIdx(G.xp);
-    if (a > b) { CP.toast("Nuovo grado: " + RANKS[a].n); CP.sfx("level"); }
+    if (a > b) { CP.toast(CP.t("rank.toast", { r: rankName(RANKS[a]) })); CP.sfx("level"); }
   }
   function rankInfo() {
     var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null;
-    return { i: i, name: r.n, ch: r.c, xp: G.xp, next: nx ? nx.x : null, nextName: nx ? nx.n : null, pct: nx ? Math.round((G.xp - r.x) / (nx.x - r.x) * 100) : 100 };
+    return { i: i, name: rankName(r), ch: r.c, xp: G.xp, next: nx ? nx.x : null, nextName: nx ? rankName(nx) : null, pct: nx ? Math.round((G.xp - r.x) / (nx.x - r.x) * 100) : 100 };
   }
   CP.stamp = function (r, lg) {
     return '<span class="seal stamp' + (lg ? " lg" : "") + (r.i === RANKS.length - 1 ? " max" : "") + '" aria-hidden="true"><svg viewBox="300 30 200 200" focusable="false"><use href="#mandarin-symbol"/></svg><b>' + r.ch + "</b></span>";
@@ -18473,7 +18484,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     addWord: function (k) {
       var r = rec(true); if (r.w.indexOf(k) >= 0) return;
       var was = r.w.length; r.w.push(k); award(10); save();
-      if (was < G.goal && r.w.length >= G.goal) { CP.toast("Obiettivo di oggi raggiunto: " + G.goal + " parole."); CP.sfx("level"); }
+      if (was < G.goal && r.w.length >= G.goal) { CP.toast(CP.t("goal.toast", { n: G.goal })); CP.sfx("level"); }
       ui();
     },
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
@@ -18498,7 +18509,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function ui() {
     var r = rankInfo(), s = streak();
     pill.innerHTML = CP.stamp(r) + "<span>🔥 <b>" + s + "</b></span><span class=\"muted\">" + r.xp + " XP</span>";
-    pill.setAttribute("aria-label", "Il tuo cammino: " + r.name + ", " + s + " giorni di fila, " + r.xp + " punti. Apri il percorso.");
+    pill.setAttribute("aria-label", CP.t("pill.aria", { r: r.name, s: s, x: r.xp }));
     if (CP.pathDirty) CP.pathDirty();
   }
   pill.addEventListener("click", function () { CP.show("path"); });
@@ -20025,16 +20036,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     {
       var rd = new FileReader();
       rd.onload = function () {
-        var o; try { o = JSON.parse(rd.result); } catch (x) { msg.textContent = "Il file non è un backup valido."; return; }
+        var o; try { o = JSON.parse(rd.result); } catch (x) { msg.textContent = CP.t("bk.bad"); return; }
         if (o && o.v === 2 && o.s && typeof o.s === "object" && !o.app) {
           /* formato del vecchio «Salva o sposta»: unione, come per il backup nuovo */
           CP.setS(Store.mergeSrs(CP.S(), o.s)); if (o.f && CP.favs) CP.favs.load(CP.favs.dump().concat(o.f)); if (o.g && CP.game && !CP.game.dump().xp) CP.game.load(o.g);
-          msg.textContent = "Progressi del vecchio formato uniti. Ricarico…"; setTimeout(function () { location.reload(); }, 700); return;
+          msg.textContent = CP.t("bk.old"); setTimeout(function () { location.reload(); }, 700); return;
         }
         var r = Store.importObj(o, "merge");
         Promise.resolve(r).then(function (res) {
-          if (!res.ok) { msg.textContent = res.msg; return; }
-          msg.textContent = res.msg + " Ricarico…"; setTimeout(function () { location.reload(); }, 700);
+          if (!res.ok) { msg.textContent = CP.t("bk.unknown"); return; }
+          msg.textContent = CP.t("bk.imported", { n: res.n }); setTimeout(function () { location.reload(); }, 700);
         });
       };
       rd.readAsText(f);
@@ -20161,9 +20172,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   var AB = { a: "", b: "" };
   var PHR = "你好，我是你的新朋友。今天天气很好。";
   CP.voiceExtra = function () {
-    var vs = CP.voices(), st = CP.audioState(), h = (window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">Suono del dispositivo</div>' +
-      '<p class="small muted" style="margin:2px 0 6px" id="aud-state">Audio: ' + (st === "running" ? "attivo" : st === "none" ? "non ancora avviato (tocca un pulsante)" : st === "suspended" ? "in pausa: tocca «Prova il suono»" : esc(st)) + ".</p>" +
-      '<button type="button" class="btn-s" id="snd-test">🔔 Prova il suono</button>';
+    var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
+      '<p class="small muted" style="margin:2px 0 6px" id="aud-state">' + CP.t("snd.state", { s: st === "running" ? CP.t("snd.running") : st === "none" ? CP.t("snd.none") : st === "suspended" ? CP.t("snd.susp") : esc(st) }) + "</p>" +
+      '<button type="button" class="btn-s" id="snd-test">' + CP.t("snd.test") + "</button>";
     if (vs.length >= 2) {
       if (!AB.a || !vs.some(function (v) { return v.voiceURI === AB.a; })) AB.a = vs[0].voiceURI;
       if (!AB.b || !vs.some(function (v) { return v.voiceURI === AB.b; }) || AB.b === AB.a) AB.b = (vs.filter(function (v) { return v.voiceURI !== AB.a; })[0] || vs[1]).voiceURI;
@@ -20172,10 +20183,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
         '<div class="ab"><label>A<select id="ab-a">' + opt(AB.a) + '</select></label><label>B<select id="ab-b">' + opt(AB.b) + "</select></label></div>" +
         '<div class="acts"><button type="button" class="btn-s" data-ab="a">▶ Ascolta A</button><button type="button" class="btn-s" data-ab="b">▶ Ascolta B</button></div>' +
         '<div class="acts"><button type="button" class="btn-s" data-abpick="a">Usa A</button><button type="button" class="btn-s" data-abpick="b">Usa B</button></div>';
-    } else h += '<p class="small muted" style="margin:10px 0 0">Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.</p>';
+    } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.</p>';
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
-    if (ps && ps.apk) { h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App Android</div><p class="small muted" style="margin:2px 0 0">Versione ' + esc(String(ps.apk)) + ". Gli aggiornamenti si installano sopra questa, senza perdere i progressi.</p></div>"; return h; }
+    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p></div>"; return h; }
+    if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App sul telefono (PWA)</div>' +
       '<p class="small muted" style="margin:2px 0 6px">' + (ps && ps.standalone ? "Stai usando l'app installata." : ps && ps.http ? "Su https puoi aggiungerla alla schermata Home e usarla offline." : "Per installarla e avere il microfono senza richieste ripetute serve un indirizzo https: scarica il pacchetto e caricalo su GitHub + Cloudflare Pages.") + "</p>" +
       '<button type="button" class="btn-s" id="pwa-dl">📦 Scarica pacchetto PWA per GitHub</button></div>';
@@ -20192,9 +20204,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (b.id === "snd-test") {
       CP.audioUnlock().then(function (s) {
         var el = document.getElementById("aud-state");
-        if (mode() === "mute") { CP.toast("Sei in modalità muto: tocca 🔇 in alto per riattivare gli effetti."); return; }
+        if (mode() === "mute") { CP.toast(CP.t("snd.mute")); return; }
         CP.sfx("ok"); paintVol();
-        if (el) el.textContent = "Audio: " + (s === "running" ? "attivo. Se non hai sentito il suono, controlla volume e tasto silenzioso del telefono." : s + ".");
+        if (el) el.textContent = CP.t("snd.state", { s: s === "running" ? CP.t("snd.ok") : s }).replace(/。。|\.\.$/, ".");
       });
     }
     if (b.id === "pwa-dl") {
@@ -21190,7 +21202,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (on) start(); else stop();
     if (mus) {
       mus.textContent = "🎵"; mus.classList.toggle("on", J.want && modeNow() !== "mute"); mus.setAttribute("aria-pressed", J.want ? "true" : "false");
-      mus.setAttribute("aria-label", "Jukebox: " + (J.want ? "acceso" : "spento") + ". Tocca per scegliere la musica"); mus.title = "Jukebox";
+      mus.setAttribute("aria-label", CP.t("jk.aria", { s: CP.t(J.want ? "jk.on" : "jk.off") })); mus.title = CP.t("jk.title").replace(/^\S+\s/, "");
     }
     paint();
   };
@@ -21213,8 +21225,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     }).join("") + "</div>";
   }
   function list(extraCls) {
-    var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="Scegli la musica">', mn = MOODS.filter(function (m) { return m[0] === J.mood; })[0];
-    h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>' + (J.mood ? "Casuali · " + mn[1] : "Tutte, in ordine casuale") + '</b><i>Cambia traccia ogni 7 minuti e mezzo, poi si rimescola</i></span></button>';
+    var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="' + CP.t("jk.choose") + '">', mn = MOODS.filter(function (m) { return m[0] === J.mood; })[0];
+    h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>' + (J.mood ? CP.t("jk.rand", { m: mn[1] }) : CP.t("jk.all")) + '</b><i>' + CP.t("jk.cycle") + '</i></span></button>';
     pool().forEach(function (t) {
       h += '<button type="button" class="jk-it' + (cur === t.id ? " on" : "") + '" role="radio" aria-checked="' + (cur === t.id) + '" data-jk="' + t.id + '"><span class="ico">' + t.ico + '</span><span><b>' + esc(t.name) + '</b><i>' + esc(t.desc) + "</i></span></button>";
     });
@@ -21223,18 +21235,18 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function left() { var ms = Math.max(0, SLOT_MS - (Date.now() - J.slotAt)), m = Math.floor(ms / 60000), sec = Math.floor(ms / 1000) % 60; return m + ":" + (sec < 10 ? "0" : "") + sec; }
   function nowLine() {
     var t = BYID[J.curId];
-    if (!J.want) return "Spento.";
-    if (J.hold) return "In pausa: il microfono è aperto.";
-    if (!t) return "Si avvia al prossimo tocco…";
-    return "In ascolto: " + t.ico + " " + esc(t.name) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· prossima tra ' + left() + "</span>" : "");
+    if (!J.want) return CP.t("jk.nowOff");
+    if (J.hold) return CP.t("jk.nowHold");
+    if (!t) return CP.t("jk.nowWait");
+    return CP.t("jk.now", { t: t.ico + " " + esc(t.name) }) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· ' + CP.t("jk.left", { t: left() }) + "</span>" : "");
   }
   function popHTML() {
     return '<div class="jk-card"><div class="jk-h"><b>🎵 Jukebox</b><button type="button" class="btn-s" data-jk-close aria-label="Chiudi">✕</button></div>' +
       '<p class="small muted jk-now" id="jk-now" aria-live="polite">' + nowLine() + "</p>" +
-      '<div class="acts" style="margin:0 0 8px"><button type="button" class="btn-main" data-jk-toggle style="flex:1">' + (J.want ? "⏸ Spegni la musica" : "▶ Accendi la musica") + '</button><button type="button" class="btn-s" data-jk-next' + (J.want ? "" : " disabled") + '>⏭ Prossima</button></div>' +
-      '<label class="jk-vol small muted">🎵 Musica <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
-      '<label class="jk-vol small muted">🔔 Effetti <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
-      '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> Abbina la musica all\'attività (⚡ nella Sfida, 🎯 nello studio)</label>' +
+      '<div class="acts" style="margin:0 0 8px"><button type="button" class="btn-main" data-jk-toggle style="flex:1">' + (J.want ? CP.t("jk.stopLong") : CP.t("jk.startLong")) + '</button><button type="button" class="btn-s" data-jk-next' + (J.want ? "" : " disabled") + '>' + CP.t("jk.next") + '</button></div>' +
+      '<label class="jk-vol small muted">' + CP.t("jk.music") + ' <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
+      '<label class="jk-vol small muted">' + CP.t("jk.fx") + ' <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
+      '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> ' + CP.t("jk.auto") + '</label>' +
       moodPills() + list() + "</div>";
   }
   function paint() {
@@ -21285,7 +21297,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   });
   CP.jukeboxOpen = openPop;
   CP.jukeboxUI = function () {
-    return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">🎵 Musica per studiare</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">Otto ambienti generati al momento, senza file. Si fermano da soli quando usi il microfono.</p><details class="jk-det"><summary>Scegli la musica</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? "⏸ Spegni" : "▶ Accendi") + "</button></div></div>";
+    return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">' + CP.t("jk.title") + '</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">' + CP.t("jk.hint") + '</p><details class="jk-det"><summary>' + CP.t("jk.choose") + '</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? CP.t("jk.stop") : CP.t("jk.start")) + "</button></div></div>";
   };
   document.addEventListener("visibilitychange", CP.musicApply);
   if (J.want) document.addEventListener("pointerdown", function () { setTimeout(CP.musicApply, 50); }, { once: true, capture: true, passive: true });
@@ -23187,9 +23199,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var p = document.getElementById("set-mic"), b = document.getElementById("set-mic-close"); if (!p) return;
     var info = CP.micInfo ? CP.micInfo() : { live: false };
     CP.micState().then(function (st) {
-      var perm = { granted: "permesso dato", denied: "bloccato: consentilo dalle impostazioni del browser", prompt: "lo chiedo la prima volta che serve" }[st] || "stato del permesso sconosciuto";
-      p.textContent = "Microfono: " + perm + ". " + (info.live ? "Adesso è aperto (si chiude da solo dopo 45 secondi di inattività)." : "Adesso è chiuso.") +
-        (CP.canListen() ? " Riconoscimento vocale presente (serve internet)." : " Riconoscimento vocale assente: il 🎤 registra e confronta.");
+      var perm = CP.t({ granted: "mic.granted", denied: "mic.denied", prompt: "mic.prompt" }[st] || "mic.unknown");
+      p.textContent = CP.t("mic.line", { p: perm, o: CP.t(info.live ? "mic.open" : "mic.closed") }) + CP.t(CP.canListen() ? "mic.sr" : "mic.nosr");
       if (b) b.disabled = !info.live;
     });
   }
@@ -23226,8 +23237,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (b.hasAttribute("data-set-close")) close();
     else if (b.hasAttribute("data-audio-set")) { CP.setAudioMode(b.getAttribute("data-audio-set")); paint(); }
     else if (b.id === "set-music") { close(); if (CP.jukeboxOpen) CP.jukeboxOpen(); }
-    else if (b.id === "set-mic-close") { if (CP.micClose) CP.micClose(); CP.toast("Microfono chiuso."); paintMic(); }
-    else if (b.id === "set-bk-down") { Store.backup().then(function (n) { document.getElementById("set-bk-msg").textContent = "Backup creato: " + n + ". Conservalo in un posto sicuro."; }); }
+    else if (b.id === "set-mic-close") { if (CP.micClose) CP.micClose(); CP.toast(CP.t("mic.closedToast")); paintMic(); }
+    else if (b.id === "set-bk-down") { Store.backup().then(function (n) { document.getElementById("set-bk-msg").textContent = CP.t("bk.done", { n: n }); }); }
     else if (b.id === "set-bk-up") document.getElementById("set-bk-file").click();
     else if (b.id === "set-welcome") { close(); if (CP.welcome) CP.welcome(true); }
     else if (b.id === "set-selftest") { close(); location.hash = "#selftest"; }
@@ -23554,7 +23565,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   /* ⚙️ → Corso: in tutte e due le lingue, perché lo deve capire chi non legge l'altra */
   (CP.settingsExtras = CP.settingsExtras || []).unshift(function () {
     return '<details class="set-sec" id="set-course"><summary>🎓 Corso · 课程</summary><div class="vbody">' +
-      '<div class="seg" role="group" aria-label="Corso"><button type="button" data-course-set="zh"' + (course === "zh" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇮🇹 Impara il cinese</button>" +
+      '<div class="seg" role="group" aria-label="Corso · 课程"><button type="button" data-course-set="zh"' + (course === "zh" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇮🇹 Impara il cinese · 学中文</button>" +
       '<button type="button" data-course-set="it"' + (course === "it" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇨🇳 学意大利语</button></div>" +
       '<p class="small muted" style="margin:0">Due corsi, progressi separati: passare dall\'uno all\'altro non cancella niente. · 两个课程的学习记录分开保存，切换不会丢失任何内容。</p></div></details>';
   });
@@ -23565,6 +23576,36 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   if (course !== "it") return;
 
   /* ================= da qui: modalità corso di italiano ================= */
+  /* ⚙️ → 语音: la voce italiana (velocità, scelta della voce, prova), poi musica e suono */
+  var IVK = "cp-it-voice";
+  function itVoices() { var s = window.speechSynthesis; return s && s.getVoices ? (s.getVoices() || []).filter(function (v) { return /^it/i.test(v.lang || ""); }) : []; }
+  CP.itVoiceURI = function () { var u = lsGet(IVK) || "", vs = itVoices(); return vs.some(function (v) { return v.voiceURI === u; }) ? u : (vs[0] ? vs[0].voiceURI : ""); };
+  CP.voiceUIOverride = function (body, sum) {
+    var vs = itVoices(), cur = CP.itVoiceURI(), slow = CP.pref.rate !== 1;
+    var h = '<div class="seg" role="group" aria-label="语速"><button type="button" data-rate="0.8"' + (slow ? ' class="on"' : "") + '>🐢 慢</button><button type="button" data-rate="1"' + (!slow ? ' class="on"' : "") + ">🐇 正常</button></div>";
+    if (vs.length > 1) h += '<label class="small muted" for="it-voice-sel" style="display:grid;gap:4px;font-weight:600">意大利语语音<select id="it-voice-sel">' + vs.map(function (v) { return '<option value="' + CP.attr(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join("") + "</select></label>";
+    else h += '<p class="small muted" style="margin:0">' + (vs.length ? "意大利语语音：" + esc(vs[0].name) + "。" : "设备没有列出意大利语语音：会尝试用默认语音朗读（it-IT）。如果听不到，请在手机设置的「文字转语音」里安装意大利语。") + "</p>";
+    h += (window.__mdVoiceHelp ? window.__mdVoiceHelp("it-IT") : "") +
+      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (CP.pref.sfx ? " checked" : "") + '> 点击音效</label>' +
+      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (CP.pref.haptics ? " checked" : "") + '> 振动</label>' +
+      (CP.voiceExtra ? CP.voiceExtra() : "") +
+      '<button type="button" class="btn-main" id="it-voice-test" style="margin-top:4px">试听：Ciao! Come stai?</button>';
+    body.innerHTML = h;
+    if (sum) sum.textContent = slow ? "🐢 慢" : "🐇 正常";
+    return true;
+  };
+  (function () { var vb = document.getElementById("vset-body"); if (vb) CP.voiceUIOverride(vb, document.getElementById("vsum")); })();
+  document.addEventListener("change", function (e) { if (e.target && e.target.id === "it-voice-sel") { lsSet(IVK, e.target.value); CP.sfx("tap"); } });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("#it-voice-test") : null;
+    if (b) CP.speak("Ciao! Come stai?", { lang: "it-IT", el: b, voiceURI: CP.itVoiceURI() });
+  });
+  /* il «cammino» in alto porterebbe al Percorso del corso di cinese: qui porta al ripasso */
+  var pillEl = document.getElementById("game-pill");
+  if (pillEl) pillEl.addEventListener("click", function (e) { e.stopImmediatePropagation(); CP.itShow("review"); }, true);
+  /* ⚙️ → 使用说明 */
+  var about = document.querySelector("#set-about .lede");
+  if (about) about.innerHTML = "给说中文的人学意大利语：" + "<b>" + ITLESSONS.length + " 课语法</b>、常用词、动词变位和中意对照的句子。每个意大利语词都可以听发音，复习间隔由 FSRS 算法安排。所有内容都可以离线使用。";
   var Z = {
     lessons: "课程", words: "单词", review: "复习", conj: "变位", phrases: "句子",
     listen: "听", back: "← 返回", start: "开始", next: "下一题", result: "看结果", right: "答对了！", wrong: "不对。", answerIs: "正确答案：",
@@ -23824,7 +23865,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   view.addEventListener("input", function (e) { if (e.target.id === "it-q") { wq = e.target.value; var g = {}, o = []; var q = wq.trim().toLowerCase(); LEX.forEach(function (x) { if (q && (x.it + " " + x.zh + " " + x.py).toLowerCase().indexOf(q) < 0) return; var t = TOPIC[x.sec] || "其他"; if (!g[t]) { g[t] = []; o.push(t); } g[t].push(x); }); document.getElementById("it-wl").innerHTML = wordList(g, o); } });
   document.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("[data-it-say]") : null;
-    if (t) { CP.speak(t.getAttribute("data-it-say"), { lang: "it-IT", el: t }); }
+    if (t) { CP.speak(t.getAttribute("data-it-say"), { lang: "it-IT", el: t, voiceURI: CP.itVoiceURI() }); }
   });
   view.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.hasAttribute("data-it-say")) return;

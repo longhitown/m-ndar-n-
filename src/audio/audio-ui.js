@@ -69,9 +69,9 @@
   var AB = { a: "", b: "" };
   var PHR = "你好，我是你的新朋友。今天天气很好。";
   CP.voiceExtra = function () {
-    var vs = CP.voices(), st = CP.audioState(), h = (window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">Suono del dispositivo</div>' +
-      '<p class="small muted" style="margin:2px 0 6px" id="aud-state">Audio: ' + (st === "running" ? "attivo" : st === "none" ? "non ancora avviato (tocca un pulsante)" : st === "suspended" ? "in pausa: tocca «Prova il suono»" : esc(st)) + ".</p>" +
-      '<button type="button" class="btn-s" id="snd-test">🔔 Prova il suono</button>';
+    var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
+      '<p class="small muted" style="margin:2px 0 6px" id="aud-state">' + CP.t("snd.state", { s: st === "running" ? CP.t("snd.running") : st === "none" ? CP.t("snd.none") : st === "suspended" ? CP.t("snd.susp") : esc(st) }) + "</p>" +
+      '<button type="button" class="btn-s" id="snd-test">' + CP.t("snd.test") + "</button>";
     if (vs.length >= 2) {
       if (!AB.a || !vs.some(function (v) { return v.voiceURI === AB.a; })) AB.a = vs[0].voiceURI;
       if (!AB.b || !vs.some(function (v) { return v.voiceURI === AB.b; }) || AB.b === AB.a) AB.b = (vs.filter(function (v) { return v.voiceURI !== AB.a; })[0] || vs[1]).voiceURI;
@@ -80,10 +80,11 @@
         '<div class="ab"><label>A<select id="ab-a">' + opt(AB.a) + '</select></label><label>B<select id="ab-b">' + opt(AB.b) + "</select></label></div>" +
         '<div class="acts"><button type="button" class="btn-s" data-ab="a">▶ Ascolta A</button><button type="button" class="btn-s" data-ab="b">▶ Ascolta B</button></div>' +
         '<div class="acts"><button type="button" class="btn-s" data-abpick="a">Usa A</button><button type="button" class="btn-s" data-abpick="b">Usa B</button></div>';
-    } else h += '<p class="small muted" style="margin:10px 0 0">Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.</p>';
+    } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">Il dispositivo ha una sola voce cinese (o nessuna). Per averne altre: Impostazioni del telefono → Sintesi vocale → Cinese.</p>';
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
-    if (ps && ps.apk) { h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App Android</div><p class="small muted" style="margin:2px 0 0">Versione ' + esc(String(ps.apk)) + ". Gli aggiornamenti si installano sopra questa, senza perdere i progressi.</p></div>"; return h; }
+    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p></div>"; return h; }
+    if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">App sul telefono (PWA)</div>' +
       '<p class="small muted" style="margin:2px 0 6px">' + (ps && ps.standalone ? "Stai usando l'app installata." : ps && ps.http ? "Su https puoi aggiungerla alla schermata Home e usarla offline." : "Per installarla e avere il microfono senza richieste ripetute serve un indirizzo https: scarica il pacchetto e caricalo su GitHub + Cloudflare Pages.") + "</p>" +
       '<button type="button" class="btn-s" id="pwa-dl">📦 Scarica pacchetto PWA per GitHub</button></div>';
@@ -100,9 +101,9 @@
     if (b.id === "snd-test") {
       CP.audioUnlock().then(function (s) {
         var el = document.getElementById("aud-state");
-        if (mode() === "mute") { CP.toast("Sei in modalità muto: tocca 🔇 in alto per riattivare gli effetti."); return; }
+        if (mode() === "mute") { CP.toast(CP.t("snd.mute")); return; }
         CP.sfx("ok"); paintVol();
-        if (el) el.textContent = "Audio: " + (s === "running" ? "attivo. Se non hai sentito il suono, controlla volume e tasto silenzioso del telefono." : s + ".");
+        if (el) el.textContent = CP.t("snd.state", { s: s === "running" ? CP.t("snd.ok") : s }).replace(/。。|\.\.$/, ".");
       });
     }
     if (b.id === "pwa-dl") {

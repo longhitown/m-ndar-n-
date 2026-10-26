@@ -76,7 +76,7 @@
     if (on) start(); else stop();
     if (mus) {
       mus.textContent = "🎵"; mus.classList.toggle("on", J.want && modeNow() !== "mute"); mus.setAttribute("aria-pressed", J.want ? "true" : "false");
-      mus.setAttribute("aria-label", "Jukebox: " + (J.want ? "acceso" : "spento") + ". Tocca per scegliere la musica"); mus.title = "Jukebox";
+      mus.setAttribute("aria-label", CP.t("jk.aria", { s: CP.t(J.want ? "jk.on" : "jk.off") })); mus.title = CP.t("jk.title").replace(/^\S+\s/, "");
     }
     paint();
   };
@@ -99,8 +99,8 @@
     }).join("") + "</div>";
   }
   function list(extraCls) {
-    var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="Scegli la musica">', mn = MOODS.filter(function (m) { return m[0] === J.mood; })[0];
-    h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>' + (J.mood ? "Casuali · " + mn[1] : "Tutte, in ordine casuale") + '</b><i>Cambia traccia ogni 7 minuti e mezzo, poi si rimescola</i></span></button>';
+    var cur = J.sel, h = '<div class="jk-list ' + (extraCls || "") + '" role="radiogroup" aria-label="' + CP.t("jk.choose") + '">', mn = MOODS.filter(function (m) { return m[0] === J.mood; })[0];
+    h += '<button type="button" class="jk-it' + (cur === "shuffle" ? " on" : "") + '" role="radio" aria-checked="' + (cur === "shuffle") + '" data-jk="shuffle"><span class="ico">🔀</span><span><b>' + (J.mood ? CP.t("jk.rand", { m: mn[1] }) : CP.t("jk.all")) + '</b><i>' + CP.t("jk.cycle") + '</i></span></button>';
     pool().forEach(function (t) {
       h += '<button type="button" class="jk-it' + (cur === t.id ? " on" : "") + '" role="radio" aria-checked="' + (cur === t.id) + '" data-jk="' + t.id + '"><span class="ico">' + t.ico + '</span><span><b>' + esc(t.name) + '</b><i>' + esc(t.desc) + "</i></span></button>";
     });
@@ -109,18 +109,18 @@
   function left() { var ms = Math.max(0, SLOT_MS - (Date.now() - J.slotAt)), m = Math.floor(ms / 60000), sec = Math.floor(ms / 1000) % 60; return m + ":" + (sec < 10 ? "0" : "") + sec; }
   function nowLine() {
     var t = BYID[J.curId];
-    if (!J.want) return "Spento.";
-    if (J.hold) return "In pausa: il microfono è aperto.";
-    if (!t) return "Si avvia al prossimo tocco…";
-    return "In ascolto: " + t.ico + " " + esc(t.name) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· prossima tra ' + left() + "</span>" : "");
+    if (!J.want) return CP.t("jk.nowOff");
+    if (J.hold) return CP.t("jk.nowHold");
+    if (!t) return CP.t("jk.nowWait");
+    return CP.t("jk.now", { t: t.ico + " " + esc(t.name) }) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· ' + CP.t("jk.left", { t: left() }) + "</span>" : "");
   }
   function popHTML() {
     return '<div class="jk-card"><div class="jk-h"><b>🎵 Jukebox</b><button type="button" class="btn-s" data-jk-close aria-label="Chiudi">✕</button></div>' +
       '<p class="small muted jk-now" id="jk-now" aria-live="polite">' + nowLine() + "</p>" +
-      '<div class="acts" style="margin:0 0 8px"><button type="button" class="btn-main" data-jk-toggle style="flex:1">' + (J.want ? "⏸ Spegni la musica" : "▶ Accendi la musica") + '</button><button type="button" class="btn-s" data-jk-next' + (J.want ? "" : " disabled") + '>⏭ Prossima</button></div>' +
-      '<label class="jk-vol small muted">🎵 Musica <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
-      '<label class="jk-vol small muted">🔔 Effetti <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
-      '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> Abbina la musica all\'attività (⚡ nella Sfida, 🎯 nello studio)</label>' +
+      '<div class="acts" style="margin:0 0 8px"><button type="button" class="btn-main" data-jk-toggle style="flex:1">' + (J.want ? CP.t("jk.stopLong") : CP.t("jk.startLong")) + '</button><button type="button" class="btn-s" data-jk-next' + (J.want ? "" : " disabled") + '>' + CP.t("jk.next") + '</button></div>' +
+      '<label class="jk-vol small muted">' + CP.t("jk.music") + ' <input type="range" min="0.1" max="1" step="0.05" value="' + J.vol + '" data-jk-vol></label>' +
+      '<label class="jk-vol small muted">' + CP.t("jk.fx") + ' <input type="range" min="0" max="1" step="0.05" value="' + (CP.bus ? CP.bus.sfxVol() : 0.7) + '" data-sfx-vol></label>' +
+      '<label class="chk small"><input type="checkbox" data-jk-auto' + (J.auto ? " checked" : "") + '> ' + CP.t("jk.auto") + '</label>' +
       moodPills() + list() + "</div>";
   }
   function paint() {
@@ -171,7 +171,7 @@
   });
   CP.jukeboxOpen = openPop;
   CP.jukeboxUI = function () {
-    return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">🎵 Musica per studiare</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">Otto ambienti generati al momento, senza file. Si fermano da soli quando usi il microfono.</p><details class="jk-det"><summary>Scegli la musica</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? "⏸ Spegni" : "▶ Accendi") + "</button></div></div>";
+    return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">' + CP.t("jk.title") + '</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">' + CP.t("jk.hint") + '</p><details class="jk-det"><summary>' + CP.t("jk.choose") + '</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? CP.t("jk.stop") : CP.t("jk.start")) + "</button></div></div>";
   };
   document.addEventListener("visibilitychange", CP.musicApply);
   if (J.want) document.addEventListener("pointerdown", function () { setTimeout(CP.musicApply, 50); }, { once: true, capture: true, passive: true });
