@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- icona della notifica: il mandarino con la foglia, in un solo colore -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M12,7.5c4.4,0 8,3 8,7s-3.6,7 -8,7s-8,-3 -8,-7s3.6,-7 8,-7z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M12,7c-1,-2.5 -3.5,-4 -6.5,-3.5c0.5,2.5 3,4 6.5,3.5zM12.3,7c1.5,-2.6 4.3,-3.7 7.2,-3c-1,2.6 -3.8,3.6 -7.2,3z"/>
+</vector>

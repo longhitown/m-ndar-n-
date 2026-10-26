@@ -8,6 +8,9 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <!-- vibrazione al tocco (si spegne nelle impostazioni dell'app) -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- promemoria giornaliero, solo se acceso in ⚙️ (il permesso si chiede in quel momento, non all'avvio) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- solo per la voce di riserva online e i link esterni: l'app funziona senza rete -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -36,7 +39,27 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- scorciatoie (pressione prolungata sull'icona) -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
+
+        <!-- widget «Oggi» (4×2 e 2×1): i dati li manda la pagina con MandarinoAndroid.setWidgetState -->
+        <receiver android:name=".TodayWidget" android:exported="true" android:label="@string/w_large_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_large_info" />
+        </receiver>
+        <receiver android:name=".TodayWidgetSmall" android:exported="true" android:label="@string/w_small_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_small_info" />
+        </receiver>
+
+        <receiver android:name=".Reminder" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <!-- per condividere il file di backup (Android 8 e 9, dove non si scrive direttamente in Download) -->
         <provider

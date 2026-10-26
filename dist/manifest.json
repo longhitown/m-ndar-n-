@@ -35,5 +35,44 @@
       "type": "image/svg+xml",
       "purpose": "any"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Studia ora",
+      "short_name": "Studia",
+      "description": "I ripassi di oggi",
+      "url": "./?go=study",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Orecchio ai toni",
+      "short_name": "Orecchio",
+      "url": "./?go=ear",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Musica per studiare",
+      "short_name": "Musica",
+      "url": "./?go=music",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

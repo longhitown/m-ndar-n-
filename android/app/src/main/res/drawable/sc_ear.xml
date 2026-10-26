@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- scorciatoia «Orecchio ai toni»: le quattro curve -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#2563BE" android:pathData="M12,1A11,11 0,1 1,12,23A11,11 0,1 1,12,1Z"/>
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M6,8h4M13,10l4,-3M6,15q2,3 4,0M13,13l4,4"/>
+</vector>

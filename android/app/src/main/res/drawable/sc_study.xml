@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- scorciatoia «Studia ora»: due carte -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#14594A" android:pathData="M12,1A11,11 0,1 1,12,23A11,11 0,1 1,12,1Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M8,6h7a1,1 0,0 1,1,1v10a1,1 0,0 1,-1,1h-7a1,1 0,0 1,-1,-1v-10a1,1 0,0 1,1,-1z"/>
+    <path android:fillColor="#F37905" android:pathData="M10,9h3v1.5h-3zM10,12h3v1.5h-3z"/>
+</vector>

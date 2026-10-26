@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- telefoni in cinese: le scorciatoie e i messaggi di sistema nella lingua del telefono -->
+<resources>
+    <string name="saved">已保存到下载：%1$s</string>
+    <string name="save_failed">无法保存文件。</string>
+    <string name="share_title">分享到……</string>
+    <string name="no_app">没有可以打开这个链接的应用。</string>
+    <string name="mic_denied">没有麦克风权限就听不到你说话。</string>
+    <string name="sc_study">现在学习</string>
+    <string name="sc_study_long">现在学习：今天的复习</string>
+    <string name="sc_ear">练耳朵</string>
+    <string name="sc_ear_long">声调听力</string>
+    <string name="sc_music">音乐</string>
+    <string name="sc_music_long">学习时的音乐</string>
+    <string name="w_small_name">今天（小）</string>
+    <string name="w_large_name">今天</string>
+    <string name="w_small_desc">连续天数和待复习数量</string>
+    <string name="w_large_desc">连续天数、待复习数量和今日一词</string>
+</resources>

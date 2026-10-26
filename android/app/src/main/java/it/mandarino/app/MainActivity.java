@@ -73,7 +73,26 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new Chrome());
 
         if (state != null) web.restoreState(state);
-        if (web.getUrl() == null) web.loadUrl(START);
+        String go = goOf(getIntent());
+        if (web.getUrl() == null) web.loadUrl(go != null ? START + "?go=" + go : START);
+        else if (go != null) js("window.__mdGo && window.__mdGo(" + org.json.JSONObject.quote(go) + ")");
+    }
+
+    /** azione d'avvio da scorciatoie, widget e promemoria: mandarino://go/<azione> */
+    static String goOf(Intent i) {
+        if (i == null || i.getData() == null) return null;
+        Uri u = i.getData();
+        if (!"mandarino".equals(u.getScheme()) || !"go".equals(u.getHost())) return null;
+        String a = u.getLastPathSegment();
+        return a != null && a.matches("[a-z]{2,10}") ? a : null;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String go = goOf(intent);
+        if (go != null) js("window.__mdGo && window.__mdGo(" + org.json.JSONObject.quote(go) + ")");
     }
 
     @Override
@@ -193,6 +212,16 @@ public class MainActivity extends Activity {
         }
     }
 
+    private java.util.function.Consumer<Boolean> notifCb;
+    private static final int REQ_NOTIF = 5;
+
+    /** permesso delle notifiche (Android 13+); prima di Android 13 basta che non siano spente */
+    void requestNotif(java.util.function.Consumer<Boolean> cb) {
+        if (Build.VERSION.SDK_INT < 33 || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) { cb.accept(true); return; }
+        notifCb = cb;
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
+    }
+
     boolean hasCamera() {
         return checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
@@ -211,6 +240,11 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int code, String[] perms, int[] results) {
         super.onRequestPermissionsResult(code, perms, results);
+        if (code == REQ_NOTIF) {
+            boolean ok = results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED;
+            if (notifCb != null) { notifCb.accept(ok); notifCb = null; }
+            return;
+        }
         if (code == REQ_CAM) {
             boolean cam = results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED;
             if (pendingCamera != null) { if (cam) pendingCamera.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE}); else pendingCamera.deny(); pendingCamera = null; }
@@ -275,7 +309,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        web.evaluateJavascript("window.Store && Store.flush && Store.flush()", null);
+        web.evaluateJavascript("window.Store && Store.flush && Store.flush(); window.__mdWidget && window.__mdWidget()", null);
     }
 
     @Override

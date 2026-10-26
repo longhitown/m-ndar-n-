@@ -90,6 +90,7 @@
     setGoal: function (n) { G.goal = n; save(); ui(); },
     goal: function () { return G.goal; },
     streak: streak, weekDots: weekDots, wordsToday: wordsToday, rank: rankInfo,
+    activeToday: function () { return active(G.days[dkey(new Date())]); },
     dump: function () { return JSON.parse(JSON.stringify(G)); },
     load: function (o) { adopt(o); save(); ui(); }
   };
