@@ -70,7 +70,7 @@
       sitHTML() +
       '<div class="reels">' + m.cols.map(function (_, i) { return reelHTML(i); }).join("") + "</div>" +
       '<div class="sbox" id="slot-out">' + outHTML() + "</div>" +
-      '<div class="dlg-bar"><button type="button" class="btn-main" data-spin-all style="margin:0">🎰 ' + T("slot.spinAll") + "</button></div>";
+      '<div class="dlg-bar"><button type="button" class="btn-s" data-spin-all style="margin:0">🎰 ' + T("slot.spinAll") + "</button></div>";
   }
   function paint() {
     var b = document.getElementById("slot-box"); if (!b) return;

@@ -12,7 +12,9 @@
      7. body.in-session ancora attivo dopo #quit, dopo la fine della sessione o dopo il cambio di scheda;
      8. contrasto testo/sfondo sotto 4.5:1 (3:1 per il testo grande, >= 24 px o >= 18.66 px in grassetto, come WCAG);
         esclusi i controlli disattivati e il testo sfocato apposta (modalità ripasso);
-     9. un profilo di prova perde o cambia chiavi in localStorage / IndexedDB, oppure #selftest non è tutto verde.
+     9. un profilo di prova perde o cambia chiavi in localStorage / IndexedDB, oppure #selftest non è tutto verde;
+    10. più di un pulsante primario (.btn-main) visibile nella stessa schermata (principio «un'azione primaria»);
+    11. un menu (barra in basso, schede, gruppo a segmenti) con più di MENU_MAX = 7 voci visibili (docs/ux-architettura.md).
    Stampa anche la tabella delle misure (4-bis.0), per confrontare prima e dopo.
 
    Uso:  node tools/ux-audit.mjs [file.html ...]      (senza argomenti: dist/index.html; prima node tools/build.mjs)
@@ -30,6 +32,7 @@ const quick = args.includes("--quick");
 const files = args.filter((a) => !a.startsWith("--")).map((f) => path.resolve(f));
 if (!files.length) files.push(path.resolve("dist/index.html"));
 const VIEWS = quick ? [[360, 740]] : [[320, 568], [360, 740], [390, 844]];
+const MENU_MAX = 7;   /* docs/ux-architettura.md: non più di 7 scelte per livello di menu */
 const THEMES = quick ? ["light"] : ["light", "sepia", "dark"];
 
 /* ---------- funzioni che girano nella pagina ---------- */
@@ -74,6 +77,13 @@ const PAGE_LIB = () => {
     return out;
   };
   window.__ux = {
+    /* [10] un solo pulsante primario (.btn-main) visibile per schermata (dentro il foglio aperto, se c'è) */
+    primaries: () => {
+      const top = [...document.querySelectorAll("#fam:not([hidden]), #settings:not([hidden]), .qr-ov")].pop();
+      return [...(top || document).querySelectorAll(".btn-main")].filter((b) => vis(b) && b.getBoundingClientRect().height > 0 && (top || !b.closest("#fam, #settings"))).map((b) => (b.textContent || "").trim().slice(0, 24));
+    },
+    /* [11] nessun menu con più di MENU_MAX voci visibili: barra in basso, schede, gruppi di pulsanti a segmenti */
+    menus: (max) => [...document.querySelectorAll(".dock, [role=tablist], .seg")].filter(vis).map((m) => [m.className || m.getAttribute("role"), [...m.querySelectorAll(":scope > button, :scope > a")].filter(vis).length]).filter((x) => x[1] > max).map((x) => x[0] + "=" + x[1]),
     overflow: () => document.documentElement.scrollWidth > window.innerWidth,
     small: () => {
       const sel = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="tab"], [role="radio"]';
@@ -149,6 +159,8 @@ async function auditView(browser, file, vw, vh, theme) {
     const sm = await ux("small"); if (sm.length) fails.push(`[5] ${label}: ${sm.length} bersagli < 44 px: ` + sm.slice(0, 4).join(" · "));
     const tn = await ux("tiny"); m["testo<13 " + label] = tn.length; if (tn.length) fails.push(`[6] ${label}: ${tn.length} testi < 13 px: ` + tn.slice(0, 3).join(" · "));
     const ct = await ux("contrast"); if (ct.length) fails.push(`[8] ${label}: ${ct.length} contrasti bassi: ` + ct.slice(0, 3).join(" · "));
+    const pr = await ux("primaries"); m["primari " + label] = pr.length; if (pr.length > 1) fails.push(`[10] ${label}: ${pr.length} pulsanti primari visibili: ` + pr.join(" · "));
+    const mn = await ux("menus", MENU_MAX); if (mn.length) fails.push(`[11] ${label}: menu con più di ${MENU_MAX} voci: ` + mn.join(" · "));
   };
   /* Percorso */
   await tab(page, "path");
