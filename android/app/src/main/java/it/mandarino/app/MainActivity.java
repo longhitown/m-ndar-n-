@@ -126,6 +126,7 @@ public class MainActivity extends Activity {
         if (p.endsWith(".js")) return "text/javascript";
         if (p.endsWith(".css")) return "text/css";
         if (p.endsWith(".json")) return "application/json";
+        if (p.endsWith(".txt")) return "text/plain";
         if (p.endsWith(".svg")) return "image/svg+xml";
         if (p.endsWith(".png")) return "image/png";
         if (p.endsWith(".webp")) return "image/webp";

@@ -111,6 +111,9 @@ const sw = fs.readFileSync(path.join(SRC, "pwa/sw.js"), "utf8");
 if (!sw.includes("'__APP_VERSION__'")) fail("src/pwa/sw.js deve contenere APP_VERSION = '__APP_VERSION__'");
 const files = { "index.html": out, "sw.js": sw.replace("'__APP_VERSION__'", "'" + version + "'") };
 for (const f of fs.readdirSync(path.join(SRC, "pwa"))) if (!/\.js$/.test(f)) files[f] = fs.readFileSync(path.join(SRC, "pwa", f));
+/* «nomi e termini» del Lettore (tools/wikidict.mjs): un file a parte, scaricato solo quando serve */
+const WIKI = path.join(SRC, "data/wiki/zh-it.txt");
+if (fs.existsSync(WIKI)) files["data/wiki/zh-it.txt"] = fs.readFileSync(WIKI);
 /* i brani del jukebox restano file a parte (dist/audio/music/): ogni modulo audio/tracks/<id>.js con «file: true» ha il suo .ogg */
 const MUS = path.join(SRC, "audio/music"), ogg = fs.existsSync(MUS) ? fs.readdirSync(MUS).filter((f) => f.endsWith(".ogg")) : [];
 for (const f of ogg) {
