@@ -2,7 +2,7 @@
 /* màndarínō · prova dell'APK su un dispositivo o emulatore Android (adb), senza dipendenze.
    Installa l'APK di debug (quello di prova: permette di collegarsi alla pagina con il protocollo DevTools), lo apre e
    controlla, dentro la WebView vera:
-     1. la pagina si carica all'origine dell'app, con le 3500 parole;   2. #selftest tutto verde;
+     1. la pagina si carica all'origine dell'app, con tutte le parole;   2. #selftest tutto verde;
      3. il backup si salva in Download con l'UTF-8 intatto;            4. il microfono (getUserMedia) funziona;
      5. i dati restano dopo la chiusura forzata dell'app;              6. il tasto Indietro chiude il foglio e torna al Percorso;
      7. il motore della pagina non va mai in crash (logcat).
@@ -55,8 +55,8 @@ try {
   adb("shell", "pm", "clear", PKG);
   adb("shell", "pm", "grant", PKG, "android.permission.RECORD_AUDIO");
   let p = await start();
-  const info = await p.ev("() => ({ apk: window.__MD_APK, words: CP.ORDER.length, secure: isSecureContext, url: location.href, sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller) })");
-  check("Pagina caricata nell'APK (origine sicura, 3500 parole, niente service worker)", info.apk && info.words === 3500 && info.secure && !info.sw, JSON.stringify(info));
+  const info = await p.ev("() => ({ apk: window.__MD_APK, words: CP.ORDER.length, expect: VOCAB_EXPECT.words, secure: isSecureContext, url: location.href, sw: !!(navigator.serviceWorker && navigator.serviceWorker.controller) })");
+  check("Pagina caricata nell'APK (origine sicura, tutte le parole, niente service worker)", info.apk && info.words === info.expect && info.secure && !info.sw, JSON.stringify(info));
 
   await p.ev("() => { localStorage.setItem('cp-ux-v1', '{\"onboarded\":1}'); location.hash = '#selftest'; location.reload(); }").catch(() => {});
   p.close(); await sleep(3000); p = await connect(120000);

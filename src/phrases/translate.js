@@ -817,7 +817,7 @@
       var a = hz(keys[i]), b = keys[i + 1] != null ? hz(keys[i + 1]) : null, c = keys[i + 2] != null ? hz(keys[i + 2]) : null;
       if (b && a === "想" && b === "要") { out.push("想要"); i++; continue; }
       /* 吃了饭 = 吃饭 + 了 */
-      if (c && (b === "了" || b === "过") && !W[a + c] && lex(G.verbs, a + c) !== undefined) { out.push(a + c); out.push(keys[i + 1]); i += 2; continue; }
+      if (c && (b === "了" || b === "过") && lex(G.verbs, a + c) !== undefined) { out.push(a + c); out.push(keys[i + 1]); i += 2; continue; }
       if (b && !W[a + b] && lex(G.verbs, a + b) !== undefined) { out.push(a + b); i++; continue; }
       out.push(keys[i]);
     }

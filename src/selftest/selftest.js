@@ -17,11 +17,12 @@
     /* dati */
     var ORD = CP.ORDER || [], seen = {}, dup = 0, bad = 0;
     ORD.forEach(function (k) { if (seen[k]) dup++; seen[k] = 1; var w = CP.WORDS[k]; if (!w || !w.py || !w.hz || !w.it) bad++; });
-    add("Parole nel dizionario", ORD.length === 3500, ORD.length + " (attese 3500)");
+    var EXP = typeof VOCAB_EXPECT !== "undefined" ? VOCAB_EXPECT : { words: -1, sections: -1 };
+    add("Parole nel dizionario", ORD.length === EXP.words, ORD.length + " (attese " + EXP.words + ")");
     add("Chiavi uniche e righe complete", dup === 0 && bad === 0, dup + " doppie, " + bad + " incomplete");
-    add("Sezioni", (CP.SEC || []).length === 155, (CP.SEC || []).length + " (attese 155)");
+    add("Sezioni", (CP.SEC || []).length === EXP.sections, (CP.SEC || []).length + " (attese " + EXP.sections + ")");
     var rows = document.querySelectorAll("#sections tbody tr").length;
-    add("Tabella virtualizzata", rows < 700, rows + " righe nel documento ora (non 3500)");
+    add("Tabella virtualizzata", rows < 700, rows + " righe nel documento ora (non " + ORD.length + ")");
     /* V6.7: tema Carta di Riso indipendente dal tema del sistema */
     try {
       var de = document.documentElement, prevT = de.getAttribute("data-theme");

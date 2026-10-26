@@ -168,7 +168,7 @@ if (apply && ok.length) {
     }
   }
   store();
-  md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso in #selftest (oggi 3500).` +
+  md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso: aggiorna VOCAB_EXPECT in src/data/path-hsk.js (la build lo controlla).` +
     (touched.has("ver:0") ? " Le traduzioni sono entrate in src/data/verified.js come «memoria»: node tools/grammar.mjs dice quali le regole sanno già fare da sole." : "") + "\n";
 } else if (apply) md += "\nNiente da applicare.\n";
 else if (ok.length) md += "\nProva a secco: rilancia con --apply per scrivere le modifiche.\n";

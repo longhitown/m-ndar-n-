@@ -3,29 +3,22 @@
 (function () {
   var CP = window.CP;
   var WORDS = CP.WORDS, ORDER = CP.ORDER;
-  var MAXL = 1; ORDER.forEach(function (k) { MAXL = Math.max(MAXL, Array.from(WORDS[k].hz).length); });
   /* omografi: stessi caratteri, più voci (花 fiore e 花 spendere: la seconda ha la chiave 花#huā). WORDS[hz] è la prima;
      alts le elenca tutte, così chi mostra la parola può dare ogni significato */
   var HOMO = {};
   ORDER.forEach(function (k) { var h = WORDS[k].hz; if (k !== h) (HOMO[h] = HOMO[h] || [WORDS[h]]).push(WORDS[k]); });
   CP.homographs = function (hz) { return HOMO[hz] || (WORDS[hz] ? [WORDS[hz]] : []); };
   /* Taglia un testo cinese nelle parole del vocabolario (la più lunga che combacia). */
+  /* Taglia un testo cinese nelle parole del vocabolario (src/core/segment.js: la divisione più probabile). Qui si
+     aggiungono gli omografi (alts) e, per i caratteri fuori dal vocabolario, il rimando alle parole dove compaiono (part). */
+  var seg0 = MDSegment.make(WORDS, typeof WORD_FREQ === "string" ? WORD_FREQ : "");
+  CP.wordRank = seg0.rank;
   CP.segmentText = CP.segment = function (raw) {
-    var s = Array.from(String(raw)), out = [], i = 0, cjk = /[㐀-鿿]/;
-    while (i < s.length) {
-      if (!cjk.test(s[i])) {
-        var j = i; while (j < s.length && !cjk.test(s[j])) j++;
-        out.push({ w: null, raw: s.slice(i, j).join(""), p: true }); i = j; continue;
-      }
-      var m = null, L;
-      for (L = Math.min(MAXL, s.length - i); L >= 1; L--) {
-        var sub = s.slice(i, i + L).join("");
-        if (Object.prototype.hasOwnProperty.call(WORDS, sub)) { m = WORDS[sub]; break; }
-      }
-      if (m) { out.push(HOMO[m.hz] ? { w: m, raw: m.hz, alts: HOMO[m.hz] } : { w: m, raw: m.hz }); i += L; }
-      else { out.push({ w: null, raw: s[i], part: CP.charHint ? CP.charHint(s[i]) : null }); i++; }
-    }
-    return out;
+    return seg0(raw).map(function (t) {
+      if (t.p) return t;
+      if (t.w) return HOMO[t.w.hz] ? { w: t.w, raw: t.raw, alts: HOMO[t.w.hz] } : t;
+      return { w: null, raw: t.raw, part: CP.charHint ? CP.charHint(t.raw) : null };
+    });
   };
   CP.gloss = function (w) { return String(w.it).split(/[;,(:]/)[0].trim(); };
   CP.inFrame = (function () { try { return window.self !== window.top; } catch (e) { return true; } })();

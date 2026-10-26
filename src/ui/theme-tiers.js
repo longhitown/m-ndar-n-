@@ -32,12 +32,15 @@
   paint();
 
   /* ---- filtro per livello (scheda Parole) ---- */
+  /* i livelli seguono le sezioni (per id, non per posizione): le sezioni HSK stanno in fondo al livello giusto */
+  function at(id) { for (var i = 0; i < CP.SEC.length; i++) if (CP.SEC[i].id === id) return i; return -1; }
+  var B1 = at("opinioni"), B2 = at("pensiero_critico"), B3 = at("finanza_valute_oro"), END = CP.SEC.length - 1;
   var TIERS = [
     { k: "all", t: "🗂️ Tutte" },
-    { k: 0, t: "🌱 Base (1–30)", a: 0, b: 29 },
-    { k: 1, t: "🌿 Intermedio (31–65)", a: 30, b: 64 },
-    { k: 2, t: "🌳 Avanzato (66–110)", a: 65, b: 109 },
-    { k: 3, t: "🏔️ Maestro (111–155)", a: 110, b: 154 }
+    { k: 0, t: "🌱 Base + HSK 1–2", a: 0, b: B1 - 1 },
+    { k: 1, t: "🌿 Intermedio + HSK 3", a: B1, b: B2 - 1 },
+    { k: 2, t: "🌳 Avanzato + HSK 4", a: B2, b: B3 - 1 },
+    { k: 3, t: "🏔️ Maestro + HSK 5", a: B3, b: END }
   ];
   var tierEl = document.getElementById("tiers"), tier = "all";
   function paintTiers() {
