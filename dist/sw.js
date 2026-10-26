@@ -1,7 +1,7 @@
 /* màndarínō · service worker. Cache dell'intera app: dopo il primo caricamento funziona senza rete.
    Modello: tools/build.mjs lo copia in dist/ con APP_VERSION = impronta di index.html (ogni modifica = avviso «Aggiorna»).
    Lo stesso testo lo genera swSource() in src/pwa/pwa.js per il pacchetto ZIP scaricabile dall'app: tienili uguali. */
-const APP_VERSION = '3890aa8d701d';   // la scrive tools/build.mjs: l'impronta di index.html
+const APP_VERSION = '5f9a1d89b782';   // la scrive tools/build.mjs: l'impronta di index.html
 const CACHE = 'mandarino-' + APP_VERSION + '-' + (self.registration ? self.registration.scope : '');
 /* i brani del jukebox (audio/music/) hanno una cache propria che resta tra un aggiornamento e l'altro */
 const MUSIC = 'mandarino-music';
