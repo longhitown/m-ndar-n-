@@ -138,35 +138,90 @@
     });
     return out;
   }
+  /* gioco: base comune al massimo, punti di ogni dispositivo al massimo (contatori che crescono soltanto), giorni uniti */
+  function mergeGame(a, b) {
+    a = a || {}; b = b || {};
+    var norm = function (o) { return { base: o.xpBy ? (o.base | 0) : (o.xp | 0), by: o.xpBy || {} }; }, A = norm(a), B = norm(b);
+    var by = {}; Object.keys(A.by).concat(Object.keys(B.by)).forEach(function (k) { by[k] = Math.max(A.by[k] | 0, B.by[k] | 0); });
+    var base = Math.max(A.base, B.base), xp = base; Object.keys(by).forEach(function (k) { xp += by[k]; });
+    var days = {}, da = a.days || {}, db = b.days || {};
+    Object.keys(da).concat(Object.keys(db)).forEach(function (d) {
+      var x = da[d] || {}, y = db[d] || {}, w = (x.w || []).slice();
+      (y.w || []).forEach(function (k) { if (w.indexOf(k) < 0) w.push(k); });
+      var o = { w: w }; ["s", "e", "nw", "nx"].forEach(function (f) { var v = Math.max(x[f] | 0, y[f] | 0); if (v) o[f] = v; });
+      days[d] = o;
+    });
+    return { xp: xp, base: base, xpBy: by, goal: a.goal || b.goal || 10, days: days, best: Math.max(a.best | 0, b.best | 0) };
+  }
+  /* orecchio: matrice di confusione dei toni, cella per cella il valore più alto */
+  function mergeEar(a, b) {
+    if (!a || !a.m) return b; if (!b || !b.m) return a;
+    var m = a.m.map(function (r, i) { return r.map(function (v, j) { return Math.max(v | 0, (b.m[i] || [])[j] | 0); }); }), n = 0;
+    m.forEach(function (r) { r.forEach(function (v) { n += v; }); });
+    return { m: m, n: n };
+  }
+  /* frasi salvate nel laboratorio: unione, senza doppioni */
+  function mergeMine(a, b) {
+    var out = [], seen = {};
+    [].concat(Array.isArray(a) ? a : [], Array.isArray(b) ? b : []).forEach(function (x) { var k = JSON.stringify([x && x.t, x && x.p]); if (x && !seen[k]) { seen[k] = 1; out.push(x); } });
+    return out.slice(0, 40);
+  }
+  /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-toneshapes", "cp-contrib-nick", "cp-lang"];
+  function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
+  function mergeKey(k, a, b) {
+    if (k === "cp-srs-v1") return mergeSrs(a, b);
+    if (k === "cp-fav-v1") return Object.assign({}, favObj(b), favObj(a));
+    if (k === "cp-community-contribs") return mergeContribs(a, b);
+    /* lezioni di grammatica: per ogni lezione il punteggio migliore, la prima volta superata, l'ultima letta */
+    if (k === "cp-lessons-v1" || k === "cp-it-lessons-v1") return mergeLessons(a, b);
+    /* corso di italiano: per ogni parola vince la scheda ripassata più di recente; il conteggio dei nuovi del giorno, il più alto */
+    if (k === "cp-it-srs-v1") return mergeItSrs(a, b);
+    if (k === "cp-game-v1") return mergeGame(a, b);
+    if (k === "cp-ear-v1") return mergeEar(a, b);
+    if (k === "cp-mine") return mergeMine(a, b);
+    /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
+    if (k === "cp-ux-v1") return Object.assign({}, b || {}, a || {});
+    return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
+  }
+  /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */
+  function canon(x) {
+    if (Array.isArray(x)) return "[" + x.map(canon).join(",") + "]";
+    if (x && typeof x === "object") return "{" + Object.keys(x).sort().map(function (k) { return JSON.stringify(k) + ":" + canon(x[k]); }).join(",") + "}";
+    return JSON.stringify(x);
+  }
+  /* changed: è arrivato qualcosa di nuovo? Si confronta l'unione con l'unione di questo dispositivo con sé stesso, così le
+     differenze di forma (campi a zero, ordine delle chiavi) non contano: sincronizzare due volte la stessa cosa non cambia niente */
   function importObj(o, mode) {
     if (!o || o.app !== "mandarino" || !o.kv) return { ok: false, msg: "File non riconosciuto." };
-    var n = 0;
+    var n = 0, changed = false;
     Object.keys(o.kv).forEach(function (k) {
       if (k.indexOf(PREFIX) !== 0 || k === LSLOG) return;
       var cur = lget(k), inc = o.kv[k];
       if (mode === "merge" && cur != null) {
-        try {
-          if (k === "cp-srs-v1") inc = JSON.stringify(mergeSrs(JSON.parse(cur), JSON.parse(inc)));
-          else if (k === "cp-fav-v1") { var u = JSON.parse(cur); var v = JSON.parse(inc); if (Array.isArray(u)) { var t = {}; u.forEach(function (x) { t[x] = 1; }); u = t; } if (Array.isArray(v)) { var t2 = {}; v.forEach(function (x) { t2[x] = 1; }); v = t2; } inc = JSON.stringify(Object.assign({}, v, u)); }
-          else if (k === "cp-community-contribs") inc = JSON.stringify(mergeContribs(JSON.parse(cur), JSON.parse(inc)));
-          /* lezioni di grammatica: per ogni lezione il punteggio migliore, la prima volta superata, l'ultima letta */
-          else if (k === "cp-lessons-v1" || k === "cp-it-lessons-v1") inc = JSON.stringify(mergeLessons(JSON.parse(cur), JSON.parse(inc)));
-          /* corso di italiano: per ogni parola vince la scheda ripassata più di recente; il conteggio dei nuovi del giorno, il più alto */
-          else if (k === "cp-it-srs-v1") inc = JSON.stringify(mergeItSrs(JSON.parse(cur), JSON.parse(inc)));
-          /* V6.7: preferenze dell'interfaccia; si aggiungono le voci mancanti, a parità vince questo dispositivo */
-          else if (k === "cp-ux-v1") inc = JSON.stringify(Object.assign({}, JSON.parse(inc) || {}, JSON.parse(cur) || {}));
-          /* V6.7: preferenze del dispositivo (vibrazione, volumi, musica, toni con segno, nickname): vince il dispositivo corrente */
-          else if (["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-toneshapes", "cp-contrib-nick", "cp-lang"].indexOf(k) >= 0) inc = cur;
-          else inc = cur;   /* le altre chiavi (impostazioni, gioco): vince il dispositivo corrente */
-        } catch (e) { inc = cur; }
-      }
+        if (KEEP.indexOf(k) >= 0) inc = cur;
+        else {
+          try {
+            var a = JSON.parse(cur), m = mergeKey(k, a, JSON.parse(inc));
+            if (m === null) inc = cur;
+            else { inc = JSON.stringify(m); if (canon(m) !== canon(mergeKey(k, a, a))) changed = true; }
+          } catch (e) { inc = cur; }
+        }
+      } else if (cur !== inc) changed = true;
       lset(k, inc); n++;
     });
     var pr = Promise.resolve();
     if (o.log && o.log.length) {
-      pr = openDB().then(function (db) { if (db) return tx(db, "log", "readwrite", function (s) { o.log.forEach(function (e) { s.add(e); }); }); });
+      /* registro dei ripassi: in unione si aggiungono solo le voci che mancano (stesso istante, stessa parola = stessa voce),
+         così sincronizzare più volte non duplica niente */
+      pr = (mode === "merge" ? logAll() : Promise.resolve([])).then(function (have) {
+        var seen = {}; (have || []).forEach(function (e) { if (e) seen[e[0] + "|" + e[1]] = 1; });
+        var add = o.log.filter(function (e) { return e && !seen[e[0] + "|" + e[1]]; });
+        if (!add.length) return;
+        return openDB().then(function (db) { if (db) return tx(db, "log", "readwrite", function (s) { add.forEach(function (e) { s.add(e); }); }); else { lsLog = lsLog.concat(add); } });
+      });
     }
-    return pr.then(function () { return flush(); }).then(function () { return { ok: true, msg: n + " voci importate.", n: n }; });
+    return pr.then(function () { return flush(); }).then(function () { return { ok: true, msg: n + " voci importate.", n: n, changed: changed }; });
   }
   /* «Azzera»: progressi del corso di cinese (carte, punti e serie, lezioni, gara d'ascolto) e registro dei ripassi.
      Con personal anche preferiti e frasi salvate. Le impostazioni e i contributi restano. La copia interna in IndexedDB
@@ -195,8 +250,11 @@
     return reviews >= 30 && (now - ts) > 7 * 86400000;
   }
 
+  /* valori qualsiasi (anche un FileSystemFileHandle) nella copia interna, fuori dai dati esportati */
+  function idbGet(k) { return openDB().then(function (db) { return db ? tx(db, "kv", "readonly", function (s) { return s.get("x:" + k); }) : null; }); }
+  function idbSet(k, v) { return openDB().then(function (db) { return db ? tx(db, "kv", "readwrite", function (s) { if (v == null) s.delete("x:" + k); else s.put(v, "x:" + k); }) : null; }); }
   window.Store = { status: function () { return { ls: st.ls, idb: st.idb, restored: st.restored }; }, get: lget, set: lset, snapshot: snapshot, flush: flush,
     log: logAdd, logAll: logAll, logClear: logClear, recent: function () { return buf; },
-    exportObj: exportObj, importObj: importObj, resetProgress: resetProgress, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
+    exportObj: exportObj, importObj: importObj, idbGet: idbGet, idbSet: idbSet, mergeGame: mergeGame, resetProgress: resetProgress, backup: backup, backupDue: backupDue, download: download, mergeSrs: mergeSrs, mergeContribs: mergeContribs, ready: openDB().then(function (db) { return maybeRestore().then(function (r) { if (r) { try { location.reload(); } catch (e) {} } logTrim(); return !!db; }); }) };
 })();
 

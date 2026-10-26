@@ -70,7 +70,7 @@ for (const s of scripts) {
 /* 3. un file unico */
 let out = html;
 const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, "") + " ---- */\n" + fs.readFileSync(path.join(SRC, s.href), "utf8").trimEnd()).join("\n\n");
-styles.forEach((s, i) => { out = out.replace(s.tag + "\n", i ? "" : "<style>\n" + css + "\n</style>\n"); });
+styles.forEach((s, i) => { out = out.replace(s.tag + "\n", () => (i ? "" : "<style>\n" + css + "\n</style>\n")); });
 out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
    compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
@@ -85,12 +85,23 @@ for (const [name, test] of LAZY) {
   const id = "lazy-" + name.toLowerCase();
   const block = '<script type="application/json" id="' + id + '">' + json + "</script>\n<script>\n/* ---- " + name + " (lazy, da " + group.map((s) => s.src).join(", ") + ") ---- */\n" + extra +
     "(function () { var v; Object.defineProperty(window, " + JSON.stringify(name) + ", { configurable: true, get: function () { if (v === undefined) { var el = document.getElementById(" + JSON.stringify(id) + "); v = el ? JSON.parse(el.textContent) : {}; if (el) el.parentNode.removeChild(el); } return v; } }); })();\n</script>";
-  group.forEach((s, i) => { out = out.replace(s.tag + "\n", i ? "" : block + "\n"); });
+  group.forEach((s, i) => { out = out.replace(s.tag + "\n", () => (i ? "" : block + "\n")); });
   scripts.splice(0, scripts.length, ...scripts.filter((s) => !test(s.src)));
+}
+/* librerie di terzi che servono di rado (la lettura dei QR dalla fotocamera): testo inerte nel file unico, eseguito la prima
+   volta che il codice tocca la variabile globale (window.jsQR). */
+const LAZYCODE = [["jsQR", "vendor/jsqr.min.js"]];
+for (const [name, src] of LAZYCODE) {
+  const s = scripts.find((x) => x.src === src); if (!s) continue;
+  const code = fs.readFileSync(path.join(SRC, src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
+  const id = "lazy-code-" + name.toLowerCase();
+  out = out.replace(s.tag, () => '<script type="text/plain" id="' + id + '">\n' + code + "\n</script>\n<script>\n/* ---- " + src + " (lazy) ---- */\n" +
+    "(function () { Object.defineProperty(window, " + JSON.stringify(name) + ", { configurable: true, get: function () { delete window[" + JSON.stringify(name) + "]; var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); return window[" + JSON.stringify(name) + "]; } }); })();\n</script>");
+  scripts.splice(scripts.indexOf(s), 1);
 }
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
-  out = out.replace(s.tag, "<script" + (s.id ? ' id="' + s.id + '"' : "") + ">\n/* ---- " + s.src + " ---- */\n" + code + "\n</script>");
+  out = out.replace(s.tag, () => "<script" + (s.id ? ' id="' + s.id + '"' : "") + ">\n/* ---- " + s.src + " ---- */\n" + code + "\n</script>");   /* funzione: i «$» nel codice restano com'erano */
 }
 out = out.replace(/<!-- =+\n[\s\S]*?=+ -->\n/, "<!-- màndarínō: file generato da tools/build.mjs a partire da src/. Per modificare l'app lavora in src/. -->\n");
 if (/<script\b[^>]*\bsrc=|<link\b[^>]*rel="stylesheet"/.test(out)) fail("è rimasto un riferimento esterno in dist/index.html");

@@ -3,6 +3,9 @@
 
     <!-- microfono: «Registra e confronta», oscilloscopio dei toni e riconoscimento vocale -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- fotocamera: solo per leggere i QR quando si passano i progressi da un telefono all'altro -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <!-- vibrazione al tocco (si spegne nelle impostazioni dell'app) -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- solo per la voce di riserva online e i link esterni: l'app funziona senza rete -->

@@ -5,11 +5,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -24,13 +26,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Ponte tra la pagina e Android, esposto come window.MandarinoAndroid. Lo usa solo src/pwa/android.js, che con questi
@@ -303,6 +310,83 @@ public class Bridge {
             try { act.startActivity(Intent.createChooser(i, act.getString(R.string.share_title))); }
             catch (ActivityNotFoundException ignored) { }
         });
+    }
+
+    /* ---------------- sincronizzazione: un file scelto da chi studia ----------------
+       Il selettore di sistema mostra anche Google Drive, OneDrive, Dropbox… (i loro «document provider»): il file resta
+       nel cloud dell'utente, l'app lo legge e lo riscrive con un permesso persistente. Nessun server, nessun account. */
+    private static final ExecutorService IO = Executors.newSingleThreadExecutor();
+    private String syncPending;
+
+    @JavascriptInterface
+    public void syncPick(final String id, final boolean create) {
+        act.runOnUiThread(() -> {
+            syncPending = id;
+            Intent i = new Intent(create ? Intent.ACTION_CREATE_DOCUMENT : Intent.ACTION_OPEN_DOCUMENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType(create ? "application/json" : "*/*");
+            if (create) i.putExtra(Intent.EXTRA_TITLE, "mandarino-sync.json");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            try { act.startActivityForResult(i, MainActivity.REQ_SYNC); }
+            catch (ActivityNotFoundException e) { syncPending = null; emit("sync-pick", id, ""); }
+        });
+    }
+
+    void syncPicked(Uri uri) {
+        String id = syncPending; syncPending = null;
+        if (id == null) return;
+        if (uri == null) { emit("sync-pick", id, ""); return; }
+        try { act.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION); }
+        catch (SecurityException ignored) { }
+        emit("sync-pick", id, uri.toString() + "\n" + displayName(uri));
+    }
+
+    private String displayName(Uri uri) {
+        try (Cursor c = act.getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+            if (c != null && c.moveToFirst()) { String n = c.getString(0); if (n != null) return n; }
+        } catch (RuntimeException ignored) { }
+        return "mandarino-sync.json";
+    }
+
+    /** legge il file in background: "1" + testo, oppure "0" + motivo */
+    @JavascriptInterface
+    public void syncRead(final String id, final String uri) {
+        IO.execute(() -> {
+            try (InputStream in = act.getContentResolver().openInputStream(Uri.parse(uri))) {
+                if (in == null) throw new IOException("null");
+                ByteArrayOutputStream b = new ByteArrayOutputStream();
+                byte[] buf = new byte[16384]; int n;
+                while ((n = in.read(buf)) > 0) b.write(buf, 0, n);
+                emit("sync-read", id, "1" + new String(b.toByteArray(), StandardCharsets.UTF_8));
+            } catch (Exception e) { emit("sync-read", id, "0" + e.getClass().getSimpleName()); }
+        });
+    }
+
+    /** riscrive il file in background ("wt" = tronca; alcuni provider conoscono solo "w") */
+    @JavascriptInterface
+    public void syncWrite(final String id, final String uri, final String text) {
+        IO.execute(() -> {
+            byte[] data = (text == null ? "" : text).getBytes(StandardCharsets.UTF_8);
+            String err = null;
+            for (String mode : new String[]{"wt", "w"}) {
+                try (OutputStream out = act.getContentResolver().openOutputStream(Uri.parse(uri), mode)) {
+                    if (out == null) throw new IOException("null");
+                    out.write(data); err = null; break;
+                } catch (Exception e) { err = e.getClass().getSimpleName(); }
+            }
+            emit("sync-write", id, err == null ? "1" : "0" + err);
+        });
+    }
+
+    /** il permesso sul file è ancora valido? (si perde se il file viene cancellato o l'app reinstallata) */
+    @JavascriptInterface
+    public boolean syncHas(String uri) {
+        try {
+            Uri u = Uri.parse(uri);
+            for (android.content.UriPermission p : act.getContentResolver().getPersistedUriPermissions())
+                if (p.getUri().equals(u) && p.isReadPermission() && p.isWritePermission()) return true;
+        } catch (RuntimeException ignored) { }
+        return false;
     }
 
     /* ---------------- aspetto e informazioni ---------------- */
