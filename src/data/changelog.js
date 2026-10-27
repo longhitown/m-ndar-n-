@@ -4,6 +4,10 @@
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
+      "Ripasso con esercizi vari (⚙️ → Avanzate → Stile di ripasso): Guidato «impara · esercitati · verifica», Misto, o Classico come prima.",
+      "Frasi a buco, rimetti in ordine, scrivi il pinyin e il significato, abbina, traccia; la verifica di tappa con 12 domande.",
+      "Lettura graduata: testi brevi per livello con domande (Frasi → Leggi → Testi).",
+      "Voci reali: frasi lette da persone vere. Sul sito si scaricano una volta da ⚙️ → Voce (circa 7 MB); nell'app Android ci sono già.",
       "Benvenuto nuovo: scegli lo scopo e il ritmo, prova i toni, e un test di livello di pochi minuti ti fa partire dal punto giusto.",
       "L'interfaccia si apre un po' alla volta: le schede Parole e Frasi arrivano quando servono. In ⚙️ → Avanzate puoi mostrare tutto subito.",
       "Sostieni il progetto: una voce in ⚙️ e i sigilli di gratitudine, solo estetici.",
@@ -20,6 +24,10 @@ var CHANGELOG = [
       "Ripasso più vario: rispondi scegliendo tra quattro risposte, ascolta, riconosci il tono. Se preferisci le carte di prima, ⚙️ → Avanzate → Stile di ripasso → Classico."
     ],
     zh: [
+      "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
+      "新练习：填空、排序、听写、动词形式、听句子。",
+      "短文阅读：按级别的意大利语短文，附中文问题（在「句子」里）。",
+      "真人录音：由真人朗读的句子。网页版在 ⚙️ → 语音 下载一次（约 7 MB）；安卓应用里已经有了。",
       "全新的欢迎流程：选择目标和节奏，试听声调，几分钟的水平测试帮你从合适的地方开始。",
       "界面逐步展开：需要时才出现“词语”和“句子”标签。在 ⚙️ → 高级 中可以立即显示全部。",
       "支持项目：⚙️ 里新增一项，以及仅作纪念的感谢印章。",

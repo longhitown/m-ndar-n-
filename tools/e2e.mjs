@@ -729,6 +729,56 @@ try {
     check("Corso di italiano, esercizi: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4n. voci reali (Task 12, T6): prima di «Scarica le voci» nessuna richiesta di clip; il pulsante le mette nella cache
+     mandarino-voice; poi «ascolta la frase» con la voce vera; in modalità aereo le clip arrivano dalla cache; senza le voci
+     cinesi (materiali/audio/zh assente) nessun errore e l'esercizio non si propone */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const voce = [], ext = []; p.on("request", (r) => { const u = r.url(); if (/\/audio\/voce\//.test(u)) voce.push(u); if (!u.startsWith(base) && !/^(data|blob):/.test(u)) ext.push(u); });
+    await ctx.addInitScript(() => { if (!localStorage.getItem("cp-ux-v1")) { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", "mixed"); } });
+    await p.goto(base); await p.waitForTimeout(800);
+    const r0 = await p.evaluate(() => { CP.ex.carica(); const E = CP.exEngine, any = CP.ORDER.some((k) => E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx)); CP.say("还有很多时间"); return { any, url: CP.voiceClip.url("还有很多时间", "zh") }; });
+    await p.waitForTimeout(150);
+    check("Voci reali: prima di scaricarle nessuna clip, nessuna richiesta, «ascolta la frase» non si propone", !r0.any && !r0.url && !voce.length, JSON.stringify({ r0, voce: voce.length }));
+    /* ⚙️ → Voce → «Voci reali» → «Scarica le voci» */
+    const label = await p.evaluate(() => { CP.show("settings"); const d = document.getElementById("set-voice") || document.querySelector("#vset-body"); const b = document.querySelector("[data-vc-dl]"); return b ? b.textContent : (document.getElementById("vc-box") || {}).textContent || null; });
+    check("Voci reali: in ⚙️ → Voce il pulsante «Scarica le voci» con i MB", /Scarica le voci \(\d+,\d MB\)/.test(label || ""), label);
+    await p.evaluate(() => document.querySelector("[data-vc-dl]").click());
+    await p.waitForFunction(() => localStorage.getItem("cp-voice-dl") === "1", null, { timeout: 120000 }).catch(() => {});
+    const r1 = await p.evaluate(async () => { const c = await caches.open("mandarino-voice"), ks = await c.keys(), F = VOICE_FILES; return { dl: localStorage.getItem("cp-voice-dl"), n: ks.length, want: Object.keys(F.zh).length + Object.keys(F.it).length, box: (document.getElementById("vc-box") || {}).textContent }; });
+    check("Voci reali: «Scarica le voci» mette tutte le clip nella cache mandarino-voice", r1.dl === "1" && r1.n === r1.want && r1.want > 1000 && /✓/.test(r1.box), JSON.stringify(r1));
+    voce.length = 0;
+    const r2 = await p.evaluate(async () => {
+      const E = CP.exEngine, k = CP.ORDER.find((k) => E.ctx.levelOf(CP.WORDS[k]) >= 2 && E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx)); if (!k) return { k: null };
+      E.force("ascolto-frase"); CP.show("study", true); CP.studyKit.start([{ k: k, kind: "test", ex: 1, retry: false }]);
+      await new Promise((r) => setTimeout(r, 700));
+      const cur = E.current(), card = document.querySelector("#study-root .ex-card");
+      const out = { k, type: card && card.dataset.ex, real: !!document.querySelector("#study-root .ex-listen .tag"), url: CP.voiceClip.url(cur.item.say, "zh"), opts: cur.item.opts.length, right: cur.item.right };
+      document.querySelectorAll("#study-root [data-exa]")[cur.item.right].click();
+      out.ok = /✓/.test(document.querySelector(".ex-verdict").textContent); E.force(null); CP.studyHome();
+      return out;
+    });
+    check("Voci reali: «ascolta la frase» con la voce vera (la clip parte da sola), quattro frasi scritte, la giusta passa", r2.k && r2.type === "ascolto-frase" && r2.real && r2.opts === 4 && r2.ok && voce.some((u) => u.endsWith(r2.url)), JSON.stringify({ r2, voce: voce.slice(0, 1) }));
+    const lv = await p.evaluate(() => { const E = CP.exEngine, hi = CP.ORDER.map((k) => CP.WORDS[k]).find((w) => E.ctx.levelOf(w) >= 3 && E.REG["ascolto-frase"].richiede(w, E.ctx)); return hi ? E.REG["mc-ascolto"].richiede(hi, Object.assign({}, E.ctx, { hasVoice: () => true })) : "nessuna"; });
+    check("Voci reali: dal livello 3 l'ascolto usa la frase vera al posto della parola sintetica", lv === false, String(lv));
+    /* modalità aereo: la clip arriva dalla cache del service worker */
+    await p.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 8000 }).catch(() => {});
+    await ctx.setOffline(true);
+    const off = await p.evaluate(async () => { const u = CP.voiceClip.url("还有很多时间", "zh"); try { const r = await fetch(u); return { u, ok: r.ok, n: (await r.arrayBuffer()).byteLength, sw: !!navigator.serviceWorker.controller }; } catch (e) { return { u, err: e.message, sw: !!navigator.serviceWorker.controller }; } });
+    await ctx.setOffline(false);
+    check("Voci reali: in modalità aereo le clip scaricate arrivano dalla cache", off.ok && off.n > 1000, JSON.stringify(off));
+    /* senza le voci cinesi (materiali/audio/zh mancante): niente clip cinesi, nessun errore, l'esercizio non si propone */
+    const nz = await p.evaluate(async () => {
+      const F = VOICE_FILES; Object.defineProperty(window, "VOICE_FILES", { configurable: true, value: { byte: { it: F.byte.it }, it: F.it } });
+      const E = CP.exEngine, any = CP.ORDER.slice(0, 600).some((k) => E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx));
+      CP.say("还有很多时间"); CP.show("study", true); CP.studyStart(); await new Promise((r) => setTimeout(r, 300));
+      const card = !!document.querySelector("#study-root .ex-card, #study-root .fc"); CP.studyHome();
+      return { any, url: CP.voiceClip.url("还有很多时间", "zh"), langs: CP.voiceClip.langs().join(), card };
+    });
+    check("Voci reali: senza le voci cinesi nessun errore, nessuna clip cinese, «ascolta la frase» non si propone", !nz.any && !nz.url && nz.langs === "it" && nz.card, JSON.stringify(nz));
+    check("Voci reali: nessuna richiesta fuori dall'app, nessun errore JavaScript", !ext.length && !errs.length, ext[0] || errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
