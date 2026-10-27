@@ -7,6 +7,7 @@ come PWA, e APK Android senza Play Store.
 - Documentazione completa (in italiano): **[LEGGIMI.md](LEGGIMI.md)**
 - Come sono fatti i moduli: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)
 - Prove: `npm install && npm test`
+- Vuoi aiutare? Anche senza programmare: [CONTRIBUTING.md](CONTRIBUTING.md) · 不会编程也能参与 · chi ha contribuito: [CONTRIBUTORS.md](CONTRIBUTORS.md)
 
 [![Sostieni il progetto](docs/img/sostieni.svg)](https://ko-fi.com/mandarinoapp)
 

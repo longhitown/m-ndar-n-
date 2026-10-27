@@ -1,0 +1,55 @@
+name: "✏️ Correzione · 更正"
+description: "Un pinyin, un tono, una traduzione o una frase sbagliati · 拼音、声调、翻译或句子有误"
+title: "Correzione: "
+labels: ["correzione"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie! Non serve saper programmare. Puoi anche correggere direttamente dall'app (tocca la parola → «✏️ Correggi o segnala») e mandare il file che prepara.
+        谢谢！不需要会编程。也可以直接在应用里更正（点开词语 → “✏️ 更正或报告”），再发送它生成的文件。
+  - type: input
+    id: dove
+    attributes:
+      label: "Parola o frase (caratteri) · 词语或句子（汉字）"
+      placeholder: "例如 / per esempio: 银行"
+    validations:
+      required: true
+  - type: dropdown
+    id: campo
+    attributes:
+      label: "Che cosa è sbagliato · 哪里有误"
+      options:
+        - "pinyin / 声调 · pinyin o tono"
+        - "traduzione italiana · 意大利语翻译"
+        - "frase d'esempio · 例句"
+        - "il cinese del corso di italiano · 意大利语课程里的中文"
+        - "altro · 其他"
+    validations:
+      required: true
+  - type: input
+    id: ora
+    attributes:
+      label: "Che cosa c'è adesso · 现在的内容"
+  - type: input
+    id: giusto
+    attributes:
+      label: "Che cosa dovrebbe esserci · 正确的内容"
+    validations:
+      required: true
+  - type: textarea
+    id: perche
+    attributes:
+      label: "Perché (una fonte, un esempio) · 原因（来源、例子）"
+  - type: input
+    id: nick
+    attributes:
+      label: "Nickname per i Crediti (facoltativo) · 致谢用的昵称（可选）"
+      description: "Solo se vuoi comparire in CONTRIBUTORS.md e nei Crediti dell'app · 只有你希望出现在致谢中时才填写"
+  - type: checkboxes
+    id: licenza
+    attributes:
+      label: "Licenza · 许可"
+      options:
+        - label: "Il mio contributo entra con licenza CC BY 4.0 e non è copiato da fonti con licenze incompatibili · 我的贡献以 CC BY 4.0 许可加入，且没有复制许可不兼容的来源"
+          required: true

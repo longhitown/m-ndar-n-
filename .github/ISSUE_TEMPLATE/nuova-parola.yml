@@ -1,0 +1,43 @@
+name: "➕ Parola nuova · 新词"
+description: "Una parola o un'espressione che manca · 缺少的词语或表达"
+title: "Parola nuova: "
+labels: ["parola-nuova"]
+body:
+  - type: input
+    id: hz
+    attributes:
+      label: "Caratteri · 汉字"
+    validations:
+      required: true
+  - type: input
+    id: py
+    attributes:
+      label: "Pinyin con i toni · 带声调的拼音"
+      placeholder: "yínháng"
+    validations:
+      required: true
+  - type: input
+    id: it
+    attributes:
+      label: "Significato in italiano · 意大利语意思"
+    validations:
+      required: true
+  - type: input
+    id: esempio
+    attributes:
+      label: "Una frase d'esempio scritta da te (facoltativa) · 你自己写的例句（可选）"
+  - type: textarea
+    id: perche
+    attributes:
+      label: "Perché è utile (livello HSK, situazione) · 为什么有用（HSK 级别、场景）"
+  - type: input
+    id: nick
+    attributes:
+      label: "Nickname per i Crediti (facoltativo) · 致谢用的昵称（可选）"
+  - type: checkboxes
+    id: licenza
+    attributes:
+      label: "Licenza · 许可"
+      options:
+        - label: "Il mio contributo entra con licenza CC BY 4.0 e non è copiato da dizionari con licenze incompatibili · 我的贡献以 CC BY 4.0 许可加入，且没有复制许可不兼容的词典"
+          required: true

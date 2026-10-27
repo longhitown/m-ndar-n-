@@ -316,10 +316,26 @@ node tools/merge-contrib.mjs arrivati/*.json            # riepilogo: da applicar
 node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ solo le voci valide (poi: node tools/build.mjs)
 ```
 
+**Come aiutare senza programmare:** [CONTRIBUTING.md](CONTRIBUTING.md), in italiano e in cinese: rileggere frasi, segnalare
+pinyin sbagliati, proporre parole, rileggere il cinese del corso di italiano. Le issue hanno tre modelli
+(`.github/ISSUE_TEMPLATE/`: correzione, parola nuova, traduzione) con le etichette `correzione`, `parola-nuova`,
+`traduzione`. Metti tu `good first issue` sulle issue piccole e chiare: GitHub la mostra a chi cerca da dove iniziare.
+
+**Nei Crediti, solo se lo chiedono.** Nel modulo dei contributi c'è la casella «Voglio comparire nei Crediti con questo
+nickname», spenta di base. Se è spuntata, la patch porta `credit: 1`. Con `--apply`, `merge-contrib.mjs` aggiunge il
+nickname a `src/data/contributors.js` (il foglio Crediti dell'app) e a [CONTRIBUTORS.md](CONTRIBUTORS.md), ma solo se
+almeno una sua voce è stata applicata, e mai un nickname con `@` o un indirizzo web. La build controlla che i due elenchi
+coincidano. Per togliere qualcuno: lo cancelli a mano da tutti e due.
+
+**Novità.** ⚙️ → Informazioni e supporto → 🆕 Novità mostra `src/data/changelog.js`: a ogni versione aggiungi in cima una
+voce `{ v, d, it: [...], zh: [...] }` con righe brevi per chi studia. La build si ferma se le due lingue non hanno lo stesso
+numero di righe.
+
 ## Chiavi salvate (tutte `cp-*`, tutte con una regola nel ripristino «unisci»)
 
 Nuove in V6.9:
 
+- `cp-contrib-credit-v1`: «1» se chi contribuisce vuole comparire nei Crediti; preferenza del dispositivo (nell'unione vince quello corrente, come `cp-contrib-nick`).
 - `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
 - `cp-it-game-v1`: punti e serie del corso di italiano, stessa struttura e stessa unione di `cp-game-v1`.
 - `cp-game-v1.pl` / `cp-it-game-v1.pl`: punti del test di livello; nell'unione vale il più alto, −1 = annullato.

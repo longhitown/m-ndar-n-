@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: "📖 Come contribuire · 如何参与"
+    url: "https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md"
+    about: "Che cosa si può fare senza programmare; per chi non usa GitHub: mandarinoapp@gmail.com · 不会编程也能做的事；不用 GitHub 可以写邮件"
