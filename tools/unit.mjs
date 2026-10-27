@@ -133,6 +133,21 @@ function sandbox() {
   check("sigilli: ogni titolo ha forma maschile, femminile e «senza titolo» (vuota) in italiano, e una forma in cinese", forms && I.zh["seal.n1"] && I.zh["seal.s3"]);
 }
 
+/* ---- contributi: chi chiede di comparire nei Crediti (tools/merge-contrib.mjs, su una copia di src/) ---- */
+{
+  const os = await import("os"), { spawnSync } = await import("child_process");
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "md-contrib-")), tsrc = path.join(tmp, "src");
+  fs.cpSync(SRC, tsrc, { recursive: true, filter: (f) => !/[\\/]audio([\\/]|$)/.test(f.slice(SRC.length)) });
+  fs.copyFileSync(path.join(ROOT, "CONTRIBUTORS.md"), path.join(tmp, "CONTRIBUTORS.md"));
+  const P = (name, author, credit, val, tg) => { const f = path.join(tmp, name + ".json"); fs.writeFileSync(f, JSON.stringify({ schema: "mandarino-contrib/1", author, credit, items: [{ id: name, op: "fix", target: tg || "你", field: "it", old: "", new: val }] })); return f; };
+  const mc = (...a) => spawnSync(process.execPath, [path.join(ROOT, "tools/merge-contrib.mjs"), ...a, "--src", tsrc], { encoding: "utf8" });
+  const r1 = mc(P("p1", "Lucia_88", 1, "tu (prova uno)"), P("p2", "Anonimo", undefined, "io (prova due)", "我"), "--apply");
+  const r2 = mc(P("p3", "bad@mail.it", 1, "tu (prova tre)"), P("p4", "lucia_88", 1, "lui (prova quattro)", "他"), "--apply");
+  const js = fs.readFileSync(path.join(tsrc, "data/contributors.js"), "utf8"), md = fs.readFileSync(path.join(tmp, "CONTRIBUTORS.md"), "utf8");
+  check("contributi: con «credit» il nickname entra in contributors.js e CONTRIBUTORS.md; senza no; e-mail scartate, niente doppioni", /var CONTRIBUTORS = \["Lucia_88"\];/.test(js) && /<!-- elenco -->\n- Lucia_88\n<!-- \/elenco -->/.test(md) && !/Anonimo|bad@/.test(js + md), r1.stdout.slice(-300) + r2.stdout.slice(-300) + js.slice(-80));
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

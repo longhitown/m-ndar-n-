@@ -5,8 +5,9 @@
      form = URL «viewform» di un Modulo Google con un campo testo lungo; formEntry = il suo numero (entry.<N>).
      repo = repository PUBBLICO dei contributi (es. «utente/mandarino-contributi»): su uno privato gli estranei non aprono issue. */
   var CFG = { email: MD_CONFIG.CONTACT_EMAIL, form: "", formEntry: "", repo: MD_CONFIG.REPO };   /* src/config.js; repo: le proposte come issue, che .github/workflows/contrib.yml controlla da sola */
-  var NICK = "cp-contrib-nick";
+  var NICK = "cp-contrib-nick", CREDIT = "cp-contrib-credit-v1";   /* CREDIT: «1» = compari nei Crediti con il nickname (scelta esplicita, spenta di base) */
   function nick() { try { return localStorage.getItem(NICK) || ""; } catch (e) { return ""; } }
+  function credit() { try { return localStorage.getItem(CREDIT) === "1"; } catch (e) { return false; } }
   function list() { return CP.contrib.list(); }
   function saveList(l) {
     CP.contrib.save(l); CP.reindex(); CP.refreshRows(); if (CP.studyRefresh) CP.studyRefresh();
@@ -22,7 +23,7 @@
     return "🚩 " + who + " · " + it.why;
   }
   function patch(items) {
-    return { schema: "mandarino-contrib/1", app: CP.VERSION, dataset: CP.DATASET, created: Date.now(), author: nick() || undefined,
+    return { schema: "mandarino-contrib/1", app: CP.VERSION, dataset: CP.DATASET, created: Date.now(), author: nick() || undefined, credit: nick() && credit() ? 1 : undefined,
       items: items.map(function (it) { var o = {}; ["id", "op", "target", "field", "old", "new", "section", "py", "hz", "it", "why"].forEach(function (k) { if (it[k] !== undefined && it[k] !== "") o[k] = it[k]; }); return o; }) };
   }
   function pending() { return list().filter(function (it) { return !it.undone && !it.sent; }); }
@@ -54,6 +55,7 @@
     }
     h += "<label>" + (f.op === "flag" ? T("ct.wrong") : T("ct.why")) + '<textarea id="ct-why" maxlength="200" rows="2">' + esc(f.why || "") + "</textarea></label>" +
       "<label>" + T("ct.nick") + '<input type="text" id="ct-nick" maxlength="40" value="' + CP.attr(nick()) + '" autocomplete="nickname"></label>' +
+      '<label class="chk"><input type="checkbox" id="ct-credit"' + (credit() ? " checked" : "") + "> " + T("ct.credit") + "</label>" +
       (errs && errs.length ? '<div class="warn" role="alert">' + errs.map(esc).join("<br>") + "</div>" : "") +
       '<p class="small muted" style="margin:0">🔒 ' + T("ct.privacy") + "</p>" +
       '<button type="button" class="btn-main" id="ct-save" style="margin-top:0">' + (f.op === "fix" || f.op === "tr" ? T("ct.saveTry") : T("lab.save")) + "</button></div>";
@@ -68,6 +70,7 @@
     if (g("ct-py") !== undefined) form.py = g("ct-py");
     if (g("ct-it") !== undefined) form.it = g("ct-it");
     form.why = g("ct-why") || ""; var n = g("ct-nick"); if (n !== undefined) { try { localStorage.setItem(NICK, n); } catch (e) {} }
+    var cr = document.getElementById("ct-credit"); if (cr) { try { localStorage.setItem(CREDIT, cr.checked ? "1" : "0"); } catch (e) {} }
     return true;
   }
   CP.contribOpen = function (o) {

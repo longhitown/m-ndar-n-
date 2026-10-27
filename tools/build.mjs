@@ -80,6 +80,18 @@ for (const s of scripts) {
   if (miss.length) fail("parti di altri senza una voce in THIRD-PARTY-NOTICES.md: " + miss.join(", "));
 }
 
+/* «Novità» e Crediti: ogni versione di data/changelog.js ha le righe nelle due lingue; l'elenco di data/contributors.js è
+   lo stesso di CONTRIBUTORS.md (tools/merge-contrib.mjs --apply li aggiorna insieme) */
+{
+  const ctx = {}; vm.runInNewContext(fs.readFileSync(path.join(SRC, "data/changelog.js"), "utf8") + ";this.C=CHANGELOG;", ctx);
+  (ctx.C || []).forEach((e) => { if (!e.v || !e.d || !(e.it || []).length || (e.it || []).length !== (e.zh || []).length) fail(`data/changelog.js: la versione ${e.v || "?"} deve avere data e lo stesso numero di righe in italiano e in cinese`); });
+  vm.runInNewContext(fs.readFileSync(path.join(SRC, "data/contributors.js"), "utf8") + ";this.P=CONTRIBUTORS;", ctx);
+  const md = fs.existsSync(path.join(SRC, "..", "CONTRIBUTORS.md")) ? fs.readFileSync(path.join(SRC, "..", "CONTRIBUTORS.md"), "utf8") : "";
+  const blk = (/<!-- elenco -->([\s\S]*?)<!-- \/elenco -->/.exec(md) || [, ""])[1];
+  const listed = blk.split("\n").map((l) => /^- (.+)$/.exec(l.trim())).filter(Boolean).map((m) => m[1].trim());
+  if (JSON.stringify(listed) !== JSON.stringify(ctx.P || [])) fail("CONTRIBUTORS.md e src/data/contributors.js non hanno lo stesso elenco");
+}
+
 /* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
    nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in lo strumento di emissione
    e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */

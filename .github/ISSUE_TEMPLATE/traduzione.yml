@@ -1,0 +1,43 @@
+name: "🈯 Traduzione · 翻译"
+description: "Il cinese del corso di italiano, o una traduzione del Laboratorio · 意大利语课程里的中文，或实验室的翻译"
+title: "Traduzione: "
+labels: ["traduzione"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cerchiamo soprattutto madrelingua cinesi che rileggano le spiegazioni e le traduzioni del corso di italiano.
+        我们特别需要母语为中文的朋友校对意大利语课程的讲解和翻译。
+  - type: dropdown
+    id: dove
+    attributes:
+      label: "Dove · 位置"
+      options:
+        - "corso di italiano (lezioni, parole, esercizi) · 意大利语课程（课文、词语、练习）"
+        - "interfaccia dell'app · 应用界面"
+        - "Laboratorio (traduzione di una frase) · 实验室（句子翻译）"
+    validations:
+      required: true
+  - type: textarea
+    id: ora
+    attributes:
+      label: "Testo attuale · 现在的文字"
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: "Proposta · 建议"
+    validations:
+      required: true
+  - type: input
+    id: nick
+    attributes:
+      label: "Nickname per i Crediti (facoltativo) · 致谢用的昵称（可选）"
+  - type: checkboxes
+    id: licenza
+    attributes:
+      label: "Licenza · 许可"
+      options:
+        - label: "Il mio contributo entra con licenza CC BY 4.0 · 我的贡献以 CC BY 4.0 许可加入"
+          required: true

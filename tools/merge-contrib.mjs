@@ -15,6 +15,9 @@
        entra in src/data/verified.js segnata "memoria" (il laboratorio la usa così com'è); poi «node tools/grammar.mjs»
        dice se le regole ci arrivano da sole. Rileggi ogni traduzione prima di applicarla.
      - pinyin: sillabe = caratteri, segni di tono presenti; niente < o >; al massimo 200 caratteri per campo.
+     - crediti: se la patch porta «credit: 1» (la casella «compari nei Crediti» nell'app) e un nickname accettabile
+       (1-40 caratteri, niente < > @ né indirizzi web), con --apply il nickname entra in src/data/contributors.js e in
+       CONTRIBUTORS.md, ma solo se almeno una sua voce è stata applicata. Senza «credit» il nickname non va da nessuna parte.
 
    Uso:  node tools/merge-contrib.mjs patch1.json [patch2.json …] [--src src] [--out riepilogo.md] [--apply]
    Codice d'uscita: 0 se tutto è valido, 1 se ci sono voci scartate o conflitti (con --apply quelle voci restano fuori). */
@@ -36,6 +39,7 @@ const vocabFiles = list.filter((f) => f.startsWith("data/vocab/")), dialogFiles 
 const SEC = { data: DATA.SECTIONS }, PHR = { data: DATA.PHRASES }, DLG = { data: DATA.DIALOGS }, VER = { data: DATA.VERIFIED || [] };
 const stripZh = (z) => String(z || "").replace(/[\s，。？！、,.!?;；:：“”"'‘’…]/g, "");
 const touched = new Set();
+const goodNick = (n) => typeof n === "string" && n.trim().length >= 1 && n.trim().length <= 40 && !/[<>@\u0000-\u001f]|https?:|www\./i.test(n);
 function store() {
   for (const t of touched) {
     const [kind, i] = t.split(":"), n = +i;
@@ -128,7 +132,7 @@ for (const f of files) {
       if (seenAdd.has(it.hz)) { dup.push({ src, it, of: seenAdd.get(it.hz) }); continue; }
       seenAdd.set(it.hz, src);
     }
-    all.push({ src, it });
+    all.push({ src, it, nick: p.credit === 1 && goodNick(p.author) ? p.author.trim() : null });
   }
 }
 /* un conflitto tiene fuori entrambe le proposte: decide una persona */
@@ -152,6 +156,13 @@ if (same.length) md += "\n## Già così nel dizionario (ignorati)\n\n" + same.ma
 if (dup.length) md += "\n## Doppioni (ignorati)\n\n" + dup.map((x) => `- ${show(x.it)} _(${x.src}, già in ${x.of})_`).join("\n") + "\n";
 if (rejected.length) md += "\n## Scartati\n\n" + rejected.map((x) => `- ${x.it ? show(x.it) : x.src}: ${x.why.join("; ")} _(${x.src})_`).join("\n") + "\n";
 
+/* chi ha chiesto di comparire nei Crediti, tra le voci da applicare; senza chi c'è già */
+const CONTRIB_JS = path.join(srcDir, "data/contributors.js"), CONTRIB_MD = path.resolve(srcDir, "..", "CONTRIBUTORS.md");
+const known = (() => { try { const t = fs.readFileSync(CONTRIB_JS, "utf8"); return JSON.parse(t.slice(t.indexOf("[", t.indexOf("CONTRIBUTORS")), t.lastIndexOf("]") + 1)); } catch (e) { return []; } })();
+const lc = (x) => x.toLowerCase();
+const newNicks = [...new Set(ok.filter((x) => x.nick).map((x) => x.nick))].filter((n) => !known.some((k) => lc(k) === lc(n)));
+if (newNicks.length) md += "\n## Nei Crediti (lo hanno chiesto)\n\n" + newNicks.map((n) => `- ${n}`).join("\n") + "\n";
+
 /* ---------- applicazione ---------- */
 if (apply && ok.length) {
   let n = 0;
@@ -168,6 +179,15 @@ if (apply && ok.length) {
     }
   }
   store();
+  if (newNicks.length) {
+    const L = known.concat(newNicks), t = fs.readFileSync(CONTRIB_JS, "utf8");
+    fs.writeFileSync(CONTRIB_JS, t.replace(/var CONTRIBUTORS = \[[\s\S]*?\];/, "var CONTRIBUTORS = " + JSON.stringify(L, null, 1).replace(/\n\s*/g, " ").replace("[ ", "[").replace(" ]", "]") + ";"));
+    if (fs.existsSync(CONTRIB_MD)) {
+      const m = fs.readFileSync(CONTRIB_MD, "utf8"), body = L.map((n) => "- " + n).join("\n") || "_(ancora nessuno)_";
+      fs.writeFileSync(CONTRIB_MD, m.replace(/<!-- elenco -->[\s\S]*?<!-- \/elenco -->/, "<!-- elenco -->\n" + body + "\n<!-- /elenco -->"));
+    }
+    md += `\nNei Crediti: ${newNicks.join(", ")} (src/data/contributors.js, CONTRIBUTORS.md).\n`;
+  }
   md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso: aggiorna VOCAB_EXPECT in src/data/path-hsk.js (la build lo controlla).` +
     (touched.has("ver:0") ? " Le traduzioni sono entrate in src/data/verified.js come «memoria»: node tools/grammar.mjs dice quali le regole sanno già fare da sole." : "") + "\n";
 } else if (apply) md += "\nNiente da applicare.\n";
