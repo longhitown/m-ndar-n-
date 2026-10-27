@@ -347,9 +347,27 @@ I punti si sommano per dispositivo (`xpBy`), così le due copie non si contano d
 
 ## Licenze
 
-Codice: MIT (`LICENSE`), © 2026 Claudio Longhitano. Brani del jukebox: CC BY 4.0 (`LICENZE/MUSICA.txt`, crediti in
-`src/audio/CREDITI-MUSICA.md`). Terze parti, con le loro licenze in `LICENZE/` e in ⚙️ → Crediti: Make Me a Hanzi (Arphic),
-jsQR (Apache 2.0), wikidict-it/Wikidata (CC0).
+| Parte | Licenza | Testo |
+|---|---|---|
+| Codice | MIT | `LICENSE` (solo il testo MIT, così GitHub lo riconosce) |
+| Contenuti didattici in `src/data/` | CC BY 4.0 | `LICENZE/CONTENUTI.txt` |
+| Musica | CC BY 4.0 | `LICENZE/MUSICA.txt` |
+
+Che cosa vale per che cosa è in `NOTICE.md`. Le parti di altri, con indirizzo, versione e file, sono in
+`THIRD-PARTY-NOTICES.md`:
+
+| Componente | Licenza |
+|---|---|
+| Make Me a Hanzi | Arphic |
+| complete-hsk-vocabulary | MIT |
+| py-fsrs | MIT |
+| jsQR | Apache 2.0 |
+| wikidict-it / Wikidata | CC0 |
+| Morph-it! | LGPL (da verificare) |
+| campioni della musica | CC0 |
+
+La build si ferma se in `src/vendor/` o tra i dati compare una parte di altri senza voce. I contributi entrano con la
+licenza dei contenuti: lo dicono il foglio dei contributi dell'app, `NOTICE.md` e `CONTRIBUTING.md`.
 
 ## Che cosa resta aperto
 
