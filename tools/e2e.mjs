@@ -1154,6 +1154,64 @@ try {
     check("Logo, interfaccia in cinese: toccando una foglia l'avviso dice «第三声»", /第三声/.test(leafZh), leafZh);
     await ctx.close();
   }
+  /* Laboratorio dei radicali (Frasi → Impara → Radicali): apertura, una reazione riuscita, una a vuoto, il trascinamento, il
+     movimento ridotto e la carta da condividere; nessuna richiesta di rete */
+  {
+    const open = async (p) => { await p.click("#tab-build"); await p.click('[data-group="learn"]'); await p.click('[data-sub="rad"]'); await p.waitForSelector("#lr-root"); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-music", "0"); });
+    const p = await ctx.newPage(); const errs = [], net = []; p.on("pageerror", (e) => errs.push(e.message));
+    p.on("request", (r) => { if (/^https?:/.test(r.url())) net.push(r.url()); });
+    await p.goto(pathToFileURL(file).href); await p.waitForTimeout(600);
+    const before = await p.evaluate(() => !!(window.CP && CP.labRad));
+    await open(p);
+    const o = await p.evaluate(() => ({ el: document.querySelectorAll(".lr-el").length, slots: document.querySelectorAll(".lr-slot").length, cnt: CP.labRad.count(), tot: CP.labRad.total(), main: Array.from(document.querySelectorAll(".btn-main")).filter((e) => e.offsetParent).length }));
+    check("Laboratorio dei radicali: si apre da Frasi → Impara → Radicali (gruppo caricato solo ora), mensola con 18 elementi, due posti, contatore a zero, nessun pulsante primario", !before && o.el === 18 && o.slots === 2 && o.cnt === 0 && o.tot > 1000 && o.main === 0, JSON.stringify(o));
+    /* una reazione riuscita: 女 + 子 = 好 */
+    await p.click('[data-lr-el="女"]'); await p.click('[data-lr-el="子"]'); await p.waitForSelector("#lr-out.ok", { timeout: 4000 });
+    await p.waitForTimeout(700);
+    const r = await p.evaluate(() => { const t = document.getElementById("lr-outwrap").innerText; return { t, strokes: document.querySelectorAll("#lr-out .lr-svg path").length, cnt: CP.labRad.count(), saved: JSON.parse(localStorage.getItem("cp-labrad-v1") || "{}").f, main: Array.from(document.querySelectorAll(".btn-main")).filter((e) => e.offsetParent).length }; });
+    check("Laboratorio dei radicali: 女 + 子 reagiscono: compare 好 con pinyin, significato, i suoi 6 tratti, la lettura simpatica dichiarata «non etimologia», contatore a 1 e scoperta salvata, un solo pulsante primario", /好/.test(r.t) && /hǎo/.test(r.t) && /bene/.test(r.t) && /non etimologia/.test(r.t) && r.strokes === 6 && r.cnt === 1 && r.saved && r.saved["好"] > 0 && r.main === 1, JSON.stringify(r).slice(0, 300));
+    /* una reazione a vuoto: 火 + 心, una battuta gentile e nessuna penalità */
+    await p.click("[data-lr-clear]"); await p.click('[data-lr-el="火"]'); await p.click('[data-lr-el="心"]'); await p.waitForSelector("#lr-out.no", { timeout: 4000 });
+    const n = await p.evaluate(() => ({ t: document.getElementById("lr-outwrap").innerText, cnt: CP.labRad.count(), xp: CP.game.rank().xp, main: Array.from(document.querySelectorAll(".btn-main")).filter((e) => e.offsetParent).length }));
+    check("Laboratorio dei radicali: 火 + 心 non reagiscono: una battuta gentile, contatore e punti invariati, niente pulsante primario", /Nessuna reazione/.test(n.t) && n.cnt === 1 && n.xp === 0 && n.main === 0, JSON.stringify(n).slice(0, 240));
+    /* trascinamento con il mouse: 日 sul primo posto, 月 sul secondo */
+    await p.click("[data-lr-clear]"); await p.evaluate(() => window.scrollTo(0, 300)); await p.waitForTimeout(100);
+    const drag = async (sel, tsel) => { const a = await (await p.$(sel)).boundingBox(), t = await (await p.$(tsel)).boundingBox(); await p.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await p.mouse.down(); await p.mouse.move(a.x + a.width / 2 + 20, a.y + a.height / 2 - 40, { steps: 4 }); await p.mouse.move(t.x + t.width / 2, t.y + t.height / 2, { steps: 8 }); await p.mouse.up(); };
+    await drag('[data-lr-el="日"]', '[data-lr-slot="0"]'); await drag('[data-lr-el="月"]', '[data-lr-slot="1"]'); await p.waitForSelector("#lr-out.ok", { timeout: 4000 });
+    const d = await p.evaluate(() => ({ t: document.getElementById("lr-outwrap").innerText, cnt: CP.labRad.count(), ghost: document.querySelectorAll(".lr-ghost").length }));
+    check("Laboratorio dei radicali: trascinando 日 e 月 sul banco nasce 明 (contatore a 2, nessun fantasma del trascinamento rimasto)", /明/.test(d.t) && /a domani/.test(d.t) && d.cnt === 2 && d.ghost === 0, JSON.stringify(d).slice(0, 240));
+    /* i composti scoperti tornano sulla mensola: 木 + 木 = 林, poi 木 + 林 = 森 */
+    await p.click("[data-lr-clear]"); await p.click('[data-lr-el="木"]'); await p.click('[data-lr-el="木"]'); await p.waitForSelector("#lr-out.ok", { timeout: 4000 });
+    await p.click("[data-lr-clear]"); await p.click('[data-lr-el="木"]'); await p.click('#lr-comp [data-lr-el="林"]'); await p.waitForFunction(() => /森/.test(document.getElementById("lr-outwrap").innerText), null, { timeout: 4000 });
+    check("Laboratorio dei radicali: 林 scoperto torna sulla mensola come composto e con 木 dà 森 (contatore a 4)", await p.evaluate(() => CP.labRad.count() === 4));
+    /* la carta da condividere */
+    await p.click("[data-lr-share]"); await p.waitForSelector(".card-cv", { timeout: 4000 }); await p.waitForTimeout(600);
+    const cd = await p.evaluate(() => { const c = document.querySelector(".card-cv"), x = c.getContext("2d"), px = x.getImageData(0, 0, c.width, c.height).data; let ink = 0; for (let i = 0; i < px.length; i += 4 * 97) if (px[i] < 120 && px[i + 1] < 120) ink++; return { w: c.width, h: c.height, ink, alt: c.getAttribute("aria-label"), cut: (c.__cut || []).length, qr: !!c.__qr }; });
+    check("Laboratorio dei radicali: la carta della scoperta (motore di ui/share-card.js, 3:4) è disegnata, senza testo tagliato e con il QR", cd.w === 1080 && cd.h === 1440 && cd.ink > 300 && cd.cut === 0 && cd.qr && /森/.test(cd.alt), JSON.stringify(cd));
+    /* si ricorda dopo il ricaricamento */
+    await p.reload(); await p.waitForTimeout(500); await open(p);
+    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", await p.evaluate(() => CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4));
+    check("Laboratorio dei radicali: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, (net[0] || "") + (errs[0] || ""));
+    await ctx.close();
+    /* movimento ridotto: la reazione compare subito, senza classi d'animazione, e i tratti sono già disegnati */
+    const rc = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+    await rc.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-music", "0"); });
+    const q = await rc.newPage(); await q.goto(pathToFileURL(file).href); await q.waitForTimeout(500); await open(q);
+    await q.click('[data-lr-el="人"]'); await q.click('[data-lr-el="木"]'); await q.waitForSelector("#lr-out.ok", { timeout: 2000 });
+    const rm = await q.evaluate(() => ({ fresh: !!document.querySelector("#lr-out.fresh"), go: !!document.querySelector("#lr-out .lr-svg.go"), merge: !!document.querySelector(".lr-bench.merge"), off: getComputedStyle(document.querySelector("#lr-out .lr-svg path")).strokeDashoffset, t: document.getElementById("lr-outwrap").innerText }));
+    check("Laboratorio dei radicali: con il movimento ridotto 人 + 木 = 休 compare subito, senza animazioni, con i tratti già disegnati", /休/.test(rm.t) && !rm.fresh && !rm.go && !rm.merge && parseFloat(rm.off) === 0, JSON.stringify(rm).slice(0, 240));
+    await rc.close();
+    /* interfaccia in cinese: stesse chiavi, nessuna chiave nuda */
+    const zc = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await zc.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-music", "0"); localStorage.setItem("cp-lang", "zh"); });
+    const z = await zc.newPage(); await z.goto(pathToFileURL(file).href); await z.waitForTimeout(500); await open(z);
+    await z.click('[data-lr-el="女"]'); await z.click('[data-lr-el="子"]'); await z.waitForSelector("#lr-out.ok", { timeout: 4000 }); await z.waitForTimeout(600);
+    const zt = await z.evaluate(() => document.getElementById("lr-root").innerText);
+    check("Laboratorio dei radicali: in cinese compaiono titolo, lettura e dicitura «不是字源», nessuna chiave senza traduzione", /部件实验室/.test(zt) && /不是字源/.test(zt) && /好/.test(zt) && !/\blr\.[a-z]/i.test(zt), zt.slice(0, 160).replace(/\n/g, " "));
+    await zc.close();
+  }
   /* microfono: un errore passeggero del riconoscitore (servizio occupato) si ritenta una volta, in silenzio, e non spegne il riconoscimento */
   {
     const ctx = await browser.newContext({ viewport: { width: 360, height: 740 }, permissions: ["microphone"] });

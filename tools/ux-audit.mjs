@@ -183,7 +183,7 @@ async function auditView(browser, file, vw, vh, theme) {
   await screen("Frasi");
   /* ogni sotto-scheda di Frasi (se c'è la navigazione a gruppi di prima) */
   /* Frasi si apre sulle quattro carte (docs/ux-architettura.md): si torna alle carte e si entra nel gruppo dello strumento */
-  const SUBS = { lessons: "learn", pat: "learn", ex: "build", lab: "build", slot: "build", dlg: "talk", thought: "talk", reader: "read" };
+  const SUBS = { lessons: "learn", pat: "learn", rad: "learn", ex: "build", lab: "build", slot: "build", dlg: "talk", thought: "talk", reader: "read" };
   for (const sub of Object.keys(SUBS)) {
     if (!(await page.$(`[data-sub="${sub}"]`)) && (await page.$("[data-fr-home]"))) { await page.click("[data-fr-home]"); await page.waitForTimeout(80); }
     if (!(await page.$(`[data-sub="${sub}"]`)) && (await page.$(`[data-group="${SUBS[sub]}"]`))) { await page.click(`[data-group="${SUBS[sub]}"]`); await page.waitForTimeout(80); }
@@ -191,6 +191,15 @@ async function auditView(browser, file, vw, vh, theme) {
     await page.click(`[data-sub="${sub}"]`); await page.waitForTimeout(150); await page.evaluate(PAGE_LIB);
     await screen("Frasi · " + sub);
   }
+  /* Laboratorio dei radicali (Frasi → Impara → Radicali), con gli strumenti aperti: banco vuoto, una reazione riuscita e una a vuoto */
+  await page.evaluate(() => { CP.unlock.showAll(true); CP.build.setSub("rad"); });
+  await page.waitForSelector("#lr-root"); await page.waitForTimeout(200); await page.evaluate(PAGE_LIB);
+  await screen("Frasi · rad (banco vuoto)");
+  await page.click('[data-lr-el="女"]'); await page.click('[data-lr-el="子"]'); await page.waitForSelector("#lr-out.ok"); await settle(page); await page.evaluate(PAGE_LIB);
+  await screen("Frasi · rad (reazione)");
+  await page.click("[data-lr-clear]"); await page.click('[data-lr-el="火"]'); await page.click('[data-lr-el="心"]'); await page.waitForSelector("#lr-out.no"); await settle(page); await page.evaluate(PAGE_LIB);
+  await screen("Frasi · rad (nessuna reazione)");
+  await page.evaluate(() => { CP.unlock.showAll(false); CP.build.home(); });
   /* i fogli */
   for (const [btn, lbl, pre] of [["#settings-btn", "⚙️", null], ["#flt-btn", "Filtri", "words"], ["#legend-btn", "Legenda", "words"]]) {
     if (pre) await tab(page, pre);

@@ -8,7 +8,7 @@
   /* una scheda ancora chiusa (ui/unlock.js) si apre in immersione, senza mostrarla */
   function go(tab, fn) { CP.closeSheet(); if (CP.unlock && !CP.unlock.ok(tab)) { CP.unlock.peek(tab, fn || function () {}); return; } CP.show(tab); if (fn) setTimeout(fn, 60); }
   /* gli strumenti avanzati di Frasi ancora chiusi: si vedono, con «si apre…», ma non portano da nessuna parte */
-  var LOCK = { "fd.t5": "fr:pat", "fd.t7": "fr:lab", "fd.t8": "fr:slot", "fd.t10": "fr:thought", "fd.t11": "fr:reader", "fd.t13": "words" };
+  var LOCK = { "fd.t5": "fr:pat", "fd.t7": "fr:lab", "fd.t8": "fr:slot", "fd.t10": "fr:thought", "fd.t11": "fr:reader", "fd.t13": "words", "fd.t17": "fr:rad" };
   function lockOf(id) {
     var k = LOCK[id]; if (!k || !CP.unlock) return "";
     if (k === "words") return CP.unlock.ok("words") ? "" : CP.unlock.why("words");
@@ -32,6 +32,7 @@
     ["🔎", "fd.t13", "parole dizionario vocabolario tabella", function () { go("words"); }],
     ["🚶", "fd.t14", "guida ascolta camminando cuffie", function () { CP.closeSheet(); var g = document.getElementById("guide-btn"); if (g) g.click(); }],
     ["🎵", "fd.t15", "musica jukebox brani tracce", function () { CP.closeSheet(); if (CP.jukeboxOpen) setTimeout(CP.jukeboxOpen, 60); }],
+    ["⚗️", "fd.t17", "laboratorio radicali componenti caratteri unisci reazione elementi chimica", function () { go("build", function () { CP.build.setSub("rad"); }); }],
     ["⚙️", "fd.t16", "impostazioni tema voce audio caratteri backup ripristino lingua", function () { CP.closeSheet(); setTimeout(function () { var s = document.getElementById("settings-btn"); if (s) s.click(); }, 60); }]
   ];
   var IDX = null;

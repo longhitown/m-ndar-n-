@@ -217,7 +217,8 @@ for (const f of COURSE_IT) {
    (type="text/plain") e non si compilano all'avvio; window.__mdLoad[NOME]() li esegue tutti, in ordine, una volta sola
    (CP.ex.carica in ui/ex-stub.js). Da src/, senza build, sono script normali e __mdLoad non c'è. */
 const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js", "study/ex-frasi.js", "study/ex-varie.js", "study/guided.js", "phrases/reading.js"] },
-  { name: "MIEIBRANI", files: ["audio/user-tracks.js"] }];
+  { name: "MIEIBRANI", files: ["audio/user-tracks.js"] },
+  { name: "LABRAD", files: ["i18n/lab-rad.js", "data/lab-recipes.js", "data/lab-readings.js", "phrases/radicali.js"] }];
 for (const g of GROUPS) {
   const group = g.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("GROUPS " + g.name + ": manca uno di " + g.files.join(", ") + " in src/index.html");
   const ids = [];
