@@ -1,7 +1,7 @@
 /* ===== màndarínō · configurazione: l'identità del progetto in un solo punto.
    Il primo script dopo boot.js: tutti gli altri moduli leggono da qui (window.MD_CONFIG), nessuno scrive indirizzi a mano.
    Se il repository cambia nome, se cambia la pagina di sostegno o l'indirizzo di contatto, si cambia solo questo file.
-   Versione «store» (Task 7D): nell'APK la sceglie la build Android (productFlavors, MandarinoAndroid.flavor()); qui sotto
+   Versione «store»: nell'APK la sceglie la build Android (productFlavors, MandarinoAndroid.flavor()); qui sotto
    si spengono il controllo degli aggiornamenti dell'APK, il sostegno e i sigilli. Il codice web resta identico. ===== */
 var MD_CONFIG = {
   REPO: "longhitown/mandarino",                       /* GitHub: issue dei contributi, controllo delle release dell'APK */

@@ -1,4 +1,4 @@
-/* ===== màndarínō · corso di italiano: gli esercizi del ripasso (Task 12, T5, parità con il corso di cinese).
+/* ===== màndarínō · corso di italiano: gli esercizi del ripasso.
    Stesso motore (CP.exEngine, gruppo ESERCIZI, caricato al primo uso), stessi stili (⚙️: Guidato, Misto, Classico = le
    carte di prima), stesse regole del voto (mai Facile da una scelta multipla); il voto passa da CP.itApi.grade(voce, g,
    meta), che scrive cp-it-srs-v1 nel formato di sempre. Le parole nuove si presentano prima (parola, cinese, forme, frase).

@@ -6,7 +6,7 @@
 
   /* ---- 1. pulsanti nella barra ---- */
   var grp = document.querySelector(".bar .grp"), first = document.getElementById("guide-btn");
-  /* V6.7: nella barra resta solo 🎵; i tre stati dell'audio stanno in ⚙️ (CP.audioMode / CP.setAudioMode) */
+  /* nella barra resta solo 🎵; i tre stati dell'audio stanno in ⚙️ (CP.audioMode / CP.setAudioMode) */
   var vol = document.createElement("button"); vol.type = "button"; vol.id = "vol-btn"; vol.className = "iconbtn emo";
   var mus = document.createElement("button"); mus.type = "button"; mus.id = "music-btn"; mus.className = "iconbtn emo";
   grp.insertBefore(mus, document.getElementById("settings-btn"));

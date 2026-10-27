@@ -1,4 +1,4 @@
-/* ===== màndarínō · stile di ripasso (Task 12, §12.9), la parte sempre presente: ⚙️ → Avanzate → «Stile di ripasso»
+/* ===== màndarínō · stile di ripasso, la parte sempre presente: ⚙️ → Avanzate → «Stile di ripasso»
    (Guidato, Misto, Classico) e CP.ex.carica(), che esegue al primo uso il gruppo ESERCIZI (tools/build.mjs, GROUPS: il
    motore degli esercizi, i distrattori, la digitazione, il percorso guidato, la lettura). Con lo stile Classico non si
    carica nulla e il ripasso è quello di sempre. Preferenza del dispositivo: cp-ex-style. ===== */
@@ -12,7 +12,7 @@
   function carica(cb) { if (!CP.exEngine && window.__mdLoad && window.__mdLoad.ESERCIZI) window.__mdLoad.ESERCIZI(); if (cb) cb(CP.exEngine); return CP.exEngine; }
   CP.ex = { stile: stile, set: function (v) { if (STYLES.indexOf(v) >= 0) lsSet(K, v); }, carica: carica, STYLES: STYLES };
 
-  /* ---- percorso guidato (Task 12, §12.6): il passo successivo, calcolato qui senza caricare il gruppo ---- */
+  /* ---- percorso guidato: il passo successivo, calcolato qui senza caricare il gruppo ---- */
   var DURS = [5, 10, 15], DK = "cp-ex-dur";
   function exData() { try { var o = JSON.parse(lsGet("cp-ex-v1") || "null"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
   function unit(id) { return (exData().units || {})[id] || null; }

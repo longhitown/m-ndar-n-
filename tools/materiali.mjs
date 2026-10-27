@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* màndarínō · dai materiali (materiali/runtime/, materiali/dati/) ai dati dell'app letti al primo uso (src/data/ex/).
-   Task 12. Ricontrolla tutto con il taglio dell'app (src/core/segment.js), non con quello approssimato del pacchetto:
+   Ricontrolla tutto con il taglio dell'app (src/core/segment.js), non con quello approssimato del pacchetto:
      - frasi cinesi (frasi-zh, voce-zh): ogni parola nel vocabolario; livello calcolato (la parola più alta, HSK 1-5, 6 = oltre)
        non sopra quello dichiarato. Le frasi che non passano si scartano e si contano (è normale che qualcuna cada);
      - clip (voce-zh, voce-it): il file .ogg c'è, sotto i 60 KB; le frasi di materiali/escludi-frasi.txt si tolgono;
@@ -80,7 +80,7 @@ export function build(srcDir, matDir) {
       bytes += sz; keep.push(r);
     }
     out[name] = { campi: v.campi, righe: keep, credito: v.credito || "", ext: v.ext || "ogg" };
-    /* il catalogo dei file (Task 12, T5-T6): per ogni clip l'impronta del contenuto, che va nel nome del file in dist/ */
+    /* il catalogo dei file: per ogni clip l'impronta del contenuto, che va nel nome del file in dist/ */
     const F = (out.VOICE_FILES = out.VOICE_FILES || { byte: {} });
     F[lang] = {}; F.byte[lang] = 0;
     for (const r of keep) { const b = fs.readFileSync(path.join(matDir, "audio", lang, r[0] + ".ogg")); F[lang][r[0]] = voiceHash(b); F.byte[lang] += b.length; }
@@ -99,12 +99,12 @@ export function build(srcDir, matDir) {
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const { out, report } = build(SRC, MAT);
   const FILES = {
-    "frasi-zh.js": js("FRASI_ZH", out.FRASI_ZH, head("frasi d'esempio cinese → italiano (Task 12): frase, traduzione, livello, numeri delle frasi su Tatoeba, traduzione diretta (1) o via inglese (0)", "Fonte: Tatoeba (tatoeba.org), licenza CC BY 2.0 FR; autori in materiali/crediti/autori-frasi.tsv.")),
-    "frasi-it.js": js("FRASI_IT", out.FRASI_IT, head("frasi italiano → cinese per il corso di italiano (Task 12): frase, traduzione, livello stimato, numero su Tatoeba, numero della clip", "Fonte: Tatoeba (tatoeba.org), licenza CC BY 2.0 FR; autori in materiali/crediti/autori-frasi.tsv.")),
-    "voce-zh.js": js("VOCE_ZH", out.VOCE_ZH, head("indice delle voci cinesi reali (Task 12): clip, chiave (solo caratteri), frase, livello, durata", "Fonte: Mozilla Common Voice Scripted Speech 27.0, licenza CC0-1.0. Nessun dato dei parlanti.")),
-    "voce-it.js": js("VOCE_IT", out.VOCE_IT, head("indice delle voci italiane reali (Task 12): clip, chiave, frase, livello stimato, durata", "Fonte: Tatoeba, voce NM1, licenza CC BY 4.0.")),
-    "voci-file.js": js("VOICE_FILES", out.VOICE_FILES || { byte: {} }, head("catalogo dei file delle voci reali (Task 12): per lingua, numero della clip → impronta del contenuto; byte per lingua", "I file vanno in dist/audio/voce/<lingua>/<numero>.<impronta>.ogg (tools/build.mjs).")),
-    "insiemi.js": js("INSIEMI", out.INSIEMI, "/* màndarínō · insiemi di elementi grammaticali da confondere, per le frasi a buco grammaticali (Task 12). Generato da\n   tools/materiali.mjs a partire da materiali/dati/insiemi-confondibili.json (scritti per il progetto): non modificarlo a mano. */\n")
+    "frasi-zh.js": js("FRASI_ZH", out.FRASI_ZH, head("frasi d'esempio cinese → italiano: frase, traduzione, livello, numeri delle frasi su Tatoeba, traduzione diretta (1) o via inglese (0)", "Fonte: Tatoeba (tatoeba.org), licenza CC BY 2.0 FR; autori in materiali/crediti/autori-frasi.tsv.")),
+    "frasi-it.js": js("FRASI_IT", out.FRASI_IT, head("frasi italiano → cinese per il corso di italiano: frase, traduzione, livello stimato, numero su Tatoeba, numero della clip", "Fonte: Tatoeba (tatoeba.org), licenza CC BY 2.0 FR; autori in materiali/crediti/autori-frasi.tsv.")),
+    "voce-zh.js": js("VOCE_ZH", out.VOCE_ZH, head("indice delle voci cinesi reali: clip, chiave (solo caratteri), frase, livello, durata", "Fonte: Mozilla Common Voice Scripted Speech 27.0, licenza CC0-1.0. Nessun dato dei parlanti.")),
+    "voce-it.js": js("VOCE_IT", out.VOCE_IT, head("indice delle voci italiane reali: clip, chiave, frase, livello stimato, durata", "Fonte: Tatoeba, voce NM1, licenza CC BY 4.0.")),
+    "voci-file.js": js("VOICE_FILES", out.VOICE_FILES || { byte: {} }, head("catalogo dei file delle voci reali: per lingua, numero della clip → impronta del contenuto; byte per lingua", "I file vanno in dist/audio/voce/<lingua>/<numero>.<impronta>.ogg (tools/build.mjs).")),
+    "insiemi.js": js("INSIEMI", out.INSIEMI, "/* màndarínō · insiemi di elementi grammaticali da confondere, per le frasi a buco grammaticali. Generato da\n   tools/materiali.mjs a partire da materiali/dati/insiemi-confondibili.json (scritti per il progetto): non modificarlo a mano. */\n")
   };
   fs.mkdirSync(OUT, { recursive: true });
   let stale = [];

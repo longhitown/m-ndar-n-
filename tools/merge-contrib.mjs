@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* màndarínō · unione dei contributi della community (prompt V6.7, §6.5). Node, nessuna dipendenza.
+/* màndarínō · unione dei contributi della community. Node, nessuna dipendenza.
 
    Legge una o più patch «mandarino-contrib/1» (i file .json scaricati dall'app, o il testo arrivato via WeChat / email /
    Modulo Google salvato in un file), rifà la validazione dell'app, segnala doppioni e conflitti e stampa un riepilogo

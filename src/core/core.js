@@ -283,7 +283,7 @@
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
     failTimer = setTimeout(finish, 6500 + text.length * 900);
-    /* Task 12: la voce reale registrata, se la frase ne ha una sul telefono (core/voice-clip.js); se non parte, la voce di sempre */
+    /* la voce reale registrata, se la frase ne ha una sul telefono (core/voice-clip.js); se non parte, la voce di sempre */
     var clip = !o.noClip && CP.voiceClip ? CP.voiceClip.url(text, zh ? "zh" : "it") : "";
     if (clip) {
       var ca = new Audio(clip), back = function () {
@@ -298,7 +298,7 @@
       try { var cp = ca.play(); if (cp && cp.catch) cp.catch(back); } catch (e) { back(); }
       return;
     }
-    /* V6.8: la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
+    /* la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
        accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
       if (finished || token !== mine) return;
@@ -334,7 +334,7 @@
   };
   CP.say = function (text, el) { CP.speak(text, { el: el }); };
 
-  /* ---- caratteri con più letture (V6.7). La sintesi vocale legge il carattere, non il pinyin:
+  /* ---- caratteri con più letture. La sintesi vocale legge il carattere, non il pinyin:
      per 还 huán direbbe «hái». Per questi caratteri si fa leggere una parola d'esempio con la stessa lettura. ---- */
   function sylList(py) {
     var clean = String(py).replace(/[!?,;:…"“”«»()（），。？！、]/g, " ").replace(/\.(?=\s|$)/g, " ").trim();
@@ -447,7 +447,7 @@
     }
     return master;
   };
-  /* V6.7: tre bus sotto il master. sfx (volume regolabile, cp-sfxvol), music (il jukebox ci si collega),
+  /* tre bus sotto il master. sfx (volume regolabile, cp-sfxvol), music (il jukebox ci si collega),
      e il ducking: quando parla la voce la musica scende di 10 dB e poi risale. */
   CP.bus = (function () {
     var B = {}, duckN = 0;
@@ -671,7 +671,7 @@
     };
   };
 
-  /* ---- V6.7: preferenze dell'interfaccia (cp-ux-v1: benvenuto, legenda, suggerimenti, logo grande) ---- */
+  /* ---- preferenze dell'interfaccia (cp-ux-v1: benvenuto, legenda, suggerimenti, logo grande) ---- */
   CP.ux = (function () {
     var K = "cp-ux-v1", o = {};
     try { o = JSON.parse(lsGet(K) || "{}") || {}; } catch (e) { o = {}; }
@@ -688,7 +688,7 @@
   window.addEventListener("pagehide", function () { CP.focusMode(false); });
   document.addEventListener("visibilitychange", function () { if (CP.studyActive && !CP.studyActive() && !(CP.mode && CP.mode.active())) CP.focusMode(false); });
 
-  /* ---- fogli e finestre modali (V6.7): il focus resta dentro (Tab / Maiusc+Tab ciclano), Esc chiude,
+  /* ---- fogli e finestre modali: il focus resta dentro (Tab / Maiusc+Tab ciclano), Esc chiude,
      alla chiusura il focus torna all'elemento da cui si era partiti. Vale per #fam, #guide, #jk-pop, #selftest e i fogli nuovi. ---- */
   var traps = [], FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
   function focusables(el) { return Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (x) { return x.getClientRects().length > 0 && !x.closest("[hidden]"); }); }
@@ -742,7 +742,7 @@
         return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
       }).join("") + "</div>";
     }
-    if (CP.anatomyHTML) h += CP.anatomyHTML(ch);   /* Task 5: di che cosa è fatto il carattere (words/anatomy.js) */
+    if (CP.anatomyHTML) h += CP.anatomyHTML(ch);   /* di che cosa è fatto il carattere (words/anatomy.js) */
     var ex = selfW && CP.exampleFor && CP.exampleFor(selfW.key);
     if (ex) h += '<div class="cd-ex"><span class="tag">' + CP.t("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + CP.esc(ex[2]) + "</div>" + CP.audioBtns(ex[1], true) + "</div>";
     if (selfW && CP.phonBlock) h += CP.phonBlock(selfW.py);

@@ -1,4 +1,4 @@
-/* Struttura dei caratteri (Task 5): 2517 caratteri (2146 del vocabolario, 25 senza scomposizione: semplici o
+/* Struttura dei caratteri: 2517 caratteri (2146 del vocabolario, 25 senza scomposizione: semplici o
    non scomponibili), da Make Me a Hanzi (github.com/skishore/makemeahanzi, file dictionary.txt), derivato da Unihan e
    CJKlib. Questo file è sotto la licenza GNU LGPL 3.0 o successiva: il testo è in LICENZE/LGPL-3.0.txt e nei crediti
    dell'app. Modifiche rispetto a dictionary.txt (tools/anatomy.mjs, 2026-10-27): tenuti solo i caratteri del vocabolario e

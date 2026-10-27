@@ -42,7 +42,7 @@ if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
   const ST = vm.runInContext("STROKES", sctx), miss = new Set();
   D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !ST[ch]) miss.add(ch); })));
   if (miss.size) fail(`caratteri senza tratti in src/data/strokes.js: ${[...miss].join("")} (lancia node tools/strokes.mjs graphics.txt)`); }
-/* anatomia del carattere (Task 5): ogni carattere del vocabolario ha una scomposizione o è segnato come semplice ("") in
+/* anatomia del carattere: ogni carattere del vocabolario ha una scomposizione o è segnato come semplice ("") in
    src/data/anatomy.js (si rigenera con tools/anatomy.mjs dictionary.txt) */
 { const actx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/anatomy.js"), "utf8"), actx);
   const AN = vm.runInContext("ANATOMY", actx), miss = new Set();
@@ -98,7 +98,7 @@ for (const s of scripts) {
   if (JSON.stringify(listed) !== JSON.stringify(ctx.P || [])) fail("CONTRIBUTORS.md e src/data/contributors.js non hanno lo stesso elenco");
 }
 
-/* Task 11: il corso di italiano non ha testi scritti nel codice: tutto passa da t() (src/i18n/). Ammessi i commenti e le
+/* il corso di italiano non ha testi scritti nel codice: tutto passa da t() (src/i18n/). Ammessi i commenti e le
    righe bilingui di proposito (data-noi18n: la scelta del corso, che deve capire anche chi non legge l'altra lingua). */
 {
   for (const f of fs.readdirSync(path.join(SRC, "it")).filter((x) => x.endsWith(".js"))) {
@@ -108,7 +108,7 @@ for (const s of scripts) {
   }
 }
 
-/* Task 12: i dati dei materiali (src/data/ex/, scritti da tools/materiali.mjs) si ricontrollano con il taglio dell'app:
+/* i dati dei materiali (src/data/ex/, scritti da tools/materiali.mjs) si ricontrollano con il taglio dell'app:
    frasi cinesi solo di parole del vocabolario e con il livello non sotto quello calcolato; ogni clip dell'indice esiste,
    sotto i 60 KB; le voci insieme sotto i 10 MB; niente frasi del serbatoio (con il campo «flag»). */
 const VOICE_CLIPS = [];
@@ -213,7 +213,7 @@ for (const f of COURSE_IT) {
     "(function () { var c = null; try { c = localStorage.getItem(\"cp-course\"); } catch (e) {} var el = document.getElementById(" + JSON.stringify(id) + "); if (c === \"it\" && el) { var s = document.createElement(\"script\"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>");
   scripts.splice(scripts.indexOf(sc), 1);
 }
-/* GROUPS (Task 12): gruppi di moduli caricati al primo uso, generalizzando COURSE_IT. Nel file unico i file restano testo
+/* GROUPS: gruppi di moduli caricati al primo uso, generalizzando COURSE_IT. Nel file unico i file restano testo
    (type="text/plain") e non si compilano all'avvio; window.__mdLoad[NOME]() li esegue tutti, in ordine, una volta sola
    (CP.ex.carica in ui/ex-stub.js). Da src/, senza build, sono script normali e __mdLoad non c'è. */
 const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js", "study/ex-frasi.js", "study/ex-varie.js", "study/guided.js", "phrases/reading.js"] }];
@@ -258,7 +258,7 @@ for (const f of fs.readdirSync(path.join(SRC, "pwa"))) if (!/\.js$/.test(f)) fil
 /* «nomi e termini» del Lettore (tools/wikidict.mjs): un file a parte, scaricato solo quando serve */
 if (WIKIB) files["data/wiki/" + WIKIF] = WIKIB;
 for (const [name, b] of MUSICB) files["audio/music/" + name] = b;
-/* le voci reali (Task 12): dist/audio/voce/<lingua>/<numero>.<impronta>.ogg; nell'APK sono dentro il pacchetto, sul sito si
+/* le voci reali: dist/audio/voce/<lingua>/<numero>.<impronta>.ogg; nell'APK sono dentro il pacchetto, sul sito si
    scaricano solo con «Scarica le voci» (core/voice-clip.js) */
 for (const [lang, name, b] of VOICE_CLIPS) files["audio/voce/" + lang + "/" + name] = b;
 for (const s of scripts.filter((s) => /^audio\/tracks\/(?!index)/.test(s.src))) {

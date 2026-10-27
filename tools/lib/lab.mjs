@@ -75,7 +75,7 @@ export function checkLessons(L) {
         else q.opts.forEach((o) => { if (CJK.test(o) && !/[a-zàèéìòù]{3}/i.test(o)) zhOk(at, o); });
         if (q.zh) zhOk(at, q.zh);
       } else if (q.k === "buco") {
-        /* Task 12: la frase con il buco (＿ o ___) e le risposte; la frase completa con la risposta giusta deve essere fatta di parole del vocabolario */
+        /* la frase con il buco (＿ o ___) e le risposte; la frase completa con la risposta giusta deve essere fatta di parole del vocabolario */
         if (!q.zh || !/＿|___/.test(q.zh) || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length) || new Set(q.opts).size !== q.opts.length) err.push(at + ": servono zh con il buco (＿), opts diverse e a");
         else zhOk(at, q.zh.replace(/＿+|_{3,}/, q.opts[q.a]));
       } else if (q.k === "scrivi") {
