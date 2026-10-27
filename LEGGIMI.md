@@ -320,6 +320,7 @@ node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ so
 
 Nuove in V6.9:
 
+- `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
 - `cp-it-game-v1`: punti e serie del corso di italiano, stessa struttura e stessa unione di `cp-game-v1`.
 - `cp-game-v1.pl` / `cp-it-game-v1.pl`: punti del test di livello; nell'unione vale il più alto, −1 = annullato.
 - Nuove voci in `cp-ux-v1`:
@@ -344,6 +345,38 @@ Dropbox, OneDrive…; l'app lo riscrive dopo ogni sessione e lo riunisce all'avv
 (su Android con il selettore di documenti del sistema, sul computer con l'API File System Access; altrove a mano).
 **Passaggio con i QR:** il telefono vecchio mostra una sequenza di QR, il nuovo la inquadra: nessuna rete, nessun account.
 I punti si sommano per dispositivo (`xpBy`), così le due copie non si contano due volte.
+
+## Sostegno volontario e sigilli di gratitudine
+
+⚙️ → Informazioni e supporto → **Sostieni il progetto** (`src/ui/seals.js`) contiene:
+
+- due righe sul perché;
+- un link a Ko-fi (`MD_CONFIG.SUPPORT_URL`), aperto solo da un tocco;
+- la riga sui sigilli;
+- la trasparenza: l'app non sa chi sei e non invia nulla.
+
+Non ci sono importi, contatori, pop-up o inviti che si ripetono. `.github/FUNDING.yml` mette il link anche su GitHub; il
+pulsante nel README è un SVG locale (`docs/img/sostieni.svg`), senza immagini né script di Ko-fi.
+
+**I sigilli** (支 Sostegno, 交 Cultura, 永 Custodire) sono disegnati in SVG e solo estetici:
+
+- arrivano come codice firmato dall'autore (`MDS1.…`, ECDSA P-256, verificato offline con WebCrypto in
+  `src/core/seal-code.js`);
+- si riscattano dal link `#seal=…`, incollando il codice o inquadrando il QR, sempre con una conferma;
+- nell'app si mostrano in grande; nelle immagini condivise solo se la persona lo sceglie; dietro il frutto all'avvio.
+
+L'emissione la fa l'autore sul suo computer con `tools/seal-keygen.mjs` e `tools/seal-issue.mjs`: simulazione per
+default, registro privato fuori dal repository, invio delle e-mail a mano. La procedura è in
+**[docs/sigilli.md](docs/sigilli.md)**.
+
+Con `MD_CONFIG.SEAL_PUBKEYS` vuoto (com'è ora) la parte «Riscatta» non compare. Con `FEATURE_DONATE` e `FEATURE_SEALS`
+spenti (versione per gli store) non compare nulla.
+
+La build si ferma se trova nel repository:
+
+- un file di chiave (`.pem`, `.key`, `.jks`);
+- una chiave privata;
+- un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
 
 ## Licenze
 

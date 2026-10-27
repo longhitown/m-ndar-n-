@@ -80,6 +80,18 @@ l'immersione.
 
 L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
+## 3c. Sostegno e sigilli
+
+| Che cosa | Dove | Note |
+|---|---|---|
+| `MDSeal` | `core/seal-code.js` | `parse`, `verify(code, keys)` con WebCrypto, `make` / `encode`; puro, lo usano anche `tools/seal-issue.mjs` e le prove |
+| `CP.seals` | `ui/seals.js` | `svg(livello, px)`, `paint(ctx, …)` per il canvas, `list`, `best`, `offer(codice)`, `forShare()` (lo usa `ui/share-card.js`) |
+| `CP.qrScan(titolo, aiuto, onText)` | `pwa/qr-transfer.js` | la fotocamera che legge un QR qualsiasi; `onText` restituisce true per chiudere |
+| `tg(chiave, forma)` / `CP.tg` | `i18n/titles.js` | titoli con forma m / f / n (senza titolo); in cinese una forma sola |
+
+`#seal=…` lo legge `ui/seals.js` all'avvio, e convive con `#dev`, `#nodev`, `#selftest` e `?go=`. Gli interruttori
+`FEATURE_DONATE` e `FEATURE_SEALS` e le chiavi stanno in `MD_CONFIG`. `window.__mdConfigTest` serve solo alle prove.
+
 ## 4. Punti d'ingresso dall'esterno
 
 | Ingresso | Dove | Chi lo usa |

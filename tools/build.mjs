@@ -80,6 +80,19 @@ for (const s of scripts) {
   if (miss.length) fail("parti di altri senza una voce in THIRD-PARTY-NOTICES.md: " + miss.join(", "));
 }
 
+/* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
+   nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in tools/seal-issue.mjs
+   e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
+const SECRET = [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, /verification_token/i, /kofi_transaction_id/i, /webhook/i];
+{
+  const skip = new Set([".git", "node_modules", "build", ".gradle", ".idea", "music"]);
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => skip.has(e.name) ? [] : e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+  const keyFiles = walk(path.join(SRC, "..")).filter((f) => /\.(pem|key|p8|jks|keystore)$/i.test(f));
+  if (keyFiles.length) fail("file di chiave nel repository (vanno fuori, vedi docs/sigilli.md): " + keyFiles.map((f) => path.relative(path.join(SRC, ".."), f)).join(", "));
+  const bad = walk(SRC).filter((f) => /\.(js|html|json|css|txt|md)$/.test(f) && SECRET.some((re) => re.test(fs.readFileSync(f, "utf8"))));
+  if (bad.length) fail("in src/ c'è qualcosa che sembra un segreto o un dato dei donatori: " + bad.map((f) => path.relative(SRC, f)).join(", "));
+}
+
 /* 3. un file unico */
 let out = html;
 const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, "") + " ---- */\n" + fs.readFileSync(path.join(SRC, s.href), "utf8").trimEnd()).join("\n\n");
@@ -132,6 +145,7 @@ for (const s of scripts) {
 }
 out = out.replace(/<!-- =+\n[\s\S]*?=+ -->\n/, "<!-- màndarínō: file generato da tools/build.mjs a partire da src/. Per modificare l'app lavora in src/. -->\n");
 if (/<script\b[^>]*\bsrc=|<link\b[^>]*rel="stylesheet"/.test(out)) fail("è rimasto un riferimento esterno in dist/index.html");
+if (SECRET.some((re) => re.test(out))) fail("dist/index.html contiene qualcosa che sembra un segreto o un dato dei donatori");
 
 /* i brani del jukebox restano file a parte, con l'impronta nel nome (dist/audio/music/<id>.<hash>.ogg): un brano sostituito
    ha un nome nuovo e arriva anche a chi aveva già quello vecchio nella cache. Il catalogo (nome del file, byte) va nella

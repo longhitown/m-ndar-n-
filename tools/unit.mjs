@@ -104,6 +104,62 @@ function sandbox() {
   check("sblocchi: con l'obiettivo predefinito (10) Parole e Frasi non arrivano il primo giorno", dayOf(10, U.words, U.dw) >= 2 && dayOf(10, U.build, U.db) >= 3, rep);
 }
 
+/* ---- 2c. sigilli di gratitudine (Task 4) ---- */
+{
+  const nodeCrypto = await import("crypto"), { spawnSync } = await import("child_process"), os = await import("os");
+  const ctx = vm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vm.runInContext(fs.readFileSync(path.join(SRC, "core/seal-code.js"), "utf8"), ctx); const S = ctx.MDSeal;
+  const { privateKey, publicKey } = nodeCrypto.generateKeyPairSync("ec", { namedCurve: "P-256" }), jwk = publicKey.export({ format: "jwk" }), KEYS = [{ kid: "t1", jwk }];
+  const mk = (lvl, num, kid, der) => { const p = S.make(kid || "t1", lvl, 2026, num); return S.encode(p, new Uint8Array(nodeCrypto.sign("sha256", Buffer.from(p), der ? privateKey : { key: privateKey, dsaEncoding: "ieee-p1363" }))); };
+  const good = await S.verify(mk(2, 7), KEYS);
+  check("sigilli: un codice firmato in Node (ieee-p1363) si verifica con WebCrypto", good.ok && good.seal.lvl === 2 && good.seal.num === 7, JSON.stringify(good));
+  const code = mk(1, 3), tampered = code.slice(0, code.indexOf(".") + 3) + (code[code.indexOf(".") + 3] === "A" ? "B" : "A") + code.slice(code.indexOf(".") + 4);
+  const res = { tampered: (await S.verify(tampered, KEYS)).err, kid: (await S.verify(mk(1, 3, "zz"), KEYS)).err, der: (await S.verify(mk(1, 3, "t1", true), KEYS)).err, format: (await S.verify("MDS1.abc", KEYS)).err, short: (await S.verify(code.slice(0, 30), KEYS)).err };
+  const p4 = S.make("t1", 4, 2026, 1), lvl4 = await S.verify(S.encode(p4, new Uint8Array(nodeCrypto.sign("sha256", Buffer.from(p4), { key: privateKey, dsaEncoding: "ieee-p1363" }))), KEYS);
+  check("sigilli: alterato, chiave sconosciuta, firma DER, livello fuori intervallo, formato errato → rifiutati", res.tampered && res.kid === "kid" && res.der === "sig" && res.format === "format" && res.short && lvl4.err === "level", JSON.stringify(res) + " " + JSON.stringify(lvl4));
+  /* unione tra dispositivi */
+  const { Store, LS } = sandbox();
+  LS.setItem("cp-seal-v1", JSON.stringify({ codes: { "1-2026-3": { code: "a" } }, gram: "f", name: "Ada", share: 1, t: 100 }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-seal-v1": JSON.stringify({ codes: { "2-2026-7": { code: "b" } }, gram: "m", name: "", share: 0, t: 50 }) }, log: [] }, "merge");
+  const sm = JSON.parse(LS.getItem("cp-seal-v1"));
+  check("sigilli: cp-seal-v1 unisce i codici; le preferenze vengono dal dispositivo più recente", sm.codes["1-2026-3"] && sm.codes["2-2026-7"] && sm.gram === "f" && sm.name === "Ada" && sm.share === 1, JSON.stringify(sm));
+  /* testi: nessuna desinenza di genere nei testi predefiniti; ogni titolo esiste in ogni forma */
+  const ic = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} }; var LANG = 'it';", ic);
+  ["i18n/it.js", "i18n/zh.js", "i18n/titles.js"].forEach((f) => vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), ic));
+  const I = vm.runInContext("I18N", ic), TT = vm.runInContext("I18N_TITLES", ic), tg = vm.runInContext("tg", ic);
+  const DEF = Object.keys(I.it).filter((k) => /^(seal\.(n|s|m)\d|seal\.(got|thanks|ed|auth|have|share|shareHint|name)$|sup\.)/.test(k));
+  const gendered = DEF.filter((k) => /\w+[oa]\/[ao]|verificat|iscritt|sostenitor|donator|benvenut[oa]/i.test(I.it[k]));
+  check("sigilli: i testi predefiniti non hanno desinenze di genere (" + DEF.length + " testi)", !gendered.length, gendered.join(", "));
+  const forms = [1, 2, "2it", 3].every((n) => ["m", "f", "n"].every((g) => typeof tg("seal.t" + n, g) === "string") && tg("seal.t" + n, "n") === "" && tg("seal.t" + n, "m") && TT.zh["seal.t" + n].x);
+  check("sigilli: ogni titolo ha forma maschile, femminile e «senza titolo» (vuota) in italiano, e una forma in cinese", forms && I.zh["seal.n1"] && I.zh["seal.s3"]);
+  /* lo strumento dell'autore: regole (funzione pura) e riga di comando in una cartella usa-e-getta */
+  const T = await import("./seal-issue.mjs");
+  const D = (id, email, amount, date, extra) => Object.assign({ id, email, amount, currency: "EUR", date, message: "Per il SIGILLO, grazie", type: "Donation" }, extra || {});
+  const reg0 = { v: 1, people: {}, done: {}, counters: {} }, rates = { EUR: 1, USD: 0.9 };
+  let r = T.plan(reg0, [D("a1", "a@x.it", 3, "2026-10-01"), D("a1", "a@x.it", 3, "2026-10-01")], "2026-10-20", rates);
+  check("strumento: donazione doppia non conta due volte; sotto i 5 € nessun sigillo ma una bozza di ringraziamento", r.reg.people["a@x.it"].cents === 300 && !r.log.issue.length && r.log.thanks.length === 1 && r.log.skipped.length === 1);
+  r = T.plan(r.reg, [D("a2", "a@x.it", 60, "2026-10-02", { type: "Tip" })], "2026-10-20", rates);
+  check("strumento: somma cumulativa, salto di più livelli (Tip vale come Donation): un solo sigillo, il più alto", r.log.issue.length === 1 && r.log.issue[0].seal.lvl === 3 && r.reg.people["a@x.it"].cents === 6300);
+  r = T.plan(reg0, [D("b1", "b@x.it", 10, "2026-10-01", { currency: "USD" }), D("c1", "c@x.it", 50.5, "2026-10-01"), D("d1", "d@x.it", 30, "2026-10-01", { message: "grazie!" }), D("e1", "e@x.it", 30, "2026-10-18")], "2026-10-20", rates);
+  const lv = Object.fromEntries(r.log.issue.map((x) => [x.email, x.seal.lvl]));
+  check("strumento: cambio arrotondato a favore di chi dona (10 USD = 9 €), 50,50 € = Cultura, senza parola chiave ignorata, attesa di 7 giorni", r.reg.people["b@x.it"].cents === 900 && lv["b@x.it"] === 1 && lv["c@x.it"] === 2 && r.log.ignored.length === 1 && r.log.waiting.length === 1 && !r.reg.people["d@x.it"]);
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "md-seal-")), env = Object.assign({}, process.env, { MANDARINO_SEAL_HOME: home, MANDARINO_SEAL_PASS: "frase-di-prova-lunga" });
+  fs.writeFileSync(path.join(home, "seal-private-t1.pem"), privateKey.export({ type: "pkcs8", format: "pem", cipher: "aes-256-cbc", passphrase: "frase-di-prova-lunga" }));
+  fs.writeFileSync(path.join(home, "in.json"), JSON.stringify([{ verification_token: "esempio", message_id: "m1", kofi_transaction_id: "tx1", type: "Donation", from_name: "Ada", message: "SIGILLO", amount: "25.00", currency: "EUR", email: "Ada@Esempio.it ", timestamp: "2026-10-01T10:00:00Z" }]));
+  const run = (...a) => spawnSync(process.execPath, [path.join(ROOT, "tools/seal-issue.mjs"), ...a], { env, encoding: "utf8" });
+  const dry = run("process", path.join(home, "in.json"), "--today", "2026-10-20", "--site", "https://esempio.org/app/");
+  check("strumento: per default è una simulazione (non scrive niente)", /Simulazione/.test(dry.stdout) && !fs.existsSync(path.join(home, "registro.json")), dry.stderr);
+  const ap = run("process", path.join(home, "in.json"), "--today", "2026-10-20", "--site", "https://esempio.org/app/", "--apply");
+  const out = path.join(home, "uscita", "2026-10-20", "2026-2-1"), files = fs.existsSync(out) ? fs.readdirSync(out) : [];
+  const codeOut = files.length ? fs.readFileSync(path.join(out, "codice.txt"), "utf8").trim() : "", ver = codeOut ? await S.verify(codeOut, KEYS) : {};
+  const leaks = files.filter((f) => f !== "mailto.txt" && /ada@esempio|Ada/i.test(fs.readFileSync(path.join(out, f), "utf8")));
+  check("strumento: con --apply emette il sigillo (Cultura n. 1), il codice si verifica nell'app, nessun dato personale nei file tranne il mailto", ver.ok && ver.seal.lvl === 2 && files.includes("qr.svg") && files.includes("email.txt") && !leaks.length && /mailto:ada@esempio\.it/.test(fs.readFileSync(path.join(out, "mailto.txt"), "utf8")), ap.stderr + " " + leaks.join(","));
+  const again = run("process", path.join(home, "in.json"), "--today", "2026-10-21", "--apply");
+  check("strumento: rielaborare la stessa transazione non emette niente di nuovo", /già elaborata/.test(again.stdout) && !/★/.test(again.stdout));
+  run("forget", "--email", "ada@esempio.it", "--apply");
+  check("strumento: forget cancella davvero la persona dal registro", !JSON.parse(fs.readFileSync(path.join(home, "registro.json"), "utf8")).people["ada@esempio.it"]);
+  fs.rmSync(home, { recursive: true, force: true });
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

@@ -363,3 +363,23 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .it-rank { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
 .it-rank .seal { flex: none; }
 .cred-h { margin: 18px 0 6px; font-size: 18px; }
+/* ===== sostegno e sigilli (ui/seals.js) ===== */
+:root { --seal-red: #B8322A; --seal-paper: #F6EEDD; }
+.sup-go { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; text-decoration: none; }
+.cup { width: 20px; height: 20px; vertical-align: -4px; }
+#set-support summary .cup { margin-right: 2px; }
+.seal-main { display: flex; gap: 14px; align-items: center; }
+.seal-main .seal-svg { flex: none; }
+.seal-card { display: grid; gap: 3px; }
+.seal-card b { font-size: 17px; }
+.seal-coll { display: flex; gap: 8px; flex-wrap: wrap; }
+.seal-big { display: grid; place-items: center; padding: 8px 0; }
+.seal-sheet { display: grid; gap: 12px; }
+.seal-gram { border: 0; padding: 0; margin: 0; display: grid; gap: 4px; }
+.seal-gram legend { margin-bottom: 6px; }
+.seal-svg { background: var(--seal-paper); border-radius: 12px; }
+.seal-redeem > summary { min-height: 44px; display: flex; align-items: center; }
+.linklike { background: none; border: 0; padding: 0 2px; min-height: 44px; color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+/* schermata d'avvio: il carattere del sigillo si apre dietro il frutto */
+#splash .sp-seal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -72%); font: 400 260px/1 var(--f-han); color: var(--seal-red); opacity: 0.12; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) { #splash .sp-seal { animation: spSeal 1.4s ease-out both; } @keyframes spSeal { from { opacity: 0; transform: translate(-50%, -72%) scale(0.55); letter-spacing: -0.2em; } } }

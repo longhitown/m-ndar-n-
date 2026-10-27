@@ -195,6 +195,40 @@ try {
       await ctx.close();
     }
   }
+  /* 4d. sostegno e sigilli di gratitudine (Task 4): chiavi usa-e-getta, nessuna richiesta di rete */
+  {
+    const nc = require("crypto"), vmm = require("vm");
+    const sctx = vmm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vmm.runInContext(fs.readFileSync(path.join(path.dirname(file), "..", "src/core/seal-code.js"), "utf8"), sctx);
+    const { privateKey, publicKey } = nc.generateKeyPairSync("ec", { namedCurve: "P-256" }), jwk = publicKey.export({ format: "jwk" });
+    const mk = (lvl, num) => { const pl = sctx.MDSeal.make("e2e", lvl, 2026, num); return sctx.MDSeal.encode(pl, new Uint8Array(nc.sign("sha256", Buffer.from(pl), { key: privateKey, dsaEncoding: "ieee-p1363" }))); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const net = []; await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => { net.push(r.request().url()); r.abort(); });
+    await ctx.addInitScript(([jwk]) => { window.__mdConfigTest = { SEAL_PUBKEYS: [{ kid: "e2e", jwk }] }; if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", 1); localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); } }, [jwk]);
+    await p.goto(base + "#seal=" + encodeURIComponent(mk(2, 17))); await p.waitForSelector("[data-seal-add]", { timeout: 5000 }).catch(() => null);
+    check("Sigillo da link: il codice sparisce dall'indirizzo e l'app chiede conferma prima di salvarlo", (await p.evaluate(() => location.hash)) === "" && !!(await p.$("[data-seal-add]")) && !(await p.evaluate(() => localStorage.getItem("cp-seal-v1"))));
+    await p.click("[data-seal-add]"); await p.waitForSelector("[data-seal-prefs]");
+    check("Sigillo: senza un titolo è la scelta predefinita; il sigillo non va nelle immagini senza consenso", await p.evaluate(() => document.querySelector('input[name="seal-gram"]:checked').value === "n" && !document.getElementById("seal-share").checked && CP.seals.forShare() === null));
+    await p.check("#seal-share"); await p.click("[data-seal-prefs]"); await p.waitForTimeout(300);
+    check("Sigillo: con il consenso compare nella carta da condividere", await p.evaluate(() => !!CP.seals.forShare() && document.querySelectorAll("#set-support .seal-main").length === 1));
+    /* da testo incollato, poi da QR (codice scritto con il generatore dell'app, letto con jsQR) */
+    await p.evaluate(() => { document.querySelector(".seal-redeem").open = true; }); await p.fill("#seal-code", mk(1, 4)); await p.click("[data-seal-try]"); await p.click("[data-seal-add]"); await p.waitForTimeout(300); await p.click("[data-seal-prefs]");
+    const qrOk = await p.evaluate((code) => { const q = CP.qr.encode(code, "M"), cv = document.createElement("canvas"); CP.qr.draw(cv, q, 4); const img = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), r = window.jsQR(img.data, cv.width, cv.height); if (!r) return false; CP.seals.offer(r.data); return true; }, mk(3, 9));
+    if (qrOk) { await p.waitForSelector("[data-seal-add]"); await p.click("[data-seal-add]"); await p.waitForTimeout(300); }
+    check("Sigillo da testo e da QR: tre sigilli nella raccolta, il più alto in primo piano", qrOk && await p.evaluate(() => CP.seals.list().length === 3 && CP.seals.best().lvl === 3));
+    await p.evaluate(() => { CP.closeSheet(); }); await p.evaluate(() => { document.getElementById("seal-code") && (document.getElementById("seal-code").value = "MDS1.abc"); });
+    await p.evaluate(() => CP.seals.offer("MDS1.abc")); await p.waitForTimeout(150);
+    check("Sigillo: un codice rotto dà un messaggio gentile", /incompleto/.test(await p.textContent(".seal-sheet")));
+    await p.reload(); await p.waitForTimeout(400);
+    check("Avvio con un sigillo: il suo carattere dietro il frutto, senza attendere la verifica", await p.evaluate(() => (document.querySelector("#splash .sp-seal") || {}).textContent === "永"));
+    check("Sostegno e sigilli: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, net[0] || errs[0]);
+    await ctx.close();
+    /* interruttori spenti (versione per gli store): nessuna traccia, nemmeno con codici arrivati da un backup */
+    const c2 = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p2 = await c2.newPage();
+    await c2.addInitScript(([jwk, code]) => { window.__mdConfigTest = { FEATURE_DONATE: false, FEATURE_SEALS: false, SEAL_PUBKEYS: [{ kid: "e2e", jwk }] }; localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-seal-v1", JSON.stringify({ codes: { "3-2026-9": { code, ok: true } }, share: 1 })); }, [jwk, mk(3, 9)]);
+    await p2.goto(base + "#seal=" + encodeURIComponent(mk(1, 5))); await p2.waitForTimeout(1200); await p2.evaluate(() => CP.openSettings("grp-info")); await p2.waitForTimeout(200);
+    check("Versione store (FEATURE_* spenti): niente sostegno né sigilli nel DOM, il link #seal= viene ignorato", await p2.evaluate(() => !document.getElementById("set-support") && !document.querySelector(".seal-svg, .sp-seal, [data-seal-add]") && !CP.seals && location.hash === "" && /cp-seal-v1/.test(Object.keys(localStorage).join(","))));
+    await c2.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
