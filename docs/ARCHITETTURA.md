@@ -103,6 +103,10 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
+| `CP.shareCard` | `ui/share-card.js` | `CP.shareCard()` carta del giorno del corso aperto; `.open(modello, dati)`, `.render(canvas, modello, dati, { format, theme, seal })`, `.templates` (`zh-day`, `it-day`, `it-milestone`, `it-week`), `.FORMATS`, `.THEMES`, `.url()` |
+| `CP.itApi` / `CP.itToday` / `CP.itCardData` / `CP.itProgress` | `it/course.js` / `it/today.js` | i dati del corso di italiano per la carta «今天», il percorso, i traguardi, «我的进步» |
+| `CP.toast(msg, { label, run })` | `core/game.js` | un'azione dentro lo stesso messaggio (Task 11.5); senza, il messaggio di sempre |
+| `CP.onAward(n)` | `core/game.js` | chiamato a ogni punto guadagnato (corso di italiano: «+N 分») |
 | `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e privacy |
 | `credit: 1` nella patch | `contrib/contrib.js` | solo con un nickname e la casella spuntata (`cp-contrib-credit-v1`) |
 

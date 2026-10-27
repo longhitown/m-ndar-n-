@@ -7,9 +7,13 @@
 
   /* ---- avviso breve ---- */
   var toastEl = document.getElementById("toast"), toastT = 0;
-  CP.toast = function (msg) {
-    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.add("on");
-    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 2000);   /* U9: una riga, al massimo 2 s */
+  /* act (facoltativo, Task 11.5): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
+     Mai una finestra in più. Senza act è il messaggio di sempre. */
+  CP.toast = function (msg, act) {
+    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.toggle("act", !!act);
+    if (act) { var b = document.createElement("button"); b.type = "button"; b.className = "btn-s toast-act"; b.textContent = act.label; b.onclick = function () { toastEl.classList.remove("on"); act.run(); }; toastEl.appendChild(b); }
+    toastEl.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, act ? 6000 : 2000);   /* U9: una riga, al massimo 2 s */
   };
 
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
@@ -95,6 +99,7 @@
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
     var b = rankIdx(G.xp), sb = season(G.xp); G.xp += n; G.xpBy[DEV] = (G.xpBy[DEV] | 0) + n; var a = rankIdx(G.xp), sa = season(G.xp);
+    if (CP.onAward) try { CP.onAward(n); } catch (e) {}
     if (a > b || sa > sb) { var r = rankInfo(); CP.toast(CP.t("rank.toast", { r: r.name })); CP.sfx("level"); if (CP.onRankUp) try { CP.onRankUp(r); } catch (e) {} }
   }
   function rankInfo() {

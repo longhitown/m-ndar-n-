@@ -241,6 +241,35 @@ async function auditView(browser, file, vw, vh, theme) {
   return { fails, m };
 }
 
+/* il corso di italiano per chi parla cinese (Task 11): carta «今天» e percorso, le altre schede, «我的进步», la carta */
+async function auditIt(browser, file, vw, vh, theme) {
+  const fails = [];
+  const seed = { "cp-course": "it", "cp-lang": "zh", "cp-it-welcome": "1", "cp-ux-v1": JSON.stringify({ onboarded: 1, legendSeen: 1, swipeHints: 9, unlv: 1, showAll: 1 }),
+    "cp-it-lessons-v1": JSON.stringify({ pronuncia: { best: 90, done: Date.now() - 864e5 } }) };
+  const { ctx, page, errors } = await openPage(browser, file, vw, vh, theme, seed);
+  const ux = (fn, ...a) => page.evaluate(([f, a2]) => window.__ux[f](...a2), [fn, a]);
+  const screen = async (label) => {
+    if (await ux("overflow")) fails.push(`[1] ${label}: overflow orizzontale`);
+    const sm = await ux("small"); if (sm.length) fails.push(`[5] ${label}: ${sm.length} bersagli < 44 px: ` + sm.slice(0, 4).join(" · "));
+    const tn = await ux("tiny"); if (tn.length) fails.push(`[6] ${label}: ${tn.length} testi < 13 px: ` + tn.slice(0, 3).join(" · "));
+    const ct = await ux("contrast"); if (ct.length) fails.push(`[8] ${label}: ${ct.length} contrasti bassi: ` + ct.slice(0, 3).join(" · "));
+    const pr = await ux("primaries"); if (pr.length > 1) fails.push(`[10] ${label}: ${pr.length} pulsanti primari visibili: ` + pr.join(" · "));
+    const mn = await ux("menus", MENU_MAX); if (mn.length) fails.push(`[11] ${label}: menu con più di ${MENU_MAX} voci: ` + mn.join(" · "));
+  };
+  await page.waitForTimeout(400);
+  for (const t of ["lessons", "review", "words", "conj", "phrases"]) {
+    await page.evaluate((x) => CP.itShow(x), t); await page.waitForTimeout(200); await settle(page); await page.evaluate(() => window.scrollTo(0, 0)); await page.evaluate(PAGE_LIB);
+    await screen("意大利语 · " + t);
+  }
+  for (const [open, lbl] of [[() => CP.itProgress(), "我的进步"], [() => CP.shareCard.open("it-day"), "分享卡片"]]) {
+    await page.evaluate(open); await page.waitForTimeout(500); await settle(page); await page.evaluate(PAGE_LIB);
+    await screen("Foglio " + lbl);
+    await page.keyboard.press("Escape"); await page.waitForTimeout(100);
+  }
+  if (errors.length) fails.push("errori JavaScript nel corso di italiano: " + errors[0]);
+  await ctx.close();
+  return { fails };
+}
 async function auditStore(browser, file) {
   const fails = [];
   const now = Date.now();
@@ -280,6 +309,8 @@ for (const file of files) {
     const r = await auditView(browser, file, vw, vh, th);
     if (th === "light") table[vw + "×" + vh] = r.m;
     r.fails.forEach((f) => all.push(`${vw}×${vh} ${th}: ${f}`));
+    const ri = await auditIt(browser, file, vw, vh, th);
+    ri.fails.forEach((f) => all.push(`${vw}×${vh} ${th}: ${f}`));
   }
   const st = await auditStore(browser, file);
   st.fails.forEach((f) => all.push("profilo di prova: " + f));

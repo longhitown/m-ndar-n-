@@ -391,6 +391,8 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
+- `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
 - `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
 - `cp-contrib-credit-v1`: «1» se chi contribuisce vuole comparire nei Crediti; preferenza del dispositivo (nell'unione vince quello corrente, come `cp-contrib-nick`).
 - `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
@@ -450,6 +452,48 @@ La build si ferma se trova nel repository:
 - un file di chiave (`.pem`, `.key`, `.jks`);
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
+
+## Corso di italiano: punteggio, «今天» e carte da condividere (Task 11)
+
+- **Punti per corso** (`cp-it-game-v1`, stessa struttura e stessa unione del cinese):
+  - parola nuova 10, frase 15, lezione superata 30, esercizio di coniugazione 3;
+  - gli stessi gradi del cinese (nomi cinesi) con l'estensione oltre i 10.000 punti, serie e giorno di riposo.
+
+  Chi aveva già studiato parte dai punti che i suoi progressi valgono: 10 per parola e 30 per lezione, una volta sola.
+- **Carta «今天»** in cima a 课程 (`src/it/today.js`):
+  - saluto in cinese e in italiano e un solo pulsante primario («继续：第 N 课 · titolo», con i minuti stimati);
+  - anello dell'obiettivo e serie, sigillo del grado con la barra;
+  - «复习 N 张», solo se ci sono carte in scadenza;
+  - «今日意大利语»: una frase scelta in modo deterministico tra gli esempi delle lezioni superate (o delle prime tre
+    all'inizio), con la sillaba accentata in evidenza dove l'ortografia la segna (città, è).
+
+  Sotto, le lezioni sono un **percorso**: nodi collegati, la corrente in evidenza, «通过» sulle superate.
+- **Momenti di piacere**, tutti con la versione ferma per `prefers-reduced-motion`:
+  - «+N 分» che sale dopo ogni esercizio, con il sigillo e la barra verso il grado successivo;
+  - «通过» che si imprime alla fine di una lezione superata.
+- **Traguardi** (`cp-it-cards-v1`; nell'unione vale la prima data):
+  - primo gradino, 7/30/100 giorni di fila, 100/500/1000 parole, nuovo grado, tutte le lezioni;
+  - il «分享纪念卡» compare dentro il messaggio di congratulazioni già mostrato (`CP.toast(msg, azione)`), mai una
+    finestra in più;
+  - chi li aveva già raggiunti prima di questa versione li ritrova segnati, senza una pioggia di messaggi.
+- **«我的进步»**: il racconto della settimana (`CP.story`), la raccolta «纪念卡» se c'è almeno un traguardo, «分享».
+- **Carte da condividere** (`src/ui/share-card.js`, `CP.shareCard.templates`). Lo stesso motore fa la carta del cinese
+  (identica a prima: `tools/e2e.mjs` la confronta con `tools/fixtures/share-card-v1.js`) e tre carte del corso di
+  italiano: del giorno, del traguardo, della settimana.
+  - Formati 3:4 (1080×1440, predefinito), 4:5 e 9:16; tre colori, i temi dell'app.
+  - Contenuto: logo e nome, sigillo e grado, tre numeri, «今日意大利语», data in cinese, «署名» facoltativo (spento di
+    base, solo sul telefono: `cp-card-v1`), «màndarínō · 免费 · 离线 · 无广告 · 无需注册» e il QR.
+  - **QR**: `MD_CONFIG.SHARE_URL`, oppure, se vuoto, il link all'ultimo APK. Scuro su bianco, 22% della larghezza, mai
+    parametri. Le prove lo rileggono con jsQR.
+  - Il sigillo di gratitudine compare solo se la persona ha scelto di mostrarlo.
+- **Niente spinte**: «分享» c'è solo nella carta «今天», in «我的进步» e alla fine di lezioni e ripasso. Niente pop-up,
+  notifiche, conteggi o classifiche: l'app non sa se qualcuno condivide.
+- **In Cina**: la pagina cinese `docs/zh/` (con l'indicazione per il browser di WeChat) e le verifiche da fare sono in
+  [docs/cina.md](docs/cina.md).
+- **Tutti i testi del corso passano da `t()`**, in `src/i18n/it-course.js`, in cinese e in italiano. La build si ferma
+  se in `src/it/` compare di nuovo del cinese scritto nel codice.
+- **Avvio leggero**: nel file unico il corso di italiano (`i18n/it-course.js`, `it/today.js`, `it/course.js`) si esegue
+  solo quando è il corso scelto (`COURSE_IT` in `tools/build.mjs`). La scelta del corso sta in `it/switch.js`.
 
 ## Ritorno quotidiano
 

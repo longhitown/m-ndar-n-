@@ -802,6 +802,8 @@ button.rc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px;
 .cred-author { padding: 12px 14px; border-radius: 14px; background: var(--chip); }
 .cred-libs { margin: 6px 0; padding-left: 18px; display: grid; gap: 3px; }
 .amb-hint { margin: 8px 0 0; padding: 6px 10px; border-radius: 10px; background: var(--chip); }
+#toast.act { pointer-events: auto; display: flex; align-items: center; gap: 10px; }
+#toast .toast-act { min-height: 44px; flex: none; }
 
 /* ---- styles/brand-audio.css ---- */
 /* ===== V5: componenti nuovi ===== */
@@ -1492,6 +1494,69 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .st-col small { color: var(--muted); font-size: 13px; }
 .st-more { margin-top: 10px; }
 .st-more > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+/* ===== Task 11: corso di italiano, carta «今天», percorso delle lezioni, «+N 分», carte da condividere ===== */
+.it-today { display: grid; gap: 12px; margin-top: 14px; }
+.itd-hi { margin: 0; font-size: 1.25rem; }
+.itd-go { display: grid; gap: 2px; text-align: center; margin: 0; }
+.itd-go small { font-weight: 600; opacity: .85; font-size: 13px; }
+.itd-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.itd-rank { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.itd-rank > div { min-width: 0; display: grid; gap: 4px; }
+.itd-rank .bar-xp { margin: 0; }
+.itd-ring { display: flex; gap: 10px; align-items: center; }
+.itd-ring > div:last-child { display: grid; gap: 2px; font-size: 13px; }
+.itd-streak { font-size: 14px; }
+.itd-rev { justify-self: start; margin: 0; }
+.itd-phrase { background: var(--chip); border-radius: 16px; padding: 12px 14px; display: grid; gap: 6px; }
+.itd-phrase .tag { color: var(--accent); font-weight: 700; font-size: 13px; }
+.itd-it { margin: 0; font: 600 1.45rem/1.35 "Iowan Old Style", Georgia, "Noto Serif", serif; }
+.itd-it .acc { color: var(--accent); text-decoration: underline 2px; text-underline-offset: 4px; }
+.itd-zh { margin: 0; color: var(--muted); }
+.itd-h3 { margin: 16px 0 6px; }
+.itd-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.itd-card { min-height: 44px; display: grid; gap: 4px; justify-items: start; text-align: left; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.itd-card small { color: var(--muted); }
+/* il percorso delle lezioni: nodi collegati da una linea */
+.itp-h { margin: 24px 0 4px; }
+.itp { list-style: none; margin: 0; padding: 0; position: relative; }
+.itp::before { content: ""; position: absolute; left: 25px; top: 24px; bottom: 24px; width: 3px; border-radius: 2px; background: var(--line); }
+.itp-node > button { position: relative; display: flex; gap: 14px; align-items: center; width: 100%; min-height: 64px; padding: 6px 4px; background: none; border: 0; color: var(--ink); text-align: left; cursor: pointer; }
+.itp-dot { flex: none; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 17px var(--f-display); background: var(--surface); border: 3px solid var(--line); z-index: 1; }
+.itp-node.done .itp-dot { border-color: var(--accent); }
+.itp-node.now .itp-dot { background: var(--accent); color: var(--bg); border-color: var(--accent); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); }
+.itp-node.now > button { background: var(--chip); border-radius: 18px; }
+.itp-t { display: grid; gap: 2px; min-width: 0; }
+.itp-t small { font-size: 13px; color: var(--muted); }
+.itp-seal { font: 700 14px "Noto Serif SC", "Songti SC", serif; color: var(--stamp-red); border: 2px solid var(--stamp-red); border-radius: 6px; padding: 2px 4px; transform: rotate(-8deg); }
+/* il sigillo «通过» che si imprime quando si supera una lezione */
+.it-stamp { float: right; font: 700 22px "Noto Serif SC", "Songti SC", serif; color: var(--stamp-red); border: 3px solid var(--stamp-red); border-radius: 8px; padding: 4px 8px; transform: rotate(-10deg); }
+.it-stamp.sm { float: none; font-size: 13px; padding: 1px 4px; border-width: 2px; }
+/* «+N 分» */
+.it-gain { position: fixed; left: 50%; top: calc(76px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 70; display: flex; gap: 10px; align-items: center; padding: 8px 14px; border-radius: 16px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.18); opacity: 0; pointer-events: none; }
+.it-gain.on { opacity: 1; }
+.it-gain-n { font: 800 18px var(--f-display); color: var(--accent); }
+.it-gain-bar { width: 80px; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.it-gain-bar i { display: block; height: 100%; background: var(--accent); }
+/* la carta da condividere */
+.it-card-cv { max-height: 52vh; width: auto; max-width: 100%; display: block; margin: 8px auto; border-radius: 12px; }
+.card-seg { margin: 8px 0 0; }
+#card-name { margin-top: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .it-gain.on { animation: itGain 1.9s ease-out both; }
+  .it-gain-bar i { transition: width .8s ease .2s; }
+  @keyframes itGain { 0% { opacity: 0; transform: translate(-50%, 16px); } 15% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -14px); } }
+  .ls-quiz .it-stamp { animation: itStamp .5s cubic-bezier(.2, 1.6, .4, 1) both .15s; }
+  @keyframes itStamp { from { opacity: 0; transform: rotate(-10deg) scale(2.2); } to { opacity: 1; transform: rotate(-10deg) scale(1); } }
+  .itd-ring-a { animation: itRing 1.2s ease-out both; }
+  @keyframes itRing { from { --p: 0; } }
+}
+@property --p { syntax: "<number>"; inherits: true; initial-value: 0; }
+/* rosso del sigillo «通过»: più chiaro nel tema scuro, per il contrasto */
+:root { --stamp-red: #C8312B; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="sepia"]) { --stamp-red: #FF8A7E; } }
+:root[data-theme="dark"] { --stamp-red: #FF8A7E; }
+.it-today small, .itd-ring small { font-size: 13px; }
+.it-tile { min-height: 44px; justify-content: center; }
 </style>
 </head>
 <body>
@@ -1642,7 +1707,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
     <div id="set-extra"></div>
     </details>
     <details class="set-grp" id="grp-info"><summary class="set-gh" data-i18n="set.gInfo">Informazioni e supporto</summary>
-    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div><p class="small" id="about-support" hidden></p></details>
+    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div><p class="small muted" style="margin:6px 0 0" data-i18n="card.privacy">Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta.</p><p class="small" id="about-support" hidden></p></details>
     <div id="set-extra-info"></div>
     </details>
   </div>
@@ -1669,6 +1734,9 @@ var MD_CONFIG = {
   SUPPORT_URL: "https://ko-fi.com/mandarinoapp",      /* sostegno volontario (link aperto solo da un tocco) */
   STORE_URLS: { play: "", fdroid: "" },               /* indirizzi degli store, quando ci saranno */
   SITE_URL: "",                                       /* sito pubblico (GitHub Pages), quando ci sarà */
+  /* il QR delle carte da condividere (Task 11.4): l'indirizzo semplice della pagina di presentazione, senza parametri né
+     codici. Vuoto = il link all'ultimo APK (ui/share-card.js). Quando GitHub Pages è attivo: la pagina cinese, …/mandarino/zh/ */
+  SHARE_URL: "",
   FLAVOR: "direct",                                   /* "direct" (sito, APK da GitHub) | "store" */
   APK_UPDATES: true,                                  /* controllo delle release su GitHub (solo APK diretto) */
   FEATURE_DONATE: true,
@@ -15216,6 +15284,7 @@ Object.assign(I18N.it, {"apk.fDirect": "versione diretta (GitHub)", "apk.fStore"
 Object.assign(I18N.it, {"rank.season": "stagione {n}", "path.restDay": "Giorno di riposo: la serie continua", "path.restNote": "Un giorno di riposo a settimana non spezza la serie: riposarsi fa parte dell'imparare."});
 Object.assign(I18N.it, {"st.more": "Memoria e orecchio: i numeri", "st.fresh": "Una settimana nuova comincia: anche cinque minuti al giorno contano.", "st.week": "Questa settimana hai studiato {d} giorni e ripassato bene {g} parole.", "st.tone": "Il tono che ti dà più filo da torcere è il {t}° ({name}): ascoltalo con calma, arriverà.", "st.bars": "Ripassi riusciti per settimana", "st.sure": "parole sicure", "st.goodWeek": "ripassi riusciti questa settimana", "st.days": "giorni di studio", "itst.fresh": "Una settimana nuova comincia: anche cinque minuti al giorno contano.", "itst.week": "Questa settimana: {d} giorni di studio, {w} parole e {l} lezioni superate.", "itst.more": "Più della settimana scorsa: bravo!", "itst.barsIt": "Parole studiate per settimana", "itst.sure": "parole sicure", "itst.lessons": "lezioni superate"});
 Object.assign(I18N.it, {"st.up": "Più della settimana scorsa: bravo!", "itst.up": "Più della settimana scorsa: bravo!"});
+Object.assign(I18N.it, {"card.privacy": "Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta."});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15341,6 +15410,7 @@ Object.assign(I18N.zh, {"apk.fDirect": "直接下载版（GitHub）", "apk.fStor
 Object.assign(I18N.zh, {"rank.season": "第 {n} 季", "path.restDay": "休息日：连续天数不会中断", "path.restNote": "每周休息一天不会中断连续天数：休息也是学习的一部分。"});
 Object.assign(I18N.zh, {"st.more": "记忆和听力：详细数据", "st.fresh": "新的一周开始了：每天五分钟也很有用。", "st.week": "这周你学习了 {d} 天，答对复习 {g} 个词。", "st.tone": "最难的是第 {t} 声（{name}）：慢慢听，会掌握的。", "st.bars": "每周答对的复习", "st.sure": "已掌握的词", "st.goodWeek": "本周答对的复习", "st.days": "学习天数", "itst.fresh": "新的一周开始了：每天五分钟也很有用。", "itst.week": "这周：学习 {d} 天，{w} 个词，通过 {l} 课。", "itst.more": "比上周更多，真棒！", "itst.barsIt": "每周学习的单词", "itst.sure": "已掌握的词", "itst.lessons": "通过的课程"});
 Object.assign(I18N.zh, {"st.up": "比上周更多，真棒！", "itst.up": "比上周更多，真棒！"});
+Object.assign(I18N.zh, {"card.privacy": "分享卡片在你的手机上生成；要不要分享、分享到哪里，由你决定。"});
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -15733,7 +15803,7 @@ function tg(key, gram) {
     return out.slice(0, 40);
   }
   /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
-  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-lang"];
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-card-v1", "cp-lang"];
   function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
   function mergeKey(k, a, b) {
     if (k === "cp-srs-v1") return mergeSrs(a, b);
@@ -15749,6 +15819,8 @@ function tg(key, gram) {
     /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
     if (k === "cp-ux-v1") return mergeUx(a, b);
     if (k === "cp-seal-v1") return mergeSeal(a, b);
+    /* traguardi del corso di italiano: unione, per ognuno la data più vecchia */
+    if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */
@@ -18183,9 +18255,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 
   /* ---- avviso breve ---- */
   var toastEl = document.getElementById("toast"), toastT = 0;
-  CP.toast = function (msg) {
-    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.add("on");
-    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 2000);   /* U9: una riga, al massimo 2 s */
+  /* act (facoltativo, Task 11.5): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
+     Mai una finestra in più. Senza act è il messaggio di sempre. */
+  CP.toast = function (msg, act) {
+    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.toggle("act", !!act);
+    if (act) { var b = document.createElement("button"); b.type = "button"; b.className = "btn-s toast-act"; b.textContent = act.label; b.onclick = function () { toastEl.classList.remove("on"); act.run(); }; toastEl.appendChild(b); }
+    toastEl.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, act ? 6000 : 2000);   /* U9: una riga, al massimo 2 s */
   };
 
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
@@ -18271,6 +18347,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
     var b = rankIdx(G.xp), sb = season(G.xp); G.xp += n; G.xpBy[DEV] = (G.xpBy[DEV] | 0) + n; var a = rankIdx(G.xp), sa = season(G.xp);
+    if (CP.onAward) try { CP.onAward(n); } catch (e) {}
     if (a > b || sa > sb) { var r = rankInfo(); CP.toast(CP.t("rank.toast", { r: r.name })); CP.sfx("level"); if (CP.onRankUp) try { CP.onRankUp(r); } catch (e) {} }
   }
   function rankInfo() {
@@ -24089,7 +24166,10 @@ var CHANGELOG = [
       "Vocabolario HSK 3.0 livelli 1-5 in sei capitoli, frasi d'esempio per tutte le parole, ordine dei tratti offline.",
       "Sincronizzazione senza server (file nel tuo cloud o QR), app Android con widget e promemoria facoltativo.",
       "«Cerca ovunque», scorrimento tra le schede, immersione a schermo pieno, jukebox con 22 brani originali.",
-      "Puoi proporre correzioni e parole nuove da ⚙️ → Dati e privacy → Contributi, e comparire nei Crediti se vuoi."
+      "Puoi proporre correzioni e parole nuove da ⚙️ → Dati e privacy → Contributi, e comparire nei Crediti se vuoi.",
+      "Un giorno di riposo a settimana non spezza la serie; oltre i 10.000 punti ci sono nuovi gradi e le stagioni; i progressi della settimana sono in evidenza in Studia.",
+      "Corso di italiano: la carta «今天» con la lezione da continuare e la frase del giorno, le lezioni come percorso, i traguardi e le carte da condividere.",
+      "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️."
     ],
     zh: [
       "全新的欢迎流程：选择目标和节奏，试听声调，几分钟的水平测试帮你从合适的地方开始。",
@@ -24100,7 +24180,10 @@ var CHANGELOG = [
       "HSK 3.0 一至五级词汇分为六章，每个词都有例句，离线笔顺。",
       "无需服务器的同步（你自己的云端文件或二维码），安卓应用带小组件和可选提醒。",
       "“全局搜索”、标签间滑动、全屏沉浸练习、22 首原创曲目的音乐盒。",
-      "可以在 ⚙️ → 数据和隐私 → 贡献 中提出更正和新词，愿意的话还可以出现在致谢中。"
+      "可以在 ⚙️ → 数据和隐私 → 贡献 中提出更正和新词，愿意的话还可以出现在致谢中。",
+      "每周休息一天不会中断连续天数；一万分以上有新的等级和“季”；“学习”里突出显示本周进步。",
+      "意大利语课程：“今天”卡片显示要继续的课和今日意大利语，课程变成一条路，还有纪念卡和分享卡片。",
+      "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。"
     ] },
   { v: "6.6", d: "2026-10",
     it: ["La versione di partenza: un solo file index.html con vocabolario, ripasso a intervalli e frasi."],
@@ -25227,7 +25310,7 @@ var PLACEMENT = (function () {
    Prova di sicurezza: tools/e2e.mjs passa al correttore tutte le frasi italiane dell'app (giuste) e non vuole segnalazioni.
    CP.itCheck(testo) → { toks, issues: [{ at, len, kind, zh, fix }], fixed, unknown, known }; CP.itCheckHTML() = il pannello. ===== */
 (function () {
-  var CP = window.CP, esc = CP.esc;
+  var CP = window.CP, tt = CP.t, esc = CP.esc;
   var IDX = null;
   var ARTS = { il: ["m", "s", "d"], lo: ["m", "s", "d"], la: ["f", "s", "d"], "l'": ["x", "s", "d"], i: ["m", "p", "d"], gli: ["m", "p", "d"], le: ["f", "p", "d"],
     un: ["m", "s", "i"], uno: ["m", "s", "i"], una: ["f", "s", "i"], "un'": ["f", "s", "i"] };
@@ -25259,8 +25342,8 @@ var PLACEMENT = (function () {
   var NOACC = { menu: 1, papa: 1, pero: 1, te: 1, se: 1, da: 1, ne: 1, si: 1, li: 1, la: 1 };   /* parole giuste anche senza accento */
   /* verbi che con il passato prossimo vogliono sempre essere: solo qui «ho andato» è un errore sicuro */
   var ESSERE_ONLY = { andare: 1, venire: 1, arrivare: 1, partire: 1, tornare: 1, entrare: 1, uscire: 1, restare: 1, rimanere: 1, stare: 1, essere: 1, nascere: 1, morire: 1, diventare: 1, sembrare: 1, cadere: 1, piacere: 1, succedere: 1, riuscire: 1 };
-  var PNAME = ["第一人称单数（io）", "第二人称单数（tu）", "第三人称单数（lui / lei）", "第一人称复数（noi）", "第二人称复数（voi）", "第三人称复数（loro）"];
-  var GN = { ms: "阳性单数", fs: "阴性单数", mp: "阳性复数", fp: "阴性复数" };
+  var PNAME = [tt("itc.180"), tt("itc.181"), tt("itc.182"), tt("itc.183"), tt("itc.184"), tt("itc.185")];
+  var GN = { ms: tt("itc.186"), fs: tt("itc.187"), mp: tt("itc.188"), fp: tt("itc.189") };
 
   function push(m, k, v) { (m[k] = m[k] || []).push(v); }
   function strip(s) { return String(s).replace(/（[^）]*）/g, "").trim(); }
@@ -25283,8 +25366,8 @@ var PLACEMENT = (function () {
       if (e.kind === "noun") {
         var f = e.forms || [], gs = e.g === "mf" ? ["m", "f"] : [e.g === "f" ? "f" : "m"], sg = "", pl = "";
         f.forEach(function (x, i) {
-          if (/女）/.test(x)) { push(N, bare(x).toLowerCase(), { g: "f", n: "s" }); return; }
-          var n = /只用复数/.test(x) || i > 0 ? "p" : "s";
+          if (x.indexOf(tt("itc.108").trim()) >= 0) { push(N, bare(x).toLowerCase(), { g: "f", n: "s" }); return; }
+          var n = x.indexOf(tt("itc.107").trim()) >= 0 || i > 0 ? "p" : "s";
           strip(x).split(" / ").forEach(function (y) {
             var m = /^(il|lo|la|i|gli|le|l')\s*(.+)$/.exec(y.trim()), w = (m ? m[2] : y).toLowerCase(), a = m ? ARTS[m[1]] : null;
             if (n === "s" && !sg) sg = w; if (n === "p" && !pl) pl = w;
@@ -25348,7 +25431,7 @@ var PLACEMENT = (function () {
     function after(p, c, head) {
       var s = skipAdv(p.j + 1), at = adj2(s.k - 1, s.k) ? T[s.k] : null, aa = at && X.A[at.lw];
       if (!aa || X.V[at.lw] || X.N[at.lw] || s.cmp) return p.j;
-      if (!aa.some(function (x) { return x.g === c.g && x.n === c.n; })) one(s.k, "adj", "「" + head + " " + at.w + "」：" + head + " 是" + GN[c.g + c.n] + "，形容词要变成「" + adjFix(aa[0], c.g, c.n) + "」。", cap(at.w, adjFix(aa[0], c.g, c.n)));
+      if (!aa.some(function (x) { return x.g === c.g && x.n === c.n; })) one(s.k, "adj", "「" + head + " " + at.w + "」：" + head + tt("itc.190") + GN[c.g + c.n] + tt("itc.191") + adjFix(aa[0], c.g, c.n) + "」。", cap(at.w, adjFix(aa[0], c.g, c.n)));
       return s.k;
     }
     /* il soggetto ricorda tutte le letture possibili del nome (vite: «la vite» e «le vite»): si segnala solo se nessuna va */
@@ -25364,12 +25447,12 @@ var PLACEMENT = (function () {
            (gerundi, imperfetti, «favore»…) e i suggerimenti sbagliati sarebbero più di quelli giusti */
         if (lw.length >= 3 && !/'$/.test(lw)) {
           var acc = X.BARE[noAcc(lw)], sug = acc && acc.length === 1 && !NOACC[lw] ? acc[0] : null;
-          if (sug) one(i, "spell", "「" + t.w + "」是不是「" + sug + "」？", cap(t.w, sug));
+          if (sug) one(i, "spell", "「" + t.w + tt("itc.192") + sug + "」？", cap(t.w, sug));
         }
       }
       /* nazionalità e lingue: minuscole in italiano */
       var A0 = X.A[lw];
-      if (A0 && A0.some(function (x) { return x.nat; }) && /^[A-ZÀ-Ö]/.test(t.w) && i > 0 && adj2(i - 1, i)) one(i, "case", "「" + t.w + "」：意大利语里国籍和语言要小写：「" + lw + "」。", lw);
+      if (A0 && A0.some(function (x) { return x.nat; }) && /^[A-ZÀ-Ö]/.test(t.w) && i > 0 && adj2(i - 1, i)) one(i, "case", "「" + t.w + tt("itc.193") + lw + "」。", lw);
 
       /* articolo (+ aggettivo) + nome, con la preposizione davanti se c'è */
       var clitic = CLIT[lw] && T[i + 1] && X.V[T[i + 1].lw] && (i === 0 || !adj2(i - 1, i) || PRON[T[i - 1].lw] || /^(non|te|me|se|ce|ve|glie)$/.test(T[i - 1].lw));
@@ -25380,22 +25463,22 @@ var PLACEMENT = (function () {
           var nt = T[p.n0], ok = p.cands.filter(function (c) { return c.n === a[1] && (a[0] === "x" || c.g === a[0]); }), c0 = ok[0] || p.cands[0];
           var next = T[p.mid != null ? p.mid : p.n0].w, nn = /^(ch|h|w|y|j|k|x)/i.test(next);
           var want = a[2] === "i" ? (c0.n === "s" ? I.indef(next, c0.g) : null) : I.def(next, c0.g, c0.n);
-          if (a[2] === "i" && c0.n === "p") one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + " 是复数，不定冠词 un / una 只能用在单数前面。可以用定冠词「" + I.def(next, c0.g, "p") + "」。", cap(t.w, I.def(next, c0.g, "p")));
+          if (a[2] === "i" && c0.n === "p") one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + tt("itc.194") + I.def(next, c0.g, "p") + "」。", cap(t.w, I.def(next, c0.g, "p")));
           else if (want && (!ok.length || (want !== lw && !nn))) {
-            if (prp < 0) one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + " 是" + GN[c0.g + c0.n] + "，" + (ok.length ? "这个词前面要用「" + want + "」（看后面一个词的开头字母）。" : "冠词要用「" + want + "」。"), cap(t.w, want));
+            if (prp < 0) one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + tt("itc.190") + GN[c0.g + c0.n] + "，" + (ok.length ? tt("itc.195") + want + tt("itc.196") : tt("itc.197") + want + "」。"), cap(t.w, want));
             artNow = want;
           }
-          if (p.mid != null) { var ma = X.A[T[p.mid].lw]; if (!ma.some(function (x) { return x.g === c0.g && x.n === c0.n; })) one(p.mid, "adj", "「" + T[p.mid].w + " " + nt.w + "」：" + nt.w + " 是" + GN[c0.g + c0.n] + "，形容词要变成「" + adjFix(ma[0], c0.g, c0.n) + "」。", cap(T[p.mid].w, adjFix(ma[0], c0.g, c0.n))); }
+          if (p.mid != null) { var ma = X.A[T[p.mid].lw]; if (!ma.some(function (x) { return x.g === c0.g && x.n === c0.n; })) one(p.mid, "adj", "「" + T[p.mid].w + " " + nt.w + "」：" + nt.w + tt("itc.190") + GN[c0.g + c0.n] + tt("itc.191") + adjFix(ma[0], c0.g, c0.n) + "」。", cap(T[p.mid].w, adjFix(ma[0], c0.g, c0.n))); }
           var end = after(p, c0, nt.w);
           if (prp < 0) subjectAt(end, c0, i, p.n0, ok);
         }
-        if (prp >= 0) { var comb = I.prep(T[prp].lw, artNow); issue(prp, i, "prep", "「" + T[prp].w + " " + t.w + "」：介词 " + T[prp].lw + " 和冠词要合成一个词「" + comb + "」。", cap(T[prp].w, comb)); }
+        if (prp >= 0) { var comb = I.prep(T[prp].lw, artNow); issue(prp, i, "prep", "「" + T[prp].w + " " + t.w + tt("itc.198") + T[prp].lw + tt("itc.199") + comb + "」。", cap(T[prp].w, comb)); }
       }
       /* numero + nome: plurale */
       if (NUMS[lw] && adj2(i, i + 1)) {
         var q = np(i + 1);
         if (q && !q.cands.some(function (c) { return c.n === "p"; }) && q.cands[0].pl && q.cands[0].pl !== T[q.n0].lw) {
-          var c1 = q.cands[0]; one(q.n0, "num", "「" + t.w + " " + T[q.n0].w + "」：两个以上要用复数「" + c1.pl + "」。", cap(T[q.n0].w, c1.pl));
+          var c1 = q.cands[0]; one(q.n0, "num", "「" + t.w + " " + T[q.n0].w + tt("itc.200") + c1.pl + "」。", cap(T[q.n0].w, c1.pl));
           after(q, { g: c1.g, n: "p" }, c1.pl);
         } else if (q) after(q, q.cands.filter(function (c) { return c.n === "p"; })[0] || q.cands[0], T[q.n0].w);
       }
@@ -25403,7 +25486,7 @@ var PLACEMENT = (function () {
       var POS = POSSOF[lw], isDem = DEM[lw];
       /* la mia madre → mia madre (i parenti al singolare non vogliono l'articolo; con «loro» sì: la loro madre) */
       if (POS && i > 0 && adj2(i - 1, i) && ARTS[T[i - 1].lw] && ARTS[T[i - 1].lw][2] === "d" && ARTS[T[i - 1].lw][1] === "s" && T[i + 1] && adj2(i, i + 1) && FAM[T[i + 1].lw] && !(T[i + 2] && adj2(i + 1, i + 2) && X.A[T[i + 2].lw]))
-        issue(i - 1, i - 1, "poss", "「" + T[i - 1].w + " " + t.w + " " + T[i + 1].w + "」：单数的家人（madre、padre、fratello…）前面，物主形容词不加冠词。", "");
+        issue(i - 1, i - 1, "poss", "「" + T[i - 1].w + " " + t.w + " " + T[i + 1].w + tt("itc.201"), "");
       if ((POS || isDem) && adj2(i, i + 1)) {
         var r = np(i + 1);
         if (r && isDem && r.mid == null && X.A[T[r.n0].lw]) r = null;   /* «quella cinese»: pronome + aggettivo */
@@ -25415,11 +25498,11 @@ var PLACEMENT = (function () {
           var gi = (cc.g === "f" ? 1 : 0) + (cc.n === "p" ? 2 : 0);
           var wantP = POS ? POS.forms[gi] : /^quest/.test(lw) ? QUESTO[gi] : QUELLO[I.def(nx, cc.g, cc.n)];
           var okP = r.cands.some(function (c) { var w2 = wantOf(c); return w2 === lw || (lw === "quest'" && c.n === "s" && I.vowel(nx)); });
-          if (!okP) one(i, "poss", "「" + t.w + " " + head + "」：" + head + " 是" + GN[cc.g + cc.n] + "，要说「" + wantP + "」。", cap(t.w, wantP));
+          if (!okP) one(i, "poss", "「" + t.w + " " + head + "」：" + head + tt("itc.190") + GN[cc.g + cc.n] + tt("itc.202") + wantP + "」。", cap(t.w, wantP));
           var fam = FAM[T[r.n0].lw] && cc.n === "s" && r.n0 === i + 1;
           if (POS && fam && artP && artP[2] === "d" && artP[1] === "s") { /* già segnalato sopra */ }
-          else if (artP && artP[2] === "d" && I.def(wantP, cc.g, cc.n) !== prev) issue(i - 1, i - 1, "art", "「" + T[i - 1].w + " " + t.w + " " + head + "」：" + head + " 是" + GN[cc.g + cc.n] + "，冠词要用「" + I.def(wantP, cc.g, cc.n) + "」。", cap(T[i - 1].w, I.def(wantP, cc.g, cc.n)));
-          else if (POS && !hasArt && !fam && start(i) && !/^[A-ZÀ-Ö]/.test(head) && !/^(caro|cara|cari|care)$/.test(T[r.n0].lw)) one(i, "poss", "「" + t.w + " " + head + "」：物主形容词前面一般要加冠词：「" + I.def(wantP, cc.g, cc.n) + " " + wantP + "」。", cap(t.w, I.join(I.def(wantP, cc.g, cc.n), wantP)));
+          else if (artP && artP[2] === "d" && I.def(wantP, cc.g, cc.n) !== prev) issue(i - 1, i - 1, "art", "「" + T[i - 1].w + " " + t.w + " " + head + "」：" + head + tt("itc.190") + GN[cc.g + cc.n] + tt("itc.203") + I.def(wantP, cc.g, cc.n) + "」。", cap(T[i - 1].w, I.def(wantP, cc.g, cc.n)));
+          else if (POS && !hasArt && !fam && start(i) && !/^[A-ZÀ-Ö]/.test(head) && !/^(caro|cara|cari|care)$/.test(T[r.n0].lw)) one(i, "poss", "「" + t.w + " " + head + tt("itc.204") + I.def(wantP, cc.g, cc.n) + " " + wantP + "」。", cap(t.w, I.join(I.def(wantP, cc.g, cc.n), wantP)));
           var e2 = after(r, cc, head);
           if (!hasArt || artP) subjectAt(e2, cc, artP ? i - 1 : i, r.n0, r.cands.filter(function (c) { return wantOf(c) === lw; }));
         }
@@ -25436,31 +25519,31 @@ var PLACEMENT = (function () {
       var vs = X.V[vt.lw], inf = X.INF[vt.lw];
       if (inf && !vs && I.present(inf.inf, subj.pi)) {
         var fi = I.present(inf.inf, subj.pi).split(" "), fw = fi[/^\S+rsi(\s|$)/.test(inf.inf) ? 1 : 0];
-        one(k, "verb", "「" + subj.w + " " + vt.w + "」：动词要变位，不能用原形。主语是" + PNAME[subj.pi] + "：「" + fw + "」。", cap(vt.w, fw));
+        one(k, "verb", "「" + subj.w + " " + vt.w + tt("itc.205") + PNAME[subj.pi] + "：「" + fw + "」。", cap(vt.w, fw));
         continue;
       }
       if (!vs || X.N[vt.lw] || X.A[vt.lw]) continue;
       var piac = vs.some(function (v) { return v.inf === "piacere"; });
       if (piac && subj.pron && T[k + 1] && adj2(k, k + 1) && (ARTS[T[k + 1].lw] || isNoun(k + 1))) {
         var pl2 = ARTS[T[k + 1].lw] ? ARTS[T[k + 1].lw][1] === "p" : false;
-        issue(i, k, "verb", "「" + subj.w + " " + vt.w + "」：意大利语说「" + CL[subj.pron] + " piace / piacciono …」，喜欢的东西才是主语。", cap(subj.w, CL[subj.pron]) + " " + (pl2 ? "piacciono" : "piace"));
+        issue(i, k, "verb", "「" + subj.w + " " + vt.w + tt("itc.206") + CL[subj.pron] + tt("itc.207"), cap(subj.w, CL[subj.pron]) + " " + (pl2 ? "piacciono" : "piace"));
         continue;
       }
       var pis = subj.all ? subj.all.map(function (c) { return c.n === "p" ? 5 : 2; }) : [subj.pi];
       if (!vs.some(function (v) { return pis.indexOf(v.pi) >= 0; }) && (subj.pron || vs.every(function (v) { return v.pi === 2 || v.pi === 5; }))) {
         var right = I.present(vs[0].inf, subj.pi), rw = right ? right.split(" ")[/^\S+rsi(\s|$)/.test(vs[0].inf) ? 1 : 0] : "";
-        if (rw) { one(k, "verb", "「" + subj.w + " … " + vt.w + "」：主语是" + PNAME[subj.pi] + "，动词 " + vs[0].inf + " 应该是「" + rw + "」。", cap(vt.w, rw)); continue; }
+        if (rw) { one(k, "verb", "「" + subj.w + " … " + vt.w + tt("itc.208") + PNAME[subj.pi] + tt("itc.209") + vs[0].inf + tt("itc.210") + rw + "」。", cap(vt.w, rw)); continue; }
       }
       /* essere + aggettivo: il predicato si accorda con il soggetto */
       var ess = ESS.indexOf(vt.lw) >= 0, sk = skipAdv(k + 1), pt = adj2(sk.k - 1, sk.k) ? T[sk.k] : null, pa = pt && !X.N[pt.lw] && X.A[pt.lw];
       if (ess && pa && !sk.cmp && !(T[sk.k + 1] && adj2(sk.k, sk.k + 1) && !FUNC[T[sk.k + 1].lw])) {
-        if (!pa.some(function (x) { return (subj.all || [subj]).some(function (c) { return x.n === c.n && (!c.g || x.g === c.g); }); })) { var pg = subj.g || "m", pf = adjFix(pa[0], pg, subj.n); one(sk.k, "adj", "「" + subj.w + " " + vt.w + " " + pt.w + "」：主语是" + (subj.g ? GN[subj.g + subj.n] : subj.n === "p" ? "复数" : "单数") + "，形容词要变成「" + pf + "」" + (subj.g ? "" : "（女性用「" + adjFix(pa[0], "f", subj.n) + "」）") + "。", cap(pt.w, pf)); }
+        if (!pa.some(function (x) { return (subj.all || [subj]).some(function (c) { return x.n === c.n && (!c.g || x.g === c.g); }); })) { var pg = subj.g || "m", pf = adjFix(pa[0], pg, subj.n); one(sk.k, "adj", "「" + subj.w + " " + vt.w + " " + pt.w + tt("itc.208") + (subj.g ? GN[subj.g + subj.n] : subj.n === "p" ? tt("itc.211") : tt("itc.212")) + tt("itc.191") + pf + "」" + (subj.g ? "" : tt("itc.213") + adjFix(pa[0], "f", subj.n) + "」）") + "。", cap(pt.w, pf)); }
       }
       /* essere + participio di un verbo con essere: accordo */
       var pp = T[k + 1] && adj2(k, k + 1) ? X.PPI[T[k + 1].lw] : null;
       if (ess && pp && pp[0].aux === "e" && subj.g && !pp.some(function (x) { return (subj.all || [subj]).some(function (c) { return x.g === c.g && x.n === c.n; }); })) {
         var pw = pp[0].st + (subj.g === "f" ? (subj.n === "p" ? "e" : "a") : (subj.n === "p" ? "i" : "o"));
-        one(k + 1, "pp", "「" + subj.w + " " + vt.w + " " + T[k + 1].w + "」：用 essere 的时候，过去分词要和主语一致：「" + pw + "」。", cap(T[k + 1].w, pw));
+        one(k + 1, "pp", "「" + subj.w + " " + vt.w + " " + T[k + 1].w + tt("itc.214") + pw + "」。", cap(T[k + 1].w, pw));
       }
     }
 
@@ -25474,17 +25557,17 @@ var PLACEMENT = (function () {
       /* il participio può venire da due verbi (chiamato: chiamare con avere, chiamarsi con essere): si segnala solo se tutti dicono così */
       if (ai >= 0 && P2 && (refl ? P2.some(function (x) { return x.refl; }) : !clit && P2.every(function (x) { return ESSERE_ONLY[x.inf.split(" ")[0]] && !x.refl; }))) {
         var g0 = P2.some(function (x) { return x.g === "m" && x.n === (ai >= 3 ? "p" : "s"); }) ? nx2 : P2[0].st + (ai >= 3 ? "i" : "o");
-        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + " 的近过去时用 essere：「" + ESS[ai] + " " + g0 + "」（分词和主语一致）。", cap(T[h].w, ESS[ai] + " " + g0));
+        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + tt("itc.215") + ESS[ai] + " " + g0 + tt("itc.216"), cap(T[h].w, ESS[ai] + " " + g0));
       } else if (ei >= 0 && w0 !== "è" && P2 && /o$/.test(nx2) && P2.every(function (x) { return x.aux === "a" && !x.refl; }) && !clit && !(T[h + 2] && adj2(h + 1, h + 2) && /^(da|dal|dalla|dai|dalle|dallo|dagli)$/.test(T[h + 2].lw))) {
         var who = w0 === "sono" ? 0 : ei;
-        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + " 的近过去时用 avere：「" + AVE[who] + " " + P2[0].st + "o」。", cap(T[h].w, AVE[who] + " " + P2[0].st + "o"));
+        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + tt("itc.217") + AVE[who] + " " + P2[0].st + "o」。", cap(T[h].w, AVE[who] + " " + P2[0].st + "o"));
       } else if (ei >= 0 && HAVE[nx2] && !clit) {
-        issue(h, h, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：意大利语说「avere " + nx2 + "」：「" + AVE[w0 === "sono" ? 0 : ei] + " " + nx2 + "」。", cap(T[h].w, AVE[w0 === "sono" ? 0 : ei]));
+        issue(h, h, "aux", "「" + T[h].w + " " + T[h + 1].w + tt("itc.218") + nx2 + "」：「" + AVE[w0 === "sono" ? 0 : ei] + " " + nx2 + "」。", cap(T[h].w, AVE[w0 === "sono" ? 0 : ei]));
       }
       /* mi piace + plurale → mi piacciono; mi piacciono + singolare → mi piace */
       if (/^(mi|ti|gli|le|ci|vi)$/.test(w0) && (nx2 === "piace" || nx2 === "piacciono") && T[h + 2] && adj2(h + 1, h + 2) && ARTS[T[h + 2].lw] && T[h + 3] && X.N[T[h + 3].lw]) {
         var pn = ARTS[T[h + 2].lw][1] === "p", wantV = pn ? "piacciono" : "piace";
-        if (wantV !== nx2) one(h + 1, "verb", "「" + T[h + 1].w + " " + T[h + 2].w + " " + T[h + 3].w + "」：喜欢的东西是" + (pn ? "复数" : "单数") + "，要用「" + wantV + "」。", wantV);
+        if (wantV !== nx2) one(h + 1, "verb", "「" + T[h + 1].w + " " + T[h + 2].w + " " + T[h + 3].w + tt("itc.219") + (pn ? tt("itc.211") : tt("itc.212")) + tt("itc.220") + wantV + "」。", wantV);
       }
     }
 
@@ -25512,23 +25595,23 @@ var PLACEMENT = (function () {
     if (!s.trim()) return "";
     var r = check(s), h = "";
     if (!r.toks.length) return "";
-    if (!r.known) return '<p class="small muted">这些词我都还不认识，没法检查。</p>';
+    if (!r.known) return tt("itc.221");
     if (r.issues.length) {
       var marked = "", pos = 0;
       r.issues.forEach(function (x) { marked += esc(s.slice(pos, x.at)) + '<mark class="itc-bad">' + esc(s.slice(x.at, x.at + x.len)) + "</mark>"; pos = x.at + x.len; });
       marked += esc(s.slice(pos));
       h += '<p class="it-big" lang="it">' + marked + "</p>" + r.issues.map(function (x) { return '<p class="verdict ' + (x.kind === "spell" ? "" : "ko ") + 'small" style="margin:4px 0">' + (x.kind === "spell" ? "❓ " : "✗ ") + esc(x.zh) + "</p>"; }).join("") +
-        '<p style="margin:8px 0 0">建议：<b lang="it">' + esc(r.fixed) + '</b> <button type="button" class="say" data-it-say="' + CP.attr(r.fixed) + '" aria-label="朗读">🔊</button></p>';
-    } else h += '<p class="verdict ok">✓ 没有发现配合错误。</p>';
+        tt("itc.222") + esc(r.fixed) + '</b> <button type="button" class="say" data-it-say="' + CP.attr(r.fixed) + tt("itc.223");
+    } else h += tt("itc.224");
     var unk = r.unknown.filter(function (w) { return !r.issues.some(function (x) { return x.kind === "spell" && x.w === w; }); });
-    if (unk.length) h += '<p class="small muted">没检查的词（词库里没有）：<span lang="it">' + esc(unk.slice(0, 12).join("、")) + "</span></p>";
+    if (unk.length) h += tt("itc.225") + esc(unk.slice(0, 12).join("、")) + "</span></p>";
     return h;
   }
   CP.itCheckHTML = function () {
-    return '<div class="panel" id="itc" style="margin-top:20px"><span class="tag muted small">✍️ 句子检查</span>' +
-      '<p class="small muted" style="margin:4px 0 8px">写一句意大利语，我来检查冠词、名词、形容词和动词是否配合，还有一些拼写。我不检查意思和语序。</p>' +
-      '<form data-itc-form style="display:flex;gap:8px;flex-wrap:wrap"><input id="itc-in" type="text" lang="it" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="意大利语句子" placeholder="La ragazza è alta." value="' + CP.attr(last) + '" style="flex:1 1 220px;min-width:0">' +
-      '<button type="submit" class="btn-s" style="margin:0">检查</button></form><div id="itc-out" aria-live="polite">' + resultHTML(last) + "</div></div>";
+    return tt("itc.226") +
+      tt("itc.227") +
+      tt("itc.228") + CP.attr(last) + '" style="flex:1 1 220px;min-width:0">' +
+      tt("itc.229") + resultHTML(last) + "</div></div>";
   };
   document.addEventListener("submit", function (e) {
     var f = e.target; if (!f || !f.hasAttribute || !f.hasAttribute("data-itc-form")) return;
@@ -25545,16 +25628,12 @@ var PLACEMENT = (function () {
   P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
 </script>
 <script>
-/* ---- it/course.js ---- */
-/* ===== Corso di italiano per chi parla cinese (意大利语课程) — la direzione «al contrario» dell'app.
-   Si sceglie dal benvenuto o da ⚙️ → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
-   In modalità "it" l'interfaccia è in cinese e le quattro schede diventano: 课程 (lezioni), 单词 (parole), 复习 (ripasso),
-   变位 (coniugazioni), 句子 (frasi e dialoghi). Le parole italiane non sono scritte a mano qui: nascono dalle schede
-   grammaticali di data/grammar.js (genere, plurale, ausiliare) e dalla morfologia di phrases/italian.js, controllate con
-   tools/morphit-check.mjs (Morph-it + Hunspell). I progressi stanno in chiavi proprie: cp-it-srs-v1, cp-it-lessons-v1. ===== */
+/* ---- it/switch.js ---- */
+/* ===== màndarínō · la scelta del corso, in tutti e due i corsi (⚙️ → Corso): cp-course = "zh" (cinese per italiani,
+   predefinito) | "it" (italiano per cinesi). Il corso di italiano (it/today.js, it/course.js, i18n/it-course.js) nel file
+   unico si esegue solo quando serve (tools/build.mjs, COURSE_IT): chi studia cinese non lo paga all'avvio. ===== */
 (function () {
-  var CP = window.CP, esc = CP.esc, W = CP.WORDS, G = GRAM, I = CP.ita;
-  var KEY = "cp-course", SRSKEY = "cp-it-srs-v1", LKEY = "cp-it-lessons-v1", NEW_PER_DAY = 10, PASS = 80;
+  var CP = window.CP, KEY = "cp-course";
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   var course = lsGet(KEY) === "it" ? "it" : "zh";
@@ -25576,6 +25655,163 @@ var PLACEMENT = (function () {
     var b = e.target.closest ? e.target.closest("[data-course-set]") : null;
     if (b && b.getAttribute("data-course-set") !== course) CP.setCourse(b.getAttribute("data-course-set"));
   });
+})();
+</script>
+<script type="text/plain" id="course-it-i18n-it-course-js">
+/* ===== màndarínō · i testi del corso di italiano per chi parla cinese (it/course.js, it/today.js, it/checker.js e le carte
+   di ui/share-card.js), nelle due lingue dell'interfaccia: cinese (quella del corso) e italiano. Nel file unico si esegue solo
+   nel corso di italiano (tools/build.mjs, COURSE_IT). ===== */
+Object.assign(I18N.zh, {"itc.005": "<div class=\"seg\" role=\"group\" aria-label=\"语速\"><button type=\"button\" data-rate=\"0.8\"", "itc.006": ">🐢 慢</button><button type=\"button\" data-rate=\"1\"", "itc.007": ">🐇 正常</button></div>", "itc.008": "<label class=\"small muted\" for=\"it-voice-sel\" style=\"display:grid;gap:4px;font-weight:600\">意大利语语音<select id=\"it-voice-sel\">", "itc.009": "意大利语语音：", "itc.010": "设备没有列出意大利语语音：会尝试用默认语音朗读（it-IT）。如果听不到，请在手机设置的「文字转语音」里安装意大利语。", "itc.011": "> 点击音效</label>", "itc.012": "> 振动</label>", "itc.013": "<button type=\"button\" class=\"btn-main\" id=\"it-voice-test\" style=\"margin-top:4px\">试听：Ciao! Come stai?</button>", "itc.014": "🐢 慢", "itc.015": "🐇 正常", "itc.016": "给说中文的人学意大利语：", "itc.017": " 课语法</b>、常用词、动词变位和中意对照的句子。每个意大利语词都可以听发音，复习间隔由 FSRS 算法安排。所有内容都可以离线使用。", "itc.018": "课程", "itc.019": "单词", "itc.020": "复习", "itc.021": "变位", "itc.022": "句子", "itc.023": "听", "itc.024": "← 返回", "itc.025": "开始", "itc.026": "下一题", "itc.027": "看结果", "itc.028": "答对了！", "itc.029": "不对。", "itc.030": "正确答案：", "itc.031": "把词语排成正确的句子：", "itc.032": "检查", "itc.033": "删除", "itc.034": "显示答案", "itc.035": "忘了", "itc.036": "困难", "itc.037": "记得", "itc.038": "简单", "itc.039": "人", "itc.040": "家庭", "itc.041": "问候", "itc.042": "回答和连接", "itc.043": "常用动词（一）", "itc.044": "常用动词（二）", "itc.045": "提问", "itc.046": "数字和量词", "itc.047": "时间", "itc.048": "方位", "itc.049": "饮食", "itc.050": "形容词", "itc.051": "心情和状态", "itc.052": "地点和国家", "itc.053": "旅行和交通", "itc.054": "家里的东西", "itc.055": "衣服和颜色", "itc.056": "身体和健康", "itc.057": "自然和动物", "itc.058": "工作和学习", "itc.059": "厨房", "itc.060": "城市", "itc.061": "口语", "itc.062": "购物", "itc.063": "自我介绍、打开话题", "itc.064": "听懂、说清楚、求助", "itc.065": "在咖啡馆吃早饭", "itc.066": "在饭店点菜", "itc.067": "购物、价格和付款", "itc.068": "问路和找方向", "itc.069": "出租车、火车和机场", "itc.070": "在酒店，房间出了问题", "itc.071": "时间、约会和朋友", "itc.072": "工作、学习和日常生活", "itc.073": "健康、身体和紧急情况", "itc.074": "谈西西里、意大利和天气", "itc.075": "坐出租车", "itc.076": "过海关", "itc.077": "行李没有到", "itc.078": "买电话卡", "itc.079": "换钱", "itc.080": "办理入住", "itc.081": "无线网连不上", "itc.082": "房间太热", "itc.083": "退房", "itc.084": "请酒店帮忙", "itc.085": "在饭店", "itc.086": "中式早餐", "itc.087": "过敏和忌口", "itc.088": "在咖啡馆", "itc.089": "路边小吃", "itc.090": "在火车上", "itc.091": "坐地铁", "itc.092": "买火车票", "itc.093": "坐公交车", "itc.094": "火车晚点了", "itc.095": "在市场", "itc.096": "扫码付款", "itc.097": "试衣服", "itc.098": "在水果摊", "itc.099": "换货或退货", "itc.100": "在药店", "itc.101": "和朋友喝咖啡", "itc.102": "聊聊西西里", "itc.103": "看医生", "itc.104": "钱包丢了", "itc.105": "商务晚宴", "itc.106": "去朋友家做客", "itc.107": "（只用复数）", "itc.108": "（女）", "itc.109": "名词", "itc.110": "地名", "itc.111": "国籍", "itc.112": "动词", "itc.113": "时间词", "itc.114": "词语", "itc.115": "名词 · 阴性", "itc.116": "名词 · 阳性/阴性", "itc.117": "名词 · 阳性", "itc.118": "<div class=\"it-ex\"><span class=\"tag muted small\">例句</span><div lang=\"it\" class=\"it-ex-it\">", "itc.119": "<table class=\"it-conj\"><thead><tr><th></th><th>现在时</th><th>近过去时</th></tr></thead><tbody>", "itc.120": "<p class=\"small muted\" style=\"margin:4px 0 0\">用 essere：分词要和主语一致（andato / andata / andati / andate）。</p>", "itc.121": "听：", "itc.122": "</div></div><button type=\"button\" class=\"fam-x btn-s\" data-famclose>关闭</button></div>", "itc.123": " <span class=\"small muted\">也说：<span lang=\"zh-CN\">", "itc.124": "</p><p class=\"small muted\">单数 · 复数（带定冠词）。冠词说明见第 3 课。</p>", "itc.125": "</p><p class=\"small muted\">阳性单数 · 阴性单数 · 阳性复数 · 阴性复数（见第 5 课）。</p>", "itc.126": "</p><p class=\"small muted\">国籍是形容词：要配合性别和单复数，而且小写。</p>", "itc.127": "</p><p class=\"small muted\">去 / 在：", "itc.128": "</p><p class=\"small muted\">现在时（见第 6 课）。</p>", "itc.129": "给中国人的意大利语", "itc.130": "màndarínō，给中国人的意大利语课程", "itc.131": "意大利语课程", "itc.132": "已读", "itc.133": "<h2 style=\"margin-top:20px\">意大利语课程</h2><p class=\"lede\" style=\"margin:4px 0\">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ", "itc.134": "% 以上就算通过。</p>", "itc.135": "<p class=\"small muted\" style=\"margin:0 0 10px\">已通过 ", "itc.136": " 课。</p><div class=\"ls-list\">", "itc.137": "</button></div><article class=\"panel ls-lesson\"><span class=\"tag muted small\">第 ", "itc.138": " 课", "itc.139": " · 最好成绩 ", "itc.140": "<h4>例句</h4>", "itc.141": "<h4>常见错误</h4>", "itc.142": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">✏️ 做练习（", "itc.143": " 题）</button></div></article>", "itc.144": "%\"></i></div><span class=\"tag muted small\">第 ", "itc.145": " 题 · 答对 ", "itc.146": "<div class=\"slot\" data-empty=\"点下面的词\">", "itc.147": "🎉 这一课通过了！", "itc.148": "差一点！", "itc.149": "</h3><p>答对 ", "itc.150": "需要 ", "itc.151": "% 才算通过：再读一遍讲解，然后再试一次。", "itc.152": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">🔁 再做一次</button><button type=\"button\" class=\"btn-s\" data-itl-open=\"", "itc.153": "\">📘 再读一遍</button><button type=\"button\" class=\"btn-s\" data-itl-back>所有课程</button></div></div>", "itc.154": " 词汇", "itc.155": "专业词汇", "itc.156": "<h2 style=\"margin-top:20px\">意大利语单词</h2><p class=\"small muted\" style=\"margin:0 0 8px\">共 ", "itc.157": " 个词。名词带定冠词，点一个词可以看全部形式和动词变位。</p>", "itc.158": "<label for=\"it-q\" class=\"sr\">搜索</label><input id=\"it-q\" type=\"search\" placeholder=\"搜索：意大利语、汉字或拼音\" value=\"", "itc.159": "<p class=\"muted\">没有找到。</p>", "itc.160": "<div class=\"acts\"><button type=\"button\" class=\"btn-s\" data-it-more>显示更多（还有 ", "itc.161": " 个）</button></div>", "itc.162": "<h2 style=\"margin-top:20px\">复习单词</h2><p class=\"small muted\" style=\"margin:0 0 10px\">今天要复习 ", "itc.163": " 个 · 新词还剩 ", "itc.164": " 个 · 已经学过 ", "itc.165": " 个。复习间隔由 FSRS 算法安排。</p>", "itc.166": "<div class=\"panel\"><p>🎉 今天的复习都做完了！明天再来，或者去「课程」和「变位」练习。</p></div>", "itc.167": "新词", "itc.168": "<p class=\"small muted\">先想一想它的中文意思，再看答案。</p><button type=\"button\" class=\"btn-main\" data-itr-show>", "itc.169": "<div class=\"it-grades\" role=\"group\" aria-label=\"记得怎么样\">", "itc.170": "<h2 style=\"margin-top:20px\">动词变位练习</h2><div class=\"seg\" role=\"group\" aria-label=\"时态\"><button type=\"button\" data-itc-tense=\"pres\"", "itc.171": ">现在时</button><button type=\"button\" data-itc-tense=\"past\"", "itc.172": ">近过去时</button></div>", "itc.173": "<div class=\"panel ls-quiz\"><span class=\"tag muted small\">答对 ", "itc.174": "现在时", "itc.175": "近过去时（lei 指女性）", "itc.176": "<div class=\"panel ls-quiz\" id=\"it-px\" style=\"margin-top:20px\"><span class=\"tag muted small\">句子练习 · 把意大利语排好</span><p class=\"ask\" lang=\"zh-CN\">", "itc.177": "</button><button type=\"button\" class=\"btn-s\" data-itx-next>换一句</button></div>", "itc.178": "<h2 style=\"margin-top:20px\">常用句子</h2><p class=\"small muted\" style=\"margin:0 0 10px\">意大利语在上，中文在下。点 🔊 听意大利语。</p>", "itc.179": "<h3 style=\"margin-top:20px\">对话（中意对照）</h3><div class=\"ls-list\">", "itc.180": "第一人称单数（io）", "itc.181": "第二人称单数（tu）", "itc.182": "第三人称单数（lui / lei）", "itc.183": "第一人称复数（noi）", "itc.184": "第二人称复数（voi）", "itc.185": "第三人称复数（loro）", "itc.186": "阳性单数", "itc.187": "阴性单数", "itc.188": "阳性复数", "itc.189": "阴性复数", "itc.190": " 是", "itc.191": "，形容词要变成「", "itc.192": "」是不是「", "itc.193": "」：意大利语里国籍和语言要小写：「", "itc.194": " 是复数，不定冠词 un / una 只能用在单数前面。可以用定冠词「", "itc.195": "这个词前面要用「", "itc.196": "」（看后面一个词的开头字母）。", "itc.197": "冠词要用「", "itc.198": "」：介词 ", "itc.199": " 和冠词要合成一个词「", "itc.200": "」：两个以上要用复数「", "itc.201": "」：单数的家人（madre、padre、fratello…）前面，物主形容词不加冠词。", "itc.202": "，要说「", "itc.203": "，冠词要用「", "itc.204": "」：物主形容词前面一般要加冠词：「", "itc.205": "」：动词要变位，不能用原形。主语是", "itc.206": "」：意大利语说「", "itc.207": " piace / piacciono …」，喜欢的东西才是主语。", "itc.208": "」：主语是", "itc.209": "，动词 ", "itc.210": " 应该是「", "itc.211": "复数", "itc.212": "单数", "itc.213": "（女性用「", "itc.214": "」：用 essere 的时候，过去分词要和主语一致：「", "itc.215": " 的近过去时用 essere：「", "itc.216": "」（分词和主语一致）。", "itc.217": " 的近过去时用 avere：「", "itc.218": "」：意大利语说「avere ", "itc.219": "」：喜欢的东西是", "itc.220": "，要用「", "itc.221": "<p class=\"small muted\">这些词我都还不认识，没法检查。</p>", "itc.222": "<p style=\"margin:8px 0 0\">建议：<b lang=\"it\">", "itc.223": "\" aria-label=\"朗读\">🔊</button></p>", "itc.224": "<p class=\"verdict ok\">✓ 没有发现配合错误。</p>", "itc.225": "<p class=\"small muted\">没检查的词（词库里没有）：<span lang=\"it\">", "itc.226": "<div class=\"panel\" id=\"itc\" style=\"margin-top:20px\"><span class=\"tag muted small\">✍️ 句子检查</span>", "itc.227": "<p class=\"small muted\" style=\"margin:4px 0 8px\">写一句意大利语，我来检查冠词、名词、形容词和动词是否配合，还有一些拼写。我不检查意思和语序。</p>", "itc.228": "<form data-itc-form style=\"display:flex;gap:8px;flex-wrap:wrap\"><input id=\"itc-in\" type=\"text\" lang=\"it\" autocomplete=\"off\" autocapitalize=\"sentences\" spellcheck=\"false\" aria-label=\"意大利语句子\" placeholder=\"La ragazza è alta.\" value=\"", "itc.229": "<button type=\"submit\" class=\"btn-s\" style=\"margin:0\">检查</button></form><div id=\"itc-out\" aria-live=\"polite\">"});
+Object.assign(I18N.it, {"itc.005": "<div class=\"seg\" role=\"group\" aria-label=\"Velocità\"><button type=\"button\" data-rate=\"0.8\"", "itc.006": ">🐢 Lento</button><button type=\"button\" data-rate=\"1\"", "itc.007": ">🐇 Normale</button></div>", "itc.008": "<label class=\"small muted\" for=\"it-voice-sel\" style=\"display:grid;gap:4px;font-weight:600\">Voce italiana<select id=\"it-voice-sel\">", "itc.009": "Voce italiana: ", "itc.010": "Il dispositivo non elenca voci italiane: provo con la voce predefinita (it-IT). Se non senti nulla, installa l'italiano in «Sintesi vocale» nelle impostazioni del telefono.", "itc.011": "> Suoni dei tocchi</label>", "itc.012": "> Vibrazione</label>", "itc.013": "<button type=\"button\" class=\"btn-main\" id=\"it-voice-test\" style=\"margin-top:4px\">Prova: Ciao! Come stai?</button>", "itc.014": "🐢 Lento", "itc.015": "🐇 Normale", "itc.016": "L'italiano per chi parla cinese: ", "itc.017": " lezioni di grammatica</b>, parole comuni, coniugazioni e frasi a fronte italiano-cinese. Ogni parola italiana si può ascoltare; gli intervalli di ripasso li decide l'algoritmo FSRS. Tutto funziona anche offline.", "itc.018": "Lezioni", "itc.019": "Parole", "itc.020": "Ripasso", "itc.021": "Coniugazioni", "itc.022": "Frasi", "itc.023": "Ascolta", "itc.024": "← Indietro", "itc.025": "Inizia", "itc.026": "Avanti", "itc.027": "Vedi il risultato", "itc.028": "Giusto!", "itc.029": "Non è giusto.", "itc.030": "Risposta giusta: ", "itc.031": "Metti le parole in ordine per formare la frase:", "itc.032": "Controlla", "itc.033": "Cancella", "itc.034": "Mostra la risposta", "itc.035": "Non la so", "itc.036": "Difficile", "itc.037": "La so", "itc.038": "Facile", "itc.039": "Persone", "itc.040": "Famiglia", "itc.041": "Saluti", "itc.042": "Risposte e connettivi", "itc.043": "Verbi comuni (1)", "itc.044": "Verbi comuni (2)", "itc.045": "Domande", "itc.046": "Numeri e classificatori", "itc.047": "Tempo", "itc.048": "Luoghi e direzioni", "itc.049": "Cibo e bevande", "itc.050": "Aggettivi", "itc.051": "Stati d'animo", "itc.052": "Luoghi e paesi", "itc.053": "Viaggi e trasporti", "itc.054": "In casa", "itc.055": "Vestiti e colori", "itc.056": "Corpo e salute", "itc.057": "Natura e animali", "itc.058": "Lavoro e studio", "itc.059": "Cucina", "itc.060": "Città", "itc.061": "Lingua parlata", "itc.062": "Acquisti", "itc.063": "Presentarsi e rompere il ghiaccio", "itc.064": "Capire, farsi capire, chiedere aiuto", "itc.065": "Colazione al bar", "itc.066": "Ordinare al ristorante", "itc.067": "Acquisti, prezzi e pagamento", "itc.068": "Chiedere la strada", "itc.069": "Taxi, treno e aeroporto", "itc.070": "In albergo, un problema in camera", "itc.071": "Orari, appuntamenti e amici", "itc.072": "Lavoro, studio e vita quotidiana", "itc.073": "Salute, corpo ed emergenze", "itc.074": "Parlare della Sicilia, dell'Italia e del tempo", "itc.075": "In taxi", "itc.076": "Alla dogana", "itc.077": "Il bagaglio non è arrivato", "itc.078": "Comprare una SIM", "itc.079": "Cambiare i soldi", "itc.080": "Il check-in", "itc.081": "Il wifi non funziona", "itc.082": "La camera è troppo calda", "itc.083": "Il check-out", "itc.084": "Chiedere aiuto all'albergo", "itc.085": "Al ristorante", "itc.086": "Colazione cinese", "itc.087": "Allergie e cibi da evitare", "itc.088": "Al bar", "itc.089": "Cibo di strada", "itc.090": "In treno", "itc.091": "In metropolitana", "itc.092": "Comprare un biglietto del treno", "itc.093": "In autobus", "itc.094": "Il treno è in ritardo", "itc.095": "Al mercato", "itc.096": "Pagare con il QR", "itc.097": "Provare i vestiti", "itc.098": "Dal fruttivendolo", "itc.099": "Cambiare o rendere un acquisto", "itc.100": "In farmacia", "itc.101": "Un caffè con gli amici", "itc.102": "Parlare della Sicilia", "itc.103": "Dal medico", "itc.104": "Ho perso il portafoglio", "itc.105": "Una cena di lavoro", "itc.106": "Ospiti a casa di amici", "itc.107": " (solo plurale)", "itc.108": " (femminile)", "itc.109": "nome", "itc.110": "luogo", "itc.111": "nazionalità", "itc.112": "verbo", "itc.113": "parola di tempo", "itc.114": "espressione", "itc.115": "nome · femminile", "itc.116": "nome · maschile/femminile", "itc.117": "nome · maschile", "itc.118": "<div class=\"it-ex\"><span class=\"tag muted small\">Esempio</span><div lang=\"it\" class=\"it-ex-it\">", "itc.119": "<table class=\"it-conj\"><thead><tr><th></th><th>Presente</th><th>Passato prossimo</th></tr></thead><tbody>", "itc.120": "<p class=\"small muted\" style=\"margin:4px 0 0\">Con essere il participio si accorda con il soggetto (andato / andata / andati / andate).</p>", "itc.121": "Ascolta: ", "itc.122": "</div></div><button type=\"button\" class=\"fam-x btn-s\" data-famclose>Chiudi</button></div>", "itc.123": " <span class=\"small muted\">si dice anche: <span lang=\"zh-CN\">", "itc.124": "</p><p class=\"small muted\">Singolare · plurale (con l'articolo determinativo). Gli articoli sono nella lezione 3.</p>", "itc.125": "</p><p class=\"small muted\">Maschile singolare · femminile singolare · maschile plurale · femminile plurale (lezione 5).</p>", "itc.126": "</p><p class=\"small muted\">Le nazionalità sono aggettivi: si accordano con genere e numero, e si scrivono minuscole.</p>", "itc.127": "</p><p class=\"small muted\">Andare a / essere a: ", "itc.128": "</p><p class=\"small muted\">Presente (lezione 6).</p>", "itc.129": "L'italiano per i cinesi", "itc.130": "màndarínō, il corso di italiano per i cinesi", "itc.131": "Corso di italiano", "itc.132": "Letta", "itc.133": "<h2 style=\"margin-top:20px\">Corso di italiano</h2><p class=\"lede\" style=\"margin:4px 0\">Una lezione, un punto di grammatica: leggi la spiegazione, ascolta gli esempi, guarda gli errori tipici e fai gli esercizi. Con almeno il ", "itc.134": "% di risposte giuste la lezione è superata.</p>", "itc.135": "<p class=\"small muted\" style=\"margin:0 0 10px\">Lezioni superate: ", "itc.136": ".</p><div class=\"ls-list\">", "itc.137": "</button></div><article class=\"panel ls-lesson\"><span class=\"tag muted small\">Lezione ", "itc.138": "", "itc.139": " · miglior risultato ", "itc.140": "<h4>Esempi</h4>", "itc.141": "<h4>Errori tipici</h4>", "itc.142": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">✏️ Fai gli esercizi (", "itc.143": " domande)</button></div></article>", "itc.144": "%\"></i></div><span class=\"tag muted small\">Domanda ", "itc.145": " · giuste ", "itc.146": "<div class=\"slot\" data-empty=\"Tocca le parole qui sotto\">", "itc.147": "🎉 Lezione superata!", "itc.148": "Ci sei quasi!", "itc.149": "</h3><p>Risposte giuste: ", "itc.150": "Serve il ", "itc.151": "% per superarla: rileggi la spiegazione e riprova.", "itc.152": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">🔁 Rifalla</button><button type=\"button\" class=\"btn-s\" data-itl-open=\"", "itc.153": "\">📘 Rileggi</button><button type=\"button\" class=\"btn-s\" data-itl-back>Tutte le lezioni</button></div></div>", "itc.154": " · vocabolario", "itc.155": "Parole specialistiche", "itc.156": "<h2 style=\"margin-top:20px\">Parole italiane</h2><p class=\"small muted\" style=\"margin:0 0 8px\">", "itc.157": " parole in tutto. I nomi hanno l'articolo; tocca una parola per vedere tutte le forme e la coniugazione.</p>", "itc.158": "<label for=\"it-q\" class=\"sr\">Cerca</label><input id=\"it-q\" type=\"search\" placeholder=\"Cerca: italiano, caratteri o pinyin\" value=\"", "itc.159": "<p class=\"muted\">Niente trovato.</p>", "itc.160": "<div class=\"acts\"><button type=\"button\" class=\"btn-s\" data-it-more>Mostra altre (ancora ", "itc.161": ")</button></div>", "itc.162": "<h2 style=\"margin-top:20px\">Ripasso delle parole</h2><p class=\"small muted\" style=\"margin:0 0 10px\">Da ripassare oggi: ", "itc.163": " · parole nuove rimaste: ", "itc.164": " · già studiate: ", "itc.165": ". Gli intervalli li decide l'algoritmo FSRS.</p>", "itc.166": "<div class=\"panel\"><p>🎉 Ripasso di oggi finito! Torna domani, oppure esercitati con «Lezioni» e «Coniugazioni».</p></div>", "itc.167": "Parola nuova", "itc.168": "<p class=\"small muted\">Prima pensa al significato in cinese, poi guarda la risposta.</p><button type=\"button\" class=\"btn-main\" data-itr-show>", "itc.169": "<div class=\"it-grades\" role=\"group\" aria-label=\"Quanto la ricordi\">", "itc.170": "<h2 style=\"margin-top:20px\">Esercizi di coniugazione</h2><div class=\"seg\" role=\"group\" aria-label=\"Tempo verbale\"><button type=\"button\" data-itc-tense=\"pres\"", "itc.171": ">Presente</button><button type=\"button\" data-itc-tense=\"past\"", "itc.172": ">Passato prossimo</button></div>", "itc.173": "<div class=\"panel ls-quiz\"><span class=\"tag muted small\">Giuste ", "itc.174": "Presente", "itc.175": "Passato prossimo (lei = femminile)", "itc.176": "<div class=\"panel ls-quiz\" id=\"it-px\" style=\"margin-top:20px\"><span class=\"tag muted small\">Frasi · metti in ordine l'italiano</span><p class=\"ask\" lang=\"zh-CN\">", "itc.177": "</button><button type=\"button\" class=\"btn-s\" data-itx-next>Un'altra frase</button></div>", "itc.178": "<h2 style=\"margin-top:20px\">Frasi utili</h2><p class=\"small muted\" style=\"margin:0 0 10px\">Sopra l'italiano, sotto il cinese. Tocca 🔊 per ascoltare l'italiano.</p>", "itc.179": "<h3 style=\"margin-top:20px\">Dialoghi (italiano e cinese)</h3><div class=\"ls-list\">", "itc.180": "prima persona singolare (io)", "itc.181": "seconda persona singolare (tu)", "itc.182": "terza persona singolare (lui / lei)", "itc.183": "prima persona plurale (noi)", "itc.184": "seconda persona plurale (voi)", "itc.185": "terza persona plurale (loro)", "itc.186": "maschile singolare", "itc.187": "femminile singolare", "itc.188": "maschile plurale", "itc.189": "femminile plurale", "itc.190": " è ", "itc.191": ", l'aggettivo diventa «", "itc.192": "» è «", "itc.193": "»: in italiano nazionalità e lingue si scrivono minuscole: «", "itc.194": " è plurale: l'articolo indeterminativo un / una va solo davanti al singolare. Puoi usare l'articolo determinativo «", "itc.195": "Davanti a questa parola serve «", "itc.196": "» (dipende dalla lettera iniziale della parola dopo).", "itc.197": "L'articolo giusto è «", "itc.198": "»: la preposizione ", "itc.199": " e l'articolo si uniscono in una parola: «", "itc.200": "»: da due in su serve il plurale «", "itc.201": "»: davanti ai familiari al singolare (madre, padre, fratello…) l'aggettivo possessivo non vuole l'articolo.", "itc.202": ", si dice «", "itc.203": ", l'articolo è «", "itc.204": "»: davanti all'aggettivo possessivo di solito serve l'articolo: «", "itc.205": "»: il verbo va coniugato, non si usa l'infinito. Il soggetto è ", "itc.206": "»: in italiano si dice «", "itc.207": " piace / piacciono …», e il soggetto è la cosa che piace.", "itc.208": "»: il soggetto è ", "itc.209": ", il verbo ", "itc.210": " diventa «", "itc.211": "plurale", "itc.212": "singolare", "itc.213": " (al femminile «", "itc.214": "»: con essere il participio passato si accorda con il soggetto: «", "itc.215": " al passato prossimo vuole essere: «", "itc.216": "» (participio accordato con il soggetto).", "itc.217": " al passato prossimo vuole avere: «", "itc.218": "»: in italiano si dice «avere ", "itc.219": "»: la cosa che piace è ", "itc.220": ", serve «", "itc.221": "<p class=\"small muted\">Non conosco ancora nessuna di queste parole: non posso controllare.</p>", "itc.222": "<p style=\"margin:8px 0 0\">Suggerimento: <b lang=\"it\">", "itc.223": "\" aria-label=\"Leggi ad alta voce\">🔊</button></p>", "itc.224": "<p class=\"verdict ok\">✓ Nessun errore di accordo.</p>", "itc.225": "<p class=\"small muted\">Parole non controllate (non sono nel lessico): <span lang=\"it\">", "itc.226": "<div class=\"panel\" id=\"itc\" style=\"margin-top:20px\"><span class=\"tag muted small\">✍️ Controllo della frase</span>", "itc.227": "<p class=\"small muted\" style=\"margin:4px 0 8px\">Scrivi una frase in italiano: controllo che articoli, nomi, aggettivi e verbi siano accordati, e un po' di ortografia. Non controllo il senso né l'ordine delle parole.</p>", "itc.228": "<form data-itc-form style=\"display:flex;gap:8px;flex-wrap:wrap\"><input id=\"itc-in\" type=\"text\" lang=\"it\" autocomplete=\"off\" autocapitalize=\"sentences\" spellcheck=\"false\" aria-label=\"Frase italiana\" placeholder=\"La ragazza è alta.\" value=\"", "itc.229": "<button type=\"submit\" class=\"btn-s\" style=\"margin:0\">Controlla</button></form><div id=\"itc-out\" aria-live=\"polite\">"});
+Object.assign(I18N.zh, {"itd.passed": "通过", "itd.lessonN": "第 {n} 课", "itd.best": "最好成绩 {p}%", "itd.pathT": "课程之路", "itd.pathSub": "已通过 {d} / {n} 课 · 答对 {p}% 以上就算通过", "itd.share": "分享", "itd.morning": "早上好", "itd.noon": "中午好", "itd.afternoon": "下午好", "itd.evening": "晚上好", "itd.continue": "继续：第 {n} 课 · {t}", "itd.min": "约 {m} 分钟", "itd.reviewN": "复习 {n} 张", "itd.allDone": "30 课都通过了！去复习单词", "itd.toNext": "距离下一级还有 {n} 分", "itd.points": "{x} 分 · 下一级 {n}", "itd.goal": "今天的目标", "itd.streak": "连续 {n} 天", "itd.phraseT": "今日意大利语", "itd.listen": "听", "itd.progress": "我的进步", "itd.gain": "+{n} 分", "itd.shareCard": "分享纪念卡", "itd.cards": "纪念卡", "itd.shareWeek": "分享本周卡片", "itd.ciaoZh": "你好！", "itm.first": "迈出第一步：通过第一课", "itm.s7": "连续学习 7 天", "itm.s30": "连续学习 30 天", "itm.s100": "连续学习 100 天", "itm.w100": "学会 100 个词", "itm.w500": "学会 500 个词", "itm.w1000": "学会 1000 个词", "itm.all": "30 课全部通过", "itm.rank": "新等级：{r}", "itm.congrats": "恭喜！{m}", "itcard.sub": "给中国人的意大利语", "itcard.weekT": "我的这一周", "itcard.rank": "我的等级", "itcard.points": "{n} 分", "itcard.wDays": "学习天数", "itcard.wWords": "新学的词", "itcard.wLessons": "通过的课", "itcard.streak": "连续天数", "itcard.words": "学会的词", "itcard.lessons": "通过的课", "itcard.phrase": "今日意大利语", "itcard.foot": "免费 · 离线 · 无广告 · 无需注册", "itcard.scan": "扫码了解 màndarínō", "itcard.alt": "分享卡片：今日意大利语「{p}」，等级 {r}", "itcard.title": "分享卡片", "itcard.privacy": "图片在你的手机上生成；要不要分享由你决定。", "itcard.format": "比例", "itcard.theme": "颜色", "itcard.th.light": "浅色", "itcard.th.sepia": "米纸", "itcard.th.dark": "深色", "itcard.sign": "在卡片上署名", "itcard.namePh": "你的名字（只保存在这台手机上）", "itcard.share": "分享"});
+Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", "itd.best": "miglior risultato {p}%", "itd.pathT": "Il percorso delle lezioni", "itd.pathSub": "Superate {d} / {n} · servono almeno il {p}% di risposte giuste", "itd.share": "Condividi", "itd.morning": "Buongiorno", "itd.noon": "Buongiorno", "itd.afternoon": "Buon pomeriggio", "itd.evening": "Buonasera", "itd.continue": "Continua: lezione {n} · {t}", "itd.min": "circa {m} min", "itd.reviewN": "Ripassa {n} carte", "itd.allDone": "Tutte le 30 lezioni superate! Ripassa le parole", "itd.toNext": "Mancano {n} punti al prossimo grado", "itd.points": "{x} punti · prossimo grado a {n}", "itd.goal": "obiettivo di oggi", "itd.streak": "{n} giorni di fila", "itd.phraseT": "L'italiano di oggi", "itd.listen": "Ascolta", "itd.progress": "I miei progressi", "itd.gain": "+{n} punti", "itd.shareCard": "Condividi la carta ricordo", "itd.cards": "Carte ricordo", "itd.shareWeek": "Condividi la carta della settimana", "itd.ciaoZh": "你好！", "itm.first": "Primo gradino: la prima lezione superata", "itm.s7": "7 giorni di fila", "itm.s30": "30 giorni di fila", "itm.s100": "100 giorni di fila", "itm.w100": "100 parole imparate", "itm.w500": "500 parole imparate", "itm.w1000": "1000 parole imparate", "itm.all": "Tutte le 30 lezioni superate", "itm.rank": "Nuovo grado: {r}", "itm.congrats": "Complimenti! {m}", "itcard.sub": "L'italiano per chi parla cinese", "itcard.weekT": "La mia settimana", "itcard.rank": "Il mio grado", "itcard.points": "{n} punti", "itcard.wDays": "giorni di studio", "itcard.wWords": "parole nuove", "itcard.wLessons": "lezioni superate", "itcard.streak": "giorni di fila", "itcard.words": "parole imparate", "itcard.lessons": "lezioni superate", "itcard.phrase": "L'italiano di oggi", "itcard.foot": "gratis · offline · senza pubblicità · senza registrazione", "itcard.scan": "Inquadra per conoscere màndarínō", "itcard.alt": "Carta da condividere: l'italiano di oggi «{p}», grado {r}", "itcard.title": "Carta da condividere", "itcard.privacy": "L'immagine nasce sul tuo telefono; quello che ne fai è una tua scelta.", "itcard.format": "Formato", "itcard.theme": "Colore", "itcard.th.light": "Chiaro", "itcard.th.sepia": "Carta di riso", "itcard.th.dark": "Scuro", "itcard.sign": "Firma la carta", "itcard.namePh": "Il tuo nome (resta solo su questo telefono)", "itcard.share": "Condividi"});
+</script>
+<script>/* ---- i18n/it-course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-i18n-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-it-today-js">
+/* ===== màndarínō · corso di italiano: la carta «今天», i progressi «我的进步», i traguardi e le carte da condividere
+   (Task 11). Gira prima di it/course.js e legge i dati del corso solo quando servono, da CP.itApi (nessun dato duplicato):
+   - carta «今天» in cima a 课程: saluto, un solo pulsante primario («继续：第 N 课»), anello dell'obiettivo e serie, sigillo del
+     grado con la barra, «复习 N 张» solo se ci sono carte in scadenza, «今日意大利语» (una frase scelta per il giorno);
+   - «+N 分» che sale dopo ogni esercizio, con il sigillo che si riempie verso il grado successivo;
+   - traguardi (primo gradino, 7/30/100 giorni, 100/500/1000 parole, nuovo grado, tutte le lezioni): un «分享纪念卡» dentro il
+     messaggio di congratulazioni già mostrato, mai una finestra in più. Si ricordano in cp-it-cards-v1 (unione: la prima data);
+   - «我的进步»: il racconto della settimana (study/story.js), la raccolta «纪念卡» se c'è almeno un traguardo, «分享».
+   Nessuna notifica, nessun conteggio delle condivisioni: l'app non sa se qualcuno condivide. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc;
+  var IT = (function () { try { return localStorage.getItem("cp-course") === "it"; } catch (e) { return false; } })();
+  if (!IT) return;
+  var MK = "cp-it-cards-v1", DAY = 86400000;
+  function api() { return CP.itApi; }
+  function lget(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+  function reduce() { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }
+
+  /* ---- la frase del giorno: tra gli esempi delle lezioni superate (o delle prime tre, all'inizio), scelta dal giorno ---- */
+  function dayIndex(d) { d = d || new Date(); var y = d.getFullYear(); return y * 366 + Math.round((Date.UTC(y, d.getMonth(), d.getDate()) - Date.UTC(y, 0, 0)) / DAY); }
+  function phrasePool() {
+    var A = api(); if (!A) return [];
+    var P = A.progress(), L = A.lessons(), passed = L.filter(function (l) { var p = P[l.id] || {}; return p.done || (p.best || 0) >= A.PASS; });
+    var src = passed.length ? passed : L.slice(0, 3), out = [];
+    src.forEach(function (l) { (l.ex || []).forEach(function (e) { if (e && e[0] && e[1]) out.push({ it: e[0], zh: e[1], n: l.n }); }); });
+    return out;
+  }
+  function phraseOfDay(d) { var p = phrasePool(); return p.length ? p[dayIndex(d) % p.length] : null; }
+  /* la sillaba accentata, dove l'ortografia la segna (città, perché, è): il resto delle parole non ha il dato */
+  function accentHTML(s) { return esc(s).replace(/([àèéìíòóùú])/g, '<b class="acc">$1</b>'); }
+
+  /* ---- numeri del corso ---- */
+  function wordsLearned() { var S = lget("cp-it-srs-v1") || {}; return Object.keys(S).filter(function (k) { return k !== "__meta" && S[k] && S[k].n; }).length; }
+  function lessonsPassed() { var A = api(); if (!A) return 0; var P = A.progress(); return A.lessons().filter(function (l) { var p = P[l.id] || {}; return p.done || (p.best || 0) >= A.PASS; }).length; }
+  function greet() { var h = new Date().getHours(); return h >= 5 && h < 11 ? ["itd.morning", "Buongiorno"] : h < 13 && h >= 11 ? ["itd.noon", "Buongiorno"] : h >= 13 && h < 18 ? ["itd.afternoon", "Buon pomeriggio"] : ["itd.evening", "Buonasera"]; }
+  function minutes(l) { return Math.max(3, Math.round(2 + (l.quiz ? l.quiz.length : 6) * 0.4)); }
+
+  /* ---- la carta «今天» ---- */
+  function html() {
+    var A = api(); if (!A || !CP.game) return "";
+    var g = greet(), r = CP.game.rank(), s = CP.game.streak(), goal = CP.game.goal(), wt = CP.game.wordsToday(), p = Math.min(100, Math.round(wt / goal * 100));
+    var curId = A.current(), cur = curId ? A.lessons().filter(function (l) { return l.id === curId; })[0] : null, q = A.queue(), due = q.due.length, ph = phraseOfDay();
+    var main = cur ? '<button type="button" class="btn-main itd-go" data-itd-go="' + CP.attr(cur.id) + '">' + esc(T("itd.continue", { n: cur.n, t: cur.title })) + "<small>" + esc(T("itd.min", { m: minutes(cur) })) + "</small></button>"
+      : '<button type="button" class="btn-main itd-go" data-itd-review>' + esc(T(due ? "itd.reviewN" : "itd.allDone", { n: due })) + "</button>";
+    return '<section class="panel it-today" aria-labelledby="itd-h">' +
+      '<h2 id="itd-h" class="itd-hi">' + esc(T(g[0])) + ' <span class="muted" lang="it">· ' + g[1] + "</span></h2>" + main +
+      '<div class="itd-row">' +
+        '<div class="itd-rank">' + CP.stamp(r) + '<div><b>' + esc(r.name) + '</b><div class="bar-xp" role="progressbar" aria-valuenow="' + r.pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + CP.attr(T("itd.toNext", { n: r.next })) + '"><i style="width:' + r.pct + '%"></i></div><small class="muted">' + esc(T("itd.points", { x: r.xp, n: r.next })) + "</small></div></div>" +
+        '<div class="itd-ring"><div class="ring-w" aria-hidden="true"><div class="ring itd-ring-a" style="--p:' + p + '"></div><span class="tx">' + wt + "</span></div><div><b>" + wt + "/" + goal + "</b><small>" + esc(T("itd.goal")) + '</small><b class="itd-streak">🔥 ' + esc(T("itd.streak", { n: s })) + "</b></div></div>" +
+      "</div>" +
+      (cur && due ? '<button type="button" class="btn-s itd-rev" data-itd-review>🎴 ' + esc(T("itd.reviewN", { n: due })) + "</button>" : "") +
+      (ph ? '<div class="itd-phrase"><span class="tag">' + esc(T("itd.phraseT")) + '</span><p class="itd-it" lang="it">' + accentHTML(ph.it) + '</p><p class="itd-zh">' + esc(ph.zh) + "</p>" +
+        '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-it-say="' + CP.attr(ph.it) + '" aria-label="' + CP.attr(T("itd.listen")) + '">🔊 ' + esc(T("itd.listen")) + '</button><button type="button" class="btn-s" data-itd-share>' + esc(T("itd.share")) + "</button></div></div>" : "") +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-itd-progress>📈 ' + esc(T("itd.progress")) + "</button></div>" +
+      "</section>";
+  }
+
+  /* ---- «+N 分» che sale ---- */
+  var gainEl = null, gainT = 0, gainSum = 0;
+  function gain(n) {
+    if (!(n > 0) || !CP.game) return;
+    gainSum += n; var r = CP.game.rank();
+    if (!gainEl) { gainEl = document.createElement("div"); gainEl.className = "it-gain"; gainEl.setAttribute("role", "status"); document.body.appendChild(gainEl); }
+    gainEl.innerHTML = CP.stamp(r) + '<span class="it-gain-n">' + esc(T("itd.gain", { n: gainSum })) + '</span><span class="it-gain-bar" aria-hidden="true"><i style="width:' + r.pct + '%"></i></span>';
+    gainEl.classList.remove("on"); void gainEl.offsetWidth; gainEl.classList.add("on");
+    clearTimeout(gainT); gainT = setTimeout(function () { gainEl.classList.remove("on"); gainSum = 0; }, reduce() ? 1600 : 1900);
+  }
+
+  /* ---- traguardi ---- */
+  function marks() { var o = lget(MK); return o && o.m && typeof o.m === "object" ? o : { m: {} }; }
+  function saveMarks(o) { try { localStorage.setItem(MK, JSON.stringify(o)); } catch (e) {} }
+  var LIST = [
+    ["first", function (c) { return c.lessons >= 1; }], ["s7", function (c) { return c.streak >= 7; }], ["s30", function (c) { return c.streak >= 30; }], ["s100", function (c) { return c.streak >= 100; }],
+    ["w100", function (c) { return c.words >= 100; }], ["w500", function (c) { return c.words >= 500; }], ["w1000", function (c) { return c.words >= 1000; }], ["all", function (c) { return c.lessons >= c.total; }]
+  ];
+  function counts() { var A = api(); return { lessons: lessonsPassed(), streak: CP.game ? CP.game.streak() : 0, words: wordsLearned(), total: A ? A.lessons().length : 30 }; }
+  function label(id) { return id.indexOf("rank:") === 0 ? T("itm.rank", { r: id.slice(5) }) : T("itm." + id); }
+  /* restituisce i traguardi nuovi (e li ricorda) */
+  function check(extra) {
+    var o = marks(), c = counts(), fresh = [];
+    LIST.forEach(function (x) { if (!o.m[x[0]] && x[1](c)) { o.m[x[0]] = Date.now(); fresh.push(x[0]); } });
+    (extra || []).forEach(function (id) { if (!o.m[id]) { o.m[id] = Date.now(); fresh.push(id); } });
+    if (fresh.length) saveMarks(o);
+    return fresh;
+  }
+  function offer(id) {
+    CP.toast(T("itm.congrats", { m: label(id) }), { label: T("itd.shareCard"), run: function () { CP.shareCard.open("it-milestone", cardData("it-milestone", id)); } });
+  }
+  /* chi aveva già raggiunto un traguardo prima di questa versione non riceve una pioggia di messaggi: si segnano in silenzio */
+  var firstRun = !lget(MK);
+  CP.onRankUp = function (r) { var f = check(["rank:" + r.name]); if (f.length) offer("rank:" + r.name); };
+  CP.onAward = function (n) {
+    gain(n);
+    setTimeout(function () { var f = check(); if (f.length) offer(f[f.length - 1]); }, 50);
+  };
+
+  /* ---- dati della carta (ui/share-card.js) ---- */
+  function cardData(tpl, milestone) {
+    var c = counts(), W = CP.story ? CP.story.weeks("it", []) : [], w = W[W.length - 1] || { days: 0, words: 0, lessons: 0 };
+    return { rank: CP.game.rank(), streak: c.streak, words: c.words, lessons: c.lessons, total: c.total, phrase: phraseOfDay() || { it: "Ciao!", zh: T("itd.ciaoZh") },
+      date: new Date(), milestone: milestone ? label(milestone) : "", week: { days: w.days, words: w.words, lessons: w.lessons } };
+  }
+  CP.itCardData = function () { return cardData("it-day"); };
+
+  /* ---- 我的进步 ---- */
+  function progressSheet() {
+    var o = marks(), ids = Object.keys(o.m).sort(function (a, b) { return o.m[a] - o.m[b]; });
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("itd.progress")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<div id="itp-story" aria-live="polite"></div>' +
+      (ids.length ? '<h3 class="itd-h3">' + esc(T("itd.cards")) + '</h3><div class="itd-cards">' + ids.map(function (id) { return '<button type="button" class="itd-card" data-itd-mile="' + CP.attr(id) + '"><span class="it-stamp sm" aria-hidden="true">' + esc(T("itd.passed")) + "</span><b>" + esc(label(id)) + "</b><small>" + esc(new Date(o.m[id]).toLocaleDateString("zh-CN")) + "</small></button>"; }).join("") + "</div>" : "") +
+      '<div class="acts"><button type="button" class="btn-main" data-itd-week style="margin:0">' + esc(T("itd.shareWeek")) + "</button></div>");
+    if (CP.story) CP.story.html("it").then(function (h) { var b = document.getElementById("itp-story"); if (b) b.innerHTML = h; });
+  }
+  CP.itProgress = progressSheet;
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-itd-go], [data-itd-review], [data-itd-share], [data-itd-progress], [data-itd-mile], [data-itd-week]") : null; if (!b) return;
+    var A = api(); CP.sfx("tap");
+    if (b.hasAttribute("data-itd-go") && A) { A.open(b.getAttribute("data-itd-go")); window.scrollTo(0, 0); }
+    else if (b.hasAttribute("data-itd-review") && A) A.show("review");
+    else if (b.hasAttribute("data-itd-share")) CP.shareCard.open("it-day", cardData("it-day"));
+    else if (b.hasAttribute("data-itd-progress")) progressSheet();
+    else if (b.hasAttribute("data-itd-mile")) { var id = b.getAttribute("data-itd-mile"); CP.closeSheet(); CP.shareCard.open("it-milestone", cardData("it-milestone", id)); }
+    else if (b.hasAttribute("data-itd-week")) { CP.closeSheet(); CP.shareCard.open("it-week", cardData("it-week")); }
+  });
+  CP.itToday = { html: html, phraseOfDay: phraseOfDay, pool: phrasePool, check: check, marks: marks, gain: gain, cardData: cardData, dayIndex: dayIndex };
+  /* al primo avvio si segnano in silenzio i traguardi già raggiunti (e i gradi), dopo che il corso è pronto */
+  if (firstRun) setTimeout(function () { if (api()) { var o = marks(); check(); o = marks(); if (CP.game) { var r = CP.game.rank(); if (r.i > 0) { o.m["rank:" + r.name] = o.m["rank:" + r.name] || Date.now(); saveMarks(o); } } } }, 0);
+})();
+</script>
+<script>/* ---- it/today.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-today-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-it-course-js">
+/* ===== Corso di italiano per chi parla cinese (意大利语课程) — la direzione «al contrario» dell'app.
+   Si sceglie dal benvenuto o da ⚙️ → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
+   In modalità "it" l'interfaccia è in cinese e le quattro schede diventano: 课程 (lezioni), 单词 (parole), 复习 (ripasso),
+   变位 (coniugazioni), 句子 (frasi e dialoghi). Le parole italiane non sono scritte a mano qui: nascono dalle schede
+   grammaticali di data/grammar.js (genere, plurale, ausiliare) e dalla morfologia di phrases/italian.js, controllate con
+   tools/morphit-check.mjs (Morph-it + Hunspell). I progressi stanno in chiavi proprie: cp-it-srs-v1, cp-it-lessons-v1. ===== */
+(function () {
+  var CP = window.CP, tt = CP.t, esc = CP.esc, W = CP.WORDS, G = GRAM, I = CP.ita;
+  var KEY = "cp-course", SRSKEY = "cp-it-srs-v1", LKEY = "cp-it-lessons-v1", NEW_PER_DAY = 10, PASS = 80;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var course = CP.course();
   if (course !== "it") return;
 
   /* ================= da qui: modalità corso di italiano ================= */
@@ -25585,16 +25821,16 @@ var PLACEMENT = (function () {
   CP.itVoiceURI = function () { var u = lsGet(IVK) || "", vs = itVoices(); return vs.some(function (v) { return v.voiceURI === u; }) ? u : (vs[0] ? vs[0].voiceURI : ""); };
   CP.voiceUIOverride = function (body, sum) {
     var vs = itVoices(), cur = CP.itVoiceURI(), slow = CP.pref.rate !== 1;
-    var h = '<div class="seg" role="group" aria-label="语速"><button type="button" data-rate="0.8"' + (slow ? ' class="on"' : "") + '>🐢 慢</button><button type="button" data-rate="1"' + (!slow ? ' class="on"' : "") + ">🐇 正常</button></div>";
-    if (vs.length > 1) h += '<label class="small muted" for="it-voice-sel" style="display:grid;gap:4px;font-weight:600">意大利语语音<select id="it-voice-sel">' + vs.map(function (v) { return '<option value="' + CP.attr(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join("") + "</select></label>";
-    else h += '<p class="small muted" style="margin:0">' + (vs.length ? "意大利语语音：" + esc(vs[0].name) + "。" : "设备没有列出意大利语语音：会尝试用默认语音朗读（it-IT）。如果听不到，请在手机设置的「文字转语音」里安装意大利语。") + "</p>";
+    var h = tt("itc.005") + (slow ? ' class="on"' : "") + tt("itc.006") + (!slow ? ' class="on"' : "") + tt("itc.007");
+    if (vs.length > 1) h += tt("itc.008") + vs.map(function (v) { return '<option value="' + CP.attr(v.voiceURI) + '"' + (v.voiceURI === cur ? " selected" : "") + ">" + esc(v.name) + " (" + esc(v.lang) + ")</option>"; }).join("") + "</select></label>";
+    else h += '<p class="small muted" style="margin:0">' + (vs.length ? tt("itc.009") + esc(vs[0].name) + "。" : tt("itc.010")) + "</p>";
     h += (window.__mdVoiceHelp ? window.__mdVoiceHelp("it-IT") : "") +
-      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (CP.pref.sfx ? " checked" : "") + '> 点击音效</label>' +
-      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (CP.pref.haptics ? " checked" : "") + '> 振动</label>' +
+      '<label class="chk"><input type="checkbox" id="opt-sfx"' + (CP.pref.sfx ? " checked" : "") + tt("itc.011") +
+      '<label class="chk"><input type="checkbox" id="opt-haptics"' + (CP.pref.haptics ? " checked" : "") + tt("itc.012") +
       (CP.voiceExtra ? CP.voiceExtra() : "") +
-      '<button type="button" class="btn-main" id="it-voice-test" style="margin-top:4px">试听：Ciao! Come stai?</button>';
+      tt("itc.013");
     body.innerHTML = h;
-    if (sum) sum.textContent = slow ? "🐢 慢" : "🐇 正常";
+    if (sum) sum.textContent = slow ? tt("itc.014") : tt("itc.015");
     return true;
   };
   (function () { var vb = document.getElementById("vset-body"); if (vb) CP.voiceUIOverride(vb, document.getElementById("vsum")); })();
@@ -25608,15 +25844,15 @@ var PLACEMENT = (function () {
   if (pillEl) pillEl.addEventListener("click", function (e) { e.stopImmediatePropagation(); CP.itShow("review"); }, true);
   /* ⚙️ → 使用说明 */
   var about = document.querySelector("#set-about .lede");
-  if (about) about.innerHTML = "给说中文的人学意大利语：" + "<b>" + ITLESSONS.length + " 课语法</b>、常用词、动词变位和中意对照的句子。每个意大利语词都可以听发音，复习间隔由 FSRS 算法安排。所有内容都可以离线使用。";
+  if (about) about.innerHTML = tt("itc.016") + "<b>" + ITLESSONS.length + tt("itc.017");
   var Z = {
-    lessons: "课程", words: "单词", review: "复习", conj: "变位", phrases: "句子",
-    listen: "听", back: "← 返回", start: "开始", next: "下一题", result: "看结果", right: "答对了！", wrong: "不对。", answerIs: "正确答案：",
-    order: "把词语排成正确的句子：", check: "检查", clear: "删除", showAnswer: "显示答案", again: "忘了", hard: "困难", good: "记得", easy: "简单"
+    lessons: tt("itc.018"), words: tt("itc.019"), review: tt("itc.020"), conj: tt("itc.021"), phrases: tt("itc.022"),
+    listen: tt("itc.023"), back: tt("itc.024"), start: tt("itc.025"), next: tt("itc.026"), result: tt("itc.027"), right: tt("itc.028"), wrong: tt("itc.029"), answerIs: tt("itc.030"),
+    order: tt("itc.031"), check: tt("itc.032"), clear: tt("itc.033"), showAnswer: tt("itc.034"), again: tt("itc.035"), hard: tt("itc.036"), good: tt("itc.037"), easy: tt("itc.038")
   };
-  var TOPIC = { persone: "人", famiglia: "家庭", saluti: "问候", risposte: "回答和连接", verbi1: "常用动词（一）", verbi2: "常用动词（二）", domande: "提问", numeri: "数字和量词", tempo: "时间", spazio: "方位", cibo: "饮食", aggettivi: "形容词", stati: "心情和状态", luoghi: "地点和国家", viaggi: "旅行和交通", casa: "家里的东西", vestiti: "衣服和颜色", corpo: "身体和健康", natura: "自然和动物", lavoro: "工作和学习", cucina: "厨房", citta: "城市", conversazione: "口语", acquisti: "购物" };
-  var PHR_ZH = ["自我介绍、打开话题", "听懂、说清楚、求助", "在咖啡馆吃早饭", "在饭店点菜", "购物、价格和付款", "问路和找方向", "出租车、火车和机场", "在酒店，房间出了问题", "时间、约会和朋友", "工作、学习和日常生活", "健康、身体和紧急情况", "谈西西里、意大利和天气"];
-  var DLG_ZH = { taxi: "坐出租车", dogana: "过海关", bagaglio: "行李没有到", scheda: "买电话卡", cambio: "换钱", checkin: "办理入住", wifi: "无线网连不上", aria: "房间太热", checkout: "退房", servizi: "请酒店帮忙", ristorante: "在饭店", zaofan: "中式早餐", allergia: "过敏和忌口", kafei: "在咖啡馆", chuan: "路边小吃", treno: "在火车上", metro: "坐地铁", piaoc: "买火车票", gongjiao: "坐公交车", wandian: "火车晚点了", mercato: "在市场", saoma: "扫码付款", shiyi: "试衣服", shuiguo: "在水果摊", tuihuo: "换货或退货", farmacia: "在药店", caffe: "和朋友喝咖啡", sicilia: "聊聊西西里", yisheng: "看医生", diu: "钱包丢了", ganbei: "商务晚宴", jiali: "去朋友家做客" };
+  var TOPIC = { persone: tt("itc.039"), famiglia: tt("itc.040"), saluti: tt("itc.041"), risposte: tt("itc.042"), verbi1: tt("itc.043"), verbi2: tt("itc.044"), domande: tt("itc.045"), numeri: tt("itc.046"), tempo: tt("itc.047"), spazio: tt("itc.048"), cibo: tt("itc.049"), aggettivi: tt("itc.050"), stati: tt("itc.051"), luoghi: tt("itc.052"), viaggi: tt("itc.053"), casa: tt("itc.054"), vestiti: tt("itc.055"), corpo: tt("itc.056"), natura: tt("itc.057"), lavoro: tt("itc.058"), cucina: tt("itc.059"), citta: tt("itc.060"), conversazione: tt("itc.061"), acquisti: tt("itc.062") };
+  var PHR_ZH = [tt("itc.063"), tt("itc.064"), tt("itc.065"), tt("itc.066"), tt("itc.067"), tt("itc.068"), tt("itc.069"), tt("itc.070"), tt("itc.071"), tt("itc.072"), tt("itc.073"), tt("itc.074")];
+  var DLG_ZH = { taxi: tt("itc.075"), dogana: tt("itc.076"), bagaglio: tt("itc.077"), scheda: tt("itc.078"), cambio: tt("itc.079"), checkin: tt("itc.080"), wifi: tt("itc.081"), aria: tt("itc.082"), checkout: tt("itc.083"), servizi: tt("itc.084"), ristorante: tt("itc.085"), zaofan: tt("itc.086"), allergia: tt("itc.087"), kafei: tt("itc.088"), chuan: tt("itc.089"), treno: tt("itc.090"), metro: tt("itc.091"), piaoc: tt("itc.092"), gongjiao: tt("itc.093"), wandian: tt("itc.094"), mercato: tt("itc.095"), saoma: tt("itc.096"), shiyi: tt("itc.097"), shuiguo: tt("itc.098"), tuihuo: tt("itc.099"), farmacia: tt("itc.100"), caffe: tt("itc.101"), sicilia: tt("itc.102"), yisheng: tt("itc.103"), diu: tt("itc.104"), ganbei: tt("itc.105"), jiali: tt("itc.106") };
   var PRON = [["io", 0], ["tu", 1], ["lui", 2], ["lei", 2], ["noi", 3], ["voi", 4], ["loro", 5]];
 
   /* ---------------- lessico: dalle schede grammaticali ---------------- */
@@ -25629,8 +25865,8 @@ var PLACEMENT = (function () {
     var w = wordOf(k); if (!w) return;
     var n = G.nouns[k], s = n[0], g = n[1], p = n[2], fl = n[3] || "", gp = g === "f" ? "f" : (/a$/.test(p) && /o$/.test(s) ? "f" : "m");
     var only = /p/.test(fl) && s === p;
-    var main = only ? art(p, gp, "p") : art(s, g, "s"), forms = only ? [main + "（只用复数）"] : [main, art(p, gp, "p")];
-    if (n[4] && n[4] !== s) forms.push(art(n[4], "f", "s") + "（女）");
+    var main = only ? art(p, gp, "p") : art(s, g, "s"), forms = only ? [main + tt("itc.107")] : [main, art(p, gp, "p")];
+    if (n[4] && n[4] !== s) forms.push(art(n[4], "f", "s") + tt("itc.108"));
     add({ id: "it:n:" + k, it: main, say: main, kind: "noun", g: only ? gp : g, forms: forms, zh: w.hz, py: w.py, sec: w.sec });
   });
   Object.keys(G.places).forEach(function (k) {
@@ -25639,7 +25875,7 @@ var PLACEMENT = (function () {
   });
   Object.keys(G.nations).forEach(function (k) {
     var w = wordOf(k), na = G.nations[k]; if (!w || !Array.isArray(na)) return;
-    add({ id: "it:a:" + k + "人", it: na[0] + ", " + na[1], say: na[0], kind: "nat", forms: na, zh: w.hz + "人", py: w.py + " rén", sec: w.sec });
+    add({ id: "it:a:" + k + tt("itc.039"), it: na[0] + ", " + na[1], say: na[0], kind: "nat", forms: na, zh: w.hz + tt("itc.039"), py: w.py + " rén", sec: w.sec });
   });
   Object.keys(G.verbs).forEach(function (k) {
     var w = wordOf(k), v = G.verbs[k]; if (!w) return;
@@ -25668,8 +25904,8 @@ var PLACEMENT = (function () {
   });
   var SECIDX = {}; CP.SEC.forEach(function (s, i) { SECIDX[s.id] = i; });
   LEX.sort(function (a, b) { return (SECIDX[a.sec] || 0) - (SECIDX[b.sec] || 0); });
-  var KIND = { noun: "名词", place: "地名", nat: "国籍", verb: "动词", adj: "形容词", time: "时间词", other: "词语" };
-  function gLabel(e) { return e.kind === "noun" ? (e.g === "f" ? "名词 · 阴性" : e.g === "mf" ? "名词 · 阳性/阴性" : "名词 · 阳性") : KIND[e.kind]; }
+  var KIND = { noun: tt("itc.109"), place: tt("itc.110"), nat: tt("itc.111"), verb: tt("itc.112"), adj: tt("itc.050"), time: tt("itc.113"), other: tt("itc.114") };
+  function gLabel(e) { return e.kind === "noun" ? (e.g === "f" ? tt("itc.115") : e.g === "mf" ? tt("itc.116") : tt("itc.117")) : KIND[e.kind]; }
   /* frase d'esempio della parola: le stesse di data/examples, lette al contrario (italiano → cinese) */
   function exOf(e) {
     var k = e.ex || e.id.replace(/^it:\w:/, ""), x = typeof EXAMPLES !== "undefined" && EXAMPLES[k];
@@ -25679,7 +25915,7 @@ var PLACEMENT = (function () {
   }
   function exHTML(e) {
     var x = exOf(e); if (!x) return "";
-    return '<div class="it-ex"><span class="tag muted small">例句</span><div lang="it" class="it-ex-it">' + esc(x.it) + " " + sayBtn(x.it, true) + '</div><div class="small muted" lang="zh-CN">' + esc(x.zh) + "</div></div>";
+    return tt("itc.118") + esc(x.it) + " " + sayBtn(x.it, true) + '</div><div class="small muted" lang="zh-CN">' + esc(x.zh) + "</div></div>";
   }
   CP.itLexicon = function () { return LEX.slice(); };
 
@@ -25689,36 +25925,36 @@ var PLACEMENT = (function () {
       var pi = p[1], g = "m", num = pi >= 3 ? "p" : "s";
       return [p[0] === "lui" ? "lui / lei" : p[0], I.present(inf, pi), I.passato(inf, aux, pi, aux === "e" || /rsi(\s|$)/.test(inf) ? "x" : g, num)];
     });
-    return '<table class="it-conj"><thead><tr><th></th><th>现在时</th><th>近过去时</th></tr></thead><tbody>' +
+    return tt("itc.119") +
       rows.map(function (r) { return "<tr><th>" + esc(r[0]) + "</th><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td></tr>"; }).join("") + "</tbody></table>" +
-      (aux === "e" || /rsi(\s|$)/.test(inf) ? '<p class="small muted" style="margin:4px 0 0">用 essere：分词要和主语一致（andato / andata / andati / andate）。</p>' : "");
+      (aux === "e" || /rsi(\s|$)/.test(inf) ? tt("itc.120") : "");
   }
   function zhHTML(hz, py) { return '<span class="it-zh"><span class="lp">' + CP.pinyinHTML(py) + '</span> <span class="lh han" lang="zh-CN">' + CP.hanziHTML(hz, py) + "</span></span>"; }
-  function sayBtn(text, small) { return '<button type="button" class="say' + (small ? " btn-s" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr("听：" + text) + '">🔊</button>'; }
+  function sayBtn(text, small) { return '<button type="button" class="say' + (small ? " btn-s" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr(tt("itc.121") + text) + '">🔊</button>'; }
   function detailHTML(e) {
-    var h = '<div class="fam-head"><div class="meta"><b lang="it" style="font-size:1.35rem">' + esc(e.it) + "</b><div class=\"small muted\">" + esc(gLabel(e)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>关闭</button></div>' +
-      '<div class="acts" style="margin:6px 0">' + sayBtn(e.say) + "</div><p style=\"margin:6px 0\">" + zhHTML(e.zh, e.py) + (e.alt && e.alt.length ? ' <span class="small muted">也说：<span lang="zh-CN">' + esc(e.alt.join("、")) + "</span></span>" : "") + "</p>";
-    if (e.kind === "noun") h += "<p>" + e.forms.map(esc).join(" · ") + '</p><p class="small muted">单数 · 复数（带定冠词）。冠词说明见第 3 课。</p>';
-    else if (e.kind === "adj") h += '<p lang="it">' + esc(e.forms.join(" · ")) + '</p><p class="small muted">阳性单数 · 阴性单数 · 阳性复数 · 阴性复数（见第 5 课）。</p>';
-    else if (e.kind === "nat") h += '<p lang="it">' + esc(e.forms.join(" · ")) + '</p><p class="small muted">国籍是形容词：要配合性别和单复数，而且小写。</p>';
-    else if (e.kind === "place") h += '<p lang="it">' + esc(e.forms[1]) + '</p><p class="small muted">去 / 在：' + esc(e.forms[1]) + "。</p>";
+    var h = '<div class="fam-head"><div class="meta"><b lang="it" style="font-size:1.35rem">' + esc(e.it) + "</b><div class=\"small muted\">" + esc(gLabel(e)) + tt("itc.122") +
+      '<div class="acts" style="margin:6px 0">' + sayBtn(e.say) + "</div><p style=\"margin:6px 0\">" + zhHTML(e.zh, e.py) + (e.alt && e.alt.length ? tt("itc.123") + esc(e.alt.join("、")) + "</span></span>" : "") + "</p>";
+    if (e.kind === "noun") h += "<p>" + e.forms.map(esc).join(" · ") + tt("itc.124");
+    else if (e.kind === "adj") h += '<p lang="it">' + esc(e.forms.join(" · ")) + tt("itc.125");
+    else if (e.kind === "nat") h += '<p lang="it">' + esc(e.forms.join(" · ")) + tt("itc.126");
+    else if (e.kind === "place") h += '<p lang="it">' + esc(e.forms[1]) + tt("itc.127") + esc(e.forms[1]) + "。</p>";
     else if (e.kind === "verb" && e.aux) h += conjTable(e.it, e.aux);
-    else if (e.kind === "verb") h += '<p lang="it">' + PRON.filter(function (p) { return p[0] !== "lei"; }).map(function (p) { return esc(p[0] === "lui" ? "lui/lei" : p[0]) + " " + esc(I.present(e.it, p[1])); }).join(" · ") + '</p><p class="small muted">现在时（见第 6 课）。</p>';
+    else if (e.kind === "verb") h += '<p lang="it">' + PRON.filter(function (p) { return p[0] !== "lei"; }).map(function (p) { return esc(p[0] === "lui" ? "lui/lei" : p[0]) + " " + esc(I.present(e.it, p[1])); }).join(" · ") + tt("itc.128");
     return h + exHTML(e);
   }
 
   /* ---------------- guscio: vista e schede ---------------- */
   document.body.classList.add("course-it");
   var brand = document.querySelector("h1.brand"), sub = brand && brand.querySelector("text.font-sub");
-  if (sub) sub.textContent = "给中国人的意大利语";
-  if (brand) brand.setAttribute("aria-label", "màndarínō，给中国人的意大利语课程");
+  if (sub) sub.textContent = tt("itc.129");
+  if (brand) brand.setAttribute("aria-label", tt("itc.130"));
   document.documentElement.setAttribute("lang", "zh-CN");
   var main = document.querySelector("main") || document.body;
   var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
   if (CP.immerse) CP.immerse.watch(view);
   /* l'ordine è quello in cui le schede si aprono (ui/unlock.js, docs/ux-architettura.md) */
   var TABS = [["lessons", "📘", Z.lessons], ["review", "🎴", Z.review], ["words", "📖", Z.words], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
-  var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", "意大利语课程");
+  var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", tt("itc.131"));
   dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");
   document.body.appendChild(dock);
   var tab = lsGet("cp-it-tab") || "lessons";
@@ -25731,6 +25967,13 @@ var PLACEMENT = (function () {
     render(); window.scrollTo(0, 0);
   }
   CP.itShow = show;
+  /* per it/today.js (carta «今天», progressi, carte da condividere): i dati del corso, senza duplicarli */
+  CP.itApi = {
+    lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
+    progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
+    open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
+    show: show, rerender: function () { render(); }
+  };
   function render() {
     var h = tab === "lessons" ? lessonsView() : tab === "words" ? wordsView() : tab === "review" ? reviewView() : tab === "conj" ? conjView() : phrasesView();
     view.innerHTML = h;
@@ -25745,25 +25988,33 @@ var PLACEMENT = (function () {
     if (ls.view === "lesson" && ls.cur) return lessonHTML(ls.cur);
     if (ls.view === "quiz" && ls.quiz) return quizHTML();
     if (ls.view === "result" && ls.quiz) return resultHTML();
-    var P = lprog(), done = 0;
-    var cards = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }).map(function (l) {
-      var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
-      return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-itl-open="' + CP.attr(l.id) + '"><span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + '</span><span class="ls-t"><b>' + esc(l.title) + '</b><span class="small muted">' + esc(l.goal) + '</span></span><span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? "已读" : "") + "</span></button>";
+    /* Task 11.2: in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
+       in evidenza, quelle superate con il sigillo «通过» */
+    var P = lprog(), L = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }), curId = currentLesson(), done = 0;
+    var nodes = L.map(function (l) {
+      var p = P[l.id] || {}, ok = !!p.done || (p.best || 0) >= PASS, now = l.id === curId; if (ok) done++;
+      return '<li class="itp-node' + (ok ? " done" : "") + (now ? " now" : "") + '"><button type="button" data-itl-open="' + CP.attr(l.id) + '"' + (now ? ' aria-current="step"' : "") + ">" +
+        '<span class="itp-dot" aria-hidden="true">' + (ok ? '<span class="itp-seal">' + esc(tt("itd.passed")) + "</span>" : l.n) + "</span>" +
+        '<span class="itp-t"><small>' + esc(tt("itd.lessonN", { n: l.n })) + "</small><b>" + esc(l.title) + "</b>" + (p.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: p.best })) + "</small>" : "") + "</span></button></li>";
     }).join("");
-    /* grado e serie anche in questo corso (cp-it-game-v1), con i nomi cinesi dei gradi */
-    var rk = CP.game ? CP.game.rank() : null, sk = CP.game ? CP.game.streak() : 0;
-    var rkH = rk ? '<div class="panel it-rank">' + CP.stamp(rk) + '<div><b>' + esc(rk.name) + '</b><div class="small muted">' + esc(CP.t(rk.next ? "itr.line" : "itr.lineMax", { xp: rk.xp, s: sk, n: rk.next })) + "</div></div></div>" : "";
-    return rkH + '<h2 style="margin-top:20px">意大利语课程</h2><p class="lede" style="margin:4px 0">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ' + PASS + "% 以上就算通过。</p>" +
-      '<p class="small muted" style="margin:0 0 10px">已通过 ' + done + " / " + ITLESSONS.length + ' 课。</p><div class="ls-list">' + cards + "</div>";
+    return (CP.itToday ? CP.itToday.html() : "") +
+      '<h2 class="itp-h">' + esc(tt("itd.pathT")) + '</h2><p class="small muted" style="margin:0 0 10px">' + esc(tt("itd.pathSub", { d: done, n: L.length, p: PASS })) + "</p>" +
+      '<ol class="itp" aria-label="' + CP.attr(tt("itd.pathT")) + '">' + nodes + "</ol>";
+  }
+  /* la lezione da fare adesso: la prima non superata (in ordine); tutte superate → null */
+  function currentLesson() {
+    var P = lprog(), L = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; });
+    for (var i = 0; i < L.length; i++) { var p = P[L[i].id] || {}; if (!p.done && (p.best || 0) < PASS) return L[i].id; }
+    return null;
   }
   function lessonHTML(l) {
     var p = lprog()[l.id] || {};
-    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + '</button></div><article class="panel ls-lesson"><span class="tag muted small">第 ' + l.n + " 课" + (p.best != null ? " · 最好成绩 " + p.best + "%" : "") + "</span><h3>" + esc(l.title) + '</h3><p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + tt("itc.137") + l.n + tt("itc.138") + (p.best != null ? tt("itc.139") + p.best + "%" : "") + "</span><h3>" + esc(l.title) + '</h3><p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
       '<div class="ls-pat">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx" lang="it">' + esc(f) + "</span>"; }).join("") + "</div>" +
-      "<h4>例句</h4>" + l.ex.map(function (e) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(e[0]) + '</div><div class="small muted">' + esc(e[1]) + "</div><div>" + sayBtn(e[0], true) + "</div></div>"; }).join("") +
-      "<h4>常见错误</h4>" + l.traps.map(function (t) { return '<div class="ls-trap"><div class="ls-bad">❌ <span lang="it">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span lang="it">' + esc(t[1]) + '</span></div><div class="small">' + esc(t[2]) + "</div></div>"; }).join("") +
-      '<div class="acts"><button type="button" class="btn-main" data-itl-quiz style="margin:0">✏️ 做练习（' + l.quiz.length + " 题）</button></div></article>";
+      tt("itc.140") + l.ex.map(function (e) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(e[0]) + '</div><div class="small muted">' + esc(e[1]) + "</div><div>" + sayBtn(e[0], true) + "</div></div>"; }).join("") +
+      tt("itc.141") + l.traps.map(function (t) { return '<div class="ls-trap"><div class="ls-bad">❌ <span lang="it">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span lang="it">' + esc(t[1]) + '</span></div><div class="small">' + esc(t[2]) + "</div></div>"; }).join("") +
+      tt("itc.142") + l.quiz.length + tt("itc.143");
   }
   function words(s) { return s.replace(/[.,!?¿¡]/g, "").split(/\s+/).filter(Boolean); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -25777,11 +26028,11 @@ var PLACEMENT = (function () {
   }
   function quizHTML() {
     var Q = ls.quiz, l = Q.l, q = l.quiz[Q.i], n = l.quiz.length, h;
-    h = '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-open="' + CP.attr(l.id) + '">' + Z.back + '</button></div><div class="panel ls-quiz"><div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(Q.i * 100 / n) + '%"></i></div><span class="tag muted small">第 ' + (Q.i + 1) + " / " + n + " 题 · 答对 " + Q.score + "</span>";
+    h = '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-open="' + CP.attr(l.id) + '">' + Z.back + '</button></div><div class="panel ls-quiz"><div class="ls-prog" aria-hidden="true"><i style="width:' + Math.round(Q.i * 100 / n) + tt("itc.144") + (Q.i + 1) + " / " + n + tt("itc.145") + Q.score + "</span>";
     if (q.k === "order") {
       var by = {}; Q.order.bank.forEach(function (b) { by[b.id] = b; });
       var tile = function (b, attr, used) { return '<button type="button" class="tile it-tile' + (used ? " used" : "") + '" ' + attr + (used || Q.state !== "play" ? " disabled" : "") + ' lang="it"><span class="th">' + esc(b.w) + "</span></button>"; };
-      h += '<p class="ask">' + Z.order + "「" + esc(q.zh) + "」</p>" + '<div class="slot" data-empty="点下面的词">' + Q.order.pick.map(function (id) { return tile(by[id], 'data-itl-un="' + id + '"'); }).join("") + "</div>";
+      h += '<p class="ask">' + Z.order + "「" + esc(q.zh) + "」</p>" + tt("itc.146") + Q.order.pick.map(function (id) { return tile(by[id], 'data-itl-un="' + id + '"'); }).join("") + "</div>";
       if (Q.state === "play") h += '<div class="bank">' + Q.order.bank.map(function (b) { return tile(b, 'data-itl-pick="' + b.id + '"', Q.order.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" data-itl-undo' + (Q.order.pick.length ? "" : " disabled") + ">" + Z.clear + '</button><button type="button" class="btn-main" data-itl-check style="margin:0"' + (Q.order.pick.length === Q.order.bank.length ? "" : " disabled") + ">" + Z.check + "</button></div>";
       else h += (Q.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.it) + "</span></p>") + '<div class="acts">' + sayBtn(q.it, true) + '<button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else {
@@ -25796,8 +26047,8 @@ var PLACEMENT = (function () {
   }
   function resultHTML() {
     var Q = ls.quiz, n = Q.l.quiz.length, pct = Math.round(Q.score * 100 / n), ok = pct >= PASS;
-    return '<div class="panel ls-quiz" style="margin-top:14px"><h3>' + (ok ? "🎉 这一课通过了！" : "差一点！") + "</h3><p>答对 " + Q.score + " / " + n + "（" + pct + "%）。" + (ok ? "" : "需要 " + PASS + "% 才算通过：再读一遍讲解，然后再试一次。") + "</p>" +
-      '<div class="acts"><button type="button" class="btn-main" data-itl-quiz style="margin:0">🔁 再做一次</button><button type="button" class="btn-s" data-itl-open="' + CP.attr(Q.l.id) + '">📘 再读一遍</button><button type="button" class="btn-s" data-itl-back>所有课程</button></div></div>';
+    return '<div class="panel ls-quiz" style="margin-top:14px">' + (ok ? '<span class="it-stamp" aria-hidden="true">' + esc(tt("itd.passed")) + "</span>" : "") + "<h3>" + (ok ? tt("itc.147") : tt("itc.148")) + tt("itc.149") + Q.score + " / " + n + "（" + pct + "%）。" + (ok ? "" : tt("itc.150") + PASS + tt("itc.151")) + "</p>" +
+      tt("itc.152") + CP.attr(Q.l.id) + tt("itc.153") + (ok ? '<div class="acts"><button type="button" class="btn-s" data-itd-share>' + esc(tt("itd.share")) + "</button></div>" : "");
   }
 
   /* ---------------- 单词: lessico ---------------- */
@@ -25807,20 +26058,20 @@ var PLACEMENT = (function () {
     LEX.forEach(function (e) {
       if (q && (e.it + " " + e.zh + " " + e.py + " " + (e.alt || []).join(" ")).toLowerCase().indexOf(q) < 0) return;
       var ch = typeof SECTION_CHAPTER !== "undefined" ? SECTION_CHAPTER[e.sec] : 0;
-      var t = TOPIC[e.sec] || (ch && ch <= 5 ? "HSK " + ch + " 词汇" : "专业词汇"); if (!groups[t]) { groups[t] = []; order.push(t); } groups[t].push(e);
+      var t = TOPIC[e.sec] || (ch && ch <= 5 ? "HSK " + ch + tt("itc.154") : tt("itc.155")); if (!groups[t]) { groups[t] = []; order.push(t); } groups[t].push(e);
     });
     return { g: groups, o: order };
   }
   function wordsView() {
     var G2 = groupsFor(wq.trim().toLowerCase()), groups = G2.g, order = G2.o;
-    return '<h2 style="margin-top:20px">意大利语单词</h2><p class="small muted" style="margin:0 0 8px">共 ' + LEX.length + ' 个词。名词带定冠词，点一个词可以看全部形式和动词变位。</p>' +
-      '<label for="it-q" class="sr">搜索</label><input id="it-q" type="search" placeholder="搜索：意大利语、汉字或拼音" value="' + CP.attr(wq) + '" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+    return tt("itc.156") + LEX.length + tt("itc.157") +
+      tt("itc.158") + CP.attr(wq) + '" autocomplete="off" autocapitalize="off" spellcheck="false">' +
       '<div id="it-wl">' + wordList(groups, order) + "</div>";
   }
   /* 4000 多个词不一次画完：先画 wmax 个，「显示更多」再加 */
   var wmax = 200;
   function wordList(groups, order) {
-    if (!order.length) return '<p class="muted">没有找到。</p>';
+    if (!order.length) return tt("itc.159");
     var left = wmax, total = 0; order.forEach(function (t) { total += groups[t].length; });
     var html = order.map(function (t) {
       if (left <= 0) return "";
@@ -25829,7 +26080,7 @@ var PLACEMENT = (function () {
         return '<div class="it-row"><button type="button" class="it-w" data-it-word="' + CP.attr(e.id) + '"><b lang="it">' + esc(e.it) + '</b><span class="small muted">' + esc(gLabel(e)) + "</span></button>" + zhHTML(e.zh, e.py) + sayBtn(e.say) + "</div>";
       }).join("");
     }).join("");
-    if (total > wmax) html += '<div class="acts"><button type="button" class="btn-s" data-it-more>显示更多（还有 ' + (total - wmax) + " 个）</button></div>";
+    if (total > wmax) html += tt("itc.160") + (total - wmax) + tt("itc.161");
     return html;
   }
 
@@ -25848,14 +26099,14 @@ var PLACEMENT = (function () {
   function reviewView() {
     var Q = queue();
     if (!rv.cur) rv.cur = Q.due[0] || Q.fresh[0] || null;
-    var head = '<h2 style="margin-top:20px">复习单词</h2><p class="small muted" style="margin:0 0 10px">今天要复习 ' + Q.due.length + " 个 · 新词还剩 " + Q.newLeft + " 个 · 已经学过 " + Q.learned + " 个。复习间隔由 FSRS 算法安排。</p>";
-    if (!rv.cur) return head + '<div class="panel"><p>🎉 今天的复习都做完了！明天再来，或者去「课程」和「变位」练习。</p></div>';
+    var head = tt("itc.162") + Q.due.length + tt("itc.163") + Q.newLeft + tt("itc.164") + Q.learned + tt("itc.165");
+    if (!rv.cur) return head + tt("itc.166") + '<div class="acts"><button type="button" class="btn-s" data-itd-share>' + esc(tt("itd.share")) + "</button></div>";
     var e = rv.cur, isNew = !sload()[e.id];
-    var h = head + '<div class="panel it-card"><span class="tag muted small">' + (isNew ? "新词" : "复习") + " · " + esc(gLabel(e)) + '</span><div class="it-front" lang="it">' + esc(e.it) + "</div><div>" + sayBtn(e.say) + "</div>";
-    if (!rv.shown) h += '<p class="small muted">先想一想它的中文意思，再看答案。</p><button type="button" class="btn-main" data-itr-show>' + Z.showAnswer + "</button>";
+    var h = head + '<div class="panel it-card"><span class="tag muted small">' + (isNew ? tt("itc.167") : tt("itc.020")) + " · " + esc(gLabel(e)) + '</span><div class="it-front" lang="it">' + esc(e.it) + "</div><div>" + sayBtn(e.say) + "</div>";
+    if (!rv.shown) h += tt("itc.168") + Z.showAnswer + "</button>";
     else {
       h += '<div class="it-back">' + zhHTML(e.zh, e.py) + "</div>" + (e.kind === "noun" || e.kind === "adj" || e.kind === "nat" ? '<p class="small" lang="it">' + esc((e.forms || []).join(" · ")) + "</p>" : e.kind === "verb" ? '<p class="small" lang="it">' + esc(I.present(e.it, 0) + " · " + I.present(e.it, 1) + " · " + I.present(e.it, 2)) + "…</p>" : "") + exHTML(e) +
-        '<div class="it-grades" role="group" aria-label="记得怎么样">' + [[1, Z.again], [2, Z.hard], [3, Z.good], [4, Z.easy]].map(function (g) { return '<button type="button" data-itr-grade="' + g[0] + '">' + g[1] + "</button>"; }).join("") + "</div>";
+        tt("itc.169") + [[1, Z.again], [2, Z.hard], [3, Z.good], [4, Z.easy]].map(function (g) { return '<button type="button" data-itr-grade="' + g[0] + '">' + g[1] + "</button>"; }).join("") + "</div>";
     }
     return h + "</div>";
   }
@@ -25883,9 +26134,9 @@ var PLACEMENT = (function () {
   }
   function conjView() {
     if (!cj.q) newQ();
-    var q = cj.q, h = '<h2 style="margin-top:20px">动词变位练习</h2><div class="seg" role="group" aria-label="时态"><button type="button" data-itc-tense="pres"' + (cj.tense === "pres" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>现在时</button><button type="button" data-itc-tense="past"' + (cj.tense === "past" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">近过去时</button></div>" +
-      '<div class="panel ls-quiz"><span class="tag muted small">答对 ' + cj.score + " / " + cj.n + '</span><p class="ask"><b lang="it">' + esc(q.p[0]) + "</b> + <b lang=\"it\">" + esc(q.e.it) + "</b>（" + zhHTML(q.e.zh, q.e.py) + "）</p>" +
-      '<p class="small muted">' + (cj.tense === "pres" ? "现在时" : "近过去时（lei 指女性）") + "</p>" +
+    var q = cj.q, h = tt("itc.170") + (cj.tense === "pres" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + tt("itc.171") + (cj.tense === "past" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + tt("itc.172") +
+      tt("itc.173") + cj.score + " / " + cj.n + '</span><p class="ask"><b lang="it">' + esc(q.p[0]) + "</b> + <b lang=\"it\">" + esc(q.e.it) + "</b>（" + zhHTML(q.e.zh, q.e.py) + "）</p>" +
+      '<p class="small muted">' + (cj.tense === "pres" ? tt("itc.174") : tt("itc.175")) + "</p>" +
       '<div class="ls-opts">' + q.opts.map(function (o, j) { var cls = cj.state === "play" ? "" : o === q.right ? " right" : j === cj.choice ? " wrong" : " off"; return '<button type="button" class="ls-opt' + cls + '" data-itc-opt="' + j + '" lang="it"' + (cj.state !== "play" ? " disabled" : "") + ">" + esc(o) + "</button>"; }).join("") + "</div>";
     if (cj.state !== "play") h += '<p class="verdict ' + (cj.state === "ok" ? "ok" : "ko") + '">' + (cj.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.right) + "</span>") + "</p>" + conjTable(q.e.it, q.e.aux) + '<div class="acts"><button type="button" class="btn-main" data-itc-next style="margin:0">' + Z.next + "</button></div>";
     return h + "</div>";
@@ -25907,9 +26158,9 @@ var PLACEMENT = (function () {
     if (!px) px = pxNew(); if (!px) return "";
     var by = {}; px.bank.forEach(function (b) { by[b.id] = b; });
     var tile = function (b, attr, used) { return '<button type="button" class="tile it-tile' + (used ? " used" : "") + '" ' + attr + (used || px.state !== "play" ? " disabled" : "") + ' lang="it"><span class="th">' + esc(b.w) + "</span></button>"; };
-    var h = '<div class="panel ls-quiz" id="it-px" style="margin-top:20px"><span class="tag muted small">句子练习 · 把意大利语排好</span><p class="ask" lang="zh-CN">' + esc(px.zh) + "</p>" +
-      '<div class="slot" data-empty="点下面的词">' + px.pick.map(function (id) { return tile(by[id], 'data-itx-un="' + id + '"'); }).join("") + "</div>";
-    if (px.state === "play") h += '<div class="bank">' + px.bank.map(function (b) { return tile(b, 'data-itx-pick="' + b.id + '"', px.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" class="btn-main" data-itx-check' + (px.pick.length === px.t.length ? "" : " disabled") + ">" + Z.check + '</button><button type="button" class="btn-s" data-itx-next>换一句</button></div>';
+    var h = tt("itc.176") + esc(px.zh) + "</p>" +
+      tt("itc.146") + px.pick.map(function (id) { return tile(by[id], 'data-itx-un="' + id + '"'); }).join("") + "</div>";
+    if (px.state === "play") h += '<div class="bank">' + px.bank.map(function (b) { return tile(b, 'data-itx-pick="' + b.id + '"', px.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" class="btn-main" data-itx-check' + (px.pick.length === px.t.length ? "" : " disabled") + ">" + Z.check + tt("itc.177");
     else h += (px.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(px.it) + "</span></p>") + '<div class="acts">' + sayBtn(px.it, true) + '<button type="button" class="btn-main" data-itx-next>' + Z.next + "</button></div>";
     return h + "</div>";
   }
@@ -25931,11 +26182,11 @@ var PLACEMENT = (function () {
       return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itp-back>' + Z.back + "</button></div><h2>" + esc(DLG_ZH[d.id] || d.title) + '</h2><p class="small muted" lang="it">' + esc(d.title + " — " + d.sub) + "</p>" +
         d.lines.map(function (l) { return '<div class="it-line it-' + (l[0] === "B" ? "b" : "a") + '"><div class="it-big" lang="it">' + esc(l[3]) + '</div><div class="small">' + zhHTML(l[2], l[1]) + "</div>" + sayBtn(l[3], true) + "</div>"; }).join("");
     }
-    var h = pxHTML() + (CP.itCheckHTML ? CP.itCheckHTML() : "") + '<h2 style="margin-top:20px">常用句子</h2><p class="small muted" style="margin:0 0 10px">意大利语在上，中文在下。点 🔊 听意大利语。</p>';
+    var h = pxHTML() + (CP.itCheckHTML ? CP.itCheckHTML() : "") + tt("itc.178");
     h += PHRASES.map(function (g, gi) {
       return '<details class="pat"><summary>' + esc(PHR_ZH[gi] || g.title) + "</summary>" + g.items.map(function (p) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(p[2]) + '</div><div class="small">' + zhHTML(p[1], p[0]) + "</div><div>" + sayBtn(p[2], true) + "</div></div>"; }).join("") + "</details>";
     }).join("");
-    h += '<h3 style="margin-top:20px">对话（中意对照）</h3><div class="ls-list">' + DIALOGS.map(function (d) { return '<button type="button" class="ls-card" data-itp-dlg="' + CP.attr(d.id) + '"><span class="ls-n" aria-hidden="true">💬</span><span class="ls-t"><b>' + esc(DLG_ZH[d.id] || d.title) + '</b><span class="small muted" lang="it">' + esc(d.title) + "</span></span><span></span></button>"; }).join("") + "</div>";
+    h += tt("itc.179") + DIALOGS.map(function (d) { return '<button type="button" class="ls-card" data-itp-dlg="' + CP.attr(d.id) + '"><span class="ls-n" aria-hidden="true">💬</span><span class="ls-t"><b>' + esc(DLG_ZH[d.id] || d.title) + '</b><span class="small muted" lang="it">' + esc(d.title) + "</span></span><span></span></button>"; }).join("") + "</div>";
     return h;
   }
 
@@ -25969,7 +26220,7 @@ var PLACEMENT = (function () {
       if (a("data-itl-opt") !== null && Q.state === "play") { Q.choice = +a("data-itl-opt"); Q.state = Q.choice === q.a ? "ok" : "ko"; if (Q.state === "ok") Q.score++; CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return; }
       if (b.hasAttribute("data-itl-next")) {
         if (Q.i + 1 < Q.l.quiz.length) { Q.i++; prepare(); ls.view = "quiz"; }
-        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) { patch.done = Date.now(); if (CP.game && CP.game.xp) CP.game.xp(30); } lmark(Q.l.id, patch); if (CP.unlock) CP.unlock.check(); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
+        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) { patch.done = Date.now(); if (CP.game && CP.game.xp) CP.game.xp(30); CP.sfx("level"); } lmark(Q.l.id, patch); if (CP.unlock) CP.unlock.check(); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
         render(); window.scrollTo(0, 0); return;
       }
     }
@@ -26000,11 +26251,16 @@ var PLACEMENT = (function () {
   };
 })();
 </script>
+<script>/* ---- it/course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script>
 /* ---- ui/share-card.js ---- */
-/* ===== màndarínō · la card del giorno: un'immagine (canvas, 1080×1350) con il sigillo del grado, la serie di giorni,
-   le parole imparate e la parola del giorno, da condividere (WeChat, WhatsApp, Instagram…). Nessun server: l'immagine
-   nasce sul telefono. Parola del giorno: la stessa del widget Android (lista delle parole viste, giorno dell'anno). ===== */
+/* ===== màndarínō · le carte da condividere: un'immagine (canvas) che nasce sul telefono, senza server.
+   Motore e modelli (Task 11.4): CP.shareCard.templates, alimentati da un oggetto dati per corso.
+   - «zh-day»: la carta del giorno del corso di cinese (1080×1350), identica a prima;
+   - «it-day», «it-milestone», «it-week»: le carte del corso di italiano (testo in cinese), in tre formati (FORMATS) e tre
+     colori (i temi dell'app), con il QR della pagina dell'app (MD_CONFIG.SHARE_URL, senza parametri), un nome facoltativo
+     («署名», spento di base, solo sul telefono: cp-card-v1) e, se la persona l'ha scelto, il sigillo di gratitudine.
+   Parola del giorno del cinese: la stessa del widget Android (lista delle parole viste, giorno dell'anno). ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc;
   CP.wotdPool = function () {
@@ -26024,7 +26280,9 @@ var PLACEMENT = (function () {
     var src = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="300 10 200 210" width="400" height="420">' + defs.outerHTML + sym.outerHTML.replace(/class="[^"]*"/g, "") + "</svg>";
     return new Promise(function (res) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src); });
   }
-  function draw(cv) {
+  /* il modello del corso di cinese: lo stesso disegno di prima del Task 11, riga per riga (tools/e2e.mjs lo confronta con
+     la copia fissa in tools/fixtures/share-card-v1.js) */
+  function drawZh(cv) {
     var x = cv.getContext("2d"), W = 1080, H = 1350, r = CP.game.rank(), s = CP.game.streak(), c = CP.counts(), w = CP.wordOfDay();
     cv.width = W; cv.height = H;
     var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#FBF6EC"); g.addColorStop(1, "#EFE4D0"); x.fillStyle = g; x.fillRect(0, 0, W, H);
@@ -26063,8 +26321,108 @@ var PLACEMENT = (function () {
       return cv;
     });
   }
-  function share(cv) {
-    var name = "mandarino-oggi.png", A = window.MandarinoAndroid;
+  /* ---------------- corso di italiano ---------------- */
+  /* formati: larghezza fissa, altezza dal rapporto. 3:4 è il predefinito per WeChat e 小红书; il rapporto è una costante
+     da ricontrollare con le indicazioni delle piattaforme prima di fissarlo */
+  var FORMATS = { "3:4": [1080, 1440], "4:5": [1080, 1350], "9:16": [1080, 1920] }, FORMAT_DEFAULT = "3:4";
+  var THEMES = {
+    light: { bg: ["#F7F9F7", "#E8EFEA"], ink: "#16201B", mute: "#4F5E56", accent: "#14594A", box: "rgba(20,89,74,.08)", seal: "#C8312B" },
+    dark: { bg: ["#16201B", "#0C110F"], ink: "#EEF3EF", mute: "#A9B8B0", accent: "#5CC4A5", box: "rgba(92,196,165,.12)", seal: "#D2453C" },
+    sepia: { bg: ["#FBF6EC", "#EFE4D0"], ink: "#1E2420", mute: "#5E6A64", accent: "#14594A", box: "rgba(20,89,74,.08)", seal: "#C8312B" }
+  };
+  var FALLBACK_URL = "https://github.com/longhitown/m-ndar-n-/releases/latest/download/mandarino.apk";
+  function shareURL() { var u = window.MD_CONFIG && MD_CONFIG.SHARE_URL; return u || FALLBACK_URL; }
+  var SANS = "system-ui, -apple-system, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif";
+  var SERIF = "'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif";
+  var IT_SERIF = "'Iowan Old Style', Georgia, 'Noto Serif', 'Times New Roman', serif";
+  /* testo che va a capo entro w; restituisce le righe. Se una parola sola non entra, si segna come «taglio» */
+  function wrap(x, text, w, cut) {
+    var out = [], line = "", toks = /[㐀-鿿]/.test(text) ? Array.from(text) : String(text).split(/(\s+)/);
+    toks.forEach(function (t) { var tryL = line + t; if (x.measureText(tryL.trim()).width > w && line.trim()) { out.push(line.trim()); line = t.trimStart ? t.trimStart() : t; } else line = tryL; });
+    if (line.trim()) out.push(line.trim());
+    out.forEach(function (l) { if (x.measureText(l).width > w + 1) cut.push(l); });
+    return out;
+  }
+  function fit(x, text, w, cut) { if (x.measureText(text).width > w + 1) cut.push(text); }
+  function roundRect(x, X, Y, w, h, r) { x.beginPath(); if (x.roundRect) x.roundRect(X, Y, w, h, r); else x.rect(X, Y, w, h); }
+  function qrPaint(x, text, X, Y, size) {
+    var q = null; try { q = CP.qr && CP.qr.encode(text, "M"); } catch (e) { q = null; }
+    if (!q) return false;
+    var n = q.size + 8, s = Math.floor(size / n), real = s * n;
+    x.fillStyle = "#FFFFFF"; roundRect(x, X - 10, Y - 10, real + 20, real + 20, 18); x.fill();
+    x.fillStyle = "#000000";
+    for (var yy = 0; yy < q.size; yy++) for (var xx = 0; xx < q.size; xx++) if (q.get(xx, yy)) x.fillRect(X + (xx + 4) * s, Y + (yy + 4) * s, s, s);
+    return real;
+  }
+  function zhDate(d) { return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"; }
+  /* dati: { rank, streak, words, lessons, total, phrase: { it, zh }, date, name?, milestone?, week? } (it/today.js) */
+  function drawIt(cv, tpl, data, opt) {
+    var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
+    cv.width = W; cv.height = H; cv.__cut = cut;
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.bg[0]); g.addColorStop(1, C.bg[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var k = H / 1440, M = 84, gap = function (n) { return Math.round(n * k); };
+    return logoImg().then(function (logo) {
+      var y = gap(64);
+      if (logo) { x.drawImage(logo, W / 2 - 80, y, 160, 168); } y += 176;
+      x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = C.ink; x.font = "700 60px " + SANS; x.fillText("màndarínō", W / 2, y + 44); y += 70;
+      x.fillStyle = C.mute; x.font = "600 30px " + SANS; x.fillText(T("itcard.sub"), W / 2, y + 22); fit(x, T("itcard.sub"), W - 2 * M, cut); y += gap(66);
+      /* titolo del modello: traguardo o settimana */
+      var head = tpl === "it-milestone" && data.milestone ? data.milestone : tpl === "it-week" ? T("itcard.weekT") : "";
+      if (head) { x.fillStyle = C.accent; x.font = "800 50px " + SANS; wrap(x, head, W - 2 * M, cut).slice(0, 2).forEach(function (l) { x.fillText(l, W / 2, y + 40); y += 62; }); y += gap(14); }
+      /* sigillo e grado */
+      var r = data.rank, sx = W / 2 - 300;
+      x.save(); x.translate(sx, y); x.fillStyle = C.seal; roundRect(x, 0, 0, 140, 140, 22); x.fill();
+      x.fillStyle = "#FFF6EA"; x.font = "700 96px " + SERIF; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(r.ch, 70, 76); x.restore();
+      x.textAlign = "left"; x.textBaseline = "alphabetic";
+      x.fillStyle = C.mute; x.font = "600 28px " + SANS; x.fillText(T("itcard.rank"), sx + 170, y + 38);
+      x.fillStyle = C.ink; x.font = "700 46px " + SANS; x.fillText(r.name, sx + 170, y + 92); fit(x, r.name, W - sx - 170 - M, cut);
+      x.fillStyle = C.accent; x.font = "600 30px " + SANS; x.fillText(T("itcard.points", { n: r.xp }), sx + 170, y + 132);
+      y += 140 + gap(56);
+      /* tre numeri */
+      var nums = tpl === "it-week" && data.week
+        ? [[String(data.week.days), T("itcard.wDays")], [String(data.week.words), T("itcard.wWords")], [String(data.week.lessons), T("itcard.wLessons")]]
+        : [["🔥 " + data.streak, T("itcard.streak")], [String(data.words), T("itcard.words")], [data.lessons + "/" + data.total, T("itcard.lessons")]];
+      nums.forEach(function (st, i) {
+        var cx = W / 6 + i * W / 3; x.textAlign = "center";
+        x.fillStyle = C.ink; x.font = "800 70px " + SANS; x.fillText(st[0], cx, y + 60); fit(x, st[0], W / 3 - 20, cut);
+        x.fillStyle = C.mute; x.font = "600 28px " + SANS; x.fillText(st[1], cx, y + 104); fit(x, st[1], W / 3 - 20, cut);
+      });
+      y += 104 + gap(54);
+      /* 今日意大利语: l'italiano in grande, la traduzione sotto */
+      var bottom = H - gap(330), boxH = Math.max(260, bottom - y - gap(30));
+      x.fillStyle = C.box; roundRect(x, M - 20, y, W - 2 * M + 40, boxH, 36); x.fill();
+      x.textAlign = "center"; x.fillStyle = C.accent; x.font = "700 30px " + SANS; x.fillText(T("itcard.phrase"), W / 2, y + 54);
+      var ph = data.phrase || { it: "", zh: "" }, size = 64, lines;
+      for (; size >= 40; size -= 4) { x.font = "600 " + size + "px " + IT_SERIF; var c2 = []; lines = wrap(x, ph.it, W - 2 * M - 20, c2); if (lines.length <= 3 && !c2.length && lines.length * size * 1.25 + 120 < boxH - 70) break; }
+      x.font = "600 " + size + "px " + IT_SERIF; lines = wrap(x, ph.it, W - 2 * M - 20, cut).slice(0, 3);
+      var ty = y + 70 + Math.max(0, (boxH - 70 - lines.length * size * 1.25 - 70) / 2);
+      x.fillStyle = C.ink; lines.forEach(function (l) { ty += size * 1.25; x.fillText(l, W / 2, ty - size * 0.25); });
+      x.fillStyle = C.mute; x.font = "500 36px " + SANS; wrap(x, ph.zh, W - 2 * M - 20, cut).slice(0, 2).forEach(function (l) { ty += 54; x.fillText(l, W / 2, ty); });
+      /* fondo: data, nome facoltativo, QR a sinistra, sigillo di gratitudine a destra (solo se scelto) */
+      var fy = H - gap(300), qs = Math.round(W * 0.22);
+      var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
+      var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
+      x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
+      if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
+      x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
+      x.font = "500 24px " + SANS; x.fillText(T("itcard.foot"), tx, fy + 196); fit(x, T("itcard.foot"), W - tx - (opt.seal ? 190 : 30), cut);
+      if (qr) { x.font = "500 22px " + SANS; x.fillText(T("itcard.scan"), tx, fy + 232); }
+      var sl = opt.seal && CP.seals && CP.seals.forShare && CP.seals.forShare();
+      if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
+      cv.__qr = !!qr;
+      return cv;
+    });
+  }
+  var TEMPLATES = {
+    "zh-day": { course: "zh", draw: function (cv) { return drawZh(cv); } },
+    "it-day": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-day", d, o); } },
+    "it-milestone": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-milestone", d, o); } },
+    "it-week": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-week", d, o); } }
+  };
+  function render(cv, tpl, data, opt) { var t = TEMPLATES[tpl] || TEMPLATES["zh-day"]; return t.draw(cv, data || {}, opt || {}); }
+
+  function share(cv, name) {
+    name = name || "mandarino-oggi.png"; var A = window.MandarinoAndroid;
     if (A && A.shareFile) { A.shareFile(name, "image/png", cv.toDataURL("image/png").split(",")[1]); return; }
     cv.toBlob(function (b) {
       var f = typeof File === "function" ? new File([b], name, { type: "image/png" }) : null;
@@ -26072,15 +26430,59 @@ var PLACEMENT = (function () {
       var u = URL.createObjectURL(b), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); URL.revokeObjectURL(u); }, 1500);
     }, "image/png");
   }
-  CP.shareCard = function () {
+  /* preferenze della carta (solo su questo telefono): formato, colore, nome facoltativo */
+  var PK = "cp-card-v1";
+  function prefs() { var o = {}; try { o = JSON.parse(localStorage.getItem(PK) || "{}") || {}; } catch (e) {} return { format: FORMATS[o.format] ? o.format : FORMAT_DEFAULT, theme: THEMES[o.theme] ? o.theme : "light", sign: !!o.sign, name: String(o.name || "").slice(0, 24) }; }
+  function savePrefs(p) { try { localStorage.setItem(PK, JSON.stringify(p)); } catch (e) {} }
+  var cur = null;   /* { tpl, data } della carta aperta nel foglio */
+  function paintSheet() {
+    var cv = document.querySelector(".card-cv"); if (!cv || !cur) return;
+    var p = prefs(), d = Object.assign({}, cur.data, { name: p.sign && p.name ? p.name : "" });
+    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
+  }
+  function itSheet(tpl, data) {
+    cur = { tpl: tpl, data: data }; var p = prefs();
+    var chip = function (attr, val, label, on) { return '<button type="button" data-' + attr + '="' + val + '" aria-pressed="' + (on ? "true" : "false") + '"' + (on ? ' class="on"' : "") + ">" + label + "</button>"; };
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("itcard.title")) + '</b><div class="small muted">' + esc(T("itcard.privacy")) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T("itcard.title")) + '"></canvas>' +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T("itcard.format")) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T("itcard.theme")) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T("itcard.th." + t), t === p.theme); }).join("") + "</div>" +
+      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T("itcard.sign")) + "</label>" +
+      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T("itcard.namePh")) + '" aria-label="' + CP.attr(T("itcard.sign")) + '"' + (p.sign ? "" : " hidden") + ">" +
+      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T("itcard.share")) + "</button></div>");
+    paintSheet();
+  }
+  function zhSheet() {
+    cur = null;
     CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("card.title")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + '</button></div>' +
       '<canvas class="card-cv" aria-label="' + CP.attr(T("card.title")) + '"></canvas><div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">📤 ' + esc(T("card.share")) + "</button></div>");
-    var cv = document.querySelector(".card-cv"); draw(cv);
-  };
+    var cv = document.querySelector(".card-cv"); drawZh(cv);
+  }
+  /* CP.shareCard(): la carta del giorno del corso aperto; CP.shareCard.open(modello, dati) per le altre */
+  CP.shareCard = function () { if (CP.course && CP.course() === "it" && CP.itCardData) itSheet("it-day", CP.itCardData()); else zhSheet(); };
+  CP.shareCard.open = function (tpl, data) { if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
+  CP.shareCard.templates = TEMPLATES;
+  CP.shareCard.render = render;
+  CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL;
   document.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-open]") : null; if (!b) return;
+    var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-open], [data-card-format], [data-card-theme]") : null; if (!b) return;
     if (b.hasAttribute("data-card-open")) { CP.sfx("tap"); CP.shareCard(); return; }
-    var cv = document.querySelector(".card-cv"); if (cv) share(cv);
+    if (b.hasAttribute("data-card-format") || b.hasAttribute("data-card-theme")) {
+      var p = prefs(); if (b.hasAttribute("data-card-format")) p.format = b.getAttribute("data-card-format"); else p.theme = b.getAttribute("data-card-theme");
+      savePrefs(p); Array.prototype.forEach.call(b.parentNode.children, function (c) { var on = c === b; c.classList.toggle("on", on); c.setAttribute("aria-pressed", on ? "true" : "false"); });
+      CP.sfx("tap"); paintSheet(); return;
+    }
+    var cv = document.querySelector(".card-cv"); if (cv) share(cv, cur ? "mandarino-" + cur.tpl + ".png" : null);
+  });
+  document.addEventListener("change", function (e) {
+    if (!e.target || e.target.id !== "card-sign") return;
+    var p = prefs(); p.sign = e.target.checked; savePrefs(p);
+    var n = document.getElementById("card-name"); if (n) { n.hidden = !p.sign; if (p.sign) n.focus(); }
+    paintSheet();
+  });
+  document.addEventListener("input", function (e) {
+    if (!e.target || e.target.id !== "card-name") return;
+    var p = prefs(); p.name = e.target.value.slice(0, 24); savePrefs(p); paintSheet();
   });
 })();
 </script>

@@ -188,7 +188,7 @@
     return out.slice(0, 40);
   }
   /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
-  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-lang"];
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-card-v1", "cp-lang"];
   function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
   function mergeKey(k, a, b) {
     if (k === "cp-srs-v1") return mergeSrs(a, b);
@@ -204,6 +204,8 @@
     /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
     if (k === "cp-ux-v1") return mergeUx(a, b);
     if (k === "cp-seal-v1") return mergeSeal(a, b);
+    /* traguardi del corso di italiano: unione, per ognuno la data più vecchia */
+    if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */
