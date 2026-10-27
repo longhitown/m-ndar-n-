@@ -54,7 +54,7 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
-tools/                     build.mjs, grammar.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
@@ -514,6 +514,33 @@ La build si ferma se trova nel repository:
   ultimi 60 giorni). I numeri tecnici (memoria, matrice dei toni) restano sotto, in un riquadro chiuso. Lo stesso modulo fa
   la pagina 我的进步 del corso di italiano.
 - **Prove su un telefono vero**: [docs/checklist-dispositivo.md](docs/checklist-dispositivo.md).
+
+## Anatomia del carattere (Task 5, solo corso di cinese)
+
+Nel foglio di ogni carattere (non sul fronte della carta di studio) c'è «Di che cosa è fatto» (`src/words/anatomy.js`):
+
+- il carattere disegnato in SVG con le linee centrali dei tratti, colorate per componente;
+- i componenti del primo livello come pulsanti. Per i caratteri fonetico-semantici, la grande maggioranza, si dice
+  quale parte dà il **significato** e quale il **suono**; poi il radicale con il suo numero Kangxi;
+- un tocco su un componente apre il suo foglio della famiglia: le altre parole che lo contengono e, se il componente è
+  scomponibile, la sua anatomia.
+
+Solo la struttura: nessuna «storia» del carattere. I dati non hanno una fonte affidabile per raccontarla, e le etimologie
+popolari spesso sono false. Nella lavagna, con la guida accesa, si evidenzia il componente del prossimo tratto.
+Interruttore: ⚙️ → Avanzate → Anatomia dei caratteri (acceso di base).
+
+**Dati.**
+- `src/data/anatomy.js` (129 KB, letto solo al primo uso) nasce da `tools/anatomy.mjs` e dal file `dictionary.txt` di
+  Make Me a Hanzi. La verifica:
+  - `strokes.js` contiene solo le linee centrali dei tratti;
+  - la scomposizione sta in `dictionary.txt`, che **non** viene da CC-CEDICT, ma da Unihan e CJKlib, sotto **LGPL 3.0 o
+    successiva** (COPYING del progetto). Il campo `matches` dice a quale componente appartiene ogni tratto.
+
+  Si tengono solo decomposizione, radicale, tipo, parte fonetica e semantica e `matches`; non definizioni, pinyin e
+  «hint». Ci sono 2517 caratteri: i 2146 del vocabolario più i loro componenti. 25 caratteri del vocabolario sono
+  semplici (人, 女, 一…).
+- `src/data/radicals.js`: i 214 radicali Kangxi con le varianti; nomi e significati scritti da noi, **da rileggere**.
+- La build controlla che ogni carattere del vocabolario abbia una struttura; `#selftest` controlla 国, 好 e 请.
 
 ## Esporta per Anki
 

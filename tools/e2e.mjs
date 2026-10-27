@@ -343,6 +343,23 @@ try {
     check("Ritorno quotidiano: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4f. anatomia del carattere (Task 5): foglio del carattere, componenti cliccabili, interruttore, lavagna */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(600);
+    await p.evaluate(() => CP.openFamily("请")); await p.waitForTimeout(300);
+    const a = await p.evaluate(() => { const s = document.querySelector("#fam .anat"); return s ? { parts: [...s.querySelectorAll(".anat-part .anat-ch")].map((x) => x.textContent).join(""), roles: [...s.querySelectorAll(".anat-role")].map((x) => x.textContent).join(","), svg: s.querySelectorAll(".anat-svg polyline").length, txt: s.textContent } : null; });
+    check("Anatomia: 请 si smonta in 讠 (significato) e 青 (suono), disegnato in SVG tratto per tratto", a && a.parts === "讠青" && a.roles === "significato,suono" && a.svg === 10 && /fonetico-semantico/.test(a.txt), JSON.stringify(a));
+    await p.click('#fam [data-anat="青"]'); await p.waitForTimeout(300);
+    const fam = await p.evaluate(() => ({ big: (document.querySelector("#fam .fam-head .big") || {}).textContent, others: document.querySelectorAll("#fam .fw").length }));
+    check("Anatomia: un componente apre le altre parole che lo contengono (foglio della famiglia)", fam.big === "青" && fam.others > 2, JSON.stringify(fam));
+    await p.evaluate(() => { CP.closeSheet(); CP.anatomy.set(false); CP.openFamily("好"); }); await p.waitForTimeout(200);
+    check("Anatomia: si spegne in ⚙️ (e non c'è sul fronte della carta di studio)", await p.evaluate(() => !document.querySelector("#fam .anat") && !document.querySelector(".fc .anat")));
+    await p.evaluate(() => { CP.closeSheet(); CP.anatomy.set(true); });
+    check("Anatomia: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -637,7 +654,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

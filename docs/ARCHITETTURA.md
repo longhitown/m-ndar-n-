@@ -101,6 +101,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | «Chi ha contribuito» | `ui/credits.js` | prima parte del foglio Crediti |
 | «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni e supporto |
 | `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
+| `CP.anatomy` / `CP.anatomyHTML(ch)` | `words/anatomy.js` | `get`, `html`, `svg`, `radical`, `groups` (componente di ogni tratto, per la lavagna), `on`/`set`; il foglio del carattere (`core/core.js`) chiede l'HTML |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
 | `CP.shareCard` | `ui/share-card.js` | `CP.shareCard()` carta del giorno del corso aperto; `.open(modello, dati)`, `.render(canvas, modello, dati, { format, theme, seal })`, `.templates` (`zh-day`, `it-day`, `it-milestone`, `it-week`), `.FORMATS`, `.THEMES`, `.url()` |
