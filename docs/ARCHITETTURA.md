@@ -80,6 +80,7 @@ l'immersione.
 - `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`;
 - `ui/credits.js`, al primo accesso a `CP.credits`;
 - `ui/share-card.js`, al primo accesso a `CP.shareCard` (il tocco su `[data-card-open]` lo ascolta `ui/settings.js`);
+- `i18n/diary.js`, `data/diary.js` e `ui/diary.js`, al primo accesso a `CP.diary` (il Taccuino del viaggiatore: la carta in «I miei progressi» lo tocca, quindi si carica quando si apre Studia);
 - `i18n/voice.js` e `ui/voice-dl.js`, al primo accesso a `CP.voiceDl` (⚙️ → Voce → «Voci reali»);
 - i Crediti caricano anche `i18n/credits-t12.js` (frasi Tatoeba, voci reali).
 
@@ -125,6 +126,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.togetherOpen(testo)` / `CP.classBanner()` | `ui/together.js` (all'avvio) | apre una sfida o importa un pacchetto da un testo qualsiasi (link, codice, QR); il riquadro del pacchetto in cima al Percorso e alle lezioni di italiano |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
+| `CP.diary` | `ui/diary.js` (+ `data/diary.js`, `i18n/diary.js`) | Taccuino del viaggiatore: `card()` (la carta in Studia), `open()` (il foglio con mappa e pagine), `build()`, `earned()` (gli aneddoti guadagnati), `shareData(id, città)`; `CP.exConf(a, b, tipo)` (`study/memory.js`) scrive le coppie scambiate in `cp-ex-v1.conf` |
 | `CP.shareCard` | `ui/share-card.js` | `CP.shareCard()` carta del giorno del corso aperto; `.open(modello, dati)`, `.render(canvas, modello, dati, { format, theme, seal })`, `.templates` (`zh-day`, `it-day`, `it-milestone`, `it-week`), `.FORMATS`, `.THEMES`, `.url()` |
 | `CP.itApi` / `CP.itToday` / `CP.itCardData` / `CP.itProgress` | `it/course.js` / `it/today.js` | i dati del corso di italiano per la carta «今天», il percorso, i traguardi, «我的进步»; anche `grade(voce, g, meta)`, `entry`, `lex`, `rec`, `example`, `detail`, `nextCard` |
 | `CP.toast(msg, { label, run })` | `core/game.js` | un'azione dentro lo stesso messaggio; senza, il messaggio di sempre |

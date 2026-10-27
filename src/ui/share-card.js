@@ -1,6 +1,7 @@
 /* ===== màndarínō · le carte da condividere: un'immagine (canvas) che nasce sul telefono, senza server.
    Motore e modelli: CP.shareCard.templates, alimentati da un oggetto dati per corso.
    - «zh-day»: la carta del giorno del corso di cinese (1080×1350), identica a prima;
+   - «zh-diary»: una pagina del Taccuino del viaggiatore (ui/diary.js), negli stessi tre formati e colori;
    - «it-day», «it-milestone», «it-week»: le carte del corso di italiano (testo in cinese), in tre formati (FORMATS) e tre
      colori (i temi dell'app), con il QR della pagina dell'app (MD_CONFIG.SHARE_URL, senza parametri), un nome facoltativo
      («署名», spento di base, solo sul telefono: cp-card-v1) e, se la persona l'ha scelto, il sigillo di gratitudine.
@@ -74,7 +75,7 @@
   var IT_SERIF = "'Iowan Old Style', Georgia, 'Noto Serif', 'Times New Roman', serif";
   /* testo che va a capo entro w; restituisce le righe. Se una parola sola non entra, si segna come «taglio» */
   function wrap(x, text, w, cut) {
-    var out = [], line = "", toks = /[㐀-鿿]/.test(text) ? Array.from(text) : String(text).split(/(\s+)/);
+    var cjk = (String(text).match(/[㐀-鿿]/g) || []).length, out = [], line = "", toks = cjk && cjk > String(text).replace(/\s/g, "").length * 0.4 ? Array.from(text) : String(text).split(/(\s+)/);
     toks.forEach(function (t) { var tryL = line + t; if (x.measureText(tryL.trim()).width > w && line.trim()) { out.push(line.trim()); line = t.trimStart ? t.trimStart() : t; } else line = tryL; });
     if (line.trim()) out.push(line.trim());
     out.forEach(function (l) { if (x.measureText(l).width > w + 1) cut.push(l); });
@@ -92,6 +93,21 @@
     return real;
   }
   function zhDate(d) { return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"; }
+  /* il piede della carta: data, nome facoltativo, QR a sinistra, sigillo di gratitudine a destra (solo se scelto) */
+  function footer(x, cv, W, H, M, C, opt, data, cut, foot, scan) {
+    var gap = function (n) { return Math.round(n * H / 1440); };
+    var fy = H - gap(300), qs = Math.round(W * 0.22);
+    var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
+    var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
+    x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
+    if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
+    x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
+    x.font = "500 24px " + SANS; x.fillText(foot, tx, fy + 196); fit(x, foot, W - tx - (opt.seal ? 190 : 30), cut);
+    if (qr) { x.font = "500 22px " + SANS; x.fillText(scan, tx, fy + 232); }
+    var sl = opt.seal && CP.seals && CP.seals.forShare && CP.seals.forShare();
+    if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
+    cv.__qr = !!qr;
+  }
   /* dati: { rank, streak, words, lessons, total, phrase: { it, zh }, date, name?, milestone?, week? } (it/today.js) */
   function drawIt(cv, tpl, data, opt) {
     var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
@@ -135,18 +151,60 @@
       var ty = y + 70 + Math.max(0, (boxH - 70 - lines.length * size * 1.25 - 70) / 2);
       x.fillStyle = C.ink; lines.forEach(function (l) { ty += size * 1.25; x.fillText(l, W / 2, ty - size * 0.25); });
       x.fillStyle = C.mute; x.font = "500 36px " + SANS; wrap(x, ph.zh, W - 2 * M - 20, cut).slice(0, 2).forEach(function (l) { ty += 54; x.fillText(l, W / 2, ty); });
-      /* fondo: data, nome facoltativo, QR a sinistra, sigillo di gratitudine a destra (solo se scelto) */
-      var fy = H - gap(300), qs = Math.round(W * 0.22);
-      var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
-      var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
-      x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
-      if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
-      x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
-      x.font = "500 24px " + SANS; x.fillText(T("itcard.foot"), tx, fy + 196); fit(x, T("itcard.foot"), W - tx - (opt.seal ? 190 : 30), cut);
-      if (qr) { x.font = "500 22px " + SANS; x.fillText(T("itcard.scan"), tx, fy + 232); }
-      var sl = opt.seal && CP.seals && CP.seals.forShare && CP.seals.forShare();
-      if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
-      cv.__qr = !!qr;
+      footer(x, cv, W, H, M, C, opt, data, cut, T("itcard.foot"), T("itcard.scan"));
+      return cv;
+    });
+  }
+  /* Taccuino del viaggiatore (corso di cinese): una pagina scritta a mano. Dati (ui/diary.js, shareData):
+     { stop: { n, m, city }, route: [bool], text, pair: [{ hz, py }], words: [{ hz, py, it }], date, name } */
+  var HAND = "'Bradley Hand', 'Segoe Print', 'Chalkboard SE', 'Noto Sans Handwriting', 'Comic Sans MS', 'Marker Felt', cursive";
+  var KAI = "'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', 'Songti SC', serif";
+  function drawDiary(cv, data, opt) {
+    var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
+    cv.width = W; cv.height = H; cv.__cut = cut;
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.bg[0]); g.addColorStop(1, C.bg[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var k = H / 1440, M = 84, gap = function (n) { return Math.round(n * k); }, zh = typeof LANG !== "undefined" && LANG === "zh";
+    /* un bordo di carta, tratteggiato come una pagina di taccuino */
+    x.save(); x.strokeStyle = C.mute; x.lineWidth = 3; x.setLineDash([2, 14]); x.lineCap = "round"; roundRect(x, 30, 30, W - 60, H - 60, 28); x.stroke(); x.restore();
+    return logoImg().then(function (logo) {
+      var y = gap(70);
+      if (logo) x.drawImage(logo, W / 2 - 60, y, 120, 126); y += 132;
+      x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = C.mute; x.font = "600 28px " + SANS; x.fillText("màndarínō", W / 2, y + 28); y += gap(56);
+      x.fillStyle = C.accent; x.font = "700 62px " + (zh ? KAI : HAND); x.fillText(T("dcard.head"), W / 2, y + 52); fit(x, T("dcard.head"), W - 2 * M, cut); y += gap(84);
+      x.fillStyle = C.ink; x.font = "700 40px " + (zh ? KAI : HAND); var pg = T("dcard.page", { n: data.stop.n, m: data.stop.m, c: data.stop.city }); x.fillText(pg, W / 2, y + 36); fit(x, pg, W - 2 * M, cut); y += gap(70);
+      /* la strada: una città per punto, piena se raggiunta */
+      var rt = data.route || [], n = rt.length, x0 = M + 20, x1 = W - M - 20, i, px = function (j) { return x0 + (x1 - x0) * j / Math.max(1, n - 1); };
+      x.strokeStyle = C.mute; x.lineWidth = 3; x.lineCap = "round"; x.setLineDash([2, 10]);
+      x.beginPath(); for (i = 0; i < n; i++) { var yy = y + (i % 2 ? 6 : -6); if (i) x.lineTo(px(i), yy); else x.moveTo(px(i), yy); } x.stroke(); x.setLineDash([]);
+      for (i = 0; i < n; i++) { x.beginPath(); x.arc(px(i), y + (i % 2 ? 6 : -6), rt[i] ? 11 : 8, 0, Math.PI * 2); if (rt[i]) { x.fillStyle = C.seal; x.fill(); } else { x.lineWidth = 2.5; x.stroke(); } }
+      y += gap(46);
+      /* l'aneddoto */
+      var wordsH = (data.words || []).length ? gap(150) : 0, pairH = (data.pair || []).length ? gap(190) : 0, bottom = H - gap(330), boxH = Math.max(300, bottom - y - wordsH - gap(20));
+      x.fillStyle = C.box; roundRect(x, M - 20, y, W - 2 * M + 40, boxH, 36); x.fill();
+      var size = 60, lines, fnt = zh ? KAI : HAND, inner = boxH - pairH - 60;
+      for (; size >= 34; size -= 3) { x.font = "600 " + size + "px " + fnt; var c2 = []; lines = wrap(x, data.text || "", W - 2 * M - 40, c2); if (!c2.length && lines.length * size * 1.35 < inner) break; }
+      x.font = "600 " + size + "px " + fnt; lines = wrap(x, data.text || "", W - 2 * M - 40, cut);
+      var ty = y + 36 + Math.max(0, (inner - lines.length * size * 1.35) / 2); x.fillStyle = C.ink; x.textAlign = "center";
+      lines.forEach(function (l) { ty += size * 1.35; x.fillText(l, W / 2, ty - size * 0.3); });
+      /* la coppia scambiata */
+      var pr = data.pair || [];
+      if (pr.length) {
+        var cw = Math.min(260, (W - 2 * M - 40) / pr.length), cx0 = W / 2 - cw * pr.length / 2, py0 = y + boxH - pairH + 10;
+        pr.forEach(function (p, j) {
+          var cx = cx0 + cw * (j + 0.5); x.textAlign = "center";
+          x.fillStyle = C.ink; x.font = "500 78px " + SERIF; x.fillText(p.hz, cx, py0 + 74); fit(x, p.hz, cw, cut);
+          x.fillStyle = C.accent; x.font = "600 34px " + SANS; x.fillText(p.py, cx, py0 + 122); fit(x, p.py, cw, cut);
+        });
+      }
+      y += boxH + gap(24);
+      /* le parole raccolte */
+      if (wordsH) {
+        x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText(T("dcard.words"), W / 2, y + 20);
+        var wl = data.words.map(function (w) { return w.hz + " " + w.py; }).join("  ·  "), fs = 36;
+        for (; fs >= 24; fs -= 2) { x.font = "500 " + fs + "px " + SANS; if (x.measureText(wl).width <= W - 2 * M) break; }
+        x.fillStyle = C.ink; x.fillText(wl, W / 2, y + 74); fit(x, wl, W - 2 * M, cut);
+      }
+      footer(x, cv, W, H, M, C, opt, data, cut, T("dcard.foot"), T("dcard.scan"));
       return cv;
     });
   }
@@ -154,7 +212,8 @@
     "zh-day": { course: "zh", draw: function (cv) { return drawZh(cv); } },
     "it-day": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-day", d, o); } },
     "it-milestone": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-milestone", d, o); } },
-    "it-week": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-week", d, o); } }
+    "it-week": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-week", d, o); } },
+    "zh-diary": { course: "zh", ns: "dcard", draw: function (cv, d, o) { return drawDiary(cv, d, o); } }
   };
   function render(cv, tpl, data, opt) { var t = TEMPLATES[tpl] || TEMPLATES["zh-day"]; return t.draw(cv, data || {}, opt || {}); }
 
@@ -175,18 +234,18 @@
   function paintSheet() {
     var cv = document.querySelector(".card-cv"); if (!cv || !cur) return;
     var p = prefs(), d = Object.assign({}, cur.data, { name: p.sign && p.name ? p.name : "" });
-    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
+    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", cur.ns === "dcard" ? T("dcard.alt", { n: (d.stop || {}).n, c: (d.stop || {}).city, p: d.text || "" }) : T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
   }
-  function itSheet(tpl, data) {
-    cur = { tpl: tpl, data: data }; var p = prefs();
+  function itSheet(tpl, data, ns) {
+    ns = ns || "itcard"; cur = { tpl: tpl, data: data, ns: ns }; var p = prefs();
     var chip = function (attr, val, label, on) { return '<button type="button" data-' + attr + '="' + val + '" aria-pressed="' + (on ? "true" : "false") + '"' + (on ? ' class="on"' : "") + ">" + label + "</button>"; };
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("itcard.title")) + '</b><div class="small muted">' + esc(T("itcard.privacy")) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
-      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T("itcard.title")) + '"></canvas>' +
-      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T("itcard.format")) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
-      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T("itcard.theme")) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T("itcard.th." + t), t === p.theme); }).join("") + "</div>" +
-      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T("itcard.sign")) + "</label>" +
-      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T("itcard.namePh")) + '" aria-label="' + CP.attr(T("itcard.sign")) + '"' + (p.sign ? "" : " hidden") + ">" +
-      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T("itcard.share")) + "</button></div>");
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T(ns + ".title")) + '</b><div class="small muted">' + esc(T(ns + ".privacy")) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T(ns + ".title")) + '"></canvas>' +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(ns + ".format")) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(ns + ".theme")) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T(ns + ".th." + t), t === p.theme); }).join("") + "</div>" +
+      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T(ns + ".sign")) + "</label>" +
+      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T(ns + ".namePh")) + '" aria-label="' + CP.attr(T(ns + ".sign")) + '"' + (p.sign ? "" : " hidden") + ">" +
+      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T(ns + ".share")) + "</button></div>");
     paintSheet();
   }
   function zhSheet() {
@@ -197,7 +256,10 @@
   }
   /* CP.shareCard(): la carta del giorno del corso aperto; CP.shareCard.open(modello, dati) per le altre */
   CP.shareCard = function () { if (CP.course && CP.course() === "it" && CP.itCardData) itSheet("it-day", CP.itCardData()); else zhSheet(); };
-  CP.shareCard.open = function (tpl, data) { if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
+  CP.shareCard.open = function (tpl, data) {
+    if (TEMPLATES[tpl] && TEMPLATES[tpl].ns) itSheet(tpl, data, TEMPLATES[tpl].ns);
+    else if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet();
+  };
   CP.shareCard.templates = TEMPLATES;
   CP.shareCard.render = render;
   CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL; CP.shareCard.sharePNG = share;

@@ -8,9 +8,26 @@
   /* ---- matrice di confusione dei toni (orecchio) ---- */
   var M; try { M = JSON.parse(lget(EARKEY) || "null"); } catch (e) { M = null; }
   if (!M || !M.m) M = { m: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], n: 0 };
-  CP.confuse = function (expected, chosen) {
+  CP.confuse = function (expected, chosen, key) {
     if (!(expected >= 1 && expected <= 4 && chosen >= 1 && chosen <= 4)) return;
     M.m[expected - 1][chosen - 1]++; M.n++; lset(EARKEY, JSON.stringify(M));
+    /* per il Taccuino del viaggiatore: la parola e il tono che si è scelto al suo posto */
+    var w = key && CP.WORDS && CP.WORDS[key];
+    if (expected !== chosen && w) CP.exConf(w.hz, "~" + chosen, "tono");
+  };
+  /* ---- le coppie davvero scambiate (cp-ex-v1.conf), per gli aneddoti del Taccuino (ui/diary.js)
+     «a|b» = a era la risposta giusta e si è scelta la parola b (le due in ordine alfabetico: il verso non conta);
+     «a|~3» = a era giusta e si è scelto il tono 3. Valore: { n, ultimo, d } (d = tappe del Percorso finite la prima volta).
+     Resta sul telefono; si tengono le 300 più recenti. Non cambia né ripassi né voti. ---- */
+  CP.exConf = function (right, picked, type) {
+    if (!right || !picked || right === picked) return;
+    var o; try { o = JSON.parse(lget("cp-ex-v1") || "null"); } catch (e) { o = null; }
+    if (!o || typeof o !== "object") o = {};
+    var k = picked.charAt(0) === "~" ? right + "|" + picked : [right, picked].sort().join("|"), c = o.conf = o.conf || {}, e = c[k];
+    if (!e) { e = c[k] = { n: 0, ultimo: 0, d: CP.pathDoneCount ? CP.pathDoneCount() : 0 }; }
+    e.n++; e.ultimo = Date.now(); if (type) e.t = type;
+    var ks = Object.keys(c); if (ks.length > 300) ks.sort(function (a, b) { return c[a].ultimo - c[b].ultimo; }).slice(0, ks.length - 300).forEach(function (x) { delete c[x]; });
+    lset("cp-ex-v1", JSON.stringify(o));
   };
   CP.confusion = function () { return M; };
   function NAME(n) { return T("tone." + n); }
