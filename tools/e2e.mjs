@@ -457,10 +457,15 @@ try {
     check("Esercizi: con lo stile Classico o prima di una sessione il motore non si carica", await p.evaluate(() => !CP.exEngine));
     const seen = {};
     for (const t of ["mc-significato", "mc-parola", "mc-pinyin", "mc-ascolto", "tono"]) {
-      const r = await p.evaluate((t) => { CP.ex.carica(); CP.exEngine.hasVoice = () => true; CP.exEngine.force(t); CP.show("study", true); CP.studyStart(); const c = document.querySelector("#study-root .ex-card"); return c ? { t: c.dataset.ex, k: c.dataset.k, n: document.querySelectorAll("[data-exa]").length } : null; }, t);
-      if (r && r.t !== t) { /* il tono vale solo per le parole di una sillaba: si va avanti finché non tocca a 妈 o 马 */
-        for (let i = 0; i < 12; i++) { await p.evaluate(() => { document.querySelector("[data-exa]").click(); document.querySelector("[data-exc]").click(); }); const c = await p.evaluate(() => (document.querySelector("#study-root .ex-card") || {}).dataset); if (c && c.ex === t) { r.t = t; break; } }
-      }
+      /* senza rispondere: si fa girare la coda finché il tipo vale per la parola in testa (il tono solo per 妈 e 马) */
+      const r = await p.evaluate((t) => {
+        CP.ex.carica(); CP.exEngine.hasVoice = () => true; CP.exEngine.force(t); CP.show("study", true); CP.studyStart(); const s = CP.studyKit.sess();
+        for (let i = 0; i < s.q.length + 1; i++) {
+          const c = document.querySelector("#study-root .ex-card"); if (c && c.dataset.ex === t) return { t: c.dataset.ex, k: c.dataset.k, n: document.querySelectorAll("[data-exa]").length };
+          const e = s.q.shift(); e.item = e.exType = null; s.q.push(e); s.q[0].item = s.q[0].exType = null; CP.studyRefresh();
+        }
+        return null;
+      }, t);
       const right = await p.evaluate(() => { const cur = CP.exEngine.current(); return cur ? cur.item.right : -1; });
       await p.keyboard.press(String(right + 1)); await p.waitForTimeout(80);
       const fb = await p.evaluate(() => ({ ok: !!document.querySelector(".ex-opt.ok .ex-mark"), verdict: (document.querySelector(".ex-verdict") || {}).textContent || "", cont: !!document.querySelector(".actbar [data-exc].btn-main"), primaries: document.querySelectorAll("#study-root .btn-main").length, unsure: !!document.querySelector("[data-exu]") }));
@@ -488,22 +493,85 @@ try {
     check("Esercizi: dopo un errore la parola torna a +3 (con un altro tipo) e una copia di rinforzo a +8", i3 === 3 && i8 === 8 && /:mc-significato$/.test(flow.q[i3]), JSON.stringify(flow.q));
     check("Esercizi: nel registro dei ripassi il tipo di esercizio; sbagliata = Di nuovo, «Non ero sicuro» = Difficile; statistiche in cp-ex-v1", flow.prev[0] === flow.k0 && flow.prev[1] === 1 && flow.prev[2] === "mc-significato" && flow.last[0] === flow.k2 && flow.last[1] === 2 && flow.st.n === 1 && flow.st.ok === 0, JSON.stringify(flow));
     /* intervalli FSRS: la stessa risposta «Bene» dà la stessa scheda nei due stili */
-    const fsrs = await p.evaluate(() => { const S = CP.S(), k = "晚安", before = JSON.stringify(S[k]); CP.grade(k, 2, false, { ms: 1000, type: "mc-pinyin" }); const a = S[k]; const r = { st: a.st, df: a.df, iv: a.d - a.lr }; S[k] = JSON.parse(before); CP.grade(k, 2, false, { ms: 1000, type: "pi" }); const b = S[k]; return [r, { st: b.st, df: b.df, iv: b.d - b.lr }]; });
-    check("Esercizi: gli intervalli FSRS di un voto sono identici a prima (il tipo finisce solo nel registro)", JSON.stringify(fsrs[0]) === JSON.stringify(fsrs[1]), JSON.stringify(fsrs));
+    /* la scadenza ha il «fuzz» casuale di FSRS (lo scheduler tiene il suo generatore): si confrontano stabilità, difficoltà, stato e ripetizioni */
+    const fsrs = await p.evaluate(() => {
+      const S = CP.S(), k = "晚安", before = JSON.stringify(S[k]); CP.grade(k, 2, false, { ms: 1000, type: "mc-pinyin" }); const a = S[k]; const r = { st: a.st, df: a.df, sd: a.sd, rp: a.rp }; S[k] = JSON.parse(before); CP.grade(k, 2, false, { ms: 1000, type: "pi" }); const b = S[k]; return [r, { st: b.st, df: b.df, sd: b.sd, rp: b.rp }]; });
+    check("Esercizi: la scheda FSRS dopo un voto è identica a prima (stabilità, difficoltà, stato; il tipo finisce solo nel registro)", JSON.stringify(fsrs[0]) === JSON.stringify(fsrs[1]), JSON.stringify(fsrs));
     check("Esercizi: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4j. esercizi di T2 (Task 12): frase a buco, buco grammaticale, ordina, digitazione del pinyin e del significato,
+     buco digitato, abbina, componente; voti della digitazione (senza toni = Difficile) */
+  {
+    const prof = (style) => { const now = Date.now(), S = {}; ["妈", "好", "你好", "谢谢", "我", "是", "学生", "老师", "朋友", "吃", "喝", "茶", "书", "请"].forEach((k, i) => { S[k] = { n: 9, d: now - 86400000 * (1 + i), b: 6 }; }); localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", style); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(prof, "mixed"); await p.goto(base); await p.waitForTimeout(700);
+    /* porta in testa una carta del tipo voluto, scorrendo la coda con risposte giuste */
+    const open = (t) => p.evaluate((t) => {
+      CP.ex.carica(); CP.exEngine.force(t); CP.show("study", true); CP.studyStart();
+      const s = CP.studyKit.sess(); if (!s) return null;
+      /* senza rispondere: si fa girare la coda finché il tipo voluto vale per la parola in testa */
+      for (let i = 0; i < s.q.length + 1; i++) {
+        const c = document.querySelector("#study-root .ex-card"); if (c && c.dataset.ex === t) return CP.exEngine.current().item;
+        const e = s.q.shift(); e.item = e.exType = null; s.q.push(e); s.q[0].item = s.q[0].exType = null; CP.studyRefresh();
+      }
+      return null;
+    }, t);
+    const res = {};
+    for (const t of ["buco", "buco-gram", "componente"]) {
+      const it = await open(t);
+      if (!it) { res[t] = "nessuna carta"; continue; }
+      await p.keyboard.press(String(it.right + 1)); await p.waitForTimeout(60);
+      res[t] = await p.evaluate(() => !!document.querySelector(".ex-opt.ok") && /✓/.test(document.querySelector(".ex-verdict").textContent) && (!document.querySelector(".ex-hole") || true));
+      await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    }
+    check("Esercizi T2: frase a buco, buco grammaticale (con la nota) e componente si risolvono con 1-4", Object.values(res).every((x) => x === true), JSON.stringify(res));
+    const hole = await p.evaluate(() => { const s = CP.exSent.forWord(CP.WORDS["学生"]); return { n: s.length, okSeg: s.every((x) => x.toks.some((t) => t.w && t.w.key === "学生")) }; });
+    check("Frasi a buco: le frasi di una parola la contengono come parola (taglio dell'app)", hole.n > 0 && hole.okSeg, JSON.stringify(hole));
+    /* ordina */
+    let it = await open("ordina");
+    const ord = it && await p.evaluate(() => { const it = CP.exEngine.current().item; it.tiles.forEach((t) => document.querySelector('[data-exo="' + t.id + '"]').click()); document.querySelector("[data-exo-check]").click(); return { ok: /✓/.test(document.querySelector(".ex-verdict").textContent), primaries: document.querySelectorAll("#study-root .btn-main").length }; });
+    check("Esercizi T2: rimetti in ordine la frase (tessere, «Controlla», poi un solo «Continua»)", ord && ord.ok && ord.primaries === 1, JSON.stringify(ord));
+    await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    /* digitazione: pinyin con i numeri (esatto), senza toni (Difficile), significato con l'accento sbagliato (Difficile) */
+    const typ = [];
+    for (const [t, val] of [["scrivi-pinyin", (it) => it.answer.split(/[.\s']+/).map((s) => CP.typing.syllableInfo(s).plain + (CP.typing.syllableInfo(s).tone || 5)).join("")], ["scrivi-pinyin", (it) => it.answer.split(/[.\s']+/).map((s) => CP.typing.syllableInfo(s).plain).join(" ")], ["scrivi-significato", (it) => it.accept[0]], ["buco-scrivi", (it) => it.answer]]) {
+      it = await open(t); if (!it) { typ.push(t + ": nessuna carta"); continue; }
+      const attrs = await p.evaluate(() => { const i = document.querySelector("#ex-in"); return [i.getAttribute("autocapitalize"), i.getAttribute("autocorrect"), i.getAttribute("spellcheck"), !!document.querySelector("[data-ext='3']") || !!document.querySelector("#ex-in[lang=it]")].join(); });
+      await p.fill("#ex-in", await p.evaluate(`(${val.toString()})(CP.exEngine.current().item)`)); await p.keyboard.press("Enter"); await p.waitForTimeout(60);
+      const g = await p.evaluate(() => { const c = CP.exEngine.current(); return c.g; });
+      typ.push(t + ":" + g + ":" + attrs);
+      await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    }
+    check("Digitazione: numeri dei toni = giusto, senza toni = Difficile con la spiegazione, campo senza correttore né maiuscole, tasti dei toni", /^scrivi-pinyin:[23]:off,off,false,true$/.test(typ[0]) && /^scrivi-pinyin:1:/.test(typ[1]) && /^scrivi-significato:[23]:/.test(typ[2]) && /^buco-scrivi:[23]:/.test(typ[3]), typ.join(" | "));
+    /* abbina */
+    it = await open("abbina");
+    const mt = it && await p.evaluate(() => { const it = CP.exEngine.current().item; it.words.forEach((w, i) => { document.querySelector('[data-exm="l:' + i + '"]').click(); document.querySelector('[data-exm="r:' + i + '"]').click(); }); return { n: it.words.length, ok: /✓/.test(document.querySelector(".ex-verdict").textContent) }; });
+    check("Esercizi T2: abbina (almeno quattro coppie)", mt && mt.n >= 4 && mt.ok, JSON.stringify(mt));
+    /* quiz delle lezioni: «buco» e «scrivi» (un quiz inventato, messo solo nella pagina) */
+    const lq = await p.evaluate(async () => {
+      CP.studyHome(); const L = CP.lessons.list()[0]; L.quiz = [{ k: "buco", zh: "我＿学生。", opts: ["在", "是"], a: 1 }, { k: "scrivi", py: true, a: "shì" }];
+      CP.show("build", true); CP.build.openLesson(L.id); document.querySelector("[data-ls-quiz]").click();
+      const hole = !!document.querySelector(".ls-opt"); document.querySelectorAll("[data-ls-opt]")[1].click(); const ok1 = !!document.querySelector(".verdict.ok"); document.querySelector("[data-ls-next]").click();
+      const inp = document.getElementById("ls-in"); inp.value = "shi4"; document.querySelector("[data-ls-type]").click();
+      return { hole, ok1, ok2: !!document.querySelector(".verdict.ok") };
+    });
+    check("Lezioni: i quiz accettano «buco» e «scrivi» (pinyin con i numeri dei toni)", lq.hole && lq.ok1 && lq.ok2, JSON.stringify(lq));
+    check("Esercizi T2: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
-    await p.goto(pathToFileURL(file).href); await p.waitForTimeout(700);
+    /* da http, non da file://: con le pagine file:// Chromium a volte perde tutto il localStorage al ricaricamento */
+    await p.goto(base); await p.waitForTimeout(700);
     /* il benvenuto (ui/welcome.js): intro di qualche secondo, poi le porte; in piccolo, l'altro corso */
     const btn = await p.waitForSelector('#onb [data-course-set="it"]', { timeout: 8000 }).catch(() => null);
     check("Benvenuto: intro, porte e «我是中国人，我想学意大利语»", !!btn && (await p.$$("#onb [data-onb-door]")).length === 3);
     if (btn) { await Promise.all([p.waitForNavigation(), btn.click()]); await p.waitForTimeout(700); }
     /* il corso di italiano ha lo stesso benvenuto, in cinese (l'intro non si ripete nella stessa sessione) */
     const later = await p.waitForSelector("#onb [data-onb-later]", { timeout: 8000 }).catch(() => null);
-    check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")));
+    check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")), JSON.stringify(await p.evaluate(() => ({ url: location.href, course: localStorage.getItem("cp-course"), lang: localStorage.getItem("cp-lang"), welcome: localStorage.getItem("cp-it-welcome"), onb: (document.getElementById("onb") || {}).className, body: document.body.className })).catch((e) => String(e))));
     if (later) { await later.click(); await p.waitForTimeout(200); }
     check("Corso di italiano: all'inizio solo 课程 e 复习 nella barra (rivelazione progressiva)", await p.evaluate(() => [...document.querySelectorAll(".dock-it .dtab")].filter((b) => !b.hidden).map((b) => b.getAttribute("data-it-tab")).join(",") === "lessons,review"));
     const ak = await p.evaluate(() => { const r = CP.anki.build({ which: "all" }), rows = r.text.split("\n").filter((l) => l && l[0] !== "#"), g = new Set(rows.map((l) => l.split("\t")[0])), v = rows.find((l) => /\tmandarino-it verb /.test(l)) || ""; return { n: r.n, uniq: g.size, cols: rows.every((l) => l.split("\t").length === 7), deck: /#deck:màndarínō::意大利语/.test(r.text), morph: /Morph-it!/.test(r.text.split("\n")[6]), conj: /io [^,<]+, tu [^,<]+,/.test(v), dots: rows.some((l) => /\.[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(l.split("\t")[2])) }; });

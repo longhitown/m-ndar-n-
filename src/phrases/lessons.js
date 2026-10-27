@@ -66,7 +66,7 @@
     prepare();
   }
   function prepare() {
-    var q = quiz.l.quiz[quiz.i]; quiz.state = "play"; quiz.choice = null; quiz.order = null;
+    var q = quiz.l.quiz[quiz.i]; quiz.state = "play"; quiz.choice = null; quiz.order = null; quiz.typed = "";
     if (q.k === "order") {
       var t = toks(q.zh), bank = t.map(function (k, i) { return { id: i, k: k }; }), sh;
       for (var n = 0; n < 6; n++) { sh = shuffle(bank); if (sh.map(function (b) { return b.k; }).join("|") !== t.join("|")) break; }
@@ -91,8 +91,15 @@
         h += quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") + "</p>" : '<p class="verdict ko">' + T("ls.wrongOrder") + "</p>" + zhHTML(q.zh.replace(/[。？！]$/, "")) ;
         h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
       }
+    } else if (q.k === "scrivi") {
+      /* Task 12: risposta da scrivere (pinyin se q.py, altrimenti italiano); il confronto è quello del ripasso (CP.typing) */
+      h += '<p class="ask" lang="it">' + rich(q.q || T(q.py ? "ls.typePy" : "ls.typeIt")) + "</p>" + (q.zh ? zhHTML(q.zh) : "") +
+        '<form class="ex-type" data-ls-form><input id="ls-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="' + (q.py ? "zh-Latn" : "it") + '" aria-label="' + CP.attr(T("ls.answers")) + '"' + (quiz.state !== "play" ? ' disabled value="' + CP.attr(quiz.typed || "") + '"' : "") + "></form>";
+      h += quiz.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-ls-type style="margin:0">' + T("ex.check") + "</button></div>" :
+        (quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") : '<p class="verdict ko">' + T("ls.notThis")) + ' <b lang="' + (q.py ? "zh-Latn" : "it") + '">' + esc(q.a) + "</b>" + (q.why ? ' <span lang="it">' + rich(q.why) + "</span>" : "") + '</p><div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
     } else {
-      h += '<p class="ask" lang="it">' + rich(q.q) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
+      /* «pick» e, dal Task 12, «buco» (la frase con il buco in zh, la domanda è facoltativa) */
+      h += '<p class="ask" lang="it">' + rich(q.q || T("ls.holeQ")) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
       h += '<div class="ls-opts" role="group" aria-label="' + CP.attr(T("ls.answers")) + '">' + q.opts.map(function (op, j) {
         var cls = quiz.state === "play" ? "" : j === q.a ? " right" : j === quiz.choice ? " wrong" : " off";
         return '<button type="button" class="ls-opt' + cls + '" data-ls-opt="' + j + '"' + (quiz.state !== "play" ? " disabled" : "") + ">" + (isZh(op) ? zhHTML(op, "ls-zh in") : '<span lang="it">' + rich(op) + "</span>") + "</button>";
@@ -170,6 +177,15 @@
       quiz.choice = +a("data-ls-opt"); quiz.state = quiz.choice === q.a ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
       CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint(); return;
     }
+    if (t.hasAttribute("data-ls-type") && quiz.state === "play") { typed(q); return; }
     if (t.hasAttribute("data-ls-next")) { if (quiz.i + 1 < quiz.l.quiz.length) { quiz.i++; prepare(); } else finish(); paint(true); return; }
   });
+  /* «scrivi»: il confronto sta nel gruppo ESERCIZI (CP.ex.carica); giusta anche senza un accento o con un refuso */
+  function typed(q) {
+    var i = document.getElementById("ls-in"), v = i ? i.value : ""; if (!String(v).trim()) return;
+    if (CP.ex) CP.ex.carica(); var Y = CP.typing, r = !Y ? (v.trim() === q.a ? "esatto" : "sbagliato") : q.py ? Y.comparePinyin(v, q.a) : Y.compareIt(v, q.a);
+    quiz.typed = v; quiz.state = /^(esatto|accento|quasi)$/.test(r) ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+    CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint();
+  }
+  document.addEventListener("submit", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-ls-form")) { e.preventDefault(); if (quiz && quiz.state === "play") typed(quiz.l.quiz[quiz.i]); } });
 })();

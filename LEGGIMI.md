@@ -625,6 +625,24 @@ serve. La scelta resta in `cp-ex-style` (preferenza del dispositivo).
   - con meno di 3 candidati la domanda non si fa.
 - **Digitazione** (`src/core/typing.js`): adattata da `materiali/riferimenti/digitazione.mjs`, con le sue prove in
   `tools/unit.mjs`.
+- **Tipi di T2** (`src/study/ex-frasi.js`, `src/study/ex-varie.js`):
+  - misto: frase a buco (`buco`), rimetti in ordine (`ordina`), `traccia` (parole di un carattere, lavagna senza guida) e
+    `componente` (quale parte dà il suono o il significato, solo con l'anatomia accesa);
+  - produzione: buco grammaticale (`buco-gram`: insiemi confondibili e classificatori di `CP.lab.NCLF`), `scrivi-pinyin`,
+    `scrivi-significato` e il buco digitato (`buco-scrivi`);
+  - riconoscimento: `abbina` (cinque coppie).
+- **Le frasi di una parola** (`CP.exSent.forWord`), in quest'ordine:
+  - l'esempio della parola;
+  - le frasi Tatoeba con traduzione diretta e livello non sopra quello della parola;
+  - gli esempi delle lezioni;
+  - le frasi delle voci reali, che non hanno traduzione e servono solo come ultima scelta.
+
+  La parola deve comparire come parola nel taglio dell'app.
+- **Digitazione:** sotto il campo i tasti 1-5 e ü. Pinyin senza toni, o italiano con un accento sbagliato o un refuso:
+  Difficile, con la correzione.
+- **Lezioni:** i quiz accettano anche `{ k: "buco", zh: "我＿学生。", opts, a }` e `{ k: "scrivi", q?, zh?, a, py? }`. Nel corso
+  di italiano: `{ k: "buco", it: "Io ___ …", opts, a }` e `{ k: "scrivi", q, a }`. `tools/lib/lab.mjs` li valida; i file
+  delle lezioni non sono cambiati.
 
 **Peso.**
 - Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che

@@ -174,6 +174,14 @@
   }
   CP.itShow = show;
   /* per it/today.js (carta «今天», progressi, carte da condividere): i dati del corso, senza duplicarli */
+  /* «scrivi» nei quiz delle lezioni: il confronto sta nel gruppo ESERCIZI; giusta anche senza un accento o con un refuso */
+  function itTyped(Q, q) {
+    var i = document.getElementById("itl-in"), v = i ? i.value : ""; if (!String(v).trim()) return;
+    if (CP.ex) CP.ex.carica(); var r = CP.typing ? CP.typing.compareIt(v, q.a) : (v.trim().toLowerCase() === String(q.a).toLowerCase() ? "esatto" : "sbagliato");
+    Q.typed = v; Q.state = /^(esatto|accento|quasi)$/.test(r) ? "ok" : "ko"; if (Q.state === "ok") Q.score++;
+    CP.sfx(Q.state === "ok" ? "ok" : "ko"); render();
+  }
+  document.addEventListener("submit", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-itl-form")) { e.preventDefault(); if (ls.quiz && ls.quiz.state === "play") itTyped(ls.quiz, ls.quiz.l.quiz[ls.quiz.i]); } });
   CP.itApi = {
     lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
@@ -225,7 +233,7 @@
   function words(s) { return s.replace(/[.,!?¿¡]/g, "").split(/\s+/).filter(Boolean); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function prepare() {
-    var q = ls.quiz.l.quiz[ls.quiz.i]; ls.quiz.state = "play"; ls.quiz.choice = null; ls.quiz.order = null;
+    var q = ls.quiz.l.quiz[ls.quiz.i]; ls.quiz.state = "play"; ls.quiz.choice = null; ls.quiz.order = null; ls.quiz.typed = "";
     if (q.k === "order") {
       var t = words(q.it), bank = t.map(function (w, i) { return { id: i, w: w }; }), sh = bank;
       for (var n = 0; n < 6; n++) { sh = shuffle(bank); if (sh.map(function (b) { return b.w; }).join(" ") !== t.join(" ")) break; }
@@ -241,8 +249,13 @@
       h += '<p class="ask">' + Z.order + "「" + esc(q.zh) + "」</p>" + tt("itc.146") + Q.order.pick.map(function (id) { return tile(by[id], 'data-itl-un="' + id + '"'); }).join("") + "</div>";
       if (Q.state === "play") h += '<div class="bank">' + Q.order.bank.map(function (b) { return tile(b, 'data-itl-pick="' + b.id + '"', Q.order.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" data-itl-undo' + (Q.order.pick.length ? "" : " disabled") + ">" + Z.clear + '</button><button type="button" class="btn-main" data-itl-check style="margin:0"' + (Q.order.pick.length === Q.order.bank.length ? "" : " disabled") + ">" + Z.check + "</button></div>";
       else h += (Q.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.it) + "</span></p>") + '<div class="acts">' + sayBtn(q.it, true) + '<button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
+    } else if (q.k === "scrivi") {
+      /* Task 12: risposta da scrivere in italiano, confrontata come nel ripasso (CP.typing.compareIt) */
+      h += '<p class="ask">' + esc(q.q) + '</p><form class="ex-type" data-itl-form><input id="itl-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="it" aria-label="' + CP.attr(q.q) + '"' + (Q.state !== "play" ? ' disabled value="' + CP.attr(Q.typed || "") + '"' : "") + "></form>";
+      h += Q.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-itl-type style="margin:0">' + Z.check + "</button></div>" : '<p class="verdict ' + (Q.state === "ok" ? "ok" : "ko") + '">' + (Q.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs) + ' <b lang="it">' + esc(q.a) + "</b>" + (q.why ? " " + esc(q.why) : "") + '</p><div class="acts"><button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else {
-      h += '<p class="ask">' + esc(q.q) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
+      /* «pick» e, dal Task 12, «buco» (la frase italiana con ___; la domanda è facoltativa) */
+      h += '<p class="ask">' + esc(q.q || tt("itm.holeQ")) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
       h += '<div class="ls-opts">' + q.opts.map(function (o, j) {
         var cls = Q.state === "play" ? "" : j === q.a ? " right" : j === Q.choice ? " wrong" : " off";
         return '<button type="button" class="ls-opt' + cls + '" data-itl-opt="' + j + '"' + (Q.state !== "play" ? " disabled" : "") + ">" + esc(o) + "</button>";
@@ -424,6 +437,7 @@
         CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return;
       }
       if (a("data-itl-opt") !== null && Q.state === "play") { Q.choice = +a("data-itl-opt"); Q.state = Q.choice === q.a ? "ok" : "ko"; if (Q.state === "ok") Q.score++; CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return; }
+      if (b.hasAttribute("data-itl-type") && Q.state === "play") { itTyped(Q, q); return; }
       if (b.hasAttribute("data-itl-next")) {
         if (Q.i + 1 < Q.l.quiz.length) { Q.i++; prepare(); ls.view = "quiz"; }
         else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) { patch.done = Date.now(); if (CP.game && CP.game.xp) CP.game.xp(30); CP.sfx("level"); } lmark(Q.l.id, patch); if (CP.unlock) CP.unlock.check(); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
