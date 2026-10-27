@@ -16,47 +16,47 @@ programmare.**
 | **Proporre una parola nuova** | ⚙️ → Dati e privacy → Contributi → ➕ Parola nuova, oppure una issue «Parola nuova». |
 | **Rileggere il cinese del corso di italiano** | Per madrelingua cinesi: le spiegazioni e le traduzioni del corso 意大利语. Una issue «Traduzione». |
 | **Proporre una traduzione nel Laboratorio** | Quando il laboratorio dice «non so ancora»: il pulsante 🈯 accanto alla frase. |
-| **Dire che cosa è difficile** | Una issue normale, o una e-mail: anche «non ho capito come si fa X» è un contributo. |
+| **Dirmi che cosa è difficile** | Una issue normale, o una e-mail: anche «non ho capito come si fa X» è un contributo. |
 
-I contributi fatti nell'app restano sul tuo telefono finché non li mandi tu, con il canale che preferisci.
+I contributi fatti nell'app restano sul tuo telefono finché non li mandi tu, nel modo che preferisci.
 
 ### Rileggere un campione di frasi (madrelingua cinesi)
 
 Se il cinese è la tua lingua, il contributo più prezioso è rileggere un campione di circa 300 frasi: per ognuna basta
-✓ / ~ / ✗ e, se serve, una proposta. Il modulo e il flusso sono in [docs/rilettura.md](docs/rilettura.md); chiedilo a
-`mandarinoapp@gmail.com`.
+✓ / ~ / ✗ e, se serve, una proposta. Il modulo e il procedimento sono in [docs/rilettura.md](docs/rilettura.md); per
+averlo scrivimi a `mandarinoapp@gmail.com`.
 
-### Canali
+### Come mandarmi un contributo
 
 - **Dall'app, senza account:** ⚙️ → Dati e privacy → Contributi → condividi (WeChat, e-mail, ecc.), e-mail, file `.json`
   o GitHub. L'app prepara un piccolo file `mandarino-contrib/1` con le tue proposte e nient'altro.
-- **GitHub Issues:** scegli un modello (Correzione, Parola nuova, Traduzione). Una issue con dentro il file dell'app viene
-  controllata in automatico da `.github/workflows/contrib.yml`, che risponde con un riepilogo.
-- **GitHub Discussions:** per domande e idee, se sono attive nel repository.
-- **E-mail:** `mandarinoapp@gmail.com` (lo stesso indirizzo di `src/config.js`).
+- **GitHub Issues:** scegli un modello (Correzione, Parola nuova, Traduzione). Se dentro la issue c'è il file dell'app,
+  `.github/workflows/contrib.yml` lo controlla da solo e risponde con un riepilogo.
+- **E-mail:** `mandarinoapp@gmail.com`.
 
 ### Nickname e Crediti
 
 Puoi firmare con un nickname. Se spunti «Voglio comparire nei Crediti», quando almeno una tua proposta viene accolta il
 nickname entra in [CONTRIBUTORS.md](CONTRIBUTORS.md) e nel foglio Crediti dell'app. Senza la spunta il nickname serve
-solo a chi rilegge. Non chiediamo mai nome vero, e-mail o altri dati.
+solo a chi rilegge. Non ti chiedo mai il nome vero, l'e-mail o altri dati.
 
 ### Licenza dei contributi
 
-Mandando un contributo accetti che entri in màndarínō con le licenze del progetto: i **contenuti** (parole, frasi,
+Se mi mandi un contributo, accetti che entri in màndarínō con le licenze del progetto: i **contenuti** (parole, frasi,
 traduzioni, spiegazioni) con **CC BY 4.0**, il **codice** con **MIT**. Vedi [NOTICE.md](NOTICE.md). Non copiare testi
 da fonti con licenze incompatibili (per esempio Wikipedia o CC-CEDICT, che sono «share-alike»): scrivi con parole tue.
 
 ### Per chi programma
 
-- Prima di tutto: `npm ci`, poi `npm test` (prove unitarie, build, e2e, ux-audit). Struttura: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
+- Si comincia con `npm ci` e poi `npm test` (prove unitarie, build, e2e, ux-audit). La struttura è in
+  [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
 - I vincoli del progetto: tutto offline, nessuna richiesta di rete automatica, niente tracciamento, nessuna dipendenza
   nuova a runtime, due lingue d'interfaccia (italiano e cinese), ogni testo nuovo passa da `t()`.
 - Le chiavi dei progressi (`hz`) e i nomi delle chiavi `cp-*` non cambiano mai. Una chiave nuova si chiama `cp-…-v1` e ha
   una regola di unione in `src/core/store.js`.
 - Un commit per cambiamento, messaggio in italiano.
-- **Etichetta `good first issue`:** chi gestisce il repository la mette sulle issue piccole e ben definite (una
-  correzione di dati, un testo, una prova in più). Sono il punto di partenza consigliato.
+- Sulle issue piccole e ben definite (una correzione di dati, un testo, una prova in più) metto l'etichetta
+  `good first issue`: sono il punto di partenza consigliato.
 
 ### Etichette
 
@@ -66,7 +66,7 @@ da fonti con licenze incompatibili (per esempio Wikipedia o CC-CEDICT, che sono 
 | `parola-nuova` | una voce da aggiungere |
 | `traduzione` | il cinese del corso di italiano, o una traduzione del laboratorio |
 | `contributo` | una patch arrivata dall'app (la mette l'Action) |
-| `applica` | chi gestisce il repository la aggiunge per applicare la patch: si apre una pull request |
+| `applica` | la aggiungo io per applicare la patch: si apre una pull request |
 | `good first issue` | adatta a chi inizia |
 
 ## 中文
@@ -81,7 +81,7 @@ màndarínō 为学习者而做，而学习者最容易发现错误。**不需�
 | **校对例句** | 句子不自然或意大利语翻译有误：“✏️ 更正或报告”，或“更正”issue。 |
 | **提议新词** | ⚙️ → 数据和隐私 → 贡献 → ➕ 新词，或“新词”issue。 |
 | **校对意大利语课程里的中文** | 欢迎母语为中文的朋友校对意大利语课程的讲解和翻译。请开一个“翻译”issue。 |
-| **告诉我们哪里难用** | 普通 issue 或电子邮件都可以：“我不知道怎么做 X”也是贡献。 |
+| **告诉我哪里难用** | 普通 issue 或电子邮件都可以：“我不知道怎么做 X”也是贡献。 |
 
 在应用里做的贡献会保存在你的手机上，直到你自己选择方式发送。
 
@@ -98,7 +98,7 @@ màndarínō 为学习者而做，而学习者最容易发现错误。**不需�
 ### 昵称和致谢
 
 你可以用昵称署名。如果勾选“我愿意用这个昵称出现在致谢中”，当你至少有一条建议被采纳时，昵称会出现在
-[CONTRIBUTORS.md](CONTRIBUTORS.md) 和应用的致谢页面。我们从不索要真实姓名、电子邮件或其他个人信息。
+[CONTRIBUTORS.md](CONTRIBUTORS.md) 和应用的致谢页面。我从不索要真实姓名、电子邮件或其他个人信息。
 
 ### 贡献的许可
 
