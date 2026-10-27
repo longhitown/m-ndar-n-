@@ -36,6 +36,12 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
 - **Notifiche (Android):** solo per il promemoria facoltativo e per la musica in secondo piano.
 - **Pleco** (facoltativo, spento di base, solo sul telefono): se lo accendi e tocchi «Apri in Pleco», la parola passa all'app Pleco sul tuo telefono, non a internet.
 
+### Backup automatico di Android
+
+Nell'app Android, se il backup è acceso nelle impostazioni del telefono, Android copia i dati dell'app (i progressi)
+nel backup del tuo account Google e li riporta su un telefono nuovo. È un servizio del sistema, non di màndarínō: noi non
+vediamo niente. Si spegne nelle impostazioni del telefono (Sistema → Backup).
+
 ### Sincronizzazione e backup
 
 La sincronizzazione scrive un file che scegli tu, nel tuo cloud (Google Drive, OneDrive, Dropbox, iCloud…), oppure passa
@@ -85,6 +91,10 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 - **相机：** 只用于扫描二维码（换手机、印章）。图像不会保存。
 - **通知（安卓）：** 只用于可选的提醒和后台音乐。
 - **Pleco**（可选，默认关闭，仅限手机）：打开后点击“在 Pleco 中打开”，词语会传给你手机上的 Pleco 应用，不会发送到网络。
+
+### 安卓自动备份
+
+在安卓应用中，如果手机设置里打开了备份，安卓系统会把应用数据（学习进度）复制到你的 Google 账号备份中，并在换新手机时恢复。这是系统服务，不是 màndarínō 的服务：我们什么也看不到。可以在手机设置中关闭（系统 → 备份）。
 
 ### 同步和备份
 

@@ -249,8 +249,8 @@ try {
     await p.evaluate(() => CP.openSettings("grp-info")); await p.waitForTimeout(200);
     const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector("summary").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
     check("Novità in cinese: titolo e righe in cinese", /更新内容/.test(zh || "") && /zh-CN$/.test(zh || ""), zh);
-    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-data") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
-    check("Privacy: voce in ⚙️ → Dati e privacy, in cinese, sei punti", /隐私\|6$/.test(pv || ""), pv);
+    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-info") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
+    check("Privacy: voce in ⚙️ → Informazioni e supporto, in cinese, sette punti (anche il backup di Android)", /隐私\|7$/.test(pv || ""), pv);
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
