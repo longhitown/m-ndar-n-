@@ -6,6 +6,7 @@ telefono vero. Dieci minuti, prima di ogni release importante. Segna data, telef
 | | Prova | Che cosa deve succedere |
 |---|---|---|
 | ☐ | **Musica e voce**: musica accesa, poi tocca una parola | la musica si abbassa mentre parla la voce e risale dopo; il volume degli effetti resta gradevole |
+| ☐ | **Livello della musica** (guadagno 0,6): volume di sistema al 50%, musica accesa, poi una frase lunga in 🔊 | la voce si capisce bene sopra la musica e la musica non copre le parole; la musica non è troppo bassa da sola. Annota «troppo alta / giusta / troppo bassa» |
 | ☐ | **Loop della musica**: lascia finire un brano (o salta vicino alla fine) | il giro è senza un vuoto udibile (la prova in CI misura 3-16 ms in Chromium; sul telefono va ascoltato) |
 | ☐ | **Musica in secondo piano**: 🎵 → «in secondo piano», poi blocca lo schermo | la musica continua, la notifica ha pausa, avanti, stop; stop la chiude davvero |
 | ☐ | **Modalità aereo**: attivala e apri l'app | tutto funziona: studio, parole, frasi, lezioni, musica già scaricata; nessun errore |
@@ -17,6 +18,8 @@ telefono vero. Dieci minuti, prima di ogni release importante. Segna data, telef
 | ☐ | **Fotocamera e QR**: ⚙️ → Sincronizzazione → passa a un altro telefono | il QR si legge; nessuna immagine salvata |
 | ☐ | **Pleco** (se installato): accendi l'opzione, tieni premuto un carattere 2 s, tocca «Apri in Pleco» | si apre Pleco sulla parola giusta. Senza Pleco: messaggio «Pleco non è installato» e «Scarica Pleco» |
 | ☐ | **Carta da condividere** (corso di italiano): 分享, poi in WeChat pressione lunga sul QR | WeChat riconosce il QR e apre la pagina (vedi docs/cina.md) |
+| ☐ | **Sfida a un amico**: Percorso → 🎯, poi inquadra il QR con un secondo telefono (⚙️ → Sfide e classe → Inquadra il QR) | sul secondo telefono le stesse domande; il link (se c'è il sito) si apre anche dalla fotocamera di sistema |
+| ☐ | **Foglio della classe**: ⚙️ → Sfide e classe → Prepara un pacchetto → Foglio da stampare, stampato su A4 | i due QR si leggono dalla carta; il pacchetto si importa |
 | ☐ | **Aggiornamento sopra la versione precedente** | i progressi restano |
 
 Se qualcosa non va: una issue con telefono, versione di Android e che cosa hai visto.

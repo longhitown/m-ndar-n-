@@ -250,7 +250,7 @@ try {
     const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector("summary").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
     check("Novità in cinese: titolo e righe in cinese", /更新内容/.test(zh || "") && /zh-CN$/.test(zh || ""), zh);
     const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-info") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
-    check("Privacy: voce in ⚙️ → Informazioni e supporto, in cinese, sette punti (anche il backup di Android)", /隐私\|7$/.test(pv || ""), pv);
+    check("Privacy: voce in ⚙️ → Informazioni e supporto, in cinese, otto punti (anche il backup di Android e le sfide)", /隐私\|8$/.test(pv || ""), pv);
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -359,6 +359,91 @@ try {
     await p.evaluate(() => { CP.closeSheet(); CP.anatomy.set(true); });
     check("Anatomia: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
+  }
+  /* 4g. sfida a un amico e pacchetto classe (Task 9): stesso codice → stesse domande su due «telefoni», QR leggibile,
+     link che si apre e si toglie dall'indirizzo, pacchetto importato con riquadro nel Percorso, riepilogo solo con consenso */
+  {
+    const mk = async (init) => { const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message)); await ctx.addInitScript(init || (() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); })); return { ctx, p, errs }; };
+    const A = await mk(); await A.p.goto(base); await A.p.waitForTimeout(600);
+    check("Sfida: i moduli si caricano solo al primo uso (non all'avvio)", await A.p.evaluate(() => !!document.getElementById("lazy-mod-challenge")));
+    await A.p.click("#path-root [data-chal-open]"); await A.p.waitForSelector("#fam .chal-qr", { timeout: 4000 }).catch(() => {});
+    const made = await A.p.evaluate(() => { const v = (document.querySelector("#fam .chal-code") || {}).value || "", c = CP.challenge.decode(v), cv = document.querySelector("#fam .chal-qr"), img = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), q = window.jsQR(img.data, cv.width, cv.height); return { v, n: c && c.keys.length, c: c && c.c, qr: q && q.data, Q: c && CP.challenge.build(c).map((x) => [x.x.q, x.opts.join("|")]) }; });
+    check("Sfida: 10 parole in un link …#sfida=MDC1-…, e il QR (letto con jsQR) contiene esattamente quel link", made.n === 10 && made.c === "zh" && /^http:\/\/127\.0\.0\.1:\d+\/#sfida=MDC1-[A-Za-z0-9_-]+$/.test(made.v) && made.qr === made.v, JSON.stringify(made).slice(0, 300));
+    const B = await mk(); await B.p.goto(made.v); await B.p.waitForTimeout(1600);
+    const recv = await B.p.evaluate(() => ({ hash: location.hash, intro: !!document.querySelector("#fam [data-chal-start]"), welcome: !!document.querySelector("#onb:not([hidden])") }));
+    check("Sfida: il link apre la sfida sul secondo telefono e il codice sparisce dall'indirizzo", recv.hash === "" && recv.intro && !recv.welcome, JSON.stringify(recv));
+    await B.p.click("#fam [data-chal-start]"); await B.p.waitForTimeout(150);
+    const q1 = await B.p.evaluate(() => [document.querySelector("#fam .chal-q").textContent, [...document.querySelectorAll("#fam [data-chal-a]")].map((b) => b.textContent).join("|")]);
+    check("Sfida: stesse domande e stesse risposte da scegliere, nello stesso ordine, sui due telefoni", q1[0] === made.Q[0][0] && q1[1] === made.Q[0][1], JSON.stringify([q1, made.Q[0]]));
+    for (let i = 0; i < 10; i++) {
+      await B.p.evaluate((Q) => { const st = CP.challenge.state(), want = CP.challenge.build(CP.challenge.decode(Q)); const r = want[st.i]; const b = [...document.querySelectorAll("#fam [data-chal-a]")].find((x) => x.textContent === r.x.a); (st.i === 9 ? document.querySelectorAll("#fam [data-chal-a]")[[...document.querySelectorAll("#fam [data-chal-a]")].indexOf(b) === 0 ? 1 : 0] : b).click(); }, made.v);
+      await B.p.waitForTimeout(i === 9 ? 2000 : 1000);
+    }
+    const res = await B.p.evaluate(() => ({ txt: (document.querySelector("#fam .chal-res") || {}).textContent || "", wrong: document.querySelectorAll("#fam .chal-wrong li").length, again: !!document.querySelector("#fam [data-chal-send]") }));
+    check("Sfida: risultato (9 su 10), la parola sbagliata da ripassare e «Rilancia la sfida»", /^9 su 10 in \d+ s/.test(res.txt) && res.wrong === 1 && res.again, JSON.stringify(res));
+    const other = await B.p.evaluate(() => { CP.closeSheet(); CP.togetherOpen(CP.challenge.encode({ c: "it", seed: 7, keys: ["n:书", "n:茶", "n:猫", "n:狗"] })); return !!document.querySelector("#fam [data-chal-switch=it]"); });
+    check("Sfida: un codice dell'altro corso propone di passare a quel corso", other);
+    check("Sfida: un codice rovinato non apre niente", await B.p.evaluate(() => CP.challenge.decode("MDC1-xx") === null && CP.challenge.decode("ciao") === null));
+    /* pacchetto classe */
+    const pk = await A.p.evaluate(() => { const p = { id: "abc12", c: "zh", t: "Classe 2B", s: CP.SEC[0].id, e: CP.SEC[1].id, g: 80, d: "2030-01-15" }; return { link: CP.classroom.link(p), p }; });
+    await B.p.evaluate((l) => { CP.closeSheet(); CP.togetherOpen(l); }, pk.link); await B.p.waitForTimeout(700);
+    const st = await B.p.evaluate(() => { const o = JSON.parse(localStorage.getItem("cp-class-v1")); return { ids: Object.keys(o.p), card: !!document.querySelector("#set-together .cls-card"), banner: (document.querySelector("#path-root .cls-banner") || {}).textContent || "" }; });
+    check("Classe: il pacchetto si importa dal codice (cp-class-v1) e si vede in ⚙️", st.ids.join() === "abc12" && st.card, JSON.stringify(st));
+    await B.p.evaluate(() => { CP.untrap(document.getElementById("settings")); CP.pathDirty(); CP.onPath(); }); await B.p.waitForTimeout(200);
+    check("Classe: riquadro in cima al Percorso con titolo e avanzamento", /Classe: Classe 2B/.test(await B.p.evaluate(() => (document.querySelector("#path-root .cls-banner") || {}).textContent || "")));
+    await B.p.evaluate(() => CP.openSettings("set-together")); await B.p.click("#set-together [data-cls-report]"); await B.p.waitForTimeout(200);
+    const dis = await B.p.evaluate(() => [...document.querySelectorAll("#fam [data-cls-rep-dl], #fam [data-cls-rep-share]")].map((b) => b.disabled));
+    await B.p.check("#cls-consent");
+    const en = await B.p.evaluate(() => [...document.querySelectorAll("#fam [data-cls-rep-dl], #fam [data-cls-rep-share]")].map((b) => b.disabled));
+    check("Classe: il riepilogo si consegna solo dopo la spunta del consenso", dis.join() === "true,true" && en.join() === "false,false", JSON.stringify([dis, en]));
+    const rep = await B.p.evaluate(() => { const p = CP.classroom.list()[0], r = CP.classroom.report(p, "Ada"); return { keys: Object.keys(r).sort().join(","), n: r.n }; });
+    check("Classe: nel riepilogo solo conteggi (nessun registro dei ripassi)", rep.keys === "app,date,days30,done,kind,met,n,name,pct,pkg,v,version" && rep.n > 10, JSON.stringify(rep));
+    const tb = await B.p.evaluate(() => { const p = CP.classroom.list()[0]; CP.classroom.table([CP.classroom.report(p, "Bo"), CP.classroom.report(p, "Ada")]); return [...document.querySelectorAll("#fam .cls-table tbody tr td:first-child")].map((x) => x.textContent).join(","); });
+    check("Classe: chi insegna legge i riepiloghi in una tabella", tb === "Ada,Bo", tb);
+    const sh = await A.p.evaluate((p) => { const cv = CP.classroom.sheet(document.createElement("canvas"), p), x = cv.getContext("2d"), img = x.getImageData(640, 380, 600, 700), q = window.jsQR(img.data, 600, 700); return { w: cv.width, h: cv.height, q: q && q.data }; }, pk.p);
+    check("Classe: foglio da stampare A4 con il QR del pacchetto (letto con jsQR)", sh.w === 1240 && sh.h === 1754 && sh.q === pk.link, JSON.stringify(sh));
+    check("Sfida e classe: nessun errore JavaScript", !A.errs.length && !B.errs.length, A.errs[0] || B.errs[0]);
+    await A.ctx.close(); await B.ctx.close();
+    /* corso di italiano: la domanda è la parola italiana, le risposte sono in caratteri */
+    const I = await mk(() => { localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh"); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await I.p.goto(base); await I.p.waitForTimeout(800);
+    const it = await I.p.evaluate(() => { CP.challenge.create(); const c = CP.challenge.decode(document.querySelector("#fam .chal-code").value), Q = CP.challenge.build(c); return { c: c.c, n: c.keys.length, q: Q[0].x.q, a: Q[0].opts }; });
+    check("Sfida, corso di italiano: parola italiana → caratteri", it.c === "it" && it.n === 10 && !/[\u4e00-\u9fff]/.test(it.q) && it.a.every((x) => /[一-鿿]/.test(x)), JSON.stringify(it));
+    check("Sfida, corso di italiano: nessun errore JavaScript", !I.errs.length, I.errs[0]);
+    await I.ctx.close();
+  }
+  /* 4h. golden (Task 12, T0): con lo stile «Classico» la sessione di ripasso è identica alla copia fissa di study.js di prima
+     del Task 12 (tools/fixtures/study-classic-v1.js): stessa coda, stesse carte pi / ip / hp, stessi voti. Profilo e seme fissi. */
+  {
+    const init = () => {
+      const now = Date.now(), S = {};
+      ["你好", "谢谢", "再见", "早上好", "晚上好", "晚安", "对不起", "没关系", "请", "不客气", "欢迎", "朋友"].forEach((k, i) => { S[k] = { n: 3, d: now - 86400000 * (1 + i), b: i % 4 }; });
+      localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}');
+      localStorage.setItem("cp-study-cfg", '{"n":3,"sec":""}'); localStorage.setItem("cp-ex-style", "classic");
+      window.__seed = (n) => { let s = n >>> 0; Math.random = () => { s = (Math.imul(s, 1103515245) + 12345) >>> 0; return s / 4294967296; }; };
+    };
+    const run = async (fixture) => {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await ctx.addInitScript(init); await p.goto(base); await p.waitForTimeout(700);
+      if (fixture) await p.evaluate((code) => { const r = document.getElementById("study-root"); r.replaceWith(r.cloneNode(false)); (0, eval)(code); }, fs.readFileSync(path.join(path.dirname(fileURLToPathSafe(import.meta.url)), "fixtures/study-classic-v1.js"), "utf8"));
+      const seq = await p.evaluate(() => {
+        __seed(20261027); CP.show("study", true); CP.studyStart();
+        const out = [], root = document.getElementById("study-root"), clean = (h) => h.replace(/ enter"/g, '"');
+        for (let i = 0; i < 40; i++) {
+          out.push(clean(root.innerHTML));
+          const b = root.querySelector("#next") || root.querySelector("#reveal") || root.querySelector('[data-g="' + (i % 7 === 3 ? 0 : i % 5 === 1 ? 1 : 2) + '"]');
+          if (!b) break; b.click();
+        }
+        return out;
+      });
+      await ctx.close(); return { seq, errs };
+    };
+    const now = await run(false), old = await run(true);
+    const firstDiff = now.seq.findIndex((h, i) => h !== old.seq[i]);
+    check("Golden «Classico»: la sessione di ripasso è identica a quella di prima del Task 12 (" + now.seq.length + " schermate)", now.seq.length > 20 && now.seq.length === old.seq.length && firstDiff < 0, firstDiff >= 0 ? "schermata " + firstDiff + ": " + now.seq[firstDiff].slice(0, 200) + " ≠ " + (old.seq[firstDiff] || "").slice(0, 200) : "");
+    const tags = await (async () => { const all = now.seq.join(""); return ["Che cosa significa?", "Come si dice?", "Leggi il carattere", 'class="grades"'].map((x) => all.includes(x)); })();
+    check("Golden «Classico»: nella sessione ci sono le tre carte (pi, ip, hp) e i quattro voti", tags.every(Boolean), JSON.stringify(tags));
+    check("Golden «Classico»: nessun errore JavaScript", !now.errs.length && !old.errs.length, now.errs[0] || old.errs[0]);
   }
   /* 5. corso di italiano per chi parla cinese */
   {

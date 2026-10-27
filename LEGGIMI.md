@@ -57,7 +57,7 @@ android/                   l'app Android: una WebView che apre dist/index.html d
 tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
-                           review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
+                           review-sample.mjs e review-import.mjs (rilettura da madrelingua, docs/rilettura.md),
                            icons.mjs (rigenera le icone PWA e Android, mandarino + wordmark, con Playwright),
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
@@ -337,6 +337,9 @@ node tools/e2e.mjs          # 81 prove su dist/ (benvenuto e test di livello, co
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
+**Golden del ripasso (Task 12).** `tools/fixtures/study-classic-v1.js` è una copia fissa di `src/study/study.js` di prima
+del Task 12: `tools/e2e.mjs` fa la stessa sessione (profilo e seme fissi) con l'app in stile «Classico» e con la copia, e
+controlla che le 40 schermate (coda, carte pi / ip / hp, voti) siano identiche. Non va nell'app.
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi). `#dev` accende il modo sviluppatore
 (in ⚙️ compare «Scarica pacchetto PWA per GitHub»), `#nodev` lo spegne.
 
@@ -391,6 +394,7 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-class-v1`: i pacchetti classe importati `{ p: { id: pacchetto }, x: { id: quando è stato tolto } }`; nell'unione si sommano (per ognuno la data d'importazione più vecchia) e chi è stato tolto resta tolto.
 - `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
 - `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
 - `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
@@ -542,6 +546,52 @@ Interruttore: ⚙️ → Avanzate → Anatomia dei caratteri (acceso di base).
 - `src/data/radicals.js`: i 214 radicali Kangxi con le varianti; nomi e significati scritti da noi, **da rileggere**.
 - La build controlla che ogni carattere del vocabolario abbia una struttura; `#selftest` controlla 国, 好 e 请.
 
+## Sfide e classe, senza server (Task 9, tutti e due i corsi)
+
+In ⚙️ → Dati e privacy → «🎯 Sfide e classe», e con il pulsante «🎯 Sfida un amico» nel Percorso (corso di cinese) e in
+«我的进步» (corso di italiano).
+
+**Sfida a un amico** (`src/ui/challenge.js`).
+- Dieci parole (tra quelle già studiate, a caso; se sono poche, le prime del corso) e un seme diventano un codice
+  `MDC1-…`: base64url di `1|corso|seme|chiavi`.
+- Chi lo apre fa la stessa sfida: stesse domande, stesso ordine, stesse quattro risposte tra cui scegliere. Tutto viene
+  dal seme e dalle dieci parole: le risposte sbagliate sono le altre parole della sfida, quindi niente dipende dalla
+  versione del vocabolario.
+- Il codice viaggia in tre modi:
+  - come link `…#sfida=MDC1-…`, dove l'app ha un indirizzo web (la pagina aperta nel browser, o `SITE_URL` + `app/`).
+    Il frammento non arriva a nessun server e si toglie subito dall'indirizzo;
+  - come testo da incollare (va bene anche il messaggio intero);
+  - come QR da inquadrare nell'app (⚙️ → Sfide e classe → Inquadra il QR).
+- Corso di cinese: carattere e pinyin → significato in italiano. Corso di italiano: parola italiana → caratteri.
+- Un codice dell'altro corso propone di passare a quel corso; un codice con parole sconosciute chiede di aggiornare l'app.
+- La sfida non tocca i ripassi né i punti. Dentro il codice non ci sono nomi né punteggi; «Rilancia la sfida» manda lo
+  stesso codice con una riga sul proprio risultato, scritta in chiaro nel messaggio.
+- Nell'APK non c'è un indirizzo web finché `SITE_URL` è vuoto: si manda il codice, che si incolla o si inquadra.
+
+**Pacchetto classe** (`src/ui/classroom.js`).
+- Chi insegna sceglie:
+  - un tratto del Percorso: tappe del corso di cinese, lezioni del corso di italiano;
+  - un obiettivo (50, 80 o 100% del tratto; predefinito 80%, `GOAL_DEFAULT`);
+  - una data.
+- Ne escono tre cose:
+  - il codice `MDK1-…` (base64url del JSON `{ id, c, t, s, e, g, d }`; le tappe si indicano per id, la prima e l'ultima);
+  - il file `.json` con lo stesso contenuto;
+  - un **foglio da stampare** (PNG A4 a 150 dpi) con due QR: l'app (lo stesso indirizzo della carta da condividere) e il
+    pacchetto (il link `#classe=`, o il codice se non c'è un indirizzo web).
+- Chi studia lo importa (file, codice o QR) e vede il riquadro «👩‍🏫 Classe: …» in cima al Percorso o alle lezioni, con
+  l'avanzamento e i giorni che mancano.
+- **Riepilogo per chi insegna**, solo dopo una spunta di consenso. Contiene solo conteggi:
+  - parole del tratto studiate (corso di cinese) o lezioni superate (corso di italiano);
+  - obiettivo raggiunto sì/no;
+  - giorni di studio negli ultimi 30;
+  - data e versione.
+
+  Il nome è facoltativo e finisce solo nel file. Niente registro dei ripassi.
+- Chi insegna apre insieme più riepiloghi (`.json`) e li vede in una tabella; i file non vengono salvati.
+
+**Peso.** I due moduli e i loro testi (`src/i18n/together.js`) si caricano al primo uso (`LAZYMOD` in `tools/build.mjs`).
+All'avvio c'è solo `src/ui/together.js`: la sezione in ⚙️, i link e il riquadro.
+
 ## Esporta per Anki
 
 Per chi ha studiato molto e vuole portare le parole anche in Anki, senza togliere niente a màndarínō. La voce compare
@@ -637,12 +687,18 @@ licenza dei contenuti: lo dicono il foglio dei contributi dell'app, `NOTICE.md` 
 
 ## Che cosa resta aperto
 
+L'elenco ordinato, con il motivo per cui ogni cosa aspetta, è in [docs/roadmap.md](docs/roadmap.md). Per pubblicare una
+versione: [docs/rilascio.md](docs/rilascio.md).
+
 - Corso di italiano: 30 lezioni; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
 - Correttore di frasi italiane: controlla gli accordi, non il senso. Trova 26 degli 88 «errori tipici» delle lezioni; gli altri
   (tempi verbali, ordine delle parole, preposizioni con città e paesi, scelta delle parole) richiedono più che regole d'accordo.
 - 有一些 è l'unica parola senza frase d'esempio (il taglio la legge sempre come 有|一些, che è corretto).
-- Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi:
-  `node tools/review-sample.mjs --out revisione.md` prepara il modulo (circa 300 righe, istruzioni in cinese).
+- Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi: il flusso è in
+  [docs/rilettura.md](docs/rilettura.md) (`review-sample.mjs` prepara il modulo, `review-import.mjs` lo trasforma in
+  segnalazioni per `merge-contrib.mjs`). La rilettura vera la fa una persona.
+- Voci di madrelingua (scambio linguistico tra i due corsi): progetto in [docs/scambio-linguistico.md](docs/scambio-linguistico.md),
+  in attesa dell'approvazione dell'autore; nell'app non c'è ancora niente.
 
 **Come si comportano adesso alcune parti delicate:**
 - FSRS: il giorno di studio cambia alle 4 del mattino (come Anki); la ripetizione di una carta nella stessa sessione la

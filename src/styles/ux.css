@@ -492,3 +492,34 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .anat-part > span:last-child { display: grid; gap: 1px; }
 .anat-role { font-size: 13px; color: var(--accent); }
 .anat-part small { font-size: 13px; color: var(--muted); }
+
+/* ---- Task 9: sfida a un amico e pacchetto classe (ui/challenge.js, ui/classroom.js) ---- */
+.chal-lead { font-size: 18px; font-weight: 700; margin: 4px 0; }
+.chal-q { font-family: var(--f-han); font-size: 52px; line-height: 1.2; text-align: center; margin: 6px 0 0; }
+.chal-q[lang="it"] { font-family: var(--f-display); font-size: 34px; }
+.chal-q.sm { display: inline; font-size: 18px; margin: 0; }
+.chal-q.sm[lang="it"] { font-size: 16px; }
+.chal-py { text-align: center; font-size: 17px; }
+.chal-say { display: flex; justify-content: center; }
+.chal-n { text-align: center; }
+.chal-bar { height: 5px; border-radius: 4px; background: var(--chip); overflow: hidden; } .chal-bar i { display: block; height: 100%; background: var(--accent); }
+.chal-opts { display: grid; gap: 8px; margin-top: 12px; }
+.chal-opt { min-height: 48px; text-align: left; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; }
+.chal-opt.ok { border-color: var(--t2); box-shadow: 0 0 0 3px color-mix(in srgb, var(--t2) 22%, transparent); font-weight: 700; }
+.chal-opt.ko { border-color: var(--t4); border-style: dashed; }
+.chal-opt:disabled { opacity: 1; cursor: default; }
+.chal-fb { min-height: 1.4em; text-align: center; margin-top: 6px; font-weight: 600; }
+.chal-res { text-align: center; font-size: 22px; margin: 10px 0; }
+.chal-wrong { padding-left: 18px; display: grid; gap: 6px; }
+.chal-qr { display: block; width: min(260px, 70vw); height: auto; margin: 8px auto; image-rendering: pixelated; border-radius: 8px; }
+.chal-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; width: 100%; min-height: 44px; }
+.cls-h { margin: 14px 0 2px; font-size: 15px; }
+.cls-card { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.cls-card .mini { height: 6px; border-radius: 4px; background: var(--chip); overflow: hidden; } .cls-card .mini i { display: block; height: 100%; background: var(--accent); }
+.cls-card .okline { color: var(--accent); font-weight: 700; }
+.cls-teach { border-top: 1px solid var(--line); padding-top: 8px; display: grid; gap: 8px; }
+.cls-teach summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
+.cls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .cls-row label { display: grid; gap: 4px; min-width: 0; } .cls-row select, .cls-row input { min-height: 44px; min-width: 0; width: 100%; }
+.cls-banner { display: flex; gap: 10px; align-items: center; width: 100%; min-height: 48px; text-align: left; font: inherit; color: var(--ink); cursor: pointer; margin-bottom: 10px; }
+.cls-banner > span:first-child { font-size: 24px; } .cls-banner small { display: block; color: var(--muted); }
+.cls-table-w { overflow-x: auto; } .cls-table { border-collapse: collapse; width: 100%; font-size: 14px; } .cls-table th, .cls-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
