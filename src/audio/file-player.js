@@ -14,6 +14,7 @@
   var fileProto = location.protocol === "file:";
   /* il file intero come Blob (dalla cache del service worker quando c'è): sorgente locale, si può riavvolgere senza rete */
   function blob(id) {
+    if (id.slice(0, 2) === "u-") return CP.userBlob(id);   /* un brano dell'utente: sta nella memoria dell'app, vale anche da file:// */
     if (fileProto) return Promise.reject(new Error("file"));
     return fetch(url(id)).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); });
   }
