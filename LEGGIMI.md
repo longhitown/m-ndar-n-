@@ -707,6 +707,15 @@ caricare il gruppo).
   la cancella agli aggiornamenti; `src/pwa/sw.js` e `swSource()` in `src/pwa/pwa.js` restano uguali). Prima di allora
   nessuna richiesta di rete. Mai il sesso, l'accento o il numero di chi parla.
 - Crediti: «voce: NM1, Tatoeba, CC BY 4.0» e «voci: Mozilla Common Voice, CC0».
+- **Corso di cinese (T6):** «ascolta la frase» (`ascolto-frase`, misto): la clip vera di una frase con la parola, e quale
+  frase hai sentito tra quattro scritte (le altre contengono la stessa parola quando si può). Si propone solo se le clip
+  sono sul telefono. Dal livello 3, quando c'è la frase vera, l'ascolto della parola sola con la voce sintetica
+  (`mc-ascolto`) lascia il posto alla frase.
+- `materiali/escludi-frasi.txt`: le frasi da togliere da esercizi e voci (una per riga); poi `node tools/materiali.mjs`.
+- Senza `materiali/audio/zh` i materiali si generano lo stesso (0 clip cinesi) e l'app non propone l'ascolto delle frasi
+  (prova in `tools/unit.mjs` e in `tools/e2e.mjs`).
+- Le prove (blocco 4n): prima di scaricare nessuna richiesta; il pulsante mette le 1154 clip nella cache; in modalità aereo
+  arrivano dalla cache; nessuna richiesta fuori dall'app.
 
 **Peso.**
 - Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che

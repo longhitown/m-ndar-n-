@@ -5,6 +5,7 @@
    3. il peso dell'avvio: i byte di JavaScript che il telefono deve compilare all'apertura (dist/index.html).
    Uso: node tools/unit.mjs */
 import fs from "fs";
+import os from "os";
 import path from "path";
 import vm from "vm";
 import { fileURLToPath } from "url";
@@ -297,6 +298,15 @@ function sandbox() {
   const IW = DS.itWords(IP[7], IP, { levelOf: () => 1 }, DS.rng(11)) || [];
   const iwBad = IW.filter((x) => x.g !== "m" || /学/.test(x.zh) || x.id === "h");
   check("distrattori del corso di italiano: tre nomi dello stesso genere, nessun carattere cinese in comune (学校/学生), nessun doppione", IW.length === 3 && !iwBad.length && new Set(IW.map((x) => x.it)).size === 3 && new Set(IW.map((x) => x.zh)).size === 3, IW.map((x) => x.it + "/" + x.zh).join(", "));
+  /* senza materiali/audio/zh nulla si rompe: le voci cinesi restano vuote, quelle italiane ci sono */
+  {
+    const { build: mbuild } = await import("./materiali.mjs"), tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mat-")), MAT = path.join(ROOT, "materiali");
+    for (const d of ["runtime", "dati", "crediti"]) fs.symlinkSync(path.join(MAT, d), path.join(tmp, d));
+    fs.mkdirSync(path.join(tmp, "audio")); fs.symlinkSync(path.join(MAT, "audio/it"), path.join(tmp, "audio/it"));
+    let mo = null, merr = ""; try { mo = mbuild(SRC, tmp).out; } catch (e) { merr = e.message; }
+    fs.rmSync(tmp, { recursive: true, force: true });
+    check("voci reali: senza materiali/audio/zh i materiali si generano lo stesso (0 clip cinesi, le italiane restano)", mo && mo.VOCE_ZH.righe.length === 0 && mo.VOCE_IT.righe.length > 400 && !Object.keys(mo.VOICE_FILES.zh).length, merr || (mo && mo.VOCE_IT.righe.length));
+  }
   const o = DS.options("x", ["a", "b", "c"], DS.rng(3));
   check("distrattori: la giusta sta tra le quattro, in un posto deciso dal seme", o.opts.length === 4 && o.opts[o.right] === "x");
   /* regole del motore, caricate senza pagina */

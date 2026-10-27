@@ -19,7 +19,7 @@
     };
     try { if (typeof FRASI_ZH !== "undefined") FRASI_ZH.righe.forEach(function (r) { if (r[5]) add(r[0], r[1], "tatoeba", r[2]); }); } catch (e) {}
     (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (e) { add(e[0], e[1], "lesson"); }); });
-    try { if (typeof VOCE_ZH !== "undefined") VOCE_ZH.righe.forEach(function (r) { add(r[2], "", "voice"); }); } catch (e) {}
+    try { if (typeof VOCE_ZH !== "undefined") VOCE_ZH.righe.forEach(function (r) { add(r[2], "", "voice", r[3]); }); } catch (e) {}
     return IDX;
   }
   function forWord(w) {
@@ -77,6 +77,26 @@
       return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(g.s.toks, g.i, g.s.it), say: g.s.zh, note: g.set.nota };
     },
     risposta: function (it) { if (it.note) { var fb = document.querySelector(".ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="it">💡 ' + esc(it.note) + "</p>"); } } });
+
+  /* ---- ascolta la frase (T6): una voce reale, sul telefono (CP.voiceClip); quale frase hai sentito, tra quattro scritte.
+     Le altre contengono la stessa parola quando si può, così bisogna ascoltare tutta la frase. ---- */
+  function voiced(w) { return CP.voiceClip ? forWord(w).filter(function (s) { return s.src === "voice" && CP.voiceClip.url(s.zh, "zh"); }) : []; }
+  ENG.register({ id: "ascolto-frase", famiglia: 1, corso: "zh", q: "exm.q.listenSent",
+    richiede: function (w) { return voiced(w).length > 0; },
+    crea: function (w, ctx, r) {
+      var mine = voiced(w), s = mine[Math.floor(r() * mine.length)]; if (!s) return null;
+      var n = Array.from(s.zh).length, seen = {}, other = []; seen[s.zh] = 1;
+      var take = function (zh) { if (other.length < 3 && !seen[zh] && Math.abs(Array.from(zh).length - n) <= 4) { seen[zh] = 1; other.push(zh); } };
+      D.shuffle(forWord(w), r).forEach(function (x) { take(x.zh); });
+      if (other.length < 3 && typeof VOCE_ZH !== "undefined") D.shuffle(VOCE_ZH.righe, r).some(function (x) { take(x[2]); return other.length >= 3; });
+      if (other.length < 3) return null;
+      var o = D.options('<span class="ex-sent-opt">' + esc(s.zh) + "</span>", other.map(function (z) { return '<span class="ex-sent-opt">' + esc(z) + "</span>"; }), r);
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", wide: true, say: s.zh, autoSay: true, sentence: s,
+        prompt: '<div class="ex-listen">' + CP.sayBtn(s.zh).replace('class="say"', 'class="say big"') + '<span class="tag small">' + esc(T("exm.real")) + "</span></div>" };
+    } });
+  /* l'ascolto della parola sola (voce sintetica) resta per i livelli 1-2; dal livello 3, quando c'è, la frase vera */
+  var mcA = ENG.REG["mc-ascolto"], mcReq = mcA && mcA.richiede;
+  if (mcA) mcA.richiede = function (w, ctx) { return (!mcReq || mcReq(w, ctx) !== false) && !(ctx.levelOf(w) >= 3 && voiced(w).length); };
 
   /* ---- rimetti in ordine: le tessere della frase (3-8 parole) ---- */
   ENG.register({ id: "ordina", famiglia: 1, corso: "zh", q: "exm.q.order",
