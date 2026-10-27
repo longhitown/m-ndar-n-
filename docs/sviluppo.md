@@ -206,10 +206,10 @@ sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 
 
 `.github/workflows/pages.yml` lancia `node tools/build.mjs && node tools/site.mjs --out _site` e pubblica:
 
-- alla radice, la **pagina di presentazione** `docs/index.html`, in italiano e in cinese, con:
+- alla radice, la **pagina di presentazione** `docs/index.html`, in italiano e in cinese (due versioni complete nella stessa pagina: la scelta è nitida, l'altra resta sfocata sotto come anteprima), con:
   - un solo invito all'azione («Apri l'app») e un piccolo lettore con tre brani dell'app (estratti in `docs/audio/`, ogni brano in `.ogg` e `.m4a`), che parte solo dopo un tocco;
   - il logo da toccare (le lettere con l'accento e le foglie suonano il loro tono) e tre microprove, «Provala qui» (orecchio ai toni, scrittura dei caratteri con Hanzi Writer, parole), che non salvano né inviano niente;
-  - una breve dimostrazione (`docs/img/demo.webm`, con `docs/img/demo.png` come copertina; parte solo se la si avvia);
+  - nel telefono in testa alla pagina e in ogni scheda delle funzioni, una clip in loop dell'app vera (`docs/img/clip-*.mp4` con il poster `.jpg`), che parte quando si vede e si ferma quando esce; con «riduci movimento» o il risparmio dati restano una foto e si avviano con un tocco. Le clip si registrano con `node tools/site-video.mjs` (Playwright e ffmpeg, dopo `node tools/build.mjs`) e stanno nel repository;
   - l'installazione per Android (APK, dal sito se c'è, altrimenti da GitHub; più avanti gli store), iPhone (tre immagini, `docs/img/ios-*.svg`) e computer;
   - domande frequenti e link a repository, privacy e sostegno.
 
@@ -220,7 +220,7 @@ sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 
 - in `app/`, l'**app** (`dist/` appena costruito);
 - `mandarino.apk` e `mandarino.apk.sha256`, scaricati dall'ultima Release a ogni pubblicazione (se non c'è una Release il sito esce senza e la pagina rimanda a GitHub).
 
-Le immagini della pagina (`docs/img/anteprima.png` 1200×630 per le condivisioni e la demo) le genera
+L'immagine per le condivisioni (`docs/img/anteprima.png` 1200×630) la genera
 `node tools/site.mjs --assets` con Playwright e stanno nel repository: rilancialo quando l'aspetto dell'app cambia molto.
 
 Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi la pubblicazione parte da sola

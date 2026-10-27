@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,6 +16,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/sito.css">
 <!-- Pagina di presentazione (docs/, pubblicata da .github/workflows/pages.yml con tools/site.mjs; l'app è in app/).
+     Due versioni complete, italiano e cinese, nella stessa pagina: quella scelta è nitida, l'altra resta sfocata sotto come anteprima.
      Nessun font, immagine, script o servizio esterno, nessun cookie: solo file nostri, dello stesso sito.
      Senza JavaScript la pagina è completa; assets/sito.js aggiunge solo animazioni e comodità. -->
 <script src="assets/sito.js"></script>
@@ -23,218 +24,226 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="màndarínō, inizio pagina"><img src="icon.svg" alt="" width="32" height="32">màndarínō</a>
-    <nav class="nav" aria-label="Sezioni">
-      <a href="#prova">Provala</a><a href="#funzioni">Funzioni</a><a href="#come">Come funziona</a><a href="#installa">Installa</a><a href="#domande">Domande</a>
-    </nav>
-    <p class="lang" style="margin:0"><a href="#top" aria-current="true">IT</a><a href="#zh" lang="zh-CN">中文</a></p>
-    <a class="btn small" href="app/">Apri l'app</a>
+    <a class="brand" href="#it-top" aria-label="màndarínō, inizio pagina"><img src="icon.svg" alt="" width="32" height="32">màndarínō</a>
+    <nav class="nav nav-it" aria-label="Sezioni" lang="it"><a href="#it-prova">Provala</a><a href="#it-funzioni">Funzioni</a><a href="#it-come">Come funziona</a><a href="#it-installa">Installa</a><a href="#it-domande">Domande</a></nav>
+    <nav class="nav nav-zh" aria-label="栏目" lang="zh-CN"><a href="#zh-prova">试一试</a><a href="#zh-funzioni">功能</a><a href="#zh-come">怎么学</a><a href="#zh-installa">安装</a><a href="#zh-domande">常见问题</a></nav>
+    <p class="lang" role="group" aria-label="Lingua · 语言"><button type="button" data-set-lang="it" aria-pressed="true">IT</button><button type="button" data-set-lang="zh" aria-pressed="false" lang="zh-CN">中文</button></p>
+    <a class="btn small" href="app/"><span class="l-it">Apri l'app</span><span class="l-zh" lang="zh-CN">打开应用</span></a>
   </div>
 </header>
-
-<main id="top">
+<div class="langstack">
+<div class="pgwrap" data-l="it">
+<main class="pg" id="it-top" lang="it">
 <section class="hero">
   <div class="drift" aria-hidden="true" lang="zh-CN"><span style="--x:44%;--s:4rem;--t:38s;--w:-20s;--r:-22deg">学</span><span style="--x:12%;--s:7rem;--t:29s;--w:-11s;--r:12deg">好</span><span style="--x:10%;--s:7rem;--t:32s;--w:-1s;--r:-20deg">你</span><span style="--x:58%;--s:6rem;--t:28s;--w:-7s;--r:-20deg">爱</span><span style="--x:73%;--s:6rem;--t:27s;--w:-26s;--r:11deg">人</span><span style="--x:18%;--s:4rem;--t:46s;--w:-20s;--r:12deg">水</span><span style="--x:10%;--s:7rem;--t:44s;--w:-12s;--r:-22deg">书</span><span style="--x:31%;--s:3rem;--t:43s;--w:-27s;--r:-17deg">茶</span><span style="--x:40%;--s:6rem;--t:30s;--w:-17s;--r:-18deg">猫</span><span style="--x:76%;--s:5rem;--t:43s;--w:-26s;--r:18deg">谢</span><span style="--x:26%;--s:3rem;--t:44s;--w:-18s;--r:15deg">吃</span><span style="--x:27%;--s:5rem;--t:29s;--w:-17s;--r:20deg">大</span></div>
   <div class="wrap">
-    <div>
-      <div class="mark">
-        <svg viewBox="-104 -108 208 200" role="group" aria-label="Il mandarino del logo: tocca le foglie">
+    <div class="htext">
+      <div class="mark"><svg viewBox="-104 -108 208 200" role="group" aria-label="Il mandarino del logo">
           <defs>
-            <radialGradient id="mk-b" cx="36%" cy="32%" r="68%"><stop offset="0" stop-color="#FFA41C"/><stop offset=".45" stop-color="#F37905"/><stop offset=".8" stop-color="#D95000"/><stop offset="1" stop-color="#9C3200"/></radialGradient>
-            <radialGradient id="mk-a" cx="40%" cy="40%" r="60%"><stop offset=".7" stop-opacity="0"/><stop offset="1" stop-color="#5C1600" stop-opacity=".45"/></radialGradient>
-            <linearGradient id="mk-h" x1="0" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-            <linearGradient id="mk-l" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2D7DD2"/><stop offset=".4" stop-color="#229874"/><stop offset="1" stop-color="#14594A"/></linearGradient>
-            <linearGradient id="mk-r" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#14594A"/><stop offset=".6" stop-color="#2EB88A"/><stop offset="1" stop-color="#3AD8A3"/></linearGradient>
+            <radialGradient id="mi-b" cx="36%" cy="32%" r="68%"><stop offset="0" stop-color="#FFA41C"/><stop offset=".45" stop-color="#F37905"/><stop offset=".8" stop-color="#D95000"/><stop offset="1" stop-color="#9C3200"/></radialGradient>
+            <radialGradient id="mi-a" cx="40%" cy="40%" r="60%"><stop offset=".7" stop-opacity="0"/><stop offset="1" stop-color="#5C1600" stop-opacity=".45"/></radialGradient>
+            <linearGradient id="mi-h" x1="0" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            <linearGradient id="mi-l" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2D7DD2"/><stop offset=".4" stop-color="#229874"/><stop offset="1" stop-color="#14594A"/></linearGradient>
+            <linearGradient id="mi-r" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#14594A"/><stop offset=".6" stop-color="#2EB88A"/><stop offset="1" stop-color="#3AD8A3"/></linearGradient>
           </defs>
           <ellipse cx="0" cy="88" rx="82" ry="9" fill="#0F1412" opacity=".18"/>
-          <path fill="url(#mk-b)" d="M 0,-68 C 58,-68 96,-34 96,12 C 96,58 54,84 0,84 C -54,84 -96,58 -96,12 C -96,-34 -58,-68 0,-68 Z"/>
-          <path fill="url(#mk-a)" d="M 0,-68 C 58,-68 96,-34 96,12 C 96,58 54,84 0,84 C -54,84 -96,58 -96,12 C -96,-34 -58,-68 0,-68 Z"/>
-          <path fill="url(#mk-h)" d="M -48,-48 C -16,-62 24,-62 52,-44 C 18,-48 -22,-44 -48,-48 Z"/>
+          <path fill="url(#mi-b)" d="M 0,-68 C 58,-68 96,-34 96,12 C 96,58 54,84 0,84 C -54,84 -96,58 -96,12 C -96,-34 -58,-68 0,-68 Z"/>
+          <path fill="url(#mi-a)" d="M 0,-68 C 58,-68 96,-34 96,12 C 96,58 54,84 0,84 C -54,84 -96,58 -96,12 C -96,-34 -58,-68 0,-68 Z"/>
+          <path fill="url(#mi-h)" d="M -48,-48 C -16,-62 24,-62 52,-44 C 18,-48 -22,-44 -48,-48 Z"/>
           <ellipse cx="0" cy="-66" rx="9" ry="3.5" fill="#752200" opacity=".75"/>
           <path d="M -2,-66 C -4,-76 -1,-82 3,-86 C 4,-86 5,-83 4,-81 C 1,-77 2,-73 2,-66 Z" fill="#293A2C"/>
-          <g class="leaf l" data-tone="3" role="button" tabindex="0" aria-label="Foglia sinistra: ascolta il terzo tono">
-            <path fill="url(#mk-l)" d="M -1,-67 C -14,-84 -38,-98 -62,-92 C -58,-74 -36,-64 -1,-67 Z"/>
+          <g class="leaf l" data-tone="3" role="button" tabindex="0" aria-label="Foglia sinistra">
+            <path fill="url(#mi-l)" d="M -1,-67 C -14,-84 -38,-98 -62,-92 C -58,-74 -36,-64 -1,-67 Z"/>
             <path d="M -54,-88 C -36,-82 -18,-74 -4,-68" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".4"/>
           </g>
-          <g class="leaf r" data-tone="3" role="button" tabindex="0" aria-label="Foglia destra: ascolta il terzo tono">
-            <path fill="url(#mk-r)" d="M 1,-68 C 22,-88 52,-102 78,-94 C 66,-72 38,-62 1,-68 Z"/>
+          <g class="leaf r" data-tone="3" role="button" tabindex="0" aria-label="Foglia destra">
+            <path fill="url(#mi-r)" d="M 1,-68 C 22,-88 52,-102 78,-94 C 66,-72 38,-62 1,-68 Z"/>
             <path d="M 2,-69 C 28,-75 52,-84 70,-92" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".45"/>
           </g>
           <circle cx="0" cy="-67.5" r="2.8" fill="#14594A"/>
-        </svg>
-        <div>
-          <p class="wordmark" lang="it" aria-label="màndarínō">m<button class="tn" type="button" data-tone="4" aria-label="à, quarto tono">à</button>ndar<button class="tn" type="button" data-tone="2" aria-label="í, secondo tono">í</button>n<button class="tn" type="button" data-tone="1" aria-label="ō, primo tono">ō</button></p>
-          <p class="mark-hint">Tocca le lettere con l'accento. E le foglie: hanno la forma del terzo tono, ˇ</p>
-        </div>
-      </div>
+        </svg><p class="wordmark" lang="it" aria-label="màndarínō">m<button class="tn" type="button" data-tone="4" aria-label="à, quarto tono">à</button>ndar<button class="tn" type="button" data-tone="2" aria-label="í, secondo tono">í</button>n<button class="tn" type="button" data-tone="1" aria-label="ō, primo tono">ō</button></p></div>
       <span class="eyebrow">Gratis · offline · senza account</span>
-      <h1>Il cinese per italiani. <em>L'italiano</em> per chi parla cinese.</h1>
-      <p class="zh" lang="zh-CN">为中文使用者学意大利语，为意大利人学中文。</p>
-      <p class="ticker" aria-hidden="true"><span class="h" lang="zh-CN">你好</span><span class="p">nǐ hǎo</span><span class="i">ciao</span></p>
+      <h1><span>Il cinese per italiani.</span><span>L'italiano per chi parla cinese.</span></h1>
+      <p class="ticker" aria-hidden="true" data-words='[["你好", "nǐ hǎo", "ciao"], ["谢谢", "xièxie", "grazie"], ["再见", "zàijiàn", "arrivederci"], ["好吃", "hǎochī", "buono (da mangiare)"], ["加油", "jiāyóu", "forza!"]]'><span class="h" lang="zh-CN">你好</span><span class="p">nǐ hǎo</span><span class="i" lang="it">ciao</span></p>
       <div class="cta">
-        <a class="btn" href="app/">Apri l'app · 打开应用</a>
-        <a class="btn ghost" href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-          Scarica l'APK <small data-apk-size style="font-weight:500"></small></a>
+        <a class="btn" href="app/">Apri l'app</a>
+        <a class="btn ghost" href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>Scarica l'APK <small data-apk-size style="font-weight:500"></small></a>
       </div>
-      <ul class="badges">
-        <li>Nessuna pubblicità</li><li>Nessun dato raccolto</li><li>Si installa sul telefono</li><li>Codice aperto</li>
-      </ul>
+      <ul class="badges"><li>Nessuna pubblicità</li><li>Nessun dato raccolto</li><li>Si installa sul telefono</li><li>Open source</li></ul>
     </div>
-    <div class="phone">
-      <video src="img/demo.webm" poster="img/demo.png" width="240" height="493" muted loop playsinline preload="none" controls aria-label="Pochi secondi dell'app: studio, parole, percorso"></video>
-    </div>
+    <div class="phone"><video data-src="img/clip-hero.mp4" poster="img/clip-hero.jpg" muted loop playsinline preload="none" aria-label="Alcuni secondi dell'app: la carta Continua, le parole nuove, la prima domanda"></video></div>
   </div>
 </section>
-
-<section style="padding-top:0">
-  <div class="wrap">
-    <ul class="stats">
-      <li class="rv"><b data-count="6385">6.385</b><span>parole di cinese, HSK 3.0</span></li>
-      <li class="rv"><b data-count="4780">4.780</b><span>parole di italiano</span></li>
-      <li class="rv"><b>0</b><span>pubblicità</span></li>
-      <li class="rv"><b>0</b><span>account da creare</span></li>
-    </ul>
-  </div>
-</section>
-
-<section id="prova" class="try alt">
+<section class="statsec"><div class="wrap"><ul class="stats"><li class="rv"><b data-count="6385">6.385</b><span>parole di cinese, HSK 3.0</span></li><li class="rv"><b data-count="4780">4.780</b><span>parole di italiano</span></li><li class="rv"><b>0</b><span>pubblicità</span></li><li class="rv"><b>0</b><span>account da creare</span></li></ul></div></section>
+<section id="it-prova" class="try alt" data-l="it">
   <div class="wrap">
     <span class="eyebrow rv">Provala qui</span>
     <h2 class="rv">Tre minuti di app, senza installare niente</h2>
     <p class="lede rv">Un assaggio di quello che c'è dentro: senti i toni, scrivi un carattere tratto per tratto, indovina qualche parola. Niente viene salvato né inviato.</p>
     <p class="score rv">Punti <b data-score>0</b></p>
-    <div class="tabs rv" role="tablist" aria-label="Microprove">
-      <span class="pill" aria-hidden="true"></span>
-      <button role="tab" id="t-toni" aria-controls="p-toni" aria-selected="true">Orecchio ai toni</button>
-      <button role="tab" id="t-scrivi" aria-controls="p-scrivi" aria-selected="false" tabindex="-1">Scrivi</button>
-      <button role="tab" id="t-parole" aria-controls="p-parole" aria-selected="false" tabindex="-1">Parole</button>
-    </div>
-    <div class="panel" id="p-toni" role="tabpanel" aria-labelledby="t-toni"><div class="play-area"><p class="q">Sto caricando…</p></div>
-      <p class="note">I toni sono sintetici, per darti l'idea. Nell'app senti voci vere, registrate da persone.</p></div>
-    <div class="panel" id="p-scrivi" role="tabpanel" aria-labelledby="t-scrivi" hidden><div class="play-area"><p class="q">Sto caricando…</p></div>
-      <p class="note">Disponibile anche l'ordine dei tratti di oltre duemila caratteri, nell'app.</p></div>
-    <div class="panel" id="p-parole" role="tabpanel" aria-labelledby="t-parole" hidden><div class="play-area"><p class="q">Sto caricando…</p></div></div>
+    <div class="tabs rv" role="tablist" aria-label="Provala qui"><span class="pill" aria-hidden="true"></span><button role="tab" id="it-t-toni" aria-controls="it-p-toni" aria-selected="true">Orecchio ai toni</button><button role="tab" id="it-t-scrivi" aria-controls="it-p-scrivi" aria-selected="false" tabindex="-1">Scrivi</button><button role="tab" id="it-t-parole" aria-controls="it-p-parole" aria-selected="false" tabindex="-1">Parole</button></div>
+    <div class="panel" id="it-p-toni" role="tabpanel" aria-labelledby="it-t-toni"><div class="play-area" data-play="toni"><p class="q">Sto caricando…</p></div><p class="note">I toni sono sintetici, per darti l'idea. Nell'app senti voci vere, registrate da persone.</p></div><div class="panel" id="it-p-scrivi" role="tabpanel" aria-labelledby="it-t-scrivi" hidden><div class="play-area" data-play="scrivi"><p class="q">Sto caricando…</p></div><p class="note">Nell'app c'è l'ordine dei tratti di oltre duemila caratteri.</p></div><div class="panel" id="it-p-parole" role="tabpanel" aria-labelledby="it-t-parole" hidden><div class="play-area" data-play="parole"><p class="q">Sto caricando…</p></div></div>
     <div class="final" data-final hidden><a class="btn go" href="app/">Continua nell'app</a></div>
   </div>
 </section>
-
-<section id="funzioni">
+<section id="it-funzioni">
   <div class="wrap">
     <span class="eyebrow rv">Che cos'è</span>
     <h2 class="rv">Un'app per studiare, non per distrarti</h2>
     <p class="lede rv">Si apre nel browser e si installa sul telefono; dopo la prima apertura funziona senza rete. Nessun account, nessuna pubblicità, nessun dato raccolto: i progressi restano sul tuo telefono.</p>
-    <ul class="cards">
-      <li class="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h10"/></svg><h3>6385 parole HSK 3.0</h3><p>Livelli 1-5 in sei capitoli, pinyin, toni e una frase d'esempio per ogni parola.</p></li>
-      <li class="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><h3>Ripasso a intervalli</h3><p>Dieci parole al giorno, lette ad alta voce; un test di livello di pochi minuti all'inizio.</p></li>
-      <li class="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><h3>Frasi e grammatica</h3><p>30 lezioni, dialoghi e un laboratorio che traduce solo quando è sicuro.</p></li>
-      <li class="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><h3>Toni e scrittura</h3><p>Orecchio ai toni, pronuncia con il microfono, ordine dei tratti.</p></li>
-      <li class="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><h3>Italiano per chi parla cinese</h3><p>30 lezioni, 4780 parole, coniugazione dei verbi e correzione delle frasi: un corso a parte, nella stessa app.</p></li>
-      <li class="rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg><h3>Su più dispositivi</h3><p>La sincronizzazione usa un file nel tuo cloud (Drive, OneDrive, Dropbox, iCloud) oppure dei QR da un telefono all'altro.</p></li>
-    </ul>
+    <ul class="cards"><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-parole.mp4" poster="img/clip-parole.jpg" muted loop playsinline preload="none" aria-label="La tabella delle parole e la ricerca"></video></div><div class="ft"><h3>6385 parole HSK 3.0</h3><p>Livelli 1-5 in sei capitoli, pinyin, toni e una frase d'esempio per ogni parola. Cerchi in pinyin, in caratteri o in italiano.</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-ripasso.mp4" poster="img/clip-ripasso.jpg" muted loop playsinline preload="none" aria-label="Una domanda di ripasso con la risposta corretta"></video></div><div class="ft"><h3>Ripasso a intervalli</h3><p>Le parole tornano quando stai per dimenticarle. Esercizi vari, dieci parole al giorno e un test di livello all'inizio.</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-frasi.mp4" poster="img/clip-frasi.jpg" muted loop playsinline preload="none" aria-label="Le strade di Frasi e un dialogo"></video></div><div class="ft"><h3>Frasi e grammatica</h3><p>30 lezioni, dialoghi da ascoltare e un laboratorio che traduce solo quando è sicuro.</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-toni.mp4" poster="img/clip-toni.jpg" muted loop playsinline preload="none" aria-label="L'allenamento dell'orecchio ai toni"></video></div><div class="ft"><h3>Toni e scrittura</h3><p>Orecchio ai toni, pronuncia con il microfono, ordine dei tratti di oltre duemila caratteri.</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-italiano.mp4" poster="img/clip-italiano.jpg" muted loop playsinline preload="none" aria-label="Il corso di italiano per chi parla cinese"></video></div><div class="ft"><h3>Italiano per chi parla cinese</h3><p>30 lezioni, 4780 parole, coniugazione dei verbi e correzione delle frasi: un corso a parte, nella stessa app.</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-dati.mp4" poster="img/clip-dati.jpg" muted loop playsinline preload="none" aria-label="Le impostazioni dei dati: sincronizzazione e backup"></video></div><div class="ft"><h3>Su più dispositivi</h3><p>File nel tuo cloud (Drive, OneDrive, Dropbox, iCloud) o QR da un telefono all'altro. Nessun account.</p></div></li></ul>
   </div>
 </section>
-
-<section id="come" class="alt">
+<section id="it-come" class="alt">
   <div class="wrap">
     <span class="eyebrow rv">Come funziona</span>
     <h2 class="rv">Dieci minuti al giorno bastano</h2>
-    <ol class="steps">
-      <li class="rv"><h3>Un test di pochi minuti</h3><p>Parti dal tuo livello: se sai già un po' di cinese non ricominci da zero, e puoi sempre cambiarlo.</p></li>
-      <li class="rv"><h3>Dieci parole al giorno</h3><p>Una lezione, le parole nuove, qualche frase: il percorso ti dice sempre qual è il prossimo passo.</p></li>
-      <li class="rv"><h3>Il ripasso al momento giusto</h3><p>Le parole tornano quando stai per dimenticarle, non prima e non dopo.</p></li>
-    </ol>
+    <ol class="steps"><li class="rv"><h3>Un test di pochi minuti</h3><p>Parti dal tuo livello: se sai già un po' di cinese non ricominci da zero, e puoi sempre cambiarlo.</p></li><li class="rv"><h3>Dieci parole al giorno</h3><p>Una lezione, le parole nuove, qualche frase: il percorso ti dice sempre qual è il prossimo passo.</p></li><li class="rv"><h3>Il ripasso al momento giusto</h3><p>Le parole tornano quando stai per dimenticarle, non prima e non dopo.</p></li></ol>
   </div>
 </section>
-
-<section id="installa">
+<section id="it-installa">
   <div class="wrap">
     <span class="eyebrow rv">Installare</span>
     <h2 class="rv">Sul telefono in un minuto</h2>
-    <div class="tabs rv" role="tablist" aria-label="Dispositivo">
-      <span class="pill" aria-hidden="true"></span>
-      <button role="tab" id="t-android" aria-controls="p-android" aria-selected="true" data-os="android">Android</button>
-      <button role="tab" id="t-ios" aria-controls="p-ios" aria-selected="false" tabindex="-1" data-os="ios">iPhone</button>
-      <button role="tab" id="t-pc" aria-controls="p-pc" aria-selected="false" tabindex="-1" data-os="pc">Computer</button>
-    </div>
-    <div class="panel" id="p-android" role="tabpanel" aria-labelledby="t-android">
-      <h3>Android</h3>
-      <p>Scarica l'<a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk">APK</a> <small data-apk-size></small> e permetti l'installazione da questa fonte quando il telefono lo chiede. L'app Android ha anche widget, scorciatoie e musica in secondo piano. Più avanti sarà anche negli store.</p>
-    </div>
-    <div class="panel" id="p-ios" role="tabpanel" aria-labelledby="t-ios">
-      <h3>iPhone e iPad</h3>
-      <ol class="shots">
-        <li><img src="img/ios-1.svg" alt="" width="150" height="225">Apri <a href="app/">l'app</a> in Safari e tocca <b>Condividi</b>.</li>
-        <li><img src="img/ios-2.svg" alt="" width="150" height="225">Scegli <b>Aggiungi alla schermata Home</b>.</li>
-        <li><img src="img/ios-3.svg" alt="" width="150" height="225">màndarínō è sulla schermata Home, anche senza rete.</li>
-      </ol>
-    </div>
-    <div class="panel" id="p-pc" role="tabpanel" aria-labelledby="t-pc">
-      <h3>Computer</h3>
-      <p>Apri <a href="app/">l'app</a> in Chrome, Edge o Firefox. In Chrome ed Edge puoi installarla dal menu del browser.</p>
-    </div>
+    <div class="tabs rv" role="tablist" aria-label="Installare"><span class="pill" aria-hidden="true"></span><button role="tab" id="it-ti-android" aria-controls="it-pi-android" aria-selected="true" data-os="android">Android</button><button role="tab" id="it-ti-ios" aria-controls="it-pi-ios" aria-selected="false" tabindex="-1" data-os="ios">iPhone</button><button role="tab" id="it-ti-pc" aria-controls="it-pi-pc" aria-selected="false" tabindex="-1" data-os="pc">Computer</button></div>
+    <div class="panel" id="it-pi-android" role="tabpanel" aria-labelledby="it-ti-android"><h3>Android</h3><p>Scarica l'<a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk">APK</a> <small data-apk-size></small> e permetti l'installazione da questa fonte quando il telefono lo chiede. L'app Android ha anche widget, scorciatoie e musica in secondo piano. Più avanti sarà anche negli store.</p></div>
+    <div class="panel" id="it-pi-ios" role="tabpanel" aria-labelledby="it-ti-ios" hidden><h3>iPhone e iPad</h3><ol class="shots"><li><img src="img/ios-1.svg" alt="" width="150" height="225">Apri <a href="app/">l'app</a> in Safari e tocca <b>Condividi</b>.</li><li><img src="img/ios-2.svg" alt="" width="150" height="225">Scegli <b>Aggiungi alla schermata Home</b>.</li><li><img src="img/ios-3.svg" alt="" width="150" height="225">màndarínō è sulla schermata Home, anche senza rete.</li></ol></div>
+    <div class="panel" id="it-pi-pc" role="tabpanel" aria-labelledby="it-ti-pc" hidden><h3>Computer</h3><p>Apri <a href="app/">l'app</a> in Chrome, Edge, Safari o Firefox. È pensata per lo schermo di un telefono, ma si usa anche dal computer; in Chrome ed Edge puoi installarla dal menu del browser.</p></div>
   </div>
 </section>
-
-<section id="dati" class="alt">
+<section id="it-dati" class="alt">
   <div class="wrap">
     <div class="band rv">
       <h2>I tuoi dati restano tuoi</h2>
       <p>Nessun account, nessun server, nessuna statistica. Quello che studi resta sul tuo telefono, e puoi esportarlo quando vuoi.</p>
+      <h3>Perché è gratis</h3>
+      <p>Costruire màndarínō è stato molto più semplice di quanto immaginassi: Claude, un'intelligenza artificiale, ha scritto buona parte del codice mentre io decidevo che cosa doveva fare. Quando una cosa costa così poca fatica, mi sembra sbagliato farla pagare, riempirla di pubblicità o tenere i dati di chi la usa.</p>
+      <p>Per questo non c'è niente da vendere e niente da raccogliere. Se un giorno vorrai ringraziare, c'è una pagina Ko-fi e un sigillo di gratitudine, ma non sblocca nulla: l'app è la stessa per tutti.</p>
       <ul class="chips"><li>Nessun tracciamento</li><li>Funziona offline</li><li>Gratis, per sempre</li></ul>
       <a class="btn inv" href="privacy.html">Leggi la privacy</a>
     </div>
   </div>
 </section>
-
-<section id="domande">
+<section id="it-domande">
   <div class="wrap">
     <span class="eyebrow rv">Domande frequenti</span>
     <h2 class="rv">Hai un dubbio?</h2>
-    <div style="margin-top:20px">
-      <details class="rv"><summary>È davvero gratis?</summary><p>Sì, del tutto: niente pubblicità, niente abbonamenti, niente funzioni a pagamento. Chi vuole può <a href="https://ko-fi.com/mandarinoapp" rel="noopener noreferrer">sostenere il progetto</a>, ma non sblocca nulla.</p></details>
-      <details class="rv"><summary>Serve internet?</summary><p>Solo la prima volta, per scaricarla. Poi funziona offline; la musica si scarica al primo ascolto.</p></details>
-      <details class="rv"><summary>Dove finiscono i miei dati?</summary><p>Restano sul tuo telefono. Nessun account, nessun server, nessuna statistica. Leggi la <a href="privacy.html">privacy</a>.</p></details>
-      <details class="rv"><summary>Posso studiare su due dispositivi?</summary><p>Sì: la sincronizzazione usa un file nel tuo cloud (Drive, OneDrive, Dropbox, iCloud) oppure dei QR da un telefono all'altro.</p></details>
-      <details class="rv"><summary>So già un po' di cinese: devo ricominciare da zero?</summary><p>No: all'inizio un test di pochi minuti ti fa partire dal tuo livello, e puoi sempre cambiarlo.</p></details>
-      <details class="rv"><summary>Ho trovato un errore</summary><p>Correggilo dall'app (tocca la parola, poi «Correggi o segnala»), oppure leggi <a href="https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md">come contribuire</a>: non serve programmare.</p></details>
-    </div>
-  </div>
-</section>
-
-<section id="zh" lang="zh-CN">
-  <div class="wrap">
-    <span class="eyebrow rv">中文</span>
-    <h2 class="rv">这是什么</h2>
-    <p class="lede rv">màndarínō 是一款学习应用：中文使用者用它学意大利语，意大利人用它学中文。它在浏览器中运行，也可以安装到手机上；第一次打开后不需要网络。没有账号，没有广告，不收集任何数据：学习进度只保存在你的手机上。</p>
-    <ul class="cards">
-      <li class="rv"><h3>意大利语课程</h3><p>30 课、4780 个词、动词变位练习和意大利语句子检查。</p></li>
-      <li class="rv"><h3>间隔复习</h3><p>每天十个词；开始时有几分钟的水平测试，从合适的地方起步。</p></li>
-      <li class="rv"><h3>只属于你</h3><p>学习进度保存在手机上；同步使用你自己云端的文件或二维码。</p></li>
-    </ul>
-    <div class="cta"><a class="btn go" href="app/">打开应用</a><a class="btn ghost" href="zh/">中文介绍页</a></div>
-    <h3 style="margin-top:32px">怎么安装</h3>
-    <p><b>安卓：</b>下载 <a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk">APK</a>，手机询问时允许从此来源安装。以后也会上架应用商店。<br>
-    <b>iPhone 和 iPad：</b>在 Safari 中打开<a href="app/">应用</a>，点<b>分享</b>，选择<b>添加到主屏幕</b>。<br>
-    <b>电脑：</b>在 Chrome、Edge 或 Firefox 中打开<a href="app/">应用</a>。</p>
-    <h3 style="margin-top:24px">常见问题</h3>
-    <div>
-      <details><summary>真的免费吗？</summary><p>完全免费：没有广告、没有订阅、没有付费功能。</p></details>
-      <details><summary>需要网络吗？</summary><p>只有第一次下载时需要。之后可以离线使用。</p></details>
-      <details><summary>我的数据在哪里？</summary><p>只在你的手机上。没有账号、服务器或统计。请看<a href="privacy.html#中文">隐私说明</a>。</p></details>
-      <details><summary>我可以帮忙吗？</summary><p>可以！我特别需要母语为中文的朋友校对意大利语课程里的中文。不会编程也能帮忙：见<a href="https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md#中文">如何参与</a>。</p></details>
-    </div>
+    <div style="margin-top:20px"><details class="rv"><summary>È davvero gratis?</summary><p>Sì, del tutto: niente pubblicità, niente abbonamenti, niente funzioni a pagamento. Chi vuole può <a href="https://ko-fi.com/mandarinoapp" rel="noopener noreferrer">sostenere il progetto</a>, ma non sblocca nulla.</p></details><details class="rv"><summary>Serve internet?</summary><p>Solo la prima volta, per scaricarla. Poi funziona offline; la musica si scarica al primo ascolto.</p></details><details class="rv"><summary>Dove finiscono i miei dati?</summary><p>Restano sul tuo telefono. Nessun account, nessun server, nessuna statistica. Leggi la <a href="privacy.html">privacy</a>.</p></details><details class="rv"><summary>Funziona anche sul computer?</summary><p>Sì: apri l'app nel browser. È pensata per lo schermo di un telefono, ma si usa anche da un computer.</p></details><details class="rv"><summary>Posso studiare su due dispositivi?</summary><p>Sì: la sincronizzazione usa un file nel tuo cloud (Drive, OneDrive, Dropbox, iCloud) oppure dei QR da un telefono all'altro.</p></details><details class="rv"><summary>So già un po' di cinese: devo ricominciare da zero?</summary><p>No: all'inizio un test di pochi minuti ti fa partire dal tuo livello, e puoi sempre cambiarlo.</p></details><details class="rv"><summary>Ho trovato un errore</summary><p>Correggilo dall'app (tocca la parola, poi «Correggi o segnala»), oppure leggi <a href="https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md">come contribuire</a>: non serve programmare.</p></details></div>
   </div>
 </section>
 </main>
-
+<button class="peek-cta" type="button" data-set-lang="it" lang="it">Leggi in italiano · 用意大利语阅读</button>
+</div>
+<div class="pgwrap" data-l="zh">
+<main class="pg" id="zh-top" lang="zh-CN">
+<section class="hero">
+  <div class="drift" aria-hidden="true" lang="zh-CN"><span style="--x:44%;--s:4rem;--t:38s;--w:-20s;--r:-22deg">学</span><span style="--x:12%;--s:7rem;--t:29s;--w:-11s;--r:12deg">好</span><span style="--x:10%;--s:7rem;--t:32s;--w:-1s;--r:-20deg">你</span><span style="--x:58%;--s:6rem;--t:28s;--w:-7s;--r:-20deg">爱</span><span style="--x:73%;--s:6rem;--t:27s;--w:-26s;--r:11deg">人</span><span style="--x:18%;--s:4rem;--t:46s;--w:-20s;--r:12deg">水</span><span style="--x:10%;--s:7rem;--t:44s;--w:-12s;--r:-22deg">书</span><span style="--x:31%;--s:3rem;--t:43s;--w:-27s;--r:-17deg">茶</span><span style="--x:40%;--s:6rem;--t:30s;--w:-17s;--r:-18deg">猫</span><span style="--x:76%;--s:5rem;--t:43s;--w:-26s;--r:18deg">谢</span><span style="--x:26%;--s:3rem;--t:44s;--w:-18s;--r:15deg">吃</span><span style="--x:27%;--s:5rem;--t:29s;--w:-17s;--r:20deg">大</span></div>
+  <div class="wrap">
+    <div class="htext">
+      <div class="mark"><svg viewBox="-104 -108 208 200" role="group" aria-label="标志里的橘子">
+          <defs>
+            <radialGradient id="mz-b" cx="36%" cy="32%" r="68%"><stop offset="0" stop-color="#FFA41C"/><stop offset=".45" stop-color="#F37905"/><stop offset=".8" stop-color="#D95000"/><stop offset="1" stop-color="#9C3200"/></radialGradient>
+            <radialGradient id="mz-a" cx="40%" cy="40%" r="60%"><stop offset=".7" stop-opacity="0"/><stop offset="1" stop-color="#5C1600" stop-opacity=".45"/></radialGradient>
+            <linearGradient id="mz-h" x1="0" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            <linearGradient id="mz-l" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2D7DD2"/><stop offset=".4" stop-color="#229874"/><stop offset="1" stop-color="#14594A"/></linearGradient>
+            <linearGradient id="mz-r" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#14594A"/><stop offset=".6" stop-color="#2EB88A"/><stop offset="1" stop-color="#3AD8A3"/></linearGradient>
+          </defs>
+          <ellipse cx="0" cy="88" rx="82" ry="9" fill="#0F1412" opacity=".18"/>
+          <path fill="url(#mz-b)" d="M 0,-68 C 58,-68 96,-34 96,12 C 96,58 54,84 0,84 C -54,84 -96,58 -96,12 C -96,-34 -58,-68 0,-68 Z"/>
+          <path fill="url(#mz-a)" d="M 0,-68 C 58,-68 96,-34 96,12 C 96,58 54,84 0,84 C -54,84 -96,58 -96,12 C -96,-34 -58,-68 0,-68 Z"/>
+          <path fill="url(#mz-h)" d="M -48,-48 C -16,-62 24,-62 52,-44 C 18,-48 -22,-44 -48,-48 Z"/>
+          <ellipse cx="0" cy="-66" rx="9" ry="3.5" fill="#752200" opacity=".75"/>
+          <path d="M -2,-66 C -4,-76 -1,-82 3,-86 C 4,-86 5,-83 4,-81 C 1,-77 2,-73 2,-66 Z" fill="#293A2C"/>
+          <g class="leaf l" data-tone="3" role="button" tabindex="0" aria-label="左边的叶子">
+            <path fill="url(#mz-l)" d="M -1,-67 C -14,-84 -38,-98 -62,-92 C -58,-74 -36,-64 -1,-67 Z"/>
+            <path d="M -54,-88 C -36,-82 -18,-74 -4,-68" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".4"/>
+          </g>
+          <g class="leaf r" data-tone="3" role="button" tabindex="0" aria-label="右边的叶子">
+            <path fill="url(#mz-r)" d="M 1,-68 C 22,-88 52,-102 78,-94 C 66,-72 38,-62 1,-68 Z"/>
+            <path d="M 2,-69 C 28,-75 52,-84 70,-92" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".45"/>
+          </g>
+          <circle cx="0" cy="-67.5" r="2.8" fill="#14594A"/>
+        </svg><p class="wordmark" lang="it" aria-label="màndarínō">m<button class="tn" type="button" data-tone="4" aria-label="à, quarto tono">à</button>ndar<button class="tn" type="button" data-tone="2" aria-label="í, secondo tono">í</button>n<button class="tn" type="button" data-tone="1" aria-label="ō, primo tono">ō</button></p></div>
+      <span class="eyebrow">免费 · 离线 · 无需账号</span>
+      <h1><span>中文使用者学意大利语。</span><span>意大利人学中文。</span></h1>
+      <p class="ticker" aria-hidden="true" data-words='[["ciao", "", "你好"], ["grazie", "", "谢谢"], ["arrivederci", "", "再见"], ["buongiorno", "", "早上好"], ["salute!", "", "干杯！"]]'><span class="h" lang="it">ciao</span><span class="p"></span><span class="i" lang="zh-CN">你好</span></p>
+      <div class="cta">
+        <a class="btn go" href="app/">打开应用</a>
+        <a class="btn ghost" href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>下载安装包（APK） <small data-apk-size style="font-weight:500"></small></a>
+      </div>
+      <ul class="badges"><li>没有广告</li><li>不收集数据</li><li>可安装到手机</li><li>开源</li></ul>
+    </div>
+    <div class="phone"><video data-src="img/clip-hero.mp4" poster="img/clip-hero.jpg" muted loop playsinline preload="none" aria-label="应用里的几秒钟：继续学习卡片、新词、第一道题"></video></div>
+  </div>
+</section>
+<section class="statsec"><div class="wrap"><ul class="stats"><li class="rv"><b data-count="4780">4,780</b><span>个意大利语单词</span></li><li class="rv"><b data-count="6385">6,385</b><span>个中文词（意大利人用）</span></li><li class="rv"><b>0</b><span>广告</span></li><li class="rv"><b>0</b><span>要注册的账号</span></li></ul></div></section>
+<section id="zh-prova" class="try alt" data-l="zh">
+  <div class="wrap">
+    <span class="eyebrow rv">试一试</span>
+    <h2 class="rv">三分钟体验，不用安装</h2>
+    <p class="lede rv">感受一下应用里有什么：学意大利语单词、选冠词、听一听。不保存、也不上传任何内容。</p>
+    <p class="score rv">得分 <b data-score>0</b></p>
+    <div class="tabs rv" role="tablist" aria-label="试一试"><span class="pill" aria-hidden="true"></span><button role="tab" id="zh-t-zparole" aria-controls="zh-p-zparole" aria-selected="true">词语</button><button role="tab" id="zh-t-articoli" aria-controls="zh-p-articoli" aria-selected="false" tabindex="-1">冠词</button><button role="tab" id="zh-t-ascolta" aria-controls="zh-p-ascolta" aria-selected="false" tabindex="-1">听一听</button></div>
+    <div class="panel" id="zh-p-zparole" role="tabpanel" aria-labelledby="zh-t-zparole"><div class="play-area" data-play="zparole"><p class="q">加载中…</p></div></div><div class="panel" id="zh-p-articoli" role="tabpanel" aria-labelledby="zh-t-articoli" hidden><div class="play-area" data-play="articoli"><p class="q">加载中…</p></div></div><div class="panel" id="zh-p-ascolta" role="tabpanel" aria-labelledby="zh-t-ascolta" hidden><div class="play-area" data-play="ascolta"><p class="q">加载中…</p></div><p class="note">这里用的是你设备上的意大利语语音；应用里有真人录音。</p></div>
+    <div class="final" data-final hidden><a class="btn go" href="app/">在应用里继续</a></div>
+  </div>
+</section>
+<section id="zh-funzioni">
+  <div class="wrap">
+    <span class="eyebrow rv">这是什么</span>
+    <h2 class="rv">为学习而设计，不为打扰你</h2>
+    <p class="lede rv">在浏览器中运行，也可以安装到手机；第一次打开后不需要网络。没有账号，没有广告，不收集任何数据：学习进度只保存在你的手机上。</p>
+    <ul class="cards"><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-italiano.mp4" poster="img/clip-italiano.jpg" muted loop playsinline preload="none" aria-label="意大利语课程：今天的任务和课程列表"></video></div><div class="ft"><h3>30 课意大利语</h3><p>每课先讲后练：规则用中文解释，例句配意大利语发音，最后有小测验。</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-itparole.mp4" poster="img/clip-itparole.jpg" muted loop playsinline preload="none" aria-label="意大利语单词表和搜索"></video></div><div class="ft"><h3>4780 个常用词</h3><p>名词带冠词和阴阳性，动词有完整变位，每个词都有例句和读音，还可以搜索。</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-itripasso.mp4" poster="img/clip-itripasso.jpg" muted loop playsinline preload="none" aria-label="学新词并马上练习"></video></div><div class="ft"><h3>间隔复习</h3><p>每天十个新词；词在你快忘记时回来复习，还有听写和选择题。</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-itconiuga.mp4" poster="img/clip-itconiuga.jpg" muted loop playsinline preload="none" aria-label="动词变位练习"></video></div><div class="ft"><h3>动词变位练习</h3><p>选对动词的形式，马上知道对不对，错在哪里。</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-itfrasi.mp4" poster="img/clip-itfrasi.jpg" muted loop playsinline preload="none" aria-label="句子练习"></video></div><div class="ft"><h3>句子练习和检查</h3><p>用词块拼出句子；写一句意大利语，应用会检查冠词、性数和主谓一致，并用中文告诉你错在哪里。</p></div></li><li class="fcard rv"><div class="phone mini"><video data-src="img/clip-dati.mp4" poster="img/clip-dati.jpg" muted loop playsinline preload="none" aria-label="数据设置：同步和备份"></video></div><div class="ft"><h3>多台设备同步</h3><p>用你自己云盘里的文件，或扫二维码，从一部手机换到另一部。不需要账号。</p></div></li></ul>
+  </div>
+</section>
+<section id="zh-come" class="alt">
+  <div class="wrap">
+    <span class="eyebrow rv">怎么学</span>
+    <h2 class="rv">每天十分钟就够了</h2>
+    <ol class="steps"><li class="rv"><h3>几分钟的水平测试</h3><p>已经会一点意大利语也不用从头开始，随时可以改。</p></li><li class="rv"><h3>每天十个新词</h3><p>一课、新词、几个句子：路线图告诉你下一步做什么。</p></li><li class="rv"><h3>在恰当的时候复习</h3><p>词在你快忘记时回来，不早也不晚。</p></li></ol>
+  </div>
+</section>
+<section id="zh-installa">
+  <div class="wrap">
+    <span class="eyebrow rv">安装</span>
+    <h2 class="rv">一分钟装到手机上</h2>
+    <div class="tabs rv" role="tablist" aria-label="安装"><span class="pill" aria-hidden="true"></span><button role="tab" id="zh-ti-android" aria-controls="zh-pi-android" aria-selected="true" data-os="android">安卓</button><button role="tab" id="zh-ti-ios" aria-controls="zh-pi-ios" aria-selected="false" tabindex="-1" data-os="ios">iPhone</button><button role="tab" id="zh-ti-pc" aria-controls="zh-pi-pc" aria-selected="false" tabindex="-1" data-os="pc">电脑</button></div>
+    <div class="panel" id="zh-pi-android" role="tabpanel" aria-labelledby="zh-ti-android"><h3>安卓</h3><p>下载 <a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk" data-apk="mandarino.apk">安装包（APK）</a> <small data-apk-size></small>，手机询问时允许从此来源安装。安卓应用还有小组件、快捷方式和后台音乐。以后也会上架应用商店。如果下载很慢，可以先用网页版。</p></div>
+    <div class="panel" id="zh-pi-ios" role="tabpanel" aria-labelledby="zh-ti-ios" hidden><h3>iPhone 和 iPad</h3><ol class="shots"><li><img src="img/ios-1.svg" alt="" width="150" height="225">在 Safari 中打开<a href="app/">应用</a>，点<b>分享</b>。</li><li><img src="img/ios-2.svg" alt="" width="150" height="225">选择<b>添加到主屏幕</b>。</li><li><img src="img/ios-3.svg" alt="" width="150" height="225">màndarínō 出现在主屏幕上，离线也能用。</li></ol></div>
+    <div class="panel" id="zh-pi-pc" role="tabpanel" aria-labelledby="zh-ti-pc" hidden><h3>电脑</h3><p>在 Chrome、Edge、Safari 或 Firefox 中打开<a href="app/">应用</a>。它是为手机屏幕设计的，但电脑上也能用；在 Chrome 和 Edge 中可以从浏览器菜单安装。</p></div>
+  </div>
+</section>
+<section id="zh-dati" class="alt">
+  <div class="wrap">
+    <div class="band rv">
+      <h2>你的数据只属于你</h2>
+      <p>没有账号，没有服务器，没有统计。学习内容保存在你的手机上，随时可以导出。</p>
+      <h3>为什么免费</h3>
+      <p>做 màndarínō 比我想象的容易得多：Claude（一个人工智能）写了大部分代码，我只负责决定它该做什么。事情这么省力，我觉得再收费、放广告、收集用户数据就不对了。</p>
+      <p>所以没有东西可卖，也没有数据可收。如果哪天你想说声谢谢，可以去 Ko-fi，还有一枚感谢印章，但它不会解锁任何东西：应用对每个人都一样。</p>
+      <ul class="chips"><li>不跟踪</li><li>可离线</li><li>永久免费</li></ul>
+      <a class="btn inv" href="privacy.html#中文">阅读隐私说明</a>
+    </div>
+  </div>
+</section>
+<section id="zh-domande">
+  <div class="wrap">
+    <span class="eyebrow rv">常见问题</span>
+    <h2 class="rv">有疑问？</h2>
+    <div style="margin-top:20px"><details class="rv"><summary>真的免费吗？</summary><p>完全免费：没有广告、没有订阅、没有付费功能。想支持的话可以去 <a href="https://ko-fi.com/mandarinoapp" rel="noopener noreferrer">Ko-fi</a>，但不会解锁任何东西。</p></details><details class="rv"><summary>需要网络吗？</summary><p>只有第一次下载时需要。之后可以离线使用；音乐在第一次播放时下载。</p></details><details class="rv"><summary>我的数据在哪里？</summary><p>只在你的手机上。没有账号、服务器或统计。请看<a href="privacy.html#中文">隐私说明</a>。</p></details><details class="rv"><summary>电脑上能用吗？</summary><p>可以：在浏览器里打开应用。它是为手机屏幕设计的，但电脑上也能用。</p></details><details class="rv"><summary>我完全不会意大利语可以吗？</summary><p>可以：开始时有几分钟的水平测试，从零开始也行，随时可以改。</p></details><details class="rv"><summary>我可以帮忙吗？</summary><p>可以！我特别需要母语为中文的朋友校对意大利语课程里的中文。不会编程也能帮忙：见<a href="https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md#中文">如何参与</a>。</p></details></div>
+  </div>
+</section>
+</main>
+<button class="peek-cta" type="button" data-set-lang="zh" lang="zh-CN">用中文阅读 · Leggi in cinese</button>
+</div>
+</div>
 <footer>
   <div class="wrap">
     <a href="https://github.com/longhitown/mandarino">GitHub</a> ·
     <a href="privacy.html">Privacy · 隐私</a> ·
     <a href="https://ko-fi.com/mandarinoapp" rel="noopener noreferrer">Sostieni · 支持</a> ·
     <a href="https://github.com/longhitown/mandarino/blob/HEAD/NOTICE.md">Licenze · 许可</a> ·
-    <button class="btn ghost small" type="button" data-share data-done="Indirizzo copiato">Condividi</button><br>
+    <button class="btn ghost small" type="button" data-share data-done="Indirizzo copiato · 已复制">Condividi · 分享</button><br>
     <p class="credits">Musica del sito: «Biblioteca di Hangzhou», «Calligrafia» e «Pioggia sul bambù», © 2026 Claudio Longhitano, <a href="https://creativecommons.org/licenses/by/4.0/deed.it" rel="noopener noreferrer">CC BY 4.0</a>, estratti dai brani dell'app.<br>
     Costruito con software libero:
     <a href="https://hanziwriter.org" rel="noopener noreferrer">Hanzi Writer</a> (David Chanin, licenza MIT) ·
@@ -246,11 +255,11 @@
 </footer>
 <div class="toast" role="status" aria-live="polite"></div>
 <div class="radio" hidden>
-  <button class="r-play" type="button" aria-label="Ascolta la musica" aria-pressed="false"><svg class="pl" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+  <button class="r-play" type="button" aria-label="Musica · 音乐" aria-pressed="false"><svg class="pl" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
   <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
   <span class="r-name">Biblioteca di Hangzhou</span>
-  <button class="r-next" type="button" aria-label="Brano successivo"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 6l9 6-9 6zM16 6h2v12h-2z"/></svg></button>
+  <button class="r-next" type="button" aria-label="Brano successivo · 下一首"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 6l9 6-9 6zM16 6h2v12h-2z"/></svg></button>
 </div>
-<button class="to-top" type="button" aria-label="Torna su"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg></button>
+<button class="to-top" type="button" aria-label="Torna su · 回到顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg></button>
 </body>
 </html>
