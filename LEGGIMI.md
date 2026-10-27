@@ -93,6 +93,14 @@ I brani non stanno dentro `index.html`: nell'APK sono nel pacchetto; sul sito il
 `mandarino-music` al primo ascolto (o tutti insieme con «Scarica tutta la musica» nel pannello 🎵), che resta tra un
 aggiornamento e l'altro. Aperta da `file://` l'app funziona, ma il browser non le lascia leggere i brani e il pannello lo dice.
 
+**Il loop si controlla da solo** (`tools/e2e.mjs`, «loop senza buchi»). Ogni brano suona dal riproduttore vero dell'app,
+salta a 0,35 s dalla fine e un AnalyserNode registra la cucitura. Il «buco» è la sequenza più lunga sotto −60 dB e deve
+restare sotto 20 ms (`LOOP_GAP_MS`). Misure di ottobre 2026 in Chromium: da 3 a 16 ms, a gradini di circa 2,9 ms (un
+blocco audio da 128 campioni che il browser lascia vuoto al giro). I file invece non hanno silenzi ai bordi: al massimo
+3 ms sotto −60 dB attorno alla cucitura. Sotto la soglia il riproduttore resta com'è, con un solo `<audio loop>`. Se un
+brano nuovo la supera, prima si controllano i bordi del file; se il buco viene dal browser, il rimedio previsto sono due
+elementi `<audio>` che si danno il cambio con una dissolvenza.
+
 ## Benvenuto, test di livello, rivelazione progressiva
 
 **Benvenuto** (`src/ui/welcome.js` + `src/ui/onboarding.js`, uguale per i due corsi):
@@ -277,7 +285,7 @@ Primo giro: nessuna forma sbagliata nelle regole; trovato un errore nei dati (�
 node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
-node tools/e2e.mjs          # 46 prove su dist/ (corso di italiano e correttore, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
+node tools/e2e.mjs          # 81 prove su dist/ (benvenuto e test di livello, corso di italiano e correttore, immersione, sincronizzazione, QR, sigilli, musica e loop, testi cinesi senza italiano), ~7 minuti
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
