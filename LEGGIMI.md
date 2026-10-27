@@ -44,7 +44,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
   vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
-site/                      la pagina di presentazione (GitHub Pages, con l'app in app/): solo HTML e CSS
+docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
@@ -200,16 +200,26 @@ sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 
 
 ## Pubblicare su GitHub Pages (pagina di presentazione + app)
 
-`.github/workflows/pages.yml` pubblica due cose insieme:
+`.github/workflows/pages.yml` lancia `node tools/build.mjs && node tools/site.mjs --out _site` e pubblica:
 
-- alla radice, la **pagina di presentazione** `site/index.html`, in italiano e in cinese, con i link all'app, all'APK, a
-  CONTRIBUTING, PRIVACY e alle licenze. Non ha script, font, immagini o servizi esterni né cookie (lo controlla
-  `tools/unit.mjs`); il sostegno è un link semplice, mai un widget;
+- alla radice, la **pagina di presentazione** `docs/index.html`, in italiano e in cinese, con:
+  - un solo invito all'azione («Apri l'app»);
+  - una breve dimostrazione (`docs/img/demo.webm`, con `docs/img/demo.png` come copertina; parte solo se la si avvia);
+  - l'installazione per Android (APK; più avanti gli store), iPhone (tre immagini, `docs/img/ios-*.svg`) e computer;
+  - domande frequenti e link a repository, privacy e sostegno.
+
+  Non ha script, font, immagini o servizi esterni né cookie (lo controlla `tools/unit.mjs`); il sostegno è un link
+  semplice, mai un widget;
+- **`privacy.html`**, ricavata da PRIVACY.md a ogni pubblicazione: è l'indirizzo pubblico della privacy che chiedono gli
+  store (`…/mandarino/privacy.html`);
 - in `app/`, l'**app** (`dist/` appena costruito).
 
-Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi parte da sola a ogni push sul
-ramo `main` che tocca `src/`, `site/` o la build (oppure: Actions → pages → Run workflow). L'indirizzo sarà
-`https://longhitown.github.io/mandarino/` (app in `…/mandarino/app/`). Quando è attivo, scrivilo in `SITE_URL` in
+Le immagini della pagina (`docs/img/anteprima.png` 1200×630 per le condivisioni e la demo) le genera
+`node tools/site.mjs --assets` con Playwright e stanno nel repository: rilancialo quando l'aspetto dell'app cambia molto.
+
+Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi la pubblicazione parte da sola
+a ogni push sul ramo `main` che tocca l'app, la pagina o PRIVACY.md (oppure: Actions → pages → Run workflow). L'indirizzo
+sarà `https://longhitown.github.io/mandarino/` (app in `…/mandarino/app/`). Quando è attivo, scrivilo in `SITE_URL` in
 `src/config.js`: lo usano i link dei sigilli.
 
 ## Pubblicare (Cloudflare Pages, il più semplice)

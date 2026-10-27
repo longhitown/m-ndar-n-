@@ -148,11 +148,16 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-/* ---- pagina di presentazione (site/): niente script, font, immagini o fogli esterni; due lingue ---- */
+/* ---- pagina di presentazione (docs/index.html) e privacy.html: niente script, font, immagini o fogli esterni; due lingue ---- */
 {
-  const h = fs.readFileSync(path.join(ROOT, "site/index.html"), "utf8");
-  const ext = [...h.matchAll(/<(script|img|link|iframe|source|video|audio)\b[^>]*?(?:src|href)="([^"]+)"/gi)].map((m) => m[2]).filter((u) => /^(https?:)?\/\//i.test(u));
-  check("pagina di presentazione: nessuno script né risorsa esterna, italiano e cinese, link all'app e alla privacy", !/<script\b/i.test(h) && !ext.length && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /PRIVACY\.md/.test(h), ext.join(", "));
+  const h = fs.readFileSync(path.join(ROOT, "docs/index.html"), "utf8");
+  const ext = [...h.matchAll(/<(script|img|link|iframe|source|video|audio)\b[^>]*?(?:src|href|poster)="([^"]+)"/gi)].map((m) => m[2]).filter((u) => /^(https?:)?\/\//i.test(u));
+  const local = [...h.matchAll(/(?:src|poster)="(img\/[^"]+|icon\.svg)"/g)].map((m) => m[1]).filter((f) => !fs.existsSync(path.join(ROOT, "docs", f)));
+  const ctas = (h.match(/class="btn"/g) || []).length;
+  check("pagina di presentazione: nessuno script né risorsa esterna, un solo invito all'azione, italiano e cinese, immagini presenti, privacy e app", !/<script\b/i.test(h) && !ext.length && !local.length && ctas === 1 && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /href="privacy\.html"/.test(h), ext.concat(local).join(", ") + " cta " + ctas);
+  const { md2html } = await import("./site.mjs");
+  const pv = md2html(fs.readFileSync(path.join(ROOT, "PRIVACY.md"), "utf8"));
+  check("privacy.html da PRIVACY.md: tabelle, sezione cinese con lang, nessuno script", /<table>/.test(pv) && /<section lang="zh-CN">[\s\S]*<table>/.test(pv) && !/<script/i.test(pv) && /api\.github\.com/.test(pv));
 }
 
 /* ---- 3. peso dell'avvio ---- */
