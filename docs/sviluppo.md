@@ -59,7 +59,7 @@ android/                   l'app Android: una WebView che apre dist/index.html d
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
 tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
-                           unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
+                           unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), misura-avvio.mjs (tempo di apertura), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs e review-import.mjs (rilettura da madrelingua, docs/rilettura.md),
                            icons.mjs (rigenera le icone PWA e Android, mandarino + wordmark, con Playwright),
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
@@ -339,6 +339,7 @@ node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
 node tools/e2e.mjs          # 81 prove su dist/ (benvenuto e test di livello, corso di italiano e correttore, immersione, sincronizzazione, QR, sigilli, musica e loop, testi cinesi senza italiano), ~7 minuti
+node tools/misura-avvio.mjs # apertura a freddo con CPU 4× e costo dei gruppi al primo uso (non fa parte di `npm test`)
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
@@ -726,6 +727,20 @@ caricare il gruppo).
   generalizza `COURSE_IT`; lo esegue `CP.ex.carica()`. All'avvio resta solo `ui/ex-stub.js`.
 - Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1480 KB su 1500 (la ricerca
   delle voci reali, `core/voice-clip.js`, serve a `CP.speak` fin dall'avvio).
+
+**Che cosa vuol dire «budget di avvio».** Il file è uno solo e sta già sul telefono: i byte non si scaricano, quindi il limite
+di 1500 KB di `tools/unit.mjs` non misura la rete. È un sostituto, controllabile ad ogni prova, del lavoro che il telefono
+fa all'apertura: leggere, compilare ed eseguire il JavaScript prima che sparisca la schermata d'avvio. Misura con
+`node tools/misura-avvio.mjs` (Chromium, CPU 4×, profilo nuovo): apertura a freddo ~2,8 s mediana (2,0–3,5 s).
+- I gruppi al primo uso costano pochissimo: a 4× ESERCIZI (79 KB) ~19 ms, correttore di italiano (28 KB) ~9 ms, sfide e
+  classe (42 KB) ~8 ms, crediti e carta da condividere 1–3 ms; insieme ~40 ms, circa l'1,5 % dell'apertura. Il testo
+  inerte non si compila; il costo resta quasi tutto in ciò che gira all'avvio (dati e moduli eseguiti subito).
+- Allungare la schermata d'avvio o eseguire i gruppi nei momenti di inattività (`requestIdleCallback`) non libera
+  margine: i KB nel gruppo sono già fuori dal conteggio, e l'esecuzione anticipata toglierebbe al primo uso soltanto
+  ~10–20 ms, in cambio di lavoro sul filo principale mentre la persona già tocca lo schermo e di nuove strade da provare
+  (i moduli di LAZYMOD hanno effetti all'esecuzione, come `CP.settingsExtras`). Non è stata aggiunta.
+- Per fare margine serve spostare codice dall'avvio a un gruppo (`GROUPS`, `LAZYMOD`) quando non serve nei primi
+  istanti; ogni funzione nuova che non serve subito va lì, non nell'avvio.
 
 **Materiali** (`materiali/`, dalla cartella dei materiali di lavoro; fonti e licenze in
 `materiali/FONTI-E-LICENZE.md`).
