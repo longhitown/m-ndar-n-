@@ -173,5 +173,10 @@ grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
 | ☑ | bersagli da 44 px, testi da 13 px, contrasto | gli stessi controlli di `tools/ux-audit.mjs` | fatto |
 | ☑ | `prefers-reduced-motion` | «+N 分», «通过» e l'anello hanno la versione ferma | fatto |
 | ☑ | icone SVG nella barra | le stesse icone SVG, più una per 变位 | fatto |
+| ☑ | ripasso a scelta multipla (stile Misto, Task 12 T1): risposta prima del risultato, segno ✓/✗, un solo «Continua» | 复习 con lo stesso motore e gli stessi stili, parola nuova presentata prima, voto da `CP.itApi.grade` (T5) | fatto |
+| ☑ | percorso guidato (T3): carta «Continua» con un solo pulsante che dice il passo, verifica di tappa con le cinque parti | carta «今天» con un solo pulsante: esercizi (5/10/15 min), un testo, la lezione con il suo quiz (T5) | fatto |
+| ☑ | lettura graduata (T4): testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso | 句子 → «短文阅读»: testi A1-B1, domande in cinese, «适合你», «已读» (T5) | fatto |
+| ☑ | esercizi a buco, ordina, digitazione (T2) | `it-buco`, `it-buco-gram`, `it-ordina`, `it-scrivi`, `it-dettato`, `it-verbo` (T5) | fatto |
+| ☑ | voci reali: «ascolta la frase» con Common Voice, «Scarica le voci» in ⚙️ → Voce (T6) | voce NM1 nelle frasi italiane, dettato e «听句子» con clip (T5) | fatto |
 | ☐ | testi riletti da un madrelingua | i testi cinesi del corso, della carta e della pagina zh/ | da far rileggere |
 | ☐ | vuoti curati | «ancora nessuna lezione»: oggi la carta mostra sempre la prossima lezione | da controllare |

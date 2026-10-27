@@ -5,6 +5,16 @@
    già passate. La parola del giorno la sceglie il widget dalla lista (giorno dell'anno modulo lunghezza). ===== */
 (function () {
   var CP = window.CP, A = window.MandarinoAndroid;
+  /* la parola del giorno: la stessa nel widget e nella carta da condividere (ui/share-card.js) */
+  CP.wotdPool = function () {
+    var seen = [], next = [];
+    CP.ORDER.forEach(function (k) { (CP.state(k) ? seen : next).push(CP.WORDS[k]); });
+    return (seen.length >= 30 ? seen : seen.concat(next.slice(0, 366 - seen.length))).slice(0, 366);
+  };
+  CP.wordOfDay = function () {
+    var p = CP.wotdPool(), d = new Date(), y = d.getFullYear(), doy = Math.round((Date.UTC(y, d.getMonth(), d.getDate()) - Date.UTC(y, 0, 0)) / 864e5);
+    return p.length ? p[(y * 366 + doy) % p.length] : null;
+  };
   if (!A || !A.setWidgetState) return;
   var H = 3600000, timer = 0;
   function words() { return (CP.wotdPool ? CP.wotdPool() : []).map(function (w) { return [w.hz, w.py.replace(/\./g, ""), CP.gloss(w)]; }); }

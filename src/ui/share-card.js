@@ -7,15 +7,8 @@
    Parola del giorno del cinese: la stessa del widget Android (lista delle parole viste, giorno dell'anno). ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc;
-  CP.wotdPool = function () {
-    var seen = [], next = [];
-    CP.ORDER.forEach(function (k) { (CP.state(k) ? seen : next).push(CP.WORDS[k]); });
-    return (seen.length >= 30 ? seen : seen.concat(next.slice(0, 366 - seen.length))).slice(0, 366);
-  };
-  CP.wordOfDay = function () {
-    var p = CP.wotdPool(), d = new Date(), y = d.getFullYear(), doy = Math.round((Date.UTC(y, d.getMonth(), d.getDate()) - Date.UTC(y, 0, 0)) / 864e5);
-    return p.length ? p[(y * 366 + doy) % p.length] : null;
-  };
+  /* CP.wotdPool e CP.wordOfDay (la parola del giorno, condivisa con il widget) stanno in pwa/widget.js: questo modulo si
+     carica al primo uso di CP.shareCard (tools/build.mjs, LAZYMOD), e il tocco su [data-card-open] lo ascolta ui/settings.js */
   function css(v, fb) { return (getComputedStyle(document.documentElement).getPropertyValue(v) || fb).trim() || fb; }
   /* il mandarino del logo, dalla pagina (defs + simbolo), come immagine */
   function logoImg() {
@@ -209,8 +202,7 @@
   CP.shareCard.render = render;
   CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL; CP.shareCard.sharePNG = share;
   document.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-open], [data-card-format], [data-card-theme]") : null; if (!b) return;
-    if (b.hasAttribute("data-card-open")) { CP.sfx("tap"); CP.shareCard(); return; }
+    var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-format], [data-card-theme]") : null; if (!b) return;
     if (b.hasAttribute("data-card-format") || b.hasAttribute("data-card-theme")) {
       var p = prefs(); if (b.hasAttribute("data-card-format")) p.format = b.getAttribute("data-card-format"); else p.theme = b.getAttribute("data-card-theme");
       savePrefs(p); Array.prototype.forEach.call(b.parentNode.children, function (c) { var on = c === b; c.classList.toggle("on", on); c.setAttribute("aria-pressed", on ? "true" : "false"); });

@@ -1,0 +1,4 @@
+# màndarínō · frasi da togliere dagli esercizi e dalle voci reali (Task 12).
+# Una frase per riga, scritta come nei materiali (anche solo i caratteri cinesi, o l'italiano senza punteggiatura).
+# Le righe che cominciano con # non contano. Dopo una modifica: node tools/materiali.mjs && node tools/build.mjs
+# La lista la tiene l'autore: per esempio frasi strane, delicate o con una traduzione sbagliata trovate nella revisione.

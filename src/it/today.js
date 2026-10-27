@@ -42,6 +42,8 @@
     var curId = A.current(), cur = curId ? A.lessons().filter(function (l) { return l.id === curId; })[0] : null, q = A.queue(), due = q.due.length, ph = phraseOfDay();
     var main = cur ? '<button type="button" class="btn-main itd-go" data-itd-go="' + CP.attr(cur.id) + '">' + esc(T("itd.continue", { n: cur.n, t: cur.title })) + "<small>" + esc(T("itd.min", { m: minutes(cur) })) + "</small></button>"
       : '<button type="button" class="btn-main itd-go" data-itd-review>' + esc(T(due ? "itd.reviewN" : "itd.allDone", { n: due })) + "</button>";
+    /* Task 12: nello stile Guidato il pulsante dice il passo successivo (lezione, esercizi, lettura: it/esercizi.js) */
+    var gs = CP.itEx ? CP.itEx.stepHTML() : ""; if (gs) main = gs;
     return '<section class="panel it-today" aria-labelledby="itd-h">' +
       '<h2 id="itd-h" class="itd-hi">' + esc(T(g[0])) + ' <span class="muted" lang="it">· ' + g[1] + "</span></h2>" + main +
       '<div class="itd-row">' +

@@ -32,6 +32,8 @@
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
+    /* Task 12: nello stile Guidato la carta dice il passo successivo (ui/ex-stub.js) */
+    var gh = CP.ex && CP.ex.guidaHTML ? CP.ex.guidaHTML(cur) : ""; if (gh) return gh;
     var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur], T = CP.t;
     return '<div class="panel resume"><div class="small muted">' + T("path.stage", { n: cur + 1 }) + ' · <span lang="it">' + esc(title(s)) + "</span></div>" +
       '<button type="button" class="btn-main" id="path-continue">' + (n ? T("path.continue", { min: Math.max(1, Math.round(n * 20 / 60)) }) : T("path.explore", { n: cur + 1 })) + "</button>" +
@@ -55,7 +57,7 @@
       '<div class="sbody"' + (isOpen ? "" : " hidden") + ">" +
         '<p class="obj" lang="it">' + esc(P.o) + "</p>" +
         '<div class="small muted">' + T("path.stats", { n: st.n, s: st.started, k: st.known }) + "</div>" +
-        (st.done ? '<div class="okline">✓ ' + T("path.doneLine") + "</div>" : "") +
+        (st.done ? '<div class="okline">✓ ' + T("path.doneLine") + "</div>" : "") + (CP.ex && CP.ex.verificata(s.id) ? '<div class="okline gd-ok">🏅 ' + T("gd.verified") + "</div>" : "") +
         '<div style="display:flex;flex-wrap:wrap;gap:8px">' +
           (pat ? '<button type="button" class="gpl" data-pat="' + P.g + '">📐 <span lang="it">' + esc(pat.t) + "</span></button>" : "") +
           (d ? '<button type="button" class="gpl" data-dlg="' + d.id + '">💬 ' + T("path.dlg") + ' <span lang="it">' + esc(d.title) + "</span></button>" : "") +
@@ -133,6 +135,7 @@
     var el = document.getElementById("stop-" + id); if (el) { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); setTimeout(function () { el.classList.remove("flash"); }, 1600); }
   };
   CP.onPath = function () { render(); };
+  CP.pathCurrent = function () { return currentIdx(); };
 
   function goWords(id) {
     CP.resetFilters();

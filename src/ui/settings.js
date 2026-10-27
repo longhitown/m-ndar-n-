@@ -45,6 +45,10 @@
     CP.sfx("tap");
   };
   btn.addEventListener("click", function () { CP.openSettings(); });
+  /* «Crediti e licenze»: ui/credits.js si carica al primo uso di CP.credits */
+  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-credits]") : null; if (b && CP.credits) CP.credits(); });
+  /* la carta da condividere: ui/share-card.js si carica al primo uso di CP.shareCard */
+  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-card-open]") : null; if (b && CP.shareCard) { CP.sfx("tap"); CP.shareCard(); } });
   el.addEventListener("click", function (e) {
     if (e.target === el) { close(); return; }
     var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
