@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>màndarínō · il cinese per italiani, l'italiano per chi parla cinese</title>
+<meta name="description" content="App gratuita, offline e senza pubblicità per imparare il cinese (per italiani) e l'italiano (per chi parla cinese). 免费、离线、无广告的学习应用。">
+<meta name="theme-color" content="#14594A">
+<meta property="og:title" content="màndarínō">
+<meta property="og:description" content="Il cinese per italiani, l'italiano per chi parla cinese. Gratis, offline, senza pubblicità. 免费、离线、无广告。">
+<meta property="og:image" content="img/anteprima.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<!-- Pagina di presentazione (docs/, pubblicata da .github/workflows/pages.yml con tools/site.mjs, l'app in app/).
+     Nessuno script, nessun font, immagine o servizio esterno, nessun cookie: solo testo, link e immagini nostre. -->
+<style>
+:root { --bg: #F5F7F5; --ink: #16201B; --mute: #4A5A52; --accent: #14594A; --card: #FFFFFF; --line: #D5DED9; --focus: #B54400; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0F1412; --ink: #E9EFEB; --mute: #A9B8B0; --accent: #5CC4A5; --card: #18201C; --line: #2A3530; --focus: #FF9A4D; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 16px 16px 48px; }
+header { text-align: center; padding: 8px 0 0; }
+header img { width: 112px; height: 112px; }
+h1 { font-size: 2.2rem; margin: 6px 0 4px; letter-spacing: .5px; }
+h2 { font-size: 1.35rem; margin: 36px 0 10px; }
+h3 { font-size: 1.05rem; margin: 18px 0 6px; }
+.tag { color: var(--mute); margin: 0; }
+.cta { display: flex; justify-content: center; margin: 20px 0 4px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 12px 26px; border-radius: 14px; text-decoration: none; font-weight: 700; background: var(--accent); color: var(--bg); font-size: 1.1rem; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.lang { text-align: center; margin: 0; }
+.lang a { display: inline-block; min-height: 44px; line-height: 44px; padding: 0 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding: 0; list-style: none; }
+.grid li, .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.grid b { display: block; margin-bottom: 2px; }
+.demo { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.demo video, .demo img { width: 240px; max-width: 100%; height: auto; border-radius: 22px; border: 6px solid var(--ink); background: var(--card); }
+.demo p { flex: 1 1 260px; margin: 0; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0; list-style: none; counter-reset: s; }
+.steps li { text-align: center; font-size: .92rem; }
+.steps img { width: 100%; max-width: 150px; height: auto; display: block; margin: 0 auto 6px; }
+details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0 14px; margin: 8px 0; }
+summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+details p { margin: 0 0 12px; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 44px 0; }
+footer { color: var(--mute); font-size: .92rem; text-align: center; }
+footer a { display: inline-block; min-height: 44px; line-height: 44px; padding: 0 6px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+@media (max-width: 420px) { .steps { grid-template-columns: 1fr 1fr 1fr; gap: 6px; } .steps li { font-size: .82rem; } }
+</style>
+</head>
+<body>
+<main>
+<p class="lang"><a href="#it">Italiano</a> · <a href="#zh" lang="zh-CN">中文</a></p>
+<header>
+  <img src="icon.svg" alt="" width="112" height="112">
+  <h1>màndarínō</h1>
+  <p class="tag">Il cinese per italiani, l'italiano per chi parla cinese.</p>
+  <p class="tag" lang="zh-CN">为中文使用者学意大利语，为意大利人学中文。</p>
+  <div class="cta"><a class="btn" href="app/">Apri l'app · 打开应用</a></div>
+  <p class="tag small">Gratis, offline, senza pubblicità né account · 免费、离线、无广告、无需账号</p>
+</header>
+
+<section id="it">
+  <h2>Che cos'è</h2>
+  <div class="demo">
+    <video src="img/demo.webm" poster="img/demo.png" width="240" height="493" controls muted loop playsinline preload="none" aria-label="Pochi secondi dell'app: studio, parole, percorso"></video>
+    <p>Un'app per studiare il cinese mandarino partendo dall'italiano, e l'italiano partendo dal cinese. Si apre nel
+    browser e si installa sul telefono; dopo la prima apertura funziona senza rete. Nessun account, nessuna pubblicità,
+    nessun dato raccolto: i progressi restano sul tuo telefono.</p>
+  </div>
+  <ul class="grid">
+    <li><b>6385 parole HSK 3.0</b>livelli 1-5 in sei capitoli, pinyin, toni e una frase d'esempio per ogni parola.</li>
+    <li><b>Ripasso a intervalli</b>dieci parole al giorno, lette ad alta voce; un test di livello di pochi minuti all'inizio.</li>
+    <li><b>Frasi e grammatica</b>30 lezioni, dialoghi e un laboratorio che traduce solo quando è sicuro.</li>
+    <li><b>Toni e scrittura</b>orecchio ai toni, pronuncia con il microfono, ordine dei tratti.</li>
+  </ul>
+
+  <h2>Come installarla</h2>
+  <h3>Android</h3>
+  <p>Scarica l'<a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk">APK</a> e permetti
+  l'installazione da questa fonte quando il telefono lo chiede. L'app Android ha anche widget, scorciatoie e musica in
+  secondo piano. Più avanti sarà anche negli store.</p>
+  <h3>iPhone e iPad</h3>
+  <ol class="steps">
+    <li><img src="img/ios-1.svg" alt="" width="150" height="225">Apri <a href="app/">l'app</a> in Safari e tocca <b>Condividi</b>.</li>
+    <li><img src="img/ios-2.svg" alt="" width="150" height="225">Scegli <b>Aggiungi alla schermata Home</b>.</li>
+    <li><img src="img/ios-3.svg" alt="" width="150" height="225">màndarínō è sulla schermata Home, anche senza rete.</li>
+  </ol>
+  <h3>Computer</h3>
+  <p>Apri <a href="app/">l'app</a> in Chrome, Edge o Firefox. In Chrome ed Edge puoi installarla dal menu del browser.</p>
+
+  <h2>Domande frequenti</h2>
+  <details><summary>È davvero gratis?</summary><p>Sì, del tutto: niente pubblicità, niente abbonamenti, niente funzioni a pagamento. Chi vuole può <a href="https://ko-fi.com/mandarinoapp" rel="noopener noreferrer">sostenere il progetto</a>, ma non sblocca nulla.</p></details>
+  <details><summary>Serve internet?</summary><p>Solo la prima volta, per scaricarla. Poi funziona offline; la musica si scarica al primo ascolto.</p></details>
+  <details><summary>Dove finiscono i miei dati?</summary><p>Restano sul tuo telefono. Nessun account, nessun server, nessuna statistica. Leggi la <a href="privacy.html">privacy</a>.</p></details>
+  <details><summary>Posso studiare su due dispositivi?</summary><p>Sì: la sincronizzazione usa un file nel tuo cloud (Drive, OneDrive, Dropbox, iCloud) oppure dei QR da un telefono all'altro.</p></details>
+  <details><summary>So già un po' di cinese: devo ricominciare da zero?</summary><p>No: all'inizio un test di pochi minuti ti fa partire dal tuo livello, e puoi sempre cambiarlo.</p></details>
+  <details><summary>Ho trovato un errore</summary><p>Correggilo dall'app (tocca la parola, poi «Correggi o segnala»), oppure leggi <a href="https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md">come contribuire</a>: non serve programmare.</p></details>
+</section>
+
+<hr>
+
+<section id="zh" lang="zh-CN">
+  <h2>这是什么</h2>
+  <p>màndarínō 是一款学习应用：中文使用者用它学意大利语，意大利人用它学中文。它在浏览器中运行，也可以安装到手机上；第一次打开后不需要网络。没有账号，没有广告，不收集任何数据：学习进度只保存在你的手机上。</p>
+  <ul class="grid">
+    <li><b>意大利语课程</b>30 课、4780 个词、动词变位练习和意大利语句子检查。</li>
+    <li><b>间隔复习</b>每天十个词；开始时有几分钟的水平测试，从合适的地方起步。</li>
+    <li><b>只属于你</b>学习进度保存在手机上；同步使用你自己云端的文件或二维码。</li>
+  </ul>
+  <h2>怎么安装</h2>
+  <h3>安卓</h3>
+  <p>下载 <a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk">APK</a>，手机询问时允许从此来源安装。以后也会上架应用商店。</p>
+  <h3>iPhone 和 iPad</h3>
+  <ol class="steps">
+    <li><img src="img/ios-1.svg" alt="" width="150" height="225">在 Safari 中打开<a href="app/">应用</a>，点<b>分享</b>。</li>
+    <li><img src="img/ios-2.svg" alt="" width="150" height="225">选择<b>添加到主屏幕</b>。</li>
+    <li><img src="img/ios-3.svg" alt="" width="150" height="225">màndarínō 出现在主屏幕上，离线也能用。</li>
+  </ol>
+  <h3>电脑</h3>
+  <p>在 Chrome、Edge 或 Firefox 中打开<a href="app/">应用</a>。</p>
+  <h2>常见问题</h2>
+  <details><summary>真的免费吗？</summary><p>完全免费：没有广告、没有订阅、没有付费功能。</p></details>
+  <details><summary>需要网络吗？</summary><p>只有第一次下载时需要。之后可以离线使用。</p></details>
+  <details><summary>我的数据在哪里？</summary><p>只在你的手机上。没有账号、服务器或统计。请看<a href="privacy.html#中文">隐私说明</a>。</p></details>
+  <details><summary>我可以帮忙吗？</summary><p>可以！我们特别需要母语为中文的朋友校对意大利语课程里的中文。不会编程也能帮忙：见<a href="https://github.com/longhitown/mandarino/blob/HEAD/CONTRIBUTING.md#中文">如何参与</a>。</p></details>
+</section>
+
+<hr>
+<footer>
+  <a href="https://github.com/longhitown/mandarino">GitHub</a> ·
+  <a href="privacy.html">Privacy · 隐私</a> ·
+  <a href="https://ko-fi.com/mandarinoapp" rel="noopener noreferrer">Sostieni · 支持</a> ·
+  <a href="https://github.com/longhitown/mandarino/blob/HEAD/NOTICE.md">Licenze · 许可</a><br>
+  Codice MIT, contenuti CC BY 4.0 · © 2026 Claudio Longhitano · mandarinoapp@gmail.com
+</footer>
+</main>
+</body>
+</html>
