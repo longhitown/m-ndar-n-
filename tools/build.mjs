@@ -128,6 +128,11 @@ const VOICE_CLIPS = [];
       tot += b; VOICE_CLIPS.push([lang, r[0], f]);
     }
     if (tot > AUDIO_MAX) fail("le voci superano i 10 MB: " + (tot / 1048576).toFixed(2) + " MB");
+    /* testi graduati: stesse regole di tools/lettura.mjs */
+    const rd = path.join(SRC, "data/reading"), rctx = {};
+    if (fs.existsSync(rd)) for (const f of fs.readdirSync(rd).filter((x) => x.endsWith(".js"))) vm.runInNewContext(fs.readFileSync(path.join(rd, f), "utf8"), rctx);
+    const { checkTexts } = await import("./lettura.mjs"), terr = checkTexts(TL, rctx.TESTI_ZH, rctx.TESTI_IT);
+    if (terr.length) fail("testi graduati: " + terr.slice(0, 3).join("; "));
     /* le righe segnate «sensibile» non sono nei file «scelta» da cui nasce runtime/ (materiali/LEGGIMI-materiali.md): un
        campo «flag» nei dati vorrebbe dire che qualcuno ha copiato il serbatoio */
     for (const n of ["FRASI_ZH", "FRASI_IT"]) if (((ctx[n] || {}).campi || []).includes("flag")) fail("src/data/ex: " + n + " ha il campo «flag»: si usano solo le frasi scelte");
@@ -155,7 +160,7 @@ out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
    compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
    STROKES o IT_LEXICON (il lessico del corso di italiano). Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
-const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"], ["FRASI_ZH", (s) => s === "data/ex/frasi-zh.js"], ["FRASI_IT", (s) => s === "data/ex/frasi-it.js"], ["VOCE_ZH", (s) => s === "data/ex/voce-zh.js"], ["VOCE_IT", (s) => s === "data/ex/voce-it.js"], ["INSIEMI", (s) => s === "data/ex/insiemi.js"]];
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"], ["FRASI_ZH", (s) => s === "data/ex/frasi-zh.js"], ["FRASI_IT", (s) => s === "data/ex/frasi-it.js"], ["VOCE_ZH", (s) => s === "data/ex/voce-zh.js"], ["VOCE_IT", (s) => s === "data/ex/voce-it.js"], ["INSIEMI", (s) => s === "data/ex/insiemi.js"], ["TESTI_ZH", (s) => s === "data/reading/testi-zh.js"], ["TESTI_IT", (s) => s === "data/reading/testi-it.js"]];
 for (const [name, test] of LAZY) {
   const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
   const lctx = vm.createContext({});
@@ -207,7 +212,7 @@ for (const f of COURSE_IT) {
 /* GROUPS (Task 12): gruppi di moduli caricati al primo uso, generalizzando COURSE_IT. Nel file unico i file restano testo
    (type="text/plain") e non si compilano all'avvio; window.__mdLoad[NOME]() li esegue tutti, in ordine, una volta sola
    (CP.ex.carica in ui/ex-stub.js). Da src/, senza build, sono script normali e __mdLoad non c'è. */
-const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js", "study/ex-frasi.js", "study/ex-varie.js", "study/guided.js"] }];
+const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js", "study/ex-frasi.js", "study/ex-varie.js", "study/guided.js", "phrases/reading.js"] }];
 for (const g of GROUPS) {
   const group = g.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("GROUPS " + g.name + ": manca uno di " + g.files.join(", ") + " in src/index.html");
   const ids = [];

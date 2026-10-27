@@ -623,6 +623,39 @@ try {
     check("Guidato: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4l. lettura graduata (Task 12, T4): Frasi → Leggi → Testi, elenco per livello, parole che aprono il foglio, pinyin e
+     traduzione a richiesta, domande con le risposte mescolate, letto + punti una volta sola, parole nuove nel ripasso */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); });
+    await p.goto(base); await p.waitForTimeout(700);
+    const r1 = await p.evaluate(() => { CP.show("build", true); CP.build.setSub("testi"); const items = document.querySelectorAll("[data-rdg]"); return { n: items.length, lv: document.querySelectorAll(".rdg-h").length, loaded: !!CP.reading }; });
+    check("Lettura: in Frasi → Leggi → Testi i 15 testi per livello (il gruppo si carica all'apertura)", r1.n === 15 && r1.lv >= 4 && r1.loaded, JSON.stringify(r1));
+    await p.click('[data-rdg="zh-t01-la-mia-giornata"]'); await p.waitForTimeout(150);
+    const r2 = await p.evaluate(() => ({ s: document.querySelectorAll(".rdg-s").length, py: document.querySelectorAll(".rdg-py").length > 0, tr: document.querySelectorAll(".rdg-s .cd-note").length, say: document.querySelectorAll(".rdg-s .say").length }));
+    await p.click('[data-rdg-tog="tr"]'); await p.waitForTimeout(80);
+    const tr = await p.evaluate(() => document.querySelectorAll(".rdg-s .cd-note").length);
+    await p.click(".rdg-w"); await p.waitForTimeout(250);
+    const fam = await p.evaluate(() => !document.getElementById("fam").hidden);
+    await p.evaluate(() => CP.closeSheet());
+    check("Lettura: frase per frase con ascolto, pinyin acceso al livello 1, traduzione a richiesta, una parola apre il suo foglio", r2.s === 9 && r2.py && r2.tr === 0 && r2.say === 9 && tr === 9 && fam, JSON.stringify({ r2, tr, fam }));
+    const xp0 = await p.evaluate(() => CP.game.rank().xp);
+    const q = await p.evaluate(() => {
+      document.querySelector("[data-rdg-q]").click();
+      const t = CP.reading.texts()[0], rights = [];
+      t.domande.forEach((d, i) => { const btns = [...document.querySelectorAll('[data-rdg-a^="' + i + ':"]')]; const j = btns.findIndex((b) => b.textContent.includes(d.scelte_it[d.giusta])); rights.push(j); btns[j].click(); });
+      return { rights, score: (document.querySelector(".rdg-end .gd-score") || {}).textContent, read: !!JSON.parse(localStorage.getItem("cp-ex-v1")).read["zh-t01-la-mia-giornata"], add: document.querySelectorAll("[data-rdg-add]").length };
+    });
+    const xp1 = await p.evaluate(() => CP.game.rank().xp);
+    check("Lettura: domande con la giusta in posti diversi (non sempre la prima), testo segnato «letto» e +5 punti", new Set(q.rights).size > 1 && /3 risposte giuste su 3/.test(q.score) && q.read && xp1 - xp0 === 5, JSON.stringify({ q, xp0, xp1 }));
+    const add = await p.evaluate(() => { const b = document.querySelector("[data-rdg-add]"); if (!b) return "nessuna"; const k = b.getAttribute("data-rdg-add"); b.click(); return CP.state(k) >= 1 ? "ok" : "no"; });
+    check("Lettura: una parola nuova del testo entra nel ripasso con un tocco", add === "ok", add);
+    /* riletto: niente punti la seconda volta */
+    await p.evaluate(() => { CP.reading.open("zh-t01-la-mia-giornata"); document.querySelector("[data-rdg-q]").click(); const t = CP.reading.texts()[0]; t.domande.forEach((d, i) => document.querySelector('[data-rdg-a^="' + i + ':"]').click()); });
+    check("Lettura: i punti arrivano una volta sola per testo", (await p.evaluate(() => CP.game.rank().xp)) === xp1);
+    check("Lettura: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -918,7 +951,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

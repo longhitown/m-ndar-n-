@@ -175,5 +175,6 @@ grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
 | ☑ | icone SVG nella barra | le stesse icone SVG, più una per 变位 | fatto |
 | ☑ | ripasso a scelta multipla (stile Misto, Task 12 T1): risposta prima del risultato, segno ✓/✗, un solo «Continua» | arriva con T5 (stesso motore, voto da `CP.itApi.grade`) | cinese fatto, italiano in T5 |
 | ☑ | percorso guidato (T3): carta «Continua» con un solo pulsante che dice il passo, verifica di tappa con le cinque parti | carta «今天» con il passo successivo (T5) | cinese fatto, italiano in T5 |
+| ☑ | lettura graduata (T4): testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso | testi italiani con le domande in cinese (T5) | cinese fatto, italiano in T5 |
 | ☐ | testi riletti da un madrelingua | i testi cinesi del corso, della carta e della pagina zh/ | da far rileggere |
 | ☐ | vuoti curati | «ancora nessuna lezione»: oggi la carta mostra sempre la prossima lezione | da controllare |

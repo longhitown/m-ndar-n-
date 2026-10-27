@@ -660,10 +660,24 @@ caricare il gruppo).
   prese dagli esempi. Nessuna delle due cambia il risultato della lezione.
 - `ui/share-card.js` ora si carica al primo uso di `CP.shareCard`; la parola del giorno sta in `pwa/widget.js`.
 
+**Lettura graduata** (Frasi → 📖 Leggi → «Testi», `src/phrases/reading.js`, gruppo ESERCIZI).
+- I testi vengono da `materiali/runtime/testi-*.json`; `tools/lettura.mjs` li controlla e scrive `src/data/reading/`
+  (`TESTI_ZH`, `TESTI_IT`, letti al primo uso). Ogni frase cinese deve essere fatta di parole del vocabolario nel taglio
+  dell'app; il livello del testo è quello della parola più alta, e se quello dichiarato è più basso vince il calcolato
+  (alzati: `zh-t03-al-negozio` 1 → 2, `zh-t11-dal-medico` 4 → 6). La build ricontrolla gli stessi punti.
+- L'elenco va per livello, con «★ giusto per te» quando conosci almeno il 90% delle parole e «✓ letto».
+- Nel testo: un tocco su una parola apre il suo foglio; pinyin (acceso fino al livello 2) e traduzione si accendono e
+  spengono; ogni frase si ascolta.
+- In fondo le domande di comprensione (risposte mescolate con un seme), poi le parole nuove: un tocco le mette nel ripasso
+  (`CP.grade(parola, 0)`, tipo «lettura»). 5 punti la prima volta, segno in `cp-ex-v1.read`.
+- I testi sono bozze scritte per il progetto: vanno riletti da un madrelingua. I testi italiani arrivano con T5.
+- Crediti: «Frasi d'esempio degli esercizi», Tatoeba, CC BY 2.0 FR, con l'elenco degli autori in
+  `materiali/crediti/autori-frasi.tsv` (le frasi sono negli esercizi da T1).
+
 **Peso.**
 - Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che
   generalizza `COURSE_IT`; lo esegue `CP.ex.carica()`. All'avvio resta solo `ui/ex-stub.js`.
-- Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1472 KB su 1500.
+- Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1474 KB su 1500.
 
 **Materiali** (`materiali/`, dalla cartella «Materiali mandarino» dell'autore; fonti e licenze in
 `materiali/FONTI-E-LICENZE.md`).

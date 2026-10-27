@@ -83,7 +83,7 @@ l'immersione.
 
 **Gruppi caricati al primo uso** (`GROUPS` in `tools/build.mjs`, Task 12): i file restano testo e `window.__mdLoad[NOME]()`
 li esegue in ordine, una volta sola. Gruppo ESERCIZI: `i18n/exercises.js`, `core/typing.js`, `study/distractors.js`,
-`study/exercises.js`, `study/ex-frasi.js`, `study/ex-varie.js`, `study/guided.js` (poi la lettura), eseguito da `CP.ex.carica()`.
+`study/exercises.js`, `study/ex-frasi.js`, `study/ex-varie.js`, `study/guided.js`, `phrases/reading.js`, eseguito da `CP.ex.carica()`.
 
 L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
@@ -116,6 +116,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.distract` / `CP.typing` | `study/distractors.js` / `core/typing.js` (gruppo ESERCIZI) | risposte sbagliate credibili (funzioni pure con seme); confronto di pinyin e italiano digitati |
 | `CP.exSent` | `study/ex-frasi.js` (gruppo ESERCIZI) | `forWord(parola)` → frasi che la contengono come parola (esempio, Tatoeba, lezioni, voci), `holed(segmenti, i)`; per buchi, ordina, lettura |
 | `CP.guided` | `study/guided.js` (gruppo ESERCIZI) | `go(passo, durata)`, `impara(tappa)`, `verifica(tappa)` (12 domande, cinque parti, soglia 80%), `leggi`, `miniQuiz(lezione)`; il passo lo calcola `CP.ex.prossimo(indice)` in `ui/ex-stub.js`, la carta `CP.ex.guidaHTML` |
+| `CP.reading` | `phrases/reading.js` (gruppo ESERCIZI) | lettura graduata: `render()` (Frasi → Leggi → Testi), `open(id)`, `texts()`, `knownPct(testo)`; i testi in `TESTI_ZH` / `TESTI_IT` (`src/data/reading/`, da `tools/lettura.mjs`, letti al primo uso) |
 | `CP.togetherOpen(testo)` / `CP.classBanner()` | `ui/together.js` (all'avvio) | apre una sfida o importa un pacchetto da un testo qualsiasi (link, codice, QR); il riquadro del pacchetto in cima al Percorso e alle lezioni di italiano |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
