@@ -12,7 +12,7 @@
   var UNLOCK = {
     words: 200, build: 300, minDays: { words: 2, build: 3 },   /* punti (XP) e giorni attivi per le schede del corso di cinese */
     advancedXp: 1500,                                          /* da qui (grado «Mercante di Seta») tutto è aperto */
-    frasi: { pat: 3, thought: 3, lab: 6, slot: 6, reader: 6 }, /* lezioni superate per gli strumenti di Frasi */
+    frasi: { pat: 3, thought: 3, lab: 6, slot: 6, reader: 6, rad: 6 }, /* lezioni superate per gli strumenti di Frasi */
     frasiXp: 1000,                                             /* ...oppure questi punti */
     it: { words: [200, 2], conj: [300, 3], phrases: [300, 3], conjLesson: "presente" }
   };
@@ -20,7 +20,7 @@
   function jget(k) { try { return JSON.parse(lsGet(k) || "null"); } catch (e) { return null; } }
   var IT = lsGet("cp-course") === "it";
   var BASE = IT ? { lessons: 1, review: 1 } : { path: 1, study: 1 };
-  var ALL_ZH = ["words", "build", "fr:pat", "fr:thought", "fr:lab", "fr:slot", "fr:reader"], ALL_IT = ["it:words", "it:conj", "it:phrases"];
+  var ALL_ZH = ["words", "build", "fr:pat", "fr:thought", "fr:lab", "fr:slot", "fr:reader", "fr:rad"], ALL_IT = ["it:words", "it:conj", "it:phrases"];
   function unl() { var u = CP.ux.get("unl"); return u && typeof u === "object" ? u : {}; }
   function setUnl(u) { CP.ux.set("unl", u); }
   function hasProgress() {
@@ -62,7 +62,7 @@
     }
     return out;
   }
-  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases" };
+  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "fr:rad": "sub.rad", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases" };
   var queue = [], noteEl = null;
   /* il messaggio dello sblocco: una riga dentro la pagina, sopra la barra in basso; una novità alla volta, mai un pop-up */
   function announce() {
