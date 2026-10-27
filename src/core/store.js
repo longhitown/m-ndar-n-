@@ -182,13 +182,31 @@
     return { m: m, n: n };
   }
   /* frasi salvate nel laboratorio: unione, senza doppioni */
+  function mergeEx(a, b) {
+    a = a || {}; b = b || {};
+    var U = {}, E = {}, RD = {};
+    [a.units || {}, b.units || {}].forEach(function (u) { Object.keys(u).forEach(function (id) {
+      var x = U[id], y = u[id] || {}; if (!x) { U[id] = JSON.parse(JSON.stringify(y)); return; }
+      var m = { passo: Math.max(x.passo || 0, y.passo || 0) }, vx = x.verifica, vy = y.verifica;
+      if (vx || vy) m.verifica = !vx ? vy : !vy ? vx : ((vy.data || 0) > (vx.data || 0) ? vy : vx);
+      Object.keys(y).concat(Object.keys(x)).forEach(function (f) { if (m[f] === undefined && f !== "passo" && f !== "verifica") m[f] = x[f] !== undefined ? x[f] : y[f]; });
+      U[id] = m;
+    }); });
+    [a.ex || {}, b.ex || {}].forEach(function (ex) { Object.keys(ex).forEach(function (k) {
+      var t = E[k] = E[k] || {}; Object.keys(ex[k] || {}).forEach(function (ty) { var y = ex[k][ty], x = t[ty]; if (!x || (y && (y.n || 0) > (x.n || 0)) || (y && (y.n || 0) === (x.n || 0) && (y.ultimo || 0) > (x.ultimo || 0))) t[ty] = y; });
+    }); });
+    [a.read || {}, b.read || {}].forEach(function (r) { Object.keys(r).forEach(function (id) { RD[id] = Math.max(RD[id] || 0, r[id] || 0); }); });
+    var out = { units: U, ex: E, read: RD };
+    Object.keys(b).concat(Object.keys(a)).forEach(function (f) { if (!(f in out)) out[f] = a[f] !== undefined ? a[f] : b[f]; });
+    return out;
+  }
   function mergeMine(a, b) {
     var out = [], seen = {};
     [].concat(Array.isArray(a) ? a : [], Array.isArray(b) ? b : []).forEach(function (x) { var k = JSON.stringify([x && x.t, x && x.p]); if (x && !seen[k]) { seen[k] = 1; out.push(x); } });
     return out.slice(0, 40);
   }
   /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
-  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-card-v1", "cp-lang"];
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-card-v1", "cp-lang", "cp-ex-style", "cp-ex-dur"];
   function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
   function mergeKey(k, a, b) {
     if (k === "cp-srs-v1") return mergeSrs(a, b);
@@ -208,6 +226,9 @@
     if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
     /* pacchetti classe: unione per id; chi è stato tolto su un dispositivo resta tolto (la data più recente) */
     if (k === "cp-class-v1") { var P = {}, X = {}; [a, b].forEach(function (o) { o = o || {}; Object.keys(o.p || {}).forEach(function (id) { if (!P[id] || (o.p[id].at || 0) < (P[id].at || 0)) P[id] = o.p[id]; }); Object.keys(o.x || {}).forEach(function (id) { X[id] = Math.max(X[id] || 0, o.x[id]); }); }); return { p: P, x: X }; }
+    /* esercizi (Task 12): per ogni unità il passo più avanzato e la verifica più recente; per ogni parola e tipo la voce con n
+       più alto (mai la somma: un backup ripristinato non conta due volte); i testi letti si sommano */
+    if (k === "cp-ex-v1") return mergeEx(a, b);
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */

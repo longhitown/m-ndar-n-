@@ -394,6 +394,8 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-ex-v1` (Task 12): `{ units: {id: {passo, verifica}}, ex: {parola: {tipo: {n, ok, ultimo}}}, read: {id: data} }`; nell'unione il passo più avanzato, la verifica più recente, per ogni tipo la voce con `n` più alto (mai la somma), i testi letti uniti.
+- `cp-ex-style`: lo stile di ripasso (`guided`, `mixed`, `classic`); `cp-ex-dur`: durata del passo guidato (5, 10, 15). Preferenze del dispositivo.
 - `cp-class-v1`: i pacchetti classe importati `{ p: { id: pacchetto }, x: { id: quando è stato tolto } }`; nell'unione si sommano (per ognuno la data d'importazione più vecchia) e chi è stato tolto resta tolto.
 - `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
 - `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
@@ -591,6 +593,150 @@ In ⚙️ → Dati e privacy → «🎯 Sfide e classe», e con il pulsante «�
 
 **Peso.** I due moduli e i loro testi (`src/i18n/together.js`) si caricano al primo uso (`LAZYMOD` in `tools/build.mjs`).
 All'avvio c'è solo `src/ui/together.js`: la sezione in ⚙️, i link e il riquadro.
+
+## Esercizi vari e stile di ripasso (Task 12)
+
+⚙️ → Avanzate → «Stile di ripasso»:
+- **Guidato** (consigliato a chi comincia): il ciclo «impara, esercitati, verifica», una tappa alla volta (tappa T3; fino ad
+  allora si comporta come Misto);
+- **Misto**: esercizi vari al posto dell'autovalutazione;
+- **Classico**: le carte di prima, con «La so / Non la so», identiche riga per riga (prova golden).
+
+`EX_DEFAULT_STYLE` (`src/ui/ex-stub.js`) sceglie Guidato per chi non ha progressi e Misto per chi ne ha, la prima volta che
+serve. La scelta resta in `cp-ex-style` (preferenza del dispositivo).
+
+**Come funziona.**
+- **Nessun motore parallelo.** La coda, i tempi, «Esci», la barra e il voto restano quelli di `src/study/study.js`.
+  Negli stili Misto e Guidato le carte di prova portano `e.ex`, e la carta la disegna `src/study/exercises.js`
+  (`CP.exEngine`). Il voto passa sempre da `CP.grade`, con il tipo di esercizio in `meta.type`; FSRS non cambia.
+- **Tipi di T1:**
+  - riconoscimento: `mc-significato`, `mc-parola`, `mc-pinyin`;
+  - misto: `mc-ascolto` (solo se c'è una voce cinese) e `tono` (parole di una sillaba; gli errori vanno al Dottore dei Toni).
+- **Scelta del tipo** dalla stabilità FSRS: sotto 3 giorni riconoscimento, 3-21 misto, oltre produzione. Il gradino scende
+  sotto il 60% di risposte giuste nelle ultime 10 e sale sopra il 90%. Mai lo stesso tipo più di due volte di fila.
+  Dopo un errore la parola torna dopo 3 carte con un altro tipo, e una copia di rinforzo dopo 8.
+- **Voti.** Scelta multipla giusta = Bene, mai Facile; «Non ero sicuro» = Difficile; sbagliata = Di nuovo. Tasti 1-4 per
+  rispondere, Invio per continuare, spazio per ascoltare.
+- **Distrattori** (`src/study/distractors.js`, funzioni pure con seme):
+  - livello ±1, e per il 40% la stessa tappa;
+  - niente glosse con parole in comune con la giusta;
+  - pinyin con al massimo due toni diversi e una confusione tipica;
+  - nell'ascolto, niente omofoni né parole con più letture;
+  - con meno di 3 candidati la domanda non si fa.
+- **Digitazione** (`src/core/typing.js`): adattata da `materiali/riferimenti/digitazione.mjs`, con le sue prove in
+  `tools/unit.mjs`.
+- **Tipi di T2** (`src/study/ex-frasi.js`, `src/study/ex-varie.js`):
+  - misto: frase a buco (`buco`), rimetti in ordine (`ordina`), `traccia` (parole di un carattere, lavagna senza guida) e
+    `componente` (quale parte dà il suono o il significato, solo con l'anatomia accesa);
+  - produzione: buco grammaticale (`buco-gram`: insiemi confondibili e classificatori di `CP.lab.NCLF`), `scrivi-pinyin`,
+    `scrivi-significato` e il buco digitato (`buco-scrivi`);
+  - riconoscimento: `abbina` (cinque coppie).
+- **Le frasi di una parola** (`CP.exSent.forWord`), in quest'ordine:
+  - l'esempio della parola;
+  - le frasi Tatoeba con traduzione diretta e livello non sopra quello della parola;
+  - gli esempi delle lezioni;
+  - le frasi delle voci reali, che non hanno traduzione e servono solo come ultima scelta.
+
+  La parola deve comparire come parola nel taglio dell'app.
+- **Digitazione:** sotto il campo i tasti 1-5 e ü. Pinyin senza toni, o italiano con un accento sbagliato o un refuso:
+  Difficile, con la correzione.
+- **Lezioni:** i quiz accettano anche `{ k: "buco", zh: "我＿学生。", opts, a }` e `{ k: "scrivi", q?, zh?, a, py? }`. Nel corso
+  di italiano: `{ k: "buco", it: "Io ___ …", opts, a }` e `{ k: "scrivi", q, a }`. `tools/lib/lab.mjs` li valida; i file
+  delle lezioni non sono cambiati.
+
+**Percorso guidato** (stile Guidato, `src/study/guided.js`; il passo successivo lo calcola `CP.ex.prossimo` nello stub, senza
+caricare il gruppo).
+- **La carta «Continua»** del Percorso ha un solo pulsante, che dice che cosa succederà, per esempio «Impara 5 parole
+  nuove · 10 ripassi». La durata si sceglie tra 5, 10 e 15 minuti (`cp-ex-dur`).
+- **I passi** di una tappa:
+  1. impara (5 parole nuove con frase e ascolto) ed esercitati (esercizi sulle stesse parole e ripassi in scadenza);
+  2. con l'80% delle parole avviate, **verifica**: 12 domande senza aiuti, soglia 80%. Il risultato è diviso nelle cinque
+     parti del test di livello, con una frase gentile sul punto più debole. Sotto la soglia, «Rinforza» ripassa le parole
+     sbagliate. La verifica non tocca FSRS; superata la prima volta dà 20 punti;
+  3. il dialogo della tappa.
+- **Stato** in `cp-ex-v1.units[tappa]`. Il segno «🏅 Tappa verificata» si aggiunge alla regola dell'80%, che non cambia.
+- Si può sempre «Studiare libero» da Studia.
+- **Lezioni:** dopo il quiz «Rifai i tuoi errori» e (stili Misto e Guidato) una mini-verifica con 2 domande a buco nuove,
+  prese dagli esempi. Nessuna delle due cambia il risultato della lezione.
+- `ui/share-card.js` ora si carica al primo uso di `CP.shareCard`; la parola del giorno sta in `pwa/widget.js`.
+
+**Lettura graduata** (Frasi → 📖 Leggi → «Testi», `src/phrases/reading.js`, gruppo ESERCIZI).
+- I testi vengono da `materiali/runtime/testi-*.json`; `tools/lettura.mjs` li controlla e scrive `src/data/reading/`
+  (`TESTI_ZH`, `TESTI_IT`, letti al primo uso). Ogni frase cinese deve essere fatta di parole del vocabolario nel taglio
+  dell'app; il livello del testo è quello della parola più alta, e se quello dichiarato è più basso vince il calcolato
+  (alzati: `zh-t03-al-negozio` 1 → 2, `zh-t11-dal-medico` 4 → 6). La build ricontrolla gli stessi punti.
+- L'elenco va per livello, con «★ giusto per te» quando conosci almeno il 90% delle parole e «✓ letto».
+- Nel testo: un tocco su una parola apre il suo foglio; pinyin (acceso fino al livello 2) e traduzione si accendono e
+  spengono; ogni frase si ascolta.
+- In fondo le domande di comprensione (risposte mescolate con un seme), poi le parole nuove: un tocco le mette nel ripasso
+  (`CP.grade(parola, 0)`, tipo «lettura»). 5 punti la prima volta, segno in `cp-ex-v1.read`.
+- I testi sono bozze scritte per il progetto: vanno riletti da un madrelingua. I testi italiani arrivano con T5.
+- Crediti: «Frasi d'esempio degli esercizi», Tatoeba, CC BY 2.0 FR, con l'elenco degli autori in
+  `materiali/crediti/autori-frasi.tsv` (le frasi sono negli esercizi da T1).
+
+**Corso di italiano alla pari** (T5; codice in `COURSE_IT`: `src/it/esercizi.js`, `src/it/lettura.js`).
+- **Stessi stili** (⚙️ → Stile di ripasso): Classico = le carte di prima (da girare, quattro voti); Misto e Guidato = gli
+  esercizi dello stesso motore (`CP.exEngine`, con un kit per il corso: parola, scheda, voce italiana, rivelazione).
+  Le parole nuove si presentano prima (parola, cinese, forme, frase) con «记住了，练一练».
+- **Voto** sempre da `CP.itApi.grade(voce, g, meta)`: scrive `cp-it-srs-v1` nel formato di sempre `{ c, n, lr }`; la
+  ripetizione dopo un errore (3 carte dopo, con un altro tipo) aggiorna la scheda solo se chiude un riapprendimento,
+  come nel cinese. Mai Facile da una scelta multipla.
+- **Tipi** (prefisso `it-` nel registro del motore): `it-significato`, `it-parola`, `it-ascolto` (con la voce italiana del
+  telefono), `it-ascolto-frase`, `it-buco`, `it-ordina`, `it-scrivi` (confronto `compareIt` e, se sbagliata, il correttore
+  `it/checker.js`), `it-dettato` (solo con una voce reale), `it-buco-gram` (articoli, preposizioni, avere/essere da
+  `INSIEMI.it`), `it-verbo` (presente da `CP.ita`).
+- **Distrattori** (`CP.distract.itWords`): stessa specie e, per i nomi, stesso genere; livello ±1 dal capitolo della tappa;
+  nessun carattere cinese in comune con la giusta (学校/学生); nessun doppione, né in italiano né in cinese.
+- **Frasi di una parola:** l'esempio, poi le frasi Tatoeba (`FRASI_IT`, solo con traduzione) e gli esempi delle lezioni,
+  con il livello non oltre quello della parola. La parola si cerca tra le sue forme (nomi senza articolo, quattro forme
+  degli aggettivi, presente dei verbi regolari).
+- **Guidato:** la carta «今天» ha un solo pulsante con il passo successivo: esercizi se ci sono almeno 10 ripassi (durata
+  5/10/15 minuti, poi «这次练习完成了»), un testo da leggere (A1 dopo 3 lezioni, A2 dopo 10, B1 dopo 20, al massimo uno
+  ogni 3 lezioni), altrimenti la lezione corrente (la lezione con il suo quiz è «impara + verifica»).
+- **Lettura** (in 句子, sopra le frasi): gli 8 testi A1-B1 con le domande in cinese e le risposte in italiano, «适合你»,
+  «已读», traduzione cinese a richiesta, un tocco su una parola apre il suo foglio, ogni frase si ascolta, parole nuove nel
+  ripasso con un tocco, 5 punti la prima volta.
+
+**Voci reali** (`src/core/voice-clip.js`, `src/ui/voice-dl.js`).
+- `tools/materiali.mjs` scrive anche `src/data/ex/voci-file.js` (`VOICE_FILES`: per lingua, numero della clip → impronta
+  del contenuto; letto al primo uso). La build ricontrolla le impronte e scrive le clip in
+  `dist/audio/voce/<lingua>/<numero>.<impronta>.ogg` (fuori dal repository, come i brani; `--check` le ignora).
+- `CP.speak` chiede la clip della frase (chiave: per l'italiano minuscole senza punteggiatura, per il cinese solo i
+  caratteri); se non parte torna alla voce di sempre. Le clip si usano **solo se sono sul telefono**: nell'APK sempre;
+  sul sito dopo ⚙️ → Voce → «Scarica le voci (7,3 MB)», che le mette nella cache `mandarino-voice` (il service worker non
+  la cancella agli aggiornamenti; `src/pwa/sw.js` e `swSource()` in `src/pwa/pwa.js` restano uguali). Prima di allora
+  nessuna richiesta di rete. Mai il sesso, l'accento o il numero di chi parla.
+- Crediti: «voce: NM1, Tatoeba, CC BY 4.0» e «voci: Mozilla Common Voice, CC0».
+- **Corso di cinese (T6):** «ascolta la frase» (`ascolto-frase`, misto): la clip vera di una frase con la parola, e quale
+  frase hai sentito tra quattro scritte (le altre contengono la stessa parola quando si può). Si propone solo se le clip
+  sono sul telefono. Dal livello 3, quando c'è la frase vera, l'ascolto della parola sola con la voce sintetica
+  (`mc-ascolto`) lascia il posto alla frase.
+- `materiali/escludi-frasi.txt`: le frasi da togliere da esercizi e voci (una per riga); poi `node tools/materiali.mjs`.
+- Senza `materiali/audio/zh` i materiali si generano lo stesso (0 clip cinesi) e l'app non propone l'ascolto delle frasi
+  (prova in `tools/unit.mjs` e in `tools/e2e.mjs`).
+- Le prove (blocco 4n): prima di scaricare nessuna richiesta; il pulsante mette le 1154 clip nella cache; in modalità aereo
+  arrivano dalla cache; nessuna richiesta fuori dall'app.
+
+**Peso.**
+- Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che
+  generalizza `COURSE_IT`; lo esegue `CP.ex.carica()`. All'avvio resta solo `ui/ex-stub.js`.
+- Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1480 KB su 1500 (T5: la ricerca
+  delle voci reali, `core/voice-clip.js`, serve a `CP.speak` fin dall'avvio).
+
+**Materiali** (`materiali/`, dalla cartella «Materiali mandarino» dell'autore; fonti e licenze in
+`materiali/FONTI-E-LICENZE.md`).
+- `tools/materiali.mjs` scrive `src/data/ex/` (letti al primo uso), controllando le frasi con il taglio dell'app:
+  - frasi Tatoeba: 2484 cinese → italiano e 3048 italiano → cinese;
+  - indici delle voci: 720 clip cinesi Common Voice (CC0) e 434 italiane NM1 (CC BY 4.0), 7,0 MB;
+  - insiemi confondibili.
+- Tutte le frasi passano il taglio; per 135 frasi il livello è salito a quello calcolato (per le frasi fatte fuori
+  dall'HSK conta il capitolo della tappa).
+- La build ricontrolla tutto e fallisce se:
+  - una parola è fuori dal vocabolario;
+  - un livello è sotto quello calcolato;
+  - manca una clip;
+  - un file supera i 60 KB, o le voci insieme superano i 10 MB.
+- `materiali/escludi-frasi.txt` (una frase per riga) toglie frasi senza toccare i file.
 
 ## Esporta per Anki
 

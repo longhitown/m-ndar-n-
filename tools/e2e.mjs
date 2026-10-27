@@ -38,6 +38,9 @@ await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const base = "http://127.0.0.1:" + server.address().port + "/";
 
 const browser = await chromium.launch({ args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required"] });
+/* Task 12: le prove scritte prima del motore degli esercizi descrivono il ripasso «Classico»: ogni contesto parte da lì,
+   a meno che la prova scelga un altro stile (il suo addInitScript viene dopo e lo sovrascrive) */
+{ const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (!localStorage.getItem("cp-ex-style")) localStorage.setItem("cp-ex-style", "classic"); } catch (e) {} }); return c; }; }
 async function selftest(url) {
   const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
   await p.goto(url + "#selftest"); await p.waitForFunction(() => window.__SELFTEST, null, { timeout: 30000 });
@@ -445,17 +448,349 @@ try {
     check("Golden «Classico»: nella sessione ci sono le tre carte (pi, ip, hp) e i quattro voti", tags.every(Boolean), JSON.stringify(tags));
     check("Golden «Classico»: nessun errore JavaScript", !now.errs.length && !old.errs.length, now.errs[0] || old.errs[0]);
   }
+  /* 4i. motore degli esercizi (Task 12, T1): stile Misto, ogni tipo di scelta multipla e il tono, tasti 1-4, «Non ero
+     sicuro», errore che torna a +3 e +8 con un altro tipo, statistiche in cp-ex-v1, intervalli FSRS identici al Classico */
+  {
+    const prof = (style) => { const now = Date.now(), S = {}; ["妈", "马", "你好", "谢谢", "再见", "早上好", "晚上好", "晚安", "对不起", "没关系"].forEach((k, i) => { S[k] = { n: 3, d: now - 86400000 * (1 + i), b: i % 4 }; }); localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-study-cfg", '{"n":0,"sec":""}'); localStorage.setItem("cp-ex-style", style); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(prof, "mixed"); await p.goto(base); await p.waitForTimeout(700);
+    check("Esercizi: con lo stile Classico o prima di una sessione il motore non si carica", await p.evaluate(() => !CP.exEngine));
+    const seen = {};
+    for (const t of ["mc-significato", "mc-parola", "mc-pinyin", "mc-ascolto", "tono"]) {
+      /* senza rispondere: si fa girare la coda finché il tipo vale per la parola in testa (il tono solo per 妈 e 马) */
+      const r = await p.evaluate((t) => {
+        CP.ex.carica(); CP.exEngine.hasVoice = () => true; CP.exEngine.force(t); CP.show("study", true); CP.studyStart(); const s = CP.studyKit.sess();
+        for (let i = 0; i < s.q.length + 1; i++) {
+          const c = document.querySelector("#study-root .ex-card"); if (c && c.dataset.ex === t) return { t: c.dataset.ex, k: c.dataset.k, n: document.querySelectorAll("[data-exa]").length };
+          const e = s.q.shift(); e.item = e.exType = null; s.q.push(e); s.q[0].item = s.q[0].exType = null; CP.studyRefresh();
+        }
+        return null;
+      }, t);
+      const right = await p.evaluate(() => { const cur = CP.exEngine.current(); return cur ? cur.item.right : -1; });
+      await p.keyboard.press(String(right + 1)); await p.waitForTimeout(80);
+      const fb = await p.evaluate(() => ({ ok: !!document.querySelector(".ex-opt.ok .ex-mark"), verdict: (document.querySelector(".ex-verdict") || {}).textContent || "", cont: !!document.querySelector(".actbar [data-exc].btn-main"), primaries: document.querySelectorAll("#study-root .btn-main").length, unsure: !!document.querySelector("[data-exu]") }));
+      seen[t] = r && r.t === t && r.n === 4 && fb.ok && /✓/.test(fb.verdict) && fb.cont && fb.primaries === 1 && fb.unsure;
+      await p.keyboard.press("Enter"); await p.waitForTimeout(60);
+      await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    }
+    check("Esercizi: significato, parola, pinyin, ascolto e tono con quattro risposte, tasti 1-4, segno ✓ oltre al colore, un solo «Continua»", Object.values(seen).every(Boolean) && Object.keys(seen).length === 5, JSON.stringify(seen));
+    /* «Non ero sicuro» = Difficile; un errore torna a +3 con un altro tipo e una copia a +8 */
+    const flow = await p.evaluate(async () => {
+      CP.exEngine.force("mc-significato"); CP.studyStart();
+      const k0 = document.querySelector(".ex-card").dataset.k, cur = CP.exEngine.current(), wrong = (cur.item.right + 1) % 4;
+      document.querySelectorAll("[data-exa]")[wrong].click(); document.querySelector("[data-exc]").click();
+      CP.exEngine.force(null);
+      const q = CP.studyKit.sess().q.map((e) => e.k + (e.bonus ? "+" : "") + ":" + (e.lastType || ""));
+      const st = JSON.parse(localStorage.getItem("cp-ex-v1")).ex[k0]["mc-significato"];
+      /* «Non ero sicuro» sulla carta che segue */
+      const c2 = CP.exEngine.current(), k2 = document.querySelector(".ex-card").dataset.k;
+      document.querySelectorAll("[data-exa]")[c2.item.right].click(); document.querySelector("[data-exu]").click();
+      await new Promise((r) => setTimeout(r, 400));
+      const log = (await Store.exportObj(true)).log; const last = log[log.length - 1], prev = log[log.length - 2];
+      return { k0, q: q.slice(0, 9), st, last: [last[1], last[2], last[4]], prev: [prev[1], prev[2], prev[4]], k2 };
+    });
+    const i3 = flow.q.findIndex((x) => x.startsWith(flow.k0 + ":")), i8 = flow.q.findIndex((x) => x.startsWith(flow.k0 + "+:"));
+    check("Esercizi: dopo un errore la parola torna a +3 (con un altro tipo) e una copia di rinforzo a +8", i3 === 3 && i8 === 8 && /:mc-significato$/.test(flow.q[i3]), JSON.stringify(flow.q));
+    check("Esercizi: nel registro dei ripassi il tipo di esercizio; sbagliata = Di nuovo, «Non ero sicuro» = Difficile; statistiche in cp-ex-v1", flow.prev[0] === flow.k0 && flow.prev[1] === 1 && flow.prev[2] === "mc-significato" && flow.last[0] === flow.k2 && flow.last[1] === 2 && flow.st.n === 1 && flow.st.ok === 0, JSON.stringify(flow));
+    /* intervalli FSRS: la stessa risposta «Bene» dà la stessa scheda nei due stili */
+    /* la scadenza ha il «fuzz» casuale di FSRS (lo scheduler tiene il suo generatore): si confrontano stabilità, difficoltà, stato e ripetizioni */
+    const fsrs = await p.evaluate(() => {
+      const S = CP.S(), k = "晚安", before = JSON.stringify(S[k]); CP.grade(k, 2, false, { ms: 1000, type: "mc-pinyin" }); const a = S[k]; const r = { st: a.st, df: a.df, sd: a.sd, rp: a.rp }; S[k] = JSON.parse(before); CP.grade(k, 2, false, { ms: 1000, type: "pi" }); const b = S[k]; return [r, { st: b.st, df: b.df, sd: b.sd, rp: b.rp }]; });
+    check("Esercizi: la scheda FSRS dopo un voto è identica a prima (stabilità, difficoltà, stato; il tipo finisce solo nel registro)", JSON.stringify(fsrs[0]) === JSON.stringify(fsrs[1]), JSON.stringify(fsrs));
+    check("Esercizi: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4j. esercizi di T2 (Task 12): frase a buco, buco grammaticale, ordina, digitazione del pinyin e del significato,
+     buco digitato, abbina, componente; voti della digitazione (senza toni = Difficile) */
+  {
+    const prof = (style) => { const now = Date.now(), S = {}; ["妈", "好", "你好", "谢谢", "我", "是", "学生", "老师", "朋友", "吃", "喝", "茶", "书", "请"].forEach((k, i) => { S[k] = { n: 9, d: now - 86400000 * (1 + i), b: 6 }; }); localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", style); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(prof, "mixed"); await p.goto(base); await p.waitForTimeout(700);
+    /* porta in testa una carta del tipo voluto, scorrendo la coda con risposte giuste */
+    const open = (t) => p.evaluate((t) => {
+      CP.ex.carica(); CP.exEngine.force(t); CP.show("study", true); CP.studyStart();
+      const s = CP.studyKit.sess(); if (!s) return null;
+      /* senza rispondere: si fa girare la coda finché il tipo voluto vale per la parola in testa */
+      for (let i = 0; i < s.q.length + 1; i++) {
+        const c = document.querySelector("#study-root .ex-card"); if (c && c.dataset.ex === t) return CP.exEngine.current().item;
+        const e = s.q.shift(); e.item = e.exType = null; s.q.push(e); s.q[0].item = s.q[0].exType = null; CP.studyRefresh();
+      }
+      return null;
+    }, t);
+    const res = {};
+    for (const t of ["buco", "buco-gram", "componente"]) {
+      const it = await open(t);
+      if (!it) { res[t] = "nessuna carta"; continue; }
+      await p.keyboard.press(String(it.right + 1)); await p.waitForTimeout(60);
+      res[t] = await p.evaluate(() => !!document.querySelector(".ex-opt.ok") && /✓/.test(document.querySelector(".ex-verdict").textContent) && (!document.querySelector(".ex-hole") || true));
+      await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    }
+    check("Esercizi T2: frase a buco, buco grammaticale (con la nota) e componente si risolvono con 1-4", Object.values(res).every((x) => x === true), JSON.stringify(res));
+    const hole = await p.evaluate(() => { const s = CP.exSent.forWord(CP.WORDS["学生"]); return { n: s.length, okSeg: s.every((x) => x.toks.some((t) => t.w && t.w.key === "学生")) }; });
+    check("Frasi a buco: le frasi di una parola la contengono come parola (taglio dell'app)", hole.n > 0 && hole.okSeg, JSON.stringify(hole));
+    /* ordina */
+    let it = await open("ordina");
+    const ord = it && await p.evaluate(() => { const it = CP.exEngine.current().item; it.tiles.forEach((t) => document.querySelector('[data-exo="' + t.id + '"]').click()); document.querySelector("[data-exo-check]").click(); return { ok: /✓/.test(document.querySelector(".ex-verdict").textContent), primaries: document.querySelectorAll("#study-root .btn-main").length }; });
+    check("Esercizi T2: rimetti in ordine la frase (tessere, «Controlla», poi un solo «Continua»)", ord && ord.ok && ord.primaries === 1, JSON.stringify(ord));
+    await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    /* digitazione: pinyin con i numeri (esatto), senza toni (Difficile), significato con l'accento sbagliato (Difficile) */
+    const typ = [];
+    for (const [t, val] of [["scrivi-pinyin", (it) => it.answer.split(/[.\s']+/).map((s) => CP.typing.syllableInfo(s).plain + (CP.typing.syllableInfo(s).tone || 5)).join("")], ["scrivi-pinyin", (it) => it.answer.split(/[.\s']+/).map((s) => CP.typing.syllableInfo(s).plain).join(" ")], ["scrivi-significato", (it) => it.accept[0]], ["buco-scrivi", (it) => it.answer]]) {
+      it = await open(t); if (!it) { typ.push(t + ": nessuna carta"); continue; }
+      const attrs = await p.evaluate(() => { const i = document.querySelector("#ex-in"); return [i.getAttribute("autocapitalize"), i.getAttribute("autocorrect"), i.getAttribute("spellcheck"), !!document.querySelector("[data-ext='3']") || !!document.querySelector("#ex-in[lang=it]")].join(); });
+      await p.fill("#ex-in", await p.evaluate(`(${val.toString()})(CP.exEngine.current().item)`)); await p.keyboard.press("Enter"); await p.waitForTimeout(60);
+      const g = await p.evaluate(() => { const c = CP.exEngine.current(); return c.g; });
+      typ.push(t + ":" + g + ":" + attrs);
+      await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    }
+    check("Digitazione: numeri dei toni = giusto, senza toni = Difficile con la spiegazione, campo senza correttore né maiuscole, tasti dei toni", /^scrivi-pinyin:[23]:off,off,false,true$/.test(typ[0]) && /^scrivi-pinyin:1:/.test(typ[1]) && /^scrivi-significato:[23]:/.test(typ[2]) && /^buco-scrivi:[23]:/.test(typ[3]), typ.join(" | "));
+    /* abbina */
+    it = await open("abbina");
+    const mt = it && await p.evaluate(() => { const it = CP.exEngine.current().item; it.words.forEach((w, i) => { document.querySelector('[data-exm="l:' + i + '"]').click(); document.querySelector('[data-exm="r:' + i + '"]').click(); }); return { n: it.words.length, ok: /✓/.test(document.querySelector(".ex-verdict").textContent) }; });
+    check("Esercizi T2: abbina (almeno quattro coppie)", mt && mt.n >= 4 && mt.ok, JSON.stringify(mt));
+    /* quiz delle lezioni: «buco» e «scrivi» (un quiz inventato, messo solo nella pagina) */
+    const lq = await p.evaluate(async () => {
+      CP.studyHome(); const L = CP.lessons.list()[0]; L.quiz = [{ k: "buco", zh: "我＿学生。", opts: ["在", "是"], a: 1 }, { k: "scrivi", py: true, a: "shì" }];
+      CP.show("build", true); CP.build.openLesson(L.id); document.querySelector("[data-ls-quiz]").click();
+      const hole = !!document.querySelector(".ls-opt"); document.querySelectorAll("[data-ls-opt]")[1].click(); const ok1 = !!document.querySelector(".verdict.ok"); document.querySelector("[data-ls-next]").click();
+      const inp = document.getElementById("ls-in"); inp.value = "shi4"; document.querySelector("[data-ls-type]").click();
+      return { hole, ok1, ok2: !!document.querySelector(".verdict.ok") };
+    });
+    check("Lezioni: i quiz accettano «buco» e «scrivi» (pinyin con i numeri dei toni)", lq.hole && lq.ok1 && lq.ok2, JSON.stringify(lq));
+    check("Esercizi T2: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4k. percorso guidato (Task 12, T3): carta «Continua» con il passo successivo, impara + esercitati, verifica superata
+     (tappa verificata, +20 una volta sola) e fallita (le cinque parti, «Rinforza»), «I tuoi errori» e mini-verifica nelle lezioni */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", "guided"); });
+    await p.goto(base); await p.waitForTimeout(700);
+    /* risponde all'esercizio aperto: giusto (ok) o sbagliato */
+    const answer = (ok) => p.evaluate((ok) => {
+      const cur = CP.exEngine.current(); if (!cur) return "nessuno"; const it = cur.item;
+      if (it.kind === "mc") document.querySelectorAll("[data-exa]")[ok ? it.right : (it.right + 1) % it.opts.length].click();
+      else if (it.kind === "type") { document.getElementById("ex-in").value = ok ? (it.mode === "pinyin" ? it.answer : it.accept[0]) : "xyz"; document.querySelector("[data-ex-submit]").click(); }
+      else if (it.kind === "order") { (ok ? it.tiles : it.tiles.slice().reverse()).forEach((t) => document.querySelector('[data-exo="' + t.id + '"]').click()); document.querySelector("[data-exo-check]").click(); }
+      else if (it.kind === "match") { it.words.forEach((w, i) => { document.querySelector('[data-exm="l:' + i + '"]').click(); document.querySelector('[data-exm="r:' + (ok ? i : (i + 1) % it.words.length) + '"]').click(); if (!ok) document.querySelector('[data-exm="r:' + i + '"]').click(); }); }
+      else if (it.kind === "trace") { return "trace"; }
+      const c = document.querySelector("[data-exc]"); if (c) c.click(); return it.kind;
+    }, ok);
+    await p.evaluate(() => CP.show("path", true)); await p.waitForTimeout(200);
+    const card = await p.evaluate(() => { const c = document.querySelector("#path-root .gd-card"); return c ? { go: c.querySelector("[data-gd-go]").textContent, dur: c.querySelectorAll("[data-gd-dur]").length, primaries: c.querySelectorAll(".btn-main").length } : null; });
+    check("Guidato: la carta «Continua» dice il passo successivo (impara 5 parole nuove), con la durata 5/10/15 e un solo pulsante primario", card && /Impara 5 parole nuove/.test(card.go) && card.dur === 3 && card.primaries === 1, JSON.stringify(card));
+    await p.click("#path-root [data-gd-go]"); await p.waitForTimeout(300);
+    let kinds = [];
+    for (let i = 0; i < 40; i++) {
+      const st = await p.evaluate(() => { if (document.querySelector("#study-root #next")) { document.querySelector("#study-root #next").click(); return "intro"; } if (document.querySelector("#study-root .done")) return "done"; return document.querySelector("#study-root .ex-card") ? "ex" : "?"; });
+      if (st === "done" || st === "?") { kinds.push(st); break; }
+      if (st === "ex") { const k = await answer(true); kinds.push(k); if (k === "trace") await p.evaluate(() => { CP.exEngine.after({ ok: true, g: 2 }); document.querySelector("[data-exc]").click(); }); } else kinds.push(st);
+      await p.waitForTimeout(30);
+    }
+    const u1 = await p.evaluate(() => JSON.parse(localStorage.getItem("cp-ex-v1") || "{}").units);
+    check("Guidato: impara (5 carte nuove) ed esercitati (esercizi sulle stesse parole) fino alla fine della sessione", kinds.filter((x) => x === "intro").length === 5 && kinds.filter((x) => !["intro", "done", "?"].includes(x)).length >= 8 && kinds[kinds.length - 1] === "done" && u1 && u1.persone && u1.persone.passo >= 1, kinds.join(","));
+    /* la tappa è quasi tutta avviata: il passo successivo è la verifica */
+    await p.evaluate(() => { const S = CP.S(); CP.ORDER.filter((k) => CP.WORDS[k].sec === "persone").forEach((k) => { if (!S[k] || !S[k].n) CP.grade(k, 2, false, { ms: 1, type: "pi" }); }); CP.studyHome(); CP.show("path", true); });
+    await p.waitForTimeout(200);
+    const vgo = await p.evaluate(() => (document.querySelector("#path-root [data-gd-go]") || {}).textContent);
+    check("Guidato: con l'80% delle parole avviate il passo successivo è «Verifica la tappa»", /Verifica la tappa/.test(vgo || ""), vgo);
+    const xp0 = await p.evaluate(() => CP.game.rank().xp);
+    await p.click("#path-root [data-gd-go]"); await p.waitForTimeout(200);
+    const vq = [];
+    for (let i = 0; i < 14; i++) { const k = await answer(true); if (k === "nessuno") break; if (k === "trace") await p.evaluate(() => { CP.exEngine.after({ ok: true, g: 2 }); document.querySelector("[data-exc]").click(); }); vq.push(k); }
+    const pass = await p.evaluate(() => ({ title: (document.querySelector(".gd-res h2") || {}).textContent, parts: document.querySelectorAll(".gd-part").length, u: JSON.parse(localStorage.getItem("cp-ex-v1")).units.persone, xp: CP.game.rank().xp, noHint: true }));
+    check("Guidato: verifica di 12 domande di tipi diversi, superata: «Tappa verificata», le parti del test di livello, +20 punti", vq.length === 12 && new Set(vq).size >= 3 && /Tappa verificata/.test(pass.title) && pass.parts >= 3 && pass.u.verifica.ok && pass.u.verifica.pct === 100 && pass.xp - xp0 === 20, JSON.stringify({ vq, pass, xp0 }));
+    /* fallita: nessun punto in più, «Rinforza» con le parole sbagliate */
+    await p.evaluate(() => CP.guided.verifica("persone")); await p.waitForTimeout(100);
+    for (let i = 0; i < 14; i++) { const k = await answer(false); if (k === "nessuno") break; if (k === "trace") await p.evaluate(() => { CP.exEngine.after({ ok: false, g: 0 }); document.querySelector("[data-exc]").click(); }); }
+    const fail = await p.evaluate(() => ({ title: (document.querySelector(".gd-res h2") || {}).textContent, weak: (document.querySelector(".gd-weak") || {}).textContent, rinf: !!document.querySelector("[data-gd-rinforza]"), xp: CP.game.rank().xp, ok: JSON.parse(localStorage.getItem("cp-ex-v1")).units.persone.verifica.ok }));
+    await p.click("[data-gd-rinforza]"); await p.waitForTimeout(200);
+    const rq = await p.evaluate(() => { const s = CP.studyKit.sess(); return s ? s.q.length : 0; });
+    check("Guidato: verifica non superata: frase gentile sul punto debole, «Rinforza» apre un ripasso delle parole sbagliate, nessun punto in più, la tappa resta verificata", /Ancora/.test(fail.title) && /rinforzare/.test(fail.weak || "") && fail.rinf && fail.xp === pass.xp && fail.ok === true && rq >= 4, JSON.stringify({ fail, rq }));
+    await p.evaluate(() => { CP.studyHome(); CP.show("path", true); }); await p.waitForTimeout(200);
+    const badge = await p.evaluate(() => { const el = document.getElementById("stop-persone"); return !!(el && /Tappa verificata/.test(el.textContent)); });
+    check("Guidato: nel Percorso la tappa ha il segno «Tappa verificata» (la regola dell'80% non cambia)", badge);
+    /* lezioni: «I tuoi errori» e la mini-verifica */
+    const ls = await p.evaluate(() => {
+      const L = CP.lessons.list()[0]; CP.show("build", true); CP.build.openLesson(L.id); document.querySelector("[data-ls-quiz]").click();
+      for (let i = 0; i < L.quiz.length; i++) { const o = document.querySelectorAll("[data-ls-opt]"); if (o.length) o[(L.quiz[i].a + 1) % o.length].click(); else { for (let j = 0; j < 20; j++) { const b = document.querySelector("[data-ls-pick]:not([disabled])"); if (!b) break; b.click(); } const ch = document.querySelector("[data-ls-check]"); if (ch) ch.click(); } document.querySelector("[data-ls-next]").click(); }
+      const best = CP.lessons.progress(L.id).best, errs = document.querySelector("[data-ls-errs]"), mini = document.querySelector("[data-ls-mini]");
+      mini.click(); const n = document.querySelectorAll("[data-ls-opt]").length;
+      document.querySelectorAll("[data-ls-opt]")[0].click(); document.querySelector("[data-ls-next]").click(); document.querySelectorAll("[data-ls-opt]")[0].click(); document.querySelector("[data-ls-next]").click();
+      return { errs: !!errs, n, best, best2: CP.lessons.progress(L.id).best, res: !!document.querySelector("[data-ls-back]") };
+    });
+    check("Lezioni: dopo il quiz «Rifai i tuoi errori» e la mini-verifica con 2 domande nuove a buco, che non cambiano il risultato della lezione", ls.errs && ls.n >= 2 && ls.best === ls.best2 && ls.res, JSON.stringify(ls));
+    check("Guidato: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4l. lettura graduata (Task 12, T4): Frasi → Leggi → Testi, elenco per livello, parole che aprono il foglio, pinyin e
+     traduzione a richiesta, domande con le risposte mescolate, letto + punti una volta sola, parole nuove nel ripasso */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); });
+    await p.goto(base); await p.waitForTimeout(700);
+    const r1 = await p.evaluate(() => { CP.show("build", true); CP.build.setSub("testi"); const items = document.querySelectorAll("[data-rdg]"); return { n: items.length, lv: document.querySelectorAll(".rdg-h").length, loaded: !!CP.reading }; });
+    check("Lettura: in Frasi → Leggi → Testi i 15 testi per livello (il gruppo si carica all'apertura)", r1.n === 15 && r1.lv >= 4 && r1.loaded, JSON.stringify(r1));
+    await p.click('[data-rdg="zh-t01-la-mia-giornata"]'); await p.waitForTimeout(150);
+    const r2 = await p.evaluate(() => ({ s: document.querySelectorAll(".rdg-s").length, py: document.querySelectorAll(".rdg-py").length > 0, tr: document.querySelectorAll(".rdg-s .cd-note").length, say: document.querySelectorAll(".rdg-s .say").length }));
+    await p.click('[data-rdg-tog="tr"]'); await p.waitForTimeout(80);
+    const tr = await p.evaluate(() => document.querySelectorAll(".rdg-s .cd-note").length);
+    await p.click(".rdg-w"); await p.waitForTimeout(250);
+    const fam = await p.evaluate(() => !document.getElementById("fam").hidden);
+    await p.evaluate(() => CP.closeSheet());
+    check("Lettura: frase per frase con ascolto, pinyin acceso al livello 1, traduzione a richiesta, una parola apre il suo foglio", r2.s === 9 && r2.py && r2.tr === 0 && r2.say === 9 && tr === 9 && fam, JSON.stringify({ r2, tr, fam }));
+    const xp0 = await p.evaluate(() => CP.game.rank().xp);
+    const q = await p.evaluate(() => {
+      document.querySelector("[data-rdg-q]").click();
+      const t = CP.reading.texts()[0], rights = [];
+      t.domande.forEach((d, i) => { const btns = [...document.querySelectorAll('[data-rdg-a^="' + i + ':"]')]; const j = btns.findIndex((b) => b.textContent.includes(d.scelte_it[d.giusta])); rights.push(j); btns[j].click(); });
+      return { rights, score: (document.querySelector(".rdg-end .gd-score") || {}).textContent, read: !!JSON.parse(localStorage.getItem("cp-ex-v1")).read["zh-t01-la-mia-giornata"], add: document.querySelectorAll("[data-rdg-add]").length };
+    });
+    const xp1 = await p.evaluate(() => CP.game.rank().xp);
+    check("Lettura: domande con la giusta in posti diversi (non sempre la prima), testo segnato «letto» e +5 punti", new Set(q.rights).size > 1 && /3 risposte giuste su 3/.test(q.score) && q.read && xp1 - xp0 === 5, JSON.stringify({ q, xp0, xp1 }));
+    const add = await p.evaluate(() => { const b = document.querySelector("[data-rdg-add]"); if (!b) return "nessuna"; const k = b.getAttribute("data-rdg-add"); b.click(); return CP.state(k) >= 1 ? "ok" : "no"; });
+    check("Lettura: una parola nuova del testo entra nel ripasso con un tocco", add === "ok", add);
+    /* riletto: niente punti la seconda volta */
+    await p.evaluate(() => { CP.reading.open("zh-t01-la-mia-giornata"); document.querySelector("[data-rdg-q]").click(); const t = CP.reading.texts()[0]; t.domande.forEach((d, i) => document.querySelector('[data-rdg-a^="' + i + ':"]').click()); });
+    check("Lettura: i punti arrivano una volta sola per testo", (await p.evaluate(() => CP.game.rank().xp)) === xp1);
+    check("Lettura: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4m. corso di italiano alla pari (Task 12, T5): stesso motore e stessi stili, voto da CP.itApi.grade nel formato di
+     sempre di cp-it-srs-v1, ogni tipo di esercizio italiano, il dettato con una voce reale (solo se è sul telefono: prima
+     nessuna richiesta), il passo successivo nella carta «今天» (Guidato), la lettura con le domande in cinese */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const voce = []; p.on("request", (r) => { if (/\/audio\/voce\//.test(r.url())) voce.push(r.url()); });
+    await ctx.addInitScript(() => { if (!localStorage.getItem("cp-course")) { localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh"); localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-ex-style", "mixed"); } });
+    await p.goto(base); await p.waitForTimeout(800);
+    await p.evaluate(() => { window.__itRight = function () {
+      const cur = CP.exEngine.current(); if (!cur) return "nessuna carta"; const it = cur.item, root = document.getElementById("it-ex-root");
+      if (it.kind === "mc") root.querySelectorAll("[data-exa]")[it.right].click();
+      else if (it.kind === "type") { root.querySelector("#ex-in").value = it.accept[0]; root.querySelector("[data-ex-submit]").click(); }
+      else if (it.kind === "order") { it.tiles.forEach((t) => root.querySelector('[data-exo="' + t.id + '"]').click()); root.querySelector("[data-exo-check]").click(); }
+      const ok = !!root.querySelector(".ex-verdict.ok"), type = cur.e.exType; root.querySelector("[data-exc]").click(); return type + (ok ? "" : ":sbagliata");
+    }; });
+    const r1 = await p.evaluate(async () => {
+      CP.unlock.unlockAll(); CP.itShow("review"); await new Promise((r) => setTimeout(r, 200));
+      const intro = !!document.querySelector("[data-itx-learn]"); document.querySelector("[data-itx-learn]").click(); await new Promise((r) => setTimeout(r, 200));
+      const card = document.querySelector("#it-ex-root .ex-card"), t = card && card.getAttribute("data-ex"), a = window.__itRight();
+      return { intro, t, a };
+    });
+    check("Corso di italiano, stile Misto: la parola nuova si presenta, poi un esercizio di riconoscimento al posto della carta da girare", r1.intro && /^it-(significato|parola)$/.test(r1.t) && r1.a === r1.t, JSON.stringify(r1));
+    const TYPES = ["it-significato", "it-parola", "it-buco", "it-ordina", "it-scrivi", "it-buco-gram", "it-verbo"];
+    const r2 = await p.evaluate(async (TYPES) => {
+      const E = CP.exEngine, K = CP.itEx.kit, L = CP.itApi.lex(), out = {};
+      for (const T of TYPES) {
+        const w = L.find((e) => { e.key = e.id; const d = E.REG[T]; return (!d.richiede || d.richiede(e, K.ctx) !== false) && d.crea(e, K.ctx, CP.distract.rng(7)); });
+        if (!w) { out[T] = "nessuna parola"; continue; }
+        E.force(T); CP.itEx.only(w.id); await new Promise((r) => setTimeout(r, 60));
+        const shown = (document.querySelector("#it-ex-root .ex-card") || {}).getAttribute && document.querySelector("#it-ex-root .ex-card").getAttribute("data-ex");
+        out[T] = shown === T ? window.__itRight() : "mostrato " + shown;
+      }
+      E.force(null);
+      const S = JSON.parse(localStorage.getItem("cp-it-srs-v1")), recs = Object.keys(S).filter((k) => k !== "__meta").map((k) => S[k]);
+      return { out, fmt: recs.length >= 2 && recs.every((r) => Object.keys(r).sort().join() === "c,lr,n" && r.c.due > 0), n: recs.length };
+    }, TYPES);
+    check("Corso di italiano: ogni tipo di esercizio si risolve con la risposta giusta (" + TYPES.length + " tipi)", TYPES.every((t) => r2.out[t] === t), JSON.stringify(r2.out));
+    check("Corso di italiano: il voto passa da CP.itApi.grade, cp-it-srs-v1 resta { c, n, lr } per parola", r2.fmt, JSON.stringify(r2));
+    check("Corso di italiano: senza voci scaricate nessuna richiesta di clip (si usa la voce del telefono)", !voce.length, voce[0]);
+    /* il dettato con una voce reale: le clip sono sul telefono (qui come dopo «Scarica le voci») */
+    const r3 = await p.evaluate(async () => {
+      localStorage.setItem("cp-voice-dl", "1");
+      const E = CP.exEngine, K = CP.itEx.kit, L = CP.itApi.lex(), w = L.find((e) => E.REG["it-dettato"].richiede(e, K.ctx));
+      if (!w) return { w: null };
+      E.force("it-dettato"); CP.itEx.only(w.id); await new Promise((r) => setTimeout(r, 700));
+      const cur = E.current(), real = !!document.querySelector("#it-ex-root .ex-listen .tag"), url = CP.voiceClip.url(cur.item.say, "it");
+      const a = window.__itRight(); E.force(null);
+      return { w: w.id, s: cur.item.say, real, url, a };
+    });
+    await p.waitForTimeout(200);
+    check("Corso di italiano: dettato con la voce reale (la clip parte da sola, la frase scritta giusta passa)", r3.w && r3.real && /audio\/voce\/it\/\d+\.[0-9a-f]{8}\.ogg$/.test(r3.url) && voce.some((u) => u.endsWith(r3.url)) && r3.a === "it-dettato", JSON.stringify({ r3, voce: voce.slice(0, 2) }));
+    /* stile Guidato: la carta «今天» dice il passo (qui: un testo, dopo 3 lezioni superate); la lettura con le domande in cinese */
+    const r4 = await p.evaluate(async () => {
+      localStorage.setItem("cp-ex-style", "guided");
+      const P = {}; CP.itApi.lessons().slice(0, 3).forEach((l) => { P[l.id] = { done: Date.now(), best: 100 }; }); localStorage.setItem("cp-it-lessons-v1", JSON.stringify(P));
+      CP.itShow("lessons"); await new Promise((r) => setTimeout(r, 100));
+      const b = document.querySelector(".it-today [data-itg-go]"), label = b && b.textContent, xp0 = CP.game.rank().xp; if (!b) return { label: null };
+      b.click(); await new Promise((r) => setTimeout(r, 150));
+      const text = !!document.querySelector(".rdg-text"), t = CP.itRead.state().t;
+      document.querySelector("[data-itq-q]").click(); await new Promise((r) => setTimeout(r, 50));
+      t.domande.forEach((d, i) => { const bs = [...document.querySelectorAll('[data-itq-a^="' + i + ':"]')]; bs.find((x) => x.textContent.includes(d.scelte_it[d.giusta])).click(); });
+      const q = (document.querySelector(".rdg-qs .ask") || {}).textContent, score = (document.querySelector(".rdg-end .gd-score") || {}).textContent;
+      CP.itRead.close(); CP.itShow("lessons"); await new Promise((r) => setTimeout(r, 50));
+      const next = (document.querySelector(".it-today [data-itg-go]") || {}).textContent;
+      return { label, text, id: t.id, q, score, read: !!JSON.parse(localStorage.getItem("cp-ex-v1")).read[t.id], xp: CP.game.rank().xp - xp0, next };
+    });
+    check("Corso di italiano, Guidato: «今天» dice il passo (un testo), la lettura ha domande in cinese, «已读» e +5 una volta, poi la lezione successiva", /短文/.test(r4.label) && r4.text && /[一-鿿]/.test(r4.q) && /3 \/ 3/.test(r4.score) && r4.read && r4.xp === 5 && /第 4 课/.test(r4.next), JSON.stringify(r4));
+    /* Classico: le carte di prima */
+    const r5 = await p.evaluate(async () => { localStorage.setItem("cp-ex-style", "classic"); CP.itApi.nextCard(); CP.itShow("review"); await new Promise((r) => setTimeout(r, 100)); return { classic: !!document.querySelector("[data-itr-show]"), ex: !!document.querySelector("#it-ex-root") }; });
+    check("Corso di italiano, Classico: il ripasso di prima (carta da girare, quattro voti)", r5.classic && !r5.ex, JSON.stringify(r5));
+    check("Corso di italiano, esercizi: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4n. voci reali (Task 12, T6): prima di «Scarica le voci» nessuna richiesta di clip; il pulsante le mette nella cache
+     mandarino-voice; poi «ascolta la frase» con la voce vera; in modalità aereo le clip arrivano dalla cache; senza le voci
+     cinesi (materiali/audio/zh assente) nessun errore e l'esercizio non si propone */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const voce = [], ext = []; p.on("request", (r) => { const u = r.url(); if (/\/audio\/voce\//.test(u)) voce.push(u); if (!u.startsWith(base) && !/^(data|blob):/.test(u)) ext.push(u); });
+    await ctx.addInitScript(() => { if (!localStorage.getItem("cp-ux-v1")) { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", "mixed"); } });
+    await p.goto(base); await p.waitForTimeout(800);
+    const r0 = await p.evaluate(() => { CP.ex.carica(); const E = CP.exEngine, any = CP.ORDER.some((k) => E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx)); CP.say("还有很多时间"); return { any, url: CP.voiceClip.url("还有很多时间", "zh") }; });
+    await p.waitForTimeout(150);
+    check("Voci reali: prima di scaricarle nessuna clip, nessuna richiesta, «ascolta la frase» non si propone", !r0.any && !r0.url && !voce.length, JSON.stringify({ r0, voce: voce.length }));
+    /* ⚙️ → Voce → «Voci reali» → «Scarica le voci» */
+    const label = await p.evaluate(() => { CP.show("settings"); const d = document.getElementById("set-voice") || document.querySelector("#vset-body"); const b = document.querySelector("[data-vc-dl]"); return b ? b.textContent : (document.getElementById("vc-box") || {}).textContent || null; });
+    check("Voci reali: in ⚙️ → Voce il pulsante «Scarica le voci» con i MB", /Scarica le voci \(\d+,\d MB\)/.test(label || ""), label);
+    await p.evaluate(() => document.querySelector("[data-vc-dl]").click());
+    await p.waitForFunction(() => localStorage.getItem("cp-voice-dl") === "1", null, { timeout: 120000 }).catch(() => {});
+    const r1 = await p.evaluate(async () => { const c = await caches.open("mandarino-voice"), ks = await c.keys(), F = VOICE_FILES; return { dl: localStorage.getItem("cp-voice-dl"), n: ks.length, want: Object.keys(F.zh).length + Object.keys(F.it).length, box: (document.getElementById("vc-box") || {}).textContent }; });
+    check("Voci reali: «Scarica le voci» mette tutte le clip nella cache mandarino-voice", r1.dl === "1" && r1.n === r1.want && r1.want > 1000 && /✓/.test(r1.box), JSON.stringify(r1));
+    voce.length = 0;
+    const r2 = await p.evaluate(async () => {
+      const E = CP.exEngine, k = CP.ORDER.find((k) => E.ctx.levelOf(CP.WORDS[k]) >= 2 && E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx)); if (!k) return { k: null };
+      E.force("ascolto-frase"); CP.show("study", true); CP.studyKit.start([{ k: k, kind: "test", ex: 1, retry: false }]);
+      await new Promise((r) => setTimeout(r, 700));
+      const cur = E.current(), card = document.querySelector("#study-root .ex-card");
+      const out = { k, type: card && card.dataset.ex, real: !!document.querySelector("#study-root .ex-listen .tag"), url: CP.voiceClip.url(cur.item.say, "zh"), opts: cur.item.opts.length, right: cur.item.right };
+      document.querySelectorAll("#study-root [data-exa]")[cur.item.right].click();
+      out.ok = /✓/.test(document.querySelector(".ex-verdict").textContent); E.force(null); CP.studyHome();
+      return out;
+    });
+    check("Voci reali: «ascolta la frase» con la voce vera (la clip parte da sola), quattro frasi scritte, la giusta passa", r2.k && r2.type === "ascolto-frase" && r2.real && r2.opts === 4 && r2.ok && voce.some((u) => u.endsWith(r2.url)), JSON.stringify({ r2, voce: voce.slice(0, 1) }));
+    const lv = await p.evaluate(() => { const E = CP.exEngine, hi = CP.ORDER.map((k) => CP.WORDS[k]).find((w) => E.ctx.levelOf(w) >= 3 && E.REG["ascolto-frase"].richiede(w, E.ctx)); return hi ? E.REG["mc-ascolto"].richiede(hi, Object.assign({}, E.ctx, { hasVoice: () => true })) : "nessuna"; });
+    check("Voci reali: dal livello 3 l'ascolto usa la frase vera al posto della parola sintetica", lv === false, String(lv));
+    /* modalità aereo: la clip arriva dalla cache del service worker */
+    await p.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 8000 }).catch(() => {});
+    await ctx.setOffline(true);
+    const off = await p.evaluate(async () => { const u = CP.voiceClip.url("还有很多时间", "zh"); try { const r = await fetch(u); return { u, ok: r.ok, n: (await r.arrayBuffer()).byteLength, sw: !!navigator.serviceWorker.controller }; } catch (e) { return { u, err: e.message, sw: !!navigator.serviceWorker.controller }; } });
+    await ctx.setOffline(false);
+    check("Voci reali: in modalità aereo le clip scaricate arrivano dalla cache", off.ok && off.n > 1000, JSON.stringify(off));
+    /* senza le voci cinesi (materiali/audio/zh mancante): niente clip cinesi, nessun errore, l'esercizio non si propone */
+    const nz = await p.evaluate(async () => {
+      const F = VOICE_FILES; Object.defineProperty(window, "VOICE_FILES", { configurable: true, value: { byte: { it: F.byte.it }, it: F.it } });
+      const E = CP.exEngine, any = CP.ORDER.slice(0, 600).some((k) => E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx));
+      CP.say("还有很多时间"); CP.show("study", true); CP.studyStart(); await new Promise((r) => setTimeout(r, 300));
+      const card = !!document.querySelector("#study-root .ex-card, #study-root .fc"); CP.studyHome();
+      return { any, url: CP.voiceClip.url("还有很多时间", "zh"), langs: CP.voiceClip.langs().join(), card };
+    });
+    check("Voci reali: senza le voci cinesi nessun errore, nessuna clip cinese, «ascolta la frase» non si propone", !nz.any && !nz.url && nz.langs === "it" && nz.card, JSON.stringify(nz));
+    check("Voci reali: nessuna richiesta fuori dall'app, nessun errore JavaScript", !ext.length && !errs.length, ext[0] || errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
-    await p.goto(pathToFileURL(file).href); await p.waitForTimeout(700);
+    /* da http, non da file://: con le pagine file:// Chromium a volte perde tutto il localStorage al ricaricamento */
+    await p.goto(base); await p.waitForTimeout(700);
     /* il benvenuto (ui/welcome.js): intro di qualche secondo, poi le porte; in piccolo, l'altro corso */
     const btn = await p.waitForSelector('#onb [data-course-set="it"]', { timeout: 8000 }).catch(() => null);
     check("Benvenuto: intro, porte e «我是中国人，我想学意大利语»", !!btn && (await p.$$("#onb [data-onb-door]")).length === 3);
     if (btn) { await Promise.all([p.waitForNavigation(), btn.click()]); await p.waitForTimeout(700); }
     /* il corso di italiano ha lo stesso benvenuto, in cinese (l'intro non si ripete nella stessa sessione) */
     const later = await p.waitForSelector("#onb [data-onb-later]", { timeout: 8000 }).catch(() => null);
-    check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")));
+    check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")), JSON.stringify(await p.evaluate(() => ({ url: location.href, course: localStorage.getItem("cp-course"), lang: localStorage.getItem("cp-lang"), welcome: localStorage.getItem("cp-it-welcome"), onb: (document.getElementById("onb") || {}).className, body: document.body.className })).catch((e) => String(e))));
     if (later) { await later.click(); await p.waitForTimeout(200); }
     check("Corso di italiano: all'inizio solo 课程 e 复习 nella barra (rivelazione progressiva)", await p.evaluate(() => [...document.querySelectorAll(".dock-it .dtab")].filter((b) => !b.hidden).map((b) => b.getAttribute("data-it-tab")).join(",") === "lessons,review"));
     const ak = await p.evaluate(() => { const r = CP.anki.build({ which: "all" }), rows = r.text.split("\n").filter((l) => l && l[0] !== "#"), g = new Set(rows.map((l) => l.split("\t")[0])), v = rows.find((l) => /\tmandarino-it verb /.test(l)) || ""; return { n: r.n, uniq: g.size, cols: rows.every((l) => l.split("\t").length === 7), deck: /#deck:màndarínō::意大利语/.test(r.text), morph: /Morph-it!/.test(r.text.split("\n")[6]), conj: /io [^,<]+, tu [^,<]+,/.test(v), dots: rows.some((l) => /\.[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(l.split("\t")[2])) }; });
@@ -739,7 +1074,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown nm mozilla common voice ogg opus".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

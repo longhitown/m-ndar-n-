@@ -175,7 +175,7 @@
     res.fixed = t; res.steps = steps; res.issues = issues; res.ok = !issues.length; res.changed = t.join("|") !== tokens.join("|");
     return res;
   }
-  CP.lab = CP.lab || {};
+  CP.lab = CP.lab || {}; CP.lab.NCLF = NCLF;   /* i classificatori, anche per le frasi a buco (Task 12) */
   CP.lab.check = check; CP.lab._roleOf = roleOf;
 })();
 

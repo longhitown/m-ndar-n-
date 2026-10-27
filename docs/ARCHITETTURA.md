@@ -77,7 +77,15 @@ l'immersione.
 
 - `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
 - `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`;
-- `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`.
+- `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`;
+- `ui/credits.js`, al primo accesso a `CP.credits`;
+- `ui/share-card.js`, al primo accesso a `CP.shareCard` (il tocco su `[data-card-open]` lo ascolta `ui/settings.js`);
+- `i18n/voice.js` e `ui/voice-dl.js`, al primo accesso a `CP.voiceDl` (⚙️ → Voce → «Voci reali»);
+- i Crediti caricano anche `i18n/credits-t12.js` (frasi Tatoeba, voci reali).
+
+**Gruppi caricati al primo uso** (`GROUPS` in `tools/build.mjs`, Task 12): i file restano testo e `window.__mdLoad[NOME]()`
+li esegue in ordine, una volta sola. Gruppo ESERCIZI: `i18n/exercises.js`, `core/typing.js`, `study/distractors.js`,
+`study/exercises.js`, `study/ex-frasi.js`, `study/ex-varie.js`, `study/guided.js`, `phrases/reading.js`, eseguito da `CP.ex.carica()`.
 
 L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
@@ -105,11 +113,20 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.anatomy` / `CP.anatomyHTML(ch)` | `words/anatomy.js` | `get`, `html`, `svg`, `radical`, `groups` (componente di ogni tratto, per la lavagna), `on`/`set`; il foglio del carattere (`core/core.js`) chiede l'HTML |
 | `CP.challenge` | `ui/challenge.js` (al primo uso) | `create()`, `open(testo)`, `encode`/`decode` del codice `MDC1-…`, `build(sfida)` (domande dal seme), `link`, `base`; la sfida a un amico |
 | `CP.classroom` | `ui/classroom.js` (al primo uso) | `section()` (⚙️), `banner()`, `list`/`add`/`remove`, `progress(pacchetto)`, `report(pacchetto, nome)`, `table(riepiloghi)`, `sheet(canvas, pacchetto)` (foglio A4), `encode`/`decode`/`link` del codice `MDK1-…` |
+| `CP.ex` | `ui/ex-stub.js` (all'avvio) | `stile()` (`guided` / `mixed` / `classic`, `cp-ex-style`), `set(stile)`, `carica(cb)`: esegue il gruppo ESERCIZI |
+| `CP.exEngine` | `study/exercises.js` (gruppo ESERCIZI) | `register(def)`, `render(e, kit)`, `requeue`, `voto`, `famiglia`, `gradino`, `renderers`, `force(tipo)` (prove); `CP.studyKit` (in `study/study.js`) gli dà testa, parti della carta, esempio e `answer(g, meta)` |
+| `CP.distract` / `CP.typing` | `study/distractors.js` / `core/typing.js` (gruppo ESERCIZI) | risposte sbagliate credibili (funzioni pure con seme); confronto di pinyin e italiano digitati |
+| `CP.exSent` | `study/ex-frasi.js` (gruppo ESERCIZI) | `forWord(parola)` → frasi che la contengono come parola (esempio, Tatoeba, lezioni, voci), `holed(segmenti, i)`; per buchi, ordina, lettura; `ascolto-frase` (T6) usa le frasi delle voci reali che sono sul telefono |
+| `CP.guided` | `study/guided.js` (gruppo ESERCIZI) | `go(passo, durata)`, `impara(tappa)`, `verifica(tappa)` (12 domande, cinque parti, soglia 80%), `leggi`, `miniQuiz(lezione)`; il passo lo calcola `CP.ex.prossimo(indice)` in `ui/ex-stub.js`, la carta `CP.ex.guidaHTML` |
+| `CP.reading` | `phrases/reading.js` (gruppo ESERCIZI) | lettura graduata: `render()` (Frasi → Leggi → Testi), `open(id)`, `texts()`, `knownPct(testo)`; i testi in `TESTI_ZH` / `TESTI_IT` (`src/data/reading/`, da `tools/lettura.mjs`, letti al primo uso) |
+| `CP.itEx` | `it/esercizi.js` (COURSE_IT) | esercizi del ripasso del corso di italiano con lo stesso motore: `on()`, `card(voce, nuova)`, `mount(vista)`, `pick(coda)`, `step()` / `stepHTML()` (passo successivo nella carta «今天», stile Guidato), `forms(voce)`, `sentences(voce)`, `only(id)` (prove); il voto da `CP.itApi.grade(voce, g, meta)` |
+| `CP.itRead` | `it/lettura.js` (COURSE_IT) | lettura graduata del corso di italiano in 句子: `listHTML()`, `html()`, `open(id)`, `texts()` (`TESTI_IT`), `readMap()` |
+| `CP.voiceClip` / `CP.voiceDl` | `core/voice-clip.js` (all'avvio) / `ui/voice-dl.js` (al primo uso) | voci reali: `url(frase, lingua)` solo se le clip sono sul telefono (APK o `cp-voice-dl`), `idOf`, `fileUrl`; «Scarica le voci» nella cache `mandarino-voice` (`download`, `remove`, `html`) |
 | `CP.togetherOpen(testo)` / `CP.classBanner()` | `ui/together.js` (all'avvio) | apre una sfida o importa un pacchetto da un testo qualsiasi (link, codice, QR); il riquadro del pacchetto in cima al Percorso e alle lezioni di italiano |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
 | `CP.shareCard` | `ui/share-card.js` | `CP.shareCard()` carta del giorno del corso aperto; `.open(modello, dati)`, `.render(canvas, modello, dati, { format, theme, seal })`, `.templates` (`zh-day`, `it-day`, `it-milestone`, `it-week`), `.FORMATS`, `.THEMES`, `.url()` |
-| `CP.itApi` / `CP.itToday` / `CP.itCardData` / `CP.itProgress` | `it/course.js` / `it/today.js` | i dati del corso di italiano per la carta «今天», il percorso, i traguardi, «我的进步» |
+| `CP.itApi` / `CP.itToday` / `CP.itCardData` / `CP.itProgress` | `it/course.js` / `it/today.js` | i dati del corso di italiano per la carta «今天», il percorso, i traguardi, «我的进步»; dal Task 12 anche `grade(voce, g, meta)`, `entry`, `lex`, `rec`, `example`, `detail`, `nextCard` |
 | `CP.toast(msg, { label, run })` | `core/game.js` | un'azione dentro lo stesso messaggio (Task 11.5); senza, il messaggio di sempre |
 | `CP.onAward(n)` | `core/game.js` | chiamato a ogni punto guadagnato (corso di italiano: «+N 分») |
 | `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e privacy |
