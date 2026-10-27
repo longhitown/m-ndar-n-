@@ -126,3 +126,4 @@ Object.assign(I18N.it, {"cr.mmhd": "Di che cosa è fatto un carattere", "cr.mmhd
 Object.assign(I18N.it, {"tog.chal": "🎯 Sfida un amico"});
 Object.assign(I18N.it, {"pv.class": "<b>Sfide e classe</b>: il codice di una sfida ha solo dieci parole e l'ordine delle domande. Il riepilogo per chi insegna si crea solo con il tuo consenso: contiene solo conteggi, nessun ripasso. Li mandi tu."});
 Object.assign(I18N.it, {"exs.title": "Stile di ripasso", "exs.guided": "Guidato", "exs.guidedD": "consigliato: impara, esercitati, verifica, una tappa alla volta", "exs.mixed": "Misto", "exs.mixedD": "esercizi vari, senza percorso", "exs.classic": "Classico", "exs.classicD": "le carte di prima, con «La so» e «Non la so»"});
+Object.assign(I18N.it, {"ls.holeQ": "Che cosa va nel buco?", "ls.typePy": "Scrivi il pinyin", "ls.typeIt": "Scrivi la risposta in italiano"});

@@ -126,3 +126,4 @@ Object.assign(I18N.zh, {"cr.mmhd": "汉字的组成", "cr.mmhdT": "<b>Make Me a 
 Object.assign(I18N.zh, {"tog.chal": "🎯 挑战朋友"});
 Object.assign(I18N.zh, {"pv.class": "<b>挑战与班级</b>：挑战代码里只有十个词和题目顺序。给老师的学习小结只有经过你同意才会生成，只有数字统计，不含复习记录。由你自己发送。"});
 Object.assign(I18N.zh, {"exs.title": "复习方式", "exs.guided": "引导", "exs.guidedD": "推荐：学习、练习、检测，一站一站来", "exs.mixed": "混合", "exs.mixedD": "多种练习，不按路线", "exs.classic": "经典", "exs.classicD": "以前的卡片：“记得 / 忘了”"});
+Object.assign(I18N.zh, {"ls.holeQ": "空里填什么？", "ls.typePy": "写出拼音", "ls.typeIt": "用意大利语写出答案"});

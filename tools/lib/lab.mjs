@@ -74,7 +74,15 @@ export function checkLessons(L) {
         if (!q.q || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length)) err.push(at + ": servono q, opts (almeno 2) e a (l'indice giusto)");
         else q.opts.forEach((o) => { if (CJK.test(o) && !/[a-zàèéìòù]{3}/i.test(o)) zhOk(at, o); });
         if (q.zh) zhOk(at, q.zh);
-      } else err.push(at + ": tipo «" + q.k + "» sconosciuto (order o pick)");
+      } else if (q.k === "buco") {
+        /* Task 12: la frase con il buco (＿ o ___) e le risposte; la frase completa con la risposta giusta deve essere fatta di parole del vocabolario */
+        if (!q.zh || !/＿|___/.test(q.zh) || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length) || new Set(q.opts).size !== q.opts.length) err.push(at + ": servono zh con il buco (＿), opts diverse e a");
+        else zhOk(at, q.zh.replace(/＿+|_{3,}/, q.opts[q.a]));
+      } else if (q.k === "scrivi") {
+        if (!q.a) err.push(at + ": manca la risposta (a)");
+        if (q.py && !/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(q.a)) err.push(at + ": con py la risposta è pinyin con i toni");
+        if (q.zh) zhOk(at, q.zh);
+      } else err.push(at + ": tipo «" + q.k + "» sconosciuto (order, pick, buco o scrivi)");
     });
   });
   /* corso di italiano: le frasi da ricomporre devono avere almeno due parole; le risposte giuste devono esistere */
@@ -89,6 +97,8 @@ export function checkLessons(L) {
       const at = w + ` quiz[${j}]`;
       if (q.k === "order") { if (String(q.it || "").split(/\s+/).filter(Boolean).length < 2 || !q.zh) err.push(at + ": servono it (almeno due parole) e zh"); }
       else if (q.k === "pick") { if (!q.q || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length) || new Set(q.opts).size !== q.opts.length) err.push(at + ": servono q, opts diverse (almeno 2) e a"); }
+      else if (q.k === "buco") { if (!/___|＿/.test(q.it || "") || !Array.isArray(q.opts) || q.opts.length < 2 || !(q.a >= 0 && q.a < q.opts.length) || new Set(q.opts).size !== q.opts.length) err.push(at + ": servono it con il buco (___), opts diverse e a"); }
+      else if (q.k === "scrivi") { if (!q.q || !q.a) err.push(at + ": servono q e a"); }
       else err.push(at + ": tipo «" + q.k + "» sconosciuto");
     });
   });

@@ -1634,6 +1634,25 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .exs button.on b::before { content: "● "; color: var(--accent); }
 .ex-listen .say { width: 76px; height: 76px; border-radius: 50%; background: var(--accent); color: var(--bg); display: grid; place-items: center; border: 0; }
 .ex-listen .say svg { width: 34px; height: 34px; stroke: currentColor; fill: none; stroke-width: 2; }
+.ex-sent { font-family: var(--f-han); font-size: 28px; line-height: 1.5; letter-spacing: .04em; text-align: center; }
+.ex-hole { display: inline-block; min-width: 1.4em; border-bottom: 3px solid var(--accent); color: transparent; }
+.ex-note { margin: 0; text-align: left; background: var(--chip); border-radius: 10px; padding: 8px 10px; }
+.ex-ask { margin: 0; font-weight: 600; }
+.ex-slot.ok { border-color: var(--t2); border-style: solid; } .ex-slot.ko { border-color: var(--seal); }
+.ex-bank .tile, .ex-slot .tile { min-height: 48px; }
+.ex-type { width: 100%; display: grid; gap: 8px; margin-top: var(--sp-2); }
+.ex-type input { min-height: 52px; font-size: 22px; text-align: center; border: 2px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); padding: 6px 10px; }
+.ex-type input.ok { border-color: var(--t2); } .ex-type input.mid { border-color: var(--warn, #B7791F); border-style: dashed; } .ex-type input.ko { border-color: var(--seal); border-style: dashed; }
+.ex-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.ex-chip { min-width: 44px; min-height: 44px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--chip); color: var(--ink); font: 700 18px var(--f-body); }
+.ex-match { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: var(--sp-2); }
+.ex-col { display: grid; gap: 8px; align-content: start; }
+.ex-m { min-height: 52px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; }
+.ex-m.sel { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.ex-m.ok { border-color: var(--t2); opacity: .75; } .ex-m.ko { border-color: var(--seal); border-style: dashed; }
+.ex-m .ex-han { font-size: 26px; }
+.ex-pad { width: 100%; }
+.ex-pad .pad2 .pad-stage { width: min(100%, 300px); }
 </style>
 </head>
 <body>
@@ -15367,6 +15386,7 @@ Object.assign(I18N.it, {"cr.mmhd": "Di che cosa è fatto un carattere", "cr.mmhd
 Object.assign(I18N.it, {"tog.chal": "🎯 Sfida un amico"});
 Object.assign(I18N.it, {"pv.class": "<b>Sfide e classe</b>: il codice di una sfida ha solo dieci parole e l'ordine delle domande. Il riepilogo per chi insegna si crea solo con il tuo consenso: contiene solo conteggi, nessun ripasso. Li mandi tu."});
 Object.assign(I18N.it, {"exs.title": "Stile di ripasso", "exs.guided": "Guidato", "exs.guidedD": "consigliato: impara, esercitati, verifica, una tappa alla volta", "exs.mixed": "Misto", "exs.mixedD": "esercizi vari, senza percorso", "exs.classic": "Classico", "exs.classicD": "le carte di prima, con «La so» e «Non la so»"});
+Object.assign(I18N.it, {"ls.holeQ": "Che cosa va nel buco?", "ls.typePy": "Scrivi il pinyin", "ls.typeIt": "Scrivi la risposta in italiano"});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15498,6 +15518,7 @@ Object.assign(I18N.zh, {"cr.mmhd": "汉字的组成", "cr.mmhdT": "<b>Make Me a 
 Object.assign(I18N.zh, {"tog.chal": "🎯 挑战朋友"});
 Object.assign(I18N.zh, {"pv.class": "<b>挑战与班级</b>：挑战代码里只有十个词和题目顺序。给老师的学习小结只有经过你同意才会生成，只有数字统计，不含复习记录。由你自己发送。"});
 Object.assign(I18N.zh, {"exs.title": "复习方式", "exs.guided": "引导", "exs.guidedD": "推荐：学习、练习、检测，一站一站来", "exs.mixed": "混合", "exs.mixedD": "多种练习，不按路线", "exs.classic": "经典", "exs.classicD": "以前的卡片：“记得 / 忘了”"});
+Object.assign(I18N.zh, {"ls.holeQ": "空里填什么？", "ls.typePy": "写出拼音", "ls.typeIt": "用意大利语写出答案"});
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -17872,8 +17893,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 /* ---- i18n/exercises.js ---- */
 /* ===== màndarínō · i testi del motore degli esercizi (Task 12), nelle due lingue dell'interfaccia. Nel file unico arrivano
    con il gruppo ESERCIZI, al primo uso (tools/build.mjs, GROUPS). Il corso di italiano ha i suoi in i18n/it-course.js. ===== */
-Object.assign(I18N.it, {"exm.q.meaning": "Che cosa significa?", "exm.q.word": "Qual è la parola cinese?", "exm.q.pinyin": "Come si legge?", "exm.q.listen": "Ascolta: quale hai sentito?", "exm.q.tone": "Che tono è?", "exm.choose": "Scegli la risposta", "exm.right": "Giusto!", "exm.wrong": "Non è giusto. Ecco la parola:", "exm.cont": "Continua", "exm.unsure": "Non ero sicuro", "exm.kbd": "Tasti 1-4 per rispondere, spazio per ascoltare", "exm.kbdType": "Invio per confermare", "exm.kbdNext": "Invio per continuare", "exm.toneN": "{n}° tono"});
-Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": "中文是哪个？", "exm.q.pinyin": "怎么读？", "exm.q.listen": "听一听：你听到的是哪个？", "exm.q.tone": "是第几声？", "exm.choose": "选择答案", "exm.right": "答对了！", "exm.wrong": "不对。正确的是：", "exm.cont": "继续", "exm.unsure": "我不太确定", "exm.kbd": "按 1-4 作答，空格键收听", "exm.kbdType": "回车确认", "exm.kbdNext": "回车继续", "exm.toneN": "第{n}声"});
+Object.assign(I18N.it, {"exm.q.meaning": "Che cosa significa?", "exm.q.word": "Qual è la parola cinese?", "exm.q.pinyin": "Come si legge?", "exm.q.listen": "Ascolta: quale hai sentito?", "exm.q.tone": "Che tono è?", "exm.choose": "Scegli la risposta", "exm.right": "Giusto!", "exm.wrong": "Non è giusto. Ecco la parola:", "exm.cont": "Continua", "exm.unsure": "Non ero sicuro", "exm.kbd": "Tasti 1-4 per rispondere, spazio per ascoltare", "exm.kbdType": "Invio per confermare", "exm.kbdNext": "Invio per continuare", "exm.toneN": "{n}° tono", "exm.q.hole": "Quale parola manca?", "exm.q.gram": "Che cosa va nel buco?", "exm.q.order": "Rimetti in ordine la frase", "exm.q.typePy": "Scrivi il pinyin", "exm.q.typeIt": "Scrivi il significato in italiano", "exm.q.holeType": "Scrivi il pinyin della parola che manca", "exm.q.match": "Abbina ogni parola al suo significato", "exm.q.trace": "Scrivi il carattere", "exm.q.part": "Di che cosa è fatto?", "exm.hole": "parola mancante", "exm.clfNote": "Classificatori: 杯 per le bevande in tazza o bicchiere, 本 per i libri, 件 per i vestiti di sopra, 张 per le cose piatte, 条 per le cose lunghe, 只 per molti animali, 辆 per i veicoli, 双 per le paia, 个 il più comune, 位 per le persone con rispetto, 碗 e 盘 per le porzioni.", "exm.slot": "Tocca le tessere nell'ordine giusto", "exm.check": "Controlla", "exm.kbdOrder": "Tocca una tessera nella riga per toglierla", "exm.orderWas": "La frase era: {s}", "exm.toneKeys": "Numeri dei toni e ü", "exm.typePy": "Pinyin", "exm.typeIt": "Significato in italiano", "exm.phPy": "es. ni3 hao3 o nǐ hǎo", "exm.phIt": "scrivi in italiano", "exm.noTones": "Le sillabe sono giuste, mancano i toni: {a}", "exm.badTones": "Toni sbagliati: {a}", "exm.accent": "Giusto, ma attenzione agli accenti: {a}", "exm.typo": "Quasi: c'è un errore di battitura. Si scrive {a}", "exm.was": "La risposta era: {a}", "exm.matchMiss": "Fatto, con {n} errori.", "exm.traceHint": "Scrivi con il dito, poi tocca «Valuta»", "exm.traceScore": "Precisione: {n}%", "exm.partSound": "Quale parte dà il suono?", "exm.partMeaning": "Quale parte dà il significato?"});
+Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": "中文是哪个？", "exm.q.pinyin": "怎么读？", "exm.q.listen": "听一听：你听到的是哪个？", "exm.q.tone": "是第几声？", "exm.choose": "选择答案", "exm.right": "答对了！", "exm.wrong": "不对。正确的是：", "exm.cont": "继续", "exm.unsure": "我不太确定", "exm.kbd": "按 1-4 作答，空格键收听", "exm.kbdType": "回车确认", "exm.kbdNext": "回车继续", "exm.toneN": "第{n}声", "exm.q.hole": "缺了哪个词？", "exm.q.gram": "空里填什么？", "exm.q.order": "把句子排好", "exm.q.typePy": "写出拼音", "exm.q.typeIt": "用意大利语写出意思", "exm.q.holeType": "写出缺少的词的拼音", "exm.q.match": "把每个词和它的意思连起来", "exm.q.trace": "写出这个汉字", "exm.q.part": "这个字由什么构成？", "exm.hole": "缺少的词", "exm.clfNote": "量词：饮料用杯，书用本，上衣用件，平的东西用张，长的东西用条，很多动物用只，车用辆，成对的东西用双，个最常用，表示尊敬的人用位，一碗、一盘表示份量。", "exm.slot": "按正确的顺序点击词块", "exm.check": "检查", "exm.kbdOrder": "点上面的词块可以把它拿下来", "exm.orderWas": "正确的句子是：{s}", "exm.toneKeys": "声调数字和 ü", "exm.typePy": "拼音", "exm.typeIt": "意大利语意思", "exm.phPy": "例如 ni3 hao3 或 nǐ hǎo", "exm.phIt": "用意大利语写", "exm.noTones": "音节对了，但没有声调：{a}", "exm.badTones": "声调不对：{a}", "exm.accent": "对了，但注意重音符号：{a}", "exm.typo": "差一点：有一个拼写错误。正确写法是 {a}", "exm.was": "正确答案是：{a}", "exm.matchMiss": "完成了，错了 {n} 次。", "exm.traceHint": "用手指写，然后点「评分」", "exm.traceScore": "准确度：{n}%", "exm.partSound": "哪个部分表音？", "exm.partMeaning": "哪个部分表意？"});
 </script>
 <script type="text/plain" id="group-esercizi-1">
 /* ---- core/typing.js ---- */
@@ -18262,7 +18283,262 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
   (CP.exPending || []).forEach(function (f) { try { f(ENG); } catch (e) {} });   /* esercizi registrati da altri moduli (corso di italiano) */
 })();
 </script>
-<script>/* ---- gruppo ESERCIZI (i18n/exercises.js, core/typing.js, study/distractors.js, study/exercises.js): al primo uso ---- */(function () { var done = false, ids = ["group-esercizi-0","group-esercizi-1","group-esercizi-2","group-esercizi-3"]; (window.__mdLoad = window.__mdLoad || {})["ESERCIZI"] = function () { if (done) return; done = true; ids.forEach(function (id) { var el = document.getElementById(id), s = document.createElement("script"); s.textContent = el ? el.textContent : ""; document.head.appendChild(s); if (el) el.parentNode.removeChild(el); }); }; })();</script>
+<script type="text/plain" id="group-esercizi-4">
+/* ---- study/ex-frasi.js ---- */
+/* ===== màndarínō · esercizi con le frasi (Task 12, T2, §12.4): frase a buco (parola), buco grammaticale, rimetti in ordine.
+   Le frasi di una parola (CP.exSent.forWord), in quest'ordine: la frase d'esempio della parola (EXAMPLES), le frasi di
+   Tatoeba con traduzione diretta (FRASI_ZH, livello non sopra quello della parola), gli esempi delle lezioni, le frasi
+   delle voci reali (VOCE_ZH, senza traduzione: solo come ultima scelta). Ogni frase passa dal taglio dell'app (CP.segment):
+   la parola deve comparire come parola, non come pezzo di un'altra (中 non vale dentro 中国).
+   Buco grammaticale: gli insiemi confondibili (INSIEMI.zh: 了/过/着, 的/得/地, 在/再…) e i classificatori (CP.lab.NCLF, solo
+   quando il nome che segue è nell'elenco: così la risposta giusta è sicura). Gruppo ESERCIZI (al primo uso). ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, D = CP.distract, ENG = CP.exEngine;
+  var IDX = null;
+  /* [{ zh, it, toks: [segmenti], src }] per chiave di parola */
+  function index() {
+    if (IDX) return IDX;
+    IDX = {};
+    var add = function (zh, it, src, lv) {
+      var toks = CP.segment(zh); if (toks.some(function (s) { return !s.w && !s.p; })) return;
+      var seen = {};
+      toks.forEach(function (s) { if (!s.w || seen[s.w.key]) return; seen[s.w.key] = 1; var w = s.w; if (lv && lv > ENG.ctx.levelOf(w)) return; (IDX[w.key] = IDX[w.key] || []).push({ zh: zh, it: it, toks: toks, src: src }); });
+    };
+    try { if (typeof FRASI_ZH !== "undefined") FRASI_ZH.righe.forEach(function (r) { if (r[5]) add(r[0], r[1], "tatoeba", r[2]); }); } catch (e) {}
+    (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (e) { add(e[0], e[1], "lesson"); }); });
+    try { if (typeof VOCE_ZH !== "undefined") VOCE_ZH.righe.forEach(function (r) { add(r[2], "", "voice"); }); } catch (e) {}
+    return IDX;
+  }
+  function forWord(w) {
+    var out = [], x = typeof EXAMPLES !== "undefined" && EXAMPLES[w.key];
+    if (x) { var toks = CP.segment(x[0]); if (toks.some(function (s) { return s.w && s.w.key === w.key; })) out.push({ zh: x[0], it: x[1], toks: toks, src: "example" }); }
+    return out.concat(index()[w.key] || []);
+  }
+  /* la frase con un buco al posto del segmento i: la lunghezza in caratteri resta visibile */
+  function holed(toks, i) {
+    return toks.map(function (s, j) { return j === i ? '<span class="ex-hole" aria-label="' + CP.attr(T("exm.hole")) + '">' + new Array(Array.from(s.raw).length + 1).join("＿") + "</span>" : esc(s.raw); }).join("");
+  }
+  function sentHTML(toks, i, it) { return '<div class="ex-sent" lang="zh-CN">' + holed(toks, i) + "</div>" + (it ? '<div class="cd-note" lang="it">' + esc(it) + "</div>" : ""); }
+  function pick(list, r, ok) { var c = list.filter(ok || function () { return true; }); return c.length ? c[Math.floor(r() * Math.min(c.length, 4))] : null; }
+  CP.exSent = { forWord: forWord, index: index, holed: holed };
+
+  /* ---- frase a buco: la parola che manca ---- */
+  ENG.register({ id: "buco", famiglia: 1, corso: "zh", q: "exm.q.hole",
+    richiede: function (w) { return forWord(w).some(function (s) { return s.it; }); },
+    crea: function (w, ctx, r) {
+      var s = pick(forWord(w), r, function (x) { return !!x.it; }); if (!s) return null;
+      var i = s.toks.findIndex(function (t) { return t.w && t.w.key === w.key; }), x = D.word(w, ctx.pool(), ctx, r); if (i < 0 || !x) return null;
+      var o = D.options('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r);
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(s.toks, i, s.it), say: s.zh, sentence: s };
+    } });
+
+  /* ---- buco grammaticale: un elemento dell'insieme al posto di un altro ---- */
+  function sets() {
+    var out = (typeof INSIEMI !== "undefined" && INSIEMI.zh ? INSIEMI.zh : []).map(function (s) { return { id: s.id, membri: s.membri, nota: s.nota_it || "" }; });
+    var N = CP.lab && CP.lab.NCLF; if (N) { var m = {}; Object.keys(N).forEach(function (k) { m[N[k]] = 1; }); out.push({ id: "zh-clf", membri: Object.keys(m), nota: T("exm.clfNote"), clf: N }); }
+    return out;
+  }
+  function gramSpot(w) {
+    var S = sets(), res = [];
+    forWord(w).forEach(function (s) {
+      if (!s.it) return;
+      s.toks.forEach(function (t, i) {
+        if (!t.w || t.w.key === w.key) return;
+        S.forEach(function (set) {
+          if (set.membri.indexOf(t.w.hz) < 0) return;
+          /* classificatori: solo se il nome che segue vuole proprio quello */
+          if (set.clf) { var nx = s.toks[i + 1]; if (!nx || !nx.w || set.clf[nx.w.hz] !== t.w.hz) return; }
+          res.push({ s: s, i: i, set: set });
+        });
+      });
+    });
+    return res;
+  }
+  ENG.register({ id: "buco-gram", famiglia: 2, corso: "zh", q: "exm.q.gram",
+    richiede: function (w) { return gramSpot(w).length > 0; },
+    crea: function (w, ctx, r) {
+      var c = gramSpot(w); if (!c.length) return null;
+      var g = c[Math.floor(r() * c.length)], right = g.s.toks[g.i].w.hz, wrong = D.shuffle(g.set.membri.filter(function (m) { return m !== right; }), r).slice(0, 3);
+      if (wrong.length < 1) return null;
+      var o = D.options('<span class="ex-han">' + esc(right) + "</span>", wrong.map(function (m) { return '<span class="ex-han">' + esc(m) + "</span>"; }), r);
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(g.s.toks, g.i, g.s.it), say: g.s.zh, note: g.set.nota };
+    },
+    risposta: function (it) { if (it.note) { var fb = document.querySelector(".ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="it">💡 ' + esc(it.note) + "</p>"); } } });
+
+  /* ---- rimetti in ordine: le tessere della frase (3-8 parole) ---- */
+  ENG.register({ id: "ordina", famiglia: 1, corso: "zh", q: "exm.q.order",
+    richiede: function (w) { return forWord(w).some(function (s) { var n = s.toks.filter(function (t) { return t.w; }).length; return s.it && n >= 3 && n <= 8; }); },
+    crea: function (w, ctx, r) {
+      var s = pick(forWord(w), r, function (x) { var n = x.toks.filter(function (t) { return t.w; }).length; return x.it && n >= 3 && n <= 8; }); if (!s) return null;
+      var tiles = s.toks.filter(function (t) { return t.w; }).map(function (t, i) { return { id: i, w: t.w }; }), sh = tiles;
+      for (var n = 0; n < 8; n++) { sh = D.shuffle(tiles, r); if (sh.map(function (x) { return x.id; }).join() !== tiles.map(function (x) { return x.id; }).join()) break; }
+      return { kind: "order", tiles: tiles, bank: sh, pick: [], it: s.it, say: s.zh, prompt: '<div class="cd-note ex-order-it" lang="it">«' + esc(s.it) + "»</div>" };
+    } });
+  function tile(t, attr, used) { return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(t.w.py) + '</span><span class="th" lang="zh-CN">' + CP.hanziHTML(t.w.hz, t.w.py) + "</span></button>"; }
+  ENG.renderers.order = {
+    html: function (it) {
+      var by = {}; it.bank.forEach(function (t) { by[t.id] = t; });
+      return '<div class="slot ex-slot" aria-live="polite" data-empty="' + CP.attr(T("exm.slot")) + '">' + it.pick.map(function (id) { return tile(by[id], 'data-exo-un="' + id + '"'); }).join("") + "</div>" +
+        '<div class="bank ex-bank">' + it.bank.map(function (t) { return tile(t, 'data-exo="' + t.id + '"', it.pick.indexOf(t.id) >= 0); }).join("") + "</div>";
+    },
+    bind: function (it, root) { ENG.bar('<button type="button" class="btn-main" data-exo-check disabled>' + esc(T("exm.check")) + '</button><p class="kbd-hint">' + esc(T("exm.kbdOrder")) + "</p>"); },
+    redraw: function (it, root) {
+      var card = root.querySelector(".ex-card"), old = card && card.querySelector(".ex-slot"), bank = card && card.querySelector(".ex-bank"); if (!old || !bank) return;
+      var tmp = document.createElement("div"); tmp.innerHTML = this.html(it);
+      old.replaceWith(tmp.firstChild); bank.replaceWith(tmp.lastChild);
+      var c = root.querySelector("[data-exo-check]"); if (c) c.disabled = it.pick.length !== it.bank.length;
+    }
+  };
+  document.addEventListener("click", function (ev) {
+    var cur = ENG.current(); if (!cur || cur.done || cur.item.kind !== "order") return;
+    var b = ev.target.closest ? ev.target.closest("[data-exo], [data-exo-un], [data-exo-check]") : null; if (!b || !cur.kit.root.contains(b)) return;
+    var it = cur.item;
+    if (b.hasAttribute("data-exo")) { var id = +b.getAttribute("data-exo"); if (it.pick.indexOf(id) < 0) it.pick.push(id); CP.sfx("tap"); ENG.renderers.order.redraw(it, cur.kit.root); }
+    else if (b.hasAttribute("data-exo-un")) { var u = +b.getAttribute("data-exo-un"); it.pick = it.pick.filter(function (x) { return x !== u; }); ENG.renderers.order.redraw(it, cur.kit.root); }
+    else {
+      var ok = it.pick.join() === it.tiles.map(function (t) { return t.id; }).join();
+      Array.prototype.forEach.call(cur.kit.root.querySelectorAll(".ex-slot .tile, .ex-bank .tile"), function (x) { x.disabled = true; });
+      var slot = cur.kit.root.querySelector(".ex-slot"); if (slot) slot.classList.add(ok ? "ok" : "ko");
+      ENG.after({ ok: ok, g: ENG.voto({ kind: "mc", ok: ok }), msg: ok ? T("exm.right") : T("exm.orderWas", { s: it.say }) });
+    }
+  });
+})();
+</script>
+<script type="text/plain" id="group-esercizi-5">
+/* ---- study/ex-varie.js ---- */
+/* ===== màndarínō · altri esercizi del corso di cinese (Task 12, T2, §12.2 e §12.5): digitazione del pinyin e del
+   significato (anche nella frase a buco), abbina cinque coppie, traccia il carattere, componente (suono o significato).
+   Digitazione: CP.typing confronta; pinyin senza toni o italiano con l'accento sbagliato = Difficile con la spiegazione;
+   giusta al primo colpo = Bene, Facile solo se veloce e con la parola già stabile (CP.exEngine.voto). Sotto il campo i
+   tasti dei toni «1 2 3 4 5» e «ü»; il campo non corregge, non mette maiuscole, Invio conferma. Gruppo ESERCIZI. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, D = CP.distract, ENG = CP.exEngine, TY = CP.typing;
+  function sylls(py) { return String(py).split(/[.\s']+/).filter(Boolean); }
+
+  /* ---- campo di digitazione ---- */
+  ENG.renderers.type = {
+    html: function (it) {
+      var chips = it.mode === "pinyin" ? '<div class="ex-chips" role="group" aria-label="' + CP.attr(T("exm.toneKeys")) + '">' + ["1", "2", "3", "4", "5", "ü"].map(function (c) { return '<button type="button" class="ex-chip" data-ext="' + c + '">' + c + "</button>"; }).join("") + "</div>" : "";
+      return '<form class="ex-type" data-ex-form autocomplete="off"><label class="sr" for="ex-in">' + esc(T(it.mode === "pinyin" ? "exm.typePy" : "exm.typeIt")) + "</label>" +
+        '<input id="ex-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="' + (it.mode === "pinyin" ? "zh-Latn" : "it") + '" placeholder="' + CP.attr(T(it.mode === "pinyin" ? "exm.phPy" : "exm.phIt")) + '">' + chips + "</form>";
+    },
+    bind: function (it, root) {
+      ENG.bar('<button type="button" class="btn-main" data-ex-submit>' + esc(T("exm.check")) + '</button><p class="kbd-hint">' + esc(T("exm.kbdType")) + "</p>");
+      var i = root.querySelector("#ex-in"); if (i) setTimeout(function () { try { i.focus({ preventScroll: true }); } catch (e) {} }, 60);
+    }
+  };
+  function submit() {
+    var cur = ENG.current(); if (!cur || cur.done || cur.item.kind !== "type") return;
+    var inp = cur.kit.root.querySelector("#ex-in"), v = inp ? inp.value : ""; if (!String(v).trim()) { if (inp) inp.focus(); return; }
+    var it = cur.item, esito = it.mode === "pinyin" ? TY.comparePinyin(v, it.answer) : TY.compareIt(v, it.accept);
+    var rec = CP.S()[cur.w.key] || {}, g = ENG.voto({ kind: "type", ok: esito === "esatto", esito: esito, ms: Date.now() - cur.t0, st: rec.st || 0 });
+    if (inp) { inp.disabled = true; inp.classList.add(g >= 2 ? "ok" : g === 1 ? "mid" : "ko"); }
+    Array.prototype.forEach.call(cur.kit.root.querySelectorAll(".ex-chip"), function (b) { b.disabled = true; });
+    var shown = it.mode === "pinyin" ? sylls(it.answer).join(" ") : it.accept[0];
+    var msg = esito === "esatto" ? T("exm.right") : esito === "senza-toni" ? T("exm.noTones", { a: shown }) : esito === "toni-sbagliati" ? T("exm.badTones", { a: shown }) : esito === "accento" ? T("exm.accent", { a: shown }) : esito === "quasi" ? T("exm.typo", { a: shown }) : T("exm.was", { a: shown });
+    ENG.after({ ok: g >= 1, g: g, msg: msg, esito: esito });
+  }
+  document.addEventListener("submit", function (ev) { if (ev.target && ev.target.hasAttribute && ev.target.hasAttribute("data-ex-form")) { ev.preventDefault(); submit(); } });
+  document.addEventListener("click", function (ev) {
+    var cur = ENG.current(); if (!cur) return;
+    var b = ev.target.closest ? ev.target.closest("[data-ex-submit], [data-ext]") : null; if (!b || !cur.kit.root.contains(b)) return;
+    if (b.hasAttribute("data-ex-submit")) { submit(); return; }
+    /* tasti dei toni e ü: si inseriscono dove sta il cursore, senza far sparire la tastiera */
+    var inp = cur.kit.root.querySelector("#ex-in"); if (!inp || inp.disabled) return;
+    ev.preventDefault();
+    var s = inp.selectionStart != null ? inp.selectionStart : inp.value.length, e = inp.selectionEnd != null ? inp.selectionEnd : s, c = b.getAttribute("data-ext");
+    inp.value = inp.value.slice(0, s) + c + inp.value.slice(e); try { inp.setSelectionRange(s + c.length, s + c.length); } catch (x) {}
+    inp.focus({ preventScroll: true });
+  });
+  document.addEventListener("mousedown", function (ev) { if (ev.target.closest && ev.target.closest("[data-ext]")) ev.preventDefault(); });   /* il campo resta attivo */
+
+  /* le alternative accettate di una glossa: «io, me», «buongiorno / salve»; le parentesi sono note, non risposta */
+  function accepted(it) { return String(it).replace(/\([^)]*\)/g, " ").split(/\s*[;,/]\s*/).map(function (x) { return x.trim(); }).filter(Boolean); }
+  ENG.register({ id: "scrivi-pinyin", famiglia: 2, corso: "zh", q: "exm.q.typePy",
+    crea: function (w, ctx, r) {
+      var listen = ctx.hasVoice() && !ctx.poly(w.hz) && r() < 0.35;
+      return { kind: "type", mode: "pinyin", answer: w.py, say: CP.sayHz(w), autoSay: listen,
+        prompt: listen ? '<div class="ex-listen">' + CP.sayBtn(CP.sayHz(w)).replace('class="say"', 'class="say big"') + "</div>" : '<div class="cd-hz" lang="zh-CN">' + esc(w.hz) + '</div><div class="cd-it" lang="it">' + esc(D.gloss(w.it)) + "</div>" };
+    } });
+  ENG.register({ id: "scrivi-significato", famiglia: 2, corso: "zh", q: "exm.q.typeIt",
+    richiede: function (w) { return accepted(w.it).length > 0 && accepted(w.it)[0].length <= 24; },
+    crea: function (w) { return { kind: "type", mode: "it", accept: accepted(w.it), say: CP.sayHz(w), prompt: '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + "</div>" }; } });
+  /* la frase a buco digitata: il pinyin della parola che manca */
+  ENG.register({ id: "buco-scrivi", famiglia: 2, corso: "zh", q: "exm.q.holeType",
+    richiede: function (w) { return !!CP.exSent && CP.exSent.forWord(w).some(function (s) { return s.it; }); },
+    crea: function (w, ctx, r) {
+      var L = CP.exSent.forWord(w).filter(function (s) { return s.it; }); if (!L.length) return null;
+      var s = L[Math.floor(r() * Math.min(L.length, 4))], i = s.toks.findIndex(function (t) { return t.w && t.w.key === w.key; }); if (i < 0) return null;
+      return { kind: "type", mode: "pinyin", answer: w.py, say: s.zh, prompt: '<div class="ex-sent" lang="zh-CN">' + CP.exSent.holed(s.toks, i) + '</div><div class="cd-note" lang="it">' + esc(s.it) + "</div>" };
+    } });
+
+  /* ---- abbina: cinque coppie caratteri ↔ significato (riscaldamento) ---- */
+  ENG.register({ id: "abbina", famiglia: 0, corso: "zh", q: "exm.q.match",
+    crea: function (w, ctx, r) {
+      var x = D.meaning(w, ctx.pool(), ctx, r), more = x && D.meaning(x[0], ctx.pool(), ctx, r); if (!x || !more) return null;
+      var seen = {}, list = [w].concat(x, more).filter(function (y) { var k = D.gloss(y.it).toLowerCase(); if (seen[y.hz] || seen[k]) return false; seen[y.hz] = seen[k] = 1; return true; }).slice(0, 5);
+      if (list.length < 4) return null;
+      return { kind: "match", words: list, left: D.shuffle(list.map(function (y, i) { return i; }), r), right: D.shuffle(list.map(function (y, i) { return i; }), r), done: {}, sel: null, miss: 0, mine: false, say: CP.sayHz(w), prompt: "" };
+    } });
+  ENG.renderers.match = {
+    html: function (it) {
+      var col = function (side, order) { return '<div class="ex-col">' + order.map(function (i) { var y = it.words[i], ok = it.done[i]; return '<button type="button" class="ex-m' + (ok ? " ok" : "") + (it.sel && it.sel.side === side && it.sel.i === i ? " sel" : "") + '" data-exm="' + side + ":" + i + '"' + (ok ? " disabled" : "") + (side === "l" ? ' lang="zh-CN"' : ' lang="it"') + ">" + (side === "l" ? '<span class="ex-han">' + esc(y.hz) + "</span>" : esc(D.gloss(y.it))) + (ok ? ' <span aria-hidden="true">✓</span>' : "") + "</button>"; }).join("") + "</div>"; };
+      return '<div class="ex-match" role="group" aria-label="' + CP.attr(T("exm.q.match")) + '">' + col("l", it.left) + col("r", it.right) + "</div>";
+    },
+    redraw: function (it, root) { var m = root.querySelector(".ex-match"); if (m) { var tmp = document.createElement("div"); tmp.innerHTML = this.html(it); m.replaceWith(tmp.firstChild); } }
+  };
+  document.addEventListener("click", function (ev) {
+    var cur = ENG.current(); if (!cur || cur.done || cur.item.kind !== "match") return;
+    var b = ev.target.closest ? ev.target.closest("[data-exm]") : null; if (!b || !cur.kit.root.contains(b)) return;
+    var it = cur.item, p = b.getAttribute("data-exm").split(":"), side = p[0], i = +p[1];
+    if (!it.sel || it.sel.side === side) { it.sel = { side: side, i: i }; CP.sfx("tap"); }
+    else {
+      if (it.sel.i === i) { it.done[i] = 1; CP.sfx("ok"); }
+      else { it.miss++; if (i === 0 || it.sel.i === 0) it.mine = true; b.classList.add("ko"); CP.sfx("ko"); CP.haptic([20, 40, 20]); }
+      it.sel = null;
+    }
+    ENG.renderers.match.redraw(it, cur.kit.root);
+    if (Object.keys(it.done).length === it.words.length) ENG.after({ ok: !it.mine, g: it.mine ? 0 : 2, msg: it.miss ? T("exm.matchMiss", { n: it.miss }) : T("exm.right") });
+  });
+
+  /* ---- traccia: le parole di un solo carattere, sulla lavagna dei tratti senza guida ---- */
+  ENG.register({ id: "traccia", famiglia: 1, corso: "zh", q: "exm.q.trace",
+    richiede: function (w) { return Array.from(w.hz).length === 1 && !!CP.pad && (!CP.strokeData || !!CP.strokeData(w.hz)); },
+    crea: function (w) { return { kind: "trace", hz: w.hz, say: CP.sayHz(w), prompt: '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-it" lang="it">' + esc(D.gloss(w.it)) + "</div>" }; } });
+  ENG.renderers.trace = {
+    html: function () { return '<div class="ex-pad"></div>'; },
+    bind: function (it, root) {
+      var host = root.querySelector(".ex-pad"), pad = CP.pad(it.hz, { ghost: false }); it.pad = pad;
+      host.appendChild(pad.el); pad.mount();
+      ENG.bar('<p class="kbd-hint">' + esc(T("exm.traceHint")) + "</p>");
+      /* la lavagna ha il suo «Valuta»: quando compare il punteggio, l'esercizio si chiude e il pulsante sparisce */
+      var res = pad.el.querySelector(".pad-res"), mo = new MutationObserver(function () {
+        var sc = res.querySelector(".pad-score"); if (!sc) return;
+        mo.disconnect(); var n = parseInt((/(\d+)%/.exec(sc.textContent) || [0, 0])[1], 10), ev = pad.el.querySelector(".pad-eval"); if (ev) ev.hidden = true;
+        ENG.after({ ok: n >= 70, g: n >= 70 ? 2 : n >= 50 ? 1 : 0, msg: T("exm.traceScore", { n: n }) });
+      });
+      if (res) mo.observe(res, { childList: true, subtree: true });
+    }
+  };
+
+  /* ---- componente: quale parte dà il suono (o il significato) di un carattere fonetico-semantico (in data/anatomy.js il
+     tipo «s», con parte fonetica e semantica tra le parti del primo livello) ---- */
+  function anat(w) { if (!CP.anatomy || !CP.anatomy.on() || Array.from(w.hz).length !== 1) return null; var a = CP.anatomy.get(w.hz); return a && a.type === "s" && a.phon && a.sem && a.phon !== a.sem && a.parts.indexOf(a.phon) >= 0 && a.parts.indexOf(a.sem) >= 0 ? a : null; }
+  ENG.register({ id: "componente", famiglia: 1, corso: "zh", q: "exm.q.part",
+    richiede: function (w) { return !!anat(w); },
+    crea: function (w, ctx, r) {
+      var a = anat(w); if (!a) return null;
+      var sound = r() < 0.5, right = sound ? a.phon : a.sem, opts = a.parts.filter(function (p) { return p !== right; }).slice(0, 2);
+      /* un intruso da un altro carattere fonetico-semantico dello stesso livello */
+      var other = ctx.pool().filter(function (x) { return Array.from(x.hz).length === 1 && x.hz !== w.hz; });
+      for (var n = 0; n < 40 && opts.length < 3; n++) { var y = other[Math.floor(r() * other.length)], b = y && CP.anatomy.get(y.hz); if (b && b.type === "s" && b.phon && b.phon !== right && opts.indexOf(b.phon) < 0 && a.parts.indexOf(b.phon) < 0) opts.push(b.phon); }
+      if (opts.length < 2) return null;
+      var o = D.options('<span class="ex-han">' + esc(right) + "</span>", opts.map(function (p) { return '<span class="ex-han">' + esc(p) + "</span>"; }), r);
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", say: CP.sayHz(w), prompt: '<div class="cd-hz" lang="zh-CN">' + esc(w.hz) + '</div><p class="ex-ask">' + esc(T(sound ? "exm.partSound" : "exm.partMeaning")) + "</p>" };
+    } });
+})();
+</script>
+<script>/* ---- gruppo ESERCIZI (i18n/exercises.js, core/typing.js, study/distractors.js, study/exercises.js, study/ex-frasi.js, study/ex-varie.js): al primo uso ---- */(function () { var done = false, ids = ["group-esercizi-0","group-esercizi-1","group-esercizi-2","group-esercizi-3","group-esercizi-4","group-esercizi-5"]; (window.__mdLoad = window.__mdLoad || {})["ESERCIZI"] = function () { if (done) return; done = true; ids.forEach(function (id) { var el = document.getElementById(id), s = document.createElement("script"); s.textContent = el ? el.textContent : ""; document.head.appendChild(s); if (el) el.parentNode.removeChild(el); }); }; })();</script>
 <script>
 /* ---- ui/immerse.js ---- */
 /* ===== màndarínō · «Immersione»: gli esercizi di Frasi a schermo pieno.
@@ -24506,7 +24782,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     prepare();
   }
   function prepare() {
-    var q = quiz.l.quiz[quiz.i]; quiz.state = "play"; quiz.choice = null; quiz.order = null;
+    var q = quiz.l.quiz[quiz.i]; quiz.state = "play"; quiz.choice = null; quiz.order = null; quiz.typed = "";
     if (q.k === "order") {
       var t = toks(q.zh), bank = t.map(function (k, i) { return { id: i, k: k }; }), sh;
       for (var n = 0; n < 6; n++) { sh = shuffle(bank); if (sh.map(function (b) { return b.k; }).join("|") !== t.join("|")) break; }
@@ -24531,8 +24807,15 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
         h += quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") + "</p>" : '<p class="verdict ko">' + T("ls.wrongOrder") + "</p>" + zhHTML(q.zh.replace(/[。？！]$/, "")) ;
         h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
       }
+    } else if (q.k === "scrivi") {
+      /* Task 12: risposta da scrivere (pinyin se q.py, altrimenti italiano); il confronto è quello del ripasso (CP.typing) */
+      h += '<p class="ask" lang="it">' + rich(q.q || T(q.py ? "ls.typePy" : "ls.typeIt")) + "</p>" + (q.zh ? zhHTML(q.zh) : "") +
+        '<form class="ex-type" data-ls-form><input id="ls-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="' + (q.py ? "zh-Latn" : "it") + '" aria-label="' + CP.attr(T("ls.answers")) + '"' + (quiz.state !== "play" ? ' disabled value="' + CP.attr(quiz.typed || "") + '"' : "") + "></form>";
+      h += quiz.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-ls-type style="margin:0">' + T("ex.check") + "</button></div>" :
+        (quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") : '<p class="verdict ko">' + T("ls.notThis")) + ' <b lang="' + (q.py ? "zh-Latn" : "it") + '">' + esc(q.a) + "</b>" + (q.why ? ' <span lang="it">' + rich(q.why) + "</span>" : "") + '</p><div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
     } else {
-      h += '<p class="ask" lang="it">' + rich(q.q) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
+      /* «pick» e, dal Task 12, «buco» (la frase con il buco in zh, la domanda è facoltativa) */
+      h += '<p class="ask" lang="it">' + rich(q.q || T("ls.holeQ")) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
       h += '<div class="ls-opts" role="group" aria-label="' + CP.attr(T("ls.answers")) + '">' + q.opts.map(function (op, j) {
         var cls = quiz.state === "play" ? "" : j === q.a ? " right" : j === quiz.choice ? " wrong" : " off";
         return '<button type="button" class="ls-opt' + cls + '" data-ls-opt="' + j + '"' + (quiz.state !== "play" ? " disabled" : "") + ">" + (isZh(op) ? zhHTML(op, "ls-zh in") : '<span lang="it">' + rich(op) + "</span>") + "</button>";
@@ -24610,8 +24893,17 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       quiz.choice = +a("data-ls-opt"); quiz.state = quiz.choice === q.a ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
       CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint(); return;
     }
+    if (t.hasAttribute("data-ls-type") && quiz.state === "play") { typed(q); return; }
     if (t.hasAttribute("data-ls-next")) { if (quiz.i + 1 < quiz.l.quiz.length) { quiz.i++; prepare(); } else finish(); paint(true); return; }
   });
+  /* «scrivi»: il confronto sta nel gruppo ESERCIZI (CP.ex.carica); giusta anche senza un accento o con un refuso */
+  function typed(q) {
+    var i = document.getElementById("ls-in"), v = i ? i.value : ""; if (!String(v).trim()) return;
+    if (CP.ex) CP.ex.carica(); var Y = CP.typing, r = !Y ? (v.trim() === q.a ? "esatto" : "sbagliato") : q.py ? Y.comparePinyin(v, q.a) : Y.compareIt(v, q.a);
+    quiz.typed = v; quiz.state = /^(esatto|accento|quasi)$/.test(r) ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+    CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint();
+  }
+  document.addEventListener("submit", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-ls-form")) { e.preventDefault(); if (quiz && quiz.state === "play") typed(quiz.l.quiz[quiz.i]); } });
 })();
 </script>
 <script>
@@ -26567,6 +26859,8 @@ Object.assign(I18N.zh, {"itc.005": "<div class=\"seg\" role=\"group\" aria-label
 Object.assign(I18N.it, {"itc.005": "<div class=\"seg\" role=\"group\" aria-label=\"Velocità\"><button type=\"button\" data-rate=\"0.8\"", "itc.006": ">🐢 Lento</button><button type=\"button\" data-rate=\"1\"", "itc.007": ">🐇 Normale</button></div>", "itc.008": "<label class=\"small muted\" for=\"it-voice-sel\" style=\"display:grid;gap:4px;font-weight:600\">Voce italiana<select id=\"it-voice-sel\">", "itc.009": "Voce italiana: ", "itc.010": "Il dispositivo non elenca voci italiane: provo con la voce predefinita (it-IT). Se non senti nulla, installa l'italiano in «Sintesi vocale» nelle impostazioni del telefono.", "itc.011": "> Suoni dei tocchi</label>", "itc.012": "> Vibrazione</label>", "itc.013": "<button type=\"button\" class=\"btn-main\" id=\"it-voice-test\" style=\"margin-top:4px\">Prova: Ciao! Come stai?</button>", "itc.014": "🐢 Lento", "itc.015": "🐇 Normale", "itc.016": "L'italiano per chi parla cinese: ", "itc.017": " lezioni di grammatica</b>, parole comuni, coniugazioni e frasi a fronte italiano-cinese. Ogni parola italiana si può ascoltare; gli intervalli di ripasso li decide l'algoritmo FSRS. Tutto funziona anche offline.", "itc.018": "Lezioni", "itc.019": "Parole", "itc.020": "Ripasso", "itc.021": "Coniugazioni", "itc.022": "Frasi", "itc.023": "Ascolta", "itc.024": "← Indietro", "itc.025": "Inizia", "itc.026": "Avanti", "itc.027": "Vedi il risultato", "itc.028": "Giusto!", "itc.029": "Non è giusto.", "itc.030": "Risposta giusta: ", "itc.031": "Metti le parole in ordine per formare la frase:", "itc.032": "Controlla", "itc.033": "Cancella", "itc.034": "Mostra la risposta", "itc.035": "Non la so", "itc.036": "Difficile", "itc.037": "La so", "itc.038": "Facile", "itc.039": "Persone", "itc.040": "Famiglia", "itc.041": "Saluti", "itc.042": "Risposte e connettivi", "itc.043": "Verbi comuni (1)", "itc.044": "Verbi comuni (2)", "itc.045": "Domande", "itc.046": "Numeri e classificatori", "itc.047": "Tempo", "itc.048": "Luoghi e direzioni", "itc.049": "Cibo e bevande", "itc.050": "Aggettivi", "itc.051": "Stati d'animo", "itc.052": "Luoghi e paesi", "itc.053": "Viaggi e trasporti", "itc.054": "In casa", "itc.055": "Vestiti e colori", "itc.056": "Corpo e salute", "itc.057": "Natura e animali", "itc.058": "Lavoro e studio", "itc.059": "Cucina", "itc.060": "Città", "itc.061": "Lingua parlata", "itc.062": "Acquisti", "itc.063": "Presentarsi e rompere il ghiaccio", "itc.064": "Capire, farsi capire, chiedere aiuto", "itc.065": "Colazione al bar", "itc.066": "Ordinare al ristorante", "itc.067": "Acquisti, prezzi e pagamento", "itc.068": "Chiedere la strada", "itc.069": "Taxi, treno e aeroporto", "itc.070": "In albergo, un problema in camera", "itc.071": "Orari, appuntamenti e amici", "itc.072": "Lavoro, studio e vita quotidiana", "itc.073": "Salute, corpo ed emergenze", "itc.074": "Parlare della Sicilia, dell'Italia e del tempo", "itc.075": "In taxi", "itc.076": "Alla dogana", "itc.077": "Il bagaglio non è arrivato", "itc.078": "Comprare una SIM", "itc.079": "Cambiare i soldi", "itc.080": "Il check-in", "itc.081": "Il wifi non funziona", "itc.082": "La camera è troppo calda", "itc.083": "Il check-out", "itc.084": "Chiedere aiuto all'albergo", "itc.085": "Al ristorante", "itc.086": "Colazione cinese", "itc.087": "Allergie e cibi da evitare", "itc.088": "Al bar", "itc.089": "Cibo di strada", "itc.090": "In treno", "itc.091": "In metropolitana", "itc.092": "Comprare un biglietto del treno", "itc.093": "In autobus", "itc.094": "Il treno è in ritardo", "itc.095": "Al mercato", "itc.096": "Pagare con il QR", "itc.097": "Provare i vestiti", "itc.098": "Dal fruttivendolo", "itc.099": "Cambiare o rendere un acquisto", "itc.100": "In farmacia", "itc.101": "Un caffè con gli amici", "itc.102": "Parlare della Sicilia", "itc.103": "Dal medico", "itc.104": "Ho perso il portafoglio", "itc.105": "Una cena di lavoro", "itc.106": "Ospiti a casa di amici", "itc.107": " (solo plurale)", "itc.108": " (femminile)", "itc.109": "nome", "itc.110": "luogo", "itc.111": "nazionalità", "itc.112": "verbo", "itc.113": "parola di tempo", "itc.114": "espressione", "itc.115": "nome · femminile", "itc.116": "nome · maschile/femminile", "itc.117": "nome · maschile", "itc.118": "<div class=\"it-ex\"><span class=\"tag muted small\">Esempio</span><div lang=\"it\" class=\"it-ex-it\">", "itc.119": "<table class=\"it-conj\"><thead><tr><th></th><th>Presente</th><th>Passato prossimo</th></tr></thead><tbody>", "itc.120": "<p class=\"small muted\" style=\"margin:4px 0 0\">Con essere il participio si accorda con il soggetto (andato / andata / andati / andate).</p>", "itc.121": "Ascolta: ", "itc.122": "</div></div><button type=\"button\" class=\"fam-x btn-s\" data-famclose>Chiudi</button></div>", "itc.123": " <span class=\"small muted\">si dice anche: <span lang=\"zh-CN\">", "itc.124": "</p><p class=\"small muted\">Singolare · plurale (con l'articolo determinativo). Gli articoli sono nella lezione 3.</p>", "itc.125": "</p><p class=\"small muted\">Maschile singolare · femminile singolare · maschile plurale · femminile plurale (lezione 5).</p>", "itc.126": "</p><p class=\"small muted\">Le nazionalità sono aggettivi: si accordano con genere e numero, e si scrivono minuscole.</p>", "itc.127": "</p><p class=\"small muted\">Andare a / essere a: ", "itc.128": "</p><p class=\"small muted\">Presente (lezione 6).</p>", "itc.129": "L'italiano per i cinesi", "itc.130": "màndarínō, il corso di italiano per i cinesi", "itc.131": "Corso di italiano", "itc.132": "Letta", "itc.133": "<h2 style=\"margin-top:20px\">Corso di italiano</h2><p class=\"lede\" style=\"margin:4px 0\">Una lezione, un punto di grammatica: leggi la spiegazione, ascolta gli esempi, guarda gli errori tipici e fai gli esercizi. Con almeno il ", "itc.134": "% di risposte giuste la lezione è superata.</p>", "itc.135": "<p class=\"small muted\" style=\"margin:0 0 10px\">Lezioni superate: ", "itc.136": ".</p><div class=\"ls-list\">", "itc.137": "</button></div><article class=\"panel ls-lesson\"><span class=\"tag muted small\">Lezione ", "itc.138": "", "itc.139": " · miglior risultato ", "itc.140": "<h4>Esempi</h4>", "itc.141": "<h4>Errori tipici</h4>", "itc.142": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">✏️ Fai gli esercizi (", "itc.143": " domande)</button></div></article>", "itc.144": "%\"></i></div><span class=\"tag muted small\">Domanda ", "itc.145": " · giuste ", "itc.146": "<div class=\"slot\" data-empty=\"Tocca le parole qui sotto\">", "itc.147": "🎉 Lezione superata!", "itc.148": "Ci sei quasi!", "itc.149": "</h3><p>Risposte giuste: ", "itc.150": "Serve il ", "itc.151": "% per superarla: rileggi la spiegazione e riprova.", "itc.152": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">🔁 Rifalla</button><button type=\"button\" class=\"btn-s\" data-itl-open=\"", "itc.153": "\">📘 Rileggi</button><button type=\"button\" class=\"btn-s\" data-itl-back>Tutte le lezioni</button></div></div>", "itc.154": " · vocabolario", "itc.155": "Parole specialistiche", "itc.156": "<h2 style=\"margin-top:20px\">Parole italiane</h2><p class=\"small muted\" style=\"margin:0 0 8px\">", "itc.157": " parole in tutto. I nomi hanno l'articolo; tocca una parola per vedere tutte le forme e la coniugazione.</p>", "itc.158": "<label for=\"it-q\" class=\"sr\">Cerca</label><input id=\"it-q\" type=\"search\" placeholder=\"Cerca: italiano, caratteri o pinyin\" value=\"", "itc.159": "<p class=\"muted\">Niente trovato.</p>", "itc.160": "<div class=\"acts\"><button type=\"button\" class=\"btn-s\" data-it-more>Mostra altre (ancora ", "itc.161": ")</button></div>", "itc.162": "<h2 style=\"margin-top:20px\">Ripasso delle parole</h2><p class=\"small muted\" style=\"margin:0 0 10px\">Da ripassare oggi: ", "itc.163": " · parole nuove rimaste: ", "itc.164": " · già studiate: ", "itc.165": ". Gli intervalli li decide l'algoritmo FSRS.</p>", "itc.166": "<div class=\"panel\"><p>🎉 Ripasso di oggi finito! Torna domani, oppure esercitati con «Lezioni» e «Coniugazioni».</p></div>", "itc.167": "Parola nuova", "itc.168": "<p class=\"small muted\">Prima pensa al significato in cinese, poi guarda la risposta.</p><button type=\"button\" class=\"btn-main\" data-itr-show>", "itc.169": "<div class=\"it-grades\" role=\"group\" aria-label=\"Quanto la ricordi\">", "itc.170": "<h2 style=\"margin-top:20px\">Esercizi di coniugazione</h2><div class=\"seg\" role=\"group\" aria-label=\"Tempo verbale\"><button type=\"button\" data-itc-tense=\"pres\"", "itc.171": ">Presente</button><button type=\"button\" data-itc-tense=\"past\"", "itc.172": ">Passato prossimo</button></div>", "itc.173": "<div class=\"panel ls-quiz\"><span class=\"tag muted small\">Giuste ", "itc.174": "Presente", "itc.175": "Passato prossimo (lei = femminile)", "itc.176": "<div class=\"panel ls-quiz\" id=\"it-px\" style=\"margin-top:20px\"><span class=\"tag muted small\">Frasi · metti in ordine l'italiano</span><p class=\"ask\" lang=\"zh-CN\">", "itc.177": "</button><button type=\"button\" class=\"btn-s\" data-itx-next>Un'altra frase</button></div>", "itc.178": "<h2 style=\"margin-top:20px\">Frasi utili</h2><p class=\"small muted\" style=\"margin:0 0 10px\">Sopra l'italiano, sotto il cinese. Tocca 🔊 per ascoltare l'italiano.</p>", "itc.179": "<h3 style=\"margin-top:20px\">Dialoghi (italiano e cinese)</h3><div class=\"ls-list\">", "itc.180": "prima persona singolare (io)", "itc.181": "seconda persona singolare (tu)", "itc.182": "terza persona singolare (lui / lei)", "itc.183": "prima persona plurale (noi)", "itc.184": "seconda persona plurale (voi)", "itc.185": "terza persona plurale (loro)", "itc.186": "maschile singolare", "itc.187": "femminile singolare", "itc.188": "maschile plurale", "itc.189": "femminile plurale", "itc.190": " è ", "itc.191": ", l'aggettivo diventa «", "itc.192": "» è «", "itc.193": "»: in italiano nazionalità e lingue si scrivono minuscole: «", "itc.194": " è plurale: l'articolo indeterminativo un / una va solo davanti al singolare. Puoi usare l'articolo determinativo «", "itc.195": "Davanti a questa parola serve «", "itc.196": "» (dipende dalla lettera iniziale della parola dopo).", "itc.197": "L'articolo giusto è «", "itc.198": "»: la preposizione ", "itc.199": " e l'articolo si uniscono in una parola: «", "itc.200": "»: da due in su serve il plurale «", "itc.201": "»: davanti ai familiari al singolare (madre, padre, fratello…) l'aggettivo possessivo non vuole l'articolo.", "itc.202": ", si dice «", "itc.203": ", l'articolo è «", "itc.204": "»: davanti all'aggettivo possessivo di solito serve l'articolo: «", "itc.205": "»: il verbo va coniugato, non si usa l'infinito. Il soggetto è ", "itc.206": "»: in italiano si dice «", "itc.207": " piace / piacciono …», e il soggetto è la cosa che piace.", "itc.208": "»: il soggetto è ", "itc.209": ", il verbo ", "itc.210": " diventa «", "itc.211": "plurale", "itc.212": "singolare", "itc.213": " (al femminile «", "itc.214": "»: con essere il participio passato si accorda con il soggetto: «", "itc.215": " al passato prossimo vuole essere: «", "itc.216": "» (participio accordato con il soggetto).", "itc.217": " al passato prossimo vuole avere: «", "itc.218": "»: in italiano si dice «avere ", "itc.219": "»: la cosa che piace è ", "itc.220": ", serve «", "itc.221": "<p class=\"small muted\">Non conosco ancora nessuna di queste parole: non posso controllare.</p>", "itc.222": "<p style=\"margin:8px 0 0\">Suggerimento: <b lang=\"it\">", "itc.223": "\" aria-label=\"Leggi ad alta voce\">🔊</button></p>", "itc.224": "<p class=\"verdict ok\">✓ Nessun errore di accordo.</p>", "itc.225": "<p class=\"small muted\">Parole non controllate (non sono nel lessico): <span lang=\"it\">", "itc.226": "<div class=\"panel\" id=\"itc\" style=\"margin-top:20px\"><span class=\"tag muted small\">✍️ Controllo della frase</span>", "itc.227": "<p class=\"small muted\" style=\"margin:4px 0 8px\">Scrivi una frase in italiano: controllo che articoli, nomi, aggettivi e verbi siano accordati, e un po' di ortografia. Non controllo il senso né l'ordine delle parole.</p>", "itc.228": "<form data-itc-form style=\"display:flex;gap:8px;flex-wrap:wrap\"><input id=\"itc-in\" type=\"text\" lang=\"it\" autocomplete=\"off\" autocapitalize=\"sentences\" spellcheck=\"false\" aria-label=\"Frase italiana\" placeholder=\"La ragazza è alta.\" value=\"", "itc.229": "<button type=\"submit\" class=\"btn-s\" style=\"margin:0\">Controlla</button></form><div id=\"itc-out\" aria-live=\"polite\">"});
 Object.assign(I18N.zh, {"itd.passed": "通过", "itd.lessonN": "第 {n} 课", "itd.best": "最好成绩 {p}%", "itd.pathT": "课程之路", "itd.pathSub": "已通过 {d} / {n} 课 · 答对 {p}% 以上就算通过", "itd.share": "分享", "itd.morning": "早上好", "itd.noon": "中午好", "itd.afternoon": "下午好", "itd.evening": "晚上好", "itd.continue": "继续：第 {n} 课 · {t}", "itd.min": "约 {m} 分钟", "itd.reviewN": "复习 {n} 张", "itd.allDone": "30 课都通过了！去复习单词", "itd.toNext": "距离下一级还有 {n} 分", "itd.points": "{x} 分 · 下一级 {n}", "itd.goal": "今天的目标", "itd.streak": "连续 {n} 天", "itd.phraseT": "今日意大利语", "itd.listen": "听", "itd.progress": "我的进步", "itd.gain": "+{n} 分", "itd.shareCard": "分享纪念卡", "itd.cards": "纪念卡", "itd.shareWeek": "分享本周卡片", "itd.ciaoZh": "你好！", "itm.first": "迈出第一步：通过第一课", "itm.s7": "连续学习 7 天", "itm.s30": "连续学习 30 天", "itm.s100": "连续学习 100 天", "itm.w100": "学会 100 个词", "itm.w500": "学会 500 个词", "itm.w1000": "学会 1000 个词", "itm.all": "30 课全部通过", "itm.rank": "新等级：{r}", "itm.congrats": "恭喜！{m}", "itcard.sub": "给中国人的意大利语", "itcard.weekT": "我的这一周", "itcard.rank": "我的等级", "itcard.points": "{n} 分", "itcard.wDays": "学习天数", "itcard.wWords": "新学的词", "itcard.wLessons": "通过的课", "itcard.streak": "连续天数", "itcard.words": "学会的词", "itcard.lessons": "通过的课", "itcard.phrase": "今日意大利语", "itcard.foot": "免费 · 离线 · 无广告 · 无需注册", "itcard.scan": "扫码了解 màndarínō", "itcard.alt": "分享卡片：今日意大利语「{p}」，等级 {r}", "itcard.title": "分享卡片", "itcard.privacy": "图片在你的手机上生成；要不要分享由你决定。", "itcard.format": "比例", "itcard.theme": "颜色", "itcard.th.light": "浅色", "itcard.th.sepia": "米纸", "itcard.th.dark": "深色", "itcard.sign": "在卡片上署名", "itcard.namePh": "你的名字（只保存在这台手机上）", "itcard.share": "分享"});
 Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", "itd.best": "miglior risultato {p}%", "itd.pathT": "Il percorso delle lezioni", "itd.pathSub": "Superate {d} / {n} · servono almeno il {p}% di risposte giuste", "itd.share": "Condividi", "itd.morning": "Buongiorno", "itd.noon": "Buongiorno", "itd.afternoon": "Buon pomeriggio", "itd.evening": "Buonasera", "itd.continue": "Continua: lezione {n} · {t}", "itd.min": "circa {m} min", "itd.reviewN": "Ripassa {n} carte", "itd.allDone": "Tutte le 30 lezioni superate! Ripassa le parole", "itd.toNext": "Mancano {n} punti al prossimo grado", "itd.points": "{x} punti · prossimo grado a {n}", "itd.goal": "obiettivo di oggi", "itd.streak": "{n} giorni di fila", "itd.phraseT": "L'italiano di oggi", "itd.listen": "Ascolta", "itd.progress": "I miei progressi", "itd.gain": "+{n} punti", "itd.shareCard": "Condividi la carta ricordo", "itd.cards": "Carte ricordo", "itd.shareWeek": "Condividi la carta della settimana", "itd.ciaoZh": "你好！", "itm.first": "Primo gradino: la prima lezione superata", "itm.s7": "7 giorni di fila", "itm.s30": "30 giorni di fila", "itm.s100": "100 giorni di fila", "itm.w100": "100 parole imparate", "itm.w500": "500 parole imparate", "itm.w1000": "1000 parole imparate", "itm.all": "Tutte le 30 lezioni superate", "itm.rank": "Nuovo grado: {r}", "itm.congrats": "Complimenti! {m}", "itcard.sub": "L'italiano per chi parla cinese", "itcard.weekT": "La mia settimana", "itcard.rank": "Il mio grado", "itcard.points": "{n} punti", "itcard.wDays": "giorni di studio", "itcard.wWords": "parole nuove", "itcard.wLessons": "lezioni superate", "itcard.streak": "giorni di fila", "itcard.words": "parole imparate", "itcard.lessons": "lezioni superate", "itcard.phrase": "L'italiano di oggi", "itcard.foot": "gratis · offline · senza pubblicità · senza registrazione", "itcard.scan": "Inquadra per conoscere màndarínō", "itcard.alt": "Carta da condividere: l'italiano di oggi «{p}», grado {r}", "itcard.title": "Carta da condividere", "itcard.privacy": "L'immagine nasce sul tuo telefono; quello che ne fai è una tua scelta.", "itcard.format": "Formato", "itcard.theme": "Colore", "itcard.th.light": "Chiaro", "itcard.th.sepia": "Carta di riso", "itcard.th.dark": "Scuro", "itcard.sign": "Firma la carta", "itcard.namePh": "Il tuo nome (resta solo su questo telefono)", "itcard.share": "Condividi"});
+Object.assign(I18N.zh, {"itm.holeQ": "空里填什么？"});
+Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
 </script>
 <script>/* ---- i18n/it-course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-i18n-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="course-it-it-today-js">
@@ -26878,6 +27172,14 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
   }
   CP.itShow = show;
   /* per it/today.js (carta «今天», progressi, carte da condividere): i dati del corso, senza duplicarli */
+  /* «scrivi» nei quiz delle lezioni: il confronto sta nel gruppo ESERCIZI; giusta anche senza un accento o con un refuso */
+  function itTyped(Q, q) {
+    var i = document.getElementById("itl-in"), v = i ? i.value : ""; if (!String(v).trim()) return;
+    if (CP.ex) CP.ex.carica(); var r = CP.typing ? CP.typing.compareIt(v, q.a) : (v.trim().toLowerCase() === String(q.a).toLowerCase() ? "esatto" : "sbagliato");
+    Q.typed = v; Q.state = /^(esatto|accento|quasi)$/.test(r) ? "ok" : "ko"; if (Q.state === "ok") Q.score++;
+    CP.sfx(Q.state === "ok" ? "ok" : "ko"); render();
+  }
+  document.addEventListener("submit", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-itl-form")) { e.preventDefault(); if (ls.quiz && ls.quiz.state === "play") itTyped(ls.quiz, ls.quiz.l.quiz[ls.quiz.i]); } });
   CP.itApi = {
     lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
@@ -26929,7 +27231,7 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
   function words(s) { return s.replace(/[.,!?¿¡]/g, "").split(/\s+/).filter(Boolean); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function prepare() {
-    var q = ls.quiz.l.quiz[ls.quiz.i]; ls.quiz.state = "play"; ls.quiz.choice = null; ls.quiz.order = null;
+    var q = ls.quiz.l.quiz[ls.quiz.i]; ls.quiz.state = "play"; ls.quiz.choice = null; ls.quiz.order = null; ls.quiz.typed = "";
     if (q.k === "order") {
       var t = words(q.it), bank = t.map(function (w, i) { return { id: i, w: w }; }), sh = bank;
       for (var n = 0; n < 6; n++) { sh = shuffle(bank); if (sh.map(function (b) { return b.w; }).join(" ") !== t.join(" ")) break; }
@@ -26945,8 +27247,13 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
       h += '<p class="ask">' + Z.order + "「" + esc(q.zh) + "」</p>" + tt("itc.146") + Q.order.pick.map(function (id) { return tile(by[id], 'data-itl-un="' + id + '"'); }).join("") + "</div>";
       if (Q.state === "play") h += '<div class="bank">' + Q.order.bank.map(function (b) { return tile(b, 'data-itl-pick="' + b.id + '"', Q.order.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" data-itl-undo' + (Q.order.pick.length ? "" : " disabled") + ">" + Z.clear + '</button><button type="button" class="btn-main" data-itl-check style="margin:0"' + (Q.order.pick.length === Q.order.bank.length ? "" : " disabled") + ">" + Z.check + "</button></div>";
       else h += (Q.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.it) + "</span></p>") + '<div class="acts">' + sayBtn(q.it, true) + '<button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
+    } else if (q.k === "scrivi") {
+      /* Task 12: risposta da scrivere in italiano, confrontata come nel ripasso (CP.typing.compareIt) */
+      h += '<p class="ask">' + esc(q.q) + '</p><form class="ex-type" data-itl-form><input id="itl-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="it" aria-label="' + CP.attr(q.q) + '"' + (Q.state !== "play" ? ' disabled value="' + CP.attr(Q.typed || "") + '"' : "") + "></form>";
+      h += Q.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-itl-type style="margin:0">' + Z.check + "</button></div>" : '<p class="verdict ' + (Q.state === "ok" ? "ok" : "ko") + '">' + (Q.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs) + ' <b lang="it">' + esc(q.a) + "</b>" + (q.why ? " " + esc(q.why) : "") + '</p><div class="acts"><button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else {
-      h += '<p class="ask">' + esc(q.q) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
+      /* «pick» e, dal Task 12, «buco» (la frase italiana con ___; la domanda è facoltativa) */
+      h += '<p class="ask">' + esc(q.q || tt("itm.holeQ")) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
       h += '<div class="ls-opts">' + q.opts.map(function (o, j) {
         var cls = Q.state === "play" ? "" : j === q.a ? " right" : j === Q.choice ? " wrong" : " off";
         return '<button type="button" class="ls-opt' + cls + '" data-itl-opt="' + j + '"' + (Q.state !== "play" ? " disabled" : "") + ">" + esc(o) + "</button>";
@@ -27128,6 +27435,7 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
         CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return;
       }
       if (a("data-itl-opt") !== null && Q.state === "play") { Q.choice = +a("data-itl-opt"); Q.state = Q.choice === q.a ? "ok" : "ko"; if (Q.state === "ok") Q.score++; CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return; }
+      if (b.hasAttribute("data-itl-type") && Q.state === "play") { itTyped(Q, q); return; }
       if (b.hasAttribute("data-itl-next")) {
         if (Q.i + 1 < Q.l.quiz.length) { Q.i++; prepare(); ls.view = "quiz"; }
         else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) { patch.done = Date.now(); if (CP.game && CP.game.xp) CP.game.xp(30); CP.sfx("level"); } lmark(Q.l.id, patch); if (CP.unlock) CP.unlock.check(); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
