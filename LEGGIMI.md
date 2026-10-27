@@ -395,7 +395,7 @@ numero di righe.
 Nuove in V6.9:
 
 - `cp-ex-v1` (Task 12): `{ units: {id: {passo, verifica}}, ex: {parola: {tipo: {n, ok, ultimo}}}, read: {id: data} }`; nell'unione il passo più avanzato, la verifica più recente, per ogni tipo la voce con `n` più alto (mai la somma), i testi letti uniti.
-- `cp-ex-style`: lo stile di ripasso (`guided`, `mixed`, `classic`); preferenza del dispositivo.
+- `cp-ex-style`: lo stile di ripasso (`guided`, `mixed`, `classic`); `cp-ex-dur`: durata del passo guidato (5, 10, 15). Preferenze del dispositivo.
 - `cp-class-v1`: i pacchetti classe importati `{ p: { id: pacchetto }, x: { id: quando è stato tolto } }`; nell'unione si sommano (per ognuno la data d'importazione più vecchia) e chi è stato tolto resta tolto.
 - `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
 - `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
@@ -644,10 +644,26 @@ serve. La scelta resta in `cp-ex-style` (preferenza del dispositivo).
   di italiano: `{ k: "buco", it: "Io ___ …", opts, a }` e `{ k: "scrivi", q, a }`. `tools/lib/lab.mjs` li valida; i file
   delle lezioni non sono cambiati.
 
+**Percorso guidato** (stile Guidato, `src/study/guided.js`; il passo successivo lo calcola `CP.ex.prossimo` nello stub, senza
+caricare il gruppo).
+- **La carta «Continua»** del Percorso ha un solo pulsante, che dice che cosa succederà, per esempio «Impara 5 parole
+  nuove · 10 ripassi». La durata si sceglie tra 5, 10 e 15 minuti (`cp-ex-dur`).
+- **I passi** di una tappa:
+  1. impara (5 parole nuove con frase e ascolto) ed esercitati (esercizi sulle stesse parole e ripassi in scadenza);
+  2. con l'80% delle parole avviate, **verifica**: 12 domande senza aiuti, soglia 80%. Il risultato è diviso nelle cinque
+     parti del test di livello, con una frase gentile sul punto più debole. Sotto la soglia, «Rinforza» ripassa le parole
+     sbagliate. La verifica non tocca FSRS; superata la prima volta dà 20 punti;
+  3. il dialogo della tappa.
+- **Stato** in `cp-ex-v1.units[tappa]`. Il segno «🏅 Tappa verificata» si aggiunge alla regola dell'80%, che non cambia.
+- Si può sempre «Studiare libero» da Studia.
+- **Lezioni:** dopo il quiz «Rifai i tuoi errori» e (stili Misto e Guidato) una mini-verifica con 2 domande a buco nuove,
+  prese dagli esempi. Nessuna delle due cambia il risultato della lezione.
+- `ui/share-card.js` ora si carica al primo uso di `CP.shareCard`; la parola del giorno sta in `pwa/widget.js`.
+
 **Peso.**
 - Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che
   generalizza `COURSE_IT`; lo esegue `CP.ex.carica()`. All'avvio resta solo `ui/ex-stub.js`.
-- Per fare spazio, `ui/credits.js` ora si carica al primo uso di `CP.credits`. Avvio: 1480 KB su 1500.
+- Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1472 KB su 1500.
 
 **Materiali** (`materiali/`, dalla cartella «Materiali mandarino» dell'autore; fonti e licenze in
 `materiali/FONTI-E-LICENZE.md`).

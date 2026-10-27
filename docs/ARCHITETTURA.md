@@ -78,11 +78,12 @@ l'immersione.
 - `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
 - `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`;
 - `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`;
-- `ui/credits.js`, al primo accesso a `CP.credits`.
+- `ui/credits.js`, al primo accesso a `CP.credits`;
+- `ui/share-card.js`, al primo accesso a `CP.shareCard` (il tocco su `[data-card-open]` lo ascolta `ui/settings.js`).
 
 **Gruppi caricati al primo uso** (`GROUPS` in `tools/build.mjs`, Task 12): i file restano testo e `window.__mdLoad[NOME]()`
 li esegue in ordine, una volta sola. Gruppo ESERCIZI: `i18n/exercises.js`, `core/typing.js`, `study/distractors.js`,
-`study/exercises.js`, `study/ex-frasi.js`, `study/ex-varie.js` (poi il percorso guidato e la lettura), eseguito da `CP.ex.carica()`.
+`study/exercises.js`, `study/ex-frasi.js`, `study/ex-varie.js`, `study/guided.js` (poi la lettura), eseguito da `CP.ex.carica()`.
 
 L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
@@ -114,6 +115,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.exEngine` | `study/exercises.js` (gruppo ESERCIZI) | `register(def)`, `render(e, kit)`, `requeue`, `voto`, `famiglia`, `gradino`, `renderers`, `force(tipo)` (prove); `CP.studyKit` (in `study/study.js`) gli dà testa, parti della carta, esempio e `answer(g, meta)` |
 | `CP.distract` / `CP.typing` | `study/distractors.js` / `core/typing.js` (gruppo ESERCIZI) | risposte sbagliate credibili (funzioni pure con seme); confronto di pinyin e italiano digitati |
 | `CP.exSent` | `study/ex-frasi.js` (gruppo ESERCIZI) | `forWord(parola)` → frasi che la contengono come parola (esempio, Tatoeba, lezioni, voci), `holed(segmenti, i)`; per buchi, ordina, lettura |
+| `CP.guided` | `study/guided.js` (gruppo ESERCIZI) | `go(passo, durata)`, `impara(tappa)`, `verifica(tappa)` (12 domande, cinque parti, soglia 80%), `leggi`, `miniQuiz(lezione)`; il passo lo calcola `CP.ex.prossimo(indice)` in `ui/ex-stub.js`, la carta `CP.ex.guidaHTML` |
 | `CP.togetherOpen(testo)` / `CP.classBanner()` | `ui/together.js` (all'avvio) | apre una sfida o importa un pacchetto da un testo qualsiasi (link, codice, QR); il riquadro del pacchetto in cima al Percorso e alle lezioni di italiano |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |

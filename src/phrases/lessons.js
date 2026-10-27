@@ -61,8 +61,9 @@
 
   /* ---- esercizi ---- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function startQuiz(l) {
-    quiz = { l: l, i: 0, score: 0, state: "play", choice: null, order: null };
+  /* items (Task 12): un quiz in più, con altre domande («i tuoi errori», mini-verifica); non cambia il risultato della lezione */
+  function startQuiz(l, items) {
+    quiz = { l: items ? Object.assign({}, l, { quiz: items }) : l, base: l, extra: !!items, wrong: [], i: 0, score: 0, state: "play", choice: null, order: null };
     prepare();
   }
   function prepare() {
@@ -116,10 +117,13 @@
     return '<div class="panel ls-quiz" style="margin-top:14px"><h3>' + (ok ? "🎉 " + T("ls.passedOne") : T("ls.almost")) + "</h3>" +
       "<p>" + T("ls.score", { n: quiz.score, tot: n, p: pct }) + (ok ? "" : " " + T("ls.needP", { p: PASS })) + "</p>" +
       '<div class="acts"><button type="button" class="btn-main" data-ls-quiz style="margin:0">🔁 ' + T("ls.redo") + '</button><button type="button" class="btn-s" data-ls-open="' + CP.attr(l.id) + '">📘 ' + T("ls.reread") + "</button>" +
+      (quiz.wrong.length ? '<button type="button" class="btn-s" data-ls-errs>' + T("ls.myErrors", { n: quiz.wrong.length }) + "</button>" : "") +
+      (!quiz.extra && (l.ex || []).length && CP.ex && CP.ex.stile() !== "classic" ? '<button type="button" class="btn-s" data-ls-mini>' + T("ls.mini") + "</button>" : "") +
       '<button type="button" class="btn-s" data-ls-back>' + T("ls.all") + "</button>" + (ok && nextOf(l) ? '<button type="button" class="btn-s" data-ls-open="' + CP.attr(nextOf(l).id) + '">' + T("ls.nextL") + " →</button>" : "") + "</div></div>";
   }
   function nextOf(l) { var s = sorted(), i = s.indexOf(l); return s[i + 1] || null; }
   function finish() {
+    if (quiz.extra) { view = "result"; CP.sfx("tap"); return; }
     var l = quiz.l, pct = Math.round(quiz.score * 100 / l.quiz.length), p = prog(l.id), patch = { best: Math.max(p.best || 0, pct) };
     if (pct >= PASS && !p.done) patch.done = Date.now();
     mark(l.id, patch); view = "result";
@@ -170,21 +174,23 @@
     if (t.hasAttribute("data-ls-check")) {
       var by = {}; quiz.order.bank.forEach(function (b) { by[b.id] = b; });
       var got = quiz.order.pick.map(function (id) { return W[by[id].k].hz; }).join(""), want = [q.zh].concat(q.alt || []).map(CP.lab.strip);
-      quiz.state = want.indexOf(got) >= 0 ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+      quiz.state = want.indexOf(got) >= 0 ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++; else quiz.wrong.push(quiz.i);
       CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint(); return;
     }
     if (a("data-ls-opt") !== null && quiz.state === "play") {
-      quiz.choice = +a("data-ls-opt"); quiz.state = quiz.choice === q.a ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+      quiz.choice = +a("data-ls-opt"); quiz.state = quiz.choice === q.a ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++; else quiz.wrong.push(quiz.i);
       CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint(); return;
     }
     if (t.hasAttribute("data-ls-type") && quiz.state === "play") { typed(q); return; }
+    if (t.hasAttribute("data-ls-errs")) { startQuiz(quiz.base, quiz.wrong.map(function (i) { return quiz.l.quiz[i]; })); view = "quiz"; CP.sfx("tap"); paint(true); return; }
+    if (t.hasAttribute("data-ls-mini")) { CP.ex.carica(); var mq = CP.guided ? CP.guided.miniQuiz(quiz.base) : []; if (mq.length) { startQuiz(quiz.base, mq); view = "quiz"; CP.sfx("tap"); paint(true); } return; }
     if (t.hasAttribute("data-ls-next")) { if (quiz.i + 1 < quiz.l.quiz.length) { quiz.i++; prepare(); } else finish(); paint(true); return; }
   });
   /* «scrivi»: il confronto sta nel gruppo ESERCIZI (CP.ex.carica); giusta anche senza un accento o con un refuso */
   function typed(q) {
     var i = document.getElementById("ls-in"), v = i ? i.value : ""; if (!String(v).trim()) return;
     if (CP.ex) CP.ex.carica(); var Y = CP.typing, r = !Y ? (v.trim() === q.a ? "esatto" : "sbagliato") : q.py ? Y.comparePinyin(v, q.a) : Y.compareIt(v, q.a);
-    quiz.typed = v; quiz.state = /^(esatto|accento|quasi)$/.test(r) ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++;
+    quiz.typed = v; quiz.state = /^(esatto|accento|quasi)$/.test(r) ? "ok" : "ko"; if (quiz.state === "ok") quiz.score++; else quiz.wrong.push(quiz.i);
     CP.sfx(quiz.state === "ok" ? "ok" : "ko"); paint();
   }
   document.addEventListener("submit", function (e) { if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-ls-form")) { e.preventDefault(); if (quiz && quiz.state === "play") typed(quiz.l.quiz[quiz.i]); } });

@@ -107,10 +107,13 @@
   }
 
   /* ---- sessione ---- */
-  function start() {
-    var q = [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* Task 12: stili Misto e Guidato */
+  /* q0 (Task 12, percorso guidato): una coda già pronta al posto di quella del giorno */
+  function start(q0) {
+    var q = q0 || [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* Task 12: stili Misto e Guidato */
+    if (!q0) {
     dueKeys().forEach(function (k) { q.push({ k: k, kind: "test", type: pickType(k), retry: false }); });
     newKeys().forEach(function (k) { q.push({ k: k, kind: "intro", retry: false }); });
+    }
     if (EX) q.forEach(function (e) { e.ex = 1; });
     if (!q.length) { home(); return; }
     sess = { q: q, words: q.length, finished: 0, revealed: false, miss: {}, first: 0, good: 0, seen: {}, hint: CP.ux.bump("swipeHints") <= 3 };
@@ -387,7 +390,7 @@
   CP.studyActive = function () { return !!sess; };
   CP.studyRefresh = function () { if (sess && sess.q.length) render(); };
   CP.studyStart = function () { sess = null; home(); start(); };
-  CP.studyCounts = function () { return { due: dueKeys().length, nw: newKeys().length, n: cfg.n, seen: newSeen() }; };
+  CP.studyCounts = function () { return { due: dueKeys().length, nw: newKeys().length, n: cfg.n, seen: newSeen(), room: newRoom() }; };
   CP.studySection = function (id) {
     cfg.sec = id; saveCfg(); sess = null; home();
     if (dueKeys().length + newKeys().length) start();
@@ -396,7 +399,8 @@
   CP.studyRoot = root;
   /* per il motore degli esercizi (Task 12): le parti della carta e la risposta, senza duplicare la sessione */
   var KIT = { root: root, head: function () { return head(); }, parts: parts, tools: function (w) { return cardTools(w, true); }, example: example, kbd: kbd,
-    answer: function (g, m) { answer(g, m); }, sess: function () { return sess; } };
+    answer: function (g, m) { answer(g, m); }, sess: function () { return sess; },
+    start: function (q) { sess = null; start(q); }, due: function (n) { return dueKeys().slice(0, n); } };
   CP.studyKit = KIT;
   home();
 })();

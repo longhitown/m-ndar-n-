@@ -577,3 +577,12 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .ex-m .ex-han { font-size: 26px; }
 .ex-pad { width: 100%; }
 .ex-pad .pad2 .pad-stage { width: min(100%, 300px); }
+/* percorso guidato (Task 12, T3) */
+.gd-card { display: grid; gap: 8px; }
+.gd-dur { justify-self: start; } .gd-dur button { min-height: 44px; min-width: 64px; }
+.gd-card .linklike { justify-self: start; min-height: 44px; }
+.gd-res { text-align: center; }
+.gd-score { font-size: 20px; margin: 4px 0; }
+.gd-parts { display: grid; gap: 4px; text-align: left; margin: 6px 0; }
+.gd-part { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; border-radius: 10px; background: var(--chip); }
+.gd-ok { color: var(--accent); }
