@@ -281,6 +281,33 @@ try {
     check("Pleco: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4d. Anki: solo per chi ha studiato molto, due conferme, file a tabulazioni con guid stabili */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    const hidden = await p.evaluate(() => { CP.openSettings("grp-data"); const h = !document.getElementById("set-export"); CP.untrap(document.getElementById("settings")); return h; });
+    const a = await p.evaluate(() => {
+      CP.grade("你", 3, false, { ms: 900, type: "pi" }); CP.grade("银行", 3, false, { ms: 900, type: "pi" });
+      const mine = CP.anki.build({ which: "mine" }), all = CP.anki.build({ which: "all" }), sec = CP.anki.build({ which: "sec", sec: CP.WORDS["银行"].sec });
+      const lines = all.text.split("\n"), rows = lines.filter((l) => l && l[0] !== "#"), g = rows.map((l) => l.split("\t")[0]), bank = rows.find((l) => l.split("\t")[1] === "银行") || "";
+      return { mine: mine.n, all: all.n, sec: sec.n, secOk: sec.text.split("\n").filter((l) => l && l[0] !== "#").every((l) => / tappa::luoghi /.test(l)), words: CP.ORDER.length, uniq: new Set(g).size,
+        head: lines.slice(0, 4).join("|"), comment: /^# màndarínō 6\.\d+ · contenuti CC BY 4\.0/.test(lines[6]), cols: rows.every((l) => l.split("\t").length === 7), stable: CP.anki.guid("zh", "银行") === bank.split("\t")[0], bank };
+    });
+    check("Anki: guid unici e stabili, 7 colonne, intestazioni e commento, pinyin senza punti, tag di livello, tappa e stato", a.mine === 2 && a.all === a.words && a.uniq === a.all && a.cols && a.stable && a.comment && a.sec > 2 && a.secOk &&
+      a.head === "#separator:tab|#html:true|#guid column:1|#tags column:7" && /\tyínháng\t/.test(a.bank) && /\tmandarino hsk2 tappa::luoghi (sicura|in-corso)$/.test(a.bank), JSON.stringify(a).slice(0, 400));
+    /* sopra la soglia la voce compare; due conferme prima di salvare */
+    await p.evaluate(() => { const S = CP.S(); Object.keys(S).forEach((k) => {}); localStorage.setItem("cp-srs-v1", JSON.stringify(Object.assign(JSON.parse(localStorage.getItem("cp-srs-v1") || "{}"), Object.fromEntries(CP.ORDER.slice(0, 450).map((k) => [k, { n: 1, sd: 2, st: 1, df: 5, lr: Date.now(), d: Date.now() + 864e5 }]))))); });
+    await p.reload(); await p.waitForTimeout(500);
+    await p.evaluate(() => { window.__dl = null; Store.download = (n, t, m) => { window.__dl = { n, m, len: t.length }; return Promise.resolve(); }; CP.openSettings("set-export"); }); await p.waitForTimeout(150);
+    const shown = await p.evaluate(() => !!document.getElementById("set-export") && CP.anki.allowed());
+    await p.click("[data-anki-go]"); await p.waitForSelector("[data-anki-ok1]"); const before = await p.evaluate(() => window.__dl);
+    await p.click("[data-anki-ok1]"); await p.waitForSelector("[data-anki-ok2]"); await p.click("[data-anki-ok2]"); await p.waitForTimeout(200);
+    const dl = await p.evaluate(() => window.__dl);
+    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e privacy → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
+    check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -294,6 +321,8 @@ try {
     check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")));
     if (later) { await later.click(); await p.waitForTimeout(200); }
     check("Corso di italiano: all'inizio solo 课程 e 复习 nella barra (rivelazione progressiva)", await p.evaluate(() => [...document.querySelectorAll(".dock-it .dtab")].filter((b) => !b.hidden).map((b) => b.getAttribute("data-it-tab")).join(",") === "lessons,review"));
+    const ak = await p.evaluate(() => { const r = CP.anki.build({ which: "all" }), rows = r.text.split("\n").filter((l) => l && l[0] !== "#"), g = new Set(rows.map((l) => l.split("\t")[0])), v = rows.find((l) => /\tmandarino-it verb /.test(l)) || ""; return { n: r.n, uniq: g.size, cols: rows.every((l) => l.split("\t").length === 7), deck: /#deck:màndarínō::意大利语/.test(r.text), morph: /Morph-it!/.test(r.text.split("\n")[6]), conj: /io [^,<]+, tu [^,<]+,/.test(v), dots: rows.some((l) => /\.[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(l.split("\t")[2])) }; });
+    check("Anki, corso di italiano: tutto il lessico, guid unici, 7 colonne, presente dei verbi dalle regole, Morph-it! citato", ak.n > 4000 && ak.uniq === ak.n && ak.cols && ak.deck && ak.morph && ak.conj && !ak.dots, JSON.stringify(ak));
     check("Corso di italiano: interfaccia cinese e schede proprie", await p.evaluate(() => CP.course() === "it" && LANG === "zh" && document.body.classList.contains("course-it") && document.querySelectorAll(".dock-it [data-it-tab]").length === 5));
     const res = await p.evaluate(() => {
       const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
@@ -483,7 +512,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {
