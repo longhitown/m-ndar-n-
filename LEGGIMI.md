@@ -53,7 +53,7 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
-tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+tools/                     build.mjs, grammar.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
@@ -417,6 +417,41 @@ La build si ferma se trova nel repository:
 - un file di chiave (`.pem`, `.key`, `.jks`);
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
+
+## Esporta per Anki
+
+Per chi ha studiato molto e vuole portare le parole anche in Anki, senza togliere niente a màndarínō. La voce compare
+**solo dopo 400 parole iniziate o 400 ripassi** (`ANKI_MIN` in `src/core/export-anki.js`), in ⚙️ → Dati e privacy →
+«Altre opzioni di esportazione», accanto alla sincronizzazione. Il testo spiega la differenza: sincronizzare passa i
+progressi a un altro dispositivo con màndarínō, esportare porta le parole in un'altra app. Prima di salvare servono due
+conferme. Il primo foglio dice che cosa fa e che cosa non fa.
+
+**Il file** è testo UTF-8 separato da tabulazioni (`.txt`, tipo `text/tab-separated-values`), con le intestazioni che Anki
+legge da solo: `#separator:tab`, `#html:true`, `#guid column:1`, `#tags column:7`, `#columns:…`, `#deck:…`, più una riga di
+commento con app, versione e licenza.
+
+| Colonna | Corso di cinese | Corso di italiano |
+|---|---|---|
+| 1 guid | impronta di corso + chiave | impronta di corso + id |
+| 2 Vocabolo | caratteri | parola italiana (per i verbi anche il presente, dalle regole di `CP.ita`) |
+| 3 Pinyin | come lo mostra l'app: `yínháng`, `xī'ān` | pinyin del cinese |
+| 4 Traduzione | italiano (e nota) | cinese |
+| 5 Frase | frase d'esempio con pinyin | frase italiana |
+| 6 Traduzione frase | italiano | cinese |
+| 7 tag | `mandarino`, `hsk1`…`hsk6`/`hsk_plus`, `tappa::<sezione>`, `sicura`/`in-corso`/`nuova` | `mandarino-it`, tipo di parola, stato |
+
+- **Quali parole:** quelle iniziate (default), solo le sicure (`CP.state` = 2), tutte, oppure una sola tappa.
+- **Guid stabile:** è un'impronta della chiave, uguale su ogni dispositivo. Reimportando, Anki aggiorna le note invece di
+  duplicarle.
+- **Limite:** il file porta le carte, non il calendario FSRS, quindi in Anki le parole ripartono dall'inizio (i tag
+  aiutano a filtrarle). Un `.apkg` con il calendario è fuori portata.
+- **Corso di italiano:** genere e articolo vengono dal lessico, cioè da Morph-it! (LGPL), e l'intestazione lo cita. Le
+  coniugazioni le producono le regole dell'app, non Morph-it!.
+
+**Verificato con Anki vero.** `tools/anki-check.py`, uno strumento di sviluppo che usa la libreria `anki` 26.09.3, legge le
+intestazioni come Anki, importa e reimporta. Risultato: 6385 note del corso di cinese e 4780 del corso di italiano, nessun
+doppione alla seconda importazione. In Anki si crea una volta un tipo di nota con i 5 campi (o si sceglie come mapparli
+nella finestra d'importazione). `Store.download(nome, testo, mime)` ora accetta il tipo del file (di base JSON).
 
 ## Pleco (facoltativo)
 
