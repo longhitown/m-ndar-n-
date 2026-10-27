@@ -924,8 +924,10 @@
   stEl.addEventListener("change", refilter);
 
   /* ---- schede ---- */
-  var TABS = ["path", "words", "study", "build"];
-  function show(name, instant) {
+  var TABS = ["path", "study", "words", "build"];   /* l'ordine della barra: è anche l'ordine in cui le schede si aprono (ui/unlock.js) */
+  function show(name, instant, force) {
+    /* una scheda ancora chiusa porta alla più vicina aperta; force solo per aprirla in immersione (CP.unlock.peek) */
+    if (!force && CP.unlock && !CP.unlock.ok(name)) name = CP.unlock.nearest(name);
     /* la pagina nuova entra dal lato della scheda: da destra se è più avanti nel dock, da sinistra se è prima */
     var from = TABS.filter(function (t) { return !document.getElementById("view-" + t).hidden; })[0], di = TABS.indexOf(name) - TABS.indexOf(from);
     if (from && di) document.documentElement.setAttribute("data-dir", di > 0 ? "next" : "prev");
@@ -943,7 +945,8 @@
       if (name === "study" && CP.onStudy) CP.onStudy();
       if (name === "build" && CP.onBuild) CP.onBuild();
       CP.topVis();
-      try { localStorage.setItem("cp-tab", name); } catch (e) {}
+      if (!force) try { localStorage.setItem("cp-tab", name); } catch (e) {}
+      if (CP.unlock) CP.unlock.seen(name);
     };
     if (!instant && document.startViewTransition && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
       try { var vt = document.startViewTransition(run); if (vt) [vt.ready, vt.updateCallbackDone].forEach(function (pr) { if (pr && pr.catch) pr.catch(function () {}); });   /* se la finestra cambia misura la transizione si annulla: non è un errore */

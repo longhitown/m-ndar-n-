@@ -151,7 +151,21 @@
       var o = { w: w }; ["s", "e", "nw", "nx"].forEach(function (f) { var v = Math.max(x[f] | 0, y[f] | 0); if (v) o[f] = v; });
       days[d] = o;
     });
-    return { xp: xp, base: base, xpBy: by, goal: a.goal || b.goal || 10, days: days, best: Math.max(a.best | 0, b.best | 0) };
+    /* punti del test di livello: per ogni test vale il valore più alto, ma «annullato» (−1) vince; nel totale conta il più alto */
+    var pl = {}, pa = a.pl || {}, pb = b.pl || {}, bonus = 0;
+    Object.keys(pa).concat(Object.keys(pb)).forEach(function (k) { pl[k] = pa[k] === -1 || pb[k] === -1 ? -1 : Math.max(pa[k] | 0, pb[k] | 0); if (pl[k] > bonus) bonus = pl[k]; });
+    var out = { xp: xp + bonus, base: base, xpBy: by, goal: a.goal || b.goal || 10, days: days, best: Math.max(a.best | 0, b.best | 0) };
+    if (Object.keys(pl).length) out.pl = pl;
+    return out;
+  }
+  /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo; ma gli sblocchi (unl) e
+     «mostra tutto» si uniscono con «basta uno»: una scheda sbloccata su un dispositivo è sbloccata anche sull'altro */
+  function mergeUx(a, b) {
+    a = a || {}; b = b || {};
+    var o = Object.assign({}, b, a), u = Object.assign({}, b.unl || {}, a.unl || {});
+    if (Object.keys(u).length) o.unl = u;
+    if (a.showAll || b.showAll) o.showAll = 1;
+    return o;
   }
   /* orecchio: matrice di confusione dei toni, cella per cella il valore più alto */
   function mergeEar(a, b) {
@@ -177,11 +191,11 @@
     if (k === "cp-lessons-v1" || k === "cp-it-lessons-v1") return mergeLessons(a, b);
     /* corso di italiano: per ogni parola vince la scheda ripassata più di recente; il conteggio dei nuovi del giorno, il più alto */
     if (k === "cp-it-srs-v1") return mergeItSrs(a, b);
-    if (k === "cp-game-v1") return mergeGame(a, b);
+    if (k === "cp-game-v1" || k === "cp-it-game-v1") return mergeGame(a, b);
     if (k === "cp-ear-v1") return mergeEar(a, b);
     if (k === "cp-mine") return mergeMine(a, b);
     /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
-    if (k === "cp-ux-v1") return Object.assign({}, b || {}, a || {});
+    if (k === "cp-ux-v1") return mergeUx(a, b);
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */

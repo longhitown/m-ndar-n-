@@ -51,7 +51,7 @@ chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo o
 
 | Registro | Chi lo legge | Chi ci scrive |
 |---|---|---|
-| `CP.settingsExtras` (array di funzioni → HTML) | `ui/settings.js`, in fondo a ⚙️ | `pwa/sync.js` (Sincronizza), `it/course.js` (Corso), `contrib/contrib.js`, `pwa/reminder.js` (🔔) |
+| `CP.settingsExtras`: una funzione → HTML (gruppo «Avanzate») oppure `{ group: "data" \| "adv" \| "info", html }` | `ui/settings.js`, nei quattro gruppi di ⚙️ | `pwa/sync.js` e `contrib/contrib.js` (Dati e privacy); `it/course.js`, `pwa/reminder.js`, `ui/unlock.js` (Avanzate) |
 | `CP.subs[id] = { render, after }` | `phrases/frasi.js`, i sottomenu di Frasi | `dialogs.js`, `lessons.js`, `reader.js`, `slot.js`, `thought.js` |
 | `CP.audioTracks.add({ id, … make })` | `audio/player.js` (jukebox) | ogni `audio/tracks/<id>.js`; l'ordine è `audio/tracks/index.js` |
 | `SECTIONS`, `DIALOGS` (globali di `boot.js`) | vocabolario, dialoghi | `data/vocab/*.js`, `data/dialogs/*.js` |
@@ -59,6 +59,26 @@ chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo o
 
 Pezzi di HTML che altre schede inseriscono se ci sono: `CP.homeProgress`, `CP.homeBackup`, `CP.homeNotice`
 (`study/memory.js`, nella home di Studio), `CP.voiceExtra` (`audio/audio-ui.js`, nel pannello voce).
+
+## 3b. Benvenuto, test di livello, rivelazione progressiva
+
+| Che cosa | Dove | Note |
+|---|---|---|
+| `CP.unlock` | `ui/unlock.js` | `ok(scheda)`, `toolOk(strumento)`, `why()`, `check()`, `peek(scheda, fn, titolo)`, `nearest()`, `tabs()`, `showAll()`. **Prima di portare l'utente su una scheda, si chiede a `CP.unlock.ok`.** |
+| `CP.onboarding` | `ui/onboarding.js` | `open(passo)`, `redoTest()`. Si carica al primo uso; l'innesco è `ui/welcome.js` |
+| `CP.placement` | `data/placement.js` (motore, `PLACEMENT`) + `ui/placement.js` | `run`, `apply`, `undo`, `preview`. Si carica al primo uso |
+| `CP.game.grant(n)` / `ungrant()` / `granted()` / `activeDays()` | `core/game.js` | punti iniziali che non toccano la serie; ogni corso ha la sua chiave |
+
+`core.js` (`CP.show`), `ui/gestures.js`, `ui/launch.js` (`?go=`), `ui/finder.js`, `path/path.js` e `it/course.js` usano
+`CP.unlock` per non mostrare mai una scheda chiusa. `CP.show(nome, instant, force)` con `force` la mostra solo per
+l'immersione.
+
+**Moduli caricati al primo uso.** Nel file unico non vengono compilati all'avvio:
+
+- `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
+- `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`.
+
+L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
 ## 4. Punti d'ingresso dall'esterno
 

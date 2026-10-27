@@ -135,9 +135,10 @@
 
   function goWords(id) {
     CP.resetFilters();
-    CP.show("words");
-    setTimeout(function () { CP.gotoSection(id, false); }, 200);
+    CP.unlock.peek("words", function () { CP.gotoSection(id, false); }, title(SECTIONS.filter(function (x) { return x.id === id; })[0] || { title: "" }));
   }
+  /* lezioni, dialoghi, esercizi della tappa: in Frasi, o in immersione se Frasi non è ancora aperta (ui/unlock.js) */
+  function inBuild(run) { CP.unlock.peek("build", run, CP.t("build.title")); }
   root.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
     if (t.hasAttribute("data-chap")) { chap = parseInt(t.getAttribute("data-chap"), 10); CP.sfx("tap"); render(); var ch = root.querySelector(".chap-head"); if (ch && ch.scrollIntoView) ch.scrollIntoView({ block: "nearest" }); return; }
@@ -157,10 +158,10 @@
     var go = t.getAttribute("data-go"), id = t.getAttribute("data-id");
     if (go === "words") goWords(id);
     else if (go === "study") { CP.studySection(id); CP.show("study"); }
-    else if (go === "practice") { CP.build.practice(id); CP.show("build"); }
-    else if (t.hasAttribute("data-pat")) { CP.build.openPattern(parseInt(t.getAttribute("data-pat"), 10)); CP.show("build"); }
-    else if (t.hasAttribute("data-dlg")) { CP.dlg.open(t.getAttribute("data-dlg")); CP.show("build"); }
-    else if (t.hasAttribute("data-lesson")) { CP.build.openLesson(t.getAttribute("data-lesson")); CP.show("build"); }
+    else if (go === "practice") inBuild(function () { CP.build.practice(id); });
+    else if (t.hasAttribute("data-pat")) { var pi = parseInt(t.getAttribute("data-pat"), 10); inBuild(function () { CP.build.openPattern(pi); }); }
+    else if (t.hasAttribute("data-dlg")) { var di = t.getAttribute("data-dlg"); inBuild(function () { CP.dlg.open(di); }); }
+    else if (t.hasAttribute("data-lesson")) { var li = t.getAttribute("data-lesson"); inBuild(function () { CP.build.openLesson(li); }); }
   });
   root.addEventListener("change", function (e) {
     if (e.target.id === "goal-sel") { CP.game.setGoal(parseInt(e.target.value, 10)); render(); }

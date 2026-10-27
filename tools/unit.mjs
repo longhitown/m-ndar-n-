@@ -52,6 +52,58 @@ function sandbox() {
   check("unione: rifarla con gli stessi dati non cambia niente", !again.changed);
 }
 
+/* ---- 2b. test di livello e sblocchi tra dispositivi (Task 1) ---- */
+{
+  const { Store, LS } = sandbox();
+  /* punti del test di livello: lo stesso test visto da due dispositivi conta una volta; due test diversi: vale il più alto;
+     un «annulla» vince sull'unione */
+  LS.setItem("cp-game-v1", JSON.stringify({ base: 0, xpBy: { a: 100 }, goal: 10, days: {}, best: 0, pl: { "a-1": 600 } }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-game-v1": JSON.stringify({ base: 0, xpBy: { a: 100, b: 50 }, goal: 10, days: {}, best: 0, pl: { "a-1": 600, "b-2": 200 } }) }, log: [] }, "merge");
+  let g = JSON.parse(LS.getItem("cp-game-v1"));
+  check("test di livello: i punti concessi non si contano due volte unendo due dispositivi (100 + 50 + 600 = 750)", g.xp === 750, JSON.stringify(g));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-game-v1": JSON.stringify({ base: 0, xpBy: { a: 100, b: 50 }, goal: 10, days: {}, best: 0, pl: { "a-1": -1, "b-2": -1 } }) }, log: [] }, "merge");
+  g = JSON.parse(LS.getItem("cp-game-v1"));
+  check("test di livello: «annulla il salto» vince sull'unione (restano 150 punti)", g.xp === 150, JSON.stringify(g));
+  /* corso di italiano: chiave propria, stessa regola */
+  LS.setItem("cp-it-game-v1", JSON.stringify({ base: 40, xpBy: { a: 30 }, goal: 10, days: {}, best: 0 }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-it-game-v1": JSON.stringify({ base: 40, xpBy: { a: 10, b: 20 }, goal: 10, days: {}, best: 0 }) }, log: [] }, "merge");
+  check("corso di italiano: cp-it-game-v1 unito per dispositivo (40 + 30 + 20 = 90)", JSON.parse(LS.getItem("cp-it-game-v1")).xp === 90);
+  /* sblocchi: «basta uno» */
+  LS.setItem("cp-ux-v1", JSON.stringify({ onboarded: 1, unl: { words: 1 }, legendSeen: 1 }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-ux-v1": JSON.stringify({ onboarded: 1, unl: { build: 1, "it:words": 1 }, showAll: 1 }) }, log: [] }, "merge");
+  const ux = JSON.parse(LS.getItem("cp-ux-v1"));
+  check("sblocchi: una scheda aperta su un dispositivo è aperta anche sull'altro (unione «basta uno»)", ux.unl.words && ux.unl.build && ux.unl["it:words"] && ux.showAll === 1 && ux.legendSeen === 1, JSON.stringify(ux));
+}
+{
+  /* il motore del test di livello: utenti simulati di ogni livello vero. Chi sa fino al livello T risponde giusto nel 92%
+     dei casi; oltre, tira a indovinare (1/4 nel cinese, 1/3 nei quiz delle lezioni). La dichiarazione iniziale è quella
+     vera con un errore di ±1 grado. Si vuole la stima entro ±1 livello (cinese) e ±3 lezioni (italiano) in almeno il 90%. */
+  const ctx = vm.createContext({ Math }); vm.runInContext(fs.readFileSync(path.join(SRC, "data/placement.js"), "utf8"), ctx); const PL = ctx.PLACEMENT;
+  let seed = 12345; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  const sim = (course, T, N) => { let ok = 0; for (let i = 0; i < N; i++) {
+    const decl = [0, 1, 2, 3, 4].map(() => Math.max(0, Math.min(3, Math.round((course === "it" ? T / 30 * 3 : (T - 1) / 4 * 3) + (rnd() * 2 - 1)))));
+    const st = PL.start(course, decl), g = course === "it" ? 1 / 3 : 0.25;
+    while (!PL.done(st)) PL.answer(st, rnd() < (st.lv <= T ? 0.92 : g));
+    if (Math.abs(PL.estimate(st) - T) <= (course === "it" ? 3 : 1)) ok++; } return ok / N; };
+  const zh = [1, 2, 3, 4, 5].map((T) => [T, sim("zh", T, 400)]), it = [1, 5, 10, 15, 20, 25, 30].map((T) => [T, sim("it", T, 300)]);
+  const fmt = (a) => a.map(([T, r]) => T + ":" + Math.round(r * 100) + "%").join(" ");
+  console.log("  (test di livello, simulazione: cinese " + fmt(zh) + " · italiano " + fmt(it) + ")");
+  check("test di livello: corso di cinese, stima entro ±1 livello in almeno il 90% delle prove per ogni livello 1-5", zh.every(([, r]) => r >= 0.9), fmt(zh));
+  check("test di livello: corso di italiano, stima entro ±3 lezioni in almeno il 90% delle prove", it.every(([, r]) => r >= 0.9), fmt(it));
+  const st = PL.start("zh", [3, 3, 3, 3, 3]); for (let i = 0; i < 4; i++) PL.answer(st, true);
+  check("test di livello: il livello 6 («oltre l'HSK») si apre solo dopo risposte giuste al 5", st.hist.some((h) => h[0] === 5 && h[1]) && st.lv === 6, JSON.stringify(st.hist) + " → " + st.lv);
+}
+{
+  /* soglie della rivelazione progressiva (ui/unlock.js): con l'obiettivo 5, 10 o 20 parole al giorno e solo le carte
+     (10 punti per parola nuova), in quale giorno si aprono Parole e Frasi */
+  const src = fs.readFileSync(path.join(SRC, "ui/unlock.js"), "utf8"), num = (re) => +re.exec(src)[1];
+  const U = { words: num(/words: (\d+), build:/), build: num(/build: (\d+), minDays/), dw: num(/minDays: \{ words: (\d+)/), db: num(/minDays: \{ words: \d+, build: (\d+)/) };
+  const dayOf = (goal, xp, d) => { for (let day = 1; day < 60; day++) if (day * goal * 10 >= xp && day >= d) return day; return -1; };
+  const rep = [5, 10, 20].map((g) => "obiettivo " + g + ": Parole al giorno " + dayOf(g, U.words, U.dw) + ", Frasi al giorno " + dayOf(g, U.build, U.db)).join(" · ");
+  console.log("  (sblocchi: " + rep + ")");
+  check("sblocchi: con l'obiettivo predefinito (10) Parole e Frasi non arrivano il primo giorno", dayOf(10, U.words, U.dw) >= 2 && dayOf(10, U.build, U.db) >= 3, rep);
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

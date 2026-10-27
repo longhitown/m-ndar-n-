@@ -99,6 +99,20 @@ for (const [name, src] of LAZYCODE) {
     "(function () { Object.defineProperty(window, " + JSON.stringify(name) + ", { configurable: true, get: function () { delete window[" + JSON.stringify(name) + "]; var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); return window[" + JSON.stringify(name) + "]; } }); })();\n</script>");
   scripts.splice(scripts.indexOf(s), 1);
 }
+/* moduli dell'app che servono solo a qualcuno e solo in certi momenti (il test di livello, il correttore di frasi italiane):
+   testo inerte nel file unico, eseguito la prima volta che il codice tocca una delle loro proprietà di CP. Il blocco va al
+   posto dell'ultimo file del gruppo, quando CP esiste già. */
+const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }];
+for (const m of LAZYMOD) {
+  const group = m.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("LAZYMOD: manca uno di " + m.files.join(", ") + " in src/index.html");
+  const code = group.map((x) => "/* ---- " + x.src + " ---- */\n" + fs.readFileSync(path.join(SRC, x.src), "utf8").trimEnd()).join("\n").replace(/<\/script/gi, "<\\/script");
+  const id = "lazy-mod-" + m.props[0].toLowerCase(), last = group[group.length - 1];
+  group.forEach((x) => { if (x !== last) out = out.replace(x.tag + "\n", ""); });
+  out = out.replace(last.tag, () => '<script type="text/plain" id="' + id + '">\n' + code + "\n</script>\n<script>\n/* ---- " + m.files.join(" + ") + " (al primo uso di CP." + m.props.join(", CP.") + ") ---- */\n" +
+    "(function () { var P = " + JSON.stringify(m.props) + ", done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }\n" +
+    "  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();\n</script>");
+  group.forEach((x) => scripts.splice(scripts.indexOf(x), 1));
+}
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
   out = out.replace(s.tag, () => "<script" + (s.id ? ' id="' + s.id + '"' : "") + ">\n/* ---- " + s.src + " ---- */\n" + code + "\n</script>");   /* funzione: i «$» nel codice restano com'erano */
