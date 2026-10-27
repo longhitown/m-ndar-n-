@@ -391,6 +391,7 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-class-v1`: i pacchetti classe importati `{ p: { id: pacchetto }, x: { id: quando è stato tolto } }`; nell'unione si sommano (per ognuno la data d'importazione più vecchia) e chi è stato tolto resta tolto.
 - `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
 - `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
 - `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
@@ -541,6 +542,52 @@ Interruttore: ⚙️ → Avanzate → Anatomia dei caratteri (acceso di base).
   semplici (人, 女, 一…).
 - `src/data/radicals.js`: i 214 radicali Kangxi con le varianti; nomi e significati scritti da noi, **da rileggere**.
 - La build controlla che ogni carattere del vocabolario abbia una struttura; `#selftest` controlla 国, 好 e 请.
+
+## Sfide e classe, senza server (Task 9, tutti e due i corsi)
+
+In ⚙️ → Dati e privacy → «🎯 Sfide e classe», e con il pulsante «🎯 Sfida un amico» nel Percorso (corso di cinese) e in
+«我的进步» (corso di italiano).
+
+**Sfida a un amico** (`src/ui/challenge.js`).
+- Dieci parole (tra quelle già studiate, a caso; se sono poche, le prime del corso) e un seme diventano un codice
+  `MDC1-…`: base64url di `1|corso|seme|chiavi`.
+- Chi lo apre fa la stessa sfida: stesse domande, stesso ordine, stesse quattro risposte tra cui scegliere. Tutto viene
+  dal seme e dalle dieci parole: le risposte sbagliate sono le altre parole della sfida, quindi niente dipende dalla
+  versione del vocabolario.
+- Il codice viaggia in tre modi:
+  - come link `…#sfida=MDC1-…`, dove l'app ha un indirizzo web (la pagina aperta nel browser, o `SITE_URL` + `app/`).
+    Il frammento non arriva a nessun server e si toglie subito dall'indirizzo;
+  - come testo da incollare (va bene anche il messaggio intero);
+  - come QR da inquadrare nell'app (⚙️ → Sfide e classe → Inquadra il QR).
+- Corso di cinese: carattere e pinyin → significato in italiano. Corso di italiano: parola italiana → caratteri.
+- Un codice dell'altro corso propone di passare a quel corso; un codice con parole sconosciute chiede di aggiornare l'app.
+- La sfida non tocca i ripassi né i punti. Dentro il codice non ci sono nomi né punteggi; «Rilancia la sfida» manda lo
+  stesso codice con una riga sul proprio risultato, scritta in chiaro nel messaggio.
+- Nell'APK non c'è un indirizzo web finché `SITE_URL` è vuoto: si manda il codice, che si incolla o si inquadra.
+
+**Pacchetto classe** (`src/ui/classroom.js`).
+- Chi insegna sceglie:
+  - un tratto del Percorso: tappe del corso di cinese, lezioni del corso di italiano;
+  - un obiettivo (50, 80 o 100% del tratto; predefinito 80%, `GOAL_DEFAULT`);
+  - una data.
+- Ne escono tre cose:
+  - il codice `MDK1-…` (base64url del JSON `{ id, c, t, s, e, g, d }`; le tappe si indicano per id, la prima e l'ultima);
+  - il file `.json` con lo stesso contenuto;
+  - un **foglio da stampare** (PNG A4 a 150 dpi) con due QR: l'app (lo stesso indirizzo della carta da condividere) e il
+    pacchetto (il link `#classe=`, o il codice se non c'è un indirizzo web).
+- Chi studia lo importa (file, codice o QR) e vede il riquadro «👩‍🏫 Classe: …» in cima al Percorso o alle lezioni, con
+  l'avanzamento e i giorni che mancano.
+- **Riepilogo per chi insegna**, solo dopo una spunta di consenso. Contiene solo conteggi:
+  - parole del tratto studiate (corso di cinese) o lezioni superate (corso di italiano);
+  - obiettivo raggiunto sì/no;
+  - giorni di studio negli ultimi 30;
+  - data e versione.
+
+  Il nome è facoltativo e finisce solo nel file. Niente registro dei ripassi.
+- Chi insegna apre insieme più riepiloghi (`.json`) e li vede in una tabella; i file non vengono salvati.
+
+**Peso.** I due moduli e i loro testi (`src/i18n/together.js`) si caricano al primo uso (`LAZYMOD` in `tools/build.mjs`).
+All'avvio c'è solo `src/ui/together.js`: la sezione in ⚙️, i link e il riquadro.
 
 ## Esporta per Anki
 

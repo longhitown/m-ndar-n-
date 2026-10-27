@@ -207,7 +207,7 @@
   CP.shareCard.open = function (tpl, data) { if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
   CP.shareCard.templates = TEMPLATES;
   CP.shareCard.render = render;
-  CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL;
+  CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL; CP.shareCard.sharePNG = share;
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-open], [data-card-format], [data-card-theme]") : null; if (!b) return;
     if (b.hasAttribute("data-card-open")) { CP.sfx("tap"); CP.shareCard(); return; }

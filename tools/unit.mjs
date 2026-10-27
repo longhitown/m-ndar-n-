@@ -122,6 +122,22 @@ function sandbox() {
   await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-seal-v1": JSON.stringify({ codes: { "2-2026-7": { code: "b" } }, gram: "m", name: "", share: 0, t: 50 }) }, log: [] }, "merge");
   const sm = JSON.parse(LS.getItem("cp-seal-v1"));
   check("sigilli: cp-seal-v1 unisce i codici; le preferenze vengono dal dispositivo più recente", sm.codes["1-2026-3"] && sm.codes["2-2026-7"] && sm.gram === "f" && sm.name === "Ada" && sm.share === 1, JSON.stringify(sm));
+  /* pacchetti classe (Task 9): unione per id, il pacchetto tolto su un dispositivo resta tolto */
+  {
+    const { Store: S2, LS: L2 } = sandbox();
+    L2.setItem("cp-class-v1", JSON.stringify({ p: { a: { id: "a", t: "A", at: 5 }, b: { id: "b", t: "B", at: 9 } }, x: {} }));
+    await S2.importObj({ app: "mandarino", v: 5, kv: { "cp-class-v1": JSON.stringify({ p: { b: { id: "b", t: "B", at: 3 }, c: { id: "c", t: "C", at: 4 } }, x: { a: 7 } }) }, log: [] }, "merge");
+    const cm = JSON.parse(L2.getItem("cp-class-v1"));
+    check("classe: cp-class-v1 unisce i pacchetti (data d'importazione più vecchia) e tiene i tolti", Object.keys(cm.p).sort().join() === "a,b,c" && cm.p.b.at === 3 && cm.x.a === 7, JSON.stringify(cm));
+  }
+  /* sfide e classe: i testi (caricati al primo uso) esistono in tutte e due le lingue */
+  {
+    const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc); vm.runInContext(fs.readFileSync(path.join(SRC, "i18n/together.js"), "utf8"), tc);
+    const TI = vm.runInContext("I18N", tc), ki = Object.keys(TI.it).sort().join(), kz = Object.keys(TI.zh).sort().join();
+    const used = new Set(["challenge.js", "classroom.js", "together.js"].flatMap((f) => [...fs.readFileSync(path.join(SRC, "ui", f), "utf8").matchAll(/T\("((?:chal|cls|tog)\.[\w]+)"/g)].map((m) => m[1])));
+    const miss = [...used].filter((k) => !TI.it[k] && k !== "tog.chal");
+    check("sfide e classe: stessi testi in italiano e in cinese, e nessun testo usato che manchi (" + Object.keys(TI.it).length + ")", ki === kz && !miss.length, miss.join(", "));
+  }
   /* testi: nessuna desinenza di genere nei testi predefiniti; ogni titolo esiste in ogni forma */
   const ic = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} }; var LANG = 'it';", ic);
   ["i18n/it.js", "i18n/zh.js", "i18n/titles.js"].forEach((f) => vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), ic));
