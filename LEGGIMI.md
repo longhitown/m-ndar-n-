@@ -684,6 +684,9 @@ licenza dei contenuti: lo dicono il foglio dei contributi dell'app, `NOTICE.md` 
 
 ## Che cosa resta aperto
 
+L'elenco ordinato, con il motivo per cui ogni cosa aspetta, è in [docs/roadmap.md](docs/roadmap.md). Per pubblicare una
+versione: [docs/rilascio.md](docs/rilascio.md).
+
 - Corso di italiano: 30 lezioni; se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
 - Correttore di frasi italiane: controlla gli accordi, non il senso. Trova 26 degli 88 «errori tipici» delle lezioni; gli altri
   (tempi verbali, ordine delle parole, preposizioni con città e paesi, scelta delle parole) richiedono più che regole d'accordo.
