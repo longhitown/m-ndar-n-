@@ -1,4 +1,4 @@
-/* ===== màndarínō · «Privacy» (⚙️ → Informazioni e supporto): la stessa informativa di PRIVACY.md, in breve, nella lingua
+/* ===== màndarínō · «Privacy» (⚙️ → Informazioni): la stessa informativa di PRIVACY.md, in breve, nella lingua
    dell'interfaccia. Nessun link che parte da solo: il testo completo sta nel repository. ===== */
 (function () {
   var CP = window.CP, T = CP.t;

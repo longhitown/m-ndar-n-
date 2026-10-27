@@ -1,4 +1,4 @@
-/* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Come funziona → Crediti e licenze).
+/* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Informazioni → Come funziona → Crediti e licenze).
    I testi delle licenze sono anche in LICENZE/ nel repository. */
 (function () {
   var CP = window.CP, esc = CP.esc;

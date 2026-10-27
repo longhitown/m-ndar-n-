@@ -1,4 +1,4 @@
-/* ===== màndarínō · sfide e classe, la parte sempre presente: la sezione in ⚙️ (Dati e privacy), i link
+/* ===== màndarínō · sfide e classe, la parte sempre presente: la sezione in ⚙️ (Studio), i link
    …#sfida=MDC1-… e …#classe=MDK1-… (il frammento non arriva a nessun server: si toglie subito dall'indirizzo), i pulsanti
    «🎯» e il riquadro del pacchetto classe in cima al Percorso. Il resto (ui/challenge.js, ui/classroom.js e i loro testi in
    i18n/together.js) si carica al primo uso di CP.challenge o CP.classroom (tools/build.mjs, LAZYMOD): all'avvio pesa poco. ===== */

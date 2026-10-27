@@ -5,7 +5,7 @@
    quando lo sappiamo: dal vocabolario dell'app o dai 214 radicali (data/radicals.js, scritti per il progetto).
    Solo struttura: per i caratteri fonetico-semantici si dice quale parte dà il suono e quale il significato; nessuna
    «storia» o etimologia popolare (i dati non hanno una fonte affidabile per raccontarle).
-   Interruttore: ⚙️ → Avanzate → «Anatomia dei caratteri» (cp-anatomy, acceso di base). I dati pesanti (ANATOMY, STROKES)
+   Interruttore: ⚙️ → Studio → «Anatomia dei caratteri» (cp-anatomy, acceso di base). I dati pesanti (ANATOMY, STROKES)
    si leggono solo al primo uso. Nella lavagna (voice/pad.js) evidenzia il componente del tratto da scrivere. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, K = "cp-anatomy";
@@ -66,7 +66,7 @@
     var b = e.target.closest ? e.target.closest("[data-anat]") : null; if (!b) return;
     CP.sfx("tap"); CP.openFamily(b.getAttribute("data-anat"));
   });
-  /* ⚙️ → Avanzate */
+  /* ⚙️ → Studio */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     if (IT) return "";
     return '<details class="set-sec" id="set-anat"><summary>🧩 ' + T("anat.set") + '</summary><div class="vbody"><p class="small muted" style="margin:0">' + T("anat.setLede") + "</p>" +

@@ -1,6 +1,6 @@
 /* Ordine e direzione dei tratti di 2146 caratteri, da Make Me a Hanzi (github.com/skishore/makemeahanzi),
    ricavati dai font Arphic PL KaitiM GB e UKai. Questo file è sotto la Arphic Public License: il testo completo è nei
-   crediti dell'app (⚙️ → Come funziona → Crediti e licenze) e in LICENZE/ARPHIC-PUBLIC-LICENSE.txt.
+   crediti dell'app (⚙️ → Informazioni → Come funziona → Crediti e licenze) e in LICENZE/ARPHIC-PUBLIC-LICENSE.txt.
    Modifiche rispetto a graphics.txt (fatte il 2026-10-26 da tools/strokes.mjs): tenuti solo i caratteri del vocabolario e solo
    le mediane dei tratti (non i contorni), coordinate raddrizzate (y verso il basso) e arrotondate a 91 livelli. Non modificarlo a mano. */
 var STROKES_A = "!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~";
