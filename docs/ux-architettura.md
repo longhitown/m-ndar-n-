@@ -156,3 +156,22 @@ ha tutto sbloccato.
   pulsante «Gira tutto» è diventato secondario.
 - **[11] Un menu non ha più di `MENU_MAX = 7` voci visibili.** Vale per `.dock`, `[role=tablist]` e `.seg`.
 - **Le regole già presenti restano:** bersagli da 44 px, contrasto, testi da almeno 13 px, nessun overflow, avvio leggero.
+
+## 5. Parità visiva tra i due corsi (Task 11.3)
+
+Il corso di italiano per chi parla cinese deve essere curato quanto quello di cinese. Da ricontrollare a ogni modifica
+grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
+
+| | Corso di cinese | Corso di italiano | Stato |
+|---|---|---|---|
+| ☑ | Percorso: carta «Continua», grado e serie in alto | 课程: carta «今天» con un solo pulsante primario, grado, anello, serie | fatto |
+| ☑ | tappe come percorso | lezioni come percorso: nodi collegati, la corrente evidenziata, «通过» sulle superate | fatto |
+| ☑ | sigillo del grado (`CP.stamp`) | lo stesso sigillo, nella carta e in «+N 分» | fatto |
+| ☑ | fine sessione con il sigillo | fine lezione con «通过» che si imprime; «分享» | fatto |
+| ☑ | progressi in Studia (`CP.story`) | «我的进步», stesso modulo, con «纪念卡» | fatto |
+| ☑ | carta del giorno | carte del giorno, del traguardo e della settimana, 3 formati, 3 colori | fatto |
+| ☑ | bersagli da 44 px, testi da 13 px, contrasto | gli stessi controlli di `tools/ux-audit.mjs` | fatto |
+| ☑ | `prefers-reduced-motion` | «+N 分», «通过» e l'anello hanno la versione ferma | fatto |
+| ☐ | icone SVG | le schede del corso di italiano usano ancora emoji (📘 🎴 📖 🔁 💬) | da fare |
+| ☐ | testi riletti da un madrelingua | i testi cinesi del corso, della carta e della pagina zh/ | da far rileggere |
+| ☐ | vuoti curati | «ancora nessuna lezione»: oggi la carta mostra sempre la prossima lezione | da controllare |

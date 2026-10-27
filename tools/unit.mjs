@@ -171,6 +171,25 @@ function sandbox() {
   check("Android: compileSdk e targetSdk 36, versioni direct e store", /compileSdk 36/.test(g) && /targetSdk 36/.test(g) && /direct \{/.test(g) && /store \{/.test(g));
 }
 
+/* ---- Task 11: i traguardi del corso di italiano si uniscono tra dispositivi (per ognuno la data più vecchia) ---- */
+{
+  const { Store, LS } = sandbox();
+  LS.setItem("cp-it-cards-v1", JSON.stringify({ m: { first: 200, s7: 500 } }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-it-cards-v1": JSON.stringify({ m: { first: 100, w100: 300 } }) }, log: [] }, "merge");
+  const m = JSON.parse(LS.getItem("cp-it-cards-v1")).m;
+  check("traguardi del corso di italiano: unione, per ognuno la prima volta", m.first === 100 && m.s7 === 500 && m.w100 === 300, JSON.stringify(m));
+}
+
+/* ---- pagina cinese (docs/zh/, il QR delle carte): leggera, cinese per primo, nessuna risorsa esterna; l'unico script è in
+   pagina e riconosce solo il browser di WeChat ---- */
+{
+  const h = fs.readFileSync(path.join(ROOT, "docs/zh/index.html"), "utf8");
+  const ext = [...h.matchAll(/<(script|img|link|iframe)\b[^>]*?(?:src|href)="([^"]+)"/gi)].map((m) => m[2]).filter((u) => /^(https?:)?\/\//i.test(u));
+  const scripts = [...h.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+  check("pagina cinese: html lang zh-CN, sotto 12 KB, nessuna risorsa esterna, un solo script in pagina (WeChat), nessun «官方»",
+    /<html lang="zh-CN">/.test(h) && h.length < 12000 && !ext.length && scripts.length === 1 && !/src=/.test(scripts[0][1]) && /MicroMessenger/.test(scripts[0][2]) && !/官方/.test(h) && /无需注册/.test(h), ext.join(", "));
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

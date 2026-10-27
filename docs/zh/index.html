@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>màndarínō · 给中国人的意大利语</title>
+<meta name="description" content="免费、离线、无广告、无需注册的意大利语学习应用。">
+<meta name="theme-color" content="#14594A">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<!-- 中文介绍页（分享卡片上的二维码指向这里）。轻量：没有外部字体、脚本、图片或统计。
+     唯一的脚本在页面里：只判断是不是微信内置浏览器，是的话提示“在浏览器中打开”。不发送任何东西。 -->
+<style>
+:root { --bg: #F7F9F7; --ink: #16201B; --mute: #4F5E56; --accent: #14594A; --card: #FFFFFF; --line: #D5DED9; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0F1412; --ink: #E9EFEB; --mute: #A9B8B0; --accent: #5CC4A5; --card: #18201C; --line: #2A3530; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
+main { max-width: 640px; margin: 0 auto; padding: 16px 16px 40px; }
+header { text-align: center; }
+header img { width: 96px; height: 96px; }
+h1 { margin: 4px 0; font-size: 2rem; }
+h2 { font-size: 1.2rem; margin: 28px 0 8px; }
+.tag { color: var(--mute); margin: 0; }
+.btn { display: flex; align-items: center; justify-content: center; min-height: 52px; margin: 18px 0 6px; border-radius: 14px; background: var(--accent); color: var(--bg); font-weight: 700; text-decoration: none; font-size: 1.1rem; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 6px 16px; margin: 10px 0; }
+a { color: var(--accent); } a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+ol li { margin: 6px 0; }
+.it { font-family: Georgia, "Noto Serif", serif; }
+footer { color: var(--mute); text-align: center; font-size: .9rem; margin-top: 32px; }
+footer a { display: inline-block; min-height: 44px; line-height: 44px; padding: 0 6px; }
+/* 微信内置浏览器 */
+#wx { display: none; position: fixed; inset: 0; z-index: 9; background: rgba(0,0,0,.82); color: #fff; padding: 24px; }
+#wx.on { display: block; }
+#wx svg { position: absolute; right: 18px; top: 6px; width: 120px; height: 120px; }
+#wx p { margin: 120px 0 12px; font-size: 1.3rem; font-weight: 700; }
+#wx a, #wx button { display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px; border-radius: 12px; border: 2px solid #fff; color: #fff; background: none; font-size: 1rem; text-decoration: none; margin: 8px 8px 0 0; }
+</style>
+</head>
+<body>
+<div id="wx" role="dialog" aria-modal="true" aria-labelledby="wx-t">
+  <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M20 108 C 40 60, 70 40, 100 18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 8"/><path d="M86 14 L 104 14 L 100 32" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <p id="wx-t">请点右上角「···」，选择「在浏览器中打开」</p>
+  <div>微信里不能安装应用，也不能下载安卓安装包。也可以先在微信里直接使用网页版。</div>
+  <a href="../app/">直接使用网页版</a><button type="button" id="wx-x">知道了</button>
+</div>
+<main>
+<header>
+  <img src="../icon.svg" alt="" width="96" height="96">
+  <h1>màndarínō</h1>
+  <p class="tag">给中国人的意大利语 · 免费 · 离线 · 无广告 · 无需注册</p>
+</header>
+<a class="btn" href="../app/">打开应用，开始学意大利语</a>
+<p class="tag" style="text-align:center">在浏览器里就能用，第一次打开后不需要网络。</p>
+
+<h2>它能做什么</h2>
+<div class="card">
+  <ul>
+    <li><b>30 课语法</b>：用中文讲解，例句可以听意大利语发音。</li>
+    <li><b>4780 个常用词</b>：名词带冠词，动词有变位，每天复习十个新词。</li>
+    <li><b>动词变位和句子练习</b>，还有意大利语句子检查。</li>
+    <li>学习进度只保存在你的手机上：没有账号，不收集任何数据。</li>
+  </ul>
+</div>
+
+<h2>怎么安装</h2>
+<div class="card">
+  <p><b>安卓手机</b>：下载 <a href="https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk">安装包（APK）</a>，手机询问时允许安装。如果下载很慢，可以先用网页版。</p>
+  <p><b>iPhone</b>：用 Safari 打开<a href="../app/">网页版</a>，点「分享」→「添加到主屏幕」。</p>
+  <p><b>电脑</b>：用 Chrome、Edge 或 Firefox 打开<a href="../app/">网页版</a>。</p>
+</div>
+
+<h2>怎么用</h2>
+<div class="card">
+  <ol>
+    <li>第一次打开时选「我是中国人，我想学意大利语」，几分钟的小测试帮你从合适的地方开始。</li>
+    <li>每天点「继续」：读一课、听例句、做练习，答对 80% 就通过。</li>
+    <li>在「复习」里复习单词，在「变位」里练动词：<span class="it" lang="it">io parlo, tu parli…</span></li>
+  </ol>
+</div>
+<footer>
+  <a href="../privacy.html#中文">隐私说明</a> · <a href="../">Italiano</a> · <a href="https://github.com/longhitown/mandarino">GitHub</a><br>
+  代码 MIT，内容 CC BY 4.0
+</footer>
+</main>
+<script>
+/* 只判断是否在微信内置浏览器里（User-Agent 含 MicroMessenger），不发送、不保存任何东西 */
+(function () { if (!/MicroMessenger/i.test(navigator.userAgent)) return; var w = document.getElementById("wx"); w.classList.add("on"); document.getElementById("wx-x").onclick = function () { w.classList.remove("on"); }; })();
+</script>
+</body>
+</html>

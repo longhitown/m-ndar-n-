@@ -120,3 +120,4 @@ Object.assign(I18N.zh, {"apk.fDirect": "直接下载版（GitHub）", "apk.fStor
 Object.assign(I18N.zh, {"rank.season": "第 {n} 季", "path.restDay": "休息日：连续天数不会中断", "path.restNote": "每周休息一天不会中断连续天数：休息也是学习的一部分。"});
 Object.assign(I18N.zh, {"st.more": "记忆和听力：详细数据", "st.fresh": "新的一周开始了：每天五分钟也很有用。", "st.week": "这周你学习了 {d} 天，答对复习 {g} 个词。", "st.tone": "最难的是第 {t} 声（{name}）：慢慢听，会掌握的。", "st.bars": "每周答对的复习", "st.sure": "已掌握的词", "st.goodWeek": "本周答对的复习", "st.days": "学习天数", "itst.fresh": "新的一周开始了：每天五分钟也很有用。", "itst.week": "这周：学习 {d} 天，{w} 个词，通过 {l} 课。", "itst.more": "比上周更多，真棒！", "itst.barsIt": "每周学习的单词", "itst.sure": "已掌握的词", "itst.lessons": "通过的课程"});
 Object.assign(I18N.zh, {"st.up": "比上周更多，真棒！", "itst.up": "比上周更多，真棒！"});
+Object.assign(I18N.zh, {"card.privacy": "分享卡片在你的手机上生成；要不要分享、分享到哪里，由你决定。"});

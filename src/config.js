@@ -9,6 +9,9 @@ var MD_CONFIG = {
   SUPPORT_URL: "https://ko-fi.com/mandarinoapp",      /* sostegno volontario (link aperto solo da un tocco) */
   STORE_URLS: { play: "", fdroid: "" },               /* indirizzi degli store, quando ci saranno */
   SITE_URL: "",                                       /* sito pubblico (GitHub Pages), quando ci sarà */
+  /* il QR delle carte da condividere (Task 11.4): l'indirizzo semplice della pagina di presentazione, senza parametri né
+     codici. Vuoto = il link all'ultimo APK (ui/share-card.js). Quando GitHub Pages è attivo: la pagina cinese, …/mandarino/zh/ */
+  SHARE_URL: "",
   FLAVOR: "direct",                                   /* "direct" (sito, APK da GitHub) | "store" */
   APK_UPDATES: true,                                  /* controllo delle release su GitHub (solo APK diretto) */
   FEATURE_DONATE: true,

@@ -418,3 +418,66 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .st-col small { color: var(--muted); font-size: 13px; }
 .st-more { margin-top: 10px; }
 .st-more > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+/* ===== Task 11: corso di italiano, carta «今天», percorso delle lezioni, «+N 分», carte da condividere ===== */
+.it-today { display: grid; gap: 12px; margin-top: 14px; }
+.itd-hi { margin: 0; font-size: 1.25rem; }
+.itd-go { display: grid; gap: 2px; text-align: center; margin: 0; }
+.itd-go small { font-weight: 600; opacity: .85; font-size: 13px; }
+.itd-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.itd-rank { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.itd-rank > div { min-width: 0; display: grid; gap: 4px; }
+.itd-rank .bar-xp { margin: 0; }
+.itd-ring { display: flex; gap: 10px; align-items: center; }
+.itd-ring > div:last-child { display: grid; gap: 2px; font-size: 13px; }
+.itd-streak { font-size: 14px; }
+.itd-rev { justify-self: start; margin: 0; }
+.itd-phrase { background: var(--chip); border-radius: 16px; padding: 12px 14px; display: grid; gap: 6px; }
+.itd-phrase .tag { color: var(--accent); font-weight: 700; font-size: 13px; }
+.itd-it { margin: 0; font: 600 1.45rem/1.35 "Iowan Old Style", Georgia, "Noto Serif", serif; }
+.itd-it .acc { color: var(--accent); text-decoration: underline 2px; text-underline-offset: 4px; }
+.itd-zh { margin: 0; color: var(--muted); }
+.itd-h3 { margin: 16px 0 6px; }
+.itd-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.itd-card { min-height: 44px; display: grid; gap: 4px; justify-items: start; text-align: left; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.itd-card small { color: var(--muted); }
+/* il percorso delle lezioni: nodi collegati da una linea */
+.itp-h { margin: 24px 0 4px; }
+.itp { list-style: none; margin: 0; padding: 0; position: relative; }
+.itp::before { content: ""; position: absolute; left: 25px; top: 24px; bottom: 24px; width: 3px; border-radius: 2px; background: var(--line); }
+.itp-node > button { position: relative; display: flex; gap: 14px; align-items: center; width: 100%; min-height: 64px; padding: 6px 4px; background: none; border: 0; color: var(--ink); text-align: left; cursor: pointer; }
+.itp-dot { flex: none; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 17px var(--f-display); background: var(--surface); border: 3px solid var(--line); z-index: 1; }
+.itp-node.done .itp-dot { border-color: var(--accent); }
+.itp-node.now .itp-dot { background: var(--accent); color: var(--bg); border-color: var(--accent); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); }
+.itp-node.now > button { background: var(--chip); border-radius: 18px; }
+.itp-t { display: grid; gap: 2px; min-width: 0; }
+.itp-t small { font-size: 13px; color: var(--muted); }
+.itp-seal { font: 700 14px "Noto Serif SC", "Songti SC", serif; color: var(--stamp-red); border: 2px solid var(--stamp-red); border-radius: 6px; padding: 2px 4px; transform: rotate(-8deg); }
+/* il sigillo «通过» che si imprime quando si supera una lezione */
+.it-stamp { float: right; font: 700 22px "Noto Serif SC", "Songti SC", serif; color: var(--stamp-red); border: 3px solid var(--stamp-red); border-radius: 8px; padding: 4px 8px; transform: rotate(-10deg); }
+.it-stamp.sm { float: none; font-size: 13px; padding: 1px 4px; border-width: 2px; }
+/* «+N 分» */
+.it-gain { position: fixed; left: 50%; top: calc(76px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 70; display: flex; gap: 10px; align-items: center; padding: 8px 14px; border-radius: 16px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.18); opacity: 0; pointer-events: none; }
+.it-gain.on { opacity: 1; }
+.it-gain-n { font: 800 18px var(--f-display); color: var(--accent); }
+.it-gain-bar { width: 80px; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.it-gain-bar i { display: block; height: 100%; background: var(--accent); }
+/* la carta da condividere */
+.it-card-cv { max-height: 52vh; width: auto; max-width: 100%; display: block; margin: 8px auto; border-radius: 12px; }
+.card-seg { margin: 8px 0 0; }
+#card-name { margin-top: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .it-gain.on { animation: itGain 1.9s ease-out both; }
+  .it-gain-bar i { transition: width .8s ease .2s; }
+  @keyframes itGain { 0% { opacity: 0; transform: translate(-50%, 16px); } 15% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -14px); } }
+  .ls-quiz .it-stamp { animation: itStamp .5s cubic-bezier(.2, 1.6, .4, 1) both .15s; }
+  @keyframes itStamp { from { opacity: 0; transform: rotate(-10deg) scale(2.2); } to { opacity: 1; transform: rotate(-10deg) scale(1); } }
+  .itd-ring-a { animation: itRing 1.2s ease-out both; }
+  @keyframes itRing { from { --p: 0; } }
+}
+@property --p { syntax: "<number>"; inherits: true; initial-value: 0; }
+/* rosso del sigillo «通过»: più chiaro nel tema scuro, per il contrasto */
+:root { --stamp-red: #C8312B; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="sepia"]) { --stamp-red: #FF8A7E; } }
+:root[data-theme="dark"] { --stamp-red: #FF8A7E; }
+.it-today small, .itd-ring small { font-size: 13px; }
+.it-tile { min-height: 44px; justify-content: center; }

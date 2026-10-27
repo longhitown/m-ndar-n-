@@ -92,6 +92,16 @@ for (const s of scripts) {
   if (JSON.stringify(listed) !== JSON.stringify(ctx.P || [])) fail("CONTRIBUTORS.md e src/data/contributors.js non hanno lo stesso elenco");
 }
 
+/* Task 11: il corso di italiano non ha testi scritti nel codice: tutto passa da t() (src/i18n/). Ammessi i commenti e le
+   righe bilingui di proposito (data-noi18n: la scelta del corso, che deve capire anche chi non legge l'altra lingua). */
+{
+  for (const f of fs.readdirSync(path.join(SRC, "it")).filter((x) => x.endsWith(".js"))) {
+    const code = fs.readFileSync(path.join(SRC, "it", f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    const bad = code.split("\n").filter((l) => /[\u4e00-\u9fff]/.test(l) && !/data-noi18n/.test(l) && !/data-course-set/.test(l));
+    if (bad.length) fail("src/it/" + f + ": testo cinese scritto nel codice (usa t()): " + bad[0].trim().slice(0, 80));
+  }
+}
+
 /* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
    nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in lo strumento di emissione
    e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
@@ -150,6 +160,17 @@ for (const m of LAZYMOD) {
     "(function () { var P = " + JSON.stringify(m.props) + ", done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }\n" +
     "  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();\n</script>");
   group.forEach((x) => scripts.splice(scripts.indexOf(x), 1));
+}
+/* COURSE_IT: il corso di italiano per chi parla cinese (testi, carta «今天», corso) serve solo a chi lo ha scelto. Nel file
+   unico questi file restano testo (type="text/plain") e si eseguono al loro posto, in ordine, solo se cp-course è "it":
+   chi studia cinese non li compila all'avvio. Il comportamento è identico a quello degli script normali. */
+const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js"];
+for (const f of COURSE_IT) {
+  const sc = scripts.find((x) => x.src === f); if (!sc) fail("COURSE_IT: manca " + f + " in src/index.html");
+  const code = fs.readFileSync(path.join(SRC, f), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script"), id = "course-it-" + f.replace(/[^a-z0-9]+/gi, "-");
+  out = out.replace(sc.tag, () => '<script type="text/plain" id="' + id + '">\n' + code + "\n</script>\n<script>/* ---- " + f + " (solo nel corso di italiano) ---- */" +
+    "(function () { var c = null; try { c = localStorage.getItem(\"cp-course\"); } catch (e) {} var el = document.getElementById(" + JSON.stringify(id) + "); if (c === \"it\" && el) { var s = document.createElement(\"script\"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>");
+  scripts.splice(scripts.indexOf(sc), 1);
 }
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
