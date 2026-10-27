@@ -20,6 +20,12 @@ programmare.**
 
 I contributi fatti nell'app restano sul tuo telefono finché non li mandi tu, con il canale che preferisci.
 
+### Rileggere un campione di frasi (madrelingua cinesi)
+
+Se il cinese è la tua lingua, il contributo più prezioso è rileggere un campione di circa 300 frasi: per ognuna basta
+✓ / ~ / ✗ e, se serve, una proposta. Il modulo e il flusso sono in [docs/rilettura.md](docs/rilettura.md); chiedilo a
+`mandarinoapp@gmail.com`.
+
 ### Canali
 
 - **Dall'app, senza account:** ⚙️ → Dati e privacy → Contributi → condividi (WeChat, e-mail, ecc.), e-mail, file `.json`
@@ -78,6 +84,10 @@ màndarínō 为学习者而做，而学习者最容易发现错误。**不需�
 | **告诉我们哪里难用** | 普通 issue 或电子邮件都可以：“我不知道怎么做 X”也是贡献。 |
 
 在应用里做的贡献会保存在你的手机上，直到你自己选择方式发送。
+
+### 校对一组句子（中文母语者）
+
+如果中文是你的母语，最有帮助的是校对一份约 300 句的样本：每句只要标 ✓ / ~ / ✗，需要时写出更好的说法。表格和流程见 [docs/rilettura.md](docs/rilettura.md)（意大利语）；可以写信到 `mandarinoapp@gmail.com` 索取。
 
 ### 渠道
 

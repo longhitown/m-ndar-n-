@@ -108,7 +108,7 @@
     CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("itd.progress")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
       '<div id="itp-story" aria-live="polite"></div>' +
       (ids.length ? '<h3 class="itd-h3">' + esc(T("itd.cards")) + '</h3><div class="itd-cards">' + ids.map(function (id) { return '<button type="button" class="itd-card" data-itd-mile="' + CP.attr(id) + '"><span class="it-stamp sm" aria-hidden="true">' + esc(T("itd.passed")) + "</span><b>" + esc(label(id)) + "</b><small>" + esc(new Date(o.m[id]).toLocaleDateString("zh-CN")) + "</small></button>"; }).join("") + "</div>" : "") +
-      '<div class="acts"><button type="button" class="btn-main" data-itd-week style="margin:0">' + esc(T("itd.shareWeek")) + "</button></div>");
+      '<div class="acts"><button type="button" class="btn-main" data-itd-week style="margin:0">' + esc(T("itd.shareWeek")) + '</button><button type="button" class="btn-s" data-chal-open>' + esc(T("tog.chal")) + "</button></div>");
     if (CP.story) CP.story.html("it").then(function (h) { var b = document.getElementById("itp-story"); if (b) b.innerHTML = h; });
   }
   CP.itProgress = progressSheet;

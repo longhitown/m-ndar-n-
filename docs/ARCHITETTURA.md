@@ -76,7 +76,8 @@ l'immersione.
 **Moduli caricati al primo uso.** Nel file unico non vengono compilati all'avvio:
 
 - `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
-- `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`.
+- `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`;
+- `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`.
 
 L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
@@ -102,6 +103,9 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni e supporto |
 | `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
 | `CP.anatomy` / `CP.anatomyHTML(ch)` | `words/anatomy.js` | `get`, `html`, `svg`, `radical`, `groups` (componente di ogni tratto, per la lavagna), `on`/`set`; il foglio del carattere (`core/core.js`) chiede l'HTML |
+| `CP.challenge` | `ui/challenge.js` (al primo uso) | `create()`, `open(testo)`, `encode`/`decode` del codice `MDC1-…`, `build(sfida)` (domande dal seme), `link`, `base`; la sfida a un amico |
+| `CP.classroom` | `ui/classroom.js` (al primo uso) | `section()` (⚙️), `banner()`, `list`/`add`/`remove`, `progress(pacchetto)`, `report(pacchetto, nome)`, `table(riepiloghi)`, `sheet(canvas, pacchetto)` (foglio A4), `encode`/`decode`/`link` del codice `MDK1-…` |
+| `CP.togetherOpen(testo)` / `CP.classBanner()` | `ui/together.js` (all'avvio) | apre una sfida o importa un pacchetto da un testo qualsiasi (link, codice, QR); il riquadro del pacchetto in cima al Percorso e alle lezioni di italiano |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
 | `CP.shareCard` | `ui/share-card.js` | `CP.shareCard()` carta del giorno del corso aperto; `.open(modello, dati)`, `.render(canvas, modello, dati, { format, theme, seal })`, `.templates` (`zh-day`, `it-day`, `it-milestone`, `it-week`), `.FORMATS`, `.THEMES`, `.url()` |
@@ -120,6 +124,10 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `window.__mdBack()` | `pwa/android.js`, `it/course.js` | tasto Indietro di Android: chiude foglio, immersione, sottomenu, poi esce |
 | `window.__mdWidget()` = `CP.widgetPush` | `pwa/widget.js` | `MainActivity.onPause`: lo stato «Oggi» va al widget prima che l'app vada in pausa |
 | `CP.jukebox.remote(cmd)` | `audio/player.js` | pulsanti della notifica della musica (`MusicService.java`) e Media Session |
+| `#sfida=MDC1-…`, `#classe=MDK1-…` | `ui/together.js` | link di una sfida o di un pacchetto classe; il frammento si toglie subito dall'indirizzo |
+| `#seal=…` | `ui/seals.js` | link di un sigillo di gratitudine (§3c) |
+| primo avvio: benvenuto e test di livello | `ui/welcome.js` → `CP.onboarding` (§3b) | si apre se manca `cp-ux-v1.onboarded` (corso di cinese) o `cp-it-welcome` (corso di italiano), e non c'è un `?go=` o un link |
+| configurazione | `config.js` → `MD_CONFIG` (§0) | il primo script dopo `boot.js`; nell'APK la versione (`direct`/`store`) la sceglie `MandarinoAndroid.flavor()` |
 | `#selftest`, `#dev` / `#nodev` | `selftest/selftest.js`, `audio/audio-ui.js` (`CP.dev()`) | controlli dentro l'app; modo sviluppatore (mostra il «pacchetto PWA per GitHub») |
 
 ## Il ponte Android

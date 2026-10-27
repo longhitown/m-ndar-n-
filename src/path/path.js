@@ -28,7 +28,7 @@
       '<div class="week" aria-label="' + CP.attr(T("path.week")) + '">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.rest ? "rest " : "") + (d.td ? "td" : "") + '"' + (d.rest ? ' title="' + CP.attr(T("path.restDay")) + '"' : "") + ">" + days[i] + "<i>" + (d.rest ? "☾" : "") + "</i></span>"; }).join("") + "</div>" +
       (wk.some(function (d) { return d.rest; }) ? '<p class="small muted" style="margin:0">☾ ' + T("path.restNote") + "</p>" : "") +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">' + T("path.goal") + '<select id="goal-sel">' + goalOpts + "</select></label>" +
-      '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + "</button></div></div>";
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + '</button><button type="button" class="btn-s" data-chal-open>' + CP.t("tog.chal") + "</button></div></div>";
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
@@ -120,7 +120,7 @@
       CHAPTERS[k].idx.forEach(function (i) { if (isList(SECTIONS[i])) lists.push(i); else list += stopHTML(SECTIONS[i], i, cur); });
       if (lists.length) list += listHTML(k, lists, cur);
     });
-    root.innerHTML = resumeHTML(cur) + heroHTML(cur) +
+    root.innerHTML = (CP.classBanner ? CP.classBanner() : "") + resumeHTML(cur) + heroHTML(cur) +
       '<div class="path-head"><h2>' + T("path.title") + '</h2><span class="muted small">' + done + " / " + SECTIONS.length + " " + T("path.stops") + "</span></div>" +
       '<p class="muted" style="margin:0">' + T("path.lede", { n: SECTIONS.length, c: CHAPTERS.length }) + "</p>" +
       chapNav(sel) + '<div class="path">' + list + "</div>";

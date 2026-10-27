@@ -123,3 +123,5 @@ Object.assign(I18N.zh, {"st.up": "比上周更多，真棒！", "itst.up": "比�
 Object.assign(I18N.zh, {"card.privacy": "分享卡片在你的手机上生成；要不要分享、分享到哪里，由你决定。"});
 Object.assign(I18N.zh, {"anat.title": "汉字的组成", "anat.svgAria": "按部件着色的汉字 {c}", "anat.simple": "独体字：不能再拆分。", "anat.picto": "象形字：最初是一样东西的图画。", "anat.isRad": "也是第 {n} 个部首（{m}）。", "anat.phon": "声旁", "anat.sem": "形旁", "anat.ps": "形声字：{s} 表示意义的范围，{p}{py} 提示读音。", "anat.ideo": "会意字：几个部分合起来表示意思。", "anat.parts": "由这些部分组成。", "anat.rad": "部首：{r}（第 {n} 个，{m}）", "anat.note": "只显示字形结构，不讲没有根据的故事。点一个部件，看含有它的词。", "anat.set": "汉字的组成", "anat.setLede": "在每个汉字的页面显示它的组成部分：哪一部分表音，哪一部分表意。在写字板上，突出显示下一笔所在的部件。", "anat.setToggle": "显示汉字的组成"});
 Object.assign(I18N.zh, {"cr.mmhd": "汉字的组成", "cr.mmhdT": "<b>Make Me a Hanzi</b>（Shaunak Kishore）的 <code>dictionary.txt</code> 文件（来自 Unihan 和 CJKlib）：字形分解、部首、造字类型和表音部分。<code>data/anatomy.js</code> 只保留这些字段（不含释义和拼音），仍采用 LGPL 许可。214 个部首的名称和意思由我们自己编写。"});
+Object.assign(I18N.zh, {"tog.chal": "🎯 挑战朋友"});
+Object.assign(I18N.zh, {"pv.class": "<b>挑战与班级</b>：挑战代码里只有十个词和题目顺序。给老师的学习小结只有经过你同意才会生成，只有数字统计，不含复习记录。由你自己发送。"});

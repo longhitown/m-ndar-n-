@@ -122,6 +122,22 @@ function sandbox() {
   await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-seal-v1": JSON.stringify({ codes: { "2-2026-7": { code: "b" } }, gram: "m", name: "", share: 0, t: 50 }) }, log: [] }, "merge");
   const sm = JSON.parse(LS.getItem("cp-seal-v1"));
   check("sigilli: cp-seal-v1 unisce i codici; le preferenze vengono dal dispositivo più recente", sm.codes["1-2026-3"] && sm.codes["2-2026-7"] && sm.gram === "f" && sm.name === "Ada" && sm.share === 1, JSON.stringify(sm));
+  /* pacchetti classe (Task 9): unione per id, il pacchetto tolto su un dispositivo resta tolto */
+  {
+    const { Store: S2, LS: L2 } = sandbox();
+    L2.setItem("cp-class-v1", JSON.stringify({ p: { a: { id: "a", t: "A", at: 5 }, b: { id: "b", t: "B", at: 9 } }, x: {} }));
+    await S2.importObj({ app: "mandarino", v: 5, kv: { "cp-class-v1": JSON.stringify({ p: { b: { id: "b", t: "B", at: 3 }, c: { id: "c", t: "C", at: 4 } }, x: { a: 7 } }) }, log: [] }, "merge");
+    const cm = JSON.parse(L2.getItem("cp-class-v1"));
+    check("classe: cp-class-v1 unisce i pacchetti (data d'importazione più vecchia) e tiene i tolti", Object.keys(cm.p).sort().join() === "a,b,c" && cm.p.b.at === 3 && cm.x.a === 7, JSON.stringify(cm));
+  }
+  /* sfide e classe: i testi (caricati al primo uso) esistono in tutte e due le lingue */
+  {
+    const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc); vm.runInContext(fs.readFileSync(path.join(SRC, "i18n/together.js"), "utf8"), tc);
+    const TI = vm.runInContext("I18N", tc), ki = Object.keys(TI.it).sort().join(), kz = Object.keys(TI.zh).sort().join();
+    const used = new Set(["challenge.js", "classroom.js", "together.js"].flatMap((f) => [...fs.readFileSync(path.join(SRC, "ui", f), "utf8").matchAll(/T\("((?:chal|cls|tog)\.[\w]+)"/g)].map((m) => m[1])));
+    const miss = [...used].filter((k) => !TI.it[k] && k !== "tog.chal");
+    check("sfide e classe: stessi testi in italiano e in cinese, e nessun testo usato che manchi (" + Object.keys(TI.it).length + ")", ki === kz && !miss.length, miss.join(", "));
+  }
   /* testi: nessuna desinenza di genere nei testi predefiniti; ogni titolo esiste in ogni forma */
   const ic = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} }; var LANG = 'it';", ic);
   ["i18n/it.js", "i18n/zh.js", "i18n/titles.js"].forEach((f) => vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), ic));
@@ -145,6 +161,21 @@ function sandbox() {
   const r2 = mc(P("p3", "bad@mail.it", 1, "tu (prova tre)"), P("p4", "lucia_88", 1, "lui (prova quattro)", "他"), "--apply");
   const js = fs.readFileSync(path.join(tsrc, "data/contributors.js"), "utf8"), md = fs.readFileSync(path.join(tmp, "CONTRIBUTORS.md"), "utf8");
   check("contributi: con «credit» il nickname entra in contributors.js e CONTRIBUTORS.md; senza no; e-mail scartate, niente doppioni", /var CONTRIBUTORS = \["Lucia_88"\];/.test(js) && /<!-- elenco -->\n- Lucia_88\n<!-- \/elenco -->/.test(md) && !/Anonimo|bad@/.test(js + md), r1.stdout.slice(-300) + r2.stdout.slice(-300) + js.slice(-80));
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
+
+/* ---- rilettura da madrelingua (Task 8.2): modulo → review-import → merge-contrib, con risposte inventate ---- */
+{
+  const os = await import("os"), { spawnSync } = await import("child_process");
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "md-review-")), sheet = path.join(tmp, "modulo.md"), patch = path.join(tmp, "revisione.json");
+  const node = (...a) => spawnSync(process.execPath, a, { encoding: "utf8", cwd: ROOT });
+  node("tools/review-sample.mjs", "--out", sheet);
+  let n = 0;
+  const filled = fs.readFileSync(sheet, "utf8").split("\n").map((l) => { if (!/^\| \d+ \|/.test(l) || !/`(dlg|phr):/.test(l) || n >= 2) return l; n++; return l.replace(" |  |  | ", n === 1 ? " | ✗ | 示例建议一 | " : " | ✓ |  | "); }).join("\n");
+  fs.writeFileSync(sheet, filled);
+  const r1 = node("tools/review-import.mjs", sheet, "--nome", "Prova", "--out", patch), r2 = node("tools/merge-contrib.mjs", patch);
+  const p = JSON.parse(fs.readFileSync(patch, "utf8"));
+  check("rilettura: il modulo compilato diventa una patch di segnalazioni che merge-contrib riconosce (rif. precisi)", p.schema === "mandarino-contrib/1" && p.items.length === 1 && /^(dlg|phr):/.test(p.items[0].target) && /1 segnalazioni · 0 doppioni · 0 conflitti · 0 scartati/.test(r2.stdout), r1.stderr + r2.stdout.slice(0, 300));
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
