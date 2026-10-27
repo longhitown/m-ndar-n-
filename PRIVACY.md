@@ -62,6 +62,22 @@ Le carte da condividere (corso di cinese e corso di italiano) nascono **sul tuo 
 Le vedi prima di inviarle; quello che ne fai è una tua scelta. Il QR porta alla pagina dell'app senza parametri né codici,
 e l'app non registra se e dove condividi.
 
+### Sfide e pacchetti classe
+
+Una **sfida a un amico** è un codice con dieci parole e un numero che decide l'ordine delle domande: niente nome, niente
+punteggio. Lo mandi tu, come e a chi vuoi. Se lo mandi come link, il codice sta dopo il simbolo «#» e non arriva a
+nessun server.
+
+Un **pacchetto classe** contiene solo un titolo, un tratto del corso, un obiettivo e una data. Il **riepilogo per chi
+insegna** si crea solo se lo chiedi e spunti il consenso. Contiene soltanto:
+- quante parole o lezioni del pacchetto hai fatto;
+- se l'obiettivo è raggiunto;
+- in quanti giorni hai studiato negli ultimi 30;
+- la data;
+- il nome, se lo scrivi.
+
+Nessun registro dei ripassi. L'app non lo manda da sola: lo scarichi o lo condividi tu.
+
 ### Donazioni e sigilli
 
 L'app non sa chi ha donato. Una donazione passa da Ko-fi, con la sua informativa. L'autore vede solo quello che Ko-fi gli
@@ -116,6 +132,10 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 ### 分享卡片
 
 分享卡片在**你的手机上**生成，只使用手机上的数据：等级、连续天数、单词、今日句子，以及你选择署名时填写的名字（默认关闭，只保存在这台手机上）。发送前你可以先看到图片；要不要分享由你决定。二维码指向应用的介绍页，不带任何参数或代码，应用也不会记录你是否分享、分享到哪里。
+
+### 挑战和班级学习包
+
+**挑战朋友**的代码里只有十个词和一个决定题目顺序的数字，没有名字，也没有分数。发给谁、怎么发，由你决定。用链接发送时，代码在“#”后面，不会传到任何服务器。**班级学习包**只有标题、一段课程、目标和日期。**给老师的学习小结**只有在你提出并勾选同意后才会生成，内容只有：完成了学习包里的多少词或课、是否达成目标、最近 30 天学习了几天、日期，以及你自己填写的名字（可不填）。不包含复习记录。应用不会自动发送：由你下载或分享。
 
 ### 捐助和印章
 

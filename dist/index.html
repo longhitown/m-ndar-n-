@@ -1568,6 +1568,37 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .anat-part > span:last-child { display: grid; gap: 1px; }
 .anat-role { font-size: 13px; color: var(--accent); }
 .anat-part small { font-size: 13px; color: var(--muted); }
+
+/* ---- Task 9: sfida a un amico e pacchetto classe (ui/challenge.js, ui/classroom.js) ---- */
+.chal-lead { font-size: 18px; font-weight: 700; margin: 4px 0; }
+.chal-q { font-family: var(--f-han); font-size: 52px; line-height: 1.2; text-align: center; margin: 6px 0 0; }
+.chal-q[lang="it"] { font-family: var(--f-display); font-size: 34px; }
+.chal-q.sm { display: inline; font-size: 18px; margin: 0; }
+.chal-q.sm[lang="it"] { font-size: 16px; }
+.chal-py { text-align: center; font-size: 17px; }
+.chal-say { display: flex; justify-content: center; }
+.chal-n { text-align: center; }
+.chal-bar { height: 5px; border-radius: 4px; background: var(--chip); overflow: hidden; } .chal-bar i { display: block; height: 100%; background: var(--accent); }
+.chal-opts { display: grid; gap: 8px; margin-top: 12px; }
+.chal-opt { min-height: 48px; text-align: left; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; }
+.chal-opt.ok { border-color: var(--t2); box-shadow: 0 0 0 3px color-mix(in srgb, var(--t2) 22%, transparent); font-weight: 700; }
+.chal-opt.ko { border-color: var(--t4); border-style: dashed; }
+.chal-opt:disabled { opacity: 1; cursor: default; }
+.chal-fb { min-height: 1.4em; text-align: center; margin-top: 6px; font-weight: 600; }
+.chal-res { text-align: center; font-size: 22px; margin: 10px 0; }
+.chal-wrong { padding-left: 18px; display: grid; gap: 6px; }
+.chal-qr { display: block; width: min(260px, 70vw); height: auto; margin: 8px auto; image-rendering: pixelated; border-radius: 8px; }
+.chal-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; width: 100%; min-height: 44px; }
+.cls-h { margin: 14px 0 2px; font-size: 15px; }
+.cls-card { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.cls-card .mini { height: 6px; border-radius: 4px; background: var(--chip); overflow: hidden; } .cls-card .mini i { display: block; height: 100%; background: var(--accent); }
+.cls-card .okline { color: var(--accent); font-weight: 700; }
+.cls-teach { border-top: 1px solid var(--line); padding-top: 8px; display: grid; gap: 8px; }
+.cls-teach summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
+.cls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .cls-row label { display: grid; gap: 4px; min-width: 0; } .cls-row select, .cls-row input { min-height: 44px; min-width: 0; width: 100%; }
+.cls-banner { display: flex; gap: 10px; align-items: center; width: 100%; min-height: 48px; text-align: left; font: inherit; color: var(--ink); cursor: pointer; margin-bottom: 10px; }
+.cls-banner > span:first-child { font-size: 24px; } .cls-banner small { display: block; color: var(--muted); }
+.cls-table-w { overflow-x: auto; } .cls-table { border-collapse: collapse; width: 100%; font-size: 14px; } .cls-table th, .cls-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -15298,6 +15329,8 @@ Object.assign(I18N.it, {"st.up": "Più della settimana scorsa: bravo!", "itst.up
 Object.assign(I18N.it, {"card.privacy": "Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta."});
 Object.assign(I18N.it, {"anat.title": "Di che cosa è fatto", "anat.svgAria": "Il carattere {c} con i tratti colorati per componente", "anat.simple": "Carattere semplice: non si scompone in parti più piccole.", "anat.picto": "Pittogramma: in origine il disegno di una cosa.", "anat.isRad": "È anche il radicale n. {n} ({m}).", "anat.phon": "suono", "anat.sem": "significato", "anat.ps": "Composto fonetico-semantico: {s} indica l'ambito del significato, {p}{py} suggerisce il suono.", "anat.ideo": "Ideogramma composto: il significato nasce dall'unione delle parti.", "anat.parts": "Le parti di cui è fatto.", "anat.rad": "Radicale: {r} (n. {n}, {m})", "anat.note": "Solo la struttura del carattere, senza storie inventate. Tocca una parte per le parole che la contengono.", "anat.set": "Anatomia dei caratteri", "anat.setLede": "Nel foglio di ogni carattere, le parti di cui è fatto: quale dà il suono, quale il significato. Nella lavagna, la parte del tratto da scrivere.", "anat.setToggle": "Mostra l'anatomia dei caratteri"});
 Object.assign(I18N.it, {"cr.mmhd": "Di che cosa è fatto un carattere", "cr.mmhdT": "<b>Make Me a Hanzi</b> di Shaunak Kishore, file <code>dictionary.txt</code> (da Unihan e CJKlib): scomposizione, radicale, tipo di carattere e parte che dà il suono. Il file <code>data/anatomy.js</code> ne tiene solo questi campi (niente definizioni né pinyin) e resta sotto la LGPL. I nomi e i significati dei 214 radicali sono scritti da noi."});
+Object.assign(I18N.it, {"tog.chal": "🎯 Sfida un amico"});
+Object.assign(I18N.it, {"pv.class": "<b>Sfide e classe</b>: il codice di una sfida ha solo dieci parole e l'ordine delle domande. Il riepilogo per chi insegna si crea solo con il tuo consenso: contiene solo conteggi, nessun ripasso. Li mandi tu."});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15426,6 +15459,8 @@ Object.assign(I18N.zh, {"st.up": "比上周更多，真棒！", "itst.up": "比�
 Object.assign(I18N.zh, {"card.privacy": "分享卡片在你的手机上生成；要不要分享、分享到哪里，由你决定。"});
 Object.assign(I18N.zh, {"anat.title": "汉字的组成", "anat.svgAria": "按部件着色的汉字 {c}", "anat.simple": "独体字：不能再拆分。", "anat.picto": "象形字：最初是一样东西的图画。", "anat.isRad": "也是第 {n} 个部首（{m}）。", "anat.phon": "声旁", "anat.sem": "形旁", "anat.ps": "形声字：{s} 表示意义的范围，{p}{py} 提示读音。", "anat.ideo": "会意字：几个部分合起来表示意思。", "anat.parts": "由这些部分组成。", "anat.rad": "部首：{r}（第 {n} 个，{m}）", "anat.note": "只显示字形结构，不讲没有根据的故事。点一个部件，看含有它的词。", "anat.set": "汉字的组成", "anat.setLede": "在每个汉字的页面显示它的组成部分：哪一部分表音，哪一部分表意。在写字板上，突出显示下一笔所在的部件。", "anat.setToggle": "显示汉字的组成"});
 Object.assign(I18N.zh, {"cr.mmhd": "汉字的组成", "cr.mmhdT": "<b>Make Me a Hanzi</b>（Shaunak Kishore）的 <code>dictionary.txt</code> 文件（来自 Unihan 和 CJKlib）：字形分解、部首、造字类型和表音部分。<code>data/anatomy.js</code> 只保留这些字段（不含释义和拼音），仍采用 LGPL 许可。214 个部首的名称和意思由我们自己编写。"});
+Object.assign(I18N.zh, {"tog.chal": "🎯 挑战朋友"});
+Object.assign(I18N.zh, {"pv.class": "<b>挑战与班级</b>：挑战代码里只有十个词和题目顺序。给老师的学习小结只有经过你同意才会生成，只有数字统计，不含复习记录。由你自己发送。"});
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -15836,6 +15871,8 @@ function tg(key, gram) {
     if (k === "cp-seal-v1") return mergeSeal(a, b);
     /* traguardi del corso di italiano: unione, per ognuno la data più vecchia */
     if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
+    /* pacchetti classe: unione per id; chi è stato tolto su un dispositivo resta tolto (la data più recente) */
+    if (k === "cp-class-v1") { var P = {}, X = {}; [a, b].forEach(function (o) { o = o || {}; Object.keys(o.p || {}).forEach(function (id) { if (!P[id] || (o.p[id].at || 0) < (P[id].at || 0)) P[id] = o.p[id]; }); Object.keys(o.x || {}).forEach(function (id) { X[id] = Math.max(X[id] || 0, o.x[id]); }); }); return { p: P, x: X }; }
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */
@@ -18756,7 +18793,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       '<div class="week" aria-label="' + CP.attr(T("path.week")) + '">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.rest ? "rest " : "") + (d.td ? "td" : "") + '"' + (d.rest ? ' title="' + CP.attr(T("path.restDay")) + '"' : "") + ">" + days[i] + "<i>" + (d.rest ? "☾" : "") + "</i></span>"; }).join("") + "</div>" +
       (wk.some(function (d) { return d.rest; }) ? '<p class="small muted" style="margin:0">☾ ' + T("path.restNote") + "</p>" : "") +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">' + T("path.goal") + '<select id="goal-sel">' + goalOpts + "</select></label>" +
-      '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + "</button></div></div>";
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + '</button><button type="button" class="btn-s" data-chal-open>' + CP.t("tog.chal") + "</button></div></div>";
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
@@ -18848,7 +18885,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       CHAPTERS[k].idx.forEach(function (i) { if (isList(SECTIONS[i])) lists.push(i); else list += stopHTML(SECTIONS[i], i, cur); });
       if (lists.length) list += listHTML(k, lists, cur);
     });
-    root.innerHTML = resumeHTML(cur) + heroHTML(cur) +
+    root.innerHTML = (CP.classBanner ? CP.classBanner() : "") + resumeHTML(cur) + heroHTML(cur) +
       '<div class="path-head"><h2>' + T("path.title") + '</h2><span class="muted small">' + done + " / " + SECTIONS.length + " " + T("path.stops") + "</span></div>" +
       '<p class="muted" style="margin:0">' + T("path.lede", { n: SECTIONS.length, c: CHAPTERS.length }) + "</p>" +
       chapNav(sel) + '<div class="path">' + list + "</div>";
@@ -24201,7 +24238,8 @@ var CHANGELOG = [
       "Puoi proporre correzioni e parole nuove da ⚙️ → Dati e privacy → Contributi, e comparire nei Crediti se vuoi.",
       "Un giorno di riposo a settimana non spezza la serie; oltre i 10.000 punti ci sono nuovi gradi e le stagioni; i progressi della settimana sono in evidenza in Studia.",
       "Corso di italiano: la carta «今天» con la lezione da continuare e la frase del giorno, le lezioni come percorso, i traguardi e le carte da condividere.",
-      "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️."
+      "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️.",
+      "Di che cosa è fatto un carattere: le sue parti, quale dà il significato e quale il suono. Sfida un amico su dieci parole con un link o un QR; pacchetti classe per chi insegna."
     ],
     zh: [
       "全新的欢迎流程：选择目标和节奏，试听声调，几分钟的水平测试帮你从合适的地方开始。",
@@ -24215,7 +24253,8 @@ var CHANGELOG = [
       "可以在 ⚙️ → 数据和隐私 → 贡献 中提出更正和新词，愿意的话还可以出现在致谢中。",
       "每周休息一天不会中断连续天数；一万分以上有新的等级和“季”；“学习”里突出显示本周进步。",
       "意大利语课程：“今天”卡片显示要继续的课和今日意大利语，课程变成一条路，还有纪念卡和分享卡片。",
-      "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。"
+      "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。",
+      "汉字的组成：由哪些部分构成，哪部分表意、哪部分表音。用链接或二维码和朋友比一比十个词；给老师用的班级学习包。"
     ] },
   { v: "6.6", d: "2026-10",
     it: ["La versione di partenza: un solo file index.html con vocabolario, ripasso a intervalli e frasi."],
@@ -26116,7 +26155,7 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
     CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("itd.progress")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
       '<div id="itp-story" aria-live="polite"></div>' +
       (ids.length ? '<h3 class="itd-h3">' + esc(T("itd.cards")) + '</h3><div class="itd-cards">' + ids.map(function (id) { return '<button type="button" class="itd-card" data-itd-mile="' + CP.attr(id) + '"><span class="it-stamp sm" aria-hidden="true">' + esc(T("itd.passed")) + "</span><b>" + esc(label(id)) + "</b><small>" + esc(new Date(o.m[id]).toLocaleDateString("zh-CN")) + "</small></button>"; }).join("") + "</div>" : "") +
-      '<div class="acts"><button type="button" class="btn-main" data-itd-week style="margin:0">' + esc(T("itd.shareWeek")) + "</button></div>");
+      '<div class="acts"><button type="button" class="btn-main" data-itd-week style="margin:0">' + esc(T("itd.shareWeek")) + '</button><button type="button" class="btn-s" data-chal-open>' + esc(T("tog.chal")) + "</button></div>");
     if (CP.story) CP.story.html("it").then(function (h) { var b = document.getElementById("itp-story"); if (b) b.innerHTML = h; });
   }
   CP.itProgress = progressSheet;
@@ -26343,7 +26382,7 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
         '<span class="itp-dot" aria-hidden="true">' + (ok ? '<span class="itp-seal">' + esc(tt("itd.passed")) + "</span>" : l.n) + "</span>" +
         '<span class="itp-t"><small>' + esc(tt("itd.lessonN", { n: l.n })) + "</small><b>" + esc(l.title) + "</b>" + (p.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: p.best })) + "</small>" : "") + "</span></button></li>";
     }).join("");
-    return (CP.itToday ? CP.itToday.html() : "") +
+    return (CP.classBanner ? CP.classBanner() : "") + (CP.itToday ? CP.itToday.html() : "") +
       '<h2 class="itp-h">' + esc(tt("itd.pathT")) + '</h2><p class="small muted" style="margin:0 0 10px">' + esc(tt("itd.pathSub", { d: done, n: L.length, p: PASS })) + "</p>" +
       '<ol class="itp" aria-label="' + CP.attr(tt("itd.pathT")) + '">' + nodes + "</ol>";
   }
@@ -26809,7 +26848,7 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
   CP.shareCard.open = function (tpl, data) { if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
   CP.shareCard.templates = TEMPLATES;
   CP.shareCard.render = render;
-  CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL;
+  CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL; CP.shareCard.sharePNG = share;
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-card-share], [data-card-open], [data-card-format], [data-card-theme]") : null; if (!b) return;
     if (b.hasAttribute("data-card-open")) { CP.sfx("tap"); CP.shareCard(); return; }
@@ -27040,7 +27079,7 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "info", html: function () {
     return '<details class="set-sec" id="set-privacy"><summary>🔒 ' + T("pv.title") + '</summary><div class="vbody">' +
       '<p style="margin:0"><b>' + T("pv.lede") + "</b></p>" +
-      '<ul class="small pv-list">' + ["pv.local", "pv.net", "pv.voice", "pv.mic", "pv.sync", "pv.backup", "pv.contrib"].map(function (k) { return "<li>" + T(k) + "</li>"; }).join("") + "</ul>" +
+      '<ul class="small pv-list">' + ["pv.local", "pv.net", "pv.voice", "pv.mic", "pv.sync", "pv.backup", "pv.contrib", "pv.class"].map(function (k) { return "<li>" + T(k) + "</li>"; }).join("") + "</ul>" +
       '<p class="small muted" style="margin:0">' + T("pv.more") + "</p></div></details>";
   } });
 })();
@@ -27286,6 +27325,485 @@ Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", 
     if (b.hasAttribute("data-anki-ok1")) { sheet("<p><b>" + T("anki.q2") + '</b></p><button type="button" class="btn-main" data-anki-ok2>' + esc(T("anki.ok2")) + "</button>"); return; }
     CP.sfx("tap"); save(pick).then(function () { setBack(); });
   });
+})();
+</script>
+<script type="text/plain" id="lazy-mod-challenge">
+/* ---- i18n/together.js ---- */
+/* ===== màndarínō · i testi di sfide e classe (ui/challenge.js, ui/classroom.js), nelle due lingue dell'interfaccia.
+   Nel file unico arrivano insieme ai due moduli, al loro primo uso (tools/build.mjs, LAZYMOD). ===== */
+Object.assign(I18N.it, {"tog.title": "🎯 Sfide e classe", "chal.title": "Sfida a un amico", "chal.intro": "Dieci parole che hai studiato diventano un codice: chi lo apre fa la stessa sfida, con le stesse domande. Tutto resta sui telefoni: nessun server, nessun nome.", "chal.new": "Crea una sfida", "chal.ready": "La tua sfida è pronta", "chal.howTo": "Manda il link o il codice, oppure fai inquadrare il QR dall'app di un amico (⚙️ → Sfide e classe → Inquadra il QR).", "chal.code": "Codice della sfida", "chal.share": "📤 Manda la sfida", "chal.copy": "Copia", "chal.copied": "Copiato", "chal.try": "Provala anche tu", "chal.paste": "Hai ricevuto un codice? Incollalo qui (va bene anche il messaggio intero)", "chal.go": "Apri", "chal.scan": "Inquadra il QR", "chal.scanHint": "Il QR di una sfida o di un pacchetto classe.", "chal.bad": "Non è un codice valido.", "chal.old": "Questa sfida contiene parole che questa versione dell'app non conosce: aggiorna l'app.", "chal.otherZh": "Questa sfida è per chi studia il cinese.", "chal.otherIt": "Questa sfida è per chi studia l'italiano.", "chal.switch": "Passa a quel corso", "chal.received": "Una sfida per te: {n} parole.", "chal.privacy": "Il codice contiene solo le parole e l'ordine delle domande.", "chal.start": "Comincia", "chal.q": "Che cosa vuol dire?", "chal.n": "{i} di {n}", "chal.right": "Giusto", "chal.wrong": "Era: {a}", "chal.result": "{ok} su {n} in {s} s", "chal.perfect": "Tutte giuste!", "chal.review": "Da ripassare", "chal.again": "📤 Rilancia la sfida", "chal.msg": "Ti sfido su {n} parole! Apri il link, oppure incolla il codice in màndarínō (⚙️ → Sfide e classe):", "chal.msgScore": "Io ho fatto {ok} su {n}.", "cls.title": "Classe", "cls.intro": "Per chi insegna: alcune tappe del Percorso, un obiettivo e una data diventano un pacchetto che gli studenti importano. Nessun registro, nessun server.", "cls.empty": "Nessun pacchetto. Se l'insegnante te ne ha dato uno, importalo qui o incolla il codice qui sopra.", "cls.import": "Importa un pacchetto (.json)", "cls.imported": "Pacchetto «{t}» importato", "cls.dup": "Questo pacchetto c'era già", "cls.bad": "Non è un pacchetto classe valido.", "cls.other": "Questo pacchetto è per l'altro corso.", "cls.rangeZh": "Tappe {a}–{b}", "cls.rangeIt": "Lezioni {a}–{b}", "cls.goal": "Obiettivo: {p}% entro il {d}", "cls.goalNo": "Obiettivo: {p}%", "cls.progZh": "{s} parole su {n} studiate ({p}%)", "cls.progIt": "{s} lezioni su {n} superate ({p}%)", "cls.met": "✓ Obiettivo raggiunto", "cls.left": "mancano {n} giorni", "cls.today": "scade oggi", "cls.past": "scaduto", "cls.go": "Studia", "cls.report": "Consegna il riepilogo", "cls.remove": "Togli", "cls.removed": "Pacchetto tolto", "cls.banner": "Classe: {t}", "cls.teach": "Prepara un pacchetto per la classe", "cls.name": "Titolo", "cls.namePh": "Classe 2B – unità 1", "cls.from": "Da", "cls.to": "A", "cls.goalL": "Obiettivo", "cls.due": "Entro il", "cls.dl": "Scarica il pacchetto (.json)", "cls.print": "Foglio da stampare", "cls.shareCode": "📤 Manda il codice", "cls.msg": "Pacchetto classe di màndarínō «{t}». Apri il link, oppure incolla il codice nell'app (⚙️ → Sfide e classe):", "cls.reports": "Leggi i riepiloghi ricevuti (.json)", "cls.repTitle": "Riepiloghi della classe", "cls.repNone": "Nessun riepilogo valido nei file scelti.", "cls.colName": "Nome", "cls.colDone": "Fatto", "cls.colDays": "Giorni di studio negli ultimi 30", "cls.colDate": "Data", "cls.anon": "(senza nome)", "cls.yes": "raggiunto", "cls.no": "non ancora", "cls.sh1": "1 · Scarica l'app", "cls.sh2": "2 · Nell'app: ⚙️ → Sfide e classe → Inquadra il QR", "cls.shFoot": "Gratuita, senza pubblicità, funziona anche senza rete. Chi insegna non vede i tuoi ripassi: solo il riepilogo che decidi tu di consegnare.", "cls.repHead": "Riepilogo per chi insegna", "cls.repWhat": "Contiene soltanto: il titolo del pacchetto, quante parole o lezioni del pacchetto hai fatto, se l'obiettivo è raggiunto, in quanti giorni hai studiato negli ultimi 30 e la data di oggi. Niente ripassi, niente errori, nient'altro.", "cls.repName": "Il tuo nome (facoltativo, va solo in questo riepilogo)", "cls.consent": "Ho letto che cosa contiene e voglio consegnarlo", "cls.repDl": "Scarica il riepilogo (.json)", "cls.repShare": "📤 Manda come testo", "cls.repText": "{t}: {done}; obiettivo {g}. Giorni di studio negli ultimi 30: {d}. ({date})"});
+Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑战朋友", "chal.intro": "把你学过的十个词变成一个代码：朋友打开后会做同样的挑战，遇到同样的题目。一切都只在手机上：不经过服务器，也不带名字。", "chal.new": "生成挑战", "chal.ready": "你的挑战准备好了", "chal.howTo": "把链接或代码发给朋友，或者让朋友在应用里扫这个二维码（⚙️ → 挑战与班级 → 扫二维码）。", "chal.code": "挑战代码", "chal.share": "📤 发送挑战", "chal.copy": "复制", "chal.copied": "已复制", "chal.try": "自己先试试", "chal.paste": "收到了代码？粘贴在这里（整条消息也可以）", "chal.go": "打开", "chal.scan": "扫二维码", "chal.scanHint": "挑战或班级学习包的二维码。", "chal.bad": "这不是有效的代码。", "chal.old": "这个挑战里有当前版本不认识的词，请更新应用。", "chal.otherZh": "这个挑战是给学中文的人准备的。", "chal.otherIt": "这个挑战是给学意大利语的人准备的。", "chal.switch": "切换到那个课程", "chal.received": "有人向你发起挑战：{n} 个词。", "chal.privacy": "代码里只有这些词和题目的顺序。", "chal.start": "开始", "chal.q": "这是什么意思？", "chal.n": "第 {i} 题，共 {n} 题", "chal.right": "答对了", "chal.wrong": "正确答案：{a}", "chal.result": "{n} 题答对 {ok} 题，用时 {s} 秒", "chal.perfect": "全部答对！", "chal.review": "需要复习", "chal.again": "📤 把挑战发回去", "chal.msg": "我向你发起 {n} 个词的挑战！打开链接，或者在 màndarínō 里粘贴代码（⚙️ → 挑战与班级）：", "chal.msgScore": "我答对了 {n} 题中的 {ok} 题。", "cls.title": "班级", "cls.intro": "给老师用：选几站学习路线，定一个目标和日期，做成学习包让学生导入。不做记录，也不经过服务器。", "cls.empty": "还没有学习包。如果老师给了你，请在这里导入，或者把代码粘贴到上面。", "cls.import": "导入学习包（.json）", "cls.imported": "已导入学习包“{t}”", "cls.dup": "这个学习包已经有了", "cls.bad": "这不是有效的班级学习包。", "cls.other": "这个学习包属于另一个课程。", "cls.rangeZh": "第 {a}–{b} 站", "cls.rangeIt": "第 {a}–{b} 课", "cls.goal": "目标：{d} 前完成 {p}%", "cls.goalNo": "目标：完成 {p}%", "cls.progZh": "{n} 个词里学了 {s} 个（{p}%）", "cls.progIt": "{n} 课里通过了 {s} 课（{p}%）", "cls.met": "✓ 目标已达成", "cls.left": "还剩 {n} 天", "cls.today": "今天截止", "cls.past": "已截止", "cls.go": "去学习", "cls.report": "提交学习小结", "cls.remove": "移除", "cls.removed": "学习包已移除", "cls.banner": "班级：{t}", "cls.teach": "为班级制作学习包", "cls.name": "标题", "cls.namePh": "二年级 B 班 第一单元", "cls.from": "从", "cls.to": "到", "cls.goalL": "目标", "cls.due": "截止日期", "cls.dl": "下载学习包（.json）", "cls.print": "打印用的单页", "cls.shareCode": "📤 发送代码", "cls.msg": "màndarínō 班级学习包“{t}”。打开链接，或者在应用里粘贴代码（⚙️ → 挑战与班级）：", "cls.reports": "查看收到的学习小结（.json）", "cls.repTitle": "班级学习小结", "cls.repNone": "所选文件里没有有效的学习小结。", "cls.colName": "姓名", "cls.colDone": "完成", "cls.colDays": "最近 30 天的学习天数", "cls.colDate": "日期", "cls.anon": "（未署名）", "cls.yes": "已达成", "cls.no": "尚未达成", "cls.sh1": "1 · 下载应用", "cls.sh2": "2 · 在应用里：⚙️ → 挑战与班级 → 扫二维码", "cls.shFoot": "免费、无广告，没有网络也能用。老师看不到你的复习记录，只能看到你自己决定提交的小结。", "cls.repHead": "给老师的学习小结", "cls.repWhat": "只包含：学习包标题、你完成了学习包里的多少词或课、是否达成目标、最近 30 天学习了几天，以及今天的日期。不包含复习记录、错误或其他任何内容。", "cls.repName": "你的名字（可不填，只写进这份小结）", "cls.consent": "我已了解内容，同意提交", "cls.repDl": "下载小结（.json）", "cls.repShare": "📤 以文字发送", "cls.repText": "{t}：{done}；目标{g}。最近 30 天学习 {d} 天。（{date}）"});
+/* ---- ui/challenge.js ---- */
+/* ===== màndarínō · sfida a un amico, senza server (Task 9.1).
+   Dieci parole e un seme diventano un codice (MDC1-…, base64url di «1|corso|seme|chiavi»): chi lo apre fa la stessa sfida,
+   con le stesse domande nello stesso ordine e le stesse risposte tra cui scegliere, perché tutto viene dal seme e dalle
+   dieci parole (le risposte sbagliate sono le altre parole della sfida: niente dipende dalla versione del vocabolario).
+   Il codice viaggia come link (…#sfida=MDC1-…: il frammento non arriva a nessun server), come testo da incollare o come QR
+   (pwa/qr.js) da inquadrare nell'app. Dentro ci sono solo le parole e il seme: nessun nome, nessun punteggio, nessun
+   identificativo. La sfida non tocca i ripassi né i punti: è un gioco tra amici.
+   Corso di cinese: carattere e pinyin → significato in italiano. Corso di italiano: parola italiana → caratteri.
+   Modulo caricato al primo uso di CP.challenge (tools/build.mjs, LAZYMOD); l'avvio passa da ui/together.js. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, C = window.MD_CONFIG || {};
+  var N = 10, PREFIX = "MDC1-", HASH = "#sfida=", NEXT_MS = 900;
+  var IT = CP.course && CP.course() === "it";
+
+  /* ---- codice ---- */
+  function b64u(s) { var b = new TextEncoder().encode(s), bin = ""; for (var i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]); return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function unb64u(s) { var bin = atob(s.replace(/-/g, "+").replace(/_/g, "/")), b = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return new TextDecoder().decode(b); }
+  function encode(c) { return PREFIX + b64u(["1", c.c === "it" ? "i" : "z", (c.seed >>> 0).toString(36), c.keys.join(",")].join("|")); }
+  /* da un testo qualsiasi (link, messaggio incollato, QR) il primo codice valido, oppure null */
+  function decode(text) {
+    var m = /MDC1-([A-Za-z0-9_-]{8,})/.exec(String(text || "")); if (!m) return null;
+    try {
+      var p = unb64u(m[1]).split("|"); if (p[0] !== "1" || p.length !== 4) return null;
+      var keys = p[3].split(",").filter(Boolean).slice(0, 20);
+      return keys.length >= 4 ? { c: p[1] === "i" ? "it" : "zh", seed: parseInt(p[2], 36) >>> 0, keys: keys, code: PREFIX + m[1] } : null;
+    } catch (e) { return null; }
+  }
+  function base() {
+    var app = !!window.MandarinoAndroid || location.hostname === "appassets.androidplatform.net";
+    if (!app && /^https?:$/.test(location.protocol)) return location.origin + location.pathname;
+    return C.SITE_URL ? C.SITE_URL.replace(/\/?$/, "/") + "app/" : "";
+  }
+  function link(code) { var b = base(); return b ? b + HASH + code : ""; }
+
+  /* ---- parole: chiave → { k, q (domanda), py, a (risposta) } ---- */
+  var LEXI = null;
+  function itLex() { if (!LEXI) { LEXI = {}; (CP.itLexicon ? CP.itLexicon() : []).forEach(function (e) { LEXI[e.id.slice(3)] = e; }); } return LEXI; }
+  function item(c, k) {
+    if (c === "it") { var e = itLex()[k]; return e ? { k: k, q: e.it, a: e.zh, py: e.py, say: e.say } : null; }
+    var w = CP.WORDS[k]; return w ? { k: k, q: w.hz, py: w.py, a: CP.gloss(w) } : null;
+  }
+  /* parole per una sfida nuova: tra quelle già studiate, a caso; se sono poche, le prime del corso */
+  function pick() {
+    var pool = [], fill = [];
+    if (IT) {
+      var S = {}; try { S = JSON.parse(localStorage.getItem("cp-it-srs-v1") || "{}") || {}; } catch (e) {}
+      pool = Object.keys(S).filter(function (id) { return /^it:/.test(id); }).map(function (id) { return id.slice(3); });
+      fill = Object.keys(itLex()).slice(0, 80);
+    } else {
+      pool = CP.ORDER.filter(function (k) { return CP.state(k) >= 1; });
+      fill = CP.ORDER.slice(0, 80);
+    }
+    var out = [], seenA = {}, add = function (k) { var x = item(IT ? "it" : "zh", k); if (!x || seenA[x.a] || out.indexOf(k) >= 0) return; seenA[x.a] = 1; out.push(k); };
+    shuffle(pool, Math.random).forEach(function (k) { if (out.length < N) add(k); });
+    shuffle(fill, Math.random).forEach(function (k) { if (out.length < N) add(k); });
+    return { c: IT ? "it" : "zh", seed: (Math.random() * 4294967296) >>> 0, keys: out };
+  }
+
+  /* ---- generatore con seme (mulberry32): le stesse domande su ogni telefono ---- */
+  function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function shuffle(a, r) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  /* le domande: ordine e risposte da scegliere vengono solo dal seme e dalle parole */
+  function build(ch) {
+    var items = ch.keys.map(function (k) { return item(ch.c, k); }).filter(Boolean), r = rng(ch.seed);
+    if (items.length < 4) return null;
+    return shuffle(items, r).map(function (x) {
+      var others = shuffle(items.filter(function (y) { return y.a !== x.a; }), r).slice(0, 3).map(function (y) { return y.a; });
+      return { x: x, opts: shuffle(others.concat([x.a]), r) };
+    });
+  }
+
+  /* ---- foglio ---- */
+  var G = null;
+  function head(title) { return '<div class="fam-head"><div class="meta"><b>🎯 ' + esc(title) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>"; }
+  function qText(x, big) {
+    if (G && G.c === "it") return '<div class="chal-q' + (big ? "" : " sm") + '" lang="it">' + esc(x.q) + "</div>";
+    return '<div class="chal-q' + (big ? "" : " sm") + '" lang="zh-CN">' + CP.hanziHTML(x.q, x.py) + '</div><div class="chal-py">' + CP.pinyinHTML(x.py) + "</div>";
+  }
+  function aLang() { return G && G.c === "it" ? "zh-CN" : "it"; }
+  function intro(ch, mine) {
+    var Q = build(ch);
+    if (!Q) { CP.openSheet(head(T("chal.title")) + '<p role="alert">' + esc(T("chal.old")) + "</p>"); return; }
+    G = { ch: ch, c: ch.c, Q: Q, i: 0, ok: 0, wrong: [], t0: 0, lock: false };
+    if (mine) { ready(ch); return; }
+    CP.openSheet(head(T("chal.title")) + '<p class="chal-lead">' + esc(T("chal.received", { n: Q.length })) + '</p><p class="small muted">' + esc(T("chal.privacy")) + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" data-chal-start style="margin:0">' + esc(T("chal.start")) + "</button></div>");
+  }
+  function ready(ch) {
+    var code = ch.code || encode(ch), url = link(code);
+    CP.openSheet(head(T("chal.ready")) + '<p class="small">' + esc(T("chal.howTo")) + "</p>" +
+      '<canvas class="chal-qr" role="img" aria-label="' + CP.attr(T("chal.code")) + '"></canvas>' +
+      '<label class="small" style="display:grid;gap:4px">' + esc(T("chal.code")) + '<input type="text" class="chal-code" readonly value="' + CP.attr(url || code) + '" data-noi18n></label>' +
+      '<p class="small muted">' + esc(T("chal.privacy")) + "</p>" +
+      '<div class="acts"><button type="button" class="btn-main" data-chal-send style="margin:0">' + esc(T("chal.share")) + '</button><button type="button" class="btn-s" data-chal-copy>' + esc(T("chal.copy")) + '</button><button type="button" class="btn-s" data-chal-start>' + esc(T("chal.try")) + "</button></div>");
+    var cv = document.querySelector(".chal-qr"); if (cv && CP.qr) try { CP.qr.draw(cv, CP.qr.encode(url || code, "M")); } catch (e) {}
+  }
+  function question() {
+    var q = G.Q[G.i];
+    CP.openSheet(head(T("chal.title")) + '<div class="chal-n small muted" aria-live="polite">' + esc(T("chal.n", { i: G.i + 1, n: G.Q.length })) + '</div><div class="chal-bar" aria-hidden="true"><i style="width:' + Math.round(G.i / G.Q.length * 100) + '%"></i></div>' +
+      '<p class="small muted" style="margin:0">' + esc(T("chal.q")) + "</p>" + qText(q.x, true) +
+      (G.c === "zh" && CP.sayBtn ? '<div class="chal-say">' + CP.sayBtn(q.x.q) + "</div>" : "") +
+      '<div class="chal-opts" role="group" aria-label="' + CP.attr(T("chal.q")) + '">' + q.opts.map(function (a, i) { return '<button type="button" class="chal-opt" data-chal-a="' + i + '" lang="' + aLang() + '">' + esc(a) + "</button>"; }).join("") + "</div>" +
+      '<div class="chal-fb small" aria-live="assertive"></div>');
+    G.lock = false;
+  }
+  function answer(i) {
+    if (!G || G.lock) return; G.lock = true;
+    var q = G.Q[G.i], right = q.opts[i] === q.x.a, btns = document.querySelectorAll("[data-chal-a]"), fb = document.querySelector(".chal-fb");
+    Array.prototype.forEach.call(btns, function (b, j) {
+      b.disabled = true;
+      if (q.opts[j] === q.x.a) { b.classList.add("ok"); b.insertAdjacentHTML("afterbegin", '<span aria-hidden="true">✓ </span>'); }
+      else if (j === i) { b.classList.add("ko"); b.insertAdjacentHTML("afterbegin", '<span aria-hidden="true">✗ </span>'); }
+    });
+    if (right) G.ok++; else G.wrong.push(q.x);
+    if (fb) fb.textContent = right ? T("chal.right") : T("chal.wrong", { a: q.x.a });
+    CP.sfx(right ? "ok" : "ko"); if (CP.haptic) CP.haptic(right ? 12 : [20, 40, 20]);
+    setTimeout(function () { G.i++; if (G.i < G.Q.length) question(); else result(); }, right ? NEXT_MS : NEXT_MS * 2);
+  }
+  function result() {
+    var s = Math.max(1, Math.round((Date.now() - G.t0) / 1000));
+    G.score = G.ok;
+    CP.openSheet(head(T("chal.title")) + '<div class="chal-res"><b>' + esc(T("chal.result", { ok: G.ok, n: G.Q.length, s: s })) + "</b>" + (G.ok === G.Q.length ? "<div>" + esc(T("chal.perfect")) + "</div>" : "") + "</div>" +
+      (G.wrong.length ? '<h3 class="itd-h3">' + esc(T("chal.review")) + '</h3><ul class="chal-wrong">' + G.wrong.map(function (x) { return "<li>" + qText(x, false) + ' <span lang="' + aLang() + '">' + esc(x.a) + "</span></li>"; }).join("") + "</ul>" : "") +
+      '<div class="acts"><button type="button" class="btn-main" data-chal-send style="margin:0">' + esc(T("chal.again")) + '</button><button type="button" class="btn-s" data-chal-new>' + esc(T("chal.new")) + "</button></div>");
+    if (CP.sfx) CP.sfx(G.ok === G.Q.length ? "level" : "tap");
+  }
+  function send() {
+    if (!G) return;
+    var code = G.ch.code || encode(G.ch), url = link(code), parts = [T("chal.msg", { n: G.Q.length })];
+    if (G.score != null) parts.push(T("chal.msgScore", { ok: G.score, n: G.Q.length }));
+    parts.push(url || code);
+    var text = parts.join("\n");
+    if (navigator.share) navigator.share({ title: "màndarínō", text: text }).catch(function () {});
+    else copy(url || code);
+  }
+  function copy(s) {
+    var done = function () { CP.toast(T("chal.copied")); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, function () { fallback(); });
+    else fallback();
+    function fallback() { var i = document.querySelector(".chal-code"); if (i) { i.select(); try { document.execCommand("copy"); done(); } catch (e) {} } }
+  }
+
+  /* apre un codice ricevuto: dello stesso corso → la sfida; dell'altro → l'invito a cambiare corso (il codice resta nel link) */
+  function openCode(text) {
+    var ch = decode(text);
+    if (!ch) { CP.toast(T("chal.bad")); return false; }
+    var cur = IT ? "it" : "zh";
+    if (ch.c !== cur) {
+      CP.openSheet(head(T("chal.title")) + "<p>" + esc(T(ch.c === "it" ? "chal.otherIt" : "chal.otherZh")) + '</p><div class="acts"><button type="button" class="btn-s" data-chal-switch="' + ch.c + '" data-code="' + CP.attr(ch.code) + '">' + esc(T("chal.switch")) + "</button></div>");
+      return true;
+    }
+    intro(ch, false); return true;
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-chal-start], [data-chal-a], [data-chal-send], [data-chal-copy], [data-chal-new], [data-chal-switch]") : null; if (!b) return;
+    if (b.hasAttribute("data-chal-a")) answer(+b.getAttribute("data-chal-a"));
+    else if (b.hasAttribute("data-chal-start") && G) { G.i = 0; G.ok = 0; G.wrong = []; G.score = null; G.t0 = Date.now(); CP.sfx("tap"); question(); }
+    else if (b.hasAttribute("data-chal-send")) send();
+    else if (b.hasAttribute("data-chal-copy")) { var i = document.querySelector(".chal-code"); copy(i ? i.value : ""); }
+    else if (b.hasAttribute("data-chal-new")) CP.challenge.create();
+    else if (b.hasAttribute("data-chal-switch")) { try { history.replaceState(null, "", location.pathname + location.search + HASH + b.getAttribute("data-code")); } catch (x) {} CP.setCourse(b.getAttribute("data-chal-switch")); }
+  });
+
+  CP.challenge = {
+    N: N, HASH: HASH,
+    create: function () { var ch = pick(); intro(ch, true); },
+    open: openCode, encode: encode, decode: decode, build: build, link: link, base: base,
+    state: function () { return G ? { i: G.i, ok: G.ok, n: G.Q.length } : null; }
+  };
+})();
+/* ---- ui/classroom.js ---- */
+/* ===== màndarínō · pacchetto classe per chi insegna, senza server (Task 9.2), in tutti e due i corsi.
+   - Chi insegna sceglie un tratto del Percorso (tappe del corso di cinese, lezioni del corso di italiano), un obiettivo
+     (la percentuale da completare) e una data: ne esce un codice MDK1-… (base64url del JSON), un file .json con lo stesso
+     contenuto e un foglio da stampare (PNG A4) con due QR, uno verso l'app (lo stesso della carta da condividere) e uno con
+     il pacchetto da inquadrare nell'app.
+   - Chi studia lo importa (file, codice incollato o QR) e vede a che punto è. I pacchetti stanno in cp-class-v1
+     ({ p: { id: pacchetto }, x: { id: quando è stato tolto } }; nell'unione tra dispositivi si sommano, chi è tolto resta tolto).
+   - Il riepilogo per l'insegnante: solo conteggi (parole o lezioni del pacchetto fatte, obiettivo raggiunto sì/no, giorni di
+     studio negli ultimi 30, data), nessun registro dei ripassi. Si crea solo dopo una spunta esplicita; il nome è facoltativo
+     e finisce soltanto nel file. Chi insegna li legge tutti insieme in una tabella (i file non vengono salvati).
+   Modulo caricato al primo uso di CP.classroom (tools/build.mjs, LAZYMOD); l'avvio passa da ui/together.js. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, attr = CP.attr;
+  var K = "cp-class-v1", PREFIX = "MDK1-", GOALS = [50, 80, 100], GOAL_DEFAULT = 80, SHOW_PAST_DAYS = 14, TITLE_MAX = 40;
+  var IT = CP.course && CP.course() === "it";
+
+  /* ---- unità del Percorso del corso aperto: [{ id, n, title }] ---- */
+  function units(c) {
+    if (c === "it") return CP.itApi ? CP.itApi.lessons().map(function (l) { return { id: l.id, n: l.n, title: l.title }; }) : [];
+    return CP.SEC.map(function (s, i) { return { id: s.id, n: i + 1, title: s.title.replace(/^\d+\.\s*/, "") }; });
+  }
+  function slice(p) {
+    var U = units(p.c), a = -1, b = -1;
+    U.forEach(function (u, i) { if (u.id === p.s) a = i; if (u.id === p.e) b = i; });
+    if (a < 0 && b < 0) return [];
+    if (a < 0) a = b; if (b < 0) b = a; if (a > b) { var t = a; a = b; b = t; }
+    return U.slice(a, b + 1);
+  }
+  function progress(p) {
+    var U = slice(p), n = 0, done = 0, known = 0;
+    if (p.c === "it") {
+      var P = CP.itApi ? CP.itApi.progress() : {}, PASS = CP.itApi ? CP.itApi.PASS : 80;
+      U.forEach(function (u) { n++; var x = P[u.id] || {}; if (x.done || (x.best || 0) >= PASS) done++; });
+    } else {
+      var ids = {}; U.forEach(function (u) { ids[u.id] = 1; });
+      CP.ORDER.forEach(function (k) { if (!ids[CP.WORDS[k].sec]) return; n++; var s = CP.state(k); if (s >= 1) done++; if (s === 2) known++; });
+    }
+    var pct = n ? Math.round(done / n * 100) : 0;
+    return { units: U, n: n, done: done, known: known, pct: pct, met: n > 0 && pct >= (p.g || GOAL_DEFAULT) };
+  }
+  function days30() {
+    var D = CP.game && CP.game.days ? CP.game.days() : {}, lim = new Date(); lim.setDate(lim.getDate() - 30);
+    var from = lim.getFullYear() + "-" + ("0" + (lim.getMonth() + 1)).slice(-2) + "-" + ("0" + lim.getDate()).slice(-2);
+    return Object.keys(D).filter(function (d) { var r = D[d] || {}; return d > from && ((r.w && r.w.length) || r.s || r.e); }).length;
+  }
+  function todayISO() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function daysLeft(iso) { if (!iso) return null; var a = new Date(iso + "T00:00:00"), b = new Date(todayISO() + "T00:00:00"); return Math.round((a - b) / 86400000); }
+  function fmtDate(iso) { try { return new Date(iso + "T12:00:00").toLocaleDateString(IT ? "zh-CN" : "it-IT", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } }
+
+  /* ---- codice e file ---- */
+  function b64u(s) { var b = new TextEncoder().encode(s), bin = ""; for (var i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]); return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function unb64u(s) { var bin = atob(s.replace(/-/g, "+").replace(/_/g, "/")), b = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return new TextDecoder().decode(b); }
+  function clean(o) {
+    if (!o || typeof o !== "object") return null;
+    var p = { id: String(o.id || "").slice(0, 16), c: o.c === "it" ? "it" : "zh", t: String(o.t || "").slice(0, TITLE_MAX), s: String(o.s || ""), e: String(o.e || ""), g: GOALS.indexOf(+o.g) >= 0 ? +o.g : GOAL_DEFAULT, d: /^\d{4}-\d{2}-\d{2}$/.test(o.d || "") ? o.d : "" };
+    return p.id && p.t && (p.s || p.e) ? p : null;
+  }
+  function encode(p) { return PREFIX + b64u(JSON.stringify({ id: p.id, c: p.c, t: p.t, s: p.s, e: p.e, g: p.g, d: p.d })); }
+  /* da un testo qualsiasi (codice, messaggio, QR, contenuto del file .json) il pacchetto, oppure null */
+  function decode(text) {
+    text = String(text || "");
+    var m = /MDK1-([A-Za-z0-9_-]{8,})/.exec(text);
+    try { if (m) return clean(JSON.parse(unb64u(m[1]))); } catch (e) {}
+    try { var o = JSON.parse(text); if (o && o.app === "mandarino" && o.kind === "class") return clean(o); } catch (e) {}
+    return null;
+  }
+  /* il link …#classe=MDK1-… dove c'è un indirizzo web dell'app, altrimenti il codice da solo */
+  function linkOf(p) { var b = CP.challenge && CP.challenge.base ? CP.challenge.base() : ""; return b ? b + "#classe=" + encode(p) : encode(p); }
+  function fileJSON(p) { return JSON.stringify({ app: "mandarino", kind: "class", v: 1, id: p.id, c: p.c, t: p.t, s: p.s, e: p.e, g: p.g, d: p.d, code: encode(p) }, null, 2); }
+  function fileName(base) { return "mandarino-" + String(base).toLowerCase().replace(/[^a-z0-9一-鿿]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) + ".json"; }
+
+  /* ---- dati sul dispositivo ---- */
+  function load() { try { var o = JSON.parse(localStorage.getItem(K) || "null"); return o && typeof o === "object" ? { p: o.p || {}, x: o.x || {} } : { p: {}, x: {} }; } catch (e) { return { p: {}, x: {} }; } }
+  function save(o) { try { localStorage.setItem(K, JSON.stringify(o)); } catch (e) {} if (window.Store && Store.flush) Store.flush(); }
+  function list() { var o = load(); return Object.keys(o.p).filter(function (id) { return !o.x[id] && o.p[id].c === (IT ? "it" : "zh"); }).map(function (id) { return o.p[id]; }).sort(function (a, b) { return (a.d || "9") < (b.d || "9") ? -1 : 1; }); }
+  function add(p) {
+    var o = load();
+    if (p.c !== (IT ? "it" : "zh")) { CP.toast(T("cls.other")); return false; }
+    if (o.p[p.id] && !o.x[p.id]) { CP.toast(T("cls.dup")); return true; }
+    p.at = Date.now(); o.p[p.id] = p; delete o.x[p.id]; save(o);
+    CP.toast(T("cls.imported", { t: p.t })); repaint(); return true;
+  }
+  function remove(id) { var o = load(); o.x[id] = Date.now(); save(o); CP.toast(T("cls.removed")); repaint(); }
+  function repaint() { if (CP.repaintSettings && document.getElementById("set-together")) CP.repaintSettings(); }
+
+  /* ---- vista per chi studia ---- */
+  function rangeText(p, U) {
+    U = U || slice(p); if (!U.length) return "";
+    var a = U[0], b = U[U.length - 1];
+    return T(p.c === "it" ? "cls.rangeIt" : "cls.rangeZh", { a: a.n, b: b.n }) + " · " + a.title + (U.length > 1 ? " → " + b.title : "");
+  }
+  function dueText(p) { var n = daysLeft(p.d); return n == null ? "" : n > 0 ? T("cls.left", { n: n }) : n === 0 ? T("cls.today") : T("cls.past"); }
+  function cardHTML(p) {
+    var g = progress(p);
+    return '<div class="cls-card"><b>' + esc(p.t) + '</b><div class="small muted">' + esc(rangeText(p, g.units)) + "</div>" +
+      '<div class="small">' + esc(p.d ? T("cls.goal", { p: p.g, d: fmtDate(p.d) }) : T("cls.goalNo", { p: p.g })) + (p.d ? " · " + esc(dueText(p)) : "") + "</div>" +
+      '<div class="mini" role="progressbar" aria-valuenow="' + g.pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + attr(p.t) + '"><i style="width:' + g.pct + '%"></i></div>' +
+      '<div class="small">' + esc(T(p.c === "it" ? "cls.progIt" : "cls.progZh", { s: g.done, n: g.n, p: g.pct })) + (g.met ? ' <span class="okline">' + esc(T("cls.met")) + "</span>" : "") + "</div>" +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-cls-go="' + attr(p.id) + '">' + esc(T("cls.go")) + '</button><button type="button" class="btn-s" data-cls-report="' + attr(p.id) + '">' + esc(T("cls.report")) + '</button><button type="button" class="btn-s" data-cls-rm="' + attr(p.id) + '">' + esc(T("cls.remove")) + "</button></div></div>";
+  }
+  /* il primo pacchetto ancora in corso, in cima al Percorso (o alle lezioni del corso di italiano) */
+  function banner() {
+    var l = list().filter(function (p) { var n = daysLeft(p.d); return n == null || n >= -SHOW_PAST_DAYS; });
+    if (!l.length) return "";
+    var p = l[0], g = progress(p);
+    return '<button type="button" class="panel cls-banner" data-cls-settings><span aria-hidden="true">👩‍🏫</span><span><b>' + esc(T("cls.banner", { t: p.t })) + "</b><small>" + esc(T(p.c === "it" ? "cls.progIt" : "cls.progZh", { s: g.done, n: g.n, p: g.pct })) + (p.d ? " · " + esc(dueText(p)) : "") + "</small></span></button>";
+  }
+  function goTo(p) {
+    var g = progress(p), U = g.units; if (!U.length) return;
+    var target = U[0];
+    if (p.c === "it") {
+      var P = CP.itApi.progress(), PASS = CP.itApi.PASS;
+      target = U.filter(function (u) { var x = P[u.id] || {}; return !(x.done || (x.best || 0) >= PASS); })[0] || U[0];
+      if (CP.closeSheet) CP.closeSheet(); var s = document.getElementById("settings"); if (s && CP.untrap) CP.untrap(s);
+      CP.itApi.open(target.id); window.scrollTo(0, 0); return;
+    }
+    var ids = {}; U.forEach(function (u) { ids[u.id] = 1; });
+    var first = CP.ORDER.filter(function (k) { return ids[CP.WORDS[k].sec] && CP.state(k) < 1; })[0];
+    if (first) target = U.filter(function (u) { return u.id === CP.WORDS[first].sec; })[0] || U[0];
+    var st = document.getElementById("settings"); if (st && CP.untrap) CP.untrap(st);
+    if (CP.pathOpen) CP.pathOpen(target.id);
+  }
+
+  /* ---- riepilogo per l'insegnante (con consenso) ---- */
+  var repFor = null;
+  function reportSheet(p) {
+    repFor = p; var g = progress(p);
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("cls.repHead")) + '</b><div class="small muted">' + esc(p.t) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<p class="small">' + esc(T("cls.repWhat")) + "</p>" +
+      '<div class="cls-card small"><div>' + esc(T(p.c === "it" ? "cls.progIt" : "cls.progZh", { s: g.done, n: g.n, p: g.pct })) + "</div><div>" + esc(T("cls.colDays")) + ": " + days30() + "</div></div>" +
+      '<label class="small" style="display:grid;gap:4px">' + esc(T("cls.repName")) + '<input type="text" id="cls-rep-name" maxlength="40" autocomplete="off"></label>' +
+      '<label class="chk"><input type="checkbox" id="cls-consent"> ' + esc(T("cls.consent")) + "</label>" +
+      '<div class="acts"><button type="button" class="btn-main" data-cls-rep-dl disabled style="margin:0">' + esc(T("cls.repDl")) + '</button><button type="button" class="btn-s" data-cls-rep-share disabled>' + esc(T("cls.repShare")) + "</button></div>");
+  }
+  function report(p, name) {
+    var g = progress(p);
+    return { app: "mandarino", kind: "class-report", v: 1, pkg: { id: p.id, c: p.c, t: p.t, s: p.s, e: p.e, g: p.g, d: p.d }, name: String(name || "").trim().slice(0, 40), date: todayISO(), n: g.n, done: g.done, pct: g.pct, met: g.met, days30: days30(), version: CP.VERSION || "" };
+  }
+  function reportText(r) {
+    return T("cls.repText", { t: r.pkg.t, done: T(r.pkg.c === "it" ? "cls.progIt" : "cls.progZh", { s: r.done, n: r.n, p: r.pct }), g: T(r.met ? "cls.yes" : "cls.no"), d: r.days30, date: r.date }) + (r.name ? " — " + r.name : "");
+  }
+  function readReports(files) {
+    var rows = [], left = files.length;
+    if (!left) return;
+    Array.prototype.forEach.call(files, function (f) {
+      var rd = new FileReader();
+      rd.onload = function () { try { var o = JSON.parse(rd.result); if (o && o.app === "mandarino" && o.kind === "class-report" && o.pkg) rows.push(o); } catch (e) {} if (!--left) table(rows); };
+      rd.onerror = function () { if (!--left) table(rows); };
+      rd.readAsText(f);
+    });
+  }
+  function table(rows) {
+    rows.sort(function (a, b) { return String(a.name || "").localeCompare(String(b.name || "")); });
+    var h = rows.length ? '<div class="cls-table-w"><table class="cls-table"><thead><tr><th>' + esc(T("cls.colName")) + "</th><th>" + esc(T("cls.title")) + "</th><th>" + esc(T("cls.colDone")) + "</th><th>" + esc(T("cls.goalL")) + "</th><th>" + esc(T("cls.colDays")) + "</th><th>" + esc(T("cls.colDate")) + "</th></tr></thead><tbody>" +
+      rows.map(function (r) { return "<tr><td>" + esc(r.name || T("cls.anon")) + "</td><td>" + esc(r.pkg.t) + "</td><td>" + (+r.done || 0) + "/" + (+r.n || 0) + " (" + (+r.pct || 0) + "%)</td><td>" + (r.met ? "✓ " : "· ") + esc(T(r.met ? "cls.yes" : "cls.no")) + "</td><td>" + (+r.days30 || 0) + "</td><td>" + esc(String(r.date || "")) + "</td></tr>"; }).join("") + "</tbody></table></div>"
+      : '<p role="alert">' + esc(T("cls.repNone")) + "</p>";
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("cls.repTitle")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" + h);
+  }
+
+  /* ---- per chi insegna: il modulo ---- */
+  function formValues() {
+    var v = function (id) { var el = document.getElementById(id); return el ? el.value : ""; };
+    var p = clean({ id: Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 6), c: IT ? "it" : "zh", t: v("cls-t").trim() || T("cls.namePh"), s: v("cls-s"), e: v("cls-e"), g: +v("cls-g"), d: v("cls-d") });
+    return p;
+  }
+  function teachHTML() {
+    var U = units(IT ? "it" : "zh"), opts = function (sel) { return U.map(function (u, i) { return '<option value="' + attr(u.id) + '"' + (i === sel ? " selected" : "") + ">" + u.n + ". " + esc(u.title) + "</option>"; }).join(""); };
+    return '<details class="cls-teach"><summary>' + esc(T("cls.teach")) + "</summary>" +
+      '<p class="small muted">' + esc(T("cls.intro")) + "</p>" +
+      '<label class="small" style="display:grid;gap:4px">' + esc(T("cls.name")) + '<input type="text" id="cls-t" maxlength="' + TITLE_MAX + '" placeholder="' + attr(T("cls.namePh")) + '"></label>' +
+      '<div class="cls-row"><label class="small">' + esc(T("cls.from")) + '<select id="cls-s">' + opts(0) + '</select></label><label class="small">' + esc(T("cls.to")) + '<select id="cls-e">' + opts(Math.min(4, U.length - 1)) + "</select></label></div>" +
+      '<div class="cls-row"><label class="small">' + esc(T("cls.goalL")) + '<select id="cls-g">' + GOALS.map(function (g) { return '<option value="' + g + '"' + (g === GOAL_DEFAULT ? " selected" : "") + ">" + g + "%</option>"; }).join("") + '</select></label><label class="small">' + esc(T("cls.due")) + '<input type="date" id="cls-d"></label></div>' +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-cls-dl>' + esc(T("cls.dl")) + '</button><button type="button" class="btn-s" data-cls-print>' + esc(T("cls.print")) + '</button><button type="button" class="btn-s" data-cls-send>' + esc(T("cls.shareCode")) + "</button></div>" +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-cls-reports>' + esc(T("cls.reports")) + '</button><input type="file" id="cls-reports" accept="application/json,.json" multiple hidden></div></details>';
+  }
+  function section() {
+    var l = list();
+    return '<details class="set-sec" id="set-together"><summary>' + esc(T("tog.title")) + '</summary><div class="vbody">' +
+      '<h4 class="cls-h">' + esc(T("chal.title")) + '</h4><p class="small muted" style="margin:0">' + esc(T("chal.intro")) + "</p>" +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-chal-open>' + esc(T("chal.new")) + "</button></div>" +
+      '<label class="small" style="display:grid;gap:4px">' + esc(T("chal.paste")) + '<input type="text" id="tog-code" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="MDC1-… / MDK1-…" data-noi18n></label>' +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-tog-try>' + esc(T("chal.go")) + '</button><button type="button" class="btn-s" data-tog-scan>📷 ' + esc(T("chal.scan")) + "</button></div>" +
+      '<h4 class="cls-h" id="set-class">' + esc(T("cls.title")) + "</h4>" +
+      (l.length ? l.map(cardHTML).join("") : '<p class="small muted" style="margin:0">' + esc(T("cls.empty")) + "</p>") +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-cls-import>' + esc(T("cls.import")) + '</button><input type="file" id="cls-file" accept="application/json,.json,.txt" hidden></div>' +
+      teachHTML() + "</div></details>";
+  }
+
+  /* ---- foglio da stampare: PNG A4 (150 dpi), con il QR dell'app e quello del pacchetto ---- */
+  var W = 1240, H = 1754, SANS = "system-ui, -apple-system, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif";
+  function wrapLines(x, text, w) {
+    var toks = /[一-鿿]/.test(text) ? Array.from(text) : String(text).split(/(\s+)/), out = [], line = "";
+    toks.forEach(function (t) { var n = line + t; if (x.measureText(n).width > w && line.trim()) { out.push(line.trim()); line = t.trim() ? t : ""; } else line = n; });
+    if (line.trim()) out.push(line.trim());
+    return out;
+  }
+  function qrAt(x, text, X, Y, S) {
+    var q = CP.qr.encode(text, "M"), n = q.size + 8, s = S / n;
+    x.fillStyle = "#fff"; x.fillRect(X, Y, S, S); x.fillStyle = "#000";
+    for (var yy = 0; yy < q.size; yy++) for (var xx = 0; xx < q.size; xx++) if (q.get(xx, yy)) x.fillRect(Math.floor(X + (xx + 4) * s), Math.floor(Y + (yy + 4) * s), Math.ceil(s), Math.ceil(s));
+  }
+  function sheet(cv, p) {
+    cv.width = W; cv.height = H; var x = cv.getContext("2d"), y = 120, M = 110;
+    x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#B8322A"; x.fillRect(0, 0, W, 18);
+    x.textBaseline = "alphabetic"; x.fillStyle = "#6b5d4a"; x.font = "600 34px " + SANS; x.fillText("màndarínō", M, y);
+    y += 90; x.fillStyle = "#1d1a16"; x.font = "800 68px " + SANS;
+    wrapLines(x, p.t, W - 2 * M).slice(0, 2).forEach(function (l) { x.fillText(l, M, y); y += 84; });
+    x.font = "500 34px " + SANS; x.fillStyle = "#3d352b";
+    wrapLines(x, rangeText(p), W - 2 * M).slice(0, 3).forEach(function (l) { x.fillText(l, M, y); y += 48; });
+    y += 6; x.fillText(p.d ? T("cls.goal", { p: p.g, d: fmtDate(p.d) }) : T("cls.goalNo", { p: p.g }), M, y);
+    var S = 460, top = y + 100, gap = W - 2 * M - 2 * S;
+    [[CP.shareCard ? CP.shareCard.url() : "", T("cls.sh1")], [linkOf(p), T("cls.sh2")]].forEach(function (c, i) {
+      var X = M + i * (S + gap);
+      if (c[0]) qrAt(x, c[0], X, top, S);
+      x.fillStyle = "#1d1a16"; x.font = "700 32px " + SANS;
+      wrapLines(x, c[1], S).slice(0, 3).forEach(function (l, j) { x.fillText(l, X, top + S + 56 + j * 42); });
+    });
+    x.fillStyle = "#6b5d4a"; x.font = "400 28px " + SANS; var fy = top + S + 56 + 3 * 42 + 50;
+    wrapLines(x, T("cls.shFoot"), W - 2 * M).slice(0, 3).forEach(function (l) { x.fillText(l, M, fy); fy += 40; });
+    x.font = "400 20px ui-monospace, Menlo, Consolas, monospace"; x.fillStyle = "#8a7d6a";
+    var code = encode(p), per = 80; for (var i = 0, cy = H - 70; i < code.length && cy < H - 10; i += per, cy += 26) x.fillText(code.slice(i, i + per), M, cy);
+    return cv;
+  }
+
+  /* ---- eventi ---- */
+  function byId(id) { return load().p[id]; }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-cls-go], [data-cls-report], [data-cls-rm], [data-cls-import], [data-cls-dl], [data-cls-print], [data-cls-send], [data-cls-reports], [data-cls-rep-dl], [data-cls-rep-share]") : null; if (!b) return;
+    CP.sfx("tap");
+    if (b.hasAttribute("data-cls-go")) { var p = byId(b.getAttribute("data-cls-go")); if (p) goTo(p); }
+    else if (b.hasAttribute("data-cls-report")) { var q = byId(b.getAttribute("data-cls-report")); if (q) { var st = document.getElementById("settings"); if (st && CP.untrap) CP.untrap(st); reportSheet(q); } }
+    else if (b.hasAttribute("data-cls-rm")) remove(b.getAttribute("data-cls-rm"));
+    else if (b.hasAttribute("data-cls-import")) { var f = document.getElementById("cls-file"); if (f) f.click(); }
+    else if (b.hasAttribute("data-cls-reports")) { var r = document.getElementById("cls-reports"); if (r) r.click(); }
+    else if (b.hasAttribute("data-cls-dl")) { var p1 = formValues(); if (p1) Store.download(fileName(p1.t), fileJSON(p1), "application/json"); }
+    else if (b.hasAttribute("data-cls-print")) { var p2 = formValues(); if (p2 && CP.shareCard && CP.shareCard.sharePNG) CP.shareCard.sharePNG(sheet(document.createElement("canvas"), p2), fileName(p2.t).replace(/\.json$/, ".png")); }
+    else if (b.hasAttribute("data-cls-send")) { var p3 = formValues(); if (p3) { var txt = T("cls.msg", { t: p3.t }) + "\n" + linkOf(p3); if (navigator.share) navigator.share({ title: "màndarínō", text: txt }).catch(function () {}); else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { CP.toast(T("chal.copied")); }, function () {}); } }
+    else if (b.hasAttribute("data-cls-rep-dl") && repFor) { var nm = (document.getElementById("cls-rep-name") || {}).value || "", rep = report(repFor, nm); Store.download(fileName("riepilogo-" + (rep.name || "") + "-" + repFor.t), JSON.stringify(rep, null, 2), "application/json"); }
+    else if (b.hasAttribute("data-cls-rep-share") && repFor) { var r2 = report(repFor, (document.getElementById("cls-rep-name") || {}).value || ""), t2 = reportText(r2); if (navigator.share) navigator.share({ title: "màndarínō", text: t2 }).catch(function () {}); else if (navigator.clipboard) navigator.clipboard.writeText(t2).then(function () { CP.toast(T("chal.copied")); }, function () {}); }
+  });
+  document.addEventListener("change", function (e) {
+    var t = e.target; if (!t) return;
+    if (t.id === "cls-consent") Array.prototype.forEach.call(document.querySelectorAll("[data-cls-rep-dl], [data-cls-rep-share]"), function (b) { b.disabled = !t.checked; });
+    else if (t.id === "cls-file" && t.files && t.files[0]) { var rd = new FileReader(); rd.onload = function () { var p = decode(rd.result); if (p) add(p); else CP.toast(T("cls.bad")); t.value = ""; }; rd.readAsText(t.files[0]); }
+    else if (t.id === "cls-reports" && t.files && t.files.length) { var st = document.getElementById("settings"); if (st && CP.untrap) CP.untrap(st); readReports(t.files); t.value = ""; }
+  });
+
+  CP.classroom = {
+    section: section, banner: banner, list: list, add: add, remove: remove, progress: progress, report: report, reportText: reportText,
+    encode: encode, decode: decode, link: linkOf, fileJSON: fileJSON, sheet: sheet, units: units, table: table, PREFIX: PREFIX
+  };
+})();
+</script>
+<script>
+/* ---- i18n/together.js + ui/challenge.js + ui/classroom.js (al primo uso di CP.challenge, CP.classroom) ---- */
+(function () { var P = ["challenge","classroom"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-challenge"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
+  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
+</script>
+<script>
+/* ---- ui/together.js ---- */
+/* ===== màndarínō · sfide e classe, la parte sempre presente (Task 9): la sezione in ⚙️ (Dati e privacy), i link
+   …#sfida=MDC1-… e …#classe=MDK1-… (il frammento non arriva a nessun server: si toglie subito dall'indirizzo), i pulsanti
+   «🎯» e il riquadro del pacchetto classe in cima al Percorso. Il resto (ui/challenge.js, ui/classroom.js e i loro testi in
+   i18n/together.js) si carica al primo uso di CP.challenge o CP.classroom (tools/build.mjs, LAZYMOD): all'avvio pesa poco. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, OPEN_DELAY_MS = 900;
+  function closeSettings() { var s = document.getElementById("settings"); if (s && !s.hidden && CP.untrap) CP.untrap(s); }
+  /* un testo qualsiasi (codice incollato, QR, link): sfida o pacchetto classe */
+  function lazy() { return !!(CP.challenge && CP.classroom); }   /* carica i moduli e i loro testi */
+  function openAny(text) {
+    text = String(text || ""); lazy();
+    if (/MDC1-/.test(text)) { closeSettings(); return CP.challenge.open(text); }
+    if (/MDK1-|"kind"\s*:\s*"class"/.test(text)) { var p = CP.classroom.decode(text); if (p) { if (CP.classroom.add(p)) setTimeout(function () { CP.openSettings("set-together"); }, 300); return true; } CP.toast(T("cls.bad")); return false; }
+    CP.toast(T("chal.bad")); return false;
+  }
+  CP.togetherOpen = openAny;
+  (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () { return CP.classroom.section(); } });
+  /* il riquadro in cima al Percorso e alle lezioni di italiano: solo se c'è almeno un pacchetto (il modulo non si carica per niente) */
+  CP.classBanner = function () { try { var o = JSON.parse(localStorage.getItem("cp-class-v1") || "null"); if (!o || !o.p || !Object.keys(o.p).length) return ""; } catch (e) { return ""; } return CP.classroom.banner(); };
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-chal-open], [data-tog-try], [data-tog-scan], [data-cls-settings]") : null; if (!b) return;
+    CP.sfx("tap");
+    if (b.hasAttribute("data-chal-open")) { closeSettings(); CP.challenge.create(); }
+    else if (b.hasAttribute("data-tog-try")) { var i = document.getElementById("tog-code"); openAny(i ? i.value : ""); }
+    else if (b.hasAttribute("data-tog-scan") && CP.qrScan) { closeSettings(); lazy(); CP.qrScan(T("chal.scan"), T("chal.scanHint"), function (t) { if (/MDC1-|MDK1-/.test(t)) { setTimeout(function () { openAny(t); }, 300); return true; } return false; }); }
+    else if (b.hasAttribute("data-cls-settings")) CP.openSettings("set-together");
+  });
+
+  /* i link: si toglie il frammento dall'indirizzo e si apre dopo l'avvio, senza il benvenuto sopra */
+  var m = /^#(sfida|classe)=(.+)$/.exec(location.hash);
+  if (m) {
+    var code = decodeURIComponent(m[2]);
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    window.__mdGoing = true;
+    setTimeout(function () { openAny(code); }, OPEN_DELAY_MS);
+  }
 })();
 </script>
 <script>
