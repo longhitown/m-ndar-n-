@@ -1,8 +1,8 @@
 # La chiave di firma e Google Play
 
 Oggi l'APK diretto (GitHub Releases) è firmato con la chiave del repository: i segreti `MD_KEYSTORE_B64` e
-`MD_KEYSTORE_PASSWORD` (vedi LEGGIMI, «L'APK per Android»). Google Play usa **Play App Signing**: Google conserva la
-chiave che firma l'app installata dagli utenti, e l'autore carica i pacchetti con una seconda chiave, la *upload key*.
+`MD_KEYSTORE_PASSWORD` (vedi [sviluppo.md](../sviluppo.md), «L'APK per Android»). Google Play usa **Play App Signing**: Google conserva la
+chiave che firma l'app installata dagli utenti, e chi gestisce il progetto carica i pacchetti con una seconda chiave, la *upload key*.
 
 ## Perché importare la chiave esistente
 
@@ -14,8 +14,8 @@ gli aggiornamenti dallo store senza disinstallare e senza perdere i progressi. I
 
 1. Crea l'app nella Play Console con il pacchetto `it.mandarino.app`.
 2. In «Integrità dell'app» → «Firma dell'app», scegli di **usare una chiave esistente** invece di farla generare a Google.
-   La Console dà uno strumento (PEPK) che cifra la chiave privata per Google: si lancia **sul tuo computer**, con la
-   chiave che hai già, e si carica il file che produce. Claude Code non la vede mai e non la mette in nessun commit.
+   La Console dà uno strumento (PEPK) che cifra la chiave privata per Google: si lancia **sul proprio computer**, con la
+   chiave che già c'è, e si carica il file che produce. La chiave non entra mai in un commit.
 3. Crea una *upload key* nuova (`keytool -genkeypair …`), registrala nella Console e usala per firmare il `.aab`:
    `MD_KEYSTORE=upload.jks gradle -p android bundleStoreRelease`. Se la perdi, Google la può sostituire; la chiave
    dell'app no.

@@ -2,13 +2,13 @@
 
 Tutto ciò che màndarínō contiene e non è stato scritto per màndarínō. I testi delle licenze stanno in `LICENZE/` e nella
 schermata ⚙️ → Informazioni e supporto → Come funziona → Crediti. La build (`tools/build.mjs`) si ferma se in `src/vendor/`
-compare un file, o in `src/data/` un dato esterno, che non è nominato qui.
+compare un file, o in `src/data/` un dato esterno, che non è nominato qui. Il sito (`docs/`) usa anche le tre parti elencate sotto «Solo per il sito».
 
 | Componente | Licenza | Indirizzo | Versione / data | File nell'app |
 |---|---|---|---|---|
 | Make Me a Hanzi (Shaunak Kishore), dai font Arphic PL KaitiM GB e UKai | Arphic Public License (`LICENZE/ARPHIC-PUBLIC-LICENSE.txt`) | https://github.com/skishore/makemeahanzi | `graphics.txt` del ramo principale, importato il 2026-10-26 (commit non annotato) | `src/data/strokes.js` |
 | Make Me a Hanzi (Shaunak Kishore), `dictionary.txt`, derivato da Unihan e CJKlib: solo la struttura dei caratteri (scomposizione, radicale, tipo, parte fonetica e semantica, componente di ogni tratto) | GNU LGPL 3.0 o successiva (`LICENZE/LGPL-3.0.txt`, `LICENZE/GPL-3.0.txt`) | https://github.com/skishore/makemeahanzi | `dictionary.txt` del ramo principale, ottobre 2026; definizioni, pinyin e spiegazioni tolti | `src/data/anatomy.js` |
-| Tatoeba (tatoeba.org), frasi cinese–italiano e italiano–cinese scelte per il Task 12 (2.484 + 3.048), con il numero di ogni frase; autori in `materiali/crediti/autori-frasi.tsv` (441) | CC BY 2.0 Francia | https://tatoeba.org/en/downloads | esportazione del 24 ottobre 2026 | `src/data/ex/frasi-zh.js`, `src/data/ex/frasi-it.js`, `materiali/runtime/` |
+| Tatoeba (tatoeba.org), frasi cinese–italiano e italiano–cinese scelte per gli esercizi e la lettura (2.484 + 3.048), con il numero di ogni frase; autori in `materiali/crediti/autori-frasi.tsv` (441) | CC BY 2.0 Francia | https://tatoeba.org/en/downloads | esportazione del 24 ottobre 2026 | `src/data/ex/frasi-zh.js`, `src/data/ex/frasi-it.js`, `materiali/runtime/` |
 | Mozilla Common Voice Scripted Speech 27.0, cinese (Cina): 720 clip di voce (Opus, 20 kbit/s) e le loro frasi; nessun dato dei parlanti | CC0-1.0 | https://commonvoice.mozilla.org | archivio del 17 settembre 2026 (scelta di ottobre 2026) | `src/data/ex/voce-zh.js`, `materiali/audio/zh/` |
 | Tatoeba, audio italiano: 434 clip della voce «NM1» (Opus) | CC BY 4.0 | https://tatoeba.org | ottobre 2026 | `src/data/ex/voce-it.js`, `materiali/audio/it/` |
 | complete-hsk-vocabulary (Yanis Zafirópulos) | MIT (`LICENZE/MIT-complete-hsk-vocabulary.txt`) | https://github.com/drkameleon/complete-hsk-vocabulary | `complete.json` importato a ottobre 2026 (commit non annotato) | `src/data/levels.js`, `src/data/freq.js`, le parole HSK aggiunte al vocabolario |
@@ -19,6 +19,18 @@ compare un file, o in `src/data/` un dato esterno, che non è nominato qui.
 | Campioni della musica: VSCO 2 CE, VCSL, Osiris Piano, Karoryfer Samples, sfzinstruments, BigSoundBank | CC0 | vedi `src/audio/CREDITI-MUSICA.md` | — | dentro i brani di `src/audio/music/` |
 | jSteelDrum | pubblico dominio (Unlicense) | vedi `src/audio/CREDITI-MUSICA.md` | — | dentro i brani di `src/audio/music/` |
 
+## Solo per il sito (non contenute nell'app)
+
+Servono alla pagina di presentazione e alle microprove (`docs/`). Sono copiate nel repository, mai caricate da servizi esterni; i testi delle licenze sono in `docs/licenze/` e il sito li cita nel piè di pagina.
+
+| Componente | Licenza | Indirizzo | Versione | File |
+|---|---|---|---|---|
+| Hanzi Writer (David Chanin) | MIT (`docs/licenze/HANZI-WRITER-MIT.txt`) | https://hanziwriter.org, https://github.com/chanind/hanzi-writer | 3.7.3, copia minificata non modificata | `docs/assets/vendor/hanzi-writer.min.js` |
+| canvas-confetti (Kiril Vatev) | ISC (`docs/licenze/CANVAS-CONFETTI-ISC.txt`) | https://github.com/catdad/canvas-confetti | 1.9.4, copia non modificata | `docs/assets/vendor/confetti.browser.js` |
+| Dati dei tratti di 8 caratteri, dal pacchetto `hanzi-writer-data` (Make Me a Hanzi, font Arphic PL KaitiM GB e UKai) | Arphic Public License (`docs/licenze/ARPHIC-PUBLIC-LICENSE.txt`) | https://github.com/chanind/hanzi-writer-data | 2.0.1 | `docs/assets/dati/hanzi.json` |
+
+Gli estratti di musica del sito (`docs/audio/`) vengono dai brani dell'app e hanno la stessa licenza (CC BY 4.0).
+
 ## Solo durante lo sviluppo, non contenuti nell'app
 
 - **CC-CEDICT** (MDBG, CC BY-SA 4.0): controllo del pinyin (`tools/cedict-check.mjs`). Volutamente non entra nei dati,
@@ -28,11 +40,10 @@ compare un file, o in `src/data/` un dato esterno, che non è nominato qui.
 - **Playwright** (Apache 2.0): prove automatiche e generazione delle icone.
 - **Inter**: solo per disegnare le icone PNG con `tools/icons.mjs`; il carattere non è contenuto nell'app.
 
-## Da verificare (note per l'autore)
+## Note sulle licenze
 
-- **Morph-it!**: la doppia licenza CC BY-SA 2.0 / LGPL viene da fonti secondarie (due pacchetti npm che la usano). Le
-  pagine ufficiali non erano raggiungibili da qui. Va controllata sul sito dell'Università di Bologna, insieme alla
-  versione della LGPL, prima di pubblicare; poi va copiato il testo completo in `LICENZE/`.
-- **Versioni**: per Make Me a Hanzi e complete-hsk-vocabulary il commit esatto non è stato annotato al momento
-  dell'import. `tools/strokes.mjs` e `tools/levels.mjs` scrivono la data; al prossimo aggiornamento conviene annotare
-  anche il commit.
+- **Morph-it!**: la doppia licenza CC BY-SA 2.0 / LGPL risulta da due pacchetti npm che la dichiarano e da un elenco di risorse dell'Università di Torino (PARLI), che indica «Creative Commons» e
+  «CC-GNU LGPL». La pagina ufficiale dell'Università di Bologna non era raggiungibile al momento del controllo: la conferma sul sito ufficiale, con la versione della LGPL, e il testo completo in `LICENZE/`
+  restano da fare (vedi [docs/roadmap.md](docs/roadmap.md)).
+- **Versioni**: per Make Me a Hanzi e complete-hsk-vocabulary il commit esatto non è stato annotato al momento dell'import. `tools/strokes.mjs` e `tools/levels.mjs` scrivono la data; al prossimo aggiornamento
+  conviene annotare anche il commit.

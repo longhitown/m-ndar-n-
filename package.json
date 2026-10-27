@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "check": "node tools/build.mjs --check && node tools/grammar.mjs && node tools/unit.mjs",
-    "test": "node tools/unit.mjs && node tools/build.mjs && node tools/e2e.mjs && node tools/ux-audit.mjs",
+    "test": "node tools/unit.mjs && node tools/check-docs.mjs --strict && node tools/build.mjs && node tools/e2e.mjs && node tools/ux-audit.mjs",
     "unit": "node tools/unit.mjs",
     "e2e": "node tools/e2e.mjs",
     "audit": "node tools/ux-audit.mjs"

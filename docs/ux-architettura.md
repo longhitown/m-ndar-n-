@@ -157,26 +157,23 @@ ha tutto sbloccato.
 - **[11] Un menu non ha più di `MENU_MAX = 7` voci visibili.** Vale per `.dock`, `[role=tablist]` e `.seg`.
 - **Le regole già presenti restano:** bersagli da 44 px, contrasto, testi da almeno 13 px, nessun overflow, avvio leggero.
 
-## 5. Parità visiva tra i due corsi (Task 11.3)
+## 5. Parità tra i due corsi
 
-Il corso di italiano per chi parla cinese deve essere curato quanto quello di cinese. Da ricontrollare a ogni modifica
-grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
+Il corso di italiano per chi parla cinese è curato quanto quello di cinese. Da ricontrollare a ogni modifica grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
 
-| | Corso di cinese | Corso di italiano | Stato |
-|---|---|---|---|
-| ☑ | Percorso: carta «Continua», grado e serie in alto | 课程: carta «今天» con un solo pulsante primario, grado, anello, serie | fatto |
-| ☑ | tappe come percorso | lezioni come percorso: nodi collegati, la corrente evidenziata, «通过» sulle superate | fatto |
-| ☑ | sigillo del grado (`CP.stamp`) | lo stesso sigillo, nella carta e in «+N 分» | fatto |
-| ☑ | fine sessione con il sigillo | fine lezione con «通过» che si imprime; «分享» | fatto |
-| ☑ | progressi in Studia (`CP.story`) | «我的进步», stesso modulo, con «纪念卡» | fatto |
-| ☑ | carta del giorno | carte del giorno, del traguardo e della settimana, 3 formati, 3 colori | fatto |
-| ☑ | bersagli da 44 px, testi da 13 px, contrasto | gli stessi controlli di `tools/ux-audit.mjs` | fatto |
-| ☑ | `prefers-reduced-motion` | «+N 分», «通过» e l'anello hanno la versione ferma | fatto |
-| ☑ | icone SVG nella barra | le stesse icone SVG, più una per 变位 | fatto |
-| ☑ | ripasso a scelta multipla (stile Misto, Task 12 T1): risposta prima del risultato, segno ✓/✗, un solo «Continua» | 复习 con lo stesso motore e gli stessi stili, parola nuova presentata prima, voto da `CP.itApi.grade` (T5) | fatto |
-| ☑ | percorso guidato (T3): carta «Continua» con un solo pulsante che dice il passo, verifica di tappa con le cinque parti | carta «今天» con un solo pulsante: esercizi (5/10/15 min), un testo, la lezione con il suo quiz (T5) | fatto |
-| ☑ | lettura graduata (T4): testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso | 句子 → «短文阅读»: testi A1-B1, domande in cinese, «适合你», «已读» (T5) | fatto |
-| ☑ | esercizi a buco, ordina, digitazione (T2) | `it-buco`, `it-buco-gram`, `it-ordina`, `it-scrivi`, `it-dettato`, `it-verbo` (T5) | fatto |
-| ☑ | voci reali: «ascolta la frase» con Common Voice, «Scarica le voci» in ⚙️ → Voce (T6) | voce NM1 nelle frasi italiane, dettato e «听句子» con clip (T5) | fatto |
-| ☐ | testi riletti da un madrelingua | i testi cinesi del corso, della carta e della pagina zh/ | da far rileggere |
-| ☐ | vuoti curati | «ancora nessuna lezione»: oggi la carta mostra sempre la prossima lezione | da controllare |
+Che cosa corrisponde a che cosa (cinese → italiano):
+
+- **Home:** Percorso con la carta «Continua», grado e serie → 课程 con la carta «今天» (un solo pulsante primario, grado, anello, serie).
+- **Percorso:** tappe → lezioni come percorso, con nodi collegati, la corrente evidenziata e «通过» sulle superate.
+- **Grado:** sigillo del grado (`CP.stamp`) → lo stesso sigillo, nella carta e in «+N 分».
+- **Fine sessione:** sigillo → «通过» che si imprime alla fine della lezione, e «分享».
+- **Progressi:** Studia con `CP.story` → «我的进步», stesso modulo, con «纪念卡».
+- **Carta del giorno:** carte del giorno, del traguardo e della settimana, in 3 formati e 3 colori.
+- **Accessibilità:** bersagli da 44 px, testi da 13 px, contrasto (`tools/ux-audit.mjs`) e `prefers-reduced-motion` (versione ferma di «+N 分», «通过» e dell'anello); icone SVG nella barra, più una per 变位.
+- **Ripasso a scelta multipla** (stile Misto): risposta prima del risultato, segno ✓/✗, un solo «Continua» → 复习 con lo stesso motore e gli stessi stili, parola nuova presentata prima, voto da `CP.itApi.grade`.
+- **Percorso guidato:** carta «Continua» con un solo pulsante che dice il passo, verifica di tappa con le cinque parti → carta «今天» con un solo pulsante: esercizi (5/10/15 minuti), un testo, la lezione con il suo quiz.
+- **Lettura graduata:** testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso → 句子 → «短文阅读»: testi A1-B1, domande in cinese, «适合你», «已读».
+- **Esercizi a buco, ordina, digitazione** → `it-buco`, `it-buco-gram`, `it-ordina`, `it-scrivi`, `it-dettato`, `it-verbo`.
+- **Voci reali:** «ascolta la frase» con Common Voice e «Scarica le voci» in ⚙️ → Voce → voce NM1 nelle frasi italiane, dettato e «听句子» con clip.
+
+Ancora aperti (anche in [roadmap.md](roadmap.md)): la rilettura dei testi cinesi da parte di un madrelingua (corso, carta e pagina `zh/`) e i «vuoti curati» (oggi la carta «今天» mostra sempre la prossima lezione, anche quando non ce n'è ancora nessuna).

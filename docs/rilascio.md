@@ -1,6 +1,6 @@
 # Checklist di rilascio
 
-Per pubblicare una versione senza chiedere all'autore come si fa. Tempo: 20-30 minuti più le prove sul telefono.
+Per pubblicare una versione. Tempo: 20-30 minuti più le prove sul telefono.
 
 ## 1. Versione
 
@@ -54,21 +54,17 @@ Se una prova è rossa non si pubblica: si apre una issue o si corregge.
 - **Dopo.** Prova l'aggiornamento sopra la versione precedente su un telefono vero
   ([checklist-dispositivo.md](checklist-dispositivo.md), ultima riga).
 
-## Ramo predefinito `main`
+## Ramo predefinito
 
-Oggi il ramo predefinito non si chiama `main`: sul repository ci sono `mandarino` e i rami di lavoro. Va rinominato a
-mano, perché serve un permesso da amministratore. Claude Code non l'ha fatto.
+Il ramo predefinito è `main`. La Release dell'APK si pubblica quando `github.ref_name == github.event.repository.default_branch`, quindi non dipende dal nome del ramo.
+Se il repository cambia nome, basta aggiornare `REPO` in `src/config.js` (e i link in `README.md`): la build e i workflow leggono il nome da lì o da GitHub.
 
-1. GitHub → il repository → **Settings → General → Default branch** → ✏️ accanto al nome → `main` → **Rename branch**.
-   GitHub sposta le pull request aperte, le regole di protezione e reindirizza i vecchi link al ramo.
-2. Sul computer: `git branch -m <vecchio> main && git fetch origin && git branch -u origin/main main && git remote set-head origin -a`.
-3. Controlla che continuino a funzionare:
-   - **APK Android**: la Release si pubblica quando `github.ref_name == github.event.repository.default_branch`. La
-     condizione non contiene nomi, quindi vale anche per `main` senza modifiche;
-   - **GitHub Pages**: `pages.yml` ascolta già `main`;
-   - **web**: gira su ogni push, nessun nome di ramo.
-4. Dopo la rinomina, il primo push su `main` deve produrre una Release (Actions → APK Android → «Pubblica la Release»
-   non saltato).
+## Dominio e sito
 
-Quando il repository cambia nome, basta aggiornare `REPO` in `src/config.js` (e i link in README.md); la build e i
-workflow leggono il nome da lì o da GitHub.
+Il sito è su `https://mandarinoapp.org` (GitHub Pages, pubblicato da `pages.yml`).
+
+- **GitHub:** Settings → Pages → Source «GitHub Actions»; Custom domain `mandarinoapp.org`; «Enforce HTTPS» appena diventa selezionabile (il certificato arriva da solo,
+  anche un'ora dopo che il DNS è corretto). Con la pubblicazione tramite Actions un file `CNAME` nel repository non serve.
+- **Namecheap** (Domain List → Manage → Advanced DNS): quattro record **A** per `@` verso `185.199.108.153`, `185.199.109.153`, `185.199.110.153` e `185.199.111.153`, e un solo record
+  **CNAME** per `www` verso `longhitown.github.io` (un nome può avere un solo CNAME). Nessun record di parcheggio.
+- **Controlli:** `https://mandarinoapp.org/`, `…/privacy.html`, `…/app/`, `…/zh/` e `…/mandarino.apk`.

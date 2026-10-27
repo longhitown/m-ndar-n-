@@ -2,11 +2,11 @@
 
 Per un account personale nuovo, Google Play chiede un **test chiuso con almeno 12 tester per 14 giorni consecutivi**
 prima della produzione (verifica la regola attuale nella guida della Play Console). L'alternativa è un account
-«organizzazione», se l'autore ne ha uno.
+«organizzazione», se c'è.
 
 ## Come si entra
 
-1. L'autore crea un Gruppo Google (per esempio «mandarino-tester») e lo collega al test chiuso nella Play Console.
+1. Si crea un Gruppo Google (per esempio «mandarino-tester») e lo collega al test chiuso nella Play Console.
 2. La pagina `docs/tester.html` (pubblicata con il sito) spiega in italiano e in cinese che cosa fare: unirsi al gruppo,
    aprire il link di partecipazione, installare da Google Play. L'app non chiede e non riceve nessun dato: l'iscrizione
    avviene tutta su Google.
