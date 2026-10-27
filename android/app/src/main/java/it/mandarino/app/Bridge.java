@@ -159,8 +159,16 @@ public class Bridge {
     }
 
     private void startRecognizer(String id, String lang, int maxResults) {
+        final boolean hadOne = recognizer != null;
         stopRecognizer();
         recId = id;
+        /* il riconoscitore di sistema ha bisogno di un attimo per liberare il microfono dopo cancel()/destroy(): senza
+           questa pausa, un secondo tocco ravvicinato dava «recognizer busy» */
+        if (hadOne) { act.getWindow().getDecorView().postDelayed(() -> { if (id.equals(recId)) beginRecognizer(id, lang, maxResults); }, 220); return; }
+        beginRecognizer(id, lang, maxResults);
+    }
+
+    private void beginRecognizer(String id, String lang, int maxResults) {
         try {
             recognizer = SpeechRecognizer.createSpeechRecognizer(act);
             recognizer.setRecognitionListener(new Listener(id));
@@ -212,7 +220,8 @@ public class Bridge {
             if (ended) return;
             ended = true;
             emit("sr-end", id, "");
-            if (id.equals(recId)) act.runOnUiThread(Bridge.this::stopRecognizer);
+            /* si ricontrolla l'id sul thread dell'interfaccia: nel frattempo può essere partito un nuovo ascolto, che non va chiuso */
+            act.runOnUiThread(() -> { if (id.equals(recId)) stopRecognizer(); });
         }
         @Override public void onReadyForSpeech(Bundle b) { emit("sr-start", id, ""); }
         @Override public void onBeginningOfSpeech() { }
@@ -245,6 +254,8 @@ public class Bridge {
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS: e = "not-allowed"; break;
                 case SpeechRecognizer.ERROR_NETWORK: case SpeechRecognizer.ERROR_NETWORK_TIMEOUT: e = "network"; break;
                 case SpeechRecognizer.ERROR_CLIENT: e = "aborted"; break;
+                case 8: case 10: e = "busy"; break;                                   /* ERROR_RECOGNIZER_BUSY, ERROR_TOO_MANY_REQUESTS: passano da soli */
+                case 4: case 11: e = "network"; break;                                /* ERROR_SERVER, ERROR_SERVER_DISCONNECTED */
                 case SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED: case SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE: e = "language-not-supported"; break;   /* Android 12+; costanti copiate nel codice, sicure anche prima */
                 default: e = "service-not-allowed";
             }
