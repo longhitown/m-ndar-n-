@@ -1,4 +1,4 @@
-/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
+/* ===== ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
    audio, lingua), Dati e privacy, Avanzate, Informazioni e supporto. I moduli aggiungono le loro sezioni con
    CP.settingsExtras: una funzione che rende HTML (va in «Avanzate») o { group, html }. ===== */
 (function () {
@@ -27,7 +27,7 @@
   }
   function close() { CP.untrap(el); }
   CP.repaintSettings = paint;
-  /* §5 fase 1: lingua dei menu */
+  /* lingua dei menu */
   function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
   CP.setLang = function (l) {
     var nl = l === "zh" ? "zh" : "it"; if (nl === LANG) return;

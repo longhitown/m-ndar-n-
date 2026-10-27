@@ -7,7 +7,7 @@
 
   /* ---- avviso breve ---- */
   var toastEl = document.getElementById("toast"), toastT = 0;
-  /* act (facoltativo, Task 11.5): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
+  /* act (facoltativo): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
      Mai una finestra in più. Senza act è il messaggio di sempre. */
   CP.toast = function (msg, act) {
     toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.toggle("act", !!act);
@@ -22,7 +22,7 @@
   var RANKS = [
     { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
     { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" },
-    /* Task 6.2: oltre i 10.000 punti la strada continua; dopo l'ultimo grado, una «stagione» ogni SEASON punti */
+    /* oltre i 10.000 punti la strada continua; dopo l'ultimo grado, una «stagione» ogni SEASON punti */
     { n: "Calligrafo d'Inchiostro", z: "墨韵书家", x: 15000, c: "墨" }, { n: "Viandante dei Classici", z: "经典行者", x: 22000, c: "经" },
     { n: "Saggio del Fiume Giallo", z: "黄河贤者", x: 30000, c: "河" }, { n: "Maestro dei Quattro Mari", z: "四海宗师", x: 40000, c: "海" }
   ];
@@ -30,7 +30,7 @@
   function rankName(r) { return LANG === "zh" ? r.z : r.n; }
   /* la stagione oltre l'ultimo grado: 0 sotto, poi 1, 2, 3… */
   function season(xp) { var top = RANKS[RANKS.length - 1].x; return xp < top ? 0 : 1 + Math.floor((xp - top) / SEASON); }
-  /* V6.8: i punti sono contati per dispositivo (xpBy) sopra una base comune (base = i punti di prima della divisione):
+  /* i punti sono contati per dispositivo (xpBy) sopra una base comune (base = i punti di prima della divisione):
      unendo due dispositivi (sincronizzazione, backup) per ognuno vale il conteggio più alto e la somma non conta mai due
      volte la stessa cosa. L'identità del dispositivo sta in «md-device», fuori dai dati che si esportano. */
   var DEV = (function () { var d = lsGet("md-device"); if (!d) { d = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); lsSet("md-device", d); } return d; })();
@@ -67,7 +67,7 @@
   }
   function active(r) { return !!r && !!((r.w && r.w.length) || r.s || r.e); }
   function rankIdx(xp) { var i = 0; RANKS.forEach(function (r, j) { if (xp >= r.x) i = j; }); return i; }
-  /* Task 6.1: la serie conta i giorni attivi; un giorno di riposo a settimana (da lunedì a domenica) non la spezza, purché
+  /* la serie conta i giorni attivi; un giorno di riposo a settimana (da lunedì a domenica) non la spezza, purché
      non siano due di fila. Gratuito, automatico, calcolato solo dai giorni attivi: unendo due dispositivi si unisce anche lui.
      rest() dice quali giorni della serie attuale sono stati di riposo. */
   function weekKey(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7); return dkey(x); }
@@ -124,7 +124,7 @@
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
     ear: function (ok) { var r = rec(true); r.e = (r.e || 0) + 1; if (ok) award(3); save(); ui(); },
     xp: function (n) { var r = rec(true); r.e = (r.e || 0) + 1; award(n); save(); ui(); },
-    /* §4.2: parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
+    /* parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
     newToday: function () { var r = rec(false); return r && r.nw ? r.nw : 0; },
     addNew: function (n) { var r = rec(true); r.nw = (r.nw || 0) + n; save(); },
     newExtra: function () { var r = rec(false); return r && r.nx ? r.nx : 0; },

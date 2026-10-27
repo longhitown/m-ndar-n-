@@ -1,4 +1,4 @@
-/* ===== V6.7 · U6: scheda Parole. Prima le parole, poi gli strumenti ===== */
+/* ===== U6: scheda Parole. Prima le parole, poi gli strumenti ===== */
 (function () {
   var CP = window.CP, flt = document.getElementById("flt"), leg = document.getElementById("legend");
   var fb = document.getElementById("flt-btn"), lb = document.getElementById("legend-btn"), gb = document.getElementById("goto-btn"), cur = document.getElementById("cur-sec");

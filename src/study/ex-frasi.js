@@ -1,4 +1,4 @@
-/* ===== màndarínō · esercizi con le frasi (Task 12, T2, §12.4): frase a buco (parola), buco grammaticale, rimetti in ordine.
+/* ===== màndarínō · esercizi con le frasi: frase a buco (parola), buco grammaticale, rimetti in ordine.
    Le frasi di una parola (CP.exSent.forWord), in quest'ordine: la frase d'esempio della parola (EXAMPLES), le frasi di
    Tatoeba con traduzione diretta (FRASI_ZH, livello non sopra quello della parola), gli esempi delle lezioni, le frasi
    delle voci reali (VOCE_ZH, senza traduzione: solo come ultima scelta). Ogni frase passa dal taglio dell'app (CP.segment):
@@ -78,7 +78,7 @@
     },
     risposta: function (it) { if (it.note) { var fb = document.querySelector(".ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="it">💡 ' + esc(it.note) + "</p>"); } } });
 
-  /* ---- ascolta la frase (T6): una voce reale, sul telefono (CP.voiceClip); quale frase hai sentito, tra quattro scritte.
+  /* ---- ascolta la frase: una voce reale, sul telefono (CP.voiceClip); quale frase hai sentito, tra quattro scritte.
      Le altre contengono la stessa parola quando si può, così bisogna ascoltare tutta la frase. ---- */
   function voiced(w) { return CP.voiceClip ? forWord(w).filter(function (s) { return s.src === "voice" && CP.voiceClip.url(s.zh, "zh"); }) : []; }
   ENG.register({ id: "ascolto-frase", famiglia: 1, corso: "zh", q: "exm.q.listenSent",

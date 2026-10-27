@@ -1,5 +1,5 @@
 /* màndarínō · riproduttore dei brani registrati (audio/music/<id>.<impronta>.ogg, Opus).
-   V6.8: non si decodifica più tutto il brano in memoria (circa 90 MB per 4 minuti stereo): il file compresso (3-5 MB)
+   Non si decodifica più tutto il brano in memoria (circa 90 MB per 4 minuti stereo): il file compresso (3-5 MB)
    diventa la sorgente di un elemento <audio> in loop, collegato al grafo Web Audio dell'app (MediaElementSource), così
    volume, abbassamento sotto la voce e silenzio col microfono restano gli stessi. Il loop è quello del lettore del
    browser, senza stacchi. Interfaccia come ogni traccia: CP.audioFile.player(c, bus, id) → { step, stop }.

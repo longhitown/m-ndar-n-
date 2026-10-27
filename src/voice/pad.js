@@ -216,7 +216,7 @@
         bx.fillStyle = css("--ink", "#222"); bx.globalAlpha = S.assist ? 0.3 : 0.12;
         for (i = 0; i < c; i++) bx.fillText(cellChar(i), L * (i + 0.5) / c, L / 2 + fs * 0.04);
         bx.globalAlpha = 1;
-        /* Task 5: il componente del prossimo tratto, evidenziato (anatomia del carattere, se accesa) */
+        /* il componente del prossimo tratto, evidenziato (anatomia del carattere, se accesa) */
         if (c === 1 && S.cur !== "all" && CP.anatomy && CP.anatomy.on()) {
           var gr = CP.anatomy.groups(cellChar(0)), M2 = medians(cellChar(0)), nx = (S.strokes[S.cur] || []).length;
           if (gr && M2 && nx < M2.length && gr[nx] && gr[nx] !== "-") {

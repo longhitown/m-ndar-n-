@@ -53,7 +53,7 @@ function sandbox() {
   check("unione: rifarla con gli stessi dati non cambia niente", !again.changed);
 }
 
-/* ---- 2b. test di livello e sblocchi tra dispositivi (Task 1) ---- */
+/* ---- 2b. test di livello e sblocchi tra dispositivi ---- */
 {
   const { Store, LS } = sandbox();
   /* punti del test di livello: lo stesso test visto da due dispositivi conta una volta; due test diversi: vale il più alto;
@@ -105,7 +105,7 @@ function sandbox() {
   check("sblocchi: con l'obiettivo predefinito (10) Parole e Frasi non arrivano il primo giorno", dayOf(10, U.words, U.dw) >= 2 && dayOf(10, U.build, U.db) >= 3, rep);
 }
 
-/* ---- 2c. sigilli di gratitudine (Task 4) ---- */
+/* ---- 2c. sigilli di gratitudine ---- */
 {
   const nodeCrypto = await import("crypto"), { spawnSync } = await import("child_process"), os = await import("os");
   const ctx = vm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vm.runInContext(fs.readFileSync(path.join(SRC, "core/seal-code.js"), "utf8"), ctx); const S = ctx.MDSeal;
@@ -123,7 +123,7 @@ function sandbox() {
   await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-seal-v1": JSON.stringify({ codes: { "2-2026-7": { code: "b" } }, gram: "m", name: "", share: 0, t: 50 }) }, log: [] }, "merge");
   const sm = JSON.parse(LS.getItem("cp-seal-v1"));
   check("sigilli: cp-seal-v1 unisce i codici; le preferenze vengono dal dispositivo più recente", sm.codes["1-2026-3"] && sm.codes["2-2026-7"] && sm.gram === "f" && sm.name === "Ada" && sm.share === 1, JSON.stringify(sm));
-  /* pacchetti classe (Task 9): unione per id, il pacchetto tolto su un dispositivo resta tolto */
+  /* pacchetti classe: unione per id, il pacchetto tolto su un dispositivo resta tolto */
   {
     const { Store: S2, LS: L2 } = sandbox();
     L2.setItem("cp-class-v1", JSON.stringify({ p: { a: { id: "a", t: "A", at: 5 }, b: { id: "b", t: "B", at: 9 } }, x: {} }));
@@ -192,7 +192,7 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-/* ---- rilettura da madrelingua (Task 8.2): modulo → review-import → merge-contrib, con risposte inventate ---- */
+/* ---- rilettura da madrelingua: modulo → review-import → merge-contrib, con risposte inventate ---- */
 {
   const os = await import("os"), { spawnSync } = await import("child_process");
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "md-review-")), sheet = path.join(tmp, "modulo.md"), patch = path.join(tmp, "revisione.json");
@@ -238,7 +238,7 @@ function sandbox() {
   check("privacy.html da PRIVACY.md: tabelle, sezione cinese con lang, nessuno script", /<table>/.test(pv) && /<section lang="zh-CN">[\s\S]*<table>/.test(pv) && !/<script/i.test(pv) && /api\.github\.com/.test(pv));
 }
 
-/* ---- versione per gli store (Task 7D): src/config.js con il ponte Android che dice «store» ---- */
+/* ---- versione per gli store: src/config.js con il ponte Android che dice «store» ---- */
 {
   const cfg = fs.readFileSync(path.join(SRC, "config.js"), "utf8");
   const run = (flavor) => { const w = { MandarinoAndroid: flavor ? { flavor: () => flavor } : undefined }; const c = { window: w }; vm.runInNewContext(cfg + ";this.C=MD_CONFIG;", c); return c.C; };
@@ -249,7 +249,7 @@ function sandbox() {
   check("Android: compileSdk e targetSdk 36, versioni direct e store", /compileSdk 36/.test(g) && /targetSdk 36/.test(g) && /direct \{/.test(g) && /store \{/.test(g));
 }
 
-/* ---- Task 11: i traguardi del corso di italiano si uniscono tra dispositivi (per ognuno la data più vecchia) ---- */
+/* ---- i traguardi del corso di italiano si uniscono tra dispositivi (per ognuno la data più vecchia) ---- */
 {
   const { Store, LS } = sandbox();
   LS.setItem("cp-it-cards-v1", JSON.stringify({ m: { first: 200, s7: 500 } }));
@@ -268,7 +268,7 @@ function sandbox() {
     /<html lang="zh-CN">/.test(h) && h.length < 12000 && !ext.length && scripts.length === 1 && !/src=/.test(scripts[0][1]) && /MicroMessenger/.test(scripts[0][2]) && !/官方/.test(h) && /无需注册/.test(h), ext.join(", "));
 }
 
-/* ---- Task 12: digitazione (src/core/typing.js) con le prove del riferimento (materiali/riferimenti/digitazione.test.mjs) ---- */
+/* ---- digitazione (src/core/typing.js) con le prove del riferimento (materiali/riferimenti/digitazione.test.mjs) ---- */
 {
   const tc = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "core/typing.js"), "utf8"), tc);
   const raw = vm.runInContext("MDTyping", tc);   /* gli array del contesto vm diventano array di questo, per deepEqual */
@@ -280,7 +280,7 @@ function sandbox() {
   check("digitazione: src/core/typing.js passa le prove del riferimento (pinyin con numeri, accenti, senza toni; italiano con accenti e refusi)", !err, err);
 }
 
-/* ---- Task 12: distrattori, regole del voto, unione di cp-ex-v1 ---- */
+/* ---- distrattori, regole del voto, unione di cp-ex-v1 ---- */
 {
   const { tools } = await import("./materiali.mjs");
   const TL = tools(SRC), POOL = Object.values(TL.W);
@@ -356,7 +356,7 @@ function sandbox() {
   console.log("  (avvio: " + KB(js) + " KB di JavaScript da compilare, " + KB(lazy) + " KB di dati e librerie letti solo quando servono)");
   check("avvio: JavaScript da compilare all'apertura sotto i 1500 KB", js < 1500 * 1024, KB(js) + " KB");
   check("avvio: i dati pesanti (esempi, tratti, lessico, jsQR) restano fuori dalla compilazione iniziale", lazy > 700 * 1024, KB(lazy) + " KB");
-  /* Task 12: il gruppo ESERCIZI (motore, distrattori, digitazione…) e i dati dei materiali sono testo letto al primo uso */
+  /* il gruppo ESERCIZI (motore, distrattori, digitazione…) e i dati dei materiali sono testo letto al primo uso */
   const grp = [...html.matchAll(/<script type="text\/plain" id="group-esercizi-\d+">/g)].length, exData = ["frasi_zh", "frasi_it", "voce_zh", "voce_it", "insiemi"].every((n) => html.includes('<script type="application/json" id="lazy-' + n + '">'));
   check("avvio: il gruppo ESERCIZI e i dati dei materiali non si compilano all'apertura (limite di 1500 KB invariato)", grp >= 4 && exData && /__mdLoad = window.__mdLoad/.test(html), "gruppo " + grp + ", dati " + exData);
 }

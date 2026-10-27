@@ -1,8 +1,8 @@
-/* COPIA FISSA di src/study/study.js prima del Task 12 (commit 1ed4a87): serve solo a tools/e2e.mjs per controllare che lo
+/* COPIA FISSA di src/study/study.js prima del motore degli esercizi (commit 1ed4a87): serve solo a tools/e2e.mjs per controllare che lo
    stile «Classico» resti identico (coda della sessione e carte pi, ip, hp) dopo il motore degli esercizi. Non va nell'app. */
 
 /* Scheda "Studia": ripasso a intervalli con sessioni brevi.
-   V6.7: una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
+   Una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
    controlli principali (Ascolta, Parla) e il resto in «⋯»; voti con l'intervallo vero calcolato da FSRS;
    limite giornaliero di parole nuove; fine sessione con un solo gesto. */
 (function () {
@@ -18,7 +18,7 @@
   function dueKeys() {
     return CP.dueList(keysOf(), Date.now()).slice(0, 25);   /* prima le carte con la probabilita' di ricordo piu' bassa */
   }
-  /* §4.2: cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
+  /* cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
   function newSeen() { return CP.game && CP.game.newToday ? CP.game.newToday() : 0; }
   function newRoom() { return Math.max(0, cfg.n + (CP.game && CP.game.newExtra ? CP.game.newExtra() : 0) - newSeen()); }
   function newKeys() { var S = CP.S(), room = newRoom(); return room ? keysOf().filter(function (k) { return !S[k] || !S[k].n; }).slice(0, room) : []; }
@@ -65,7 +65,7 @@
   CP.exampleFor = example;
   function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
 
-  /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
+  /* l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
   function fmt(ms) { var d = ms / 86400000, T = CP.t; return ms < 3600000 ? T("u.min", { n: Math.max(1, Math.round(ms / 60000)) }) : d < 1 ? T("u.h", { n: Math.round(ms / 3600000) }) : d < 30 ? T("u.d", { n: Math.round(d) }) : d < 365 ? T("u.mo", { n: Math.round(d / 30) }) : T("u.y", { n: Math.round(d / 36.5) / 10 }); }
   function previewIntervals(k) {
     var S = CP.S(), r = S[k], now = Date.now(), sch = CP.srs.scheduler;
@@ -98,7 +98,7 @@
       (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">' + T("study.more5today") + "</button>" : "") + "</details></div>" +
       '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
       (CP.homeNotice ? CP.homeNotice() : "") +
-      /* Task 6.3: i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
+      /* i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
       '<section class="panel progress" id="st-story"><h3>' + T("study.progress") + '</h3><div id="st-body" aria-live="polite"></div>' +
       '<div class="stats"><div class="stat"><b>' + c[0] + "</b><span>" + T("study.toLearn") + '</span></div><div class="stat"><b>' + c[1] + "</b><span>" + T("study.learning") + '</span></div><div class="stat"><b>' + c[2] + "</b><span>" + T("study.known") + "</span></div></div>" +
       '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +

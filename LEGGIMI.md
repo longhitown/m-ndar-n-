@@ -52,7 +52,7 @@ Una scelta multipla giusta non vale mai «Facile». Si può sempre «Studiare li
 - **Frasi**: lezioni, esercizi, dialoghi, un laboratorio che traduce solo quando è sicuro, il lettore e altri strumenti che si aprono dopo qualche lezione.
 - **Lettura graduata** (Frasi → Leggi → Testi): testi divisi per livello, con «giusto per te» quando conosci almeno il 90% delle parole. Tocchi una parola per aprire il suo
   foglio, pinyin e traduzione si accendono quando vuoi, ogni frase si ascolta. In fondo ci sono le domande e le parole nuove si mettono nel ripasso con un tocco.
-- **Toni**: «Orecchio ai toni» in Studia e il pannello «Parla» con il microfono mostrano la curva del tono che hai detto.
+- **Toni**: «Orecchio ai toni» in Studia e il pannello «Parla» con il microfono mostrano la curva del tono che hai detto. Anche il logo: toccando le lettere con l'accento senti il loro tono e, toccando le foglie del mandarino, il terzo (ˇ: scende e risale, come la loro forma).
 
 ## Il corso di italiano per chi parla cinese
 

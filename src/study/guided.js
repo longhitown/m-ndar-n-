@@ -1,4 +1,4 @@
-/* ===== màndarínō · il percorso guidato «impara · esercitati · verifica» (Task 12, §12.6), corso di cinese.
+/* ===== màndarínō · il percorso guidato «impara · esercitati · verifica», corso di cinese.
    L'unità è una tappa del Percorso; lo stato sta in cp-ex-v1.units[tappa] = { passo, verifica: { data, pct, parti, ok }, letto, xp }.
    Il passo successivo lo calcola ui/ex-stub.js (CP.ex.prossimo) e lo mostra la carta «Continua» del Percorso; qui si fa:
    1. impara + esercitati: una sessione di Studia con 5 parole nuove della tappa (carte di presentazione), poi gli
@@ -11,7 +11,7 @@
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, ENG = CP.exEngine, D = CP.distract, KIT = CP.studyKit;
   var PASS = 80, GROUP = 5, XP = 20, NQ = 12;
-  /* le cinque parti del test di livello (Task 1): 0 pinyin e toni, 1 caratteri, 2 vocabolario, 3 ordine e grammatica, 4 ascolto */
+  /* le cinque parti del test di livello: 0 pinyin e toni, 1 caratteri, 2 vocabolario, 3 ordine e grammatica, 4 ascolto */
   var PLAN = [["mc-significato", 2], ["mc-parola", 1], ["mc-pinyin", 0], ["buco", 3], ["mc-ascolto", 4], ["ordina", 3], ["scrivi-pinyin", 0], ["tono", 0], ["mc-significato", 2], ["buco-gram", 3], ["scrivi-significato", 2], ["mc-parola", 1]];
   function units() { var o = ENG.load(); o.units = o.units || {}; return o; }
   function setUnit(id, patch) { var o = units(), u = o.units[id] = o.units[id] || { passo: 0 }; Object.keys(patch).forEach(function (k) { u[k] = patch[k]; }); ENG.save(o); if (window.Store && Store.flush) Store.flush(); return u; }

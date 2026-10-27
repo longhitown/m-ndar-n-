@@ -51,7 +51,7 @@
   CP.WORDS = WORDS; CP.ORDER = ORDER; CP.SEC = SEC;
   CP.VERSION = "6.7"; CP.DATASET = "2026-10-25";
 
-  /* ---- V6.7 · contributi della community (cp-community-contribs: un array di voci con id univoco).
+  /* ---- contributi della community (cp-community-contribs: un array di voci con id univoco).
      Formato della patch: { schema: "mandarino-contrib/1", app, dataset, created, author, items: [...] }.
      - fix: cambia py, it o note di una parola (target = chiave), di una frase (phr:<gruppo>:<riga>) o di una battuta (dlg:<id>:<riga>).
        Mai hz: è la chiave dei progressi in cp-srs-v1. Per un carattere sbagliato si usa flag.

@@ -94,7 +94,7 @@ details li { margin-bottom: 6px; }
 details li b { color: var(--ink); font-weight: 600; }
 .han { font-family: var(--f-han); }
 
-/* barra in alto: una regola per selettore (prima ridefinita in V2, V4, V5 e V6.6) */
+/* barra in alto: una regola per selettore */
 .bar {
   position: sticky;
   top: env(safe-area-inset-top, 0px);

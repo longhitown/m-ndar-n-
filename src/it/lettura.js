@@ -1,4 +1,4 @@
-/* ===== màndarínō · corso di italiano: lettura graduata (Task 12, T5; la stessa del corso di cinese, phrases/reading.js).
+/* ===== màndarínō · corso di italiano: lettura graduata.
    In 句子, sopra le frasi: i testi italiani A1-B1 (TESTI_IT, da tools/lettura.mjs, letti al primo uso), per livello, con
    «适合你» quando almeno il 90% delle parole è già nel ripasso e il segno «已读». Nel testo: ogni frase si ascolta (con la
    voce reale, se è sul telefono), la traduzione cinese si accende e spegne, un tocco su una parola apre il suo foglio.

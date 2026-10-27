@@ -1,4 +1,4 @@
-/* ===== màndarínō · sfida a un amico, senza server (Task 9.1).
+/* ===== màndarínō · sfida a un amico, senza server.
    Dieci parole e un seme diventano un codice (MDC1-…, base64url di «1|corso|seme|chiavi»): chi lo apre fa la stessa sfida,
    con le stesse domande nello stesso ordine e le stesse risposte tra cui scegliere, perché tutto viene dal seme e dalle
    dieci parole (le risposte sbagliate sono le altre parole della sfida: niente dipende dalla versione del vocabolario).

@@ -25,6 +25,7 @@ table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), t
 .brand { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .brand .lg-t { cursor: pointer; }
 .brand .lg-t:hover { filter: brightness(1.15); }
+.brand .lg-leaf { cursor: pointer; }
 @keyframes tone-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08) rotate(3deg); } }
 .leaf-v { transform-box: fill-box; transform-origin: center bottom; }
 #mandarin-symbol:hover .leaf-v, .brand.pulse .leaf-v { animation: tone-pulse 0.6s ease-in-out; }

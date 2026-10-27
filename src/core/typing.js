@@ -1,4 +1,4 @@
-/* ===== màndarínō · confronto delle risposte digitate (Task 12): pinyin (numeri, accenti o senza toni) e italiano (accenti,
+/* ===== màndarínō · confronto delle risposte digitate: pinyin (numeri, accenti o senza toni) e italiano (accenti,
    apostrofi, refusi). Adattato da materiali/riferimenti/digitazione.mjs (le sue prove sono in tools/unit.mjs). Funzioni pure.
    CP.typing.comparePinyin(digitato, atteso) → "esatto" | "senza-toni" | "toni-sbagliati" | "sbagliato"
    CP.typing.compareIt(digitato, accettate) → "esatto" | "accento" | "quasi" | "sbagliato"

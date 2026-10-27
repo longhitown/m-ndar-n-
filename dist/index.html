@@ -113,7 +113,7 @@ details li { margin-bottom: 6px; }
 details li b { color: var(--ink); font-weight: 600; }
 .han { font-family: var(--f-han); }
 
-/* barra in alto: una regola per selettore (prima ridefinita in V2, V4, V5 e V6.6) */
+/* barra in alto: una regola per selettore */
 .bar {
   position: sticky;
   top: env(safe-area-inset-top, 0px);
@@ -833,6 +833,7 @@ table.cm td.x { background: color-mix(in srgb, var(--t1) calc(var(--a) * 80%), t
 .brand { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .brand .lg-t { cursor: pointer; }
 .brand .lg-t:hover { filter: brightness(1.15); }
+.brand .lg-leaf { cursor: pointer; }
 @keyframes tone-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08) rotate(3deg); } }
 .leaf-v { transform-box: fill-box; transform-origin: center bottom; }
 #mandarin-symbol:hover .leaf-v, .brand.pulse .leaf-v { animation: tone-pulse 0.6s ease-in-out; }
@@ -979,7 +980,7 @@ body.course-it #find-btn { display: none !important; }   /* la ricerca universal
 .itc-bad { background: color-mix(in srgb, var(--t1) 22%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; text-decoration: underline wavy var(--t1); text-underline-offset: 3px; }
 
 /* ---- styles/categories.css ---- */
-/* ===== V6.5: categorie (pills), Pensiero esteso, Puzzle ===== */
+/* ===== categorie (pills), Pensiero esteso, Puzzle ===== */
 :root { --tg-mod: color-mix(in srgb, var(--t5) 75%, var(--ink)); --tg-qty: var(--muted); --tg-ba: var(--t1); --tg-ask: var(--t4); --tg-how: var(--t2); --tg-dur: var(--t3); --tg-cause: var(--t1); --tg-cond: var(--t4); --tg-res: var(--accent); }
 .tg.mod { background: var(--tg-mod); } .tg.qty { background: var(--tg-qty); } .tg.ba { background: var(--tg-ba); } .tg.ask { background: var(--tg-ask); } .tg.how { background: var(--tg-how); } .tg.dur { background: var(--tg-dur); } .tg.cause { background: var(--tg-cause); } .tg.cond { background: var(--tg-cond); } .tg.res { background: var(--tg-res); }
 .tb.mod { border-color: var(--tg-mod); } .tb.qty { border-color: var(--tg-qty); } .tb.ba { border-color: var(--tg-ba); } .tb.ask { border-color: var(--tg-ask); } .tb.how { border-color: var(--tg-how); } .tb.dur { border-color: var(--tg-dur); } .tb.cause { border-color: var(--tg-cause); } .tb.cond { border-color: var(--tg-cond); } .tb.res { border-color: var(--tg-res); }
@@ -1000,7 +1001,7 @@ body.course-it #find-btn { display: none !important; }   /* la ricerca universal
 .pz-pool { background: var(--chip); }
 
 /* ---- styles/paper-theme.css ---- */
-/* ===== V6.6 · Neo-Calligraphic Elegance: carta di riso, inchiostro, tessere tattili ===== */
+/* ===== Neo-Calligraphic Elegance: carta di riso, inchiostro, tessere tattili ===== */
 /* --- tema seppia "Carta di Riso" --- */
 :root[data-theme="sepia"] {
   --bg: #F4EFE6; --surface: #FAF6EE; --ink: #231F1B; --muted: #675E55; --line: #DFD6C7; --accent: #14594A; --chip: #EAE2D3;
@@ -1074,7 +1075,7 @@ body.compact { padding-top: 10px; }
 @media (hover: hover) and (pointer: fine) { .swipe-hint { display: none; } }
 
 /* ---- styles/ux.css ---- */
-/* ===== V6.7 · UX (prompt §4 e §4-bis) ===== */
+/* ===== UX ===== */
 :root { --fs-s: 13px; --fs-m: 16px; --fs-l: 20px; --fs-xl: 28px; --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; }
 
 /* U1 · sessione a schermo pieno: restano intestazione della sessione, carta e barra delle azioni */
@@ -1152,7 +1153,7 @@ body.in-session .actbar { flex: none; }
 .done .stats { margin-top: 0; }
 .done-seal { justify-self: center; }
 
-/* §4.3 · barra in alto: mini-logo, cammino, 🎙️ (solo col microfono aperto), 🎧, 🎵, ⚙️. Tutti i bersagli da 44 px */
+/* barra in alto: mini-logo, cammino, 🎙️ (solo col microfono aperto), 🎧, 🎵, ⚙️. Tutti i bersagli da 44 px */
 .bar .grp button, .bar .grp .iconbtn { flex: none; width: 44px; min-width: 44px; }
 .mini-logo { width: 44px; min-width: 44px; }
 @media (max-width: 340px) { .bar { flex-wrap: nowrap; justify-content: space-between; } .bar .grp button, .bar .grp .iconbtn { min-width: 44px; } }
@@ -1216,13 +1217,13 @@ th { font-size: var(--fs-s); }
   tr.st-1 { box-shadow: inset 3px 0 0 var(--muted); } tr.st-2 { box-shadow: inset 3px 0 0 var(--accent); }
 }
 
-/* §4.3 · Frasi: tre gruppi */
+/* Frasi: tre gruppi */
 nav.chips[hidden] { display: none; }
 .pills.groups { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
 .pills.groups button { min-height: 44px; padding: 0 6px; white-space: nowrap; font-size: 14px; }
 .pills button, .seg button, .cpills button, .mpick button, .xr-sample button { min-height: 44px; }
 
-/* §4.4 · tessere in stile Mahjong: ovunque ci sia qualcosa da toccare e spostare */
+/* tessere in stile Mahjong: ovunque ci sia qualcosa da toccare e spostare */
 .tactile, .tile, .xw, .reel .rc, .choices button { background: var(--surface); border: 1px solid var(--line); border-bottom: 4px solid color-mix(in srgb, var(--line) 70%, var(--ink)); border-radius: 12px; transition: transform 0.08s, border-bottom-width 0.08s; }
 .tb, .pzb { border-bottom-width: 4px; border-radius: 12px; transition: transform 0.08s, border-bottom-width 0.08s; }
 .tactile:active:not(:disabled), .tile:active:not(:disabled), .xw:active, .reel .rc:active, .choices button:active:not(:disabled), .pzb:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
@@ -1258,7 +1259,7 @@ body.tone-shapes .tone .tshape { display: inline; }
 .welcome-goal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .welcome-goal button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
-/* §6 · contributi */
+/* contributi */
 .ct-form { display: grid; gap: 10px; margin-top: 12px; }
 .ct-form label { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
 .ct-form select { width: 100%; }
@@ -1480,9 +1481,9 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .pl-skel-logo { width: 96px; height: 96px; }
 .pl-skel-wm { font-size: 1.8rem; font-weight: 700; letter-spacing: .5px; }
 @media (prefers-reduced-motion: no-preference) { .pl-chip { animation: plIn .18s ease-out; } @keyframes plIn { from { opacity: 0; transform: translate(-50%, 8px); } } }
-/* Task 6.1: giorno di riposo nella settimana (segno ☾, non solo colore) */
+/* giorno di riposo nella settimana (segno ☾, non solo colore) */
 .week .rest i { border-style: dashed; border-color: var(--accent); color: var(--accent); font-style: normal; font-size: 13px; line-height: 18px; }
-/* Task 6.3: il racconto dei progressi */
+/* il racconto dei progressi */
 .st-sum { margin: 0 0 10px; }
 .st-bars { margin: 10px 0 0; }
 .st-cols { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; align-items: end; margin-top: 6px; }
@@ -1494,7 +1495,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .st-col small { color: var(--muted); font-size: 13px; }
 .st-more { margin-top: 10px; }
 .st-more > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
-/* ===== Task 11: corso di italiano, carta «今天», percorso delle lezioni, «+N 分», carte da condividere ===== */
+/* ===== corso di italiano, carta «今天», percorso delle lezioni, «+N 分», carte da condividere ===== */
 .it-today { display: grid; gap: 12px; margin-top: 14px; }
 .itd-hi { margin: 0; font-size: 1.25rem; }
 .itd-go { display: grid; gap: 2px; text-align: center; margin: 0; }
@@ -1557,7 +1558,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 :root[data-theme="dark"] { --stamp-red: #FF8A7E; }
 .it-today small, .itd-ring small { font-size: 13px; }
 .it-tile { min-height: 44px; justify-content: center; }
-/* Task 5: anatomia del carattere */
+/* anatomia del carattere */
 .anat { margin: 10px 0 0; padding: 10px 12px; border-radius: 14px; background: var(--chip); }
 .anat h4 { margin: 0 0 6px; }
 .anat-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -1569,7 +1570,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .anat-role { font-size: 13px; color: var(--accent); }
 .anat-part small { font-size: 13px; color: var(--muted); }
 
-/* ---- Task 9: sfida a un amico e pacchetto classe (ui/challenge.js, ui/classroom.js) ---- */
+/* ---- sfida a un amico e pacchetto classe (ui/challenge.js, ui/classroom.js) ---- */
 .chal-lead { font-size: 18px; font-weight: 700; margin: 4px 0; }
 .chal-q { font-family: var(--f-han); font-size: 52px; line-height: 1.2; text-align: center; margin: 6px 0 0; }
 .chal-q[lang="it"] { font-family: var(--f-display); font-size: 34px; }
@@ -1600,7 +1601,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .cls-banner > span:first-child { font-size: 24px; } .cls-banner small { display: block; color: var(--muted); }
 .cls-table-w { overflow-x: auto; } .cls-table { border-collapse: collapse; width: 100%; font-size: 14px; } .cls-table th, .cls-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
 
-/* ---- Task 12: il motore degli esercizi (study/exercises.js) ---- */
+/* ---- il motore degli esercizi (study/exercises.js) ---- */
 .ex-card { align-content: start; }
 body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .ex-card > .cd-hz { margin-top: var(--sp-2); }
@@ -1653,7 +1654,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .ex-m .ex-han { font-size: 26px; }
 .ex-pad { width: 100%; }
 .ex-pad .pad2 .pad-stage { width: min(100%, 300px); }
-/* percorso guidato (Task 12, T3) */
+/* percorso guidato */
 .gd-card { display: grid; gap: 8px; }
 .gd-dur { justify-self: start; } .gd-dur button { min-height: 44px; min-width: 64px; }
 .gd-card .linklike { justify-self: start; min-height: 44px; }
@@ -1662,7 +1663,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .gd-parts { display: grid; gap: 4px; text-align: left; margin: 6px 0; }
 .gd-part { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; border-radius: 10px; background: var(--chip); }
 .gd-ok { color: var(--accent); }
-/* lettura graduata (Task 12, T4) */
+/* lettura graduata */
 .rdg-h { margin: 14px 0 6px; font-size: 15px; }
 .rdg-list { display: grid; gap: 8px; }
 .rdg-item { display: grid; gap: 2px; min-height: 56px; padding: 10px 12px; text-align: left; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; }
@@ -1681,7 +1682,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .rdg-new { display: flex; flex-wrap: wrap; gap: 6px; }
 .rdg-add { min-height: 44px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
 .rdg-add.ok { border-color: var(--t2); }
-/* Task 12, T5: corso di italiano, la parola cinese della domanda e il testo da leggere */
+/* corso di italiano, la parola cinese della domanda e il testo da leggere */
 .ex-zhq { text-align: center; margin: var(--sp-2) 0; }
 .ex-zhq .lp { display: block; font-size: 1.05rem; }
 .ex-zhq .lh { font-size: 2.4rem; line-height: 1.2; }
@@ -1699,7 +1700,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 
 <main>
   <header class="hd">
-    <h1 class="brand" aria-label="màndarínō, il cinese per italiani" lang="it"><svg xmlns="http://www.w3.org/2000/svg" viewBox="212 24 376 340" class="logo-svg" role="img" aria-hidden="true" focusable="false"><defs><filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter><radialGradient id="mandarin-grad" cx="36%" cy="32%" r="68%"><stop offset="0%" stop-color="#FFA41C" /><stop offset="45%" stop-color="#F37905" /><stop offset="80%" stop-color="#D95000" /><stop offset="100%" stop-color="#9C3200" /></radialGradient><radialGradient id="inner-ambient" cx="40%" cy="40%" r="60%"><stop offset="70%" stop-color="#000000" stop-opacity="0" /><stop offset="100%" stop-color="#5C1600" stop-opacity="0.45" /></radialGradient><linearGradient id="highlight-grad" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55" /><stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" /></linearGradient><linearGradient id="leaf-left-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2D7DD2" /><stop offset="40%" stop-color="#229874" /><stop offset="100%" stop-color="#14594A" /></linearGradient><linearGradient id="leaf-right-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#14594A" /><stop offset="60%" stop-color="#2EB88A" /><stop offset="100%" stop-color="#3AD8A3" /></linearGradient></defs><g id="mandarin-symbol" transform="translate(400, 118)"><ellipse cx="0" cy="88" rx="82" ry="11" class="lg-shadow" filter="url(#soft-shadow)" /><path fill="url(#mandarin-grad)" d="M 0, -68 C 58, -68  96, -34  96, 12 C 96,  58  54,  84   0, 84 C -54, 84 -96,  58 -96, 12 C -96, -34 -58, -68   0, -68 Z" /><path fill="url(#inner-ambient)" d="M 0, -68 C 58, -68  96, -34  96, 12 C 96,  58  54,  84   0, 84 C -54, 84 -96,  58 -96, 12 C -96, -34 -58, -68   0, -68 Z" /><path fill="url(#highlight-grad)" d="M -48, -48 C -16, -62  24, -62  52, -44 C 18, -48 -22, -44 -48, -48 Z" /><g id="pores" fill="#FFFFFF" opacity="0.32"><circle cx="-32" cy="-28" r="2.2" /><circle cx="-12" cy="-38" r="1.8" /><circle cx="16" cy="-32" r="2.0" /><circle cx="-52" cy="-6" r="2.2" /><circle cx="-28" cy="-8" r="2.5" /><circle cx="4" cy="-14" r="2.4" /><circle cx="36" cy="-12" r="1.8" /><circle cx="-62" cy="18" r="1.8" /><circle cx="-36" cy="18" r="2.2" /><circle cx="-6" cy="14" r="2.6" /><circle cx="24" cy="16" r="2.4" /><circle cx="58" cy="12" r="1.8" /><circle cx="-42" cy="42" r="1.8" /><circle cx="-14" cy="44" r="2.2" /><circle cx="18" cy="46" r="2.0" /><circle cx="48" cy="38" r="1.6" /><circle cx="-8" cy="66" r="1.8" /><circle cx="16" cy="64" r="1.6" /></g><g class="pores2" fill="#6E1E00" opacity="0.28"><circle cx="-31" cy="-27" r="1.6" /><circle cx="-27" cy="-7" r="1.8" /><circle cx="-5" cy="15" r="1.9" /><circle cx="25" cy="17" r="1.7" /><circle cx="-13" cy="45" r="1.6" /></g><ellipse cx="0" cy="-66" rx="9" ry="3.5" fill="#752200" opacity="0.75" /><path d="M -2, -66 C -4, -76 -1, -82 3, -86 C 4, -86 5, -83 4, -81 C 1, -77 2, -73 2, -66 Z" fill="#293A2C" /><path class="leaf-v" fill="url(#leaf-left-grad)" d="M -1, -67  C -14, -84 -38, -98 -62, -92  C -58, -74 -36, -64 -1, -67 Z" /><path d="M -54, -88 C -36, -82 -18, -74 -4, -68" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4" /><path class="leaf-v" fill="url(#leaf-right-grad)" d="M 1, -68  C 22, -88  52, -102  78, -94  C 66, -72  38, -62   1, -68 Z" /><path d="M 2, -69 C 28, -75 52, -84 70, -92" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.45" /><circle class="leaf-v" cx="0" cy="-67.5" r="2.8" fill="#14594A" /></g><g id="logo-text"><text class="font-brand" lang="it" text-anchor="middle" x="400" y="308"><tspan class="cls-text">m</tspan><tspan class="cls-tone-4 lg-t" data-tone="4">à</tspan><tspan class="cls-text">ndar</tspan><tspan class="cls-tone-2 lg-t" data-tone="2">í</tspan><tspan class="cls-text">n</tspan><tspan class="cls-tone-1 lg-t" data-tone="1">ō</tspan></text><text class="font-sub" lang="it" text-anchor="middle" x="404" y="348">il cinese per italiani</text></g></svg><span class="brand-fallback">màndarínō</span></h1>
+    <h1 class="brand" aria-label="màndarínō, il cinese per italiani" lang="it"><svg xmlns="http://www.w3.org/2000/svg" viewBox="212 24 376 340" class="logo-svg" role="img" aria-hidden="true" focusable="false"><defs><filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter><radialGradient id="mandarin-grad" cx="36%" cy="32%" r="68%"><stop offset="0%" stop-color="#FFA41C" /><stop offset="45%" stop-color="#F37905" /><stop offset="80%" stop-color="#D95000" /><stop offset="100%" stop-color="#9C3200" /></radialGradient><radialGradient id="inner-ambient" cx="40%" cy="40%" r="60%"><stop offset="70%" stop-color="#000000" stop-opacity="0" /><stop offset="100%" stop-color="#5C1600" stop-opacity="0.45" /></radialGradient><linearGradient id="highlight-grad" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55" /><stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" /></linearGradient><linearGradient id="leaf-left-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2D7DD2" /><stop offset="40%" stop-color="#229874" /><stop offset="100%" stop-color="#14594A" /></linearGradient><linearGradient id="leaf-right-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#14594A" /><stop offset="60%" stop-color="#2EB88A" /><stop offset="100%" stop-color="#3AD8A3" /></linearGradient></defs><g id="mandarin-symbol" transform="translate(400, 118)"><ellipse cx="0" cy="88" rx="82" ry="11" class="lg-shadow" filter="url(#soft-shadow)" /><path fill="url(#mandarin-grad)" d="M 0, -68 C 58, -68  96, -34  96, 12 C 96,  58  54,  84   0, 84 C -54, 84 -96,  58 -96, 12 C -96, -34 -58, -68   0, -68 Z" /><path fill="url(#inner-ambient)" d="M 0, -68 C 58, -68  96, -34  96, 12 C 96,  58  54,  84   0, 84 C -54, 84 -96,  58 -96, 12 C -96, -34 -58, -68   0, -68 Z" /><path fill="url(#highlight-grad)" d="M -48, -48 C -16, -62  24, -62  52, -44 C 18, -48 -22, -44 -48, -48 Z" /><g id="pores" fill="#FFFFFF" opacity="0.32"><circle cx="-32" cy="-28" r="2.2" /><circle cx="-12" cy="-38" r="1.8" /><circle cx="16" cy="-32" r="2.0" /><circle cx="-52" cy="-6" r="2.2" /><circle cx="-28" cy="-8" r="2.5" /><circle cx="4" cy="-14" r="2.4" /><circle cx="36" cy="-12" r="1.8" /><circle cx="-62" cy="18" r="1.8" /><circle cx="-36" cy="18" r="2.2" /><circle cx="-6" cy="14" r="2.6" /><circle cx="24" cy="16" r="2.4" /><circle cx="58" cy="12" r="1.8" /><circle cx="-42" cy="42" r="1.8" /><circle cx="-14" cy="44" r="2.2" /><circle cx="18" cy="46" r="2.0" /><circle cx="48" cy="38" r="1.6" /><circle cx="-8" cy="66" r="1.8" /><circle cx="16" cy="64" r="1.6" /></g><g class="pores2" fill="#6E1E00" opacity="0.28"><circle cx="-31" cy="-27" r="1.6" /><circle cx="-27" cy="-7" r="1.8" /><circle cx="-5" cy="15" r="1.9" /><circle cx="25" cy="17" r="1.7" /><circle cx="-13" cy="45" r="1.6" /></g><ellipse cx="0" cy="-66" rx="9" ry="3.5" fill="#752200" opacity="0.75" /><path d="M -2, -66 C -4, -76 -1, -82 3, -86 C 4, -86 5, -83 4, -81 C 1, -77 2, -73 2, -66 Z" fill="#293A2C" /><g class="lg-leaf" data-tone="3"><path class="leaf-v" fill="url(#leaf-left-grad)" d="M -1, -67  C -14, -84 -38, -98 -62, -92  C -58, -74 -36, -64 -1, -67 Z" /><path d="M -54, -88 C -36, -82 -18, -74 -4, -68" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4" /></g><g class="lg-leaf" data-tone="3"><path class="leaf-v" fill="url(#leaf-right-grad)" d="M 1, -68  C 22, -88  52, -102  78, -94  C 66, -72  38, -62   1, -68 Z" /><path d="M 2, -69 C 28, -75 52, -84 70, -92" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.45" /></g><circle class="leaf-v" cx="0" cy="-67.5" r="2.8" fill="#14594A" /></g><g id="logo-text"><text class="font-brand" lang="it" text-anchor="middle" x="400" y="308"><tspan class="cls-text">m</tspan><tspan class="cls-tone-4 lg-t" data-tone="4">à</tspan><tspan class="cls-text">ndar</tspan><tspan class="cls-tone-2 lg-t" data-tone="2">í</tspan><tspan class="cls-text">n</tspan><tspan class="cls-tone-1 lg-t" data-tone="1">ō</tspan></text><text class="font-sub" lang="it" text-anchor="middle" x="404" y="348">il cinese per italiani</text></g></svg><span class="brand-fallback">màndarínō</span></h1>
   </header>
 
   <div class="notice" id="frame-notice" hidden></div>
@@ -1859,7 +1860,7 @@ var SECTIONS = [], DIALOGS = [], LESSONS = [], ITLESSONS = [];
 /* ===== màndarínō · configurazione: l'identità del progetto in un solo punto.
    Il primo script dopo boot.js: tutti gli altri moduli leggono da qui (window.MD_CONFIG), nessuno scrive indirizzi a mano.
    Se il repository cambia nome, se cambia la pagina di sostegno o l'indirizzo di contatto, si cambia solo questo file.
-   Versione «store» (Task 7D): nell'APK la sceglie la build Android (productFlavors, MandarinoAndroid.flavor()); qui sotto
+   Versione «store»: nell'APK la sceglie la build Android (productFlavors, MandarinoAndroid.flavor()); qui sotto
    si spengono il controllo degli aggiornamenti dell'APK, il sostegno e i sigilli. Il codice web resta identico. ===== */
 var MD_CONFIG = {
   REPO: "longhitown/mandarino",                       /* GitHub: issue dei contributi, controllo delle release dell'APK */
@@ -15271,9 +15272,9 @@ ITLESSONS.push({
 <!-- Interfaccia in più lingue -->
 <script>
 /* ---- i18n/i18n.js ---- */
-/* V6.7 · §5: livello di traduzione dell'interfaccia. Cambia la lingua dei menu, non la direzione di studio:
+/* livello di traduzione dell'interfaccia. Cambia la lingua dei menu, non la direzione di studio:
    il corso resta «cinese per italiani». Ogni testo dell'interfaccia passa da qui: t("chiave", { variabile: valore }).
-   Regola (V6.8, controllata dai test e2e in cinese su 20 schermate): un testo visibile è o una chiave t(), o pinyin,
+   Regola (controllata dai test e2e in cinese su 20 schermate): un testo visibile è o una chiave t(), o pinyin,
    o contenuto di studio in italiano dentro un elemento lang="it" (traduzioni, titoli delle tappe, lezioni, dialoghi).
    Le chiavi mancanti in zh ricadono sull'italiano. Lingua scelta in ⚙️, salvata in cp-lang: cambiarla ricarica l'app. */
 var I18N = {};
@@ -15426,6 +15427,7 @@ Object.assign(I18N.it, {"exs.title": "Stile di ripasso", "exs.guided": "Guidato"
 Object.assign(I18N.it, {"ls.holeQ": "Che cosa va nel buco?", "ls.typePy": "Scrivi il pinyin", "ls.typeIt": "Scrivi la risposta in italiano"});
 Object.assign(I18N.it, {"gd.impara": "Impara {n} parole nuove", "gd.ripassa": "Ripassa", "gd.verifica": "Verifica la tappa", "gd.leggi": "Leggi e ascolta il dialogo", "gd.pR": "{n} ripassi", "gd.pN": "{n} parole nuove", "gd.pV": "12 domande, senza aiuti", "gd.pT": "1 dialogo", "gd.dur": "{n} min", "gd.durAria": "Quanto tempo hai", "gd.free": "Studia libero", "gd.verified": "Tappa verificata", "gd.noNew": "le parole nuove di oggi sono finite", "ls.myErrors": "Rifai i tuoi errori ({n})", "ls.mini": "Mini-verifica: 2 domande nuove"});
 Object.assign(I18N.it, {"sub.testi": "Testi"});
+Object.assign(I18N.it, {"logo.t1": "1° tono: alto e piatto, «gāo»", "logo.t2": "2° tono: sale, «lái»", "logo.t3": "3° tono: scende e risale, «hǎo»", "logo.t4": "4° tono: cade secco, «dà»"});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15560,6 +15562,7 @@ Object.assign(I18N.zh, {"exs.title": "复习方式", "exs.guided": "引导", "ex
 Object.assign(I18N.zh, {"ls.holeQ": "空里填什么？", "ls.typePy": "写出拼音", "ls.typeIt": "用意大利语写出答案"});
 Object.assign(I18N.zh, {"gd.impara": "学习 {n} 个新词", "gd.ripassa": "复习", "gd.verifica": "检测这一站", "gd.leggi": "读一读、听一听对话", "gd.pR": "{n} 个复习", "gd.pN": "{n} 个新词", "gd.pV": "12 道题，没有提示", "gd.pT": "1 段对话", "gd.dur": "{n} 分钟", "gd.durAria": "你有多少时间", "gd.free": "自由学习", "gd.verified": "这一站已通过检测", "gd.noNew": "今天的新词学完了", "ls.myErrors": "重做错题（{n}）", "ls.mini": "小测验：2 道新题"});
 Object.assign(I18N.zh, {"sub.testi": "课文"});
+Object.assign(I18N.zh, {"logo.t1": "第一声：高而平，「高」gāo", "logo.t2": "第二声：上扬，「来」lái", "logo.t3": "第三声：先降后升，「好」hǎo", "logo.t4": "第四声：急降，「大」dà"});
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -15990,7 +15993,7 @@ function tg(key, gram) {
     if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
     /* pacchetti classe: unione per id; chi è stato tolto su un dispositivo resta tolto (la data più recente) */
     if (k === "cp-class-v1") { var P = {}, X = {}; [a, b].forEach(function (o) { o = o || {}; Object.keys(o.p || {}).forEach(function (id) { if (!P[id] || (o.p[id].at || 0) < (P[id].at || 0)) P[id] = o.p[id]; }); Object.keys(o.x || {}).forEach(function (id) { X[id] = Math.max(X[id] || 0, o.x[id]); }); }); return { p: P, x: X }; }
-    /* esercizi (Task 12): per ogni unità il passo più avanzato e la verifica più recente; per ogni parola e tipo la voce con n
+    /* esercizi: per ogni unità il passo più avanzato e la verifica più recente; per ogni parola e tipo la voce con n
        più alto (mai la somma: un backup ripristinato non conta due volte); i testi letti si sommano */
     if (k === "cp-ex-v1") return mergeEx(a, b);
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
@@ -16176,7 +16179,7 @@ var MDSeal = (function () {
   CP.WORDS = WORDS; CP.ORDER = ORDER; CP.SEC = SEC;
   CP.VERSION = "6.7"; CP.DATASET = "2026-10-25";
 
-  /* ---- V6.7 · contributi della community (cp-community-contribs: un array di voci con id univoco).
+  /* ---- contributi della community (cp-community-contribs: un array di voci con id univoco).
      Formato della patch: { schema: "mandarino-contrib/1", app, dataset, created, author, items: [...] }.
      - fix: cambia py, it o note di una parola (target = chiave), di una frase (phr:<gruppo>:<riga>) o di una battuta (dlg:<id>:<riga>).
        Mai hz: è la chiave dei progressi in cp-srs-v1. Per un carattere sbagliato si usa flag.
@@ -16771,7 +16774,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
     failTimer = setTimeout(finish, 6500 + text.length * 900);
-    /* Task 12: la voce reale registrata, se la frase ne ha una sul telefono (core/voice-clip.js); se non parte, la voce di sempre */
+    /* la voce reale registrata, se la frase ne ha una sul telefono (core/voice-clip.js); se non parte, la voce di sempre */
     var clip = !o.noClip && CP.voiceClip ? CP.voiceClip.url(text, zh ? "zh" : "it") : "";
     if (clip) {
       var ca = new Audio(clip), back = function () {
@@ -16786,7 +16789,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       try { var cp = ca.play(); if (cp && cp.catch) cp.catch(back); } catch (e) { back(); }
       return;
     }
-    /* V6.8: la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
+    /* la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
        accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
       if (finished || token !== mine) return;
@@ -16822,7 +16825,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   };
   CP.say = function (text, el) { CP.speak(text, { el: el }); };
 
-  /* ---- caratteri con più letture (V6.7). La sintesi vocale legge il carattere, non il pinyin:
+  /* ---- caratteri con più letture. La sintesi vocale legge il carattere, non il pinyin:
      per 还 huán direbbe «hái». Per questi caratteri si fa leggere una parola d'esempio con la stessa lettura. ---- */
   function sylList(py) {
     var clean = String(py).replace(/[!?,;:…"“”«»()（），。？！、]/g, " ").replace(/\.(?=\s|$)/g, " ").trim();
@@ -16935,7 +16938,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     }
     return master;
   };
-  /* V6.7: tre bus sotto il master. sfx (volume regolabile, cp-sfxvol), music (il jukebox ci si collega),
+  /* tre bus sotto il master. sfx (volume regolabile, cp-sfxvol), music (il jukebox ci si collega),
      e il ducking: quando parla la voce la musica scende di 10 dB e poi risale. */
   CP.bus = (function () {
     var B = {}, duckN = 0;
@@ -17159,7 +17162,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     };
   };
 
-  /* ---- V6.7: preferenze dell'interfaccia (cp-ux-v1: benvenuto, legenda, suggerimenti, logo grande) ---- */
+  /* ---- preferenze dell'interfaccia (cp-ux-v1: benvenuto, legenda, suggerimenti, logo grande) ---- */
   CP.ux = (function () {
     var K = "cp-ux-v1", o = {};
     try { o = JSON.parse(lsGet(K) || "{}") || {}; } catch (e) { o = {}; }
@@ -17176,7 +17179,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   window.addEventListener("pagehide", function () { CP.focusMode(false); });
   document.addEventListener("visibilitychange", function () { if (CP.studyActive && !CP.studyActive() && !(CP.mode && CP.mode.active())) CP.focusMode(false); });
 
-  /* ---- fogli e finestre modali (V6.7): il focus resta dentro (Tab / Maiusc+Tab ciclano), Esc chiude,
+  /* ---- fogli e finestre modali: il focus resta dentro (Tab / Maiusc+Tab ciclano), Esc chiude,
      alla chiusura il focus torna all'elemento da cui si era partiti. Vale per #fam, #guide, #jk-pop, #selftest e i fogli nuovi. ---- */
   var traps = [], FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
   function focusables(el) { return Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (x) { return x.getClientRects().length > 0 && !x.closest("[hidden]"); }); }
@@ -17230,7 +17233,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
         return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
       }).join("") + "</div>";
     }
-    if (CP.anatomyHTML) h += CP.anatomyHTML(ch);   /* Task 5: di che cosa è fatto il carattere (words/anatomy.js) */
+    if (CP.anatomyHTML) h += CP.anatomyHTML(ch);   /* di che cosa è fatto il carattere (words/anatomy.js) */
     var ex = selfW && CP.exampleFor && CP.exampleFor(selfW.key);
     if (ex) h += '<div class="cd-ex"><span class="tag">' + CP.t("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + CP.esc(ex[2]) + "</div>" + CP.audioBtns(ex[1], true) + "</div>";
     if (selfW && CP.phonBlock) h += CP.phonBlock(selfW.py);
@@ -17518,7 +17521,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 </script>
 <script>
 /* ---- core/voice-clip.js ---- */
-/* ===== màndarínō · le voci reali registrate (Task 12, T5-T6). Frasi lette da persone vere: italiano dalla voce NM1 di
+/* ===== màndarínō · le voci reali registrate. Frasi lette da persone vere: italiano dalla voce NM1 di
    Tatoeba (CC BY 4.0), cinese da Mozilla Common Voice (CC0). Mai il sesso, l'accento o il numero di chi parla.
    - Indici VOCE_IT / VOCE_ZH (chiave della frase → numero della clip) e catalogo VOICE_FILES (numero → impronta), tutti
      letti al primo uso; il file è audio/voce/<lingua>/<numero>.<impronta>.ogg (tools/build.mjs).
@@ -17554,7 +17557,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 <!-- Schede e funzioni -->
 <script>
 /* ---- ui/ex-stub.js ---- */
-/* ===== màndarínō · stile di ripasso (Task 12, §12.9), la parte sempre presente: ⚙️ → Avanzate → «Stile di ripasso»
+/* ===== màndarínō · stile di ripasso, la parte sempre presente: ⚙️ → Avanzate → «Stile di ripasso»
    (Guidato, Misto, Classico) e CP.ex.carica(), che esegue al primo uso il gruppo ESERCIZI (tools/build.mjs, GROUPS: il
    motore degli esercizi, i distrattori, la digitazione, il percorso guidato, la lettura). Con lo stile Classico non si
    carica nulla e il ripasso è quello di sempre. Preferenza del dispositivo: cp-ex-style. ===== */
@@ -17568,7 +17571,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function carica(cb) { if (!CP.exEngine && window.__mdLoad && window.__mdLoad.ESERCIZI) window.__mdLoad.ESERCIZI(); if (cb) cb(CP.exEngine); return CP.exEngine; }
   CP.ex = { stile: stile, set: function (v) { if (STYLES.indexOf(v) >= 0) lsSet(K, v); }, carica: carica, STYLES: STYLES };
 
-  /* ---- percorso guidato (Task 12, §12.6): il passo successivo, calcolato qui senza caricare il gruppo ---- */
+  /* ---- percorso guidato: il passo successivo, calcolato qui senza caricare il gruppo ---- */
   var DURS = [5, 10, 15], DK = "cp-ex-dur";
   function exData() { try { var o = JSON.parse(lsGet("cp-ex-v1") || "null"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
   function unit(id) { return (exData().units || {})[id] || null; }
@@ -17629,7 +17632,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 /* ---- study/study.js ---- */
 
 /* Scheda "Studia": ripasso a intervalli con sessioni brevi.
-   V6.7: una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
+   Una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
    controlli principali (Ascolta, Parla) e il resto in «⋯»; voti con l'intervallo vero calcolato da FSRS;
    limite giornaliero di parole nuove; fine sessione con un solo gesto. */
 (function () {
@@ -17645,7 +17648,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function dueKeys() {
     return CP.dueList(keysOf(), Date.now()).slice(0, 25);   /* prima le carte con la probabilita' di ricordo piu' bassa */
   }
-  /* §4.2: cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
+  /* cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
   function newSeen() { return CP.game && CP.game.newToday ? CP.game.newToday() : 0; }
   function newRoom() { return Math.max(0, cfg.n + (CP.game && CP.game.newExtra ? CP.game.newExtra() : 0) - newSeen()); }
   function newKeys() { var S = CP.S(), room = newRoom(); return room ? keysOf().filter(function (k) { return !S[k] || !S[k].n; }).slice(0, room) : []; }
@@ -17692,7 +17695,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   CP.exampleFor = example;
   function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
 
-  /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
+  /* l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
   function fmt(ms) { var d = ms / 86400000, T = CP.t; return ms < 3600000 ? T("u.min", { n: Math.max(1, Math.round(ms / 60000)) }) : d < 1 ? T("u.h", { n: Math.round(ms / 3600000) }) : d < 30 ? T("u.d", { n: Math.round(d) }) : d < 365 ? T("u.mo", { n: Math.round(d / 30) }) : T("u.y", { n: Math.round(d / 36.5) / 10 }); }
   function previewIntervals(k) {
     var S = CP.S(), r = S[k], now = Date.now(), sch = CP.srs.scheduler;
@@ -17725,7 +17728,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">' + T("study.more5today") + "</button>" : "") + "</details></div>" +
       '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
       (CP.homeNotice ? CP.homeNotice() : "") +
-      /* Task 6.3: i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
+      /* i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
       '<section class="panel progress" id="st-story"><h3>' + T("study.progress") + '</h3><div id="st-body" aria-live="polite"></div>' +
       '<div class="stats"><div class="stat"><b>' + c[0] + "</b><span>" + T("study.toLearn") + '</span></div><div class="stat"><b>' + c[1] + "</b><span>" + T("study.learning") + '</span></div><div class="stat"><b>' + c[2] + "</b><span>" + T("study.known") + "</span></div></div>" +
       '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
@@ -17736,9 +17739,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   }
 
   /* ---- sessione ---- */
-  /* q0 (Task 12, percorso guidato): una coda già pronta al posto di quella del giorno */
+  /* q0: una coda già pronta al posto di quella del giorno */
   function start(q0) {
-    var q = q0 || [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* Task 12: stili Misto e Guidato */
+    var q = q0 || [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* stili Misto e Guidato */
     if (!q0) {
     dueKeys().forEach(function (k) { q.push({ k: k, kind: "test", type: pickType(k), retry: false }); });
     newKeys().forEach(function (k) { q.push({ k: k, kind: "intro", retry: false }); });
@@ -17894,7 +17897,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function render() {
     if (!sess.q.length) return done();
     var e = sess.q[0];
-    /* Task 12: negli stili Misto e Guidato la carta di prova la disegna il motore degli esercizi (study/exercises.js) */
+    /* negli stili Misto e Guidato la carta di prova la disegna il motore degli esercizi (study/exercises.js) */
     if (e.kind === "test" && e.ex && CP.exEngine && CP.exEngine.render(e, KIT)) return;
     var w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
@@ -17917,7 +17920,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     if (fcEl && e.kind === "test") CP.bindCardSwipe(fcEl, function () { var rv = document.getElementById("reveal"); if (rv) rv.click(); }, function (g) { answer(g); }, function () { return !!sess.revealed; });
     if (CP.pref.auto && (e.kind === "intro" || sess.revealed)) CP.say(CP.sayHz(w), root.querySelector(".say"));
   }
-  /* m (Task 12, solo dal motore degli esercizi): { ms, type } della risposta */
+  /* m: { ms, type } della risposta */
   function answer(g, m) {
     if (!(m && m.quiet)) { if (CP.pref.sfx) CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko"); else CP.haptic(8); }
     var e = sess.q.shift();
@@ -18026,7 +18029,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   };
   CP.studyCfg = function (o) { if (o) { if (o.n) cfg.n = o.n; if (o.sec !== undefined) cfg.sec = o.sec; saveCfg(); if (!sess) home(); } return { n: cfg.n, sec: cfg.sec }; };
   CP.studyRoot = root;
-  /* per il motore degli esercizi (Task 12): le parti della carta e la risposta, senza duplicare la sessione */
+  /* per il motore degli esercizi: le parti della carta e la risposta, senza duplicare la sessione */
   var KIT = { root: root, head: function () { return head(); }, parts: parts, tools: function (w) { return cardTools(w, true); }, example: example, kbd: kbd,
     answer: function (g, m) { answer(g, m); }, sess: function () { return sess; },
     start: function (q) { sess = null; start(q); }, due: function (n) { return dueKeys().slice(0, n); } };
@@ -18036,7 +18039,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 </script>
 <script type="text/plain" id="group-esercizi-0">
 /* ---- i18n/exercises.js ---- */
-/* ===== màndarínō · i testi del motore degli esercizi (Task 12), nelle due lingue dell'interfaccia. Nel file unico arrivano
+/* ===== màndarínō · i testi del motore degli esercizi, nelle due lingue dell'interfaccia. Nel file unico arrivano
    con il gruppo ESERCIZI, al primo uso (tools/build.mjs, GROUPS). Il corso di italiano ha i suoi in i18n/it-course.js. ===== */
 Object.assign(I18N.it, {"exm.q.meaning": "Che cosa significa?", "exm.q.word": "Qual è la parola cinese?", "exm.q.pinyin": "Come si legge?", "exm.q.listen": "Ascolta: quale hai sentito?", "exm.q.tone": "Che tono è?", "exm.choose": "Scegli la risposta", "exm.right": "Giusto!", "exm.wrong": "Non è giusto. Ecco la parola:", "exm.cont": "Continua", "exm.unsure": "Non ero sicuro", "exm.kbd": "Tasti 1-4 per rispondere, spazio per ascoltare", "exm.kbdType": "Invio per confermare", "exm.kbdNext": "Invio per continuare", "exm.toneN": "{n}° tono", "exm.q.hole": "Quale parola manca?", "exm.q.gram": "Che cosa va nel buco?", "exm.q.order": "Rimetti in ordine la frase", "exm.q.typePy": "Scrivi il pinyin", "exm.q.typeIt": "Scrivi il significato in italiano", "exm.q.holeType": "Scrivi il pinyin della parola che manca", "exm.q.match": "Abbina ogni parola al suo significato", "exm.q.trace": "Scrivi il carattere", "exm.q.part": "Di che cosa è fatto?", "exm.hole": "parola mancante", "exm.clfNote": "Classificatori: 杯 per le bevande in tazza o bicchiere, 本 per i libri, 件 per i vestiti di sopra, 张 per le cose piatte, 条 per le cose lunghe, 只 per molti animali, 辆 per i veicoli, 双 per le paia, 个 il più comune, 位 per le persone con rispetto, 碗 e 盘 per le porzioni.", "exm.slot": "Tocca le tessere nell'ordine giusto", "exm.check": "Controlla", "exm.kbdOrder": "Tocca una tessera nella riga per toglierla", "exm.orderWas": "La frase era: {s}", "exm.toneKeys": "Numeri dei toni e ü", "exm.typePy": "Pinyin", "exm.typeIt": "Significato in italiano", "exm.phPy": "es. ni3 hao3 o nǐ hǎo", "exm.phIt": "scrivi in italiano", "exm.noTones": "Le sillabe sono giuste, mancano i toni: {a}", "exm.badTones": "Toni sbagliati: {a}", "exm.accent": "Giusto, ma attenzione agli accenti: {a}", "exm.typo": "Quasi: c'è un errore di battitura. Si scrive {a}", "exm.was": "La risposta era: {a}", "exm.matchMiss": "Fatto, con {n} errori.", "exm.traceHint": "Scrivi con il dito, poi tocca «Valuta»", "exm.traceScore": "Precisione: {n}%", "exm.partSound": "Quale parte dà il suono?", "exm.partMeaning": "Quale parte dà il significato?", "gd.nothing": "Per ora non c'è niente da fare qui: torna dopo un ripasso.", "gd.vTitle": "Verifica della tappa", "gd.vPass": "Tappa verificata!", "gd.vFail": "Ancora un po' di pratica", "gd.vScore": "{ok} giuste su {n} ({p}%)", "gd.weak": "Il punto da rinforzare: {p}. Con qualche ripasso in più viene da sé.", "gd.xp": "+{n} punti per la tappa verificata", "gd.back": "Torna al Percorso", "gd.rinforza": "Rinforza le {n} parole sbagliate", "gd.again": "Rifai la verifica", "gd.vPassToast": "Tappa verificata: ora il dialogo della tappa.", "exm.wrongShort": "Non è giusto.", "rdg.lede": "Testi brevi, per livello. Tocca una parola per il suo significato; alla fine, qualche domanda.", "rdg.level": "Livello {n}", "rdg.read": "letto", "rdg.fit": "giusto per te", "rdg.all": "Tutti i testi", "rdg.show": "Mostra", "rdg.py": "Pinyin", "rdg.tr": "Traduzione", "rdg.tap": "Tocca una parola per vedere il significato e la famiglia.", "rdg.questions": "Rispondi alle {n} domande", "rdg.score": "{ok} risposte giuste su {n}", "rdg.xp": "+{n} punti per il testo letto", "rdg.new": "Parole nuove ({n}): toccale per metterle nel ripasso", "rdg.added": "Aggiunta al ripasso"});
 Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": "中文是哪个？", "exm.q.pinyin": "怎么读？", "exm.q.listen": "听一听：你听到的是哪个？", "exm.q.tone": "是第几声？", "exm.choose": "选择答案", "exm.right": "答对了！", "exm.wrong": "不对。正确的是：", "exm.cont": "继续", "exm.unsure": "我不太确定", "exm.kbd": "按 1-4 作答，空格键收听", "exm.kbdType": "回车确认", "exm.kbdNext": "回车继续", "exm.toneN": "第{n}声", "exm.q.hole": "缺了哪个词？", "exm.q.gram": "空里填什么？", "exm.q.order": "把句子排好", "exm.q.typePy": "写出拼音", "exm.q.typeIt": "用意大利语写出意思", "exm.q.holeType": "写出缺少的词的拼音", "exm.q.match": "把每个词和它的意思连起来", "exm.q.trace": "写出这个汉字", "exm.q.part": "这个字由什么构成？", "exm.hole": "缺少的词", "exm.clfNote": "量词：饮料用杯，书用本，上衣用件，平的东西用张，长的东西用条，很多动物用只，车用辆，成对的东西用双，个最常用，表示尊敬的人用位，一碗、一盘表示份量。", "exm.slot": "按正确的顺序点击词块", "exm.check": "检查", "exm.kbdOrder": "点上面的词块可以把它拿下来", "exm.orderWas": "正确的句子是：{s}", "exm.toneKeys": "声调数字和 ü", "exm.typePy": "拼音", "exm.typeIt": "意大利语意思", "exm.phPy": "例如 ni3 hao3 或 nǐ hǎo", "exm.phIt": "用意大利语写", "exm.noTones": "音节对了，但没有声调：{a}", "exm.badTones": "声调不对：{a}", "exm.accent": "对了，但注意重音符号：{a}", "exm.typo": "差一点：有一个拼写错误。正确写法是 {a}", "exm.was": "正确答案是：{a}", "exm.matchMiss": "完成了，错了 {n} 次。", "exm.traceHint": "用手指写，然后点「评分」", "exm.traceScore": "准确度：{n}%", "exm.partSound": "哪个部分表音？", "exm.partMeaning": "哪个部分表意？", "gd.nothing": "这里暂时没有要做的：复习之后再来吧。", "gd.vTitle": "这一站的检测", "gd.vPass": "这一站通过了！", "gd.vFail": "再练一练", "gd.vScore": "{n} 题答对 {ok} 题（{p}%）", "gd.weak": "可以多练的是：{p}。多复习几次就会好起来。", "gd.xp": "这一站通过检测：+{n} 分", "gd.back": "回到学习路线", "gd.rinforza": "巩固答错的 {n} 个词", "gd.again": "重新检测", "gd.vPassToast": "这一站通过了：接下来是这一站的对话。", "exm.wrongShort": "不对。", "rdg.lede": "按级别排列的短文。点一个词看意思；读完回答几个问题。", "rdg.level": "级别 {n}", "rdg.read": "已读", "rdg.fit": "适合你", "rdg.all": "全部课文", "rdg.show": "显示", "rdg.py": "拼音", "rdg.tr": "翻译", "rdg.tap": "点一个词可以看意思和同字词。", "rdg.questions": "回答 {n} 个问题", "rdg.score": "{n} 题答对 {ok} 题", "rdg.xp": "读完课文：+{n} 分", "rdg.new": "新词（{n}）：点一下加入复习", "rdg.added": "已加入复习"});
@@ -18045,7 +18048,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-1">
 /* ---- core/typing.js ---- */
-/* ===== màndarínō · confronto delle risposte digitate (Task 12): pinyin (numeri, accenti o senza toni) e italiano (accenti,
+/* ===== màndarínō · confronto delle risposte digitate: pinyin (numeri, accenti o senza toni) e italiano (accenti,
    apostrofi, refusi). Adattato da materiali/riferimenti/digitazione.mjs (le sue prove sono in tools/unit.mjs). Funzioni pure.
    CP.typing.comparePinyin(digitato, atteso) → "esatto" | "senza-toni" | "toni-sbagliati" | "sbagliato"
    CP.typing.compareIt(digitato, accettate) → "esatto" | "accento" | "quasi" | "sbagliato"
@@ -18134,7 +18137,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-2">
 /* ---- study/distractors.js ---- */
-/* ===== màndarínō · risposte sbagliate credibili per la scelta multipla (Task 12, §12.3). Funzioni pure: ricevono il pool
+/* ===== màndarínō · risposte sbagliate credibili per la scelta multipla. Funzioni pure: ricevono il pool
    delle parole e un seme, quindi le stesse domande escono uguali nelle prove (seme = hash(parola + data + tipo)).
    Regole:
      - livello vicino (±1) e, per il 40%, la stessa tappa; lunghezza simile, per non dare indizi;
@@ -18261,7 +18264,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-3">
 /* ---- study/exercises.js ---- */
-/* ===== màndarínō · il motore degli esercizi (Task 12, §12.2-12.3). Non è un ripasso parallelo: la coda, i tempi, «Esci»,
+/* ===== màndarínō · il motore degli esercizi. Non è un ripasso parallelo: la coda, i tempi, «Esci»,
    la barra di avanzamento e il voto restano quelli di study/study.js (CP.studyKit); qui si sceglie e si disegna la carta di
    prova quando lo stile è Misto o Guidato, e il voto passa sempre da CP.grade (con meta.type = tipo di esercizio).
    - Registro: CP.exEngine.register({ id, famiglia (0 riconosci, 1 misto, 2 produci), corso, q (testo della domanda),
@@ -18420,7 +18423,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
     else if (!typing && (ev.key === " " || ev.code === "Space") && cur.item.say) { ev.preventDefault(); speak(cur.item.say, cur.kit.root.querySelector(".say, [data-it-say]")); }
   });
 
-  /* ---- gli esercizi di T1 (corso di cinese) ---- */
+  /* ---- gli esercizi di base (corso di cinese) ---- */
   function hzpy(w) { return '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + "</div>"; }
   function sylls(py) { return String(py).split(/[.\s']+/).filter(Boolean); }
   function listenBtn(text) { return '<div class="ex-listen">' + CP.sayBtn(text).replace('class="say"', 'class="say big"') + "</div>"; }
@@ -18459,7 +18462,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-4">
 /* ---- study/ex-frasi.js ---- */
-/* ===== màndarínō · esercizi con le frasi (Task 12, T2, §12.4): frase a buco (parola), buco grammaticale, rimetti in ordine.
+/* ===== màndarínō · esercizi con le frasi: frase a buco (parola), buco grammaticale, rimetti in ordine.
    Le frasi di una parola (CP.exSent.forWord), in quest'ordine: la frase d'esempio della parola (EXAMPLES), le frasi di
    Tatoeba con traduzione diretta (FRASI_ZH, livello non sopra quello della parola), gli esempi delle lezioni, le frasi
    delle voci reali (VOCE_ZH, senza traduzione: solo come ultima scelta). Ogni frase passa dal taglio dell'app (CP.segment):
@@ -18539,7 +18542,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
     },
     risposta: function (it) { if (it.note) { var fb = document.querySelector(".ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="it">💡 ' + esc(it.note) + "</p>"); } } });
 
-  /* ---- ascolta la frase (T6): una voce reale, sul telefono (CP.voiceClip); quale frase hai sentito, tra quattro scritte.
+  /* ---- ascolta la frase: una voce reale, sul telefono (CP.voiceClip); quale frase hai sentito, tra quattro scritte.
      Le altre contengono la stessa parola quando si può, così bisogna ascoltare tutta la frase. ---- */
   function voiced(w) { return CP.voiceClip ? forWord(w).filter(function (s) { return s.src === "voice" && CP.voiceClip.url(s.zh, "zh"); }) : []; }
   ENG.register({ id: "ascolto-frase", famiglia: 1, corso: "zh", q: "exm.q.listenSent",
@@ -18604,7 +18607,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-5">
 /* ---- study/ex-varie.js ---- */
-/* ===== màndarínō · altri esercizi del corso di cinese (Task 12, T2, §12.2 e §12.5): digitazione del pinyin e del
+/* ===== màndarínō · altri esercizi del corso di cinese: digitazione del pinyin e del
    significato (anche nella frase a buco), abbina cinque coppie, traccia il carattere, componente (suono o significato).
    Digitazione: CP.typing confronta; pinyin senza toni o italiano con l'accento sbagliato = Difficile con la spiegazione;
    giusta al primo colpo = Bene, Facile solo se veloce e con la parola già stabile (CP.exEngine.voto). Sotto il campo i
@@ -18738,7 +18741,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-6">
 /* ---- study/guided.js ---- */
-/* ===== màndarínō · il percorso guidato «impara · esercitati · verifica» (Task 12, §12.6), corso di cinese.
+/* ===== màndarínō · il percorso guidato «impara · esercitati · verifica», corso di cinese.
    L'unità è una tappa del Percorso; lo stato sta in cp-ex-v1.units[tappa] = { passo, verifica: { data, pct, parti, ok }, letto, xp }.
    Il passo successivo lo calcola ui/ex-stub.js (CP.ex.prossimo) e lo mostra la carta «Continua» del Percorso; qui si fa:
    1. impara + esercitati: una sessione di Studia con 5 parole nuove della tappa (carte di presentazione), poi gli
@@ -18751,7 +18754,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, ENG = CP.exEngine, D = CP.distract, KIT = CP.studyKit;
   var PASS = 80, GROUP = 5, XP = 20, NQ = 12;
-  /* le cinque parti del test di livello (Task 1): 0 pinyin e toni, 1 caratteri, 2 vocabolario, 3 ordine e grammatica, 4 ascolto */
+  /* le cinque parti del test di livello: 0 pinyin e toni, 1 caratteri, 2 vocabolario, 3 ordine e grammatica, 4 ascolto */
   var PLAN = [["mc-significato", 2], ["mc-parola", 1], ["mc-pinyin", 0], ["buco", 3], ["mc-ascolto", 4], ["ordina", 3], ["scrivi-pinyin", 0], ["tono", 0], ["mc-significato", 2], ["buco-gram", 3], ["scrivi-significato", 2], ["mc-parola", 1]];
   function units() { var o = ENG.load(); o.units = o.units || {}; return o; }
   function setUnit(id, patch) { var o = units(), u = o.units[id] = o.units[id] || { passo: 0 }; Object.keys(patch).forEach(function (k) { u[k] = patch[k]; }); ENG.save(o); if (window.Store && Store.flush) Store.flush(); return u; }
@@ -18872,7 +18875,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="group-esercizi-7">
 /* ---- phrases/reading.js ---- */
-/* ===== màndarínō · lettura graduata (Task 12, §12.7), corso di cinese: Frasi → 📖 Leggi → Testi.
+/* ===== màndarínō · lettura graduata, corso di cinese: Frasi → 📖 Leggi → Testi.
    - Elenco per livello (TESTI_ZH, da tools/lettura.mjs), con «giusto per te» quando conosci almeno il 90% delle parole
      del testo (parole già avviate nel ripasso) e il segno «letto».
    - Il testo frase per frase: un tocco su una parola apre il suo foglio (significato e famiglia, CP.openFamily);
@@ -19359,7 +19362,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   }
 
   /* ---- struttura ---- */
-  /* §4.3: tre gruppi invece di sei pillole scorrevoli */
+  /* tre gruppi invece di sei pillole scorrevoli */
   var GROUPS = [["learn", "grp.learn", [["lessons", "sub.lessons"], ["pat", "sub.pat"]]], ["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["testi", "sub.testi"], ["reader", "sub.reader"]]]];
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
@@ -19512,7 +19515,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 
   /* ---- avviso breve ---- */
   var toastEl = document.getElementById("toast"), toastT = 0;
-  /* act (facoltativo, Task 11.5): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
+  /* act (facoltativo): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
      Mai una finestra in più. Senza act è il messaggio di sempre. */
   CP.toast = function (msg, act) {
     toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.toggle("act", !!act);
@@ -19527,7 +19530,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   var RANKS = [
     { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
     { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" },
-    /* Task 6.2: oltre i 10.000 punti la strada continua; dopo l'ultimo grado, una «stagione» ogni SEASON punti */
+    /* oltre i 10.000 punti la strada continua; dopo l'ultimo grado, una «stagione» ogni SEASON punti */
     { n: "Calligrafo d'Inchiostro", z: "墨韵书家", x: 15000, c: "墨" }, { n: "Viandante dei Classici", z: "经典行者", x: 22000, c: "经" },
     { n: "Saggio del Fiume Giallo", z: "黄河贤者", x: 30000, c: "河" }, { n: "Maestro dei Quattro Mari", z: "四海宗师", x: 40000, c: "海" }
   ];
@@ -19535,7 +19538,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   function rankName(r) { return LANG === "zh" ? r.z : r.n; }
   /* la stagione oltre l'ultimo grado: 0 sotto, poi 1, 2, 3… */
   function season(xp) { var top = RANKS[RANKS.length - 1].x; return xp < top ? 0 : 1 + Math.floor((xp - top) / SEASON); }
-  /* V6.8: i punti sono contati per dispositivo (xpBy) sopra una base comune (base = i punti di prima della divisione):
+  /* i punti sono contati per dispositivo (xpBy) sopra una base comune (base = i punti di prima della divisione):
      unendo due dispositivi (sincronizzazione, backup) per ognuno vale il conteggio più alto e la somma non conta mai due
      volte la stessa cosa. L'identità del dispositivo sta in «md-device», fuori dai dati che si esportano. */
   var DEV = (function () { var d = lsGet("md-device"); if (!d) { d = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); lsSet("md-device", d); } return d; })();
@@ -19572,7 +19575,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   }
   function active(r) { return !!r && !!((r.w && r.w.length) || r.s || r.e); }
   function rankIdx(xp) { var i = 0; RANKS.forEach(function (r, j) { if (xp >= r.x) i = j; }); return i; }
-  /* Task 6.1: la serie conta i giorni attivi; un giorno di riposo a settimana (da lunedì a domenica) non la spezza, purché
+  /* la serie conta i giorni attivi; un giorno di riposo a settimana (da lunedì a domenica) non la spezza, purché
      non siano due di fila. Gratuito, automatico, calcolato solo dai giorni attivi: unendo due dispositivi si unisce anche lui.
      rest() dice quali giorni della serie attuale sono stati di riposo. */
   function weekKey(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7); return dkey(x); }
@@ -19629,7 +19632,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
     ear: function (ok) { var r = rec(true); r.e = (r.e || 0) + 1; if (ok) award(3); save(); ui(); },
     xp: function (n) { var r = rec(true); r.e = (r.e || 0) + 1; award(n); save(); ui(); },
-    /* §4.2: parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
+    /* parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
     newToday: function () { var r = rec(false); return r && r.nw ? r.nw : 0; },
     addNew: function (n) { var r = rec(true); r.nw = (r.nw || 0) + n; save(); },
     newExtra: function () { var r = rec(false); return r && r.nx ? r.nx : 0; },
@@ -20001,7 +20004,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
-    /* Task 12: nello stile Guidato la carta dice il passo successivo (ui/ex-stub.js) */
+    /* nello stile Guidato la carta dice il passo successivo (ui/ex-stub.js) */
     var gh = CP.ex && CP.ex.guidaHTML ? CP.ex.guidaHTML(cur) : ""; if (gh) return gh;
     var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur], T = CP.t;
     return '<div class="panel resume"><div class="small muted">' + T("path.stage", { n: cur + 1 }) + ' · <span lang="it">' + esc(title(s)) + "</span></div>" +
@@ -21644,13 +21647,15 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 (function () {
   var CP = window.CP, brand = document.querySelector(".brand"), mini = document.getElementById("mini-logo");
   if (!brand) return;
-  var EX = { 4: ["大", "4° tono: cade secco, «dà»"], 2: ["来", "2° tono: sale, «lái»"], 1: ["高", "1° tono: alto e piatto, «gāo»"] };
+  /* le lettere con l'accento e le due foglie (la forma del terzo tono, ˇ) fanno sentire il loro tono e lo spiegano */
+  var EX = { 4: ["大", "logo.t4"], 3: ["好", "logo.t3"], 2: ["来", "logo.t2"], 1: ["高", "logo.t1"] };
   function pulse() { brand.classList.remove("pulse"); void brand.offsetWidth; brand.classList.add("pulse"); setTimeout(function () { brand.classList.remove("pulse"); }, 700); }
   brand.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("[data-tone]") : null;
     if (t) {
       var n = +t.getAttribute("data-tone"), ex = EX[n];
-      CP.speak(ex[0], { rate: 0.8 }); CP.toast(ex[1]);
+      CP.speak(ex[0], { rate: 0.8 }); CP.toast(CP.t(ex[1]));
+      if (n === 3) pulse();
       return;
     }
     if (e.target.closest && e.target.closest("#mandarin-symbol")) { CP.sfx("tap"); pulse(); }
@@ -21678,7 +21683,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 
   /* ---- 1. pulsanti nella barra ---- */
   var grp = document.querySelector(".bar .grp"), first = document.getElementById("guide-btn");
-  /* V6.7: nella barra resta solo 🎵; i tre stati dell'audio stanno in ⚙️ (CP.audioMode / CP.setAudioMode) */
+  /* nella barra resta solo 🎵; i tre stati dell'audio stanno in ⚙️ (CP.audioMode / CP.setAudioMode) */
   var vol = document.createElement("button"); vol.type = "button"; vol.id = "vol-btn"; vol.className = "iconbtn emo";
   var mus = document.createElement("button"); mus.type = "button"; mus.id = "music-btn"; mus.className = "iconbtn emo";
   grp.insertBefore(mus, document.getElementById("settings-btn"));
@@ -21797,7 +21802,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 Object.assign(I18N.it, { "vc.title": "Voci reali", "vc.desc": "Frasi lette da persone vere: italiano dalla voce NM1 di Tatoeba, cinese da Mozilla Common Voice. Si scaricano una volta sola e poi funzionano senza rete; senza di loro legge la voce del telefono.", "vc.dl": "Scarica le voci ({mb} MB)", "vc.dec": ",", "vc.dling": "Scarico le voci… {n} / {tot}", "vc.ok": "Le voci reali sono sul telefono.", "vc.del": "Togli le voci dal telefono", "vc.fail": "Alcune voci non sono arrivate ({n}): riprova quando c'è la rete.", "vc.apk": "✓ Le voci reali sono già dentro l'app." });
 Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读的句子：意大利语来自 Tatoeba 的 NM1 录音，中文来自 Mozilla Common Voice。只需下载一次，之后不联网也能用；没有下载时用手机自带的语音朗读。", "vc.dl": "下载真人录音（{mb} MB）", "vc.dec": ".", "vc.dling": "正在下载录音…… {n} / {tot}", "vc.ok": "真人录音已在手机上。", "vc.del": "从手机删除录音", "vc.fail": "有些录音没有下载成功（{n}）：请联网后再试。", "vc.apk": "✓ 真人录音已经包含在应用里。" });
 /* ---- ui/voice-dl.js ---- */
-/* ===== màndarínō · «Scarica le voci» (Task 12): ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
+/* ===== màndarínō · «Scarica le voci»: ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
    volta, nella cache mandarino-voice (il service worker la tiene tra un aggiornamento e l'altro); poi cp-voice-dl = "1" e
    CP.speak le usa (core/voice-clip.js). Nell'APK sono già dentro. Si carica al primo uso di CP.voiceDl. ===== */
 (function () {
@@ -21854,10 +21859,10 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
 /* ===== V6: microfono con flusso persistente + PWA (manifest, service worker, pacchetto per GitHub/Cloudflare) ===== */
 (function () {
   var CP = window.CP, esc = CP.esc;
-  var IDLE_MS = 45 * 1000;      /* V6.7: era 5 minuti, con l'indicatore del microfono del telefono sempre acceso */
+  var IDLE_MS = 45 * 1000;      /* era 5 minuti, con l'indicatore del microfono del telefono sempre acceso */
 
   /* ---- 1. microfono: un solo permesso per sessione. Il flusso resta aperto finche' la scheda e' viva ---- */
-  /* V6.8: guadagno automatico ACCESO. Spento, su molti telefoni la voce arrivava 5-10 volte più bassa e l'altezza non si
+  /* guadagno automatico ACCESO. Spento, su molti telefoni la voce arrivava 5-10 volte più bassa e l'altezza non si
      trovava quasi mai. La cancellazione dell'eco resta spenta: su Android la accende passando in «modalità chiamata»,
      e la voce guida e la musica finiscono nell'altoparlante del telefono, bassissime. */
   var AUDIO = { echoCancellation: false, noiseSuppression: false, autoGainControl: true, channelCount: 1 };
@@ -22695,7 +22700,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
     add("Parole nel dizionario", ORD.length === EXP.words, ORD.length + " (attese " + EXP.words + ")");
     add("Chiavi uniche e righe complete", dup === 0 && bad === 0, dup + " doppie, " + bad + " incomplete");
     add("Sezioni", (CP.SEC || []).length === EXP.sections, (CP.SEC || []).length + " (attese " + EXP.sections + ")");
-    /* Task 5: anatomia del carattere (dati letti al primo uso) */
+    /* anatomia del carattere (dati letti al primo uso) */
     if (CP.anatomy && CP.course && CP.course() !== "it") {
       var g = CP.anatomy.get("国"), h = CP.anatomy.get("好"), q = CP.anatomy.get("请");
       add("Anatomia: 国 = 囗 + 玉, 好 = 女 + 子, 请 = 讠 (significato) + 青 (suono)", !!(g && h && q && g.parts.join() === "囗,玉" && h.parts.join() === "女,子" && q.type === "s" && q.sem === "讠" && q.phon === "青"),
@@ -22703,7 +22708,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
     }
     var rows = document.querySelectorAll("#sections tbody tr").length;
     add("Tabella virtualizzata", rows < 700, rows + " righe nel documento ora (non " + ORD.length + ")");
-    /* V6.7: tema Carta di Riso indipendente dal tema del sistema */
+    /* tema Carta di Riso indipendente dal tema del sistema */
     try {
       var de = document.documentElement, prevT = de.getAttribute("data-theme");
       de.setAttribute("data-theme", "sepia");
@@ -22933,7 +22938,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
   }
 
 
-  /* ---------- V6.7: batteria sintetica e motore a sequencer (tutto da oscillatori e dal buffer di rumore, zero file) ---------- */
+  /* ---------- batteria sintetica e motore a sequencer (tutto da oscillatori e dal buffer di rumore, zero file) ---------- */
   function kick(c, out, t, v, f0, f1) { var o = track(c.createOscillator()), g = c.createGain(); o.frequency.setValueAtTime(f0 || 150, t); o.frequency.exponentialRampToValueAtTime(f1 || 45, t + 0.12); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.3); }
   function snare(c, out, t, v, f) { var s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(); s.buffer = noiseLoop(c); fl.type = "bandpass"; fl.frequency.value = f || 1800; fl.Q.value = 0.8; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16); s.connect(fl); fl.connect(g); g.connect(out); s.start(t, Math.random() * 2); s.stop(t + 0.18); }
   function hat(c, out, t, v, open, brush) {
@@ -23021,7 +23026,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
 <script>
 /* ---- audio/file-player.js ---- */
 /* màndarínō · riproduttore dei brani registrati (audio/music/<id>.<impronta>.ogg, Opus).
-   V6.8: non si decodifica più tutto il brano in memoria (circa 90 MB per 4 minuti stereo): il file compresso (3-5 MB)
+   Non si decodifica più tutto il brano in memoria (circa 90 MB per 4 minuti stereo): il file compresso (3-5 MB)
    diventa la sorgente di un elemento <audio> in loop, collegato al grafo Web Audio dell'app (MediaElementSource), così
    volume, abbassamento sotto la voce e silenzio col microfono restano gli stessi. Il loop è quello del lettore del
    browser, senza stacchi. Interfaccia come ogni traccia: CP.audioFile.player(c, bus, id) → { step, stop }.
@@ -23731,7 +23736,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
         bx.fillStyle = css("--ink", "#222"); bx.globalAlpha = S.assist ? 0.3 : 0.12;
         for (i = 0; i < c; i++) bx.fillText(cellChar(i), L * (i + 0.5) / c, L / 2 + fs * 0.04);
         bx.globalAlpha = 1;
-        /* Task 5: il componente del prossimo tratto, evidenziato (anatomia del carattere, se accesa) */
+        /* il componente del prossimo tratto, evidenziato (anatomia del carattere, se accesa) */
         if (c === 1 && S.cur !== "all" && CP.anatomy && CP.anatomy.on()) {
           var gr = CP.anatomy.groups(cellChar(0)), M2 = medians(cellChar(0)), nx = (S.strokes[S.cur] || []).length;
           if (gr && M2 && nx < M2.length && gr[nx] && gr[nx] !== "-") {
@@ -24082,7 +24087,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     res.fixed = t; res.steps = steps; res.issues = issues; res.ok = !issues.length; res.changed = t.join("|") !== tokens.join("|");
     return res;
   }
-  CP.lab = CP.lab || {}; CP.lab.NCLF = NCLF;   /* i classificatori, anche per le frasi a buco (Task 12) */
+  CP.lab = CP.lab || {}; CP.lab.NCLF = NCLF;   /* i classificatori, anche per le frasi a buco */
   CP.lab.check = check; CP.lab._roleOf = roleOf;
 })();
 </script>
@@ -25287,7 +25292,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
 
   /* ---- esercizi ---- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  /* items (Task 12): un quiz in più, con altre domande («i tuoi errori», mini-verifica); non cambia il risultato della lezione */
+  /* items: un quiz in più, con altre domande («i tuoi errori», mini-verifica); non cambia il risultato della lezione */
   function startQuiz(l, items) {
     quiz = { l: items ? Object.assign({}, l, { quiz: items }) : l, base: l, extra: !!items, wrong: [], i: 0, score: 0, state: "play", choice: null, order: null };
     prepare();
@@ -25319,13 +25324,13 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
         h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
       }
     } else if (q.k === "scrivi") {
-      /* Task 12: risposta da scrivere (pinyin se q.py, altrimenti italiano); il confronto è quello del ripasso (CP.typing) */
+      /* risposta da scrivere (pinyin se q.py, altrimenti italiano); il confronto è quello del ripasso (CP.typing) */
       h += '<p class="ask" lang="it">' + rich(q.q || T(q.py ? "ls.typePy" : "ls.typeIt")) + "</p>" + (q.zh ? zhHTML(q.zh) : "") +
         '<form class="ex-type" data-ls-form><input id="ls-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="' + (q.py ? "zh-Latn" : "it") + '" aria-label="' + CP.attr(T("ls.answers")) + '"' + (quiz.state !== "play" ? ' disabled value="' + CP.attr(quiz.typed || "") + '"' : "") + "></form>";
       h += quiz.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-ls-type style="margin:0">' + T("ex.check") + "</button></div>" :
         (quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") : '<p class="verdict ko">' + T("ls.notThis")) + ' <b lang="' + (q.py ? "zh-Latn" : "it") + '">' + esc(q.a) + "</b>" + (q.why ? ' <span lang="it">' + rich(q.why) + "</span>" : "") + '</p><div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
     } else {
-      /* «pick» e, dal Task 12, «buco» (la frase con il buco in zh, la domanda è facoltativa) */
+      /* «pick» e, ora, «buco» (la frase con il buco in zh, la domanda è facoltativa) */
       h += '<p class="ask" lang="it">' + rich(q.q || T("ls.holeQ")) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
       h += '<div class="ls-opts" role="group" aria-label="' + CP.attr(T("ls.answers")) + '">' + q.opts.map(function (op, j) {
         var cls = quiz.state === "play" ? "" : j === q.a ? " right" : j === quiz.choice ? " wrong" : " off";
@@ -25424,7 +25429,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
 </script>
 <script>
 /* ---- ui/theme-tiers.js ---- */
-/* ===== V6.6: temi (chiaro · carta di riso · notte), filtro per livello, intestazione compatta ===== */
+/* ===== temi (chiaro · carta di riso · notte), filtro per livello, intestazione compatta ===== */
 (function () {
   var CP = window.CP, root = document.documentElement;
   /* ---- temi ---- */
@@ -25543,7 +25548,8 @@ var CHANGELOG = [
       "Corso di italiano: la carta «今天» con la lezione da continuare e la frase del giorno, le lezioni come percorso, i traguardi e le carte da condividere.",
       "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️.",
       "Di che cosa è fatto un carattere: le sue parti, quale dà il significato e quale il suono. Sfida un amico su dieci parole con un link o un QR; pacchetti classe per chi insegna.",
-      "Ripasso più vario: rispondi scegliendo tra quattro risposte, ascolta, riconosci il tono. Se preferisci le carte di prima, ⚙️ → Avanzate → Stile di ripasso → Classico."
+      "Ripasso più vario: rispondi scegliendo tra quattro risposte, ascolta, riconosci il tono. Se preferisci le carte di prima, ⚙️ → Avanzate → Stile di ripasso → Classico.",
+      "Le due foglie del mandarino nel logo fanno sentire il terzo tono, come le lettere con l'accento fanno sentire gli altri."
     ],
     zh: [
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
@@ -25563,7 +25569,8 @@ var CHANGELOG = [
       "意大利语课程：“今天”卡片显示要继续的课和今日意大利语，课程变成一条路，还有纪念卡和分享卡片。",
       "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。",
       "汉字的组成：由哪些部分构成，哪部分表意、哪部分表音。用链接或二维码和朋友比一比十个词；给老师用的班级学习包。",
-      "复习更多样：从四个答案中选择、听音、辨认声调。喜欢以前的卡片的话：⚙️ → 高级 → 复习方式 → 经典。"
+      "复习更多样：从四个答案中选择、听音、辨认声调。喜欢以前的卡片的话：⚙️ → 高级 → 复习方式 → 经典。",
+      "标志里的两片橘叶会读出第三声，就像带声调的字母会读出其他声调。"
     ] },
   { v: "6.6", d: "2026-10",
     it: ["La versione di partenza: un solo file index.html con vocabolario, ripasso a intervalli e frasi."],
@@ -25572,7 +25579,7 @@ var CHANGELOG = [
 </script>
 <script>
 /* ---- study/story.js ---- */
-/* ===== màndarínō · il racconto dei progressi (Task 6.3 e 11.1), per i due corsi, dai dati che ci sono già:
+/* ===== màndarínō · il racconto dei progressi, per i due corsi, dai dati che ci sono già:
    - giorni attivi e parole studiate per settimana: i giorni del cammino (cp-game-v1 / cp-it-game-v1, CP.game.days);
    - corso di cinese: ripassi riusciti dal registro (Store.logAll: [ora, chiave, voto 1-4, ms, tipo, previsione, ripetizione]),
      parole sicure (CP.state = 2) e il tono più sbagliato nelle parole mancate negli ultimi 60 giorni;
@@ -25643,8 +25650,8 @@ var CHANGELOG = [
 </script>
 <script>
 /* ---- data/radicals.js ---- */
-/* ===== màndarínō · i 214 radicali Kangxi (Task 5), con le forme varianti più comuni (亻 per 人, 氵 per 水, 讠 per 言…).
-   Nomi e significati scritti da noi, in italiano e in cinese, brevi e originali: non copiati da fonti share-alike.
+/* ===== màndarínō · i 214 radicali Kangxi, con le forme varianti più comuni (亻 per 人, 氵 per 水, 讠 per 言…).
+   Nomi e significati scritti per il progetto, in italiano e in cinese, brevi e originali: non copiati da fonti share-alike.
    DA RILEGGERE (un madrelingua per i nomi cinesi, un insegnante per i significati). Sono contenuti dell'app come gli
    altri (CC BY 4.0). Formato: [numero Kangxi, radicale, varianti, significato in italiano, nome in cinese]. ===== */
 var RADICALS = [[1, "一", "", "uno", "一"],
@@ -25909,11 +25916,11 @@ var RADICALS = [[1, "一", "", "uno", "一"],
 </script>
 <script>
 /* ---- words/anatomy.js ---- */
-/* ===== màndarínō · anatomia del carattere (Task 5), solo nel corso di cinese, nel foglio del carattere (non sul fronte
+/* ===== màndarínō · anatomia del carattere, solo nel corso di cinese, nel foglio del carattere (non sul fronte
    della carta di studio). Il carattere si «smonta» nei componenti del primo livello, disegnati in SVG con le linee centrali
    dei tratti (data/strokes.js) colorate per componente (il campo matches di Make Me a Hanzi, data/anatomy.js). Ogni
    componente è un pulsante: apre il foglio della sua famiglia (le altre parole che lo contengono), con il suo significato
-   quando lo sappiamo: dal vocabolario dell'app o dai 214 radicali (data/radicals.js, scritti da noi).
+   quando lo sappiamo: dal vocabolario dell'app o dai 214 radicali (data/radicals.js, scritti per il progetto).
    Solo struttura: per i caratteri fonetico-semantici si dice quale parte dà il suono e quale il significato; nessuna
    «storia» o etimologia popolare (i dati non hanno una fonte affidabile per raccontarle).
    Interruttore: ⚙️ → Avanzate → «Anatomia dei caratteri» (cp-anatomy, acceso di base). I dati pesanti (ANATOMY, STROKES)
@@ -25988,7 +25995,7 @@ var RADICALS = [[1, "一", "", "uno", "一"],
 </script>
 <script type="text/plain" id="lazy-mod-credits">
 /* ---- i18n/credits-t12.js ---- */
-/* ===== màndarínō · i testi dei Crediti aggiunti con il Task 12 (frasi Tatoeba, voci reali), caricati con ui/credits.js al primo uso di CP.credits. ===== */
+/* ===== màndarínō · i testi dei Crediti aggiunti ora (frasi Tatoeba, voci reali), caricati con ui/credits.js al primo uso di CP.credits. ===== */
 Object.assign(I18N.it, { "cr.tatoeba": "Frasi d'esempio degli esercizi", "cr.tatoebaT": "<b>Tatoeba</b> (tatoeba.org), dei suoi contributori, licenza <b>CC BY 2.0 FR</b>: le frasi a buco e da riordinare, con la traduzione. L'elenco degli autori è in <b>materiali/crediti/autori-frasi.tsv</b> nel repository (github.com/longhitown/m-ndar-n-)." });
 Object.assign(I18N.it, { "cr.voiceIt": "Voci italiane reali", "cr.voiceItT": "Frasi lette da una persona vera, per il corso di italiano: <b>voce: NM1, Tatoeba, CC BY 4.0</b>.", "cr.voiceZh": "Voci cinesi reali", "cr.voiceZhT": "Frasi lette da persone vere, per l'ascolto: <b>voci: Mozilla Common Voice, CC0</b>. Nessun dato di chi parla." });
 Object.assign(I18N.zh, { "cr.tatoeba": "练习中的例句", "cr.tatoebaT": "<b>Tatoeba</b>（tatoeba.org），由其贡献者提供，许可证 <b>CC BY 2.0 FR</b>：填空和排序练习中的句子及其翻译。作者名单见代码库中的 <b>materiali/crediti/autori-frasi.tsv</b>（github.com/longhitown/m-ndar-n-）。" });
@@ -26049,7 +26056,7 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
 </script>
 <script>
 /* ---- ui/settings.js ---- */
-/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
+/* ===== ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
    audio, lingua), Dati e privacy, Avanzate, Informazioni e supporto. I moduli aggiungono le loro sezioni con
    CP.settingsExtras: una funzione che rende HTML (va in «Avanzate») o { group, html }. ===== */
 (function () {
@@ -26078,7 +26085,7 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
   }
   function close() { CP.untrap(el); }
   CP.repaintSettings = paint;
-  /* §5 fase 1: lingua dei menu */
+  /* lingua dei menu */
   function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
   CP.setLang = function (l) {
     var nl = l === "zh" ? "zh" : "it"; if (nl === LANG) return;
@@ -26277,7 +26284,7 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
 </script>
 <script>
 /* ---- words/toolbar.js ---- */
-/* ===== V6.7 · U6: scheda Parole. Prima le parole, poi gli strumenti ===== */
+/* ===== U6: scheda Parole. Prima le parole, poi gli strumenti ===== */
 (function () {
   var CP = window.CP, flt = document.getElementById("flt"), leg = document.getElementById("legend");
   var fb = document.getElementById("flt-btn"), lb = document.getElementById("legend-btn"), gb = document.getElementById("goto-btn"), cur = document.getElementById("cur-sec");
@@ -26343,7 +26350,7 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
 </script>
 <script>
 /* ---- contrib/contrib.js ---- */
-/* ===== V6.7 · §6 contributi della community: correggi, segnala, proponi; invia senza account ===== */
+/* ===== contributi della community: correggi, segnala, proponi; invia senza account ===== */
 (function () {
   var CP = window.CP, esc = CP.esc, T = CP.t, fam = document.getElementById("fam");
   /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).
@@ -27416,8 +27423,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 </script>
 <script>/* ---- i18n/it-course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-i18n-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="course-it-it-today-js">
-/* ===== màndarínō · corso di italiano: la carta «今天», i progressi «我的进步», i traguardi e le carte da condividere
-   (Task 11). Gira prima di it/course.js e legge i dati del corso solo quando servono, da CP.itApi (nessun dato duplicato):
+/* ===== màndarínō · corso di italiano: la carta «今天», i progressi «我的进步», i traguardi e le carte da condividere. Gira prima di it/course.js e legge i dati del corso solo quando servono, da CP.itApi (nessun dato duplicato):
    - carta «今天» in cima a 课程: saluto, un solo pulsante primario («继续：第 N 课»), anello dell'obiettivo e serie, sigillo del
      grado con la barra, «复习 N 张» solo se ci sono carte in scadenza, «今日意大利语» (una frase scelta per il giorno);
    - «+N 分» che sale dopo ogni esercizio, con il sigillo che si riempie verso il grado successivo;
@@ -27460,7 +27466,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     var curId = A.current(), cur = curId ? A.lessons().filter(function (l) { return l.id === curId; })[0] : null, q = A.queue(), due = q.due.length, ph = phraseOfDay();
     var main = cur ? '<button type="button" class="btn-main itd-go" data-itd-go="' + CP.attr(cur.id) + '">' + esc(T("itd.continue", { n: cur.n, t: cur.title })) + "<small>" + esc(T("itd.min", { m: minutes(cur) })) + "</small></button>"
       : '<button type="button" class="btn-main itd-go" data-itd-review>' + esc(T(due ? "itd.reviewN" : "itd.allDone", { n: due })) + "</button>";
-    /* Task 12: nello stile Guidato il pulsante dice il passo successivo (lezione, esercizi, lettura: it/esercizi.js) */
+    /* nello stile Guidato il pulsante dice il passo successivo (lezione, esercizi, lettura: it/esercizi.js) */
     var gs = CP.itEx ? CP.itEx.stepHTML() : ""; if (gs) main = gs;
     return '<section class="panel it-today" aria-labelledby="itd-h">' +
       '<h2 id="itd-h" class="itd-hi">' + esc(T(g[0])) + ' <span class="muted" lang="it">· ' + g[1] + "</span></h2>" + main +
@@ -27739,7 +27745,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
     open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
     show: show, rerender: function () { render(); },
-    /* Task 12: gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
+    /* gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
     grade: function (v, g, meta) { var e = typeof v === "string" ? BYID[v] : v; if (e) gradeOf(e, g + 1, !!(meta && meta.retry)); },
     entry: function (id) { return BYID[id] || null; }, lex: function () { return LEX; }, rec: function (id) { return sload()[id] || null; },
     example: exOf, sayBtn: sayBtn, zhHTML: zhHTML, gLabel: gLabel, PRON: PRON, detail: detailHTML,
@@ -27760,7 +27766,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     if (ls.view === "lesson" && ls.cur) return lessonHTML(ls.cur);
     if (ls.view === "quiz" && ls.quiz) return quizHTML();
     if (ls.view === "result" && ls.quiz) return resultHTML();
-    /* Task 11.2: in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
+    /* in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
        in evidenza, quelle superate con il sigillo «通过» */
     var P = lprog(), L = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }), curId = currentLesson(), done = 0;
     var nodes = L.map(function (l) {
@@ -27808,11 +27814,11 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
       if (Q.state === "play") h += '<div class="bank">' + Q.order.bank.map(function (b) { return tile(b, 'data-itl-pick="' + b.id + '"', Q.order.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" data-itl-undo' + (Q.order.pick.length ? "" : " disabled") + ">" + Z.clear + '</button><button type="button" class="btn-main" data-itl-check style="margin:0"' + (Q.order.pick.length === Q.order.bank.length ? "" : " disabled") + ">" + Z.check + "</button></div>";
       else h += (Q.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.it) + "</span></p>") + '<div class="acts">' + sayBtn(q.it, true) + '<button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else if (q.k === "scrivi") {
-      /* Task 12: risposta da scrivere in italiano, confrontata come nel ripasso (CP.typing.compareIt) */
+      /* risposta da scrivere in italiano, confrontata come nel ripasso (CP.typing.compareIt) */
       h += '<p class="ask">' + esc(q.q) + '</p><form class="ex-type" data-itl-form><input id="itl-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="it" aria-label="' + CP.attr(q.q) + '"' + (Q.state !== "play" ? ' disabled value="' + CP.attr(Q.typed || "") + '"' : "") + "></form>";
       h += Q.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-itl-type style="margin:0">' + Z.check + "</button></div>" : '<p class="verdict ' + (Q.state === "ok" ? "ok" : "ko") + '">' + (Q.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs) + ' <b lang="it">' + esc(q.a) + "</b>" + (q.why ? " " + esc(q.why) : "") + '</p><div class="acts"><button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else {
-      /* «pick» e, dal Task 12, «buco» (la frase italiana con ___; la domanda è facoltativa) */
+      /* «pick» e, ora, «buco» (la frase italiana con ___; la domanda è facoltativa) */
       h += '<p class="ask">' + esc(q.q || tt("itm.holeQ")) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
       h += '<div class="ls-opts">' + q.opts.map(function (o, j) {
         var cls = Q.state === "play" ? "" : j === q.a ? " right" : j === Q.choice ? " wrong" : " off";
@@ -27875,7 +27881,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   }
   function reviewView() {
     var Q = queue();
-    /* Task 12: negli stili Misto e Guidato la carta la disegnano gli esercizi (it/esercizi.js), che possono riproporre una parola sbagliata */
+    /* negli stili Misto e Guidato la carta la disegnano gli esercizi (it/esercizi.js), che possono riproporre una parola sbagliata */
     var EX = CP.itEx && CP.itEx.on();
     if (!rv.cur) rv.cur = (EX && CP.itEx.pick(Q)) || Q.due[0] || Q.fresh[0] || null;
     var head = tt("itc.162") + Q.due.length + tt("itc.163") + Q.newLeft + tt("itc.164") + Q.learned + tt("itc.165");
@@ -27890,7 +27896,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     }
     return h + "</div>";
   }
-  /* r: voto FSRS 1-4. retry (Task 12, dagli esercizi): la ripetizione nella stessa sessione aggiorna la carta solo se chiude
+  /* r: voto FSRS 1-4. retry: la ripetizione nella stessa sessione aggiorna la carta solo se chiude
      un riapprendimento, come CP.grade nel corso di cinese. Stesso formato di cp-it-srs-v1 di sempre: { c, n, lr } */
   function gradeOf(e, r, retry) {
     var S = sload(), now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now), apply = !retry || !rec.c || (r >= 3 && rec.c.state !== FSRS.REVIEW);
@@ -28039,7 +28045,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 </script>
 <script>/* ---- it/course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="course-it-it-esercizi-js">
-/* ===== màndarínō · corso di italiano: gli esercizi del ripasso (Task 12, T5, parità con il corso di cinese).
+/* ===== màndarínō · corso di italiano: gli esercizi del ripasso.
    Stesso motore (CP.exEngine, gruppo ESERCIZI, caricato al primo uso), stessi stili (⚙️: Guidato, Misto, Classico = le
    carte di prima), stesse regole del voto (mai Facile da una scelta multipla); il voto passa da CP.itApi.grade(voce, g,
    meta), che scrive cp-it-srs-v1 nel formato di sempre. Le parole nuove si presentano prima (parola, cinese, forme, frase).
@@ -28312,7 +28318,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 </script>
 <script>/* ---- it/esercizi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-esercizi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="course-it-it-lettura-js">
-/* ===== màndarínō · corso di italiano: lettura graduata (Task 12, T5; la stessa del corso di cinese, phrases/reading.js).
+/* ===== màndarínō · corso di italiano: lettura graduata.
    In 句子, sopra le frasi: i testi italiani A1-B1 (TESTI_IT, da tools/lettura.mjs, letti al primo uso), per livello, con
    «适合你» quando almeno il 90% delle parole è già nel ripasso e il segno «已读». Nel testo: ogni frase si ascolta (con la
    voce reale, se è sul telefono), la traduzione cinese si accende e spegne, un tocco su una parola apre il suo foglio.
@@ -28423,7 +28429,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 <script type="text/plain" id="lazy-mod-sharecard">
 /* ---- ui/share-card.js ---- */
 /* ===== màndarínō · le carte da condividere: un'immagine (canvas) che nasce sul telefono, senza server.
-   Motore e modelli (Task 11.4): CP.shareCard.templates, alimentati da un oggetto dati per corso.
+   Motore e modelli: CP.shareCard.templates, alimentati da un oggetto dati per corso.
    - «zh-day»: la carta del giorno del corso di cinese (1080×1350), identica a prima;
    - «it-day», «it-milestone», «it-week»: le carte del corso di italiano (testo in cinese), in tre formati (FORMATS) e tre
      colori (i temi dell'app), con il QR della pagina dell'app (MD_CONFIG.SHARE_URL, senza parametri), un nome facoltativo
@@ -28441,7 +28447,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     var src = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="300 10 200 210" width="400" height="420">' + defs.outerHTML + sym.outerHTML.replace(/class="[^"]*"/g, "") + "</svg>";
     return new Promise(function (res) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src); });
   }
-  /* il modello del corso di cinese: lo stesso disegno di prima del Task 11, riga per riga (tools/e2e.mjs lo confronta con
+  /* il modello del corso di cinese: lo stesso disegno di prima ora, riga per riga (tools/e2e.mjs lo confronta con
      la copia fissa in tools/fixtures/share-card-v1.js) */
   function drawZh(cv) {
     var x = cv.getContext("2d"), W = 1080, H = 1350, r = CP.game.rank(), s = CP.game.streak(), c = CP.counts(), w = CP.wordOfDay();
@@ -29114,7 +29120,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 Object.assign(I18N.it, {"tog.title": "🎯 Sfide e classe", "chal.title": "Sfida a un amico", "chal.intro": "Dieci parole che hai studiato diventano un codice: chi lo apre fa la stessa sfida, con le stesse domande. Tutto resta sui telefoni: nessun server, nessun nome.", "chal.new": "Crea una sfida", "chal.ready": "La tua sfida è pronta", "chal.howTo": "Manda il link o il codice, oppure fai inquadrare il QR dall'app di un amico (⚙️ → Sfide e classe → Inquadra il QR).", "chal.code": "Codice della sfida", "chal.share": "📤 Manda la sfida", "chal.copy": "Copia", "chal.copied": "Copiato", "chal.try": "Provala anche tu", "chal.paste": "Hai ricevuto un codice? Incollalo qui (va bene anche il messaggio intero)", "chal.go": "Apri", "chal.scan": "Inquadra il QR", "chal.scanHint": "Il QR di una sfida o di un pacchetto classe.", "chal.bad": "Non è un codice valido.", "chal.old": "Questa sfida contiene parole che questa versione dell'app non conosce: aggiorna l'app.", "chal.otherZh": "Questa sfida è per chi studia il cinese.", "chal.otherIt": "Questa sfida è per chi studia l'italiano.", "chal.switch": "Passa a quel corso", "chal.received": "Una sfida per te: {n} parole.", "chal.privacy": "Il codice contiene solo le parole e l'ordine delle domande.", "chal.start": "Comincia", "chal.q": "Che cosa vuol dire?", "chal.n": "{i} di {n}", "chal.right": "Giusto", "chal.wrong": "Era: {a}", "chal.result": "{ok} su {n} in {s} s", "chal.perfect": "Tutte giuste!", "chal.review": "Da ripassare", "chal.again": "📤 Rilancia la sfida", "chal.msg": "Ti sfido su {n} parole! Apri il link, oppure incolla il codice in màndarínō (⚙️ → Sfide e classe):", "chal.msgScore": "Io ho fatto {ok} su {n}.", "cls.title": "Classe", "cls.intro": "Per chi insegna: alcune tappe del Percorso, un obiettivo e una data diventano un pacchetto che gli studenti importano. Nessun registro, nessun server.", "cls.empty": "Nessun pacchetto. Se l'insegnante te ne ha dato uno, importalo qui o incolla il codice qui sopra.", "cls.import": "Importa un pacchetto (.json)", "cls.imported": "Pacchetto «{t}» importato", "cls.dup": "Questo pacchetto c'era già", "cls.bad": "Non è un pacchetto classe valido.", "cls.other": "Questo pacchetto è per l'altro corso.", "cls.rangeZh": "Tappe {a}–{b}", "cls.rangeIt": "Lezioni {a}–{b}", "cls.goal": "Obiettivo: {p}% entro il {d}", "cls.goalNo": "Obiettivo: {p}%", "cls.progZh": "{s} parole su {n} studiate ({p}%)", "cls.progIt": "{s} lezioni su {n} superate ({p}%)", "cls.met": "✓ Obiettivo raggiunto", "cls.left": "mancano {n} giorni", "cls.today": "scade oggi", "cls.past": "scaduto", "cls.go": "Studia", "cls.report": "Consegna il riepilogo", "cls.remove": "Togli", "cls.removed": "Pacchetto tolto", "cls.banner": "Classe: {t}", "cls.teach": "Prepara un pacchetto per la classe", "cls.name": "Titolo", "cls.namePh": "Classe 2B – unità 1", "cls.from": "Da", "cls.to": "A", "cls.goalL": "Obiettivo", "cls.due": "Entro il", "cls.dl": "Scarica il pacchetto (.json)", "cls.print": "Foglio da stampare", "cls.shareCode": "📤 Manda il codice", "cls.msg": "Pacchetto classe di màndarínō «{t}». Apri il link, oppure incolla il codice nell'app (⚙️ → Sfide e classe):", "cls.reports": "Leggi i riepiloghi ricevuti (.json)", "cls.repTitle": "Riepiloghi della classe", "cls.repNone": "Nessun riepilogo valido nei file scelti.", "cls.colName": "Nome", "cls.colDone": "Fatto", "cls.colDays": "Giorni di studio negli ultimi 30", "cls.colDate": "Data", "cls.anon": "(senza nome)", "cls.yes": "raggiunto", "cls.no": "non ancora", "cls.sh1": "1 · Scarica l'app", "cls.sh2": "2 · Nell'app: ⚙️ → Sfide e classe → Inquadra il QR", "cls.shFoot": "Gratuita, senza pubblicità, funziona anche senza rete. Chi insegna non vede i tuoi ripassi: solo il riepilogo che decidi tu di consegnare.", "cls.repHead": "Riepilogo per chi insegna", "cls.repWhat": "Contiene soltanto: il titolo del pacchetto, quante parole o lezioni del pacchetto hai fatto, se l'obiettivo è raggiunto, in quanti giorni hai studiato negli ultimi 30 e la data di oggi. Niente ripassi, niente errori, nient'altro.", "cls.repName": "Il tuo nome (facoltativo, va solo in questo riepilogo)", "cls.consent": "Ho letto che cosa contiene e voglio consegnarlo", "cls.repDl": "Scarica il riepilogo (.json)", "cls.repShare": "📤 Manda come testo", "cls.repText": "{t}: {done}; obiettivo {g}. Giorni di studio negli ultimi 30: {d}. ({date})"});
 Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑战朋友", "chal.intro": "把你学过的十个词变成一个代码：朋友打开后会做同样的挑战，遇到同样的题目。一切都只在手机上：不经过服务器，也不带名字。", "chal.new": "生成挑战", "chal.ready": "你的挑战准备好了", "chal.howTo": "把链接或代码发给朋友，或者让朋友在应用里扫这个二维码（⚙️ → 挑战与班级 → 扫二维码）。", "chal.code": "挑战代码", "chal.share": "📤 发送挑战", "chal.copy": "复制", "chal.copied": "已复制", "chal.try": "自己先试试", "chal.paste": "收到了代码？粘贴在这里（整条消息也可以）", "chal.go": "打开", "chal.scan": "扫二维码", "chal.scanHint": "挑战或班级学习包的二维码。", "chal.bad": "这不是有效的代码。", "chal.old": "这个挑战里有当前版本不认识的词，请更新应用。", "chal.otherZh": "这个挑战是给学中文的人准备的。", "chal.otherIt": "这个挑战是给学意大利语的人准备的。", "chal.switch": "切换到那个课程", "chal.received": "有人向你发起挑战：{n} 个词。", "chal.privacy": "代码里只有这些词和题目的顺序。", "chal.start": "开始", "chal.q": "这是什么意思？", "chal.n": "第 {i} 题，共 {n} 题", "chal.right": "答对了", "chal.wrong": "正确答案：{a}", "chal.result": "{n} 题答对 {ok} 题，用时 {s} 秒", "chal.perfect": "全部答对！", "chal.review": "需要复习", "chal.again": "📤 把挑战发回去", "chal.msg": "我向你发起 {n} 个词的挑战！打开链接，或者在 màndarínō 里粘贴代码（⚙️ → 挑战与班级）：", "chal.msgScore": "我答对了 {n} 题中的 {ok} 题。", "cls.title": "班级", "cls.intro": "给老师用：选几站学习路线，定一个目标和日期，做成学习包让学生导入。不做记录，也不经过服务器。", "cls.empty": "还没有学习包。如果老师给了你，请在这里导入，或者把代码粘贴到上面。", "cls.import": "导入学习包（.json）", "cls.imported": "已导入学习包“{t}”", "cls.dup": "这个学习包已经有了", "cls.bad": "这不是有效的班级学习包。", "cls.other": "这个学习包属于另一个课程。", "cls.rangeZh": "第 {a}–{b} 站", "cls.rangeIt": "第 {a}–{b} 课", "cls.goal": "目标：{d} 前完成 {p}%", "cls.goalNo": "目标：完成 {p}%", "cls.progZh": "{n} 个词里学了 {s} 个（{p}%）", "cls.progIt": "{n} 课里通过了 {s} 课（{p}%）", "cls.met": "✓ 目标已达成", "cls.left": "还剩 {n} 天", "cls.today": "今天截止", "cls.past": "已截止", "cls.go": "去学习", "cls.report": "提交学习小结", "cls.remove": "移除", "cls.removed": "学习包已移除", "cls.banner": "班级：{t}", "cls.teach": "为班级制作学习包", "cls.name": "标题", "cls.namePh": "二年级 B 班 第一单元", "cls.from": "从", "cls.to": "到", "cls.goalL": "目标", "cls.due": "截止日期", "cls.dl": "下载学习包（.json）", "cls.print": "打印用的单页", "cls.shareCode": "📤 发送代码", "cls.msg": "màndarínō 班级学习包“{t}”。打开链接，或者在应用里粘贴代码（⚙️ → 挑战与班级）：", "cls.reports": "查看收到的学习小结（.json）", "cls.repTitle": "班级学习小结", "cls.repNone": "所选文件里没有有效的学习小结。", "cls.colName": "姓名", "cls.colDone": "完成", "cls.colDays": "最近 30 天的学习天数", "cls.colDate": "日期", "cls.anon": "（未署名）", "cls.yes": "已达成", "cls.no": "尚未达成", "cls.sh1": "1 · 下载应用", "cls.sh2": "2 · 在应用里：⚙️ → 挑战与班级 → 扫二维码", "cls.shFoot": "免费、无广告，没有网络也能用。老师看不到你的复习记录，只能看到你自己决定提交的小结。", "cls.repHead": "给老师的学习小结", "cls.repWhat": "只包含：学习包标题、你完成了学习包里的多少词或课、是否达成目标、最近 30 天学习了几天，以及今天的日期。不包含复习记录、错误或其他任何内容。", "cls.repName": "你的名字（可不填，只写进这份小结）", "cls.consent": "我已了解内容，同意提交", "cls.repDl": "下载小结（.json）", "cls.repShare": "📤 以文字发送", "cls.repText": "{t}：{done}；目标{g}。最近 30 天学习 {d} 天。（{date}）"});
 /* ---- ui/challenge.js ---- */
-/* ===== màndarínō · sfida a un amico, senza server (Task 9.1).
+/* ===== màndarínō · sfida a un amico, senza server.
    Dieci parole e un seme diventano un codice (MDC1-…, base64url di «1|corso|seme|chiavi»): chi lo apre fa la stessa sfida,
    con le stesse domande nello stesso ordine e le stesse risposte tra cui scegliere, perché tutto viene dal seme e dalle
    dieci parole (le risposte sbagliate sono le altre parole della sfida: niente dipende dalla versione del vocabolario).
@@ -29286,7 +29292,7 @@ Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑�
   };
 })();
 /* ---- ui/classroom.js ---- */
-/* ===== màndarínō · pacchetto classe per chi insegna, senza server (Task 9.2), in tutti e due i corsi.
+/* ===== màndarínō · pacchetto classe per chi insegna, senza server, in tutti e due i corsi.
    - Chi insegna sceglie un tratto del Percorso (tappe del corso di cinese, lezioni del corso di italiano), un obiettivo
      (la percentuale da completare) e una data: ne esce un codice MDK1-… (base64url del JSON), un file .json con lo stesso
      contenuto e un foglio da stampare (PNG A4) con due QR, uno verso l'app (lo stesso della carta da condividere) e uno con
@@ -29547,7 +29553,7 @@ Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑�
 </script>
 <script>
 /* ---- ui/together.js ---- */
-/* ===== màndarínō · sfide e classe, la parte sempre presente (Task 9): la sezione in ⚙️ (Dati e privacy), i link
+/* ===== màndarínō · sfide e classe, la parte sempre presente: la sezione in ⚙️ (Dati e privacy), i link
    …#sfida=MDC1-… e …#classe=MDK1-… (il frammento non arriva a nessun server: si toglie subito dall'indirizzo), i pulsanti
    «🎯» e il riquadro del pacchetto classe in cima al Percorso. Il resto (ui/challenge.js, ui/classroom.js e i loro testi in
    i18n/together.js) si carica al primo uso di CP.challenge o CP.classroom (tools/build.mjs, LAZYMOD): all'avvio pesa poco. ===== */

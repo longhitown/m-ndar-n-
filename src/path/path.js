@@ -32,7 +32,7 @@
   }
   /* U3: il primo gesto del Percorso è riprendere a studiare (la stessa azione di «Inizia» in Studia) */
   function resumeHTML(cur) {
-    /* Task 12: nello stile Guidato la carta dice il passo successivo (ui/ex-stub.js) */
+    /* nello stile Guidato la carta dice il passo successivo (ui/ex-stub.js) */
     var gh = CP.ex && CP.ex.guidaHTML ? CP.ex.guidaHTML(cur) : ""; if (gh) return gh;
     var c = CP.studyCounts ? CP.studyCounts() : { due: 0, nw: 0 }, n = c.due + c.nw, s = SECTIONS[cur], T = CP.t;
     return '<div class="panel resume"><div class="small muted">' + T("path.stage", { n: cur + 1 }) + ' · <span lang="it">' + esc(title(s)) + "</span></div>" +

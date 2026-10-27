@@ -1,5 +1,5 @@
-/* ===== màndarínō · i 214 radicali Kangxi (Task 5), con le forme varianti più comuni (亻 per 人, 氵 per 水, 讠 per 言…).
-   Nomi e significati scritti da noi, in italiano e in cinese, brevi e originali: non copiati da fonti share-alike.
+/* ===== màndarínō · i 214 radicali Kangxi, con le forme varianti più comuni (亻 per 人, 氵 per 水, 讠 per 言…).
+   Nomi e significati scritti per il progetto, in italiano e in cinese, brevi e originali: non copiati da fonti share-alike.
    DA RILEGGERE (un madrelingua per i nomi cinesi, un insegnante per i significati). Sono contenuti dell'app come gli
    altri (CC BY 4.0). Formato: [numero Kangxi, radicale, varianti, significato in italiano, nome in cinese]. ===== */
 var RADICALS = [[1, "一", "", "uno", "一"],

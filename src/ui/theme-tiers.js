@@ -1,4 +1,4 @@
-/* ===== V6.6: temi (chiaro · carta di riso · notte), filtro per livello, intestazione compatta ===== */
+/* ===== temi (chiaro · carta di riso · notte), filtro per livello, intestazione compatta ===== */
 (function () {
   var CP = window.CP, root = document.documentElement;
   /* ---- temi ---- */
