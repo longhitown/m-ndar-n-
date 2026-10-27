@@ -8,16 +8,25 @@ def vCode = (System.getenv("MD_VERSION_CODE") ?: gitCount().toString()).toIntege
 
 android {
     namespace "it.mandarino.app"
-    compileSdk 34
+    compileSdk 36
     defaultConfig {
         applicationId "it.mandarino.app"
         minSdk 26
-        targetSdk 34
+        targetSdk 36
         versionCode vCode
         versionName "6.7." + vCode
     }
     /* firma: con le variabili MD_KEYSTORE… (GitHub Actions, segreti del repository) la chiave è sempre la stessa e
        ogni nuova versione si installa sopra la vecchia senza perdere i progressi. Senza: chiave di debug. */
+    /* due versioni, stesso applicationId e stessa chiave (chi ha l'APK diretto può passare allo store senza disinstallare):
+       - direct: GitHub Releases, come oggi (controllo degli aggiornamenti dell'APK, sostegno e sigilli accesi);
+       - store: Google Play / F-Droid (niente controllo degli aggiornamenti fuori dallo store, sostegno e sigilli spenti).
+       Il codice web è identico: src/config.js legge la versione da MandarinoAndroid.flavor() (BuildConfig.FLAVOR). */
+    flavorDimensions = ["dist"]
+    productFlavors {
+        direct { dimension "dist" }
+        store { dimension "dist"; versionNameSuffix "-store" }
+    }
     signingConfigs {
         release {
             def ks = System.getenv("MD_KEYSTORE")

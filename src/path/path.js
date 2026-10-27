@@ -25,7 +25,8 @@
       '<div class="bar-xp" role="progressbar" aria-valuenow="' + r.pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="' + CP.attr(T("path.rankAria")) + '"><i style="width:' + r.pct + '%"></i></div>' +
       '<div class="gstats"><div class="gst"><span class="flame" aria-hidden="true">🔥</span><div><b>' + s + "</b><span>" + T(s === 1 ? "done.streak1" : "done.streakN") + "</span></div></div>" +
       '<div class="gst"><div class="ring-w" aria-hidden="true"><div class="ring" style="--p:' + p + '"></div><span class="tx">' + wt + "</span></div><div><b>" + wt + "/" + goal + "</b><span>" + T("path.today", { n: wt, goal: goal }) + "</span></div></div></div>" +
-      '<div class="week" aria-label="' + CP.attr(T("path.week")) + '">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.td ? "td" : "") + '">' + days[i] + "<i></i></span>"; }).join("") + "</div>" +
+      '<div class="week" aria-label="' + CP.attr(T("path.week")) + '">' + wk.map(function (d, i) { return '<span class="' + (d.on ? "on " : "") + (d.rest ? "rest " : "") + (d.td ? "td" : "") + '"' + (d.rest ? ' title="' + CP.attr(T("path.restDay")) + '"' : "") + ">" + days[i] + "<i>" + (d.rest ? "☾" : "") + "</i></span>"; }).join("") + "</div>" +
+      (wk.some(function (d) { return d.rest; }) ? '<p class="small muted" style="margin:0">☾ ' + T("path.restNote") + "</p>" : "") +
       '<label class="small muted" style="display:grid;gap:4px;font-weight:600">' + T("path.goal") + '<select id="goal-sel">' + goalOpts + "</select></label>" +
       '<div class="acts" style="margin:0"><button type="button" class="btn-s" id="path-go">' + CP.t("path.goto", { n: cur + 1 }) + '</button><button type="button" class="btn-s" data-card-open>📤 ' + CP.t("card.open") + "</button></div></div>";
   }

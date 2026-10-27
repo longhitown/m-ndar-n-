@@ -44,6 +44,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
   vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
+fastlane/                  testi e immagini per gli store (fonte unica; docs/store/ per firma, moduli, tester)
 docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
@@ -53,7 +54,7 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
-tools/                     build.mjs, grammar.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
@@ -238,6 +239,28 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 **Nome del repository:** `longhitown/mandarino` (prima `m-ndar-n-`, perché GitHub aveva tolto gli accenti; i vecchi indirizzi,
 le release e le API vengono reindirizzati). Il nome è in un solo punto, `MD_CONFIG.REPO` in `src/config.js`.
 
+## Versione per gli store (Google Play, F-Droid)
+
+Tutto quello che si può preparare prima di pubblicare sta in [docs/store/](docs/store/README.md): firma, moduli,
+F-Droid, tester. Niente viene pubblicato automaticamente.
+
+- **Due versioni** (`productFlavors` in `android/app/build.gradle`), con lo stesso pacchetto e la stessa chiave:
+  - `direct`: GitHub Releases, come prima;
+  - `store`: senza controllo degli aggiornamenti dell'APK, senza sostegno né sigilli.
+
+  Il codice web è identico: `src/config.js` legge la versione da `MandarinoAndroid.flavor()`. Nella schermata
+  «App Android» si vede quale versione è installata.
+- **API 36** (compileSdk e targetSdk, Android Gradle Plugin 8.11.1):
+  - l'app va da bordo a bordo, e la WebView riceve come margine barre, ritaglio e tastiera;
+  - il tasto Indietro usa `OnBackInvokedCallback` da Android 13 (con l'indietro predittivo di Android 16 `onBackPressed`
+    non arriva più).
+
+  Il CI prova l'APK in emulatori Android 14 e 16.
+- **`.aab`**: la corsa «APK Android» allega `mandarino-store.aab` (circa 84 MB, sotto il limite di 200 MB del modulo
+  base), l'APK store e le note di versione di quel `versionCode`. Sono solo artefatti, mai pubblicati.
+- **Testi e immagini**: `fastlane/metadata/android/{it-IT,zh-CN}/` è la fonte unica. `node tools/store-assets.mjs`
+  rigenera icona, immagine di presentazione 1024×500, quattro schermate per lingua e le schede `docs/store/*.md`.
+
 ## L'APK per Android (gratis, senza Play Store)
 
 Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk.yml`): controlla `dist/` e la grammatica,
@@ -260,7 +283,7 @@ viene pubblicato. **Conserva una copia della chiave fuori da GitHub**: se si per
 più sopra le vecchie (bisognerebbe disinstallare, dopo aver fatto il backup dei progressi).
 Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype PKCS12 -alias mandarino -keyalg RSA -keysize 4096 -validity 18250`.
 
-**In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleRelease lintRelease`.
+**In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleDirectRelease lintDirectRelease` (versione per gli store: `bundleStoreRelease`).
 
 **Cosa c'è in più nell'APK** (tutto calcolato sul telefono, nessun server):
 - **scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Jukebox; aprono `?go=study|ear|music`;
@@ -321,7 +344,7 @@ In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti v
 `tools/android-smoke.mjs` controlla dentro la WebView dell'APK: caricamento all'origine dell'app, `#selftest`, backup in
 Download con UTF-8 intatto, permesso del microfono, dati che restano dopo la chiusura forzata, tasto Indietro, scorciatoie,
 apertura su un'azione, stato del widget, promemoria, nessun crash.
-In locale, con un telefono collegato in debug USB: `node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk`.
+In locale, con un telefono collegato in debug USB: `node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk`.
 Per il controllo «nessun attributo senza CP.attr», in revisione: `grep -rnP "[a-z-]+=\"' \+ (?!CP\.attr)" src`
 deve mostrare solo numeri, id interni e classi.
 
@@ -368,6 +391,8 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
+- `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
 - `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
 - `cp-contrib-credit-v1`: «1» se chi contribuisce vuole comparire nei Crediti; preferenza del dispositivo (nell'unione vince quello corrente, come `cp-contrib-nick`).
 - `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
@@ -427,6 +452,95 @@ La build si ferma se trova nel repository:
 - un file di chiave (`.pem`, `.key`, `.jks`);
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
+
+## Corso di italiano: punteggio, «今天» e carte da condividere (Task 11)
+
+- **Punti per corso** (`cp-it-game-v1`, stessa struttura e stessa unione del cinese):
+  - parola nuova 10, frase 15, lezione superata 30, esercizio di coniugazione 3;
+  - gli stessi gradi del cinese (nomi cinesi) con l'estensione oltre i 10.000 punti, serie e giorno di riposo.
+
+  Chi aveva già studiato parte dai punti che i suoi progressi valgono: 10 per parola e 30 per lezione, una volta sola.
+- **Carta «今天»** in cima a 课程 (`src/it/today.js`):
+  - saluto in cinese e in italiano e un solo pulsante primario («继续：第 N 课 · titolo», con i minuti stimati);
+  - anello dell'obiettivo e serie, sigillo del grado con la barra;
+  - «复习 N 张», solo se ci sono carte in scadenza;
+  - «今日意大利语»: una frase scelta in modo deterministico tra gli esempi delle lezioni superate (o delle prime tre
+    all'inizio), con la sillaba accentata in evidenza dove l'ortografia la segna (città, è).
+
+  Sotto, le lezioni sono un **percorso**: nodi collegati, la corrente in evidenza, «通过» sulle superate.
+- **Momenti di piacere**, tutti con la versione ferma per `prefers-reduced-motion`:
+  - «+N 分» che sale dopo ogni esercizio, con il sigillo e la barra verso il grado successivo;
+  - «通过» che si imprime alla fine di una lezione superata.
+- **Traguardi** (`cp-it-cards-v1`; nell'unione vale la prima data):
+  - primo gradino, 7/30/100 giorni di fila, 100/500/1000 parole, nuovo grado, tutte le lezioni;
+  - il «分享纪念卡» compare dentro il messaggio di congratulazioni già mostrato (`CP.toast(msg, azione)`), mai una
+    finestra in più;
+  - chi li aveva già raggiunti prima di questa versione li ritrova segnati, senza una pioggia di messaggi.
+- **«我的进步»**: il racconto della settimana (`CP.story`), la raccolta «纪念卡» se c'è almeno un traguardo, «分享».
+- **Carte da condividere** (`src/ui/share-card.js`, `CP.shareCard.templates`). Lo stesso motore fa la carta del cinese
+  (identica a prima: `tools/e2e.mjs` la confronta con `tools/fixtures/share-card-v1.js`) e tre carte del corso di
+  italiano: del giorno, del traguardo, della settimana.
+  - Formati 3:4 (1080×1440, predefinito), 4:5 e 9:16; tre colori, i temi dell'app.
+  - Contenuto: logo e nome, sigillo e grado, tre numeri, «今日意大利语», data in cinese, «署名» facoltativo (spento di
+    base, solo sul telefono: `cp-card-v1`), «màndarínō · 免费 · 离线 · 无广告 · 无需注册» e il QR.
+  - **QR**: `MD_CONFIG.SHARE_URL`, oppure, se vuoto, il link all'ultimo APK. Scuro su bianco, 22% della larghezza, mai
+    parametri. Le prove lo rileggono con jsQR.
+  - Il sigillo di gratitudine compare solo se la persona ha scelto di mostrarlo.
+- **Niente spinte**: «分享» c'è solo nella carta «今天», in «我的进步» e alla fine di lezioni e ripasso. Niente pop-up,
+  notifiche, conteggi o classifiche: l'app non sa se qualcuno condivide.
+- **In Cina**: la pagina cinese `docs/zh/` (con l'indicazione per il browser di WeChat) e le verifiche da fare sono in
+  [docs/cina.md](docs/cina.md).
+- **Tutti i testi del corso passano da `t()`**, in `src/i18n/it-course.js`, in cinese e in italiano. La build si ferma
+  se in `src/it/` compare di nuovo del cinese scritto nel codice.
+- **Avvio leggero**: nel file unico il corso di italiano (`i18n/it-course.js`, `it/today.js`, `it/course.js`) si esegue
+  solo quando è il corso scelto (`COURSE_IT` in `tools/build.mjs`). La scelta del corso sta in `it/switch.js`.
+
+## Ritorno quotidiano
+
+- **Giorno di riposo**: un giorno saltato a settimana (da lunedì a domenica) non spezza la serie, purché non siano due di
+  fila. È gratuito e automatico, e nella settimana del Percorso si vede con ☾ e una frase gentile. Si calcola solo dai
+  giorni attivi (`CP.game.rest()`, in `src/core/game.js`), quindi vale anche dopo l'unione tra dispositivi.
+- **Oltre i 10.000 punti**: altri quattro gradi e poi una stagione ogni 10.000 punti (`SEASON`), in tutti e due i corsi:
+
+  | Punti | Grado |
+  |---|---|
+  | 15.000 | Calligrafo d'Inchiostro 墨韵书家 |
+  | 22.000 | Viandante dei Classici 经典行者 |
+  | 30.000 | Saggio del Fiume Giallo 黄河贤者 |
+  | 40.000 | Maestro dei Quattro Mari 四海宗师 |
+  | 50.000 e oltre | «stagione 2», «stagione 3»… (第 2 季) |
+- **Progressi in evidenza** in Studia (`src/study/story.js`, `CP.story`): un riepilogo gentile della settimana, le parole
+  sicure, i ripassi riusciti delle ultime sei settimane e il tono che dà più filo da torcere (dalle parole mancate negli
+  ultimi 60 giorni). I numeri tecnici (memoria, matrice dei toni) restano sotto, in un riquadro chiuso. Lo stesso modulo fa
+  la pagina 我的进步 del corso di italiano.
+- **Prove su un telefono vero**: [docs/checklist-dispositivo.md](docs/checklist-dispositivo.md).
+
+## Anatomia del carattere (Task 5, solo corso di cinese)
+
+Nel foglio di ogni carattere (non sul fronte della carta di studio) c'è «Di che cosa è fatto» (`src/words/anatomy.js`):
+
+- il carattere disegnato in SVG con le linee centrali dei tratti, colorate per componente;
+- i componenti del primo livello come pulsanti. Per i caratteri fonetico-semantici, la grande maggioranza, si dice
+  quale parte dà il **significato** e quale il **suono**; poi il radicale con il suo numero Kangxi;
+- un tocco su un componente apre il suo foglio della famiglia: le altre parole che lo contengono e, se il componente è
+  scomponibile, la sua anatomia.
+
+Solo la struttura: nessuna «storia» del carattere. I dati non hanno una fonte affidabile per raccontarla, e le etimologie
+popolari spesso sono false. Nella lavagna, con la guida accesa, si evidenzia il componente del prossimo tratto.
+Interruttore: ⚙️ → Avanzate → Anatomia dei caratteri (acceso di base).
+
+**Dati.**
+- `src/data/anatomy.js` (129 KB, letto solo al primo uso) nasce da `tools/anatomy.mjs` e dal file `dictionary.txt` di
+  Make Me a Hanzi. La verifica:
+  - `strokes.js` contiene solo le linee centrali dei tratti;
+  - la scomposizione sta in `dictionary.txt`, che **non** viene da CC-CEDICT, ma da Unihan e CJKlib, sotto **LGPL 3.0 o
+    successiva** (COPYING del progetto). Il campo `matches` dice a quale componente appartiene ogni tratto.
+
+  Si tengono solo decomposizione, radicale, tipo, parte fonetica e semantica e `matches`; non definizioni, pinyin e
+  «hint». Ci sono 2517 caratteri: i 2146 del vocabolario più i loro componenti. 25 caratteri del vocabolario sono
+  semplici (人, 女, 一…).
+- `src/data/radicals.js`: i 214 radicali Kangxi con le varianti; nomi e significati scritti da noi, **da rileggere**.
+- La build controlla che ogni carattere del vocabolario abbia una struttura; `#selftest` controlla 国, 好 e 请.
 
 ## Esporta per Anki
 

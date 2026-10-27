@@ -96,12 +96,14 @@
       (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">' + T("study.more5today") + "</button>" : "") + "</details></div>" +
       '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
       (CP.homeNotice ? CP.homeNotice() : "") +
-      '<details class="panel progress"><summary>' + T("study.progress") + "</summary>" +
-      '<p class="muted small" style="margin:0">' + T("study.how", { p: Math.round(CP.srs.retention() * 100) }) + "</p>" +
+      /* Task 6.3: i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
+      '<section class="panel progress" id="st-story"><h3>' + T("study.progress") + '</h3><div id="st-body" aria-live="polite"></div>' +
       '<div class="stats"><div class="stat"><b>' + c[0] + "</b><span>" + T("study.toLearn") + '</span></div><div class="stat"><b>' + c[1] + "</b><span>" + T("study.learning") + '</span></div><div class="stat"><b>' + c[2] + "</b><span>" + T("study.known") + "</span></div></div>" +
       '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
-      (CP.homeProgress ? CP.homeProgress() : "") + "</details>" +
+      '<details class="st-more"><summary>' + T("st.more") + '</summary><p class="muted small" style="margin:0">' + T("study.how", { p: Math.round(CP.srs.retention() * 100) }) + "</p>" +
+      (CP.homeProgress ? CP.homeProgress() : "") + "</details></section>" +
       (CP.homeBackup ? CP.homeBackup() : "");
+    if (CP.story) CP.story.html("zh").then(function (h) { var b = document.getElementById("st-body"); if (b) b.innerHTML = h; });
   }
 
   /* ---- sessione ---- */

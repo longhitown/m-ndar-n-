@@ -21,6 +21,12 @@
     add("Parole nel dizionario", ORD.length === EXP.words, ORD.length + " (attese " + EXP.words + ")");
     add("Chiavi uniche e righe complete", dup === 0 && bad === 0, dup + " doppie, " + bad + " incomplete");
     add("Sezioni", (CP.SEC || []).length === EXP.sections, (CP.SEC || []).length + " (attese " + EXP.sections + ")");
+    /* Task 5: anatomia del carattere (dati letti al primo uso) */
+    if (CP.anatomy && CP.course && CP.course() !== "it") {
+      var g = CP.anatomy.get("国"), h = CP.anatomy.get("好"), q = CP.anatomy.get("请");
+      add("Anatomia: 国 = 囗 + 玉, 好 = 女 + 子, 请 = 讠 (significato) + 青 (suono)", !!(g && h && q && g.parts.join() === "囗,玉" && h.parts.join() === "女,子" && q.type === "s" && q.sem === "讠" && q.phon === "青"),
+        [g, h, q].map(function (a) { return a ? a.ch + "=" + a.parts.join("+") + (a.phon ? " (" + a.phon + ")" : "") : "?"; }).join(" · "));
+    }
     var rows = document.querySelectorAll("#sections tbody tr").length;
     add("Tabella virtualizzata", rows < 700, rows + " righe nel documento ora (non " + ORD.length + ")");
     /* V6.7: tema Carta di Riso indipendente dal tema del sistema */

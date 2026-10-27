@@ -216,6 +216,16 @@
         bx.fillStyle = css("--ink", "#222"); bx.globalAlpha = S.assist ? 0.3 : 0.12;
         for (i = 0; i < c; i++) bx.fillText(cellChar(i), L * (i + 0.5) / c, L / 2 + fs * 0.04);
         bx.globalAlpha = 1;
+        /* Task 5: il componente del prossimo tratto, evidenziato (anatomia del carattere, se accesa) */
+        if (c === 1 && S.cur !== "all" && CP.anatomy && CP.anatomy.on()) {
+          var gr = CP.anatomy.groups(cellChar(0)), M2 = medians(cellChar(0)), nx = (S.strokes[S.cur] || []).length;
+          if (gr && M2 && nx < M2.length && gr[nx] && gr[nx] !== "-") {
+            bx.strokeStyle = acc; bx.globalAlpha = 0.22; bx.lineWidth = L * 0.075; bx.lineCap = "round"; bx.lineJoin = "round";
+            /* le stesse coordinate dell'animazione dell'ordine dei tratti (playOrder): p.x * L */
+            M2.forEach(function (st, j) { if (gr[j] !== gr[nx]) return; bx.beginPath(); st.forEach(function (pt, q) { if (q) bx.lineTo(pt.x * L, pt.y * L); else bx.moveTo(pt.x * L, pt.y * L); }); bx.stroke(); });
+            bx.globalAlpha = 1;
+          }
+        }
       }
     }
     /* un tratto: spezzate raccordate con curve di Bezier; lo spessore segue la velocità (lento = piu' spesso) */
@@ -302,7 +312,7 @@
       });
       e.preventDefault();
     });
-    var up = function () { if (!drawing) return; drawing = null; refreshInfo(); assistDot(); };
+    var up = function () { if (!drawing) return; drawing = null; if (S.guide && CP.anatomy && CP.anatomy.on()) paintBg(); refreshInfo(); assistDot(); };
     ink.addEventListener("pointerup", up); ink.addEventListener("pointercancel", up); ink.addEventListener("lostpointercapture", up);
     ink.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 

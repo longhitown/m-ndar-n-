@@ -27,6 +27,7 @@
     ["cr.fsrs", "cr.fsrsT", MIT_FSRS],
     ["cr.jsqr", "cr.jsqrT", APACHE],
     ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."],
+    ["cr.mmhd", "cr.mmhdT", "GNU Lesser General Public License, versione 3 o successiva.\nhttps://www.gnu.org/licenses/lgpl-3.0.html\n\nIl testo completo è in LICENZE/LGPL-3.0.txt (con LICENZE/GPL-3.0.txt) nel repository."],
     ["cr.morph", "cr.morphT", "Morph-it! è distribuito con una doppia licenza: Creative Commons Attribution-ShareAlike 2.0 e GNU Lesser General Public License (LGPL). màndarínō ne usa i dati con la LGPL.\nhttps://www.gnu.org/licenses/lgpl-3.0.html\n\nVedi LICENZE/MORPH-IT.txt e THIRD-PARTY-NOTICES.md nel repository."]
   ];
   var DEV = "cr.dev";

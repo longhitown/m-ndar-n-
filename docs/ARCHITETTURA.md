@@ -101,6 +101,13 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | «Chi ha contribuito» | `ui/credits.js` | prima parte del foglio Crediti |
 | «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni e supporto |
 | `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
+| `CP.anatomy` / `CP.anatomyHTML(ch)` | `words/anatomy.js` | `get`, `html`, `svg`, `radical`, `groups` (componente di ogni tratto, per la lavagna), `on`/`set`; il foglio del carattere (`core/core.js`) chiede l'HTML |
+| `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
+| `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
+| `CP.shareCard` | `ui/share-card.js` | `CP.shareCard()` carta del giorno del corso aperto; `.open(modello, dati)`, `.render(canvas, modello, dati, { format, theme, seal })`, `.templates` (`zh-day`, `it-day`, `it-milestone`, `it-week`), `.FORMATS`, `.THEMES`, `.url()` |
+| `CP.itApi` / `CP.itToday` / `CP.itCardData` / `CP.itProgress` | `it/course.js` / `it/today.js` | i dati del corso di italiano per la carta «今天», il percorso, i traguardi, «我的进步» |
+| `CP.toast(msg, { label, run })` | `core/game.js` | un'azione dentro lo stesso messaggio (Task 11.5); senza, il messaggio di sempre |
+| `CP.onAward(n)` | `core/game.js` | chiamato a ogni punto guadagnato (corso di italiano: «+N 分») |
 | `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e privacy |
 | `credit: 1` nella patch | `contrib/contrib.js` | solo con un nickname e la casella spuntata (`cp-contrib-credit-v1`) |
 
@@ -120,7 +127,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 `android/…/Bridge.java` espone `window.MandarinoAndroid`. Il codice web non lo chiama quasi mai direttamente:
 `pwa/android.js` lo trasforma nelle API web standard (`speechSynthesis`, `SpeechRecognition`, download, condivisione) e i
 pochi moduli solo-APK (`pwa/sync.js`, `pwa/widget.js`, `pwa/reminder.js`, `pwa/pwa.js` per gli aggiornamenti, `audio/player.js`
-per la notifica della musica, `ui/pleco.js` per `openPleco` e `plecoStore`) controllano prima `if (window.MandarinoAndroid)`. Le risposte asincrone tornano da
+per la notifica della musica, `ui/pleco.js` per `openPleco` e `plecoStore`) controllano prima `if (window.MandarinoAndroid)`. `src/config.js` chiede `flavor()` («direct» o «store») per gli interruttori della versione per gli store. Le risposte asincrone tornano da
 `window.__mdEvt`.
 
 ## Regole che tengono insieme il tutto

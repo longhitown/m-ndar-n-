@@ -94,12 +94,13 @@ function copyDir(a, b, skip = new Set()) {
 function assemble(out) {
   if (!fs.existsSync(path.join(ROOT, "dist/index.html"))) throw new Error("Manca dist/: lancia prima node tools/build.mjs");
   fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
-  for (const f of ["index.html", "icon.svg"]) fs.copyFileSync(path.join(ROOT, "docs", f), path.join(out, f));
+  for (const f of ["index.html", "icon.svg", "tester.html"]) fs.copyFileSync(path.join(ROOT, "docs", f), path.join(out, f));
   copyDir(path.join(ROOT, "docs/img"), path.join(out, "img"));
+  copyDir(path.join(ROOT, "docs/zh"), path.join(out, "zh"));   /* la pagina cinese, quella del QR delle carte */
   fs.writeFileSync(path.join(out, "privacy.html"), privacyPage());
   copyDir(path.join(ROOT, "dist"), path.join(out, "app"), new Set(["_headers"]));
   fs.writeFileSync(path.join(out, ".nojekyll"), "");
-  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, privacy.html, img/, app/");
+  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, zh/, privacy.html, tester.html, img/, app/");
 }
 
 async function assets() {

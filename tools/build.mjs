@@ -42,6 +42,12 @@ if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
   const ST = vm.runInContext("STROKES", sctx), miss = new Set();
   D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !ST[ch]) miss.add(ch); })));
   if (miss.size) fail(`caratteri senza tratti in src/data/strokes.js: ${[...miss].join("")} (lancia node tools/strokes.mjs graphics.txt)`); }
+/* anatomia del carattere (Task 5): ogni carattere del vocabolario ha una scomposizione o è segnato come semplice ("") in
+   src/data/anatomy.js (si rigenera con tools/anatomy.mjs dictionary.txt) */
+{ const actx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/anatomy.js"), "utf8"), actx);
+  const AN = vm.runInContext("ANATOMY", actx), miss = new Set();
+  D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !Array.isArray(AN[ch])) miss.add(ch); })));
+  if (miss.size) fail(`caratteri senza struttura in src/data/anatomy.js: ${[...miss].join("")} (lancia node tools/anatomy.mjs dictionary.txt)`); }
 /* il Percorso: ogni tappa ha un capitolo (data/levels.js) e i file del vocabolario sono in ordine di capitolo */
 { const lctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/levels.js"), "utf8"), lctx);
   const SC = vm.runInContext("SECTION_CHAPTER", lctx); let last = 0;
@@ -92,6 +98,16 @@ for (const s of scripts) {
   if (JSON.stringify(listed) !== JSON.stringify(ctx.P || [])) fail("CONTRIBUTORS.md e src/data/contributors.js non hanno lo stesso elenco");
 }
 
+/* Task 11: il corso di italiano non ha testi scritti nel codice: tutto passa da t() (src/i18n/). Ammessi i commenti e le
+   righe bilingui di proposito (data-noi18n: la scelta del corso, che deve capire anche chi non legge l'altra lingua). */
+{
+  for (const f of fs.readdirSync(path.join(SRC, "it")).filter((x) => x.endsWith(".js"))) {
+    const code = fs.readFileSync(path.join(SRC, "it", f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    const bad = code.split("\n").filter((l) => /[\u4e00-\u9fff]/.test(l) && !/data-noi18n/.test(l) && !/data-course-set/.test(l));
+    if (bad.length) fail("src/it/" + f + ": testo cinese scritto nel codice (usa t()): " + bad[0].trim().slice(0, 80));
+  }
+}
+
 /* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
    nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in tools/seal-issue.mjs
    e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
@@ -113,7 +129,7 @@ out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
    compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
    STROKES o IT_LEXICON (il lessico del corso di italiano). Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
-const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"]];
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"]];
 for (const [name, test] of LAZY) {
   const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
   const lctx = vm.createContext({});
@@ -150,6 +166,17 @@ for (const m of LAZYMOD) {
     "(function () { var P = " + JSON.stringify(m.props) + ", done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }\n" +
     "  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();\n</script>");
   group.forEach((x) => scripts.splice(scripts.indexOf(x), 1));
+}
+/* COURSE_IT: il corso di italiano per chi parla cinese (testi, carta «今天», corso) serve solo a chi lo ha scelto. Nel file
+   unico questi file restano testo (type="text/plain") e si eseguono al loro posto, in ordine, solo se cp-course è "it":
+   chi studia cinese non li compila all'avvio. Il comportamento è identico a quello degli script normali. */
+const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js"];
+for (const f of COURSE_IT) {
+  const sc = scripts.find((x) => x.src === f); if (!sc) fail("COURSE_IT: manca " + f + " in src/index.html");
+  const code = fs.readFileSync(path.join(SRC, f), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script"), id = "course-it-" + f.replace(/[^a-z0-9]+/gi, "-");
+  out = out.replace(sc.tag, () => '<script type="text/plain" id="' + id + '">\n' + code + "\n</script>\n<script>/* ---- " + f + " (solo nel corso di italiano) ---- */" +
+    "(function () { var c = null; try { c = localStorage.getItem(\"cp-course\"); } catch (e) {} var el = document.getElementById(" + JSON.stringify(id) + "); if (c === \"it\" && el) { var s = document.createElement(\"script\"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>");
+  scripts.splice(scripts.indexOf(sc), 1);
 }
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");

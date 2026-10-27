@@ -67,11 +67,12 @@
   /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
      con lo stesso avviso della PWA. Si spegne in ⚙️ → Voce e audio → App Android. */
   var REPO = MD_CONFIG.REPO;   /* src/config.js; se il repository cambia nome, GitHub reindirizza anche le API */
-  CP.apkUpdates = { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
+  /* nella versione per gli store (MD_CONFIG.APK_UPDATES false) niente controllo né interruttore: gli aggiornamenti li dà lo store */
+  CP.apkUpdates = window.MD_CONFIG && MD_CONFIG.APK_UPDATES === false ? null : { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
   function vnum(v) { return String(v || "").replace(/^v/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
   function newer(a, b) { a = vnum(a); b = vnum(b); for (var i = 0; i < Math.max(a.length, b.length); i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); } return false; }
   function apkCheck() {
-    var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
+    var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
     var last = 0; try { last = +localStorage.getItem("md-apkcheck-t") || 0; } catch (e) {}
     if (Date.now() - last < 86400000) return;
     try { localStorage.setItem("md-apkcheck-t", String(Date.now())); } catch (e) {}

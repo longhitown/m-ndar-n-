@@ -1,0 +1,17 @@
+màndarínō è un'app per studiare il cinese mandarino partendo dall'italiano, e l'italiano partendo dal cinese. È gratuita, funziona senza rete, non ha pubblicità né account e non raccoglie dati: i progressi restano sul tuo telefono.
+
+<b>Corso di cinese</b>
+• 6385 parole HSK 3.0, livelli 1-5, in sei capitoli e tappe, con pinyin, toni e una frase d'esempio per ogni parola
+• ripasso a intervalli (FSRS): dieci parole al giorno, lette ad alta voce
+• un test di livello di pochi minuti all'inizio, per partire dal punto giusto
+• 30 lezioni di grammatica, dialoghi, modelli di frase e un laboratorio che traduce solo quando è sicuro
+• orecchio ai toni, pronuncia con il microfono, ordine dei tratti
+
+<b>Corso di italiano per chi parla cinese</b>
+• 30 lezioni, 4780 parole, esercizi di frasi e coniugazioni, un correttore di frasi italiane
+
+<b>Tuo e basta</b>
+• sincronizzazione senza server: un file nel tuo cloud, oppure dei QR da un telefono all'altro
+• esportazione per Anki, widget «Oggi», promemoria facoltativo, musica per studiare
+
+Il codice è libero (MIT), i contenuti sono CC BY 4.0. Puoi proporre correzioni direttamente dall'app.

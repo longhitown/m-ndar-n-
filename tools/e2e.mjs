@@ -17,7 +17,7 @@ import { createRequire } from "module";
 import http from "http";
 import fs from "fs";
 import path from "path";
-import { pathToFileURL } from "url";
+import { pathToFileURL, fileURLToPath as fileURLToPathSafe } from "url";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
@@ -320,6 +320,46 @@ try {
     check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4e. ritorno quotidiano (Task 6): giorno di riposo, gradi oltre i 10.000 punti, racconto dei progressi */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    const r = await p.evaluate(() => {
+      const k = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+      const day = { w: ["x"], s: 0, e: 0 }, mk = (offs) => Object.fromEntries(offs.map((o) => [k(o), day]));
+      CP.game.load({ base: 0, xpBy: {}, goal: 10, days: mk([0, 2, 3, 4, 5]), best: 0 }); const a = CP.game.streak(), restA = Object.keys(CP.game.rest());
+      CP.game.load({ base: 0, xpBy: {}, goal: 10, days: mk([0, 3, 4, 5]), best: 0 }); const b = CP.game.streak();
+      CP.game.load({ base: 45000, xpBy: {}, goal: 10, days: {}, best: 0 }); const r1 = CP.game.rank();
+      CP.game.load({ base: 55000, xpBy: {}, goal: 10, days: {}, best: 0 }); const r2 = CP.game.rank();
+      CP.game.load({ base: 16000, xpBy: {}, goal: 10, days: {}, best: 0 }); const r3 = CP.game.rank();
+      return { a, restA, yest: k(1), b, r1: [r1.name, r1.next, r1.season], r2: [r2.name, r2.next, r2.pct], r3: [r3.name, r3.next] };
+    });
+    check("Giorno di riposo: un giorno saltato non spezza la serie (5 giorni), due di fila sì (1)", r.a === 5 && r.restA.join() === r.yest && r.b === 1, JSON.stringify(r));
+    check("Gradi oltre i 10.000 punti, poi stagioni ogni 10.000", r.r3[0] === "Calligrafo d'Inchiostro" && r.r3[1] === 22000 && r.r1[0] === "Maestro dei Quattro Mari" && r.r1[1] === 50000 && r.r2[0] === "Maestro dei Quattro Mari · stagione 2" && r.r2[1] === 60000 && r.r2[2] === 50, JSON.stringify(r));
+    await p.evaluate(() => { CP.game.load({ base: 0, xpBy: {}, goal: 10, days: {}, best: 0 }); CP.grade("你", 3, false, { ms: 900, type: "pi" }); CP.show("study", true, true); }); await p.waitForTimeout(700);
+    const st = await p.evaluate(() => { const s = document.getElementById("st-story"); return s && !s.closest("details") ? { sum: (s.querySelector(".st-sum") || {}).textContent, cols: s.querySelectorAll(".st-col").length } : null; });
+    check("Progressi in evidenza in Studia: riepilogo della settimana e sei settimane", st && st.cols === 6 && /settimana/.test(st.sum || ""), JSON.stringify(st));
+    check("Ritorno quotidiano: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4f. anatomia del carattere (Task 5): foglio del carattere, componenti cliccabili, interruttore, lavagna */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(600);
+    await p.evaluate(() => CP.openFamily("请")); await p.waitForTimeout(300);
+    const a = await p.evaluate(() => { const s = document.querySelector("#fam .anat"); return s ? { parts: [...s.querySelectorAll(".anat-part .anat-ch")].map((x) => x.textContent).join(""), roles: [...s.querySelectorAll(".anat-role")].map((x) => x.textContent).join(","), svg: s.querySelectorAll(".anat-svg polyline").length, txt: s.textContent } : null; });
+    check("Anatomia: 请 si smonta in 讠 (significato) e 青 (suono), disegnato in SVG tratto per tratto", a && a.parts === "讠青" && a.roles === "significato,suono" && a.svg === 10 && /fonetico-semantico/.test(a.txt), JSON.stringify(a));
+    await p.click('#fam [data-anat="青"]'); await p.waitForTimeout(300);
+    const fam = await p.evaluate(() => ({ big: (document.querySelector("#fam .fam-head .big") || {}).textContent, others: document.querySelectorAll("#fam .fw").length }));
+    check("Anatomia: un componente apre le altre parole che lo contengono (foglio della famiglia)", fam.big === "青" && fam.others > 2, JSON.stringify(fam));
+    await p.evaluate(() => { CP.closeSheet(); CP.anatomy.set(false); CP.openFamily("好"); }); await p.waitForTimeout(200);
+    check("Anatomia: si spegne in ⚙️ (e non c'è sul fronte della carta di studio)", await p.evaluate(() => !document.querySelector("#fam .anat") && !document.querySelector(".fc .anat")));
+    await p.evaluate(() => { CP.closeSheet(); CP.anatomy.set(true); });
+    check("Anatomia: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -376,6 +416,95 @@ try {
     check("Corso di italiano: il correttore non segnala nessuna delle " + itc.n + " frasi giuste dell'app", !itc.fp.length, itc.fp.slice(0, 3).join(" · "));
     check("Corso di italiano: il correttore trova e corregge gli errori tipici", !itc.miss.length && itc.ui, itc.miss.slice(0, 3).join(" · ") + (itc.ui ? "" : " · pannello"));
     check("Corso di italiano: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 5e. Task 11: punteggio, carta «今天», percorso, traguardi e carte da condividere del corso di italiano */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, acceptDownloads: true }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const net = []; await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => { net.push(r.request().url()); r.abort(); });
+    /* un profilo che studiava già: 2 lezioni superate e 5 parole ripassate, senza il conteggio dei punti del corso */
+    await ctx.addInitScript(() => { if (sessionStorage.getItem("init")) return; sessionStorage.setItem("init", 1);
+      localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh"); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-ux-v1", JSON.stringify({ onboarded: 1, unlv: 1, showAll: 1 }));
+      localStorage.setItem("cp-it-lessons-v1", JSON.stringify({ pronuncia: { best: 90, done: Date.now() - 5 * 864e5 }, genere: { best: 85, done: Date.now() - 3 * 864e5 } }));
+      const S = {}; ["a", "b", "c", "d", "e"].forEach((k) => { S["it:x:" + k] = { n: 1, lr: Date.now() - 864e5, c: { state: 2, st: 3, df: 5, due: Date.now() + 864e5, last: Date.now() - 864e5, step: 0 } }; }); localStorage.setItem("cp-it-srs-v1", JSON.stringify(S)); });
+    await p.goto(base); await p.waitForTimeout(900);
+    const xp1 = await p.evaluate(() => CP.game.rank().xp); await p.reload(); await p.waitForTimeout(700); const xp2 = await p.evaluate(() => CP.game.rank().xp);
+    check("Corso di italiano: chi aveva già studiato parte dai punti che vale (2 lezioni e 5 parole = 110), senza contarli due volte", xp1 === 110 && xp2 === 110, xp1 + " " + xp2);
+    const today = await p.evaluate(() => { const c = document.querySelector("#view-it .it-today"); return c ? { primary: document.querySelectorAll("#view-it .btn-main").length, go: (c.querySelector("[data-itd-go]") || {}).textContent, nodes: document.querySelectorAll(".itp-node").length, done: document.querySelectorAll(".itp-node.done").length, now: (document.querySelector(".itp-node.now [data-itl-open]") || {}).getAttribute && document.querySelector(".itp-node.now [data-itl-open]").getAttribute("data-itl-open"), phrase: !!c.querySelector(".itd-phrase .itd-it"), ring: !!c.querySelector(".ring") } : null; });
+    check("Carta «今天»: un solo pulsante primario «继续：第 3 课», anello, frase del giorno; sotto il percorso di 30 lezioni con 2 superate e la terza evidenziata", today && today.primary === 1 && /第 3 课/.test(today.go) && today.nodes === 30 && today.done === 2 && today.now === "articoli" && today.phrase && today.ring, JSON.stringify(today));
+    const ph = await p.evaluate(() => { const d = new Date(2026, 9, 27), a = CP.itToday.phraseOfDay(d), b = CP.itToday.phraseOfDay(new Date(2026, 9, 27)), pool = CP.itToday.pool(); return { same: a.it === b.it, inPool: pool.some((x) => x.it === a.it), fromPassed: pool.every((x) => x.n <= 2) }; });
+    check("Frase del giorno: scelta in modo deterministico tra gli esempi delle lezioni superate", ph.same && ph.inPool && ph.fromPassed, JSON.stringify(ph));
+    /* si avvia la lezione corrente e la si supera: anello, serie, «+30 分» e il traguardo con «分享纪念卡» nel messaggio */
+    await p.click("[data-itd-go]"); await p.waitForTimeout(200);
+    const opened = await p.evaluate(() => /第 3 课/.test((document.querySelector("#view-it .ls-lesson .tag") || {}).textContent || ""));
+    const passed = await p.evaluate(() => {
+      const l = ITLESSONS.filter((x) => x.id === "articoli")[0], click = (sel) => document.querySelector(sel).click();
+      click("[data-itl-quiz]");
+      for (const q of l.quiz) {
+        if (q.k === "order") { for (const w of q.it.replace(/[.,!?]/g, "").split(/\s+/)) { const t = [...document.querySelectorAll("[data-itl-pick]:not([disabled])")].find((x) => x.textContent === w); t.click(); } click("[data-itl-check]"); }
+        else click('[data-itl-opt="' + q.a + '"]');
+        click("[data-itl-next]");
+      }
+      return { stamp: !!document.querySelector(".ls-quiz .it-stamp"), share: !!document.querySelector("#view-it [data-itd-share]"), gain: (document.querySelector(".it-gain") || {}).textContent || "", streak: CP.game.streak(), toast: document.getElementById("toast").textContent, act: !!document.querySelector("#toast .toast-act") };
+    });
+    check("Lezione corrente avviata dalla carta e superata: sigillo «通过», «+30 分», serie aggiornata, «分享» a fine lezione", opened && passed.stamp && passed.share && /\+30/.test(passed.gain) && passed.streak >= 1, JSON.stringify(passed));
+    await p.waitForTimeout(150);
+    const mile = await p.evaluate(() => { const sheets = document.querySelectorAll("[role=dialog]:not([hidden]), .sheet:not([hidden])").length; CP.onRankUp({ name: "声调学徒" }); const b = document.querySelector("#toast .toast-act"); const m = JSON.parse(localStorage.getItem("cp-it-cards-v1") || "{}").m || {}; return { act: b ? b.textContent : "", toast: document.getElementById("toast").textContent, sheets: document.querySelectorAll("[role=dialog]:not([hidden]), .sheet:not([hidden])").length - sheets, rec: !!m["rank:声调学徒"] && !!m.first }; });
+    check("Traguardo: «分享纪念卡» dentro il messaggio di congratulazioni, nessuna finestra in più, ricordato in cp-it-cards-v1", mile.act === "分享纪念卡" && /恭喜/.test(mile.toast) && mile.sheets === 0 && mile.rec, JSON.stringify(mile));
+    await p.evaluate(() => { CP.itShow("lessons"); document.querySelector("[data-itl-back]") && document.querySelector("[data-itl-back]").click(); }); await p.waitForTimeout(200);
+    const ring = await p.evaluate(() => (document.querySelector(".it-today .itd-streak") || {}).textContent || "");
+    check("Carta «今天» dopo la lezione: serie aggiornata", /连续 [1-9]/.test(ring), ring);
+    /* carte: 3 colori × 3 formati, senza testo tagliato; il QR si rilegge e dà esattamente l'indirizzo */
+    const cards = await p.evaluate(async () => {
+      const out = [], d = CP.itCardData();
+      for (const tpl of ["it-day", "it-milestone", "it-week"]) for (const f of Object.keys(CP.shareCard.FORMATS)) for (const th of ["light", "sepia", "dark"]) {
+        const cv = document.createElement("canvas"); await CP.shareCard.render(cv, tpl, Object.assign({}, d, { milestone: "连续学习 30 天", name: "小明" }), { format: f, theme: th });
+        const img = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), q = window.jsQR(img.data, cv.width, cv.height);
+        out.push({ k: tpl + " " + f + " " + th, w: cv.width, h: cv.height, cut: cv.__cut.length, qr: q ? q.data : null });
+      }
+      return { out, url: CP.shareCard.url() };
+    });
+    const badCard = cards.out.filter((c) => c.cut || c.qr !== cards.url || c.w !== 1080);
+    check("Carte del corso di italiano: 3 modelli × 3 formati × 3 colori, nessun testo tagliato, il QR rende esattamente l'indirizzo", cards.out.length === 27 && !badCard.length && cards.out.some((c) => c.h === 1440) && cards.out.some((c) => c.h === 1920), JSON.stringify(badCard.slice(0, 2)) + " " + cards.url);
+    /* condivisione: nel browser senza condivisione di file si scarica l'immagine; il nome è spento di base */
+    await p.evaluate(() => CP.shareCard.open("it-day")); await p.waitForTimeout(500);
+    const signOff = await p.evaluate(() => !document.getElementById("card-sign").checked && document.getElementById("card-name").hidden);
+    const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 4000 }).catch(() => null), p.click("[data-card-share]")]);
+    check("Carta: anteprima con testo alternativo, «署名» spento di base, condivisione con ripiego sullo scaricamento", signOff && !!dl && /\.png$/.test(dl.suggestedFilename()) && await p.evaluate(() => /今日意大利语/.test(document.querySelector(".card-cv").getAttribute("aria-label"))), dl ? dl.suggestedFilename() : "nessuno");
+    await p.evaluate(() => CP.closeSheet());
+    /* «我的进步»: racconto della settimana e raccolta delle carte ricordo */
+    await p.evaluate(() => CP.itProgress()); await p.waitForTimeout(400);
+    const pr = await p.evaluate(() => ({ story: !!document.querySelector("#itp-story .st-sum"), cards: document.querySelectorAll(".itd-card").length, share: !!document.querySelector("[data-itd-week]") }));
+    check("«我的进步»: racconto della settimana, raccolta «纪念卡», «分享»", pr.story && pr.cards >= 1 && pr.share, JSON.stringify(pr));
+    await p.evaluate(() => CP.closeSheet());
+    /* modalità aereo: tutto continua a funzionare */
+    await ctx.setOffline(true);
+    const off = await p.evaluate(async () => { CP.itShow("review"); CP.itShow("lessons"); const c = document.createElement("canvas"); await CP.shareCard.render(c, "it-day", CP.itCardData(), {}); return !!document.querySelector(".it-today") && c.width === 1080; });
+    await ctx.setOffline(false);
+    check("Corso di italiano in modalità aereo: carta «今天» e carta da condividere", off);
+    check("Task 11: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, net[0] || errs[0]);
+    await ctx.close();
+  }
+  /* 5f. la carta del corso di cinese è identica a prima del Task 11 (stessa pagina, vecchio modulo contro modelli nuovi) */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(600);
+    const grab = () => p.evaluate(() => new Promise((res) => { CP.shareCard(); setTimeout(() => { const c = document.querySelector(".card-cv"); res(c.getContext("2d").getImageData(0, 0, c.width, c.height).data.join(",").length + ":" + c.toDataURL()); CP.closeSheet(); }, 600); }));
+    const now = await grab();
+    await p.evaluate((code) => { (0, eval)(code); }, fs.readFileSync(path.join(path.dirname(fileURLToPathSafe(import.meta.url)), "fixtures/share-card-v1.js"), "utf8"));
+    const old = await grab();
+    const diff = await p.evaluate(async ([a, b]) => {
+      const load = (u) => new Promise((r) => { const i = new Image(); i.onload = () => r(i); i.src = u; });
+      const [A, B] = await Promise.all([load(a.split(":").slice(1).join(":")), load(b.split(":").slice(1).join(":"))]);
+      if (A.width !== B.width || A.height !== B.height) return 1;
+      const c = document.createElement("canvas"); c.width = A.width; c.height = A.height; const x = c.getContext("2d");
+      x.drawImage(A, 0, 0); const da = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(B, 0, 0); const db = x.getImageData(0, 0, c.width, c.height).data;
+      let n = 0; for (let i = 0; i < da.length; i += 4) if (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2]) > 30) n++;
+      return n / (da.length / 4);
+    }, [now, old]);
+    check("Carta del corso di cinese identica a prima del Task 11 (pixel diversi: " + (diff * 100).toFixed(3) + "%)", diff < 0.001, String(diff));
+    check("Carta del cinese: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
   /* 6. lezioni di grammatica del corso di cinese: ognuna si supera con le risposte giuste (tessere e scelte) */
@@ -525,7 +654,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

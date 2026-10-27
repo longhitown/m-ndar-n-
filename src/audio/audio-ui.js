@@ -85,7 +85,7 @@
     } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">' + CP.t("vo.one") + "</p>";
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
-    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p>" + (CP.apkUpdates ? '<label class="chk small"><input type="checkbox" id="opt-apkcheck"' + (CP.apkUpdates.on() ? " checked" : "") + "> " + CP.t("upd.check") + "</label>" : "") + "</div>"; return h; }
+    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + " · " + CP.t(window.MD_CONFIG && MD_CONFIG.FLAVOR === "store" ? "apk.fStore" : "apk.fDirect") + "</p>" + (CP.apkUpdates ? '<label class="chk small"><input type="checkbox" id="opt-apkcheck"' + (CP.apkUpdates.on() ? " checked" : "") + "> " + CP.t("upd.check") + "</label>" : "") + "</div>"; return h; }
     if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">' + CP.t("pwa.title") + "</div>" +
       '<p class="small muted" style="margin:2px 0 6px">' + CP.t(ps && ps.standalone ? "pwa.installed" : ps && ps.http ? "pwa.https" : "pwa.need") + "</p>" +
