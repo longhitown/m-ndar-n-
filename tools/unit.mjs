@@ -207,13 +207,32 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-/* ---- pagina di presentazione (docs/index.html) e privacy.html: niente script, font, immagini o fogli esterni; due lingue ---- */
+/* ---- sito (docs/): nessuna risorsa esterna, un solo script statico dello stesso sito, riferimenti locali che esistono, due lingue ---- */
 {
-  const h = fs.readFileSync(path.join(ROOT, "docs/index.html"), "utf8");
-  const ext = [...h.matchAll(/<(script|img|link|iframe|source|video|audio)\b[^>]*?(?:src|href|poster)="([^"]+)"/gi)].map((m) => m[2]).filter((u) => /^(https?:)?\/\//i.test(u));
-  const local = [...h.matchAll(/(?:src|poster)="(img\/[^"]+|icon\.svg)"/g)].map((m) => m[1]).filter((f) => !fs.existsSync(path.join(ROOT, "docs", f)));
+  const DOCS = path.join(ROOT, "docs");
+  const h = fs.readFileSync(path.join(DOCS, "index.html"), "utf8");
+  const isExt = (u) => /^(https?:)?\/\//i.test(u);
+  const ext = [...h.matchAll(/<(?:script|img|iframe|source|video|audio)\b[^>]*?(?:src|poster)="([^"]+)"/gi)].map((m) => m[1])
+    .concat([...h.matchAll(/<link\b[^>]*\brel="(?:stylesheet|icon|preload|modulepreload)"[^>]*?href="([^"]+)"/gi)].map((m) => m[1])).filter(isExt);
+  const scripts = [...h.matchAll(/<script\b([^>]*)>/gi)].map((m) => m[1]);
+  const GENERATI = ["app/", "privacy.html", "mandarino.apk"];   /* nascono con la pubblicazione: non stanno in docs/ */
+  const local = [...h.matchAll(/\b(?:src|poster|href)="([^"#?]+)(?:[#?][^"]*)?"/g)].map((m) => m[1])
+    .filter((u) => !/^(https?:|mailto:|tel:|\/\/|data:)/i.test(u) && !GENERATI.includes(u)).filter((f) => !fs.existsSync(path.join(DOCS, f)));
   const ctas = (h.match(/class="btn"/g) || []).length;
-  check("pagina di presentazione: nessuno script né risorsa esterna, un solo invito all'azione, italiano e cinese, immagini presenti, privacy e app", !/<script\b/i.test(h) && !ext.length && !local.length && ctas === 1 && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /href="privacy\.html"/.test(h), ext.concat(local).join(", ") + " cta " + ctas);
+  check("pagina di presentazione: nessuna risorsa esterna, solo assets/sito.js come script, un solo invito all'azione, italiano e cinese, file locali presenti, privacy e app",
+    !ext.length && scripts.length === 1 && /src="assets\/sito\.js"/.test(scripts[0]) && !local.length && ctas === 1 && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /href="privacy\.html"/.test(h),
+    ext.concat(local).join(", ") + " cta " + ctas + " script " + scripts.length);
+  const h404 = fs.readFileSync(path.join(DOCS, "404.html"), "utf8");
+  const abs404 = [...h404.matchAll(/(?:src|href)="(\/[^"]+)"/g)].map((m) => m[1]).filter((u) => !GENERATI.some((g) => u === "/" + g) && u !== "/");
+  const miss404 = abs404.filter((u) => !fs.existsSync(path.join(DOCS, u)));
+  check("404.html: i percorsi dalla radice esistono, nessuno script", abs404.length > 0 && !miss404.length && !/<script\b/i.test(h404), miss404.join(", "));
+  const hz = JSON.parse(fs.readFileSync(path.join(DOCS, "assets/dati/hanzi.json"), "utf8"));
+  const prova = fs.readFileSync(path.join(DOCS, "assets/prova.js"), "utf8");
+  const usati = [...((/var CH = \[([\s\S]*?)\];/.exec(prova) || ["", ""])[1]).matchAll(/\["(.)"/g)].map((m) => m[1]);
+  const manca = usati.filter((c) => !hz[c] || !hz[c].strokes || hz[c].strokes.length !== (hz[c].medians || []).length);
+  check("microprove del sito: hanzi.json ha i tratti di ogni carattere usato da prova.js", usati.length >= 8 && !manca.length, manca.join(" "));
+  const brani = ["biblioteca", "calligrafia", "bambu"].filter((id) => !["ogg", "m4a"].every((e) => fs.existsSync(path.join(DOCS, "audio", id + "." + e))));
+  check("radio del sito: i tre brani esistono in .ogg e .m4a", !brani.length, brani.join(", "));
   const { md2html } = await import("./site.mjs");
   const pv = md2html(fs.readFileSync(path.join(ROOT, "PRIVACY.md"), "utf8"));
   check("privacy.html da PRIVACY.md: tabelle, sezione cinese con lang, nessuno script", /<table>/.test(pv) && /<section lang="zh-CN">[\s\S]*<table>/.test(pv) && !/<script/i.test(pv) && /api\.github\.com/.test(pv));

@@ -207,22 +207,24 @@ sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 
 `.github/workflows/pages.yml` lancia `node tools/build.mjs && node tools/site.mjs --out _site` e pubblica:
 
 - alla radice, la **pagina di presentazione** `docs/index.html`, in italiano e in cinese, con:
-  - un solo invito all'azione («Apri l'app»);
+  - un solo invito all'azione («Apri l'app») e un piccolo lettore con tre brani dell'app (estratti in `docs/audio/`, ogni brano in `.ogg` e `.m4a`), che parte solo dopo un tocco;
+  - il logo da toccare (le lettere con l'accento e le foglie suonano il loro tono) e tre microprove, «Provala qui» (orecchio ai toni, scrittura dei caratteri con Hanzi Writer, parole), che non salvano né inviano niente;
   - una breve dimostrazione (`docs/img/demo.webm`, con `docs/img/demo.png` come copertina; parte solo se la si avvia);
-  - l'installazione per Android (APK; più avanti gli store), iPhone (tre immagini, `docs/img/ios-*.svg`) e computer;
+  - l'installazione per Android (APK, dal sito se c'è, altrimenti da GitHub; più avanti gli store), iPhone (tre immagini, `docs/img/ios-*.svg`) e computer;
   - domande frequenti e link a repository, privacy e sostegno.
 
-  Non ha script, font, immagini o servizi esterni né cookie (lo controlla `tools/unit.mjs`); il sostegno è un link
-  semplice, mai un widget;
+  Nessuna risorsa esterna e nessun cookie: stile e script sono in `docs/assets/` (l'unico script in pagina è `assets/sito.js`, che carica da solo `prova.js` e le librerie quando la sezione sta per comparire),
+  le librerie sono copie in `docs/assets/vendor/` con le licenze in `docs/licenze/` (lo controlla `tools/unit.mjs`). Anche `docs/404.html`, `robots.txt` e `sitemap.xml` (generati da `tools/site.mjs`) fanno parte del sito;
 - **`privacy.html`**, ricavata da PRIVACY.md a ogni pubblicazione: è l'indirizzo pubblico della privacy che chiedono gli
   store (`https://mandarinoapp.org/privacy.html`);
-- in `app/`, l'**app** (`dist/` appena costruito).
+- in `app/`, l'**app** (`dist/` appena costruito);
+- `mandarino.apk` e `mandarino.apk.sha256`, scaricati dall'ultima Release a ogni pubblicazione (se non c'è una Release il sito esce senza e la pagina rimanda a GitHub).
 
 Le immagini della pagina (`docs/img/anteprima.png` 1200×630 per le condivisioni e la demo) le genera
 `node tools/site.mjs --assets` con Playwright e stanno nel repository: rilancialo quando l'aspetto dell'app cambia molto.
 
 Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi la pubblicazione parte da sola
-a ogni push sul ramo `main` che tocca l'app, la pagina o PRIVACY.md (oppure: Actions → pages → Run workflow). L'indirizzo è
+a ogni push sul ramo `main` che tocca l'app, la pagina o PRIVACY.md, a ogni nuova Release (il workflow «APK Android» lancia `pages` dopo averla creata) oppure a mano (Actions → pages → Run workflow). L'indirizzo è
 `https://mandarinoapp.org/` (app in `…/app/`, pagina cinese in `…/zh/`): il dominio si imposta in Settings → Pages → Custom domain, con i record DNS descritti in [rilascio.md](rilascio.md). `SITE_URL` e `SHARE_URL` in
 `src/config.js` puntano a quell'indirizzo: li usano i link dei sigilli, delle sfide e il QR delle carte.
 

@@ -148,6 +148,8 @@ function siteURL(opt) {
   if (opt.site) return opt.site;
   const m = /SITE_URL:\s*"([^"]*)"/.exec(fs.readFileSync(path.join(ROOT, "src/config.js"), "utf8")); return m ? m[1] : "";
 }
+/* il link di un sigillo apre l'app: se l'indirizzo è quello del sito (…/), si aggiunge app/; se è già quello dell'app (…/app/) resta com'è */
+function appURL(site) { const b = site.replace(/#.*$/, "").replace(/\/?$/, "/"); return /\/app\/$/.test(b) ? b : b + "app/"; }
 function tpl(name, v) { return fs.readFileSync(path.join(ROOT, "docs/sigilli", name), "utf8").replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)); }
 
 async function main() {
@@ -181,7 +183,7 @@ async function main() {
   const outDir = path.join(HOME, "uscita", today), site = siteURL(opt);
   if (!site && log.issue.length) console.log("\n(MD_CONFIG.SITE_URL è vuoto e manca --site: le e-mail avranno il codice e il QR ma non il link.)");
   for (const x of log.issue) {
-    const code = sign(x.seal, key, kid), link = site ? site.replace(/#.*$/, "") + "#seal=" + code : "", dir = path.join(outDir, x.seal.year + "-" + x.seal.lvl + "-" + x.seal.num);
+    const code = sign(x.seal, key, kid), link = site ? appURL(site) + "#seal=" + code : "", dir = path.join(outDir, x.seal.year + "-" + x.seal.lvl + "-" + x.seal.num);
     const v = { SIGILLO: NAMES[x.seal.lvl][0], SIGILLO_ZH: NAMES[x.seal.lvl][1], EDIZIONE: x.seal.year, NUMERO: x.seal.num, CODICE: code, LINK: link || "(apri l'app → ⚙️ → Sostieni il progetto → Riscatta un sigillo)" };
     const mail = tpl("email-it.txt", v) + "\n\n———\n\n" + tpl("email-zh.txt", v);
     fs.mkdirSync(dir, { recursive: true, mode: 0o700 });

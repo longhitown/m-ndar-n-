@@ -44,8 +44,8 @@ Se una prova è rossa non si pubblica: si apre una issue o si corregge.
 
 - **APK diretto.** È automatico: un push sul **ramo predefinito**, con i segreti, crea la Release `v6.7.<versionCode>`
   con `mandarino.apk`. Il link `…/releases/latest/download/mandarino.apk` scarica sempre l'ultima.
-- **Sito (GitHub Pages).** `pages.yml` pubblica `docs/` più l'app a ogni push su `main`; serve che in Settings → Pages
-  la fonte sia «GitHub Actions».
+- **Sito (GitHub Pages).** `pages.yml` pubblica `docs/`, l'app e l'ultimo APK a ogni push su `main` che li riguarda e a ogni nuova Release; serve che in
+  Settings → Pages la fonte sia «GitHub Actions».
 - **Google Play** (quando ci sarà l'account):
   - scarica l'artefatto `mandarino-store-<versione>` della corsa (`.aab` e note);
   - caricalo in Play Console, nel test chiuso o in produzione;

@@ -64,7 +64,7 @@ Rielaborare la stessa transazione non emette nulla di nuovo: la chiave è `kofi_
 **Uscite.** Per ogni sigillo, in `$MANDARINO_SEAL_HOME/uscita/<data>/` si trovano `codice.txt`, `link.txt`, `qr.svg`, `email.txt` (italiano e cinese, dai modelli in `docs/sigilli/`) e `mailto.txt`, un link `mailto:`
 già compilato.
 
-- **Link:** usa `MD_CONFIG.SITE_URL`, oppure `--site URL`. Il codice sta nel frammento `#seal=…`, che non arriva a nessun server.
+- **Link:** parte da `MD_CONFIG.SITE_URL` (l'indirizzo del sito), oppure da `--site URL`, e porta all'app (`…/app/`). Il codice sta nel frammento `#seal=…`, che non arriva a nessun server.
 - **Sotto soglia:** per chi ha chiesto il sigillo ma è sotto la prima soglia c'è una bozza di ringraziamento in `uscita/<data>/grazie/`, senza importi.
 
 ## Il registro: dati personali
