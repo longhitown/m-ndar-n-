@@ -1,9 +1,10 @@
-# Crediti
+# Crediti della musica di màndarínō
 
-**Nessun credito è obbligatorio.** I brani sono composizioni originali e tutti i campioni usati per produrli sono CC0 / pubblico dominio.
-L'elenco che segue è una cortesia: se l'app ha una pagina "Crediti", può citarli.
+Nessun credito è obbligatorio. I brani sono composizioni originali e tutti i campioni usati per produrli sono CC0 o
+pubblico dominio. L'elenco che segue è una cortesia verso chi ha messo a disposizione quei suoni.
 
-Testo suggerito (facoltativo):
+Se vuoi citarli, puoi usare questo testo (facoltativo):
+
 > Musica originale per màndarínō. Strumenti campionati da librerie libere CC0: VSCO 2 Community Edition, Versilian Community Sample Library (VCSL), Osiris Piano, Karoryfer Samples, BigSoundBank (Joseph Sardin), jSteelDrum e altre raccolte di sfzinstruments.
 
 | Libreria | Cosa | Licenza |
@@ -16,4 +17,5 @@ Testo suggerito (facoltativo):
 | jSteelDrum | steel drum | pubblico dominio (Unlicense) |
 | BigSoundBank (Joseph Sardin) | vocio, allarme delle porte (Linea 2) | CC0 |
 
-Gli strumenti non elencati (tanggu, bangu, suona, sheng, carta, sintetizzatori, voci sintetiche) sono sintetizzati o costruiti a partire da percussioni CC0.
+Gli strumenti che non compaiono in elenco (tanggu, bangu, suona, sheng, carta, sintetizzatori, voci sintetiche) sono
+sintetizzati o costruiti a partire da percussioni CC0.
