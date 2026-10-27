@@ -6,6 +6,7 @@ come PWA, e APK Android senza Play Store.
 - Scarica l'APK: <https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk>
 - Documentazione completa (in italiano): **[LEGGIMI.md](LEGGIMI.md)**
 - Come sono fatti i moduli: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)
+- Privacy: [PRIVACY.md](PRIVACY.md) (nessun dato raccolto · 不收集任何数据)
 - Prove: `npm install && npm test`
 - Vuoi aiutare? Anche senza programmare: [CONTRIBUTING.md](CONTRIBUTING.md) · 不会编程也能参与 · chi ha contribuito: [CONTRIBUTORS.md](CONTRIBUTORS.md)
 
