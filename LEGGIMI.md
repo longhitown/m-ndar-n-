@@ -57,7 +57,7 @@ android/                   l'app Android: una WebView che apre dist/index.html d
 tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
-                           review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
+                           review-sample.mjs e review-import.mjs (rilettura da madrelingua, docs/rilettura.md),
                            icons.mjs (rigenera le icone PWA e Android, mandarino + wordmark, con Playwright),
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
@@ -688,8 +688,11 @@ licenza dei contenuti: lo dicono il foglio dei contributi dell'app, `NOTICE.md` 
 - Correttore di frasi italiane: controlla gli accordi, non il senso. Trova 26 degli 88 «errori tipici» delle lezioni; gli altri
   (tempi verbali, ordine delle parole, preposizioni con città e paesi, scelta delle parole) richiedono più che regole d'accordo.
 - 有一些 è l'unica parola senza frase d'esempio (il taglio la legge sempre come 有|一些, che è corretto).
-- Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi:
-  `node tools/review-sample.mjs --out revisione.md` prepara il modulo (circa 300 righe, istruzioni in cinese).
+- Rilettura da parte di madrelingua cinesi di un campione di frasi d'esempio e dialoghi: il flusso è in
+  [docs/rilettura.md](docs/rilettura.md) (`review-sample.mjs` prepara il modulo, `review-import.mjs` lo trasforma in
+  segnalazioni per `merge-contrib.mjs`). La rilettura vera la fa una persona.
+- Voci di madrelingua (scambio linguistico tra i due corsi): progetto in [docs/scambio-linguistico.md](docs/scambio-linguistico.md),
+  in attesa dell'approvazione dell'autore; nell'app non c'è ancora niente.
 
 **Come si comportano adesso alcune parti delicate:**
 - FSRS: il giorno di studio cambia alle 4 del mattino (come Anki); la ripetizione di una carta nella stessa sessione la

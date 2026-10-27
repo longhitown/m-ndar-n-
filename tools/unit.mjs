@@ -191,6 +191,21 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
+/* ---- rilettura da madrelingua (Task 8.2): modulo → review-import → merge-contrib, con risposte inventate ---- */
+{
+  const os = await import("os"), { spawnSync } = await import("child_process");
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "md-review-")), sheet = path.join(tmp, "modulo.md"), patch = path.join(tmp, "revisione.json");
+  const node = (...a) => spawnSync(process.execPath, a, { encoding: "utf8", cwd: ROOT });
+  node("tools/review-sample.mjs", "--out", sheet);
+  let n = 0;
+  const filled = fs.readFileSync(sheet, "utf8").split("\n").map((l) => { if (!/^\| \d+ \|/.test(l) || !/`(dlg|phr):/.test(l) || n >= 2) return l; n++; return l.replace(" |  |  | ", n === 1 ? " | ✗ | 示例建议一 | " : " | ✓ |  | "); }).join("\n");
+  fs.writeFileSync(sheet, filled);
+  const r1 = node("tools/review-import.mjs", sheet, "--nome", "Prova", "--out", patch), r2 = node("tools/merge-contrib.mjs", patch);
+  const p = JSON.parse(fs.readFileSync(patch, "utf8"));
+  check("rilettura: il modulo compilato diventa una patch di segnalazioni che merge-contrib riconosce (rif. precisi)", p.schema === "mandarino-contrib/1" && p.items.length === 1 && /^(dlg|phr):/.test(p.items[0].target) && /1 segnalazioni · 0 doppioni · 0 conflitti · 0 scartati/.test(r2.stdout), r1.stderr + r2.stdout.slice(0, 300));
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
+
 /* ---- pagina di presentazione (docs/index.html) e privacy.html: niente script, font, immagini o fogli esterni; due lingue ---- */
 {
   const h = fs.readFileSync(path.join(ROOT, "docs/index.html"), "utf8");
