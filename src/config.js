@@ -13,3 +13,5 @@ var MD_CONFIG = {
   FEATURE_SEALS: true,
   SEAL_PUBKEYS: []                                    /* chiavi pubbliche dei sigilli: [{ kid, jwk }]; vuoto = niente «riscatta» */
 };
+/* solo per le prove automatiche (tools/e2e.mjs, tools/unit.mjs): chiavi usa-e-getta e interruttori della versione store */
+if (typeof window !== "undefined" && window.__mdConfigTest) Object.assign(MD_CONFIG, window.__mdConfigTest);

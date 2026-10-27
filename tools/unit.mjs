@@ -104,6 +104,35 @@ function sandbox() {
   check("sblocchi: con l'obiettivo predefinito (10) Parole e Frasi non arrivano il primo giorno", dayOf(10, U.words, U.dw) >= 2 && dayOf(10, U.build, U.db) >= 3, rep);
 }
 
+/* ---- 2c. sigilli di gratitudine (Task 4) ---- */
+{
+  const nodeCrypto = await import("crypto"), { spawnSync } = await import("child_process"), os = await import("os");
+  const ctx = vm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vm.runInContext(fs.readFileSync(path.join(SRC, "core/seal-code.js"), "utf8"), ctx); const S = ctx.MDSeal;
+  const { privateKey, publicKey } = nodeCrypto.generateKeyPairSync("ec", { namedCurve: "P-256" }), jwk = publicKey.export({ format: "jwk" }), KEYS = [{ kid: "t1", jwk }];
+  const mk = (lvl, num, kid, der) => { const p = S.make(kid || "t1", lvl, 2026, num); return S.encode(p, new Uint8Array(nodeCrypto.sign("sha256", Buffer.from(p), der ? privateKey : { key: privateKey, dsaEncoding: "ieee-p1363" }))); };
+  const good = await S.verify(mk(2, 7), KEYS);
+  check("sigilli: un codice firmato in Node (ieee-p1363) si verifica con WebCrypto", good.ok && good.seal.lvl === 2 && good.seal.num === 7, JSON.stringify(good));
+  const code = mk(1, 3), tampered = code.slice(0, code.indexOf(".") + 3) + (code[code.indexOf(".") + 3] === "A" ? "B" : "A") + code.slice(code.indexOf(".") + 4);
+  const res = { tampered: (await S.verify(tampered, KEYS)).err, kid: (await S.verify(mk(1, 3, "zz"), KEYS)).err, der: (await S.verify(mk(1, 3, "t1", true), KEYS)).err, format: (await S.verify("MDS1.abc", KEYS)).err, short: (await S.verify(code.slice(0, 30), KEYS)).err };
+  const p4 = S.make("t1", 4, 2026, 1), lvl4 = await S.verify(S.encode(p4, new Uint8Array(nodeCrypto.sign("sha256", Buffer.from(p4), { key: privateKey, dsaEncoding: "ieee-p1363" }))), KEYS);
+  check("sigilli: alterato, chiave sconosciuta, firma DER, livello fuori intervallo, formato errato → rifiutati", res.tampered && res.kid === "kid" && res.der === "sig" && res.format === "format" && res.short && lvl4.err === "level", JSON.stringify(res) + " " + JSON.stringify(lvl4));
+  /* unione tra dispositivi */
+  const { Store, LS } = sandbox();
+  LS.setItem("cp-seal-v1", JSON.stringify({ codes: { "1-2026-3": { code: "a" } }, gram: "f", name: "Ada", share: 1, t: 100 }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-seal-v1": JSON.stringify({ codes: { "2-2026-7": { code: "b" } }, gram: "m", name: "", share: 0, t: 50 }) }, log: [] }, "merge");
+  const sm = JSON.parse(LS.getItem("cp-seal-v1"));
+  check("sigilli: cp-seal-v1 unisce i codici; le preferenze vengono dal dispositivo più recente", sm.codes["1-2026-3"] && sm.codes["2-2026-7"] && sm.gram === "f" && sm.name === "Ada" && sm.share === 1, JSON.stringify(sm));
+  /* testi: nessuna desinenza di genere nei testi predefiniti; ogni titolo esiste in ogni forma */
+  const ic = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} }; var LANG = 'it';", ic);
+  ["i18n/it.js", "i18n/zh.js", "i18n/titles.js"].forEach((f) => vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), ic));
+  const I = vm.runInContext("I18N", ic), TT = vm.runInContext("I18N_TITLES", ic), tg = vm.runInContext("tg", ic);
+  const DEF = Object.keys(I.it).filter((k) => /^(seal\.(n|s|m)\d|seal\.(got|thanks|ed|auth|have|share|shareHint|name)$|sup\.)/.test(k));
+  const gendered = DEF.filter((k) => /\w+[oa]\/[ao]|verificat|iscritt|sostenitor|donator|benvenut[oa]/i.test(I.it[k]));
+  check("sigilli: i testi predefiniti non hanno desinenze di genere (" + DEF.length + " testi)", !gendered.length, gendered.join(", "));
+  const forms = [1, 2, "2it", 3].every((n) => ["m", "f", "n"].every((g) => typeof tg("seal.t" + n, g) === "string") && tg("seal.t" + n, "n") === "" && tg("seal.t" + n, "m") && TT.zh["seal.t" + n].x);
+  check("sigilli: ogni titolo ha forma maschile, femminile e «senza titolo» (vuota) in italiano, e una forma in cinese", forms && I.zh["seal.n1"] && I.zh["seal.s3"]);
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

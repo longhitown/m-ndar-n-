@@ -167,6 +167,13 @@
     if (a.showAll || b.showAll) o.showAll = 1;
     return o;
   }
+  /* sigilli di gratitudine: i codici si uniscono (basta che un dispositivo ce l'abbia), le preferenze (titolo, nome,
+     condivisione) vengono dal dispositivo che le ha cambiate per ultimo */
+  function mergeSeal(a, b) {
+    a = a || {}; b = b || {};
+    var newer = (b.t || 0) > (a.t || 0) ? b : a, codes = Object.assign({}, b.codes || {}, a.codes || {});
+    return { codes: codes, gram: newer.gram || "n", name: newer.name || "", share: newer.share ? 1 : 0, t: Math.max(a.t || 0, b.t || 0) };
+  }
   /* orecchio: matrice di confusione dei toni, cella per cella il valore più alto */
   function mergeEar(a, b) {
     if (!a || !a.m) return b; if (!b || !b.m) return a;
@@ -196,6 +203,7 @@
     if (k === "cp-mine") return mergeMine(a, b);
     /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
     if (k === "cp-ux-v1") return mergeUx(a, b);
+    if (k === "cp-seal-v1") return mergeSeal(a, b);
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */
