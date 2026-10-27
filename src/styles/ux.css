@@ -481,3 +481,14 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 :root[data-theme="dark"] { --stamp-red: #FF8A7E; }
 .it-today small, .itd-ring small { font-size: 13px; }
 .it-tile { min-height: 44px; justify-content: center; }
+/* Task 5: anatomia del carattere */
+.anat { margin: 10px 0 0; padding: 10px 12px; border-radius: 14px; background: var(--chip); }
+.anat h4 { margin: 0 0 6px; }
+.anat-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.anat-svg { width: 84px; height: 84px; flex: none; background: var(--surface); border-radius: 12px; }
+.anat-parts { display: flex; gap: 8px; flex-wrap: wrap; flex: 1 1 160px; }
+.anat-part { display: flex; gap: 8px; align-items: center; min-height: 48px; padding: 4px 10px 4px 6px; border-radius: 12px; border: 2px solid var(--c); background: var(--surface); color: var(--ink); text-align: left; }
+.anat-ch { font: 500 30px/1 "Noto Serif SC", "Songti SC", serif; color: var(--c); min-width: 34px; text-align: center; }
+.anat-part > span:last-child { display: grid; gap: 1px; }
+.anat-role { font-size: 13px; color: var(--accent); }
+.anat-part small { font-size: 13px; color: var(--muted); }

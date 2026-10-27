@@ -727,6 +727,7 @@
         return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";
       }).join("") + "</div>";
     }
+    if (CP.anatomyHTML) h += CP.anatomyHTML(ch);   /* Task 5: di che cosa è fatto il carattere (words/anatomy.js) */
     var ex = selfW && CP.exampleFor && CP.exampleFor(selfW.key);
     if (ex) h += '<div class="cd-ex"><span class="tag">' + CP.t("sess.example") + '</span><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + CP.esc(ex[2]) + "</div>" + CP.audioBtns(ex[1], true) + "</div>";
     if (selfW && CP.phonBlock) h += CP.phonBlock(selfW.py);

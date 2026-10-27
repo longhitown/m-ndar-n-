@@ -42,6 +42,12 @@ if (le.length) fail("lezioni non valide:\n  " + le.slice(0, 20).join("\n  "));
   const ST = vm.runInContext("STROKES", sctx), miss = new Set();
   D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !ST[ch]) miss.add(ch); })));
   if (miss.size) fail(`caratteri senza tratti in src/data/strokes.js: ${[...miss].join("")} (lancia node tools/strokes.mjs graphics.txt)`); }
+/* anatomia del carattere (Task 5): ogni carattere del vocabolario ha una scomposizione o è segnato come semplice ("") in
+   src/data/anatomy.js (si rigenera con tools/anatomy.mjs dictionary.txt) */
+{ const actx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/anatomy.js"), "utf8"), actx);
+  const AN = vm.runInContext("ANATOMY", actx), miss = new Set();
+  D.SECTIONS.forEach((s) => s.words.forEach((w) => [...w[1]].forEach((ch) => { if (/[㐀-鿿]/.test(ch) && !Array.isArray(AN[ch])) miss.add(ch); })));
+  if (miss.size) fail(`caratteri senza struttura in src/data/anatomy.js: ${[...miss].join("")} (lancia node tools/anatomy.mjs dictionary.txt)`); }
 /* il Percorso: ogni tappa ha un capitolo (data/levels.js) e i file del vocabolario sono in ordine di capitolo */
 { const lctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/levels.js"), "utf8"), lctx);
   const SC = vm.runInContext("SECTION_CHAPTER", lctx); let last = 0;
@@ -123,7 +129,7 @@ out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
    compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
    STROKES o IT_LEXICON (il lessico del corso di italiano). Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
-const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"]];
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"]];
 for (const [name, test] of LAZY) {
   const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
   const lctx = vm.createContext({});
