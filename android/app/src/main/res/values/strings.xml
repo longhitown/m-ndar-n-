@@ -20,4 +20,36 @@
     <string name="m_pause">Pausa</string>
     <string name="m_prev">Precedente</string>
     <string name="m_next">Successivo</string>
+    <string name="w_study">Studia ora</string>
+    <string name="w_tap_meaning">Tocca per il significato</string>
+    <string name="w_open_app">Apri l\'app per cominciare</string>
+    <string name="w_msg_done">%1$s di fila · oggi fatto ✓</string>
+    <string name="w_msg_evening">%1$s: stasera bastano 3 minuti per non spezzarla</string>
+    <string name="w_msg_keep">%1$s di fila: continua oggi</string>
+    <string name="w_msg_restart">Una carta oggi e la serie riparte</string>
+    <string name="w_short_restart">Serie da riprendere</string>
+    <string name="w_short_done">%1$s ✓</string>
+    <string name="w_all_ok">Tutto in ordine per ora</string>
+    <string name="w_minutes">~%1$d min</string>
+    <string name="w_label_ok">in ordine</string>
+    <string name="w_sample_streak">12 giorni di fila · oggi fatto ✓</string>
+    <string name="w_sample_streak_short">12 giorni</string>
+    <string name="w_sample_hz">你好</string>
+    <string name="w_sample_py">nǐ hǎo</string>
+    <string name="w_sample_it">ciao</string>
+    <string name="w_sample_n">7</string>
+    <string name="w_sample_label">ripassi</string>
+    <string name="w_sample_detail">~3 min</string>
+    <plurals name="w_days">
+        <item quantity="one">%d giorno</item>
+        <item quantity="other">%d giorni</item>
+    </plurals>
+    <plurals name="w_reviews">
+        <item quantity="one">ripasso</item>
+        <item quantity="other">ripassi</item>
+    </plurals>
+    <plurals name="w_fresh">
+        <item quantity="one">%d parola nuova</item>
+        <item quantity="other">%d parole nuove</item>
+    </plurals>
 </resources>
