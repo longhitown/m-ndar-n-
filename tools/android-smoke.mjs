@@ -6,7 +6,7 @@
      3. il backup si salva in Download con l'UTF-8 intatto;            4. il microfono (getUserMedia) funziona;
      5. i dati restano dopo la chiusura forzata dell'app;              6. il tasto Indietro chiude il foglio e torna al Percorso;
      7. il motore della pagina non va mai in crash (logcat).
-   Uso: node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk   (serve adb nel PATH o ANDROID_HOME) */
+   Uso: node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk   (serve adb nel PATH o ANDROID_HOME) */
 import { execFileSync } from "child_process";
 import path from "path";
 

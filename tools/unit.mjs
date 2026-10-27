@@ -160,6 +160,17 @@ function sandbox() {
   check("privacy.html da PRIVACY.md: tabelle, sezione cinese con lang, nessuno script", /<table>/.test(pv) && /<section lang="zh-CN">[\s\S]*<table>/.test(pv) && !/<script/i.test(pv) && /api\.github\.com/.test(pv));
 }
 
+/* ---- versione per gli store (Task 7D): src/config.js con il ponte Android che dice «store» ---- */
+{
+  const cfg = fs.readFileSync(path.join(SRC, "config.js"), "utf8");
+  const run = (flavor) => { const w = { MandarinoAndroid: flavor ? { flavor: () => flavor } : undefined }; const c = { window: w }; vm.runInNewContext(cfg + ";this.C=MD_CONFIG;", c); return c.C; };
+  const st = run("store"), dr = run("direct"), web = run(null);
+  check("versione store: niente controllo degli aggiornamenti, sostegno né sigilli; la diretta e il sito restano come prima",
+    st.FLAVOR === "store" && !st.APK_UPDATES && !st.FEATURE_DONATE && !st.FEATURE_SEALS && dr.FLAVOR === "direct" && dr.APK_UPDATES && dr.FEATURE_DONATE && web.FEATURE_SEALS && web.APK_UPDATES);
+  const g = fs.readFileSync(path.join(ROOT, "android/app/build.gradle"), "utf8");
+  check("Android: compileSdk e targetSdk 36, versioni direct e store", /compileSdk 36/.test(g) && /targetSdk 36/.test(g) && /direct \{/.test(g) && /store \{/.test(g));
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

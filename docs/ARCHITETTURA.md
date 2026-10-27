@@ -120,7 +120,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 `android/…/Bridge.java` espone `window.MandarinoAndroid`. Il codice web non lo chiama quasi mai direttamente:
 `pwa/android.js` lo trasforma nelle API web standard (`speechSynthesis`, `SpeechRecognition`, download, condivisione) e i
 pochi moduli solo-APK (`pwa/sync.js`, `pwa/widget.js`, `pwa/reminder.js`, `pwa/pwa.js` per gli aggiornamenti, `audio/player.js`
-per la notifica della musica, `ui/pleco.js` per `openPleco` e `plecoStore`) controllano prima `if (window.MandarinoAndroid)`. Le risposte asincrone tornano da
+per la notifica della musica, `ui/pleco.js` per `openPleco` e `plecoStore`) controllano prima `if (window.MandarinoAndroid)`. `src/config.js` chiede `flavor()` («direct» o «store») per gli interruttori della versione per gli store. Le risposte asincrone tornano da
 `window.__mdEvt`.
 
 ## Regole che tengono insieme il tutto
