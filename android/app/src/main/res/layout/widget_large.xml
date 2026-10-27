@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- widget «Oggi» 4×2 -->
+<!-- widget «Oggi» 4×2 (largo): a sinistra la serie e la parola del giorno, a destra i ripassi e «Studia ora» -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:padding="14dp" android:background="@drawable/widget_bg">
-    <TextView android:id="@+id/w_title" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:textColor="@color/w_muted" android:textSize="12sp" android:textStyle="bold" />
-    <TextView android:id="@+id/w_streak" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" android:maxLines="2" android:ellipsize="end" android:textColor="@color/w_ink" android:textSize="14sp" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="6dp" android:baselineAligned="false">
-        <LinearLayout android:id="@+id/w_word" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-            <TextView android:id="@+id/w_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/w_muted" android:textSize="11sp" />
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="bottom">
-                <TextView android:id="@+id/w_hz" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/w_ink" android:textSize="30sp" />
-                <TextView android:id="@+id/w_py" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:paddingBottom="5dp" android:textColor="@color/w_accent" android:textSize="15sp" />
+    android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false"
+    android:padding="12dp" android:background="@drawable/widget_bg">
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_w_flame" android:importantForAccessibility="no" />
+            <TextView android:id="@+id/w_streak" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:layout_marginStart="6dp" android:maxLines="2" android:ellipsize="end"
+                android:text="@string/w_sample_streak" android:textColor="@color/w_ink" android:textSize="13sp" android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/w_word" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="52dp"
+            android:layout_marginTop="6dp" android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="4dp" android:paddingBottom="4dp" android:background="@drawable/widget_card">
+            <TextView android:id="@+id/w_hz" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1"
+                android:text="@string/w_sample_hz" android:textColor="@color/w_ink" android:textSize="32sp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical">
+                <TextView android:id="@+id/w_py" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                    android:text="@string/w_sample_py" android:textColor="@color/w_accent" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/w_it" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                    android:text="@string/w_sample_it" android:textColor="@color/w_muted" android:textSize="13sp" />
             </LinearLayout>
-            <TextView android:id="@+id/w_it" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end" android:textColor="@color/w_muted" android:textSize="13sp" />
         </LinearLayout>
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal">
-            <TextView android:id="@+id/w_due" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="150dp"
-                android:gravity="center" android:textColor="@color/w_ink" android:textSize="13sp" />
-            <TextView android:id="@+id/w_study" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp"
-                android:background="@drawable/widget_btn" android:paddingStart="14dp" android:paddingEnd="14dp" android:paddingTop="8dp" android:paddingBottom="8dp"
-                android:textColor="@color/w_on_accent" android:textSize="14sp" android:textStyle="bold" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="116dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:orientation="vertical" android:gravity="center_horizontal">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="bottom">
+            <TextView android:id="@+id/w_due_n" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/w_sample_n" android:textColor="@color/w_accent" android:textSize="28sp" android:textStyle="bold" />
+            <TextView android:id="@+id/w_due_l" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:paddingBottom="4dp"
+                android:text="@string/w_sample_label" android:textColor="@color/w_ink" android:textSize="13sp" />
         </LinearLayout>
+        <TextView android:id="@+id/w_due_d" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:ellipsize="end"
+            android:text="@string/w_sample_detail" android:textColor="@color/w_muted" android:textSize="13sp" />
+        <TextView android:id="@+id/w_study" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="4dp"
+            android:gravity="center" android:background="@drawable/widget_btn" android:text="@string/w_study"
+            android:textColor="@color/w_on_orange" android:textSize="15sp" android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>
