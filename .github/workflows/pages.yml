@@ -1,0 +1,44 @@
+# màndarínō · sito su GitHub Pages: la pagina di presentazione (docs/index.html) alla radice, privacy.html ricavata da
+# PRIVACY.md e l'app (dist/) in app/. Tutto lo mette insieme tools/site.mjs.
+# Una volta sola: Settings → Pages → Build and deployment → Source: «GitHub Actions».
+# Parte a ogni push sul ramo principale che tocca l'app o la pagina, oppure a mano (Actions → pages → Run workflow).
+# Niente chiavi né segreti: usa solo il token del workflow, con i permessi minimi di Pages.
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["src/**", "docs/index.html", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "tools/build.mjs", "tools/site.mjs", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  sito:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Costruisce l'app e mette insieme il sito
+        run: node tools/build.mjs && node tools/site.mjs --out _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

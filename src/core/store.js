@@ -188,7 +188,7 @@
     return out.slice(0, 40);
   }
   /* unione di una chiave: il valore unito, oppure null = resta quello di questo dispositivo */
-  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-lang"];
+  var KEEP = ["cp-haptics", "cp-sfxvol", "cp-jkmood", "cp-jkauto", "cp-jkbg", "cp-toneshapes", "cp-contrib-nick", "cp-contrib-credit-v1", "cp-pleco-v1", "cp-lang"];
   function favObj(x) { if (Array.isArray(x)) { var t = {}; x.forEach(function (k) { t[k] = 1; }); return t; } return x || {}; }
   function mergeKey(k, a, b) {
     if (k === "cp-srs-v1") return mergeSrs(a, b);
@@ -254,9 +254,10 @@
     PROGRESS.concat(personal ? PERSONAL : []).forEach(function (k) { try { if (LS) LS.removeItem(k); } catch (e) {} });
     return logClear().then(function () { return flush(); });
   }
-  function download(name, text) {
+  /* mime: il tipo del file (di base JSON: backup, contributi); l'esportazione per Anki usa text/tab-separated-values */
+  function download(name, text, mime) {
     var cl = window.claude;
-    var fb = function () { try { var u = URL.createObjectURL(new Blob([text], { type: "application/json" })), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1500); } catch (e) {} };
+    var fb = function () { try { var u = URL.createObjectURL(new Blob([text], { type: mime || "application/json" })), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1500); } catch (e) {} };
     if (cl && cl.use) { return cl.use("downloads").then(function (d) { if (!d) { fb(); return; } return d.save({ filename: name, data: text }); }).catch(function (e) { if (!(e && e.code === "declined")) fb(); }); }
     fb(); return Promise.resolve();
   }

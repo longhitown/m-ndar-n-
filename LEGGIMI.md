@@ -44,6 +44,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
   vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
+docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
@@ -52,7 +53,7 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
-tools/                     build.mjs, grammar.mjs, ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+tools/                     build.mjs, grammar.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
@@ -92,6 +93,14 @@ file: true, sec, make })`, dove `make` chiama `CP.audioFile.player`). Poi l'id i
 I brani non stanno dentro `index.html`: nell'APK sono nel pacchetto; sul sito il service worker li salva nella cache
 `mandarino-music` al primo ascolto (o tutti insieme con «Scarica tutta la musica» nel pannello 🎵), che resta tra un
 aggiornamento e l'altro. Aperta da `file://` l'app funziona, ma il browser non le lascia leggere i brani e il pannello lo dice.
+
+**Il loop si controlla da solo** (`tools/e2e.mjs`, «loop senza buchi»). Ogni brano suona dal riproduttore vero dell'app,
+salta a 0,35 s dalla fine e un AnalyserNode registra la cucitura. Il «buco» è la sequenza più lunga sotto −60 dB e deve
+restare sotto 20 ms (`LOOP_GAP_MS`). Misure di ottobre 2026 in Chromium: da 3 a 16 ms, a gradini di circa 2,9 ms (un
+blocco audio da 128 campioni che il browser lascia vuoto al giro). I file invece non hanno silenzi ai bordi: al massimo
+3 ms sotto −60 dB attorno alla cucitura. Sotto la soglia il riproduttore resta com'è, con un solo `<audio loop>`. Se un
+brano nuovo la supera, prima si controllano i bordi del file; se il buco viene dal browser, il rimedio previsto sono due
+elementi `<audio>` che si danno il cambio con una dissolvenza.
 
 ## Benvenuto, test di livello, rivelazione progressiva
 
@@ -189,6 +198,30 @@ percorso: 678 frasi) tagliandola con CC-CEDICT, e i classificatori del correttor
 le indicazioni «CL:». Con `--prova` aggiunge errori messi apposta, per vedere che il controllo li trova. Secondo giro: nessuna
 sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 5 significati italiani (取消, 信任, 清蒸, 蒸菜, 保守秘密).
 
+## Pubblicare su GitHub Pages (pagina di presentazione + app)
+
+`.github/workflows/pages.yml` lancia `node tools/build.mjs && node tools/site.mjs --out _site` e pubblica:
+
+- alla radice, la **pagina di presentazione** `docs/index.html`, in italiano e in cinese, con:
+  - un solo invito all'azione («Apri l'app»);
+  - una breve dimostrazione (`docs/img/demo.webm`, con `docs/img/demo.png` come copertina; parte solo se la si avvia);
+  - l'installazione per Android (APK; più avanti gli store), iPhone (tre immagini, `docs/img/ios-*.svg`) e computer;
+  - domande frequenti e link a repository, privacy e sostegno.
+
+  Non ha script, font, immagini o servizi esterni né cookie (lo controlla `tools/unit.mjs`); il sostegno è un link
+  semplice, mai un widget;
+- **`privacy.html`**, ricavata da PRIVACY.md a ogni pubblicazione: è l'indirizzo pubblico della privacy che chiedono gli
+  store (`…/mandarino/privacy.html`);
+- in `app/`, l'**app** (`dist/` appena costruito).
+
+Le immagini della pagina (`docs/img/anteprima.png` 1200×630 per le condivisioni e la demo) le genera
+`node tools/site.mjs --assets` con Playwright e stanno nel repository: rilancialo quando l'aspetto dell'app cambia molto.
+
+Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi la pubblicazione parte da sola
+a ogni push sul ramo `main` che tocca l'app, la pagina o PRIVACY.md (oppure: Actions → pages → Run workflow). L'indirizzo
+sarà `https://longhitown.github.io/mandarino/` (app in `…/mandarino/app/`). Quando è attivo, scrivilo in `SITE_URL` in
+`src/config.js`: lo usano i link dei sigilli.
+
 ## Pubblicare (Cloudflare Pages, il più semplice)
 
 1. Cloudflare → Workers & Pages → Create → Pages → Connect to Git → questo repository.
@@ -277,7 +310,7 @@ Primo giro: nessuna forma sbagliata nelle regole; trovato un errore nei dati (�
 node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi verificate
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
-node tools/e2e.mjs          # 46 prove su dist/ (corso di italiano e correttore, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
+node tools/e2e.mjs          # 81 prove su dist/ (benvenuto e test di livello, corso di italiano e correttore, immersione, sincronizzazione, QR, sigilli, musica e loop, testi cinesi senza italiano), ~7 minuti
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
@@ -316,10 +349,27 @@ node tools/merge-contrib.mjs arrivati/*.json            # riepilogo: da applicar
 node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ solo le voci valide (poi: node tools/build.mjs)
 ```
 
+**Come aiutare senza programmare:** [CONTRIBUTING.md](CONTRIBUTING.md), in italiano e in cinese: rileggere frasi, segnalare
+pinyin sbagliati, proporre parole, rileggere il cinese del corso di italiano. Le issue hanno tre modelli
+(`.github/ISSUE_TEMPLATE/`: correzione, parola nuova, traduzione) con le etichette `correzione`, `parola-nuova`,
+`traduzione`. Metti tu `good first issue` sulle issue piccole e chiare: GitHub la mostra a chi cerca da dove iniziare.
+
+**Nei Crediti, solo se lo chiedono.** Nel modulo dei contributi c'è la casella «Voglio comparire nei Crediti con questo
+nickname», spenta di base. Se è spuntata, la patch porta `credit: 1`. Con `--apply`, `merge-contrib.mjs` aggiunge il
+nickname a `src/data/contributors.js` (il foglio Crediti dell'app) e a [CONTRIBUTORS.md](CONTRIBUTORS.md), ma solo se
+almeno una sua voce è stata applicata, e mai un nickname con `@` o un indirizzo web. La build controlla che i due elenchi
+coincidano. Per togliere qualcuno: lo cancelli a mano da tutti e due.
+
+**Novità.** ⚙️ → Informazioni e supporto → 🆕 Novità mostra `src/data/changelog.js`: a ogni versione aggiungi in cima una
+voce `{ v, d, it: [...], zh: [...] }` con righe brevi per chi studia. La build si ferma se le due lingue non hanno lo stesso
+numero di righe.
+
 ## Chiavi salvate (tutte `cp-*`, tutte con una regola nel ripristino «unisci»)
 
 Nuove in V6.9:
 
+- `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
+- `cp-contrib-credit-v1`: «1» se chi contribuisce vuole comparire nei Crediti; preferenza del dispositivo (nell'unione vince quello corrente, come `cp-contrib-nick`).
 - `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
 - `cp-it-game-v1`: punti e serie del corso di italiano, stessa struttura e stessa unione di `cp-game-v1`.
 - `cp-game-v1.pl` / `cp-it-game-v1.pl`: punti del test di livello; nell'unione vale il più alto, −1 = annullato.
@@ -377,6 +427,75 @@ La build si ferma se trova nel repository:
 - un file di chiave (`.pem`, `.key`, `.jks`);
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
+
+## Esporta per Anki
+
+Per chi ha studiato molto e vuole portare le parole anche in Anki, senza togliere niente a màndarínō. La voce compare
+**solo dopo 400 parole iniziate o 400 ripassi** (`ANKI_MIN` in `src/core/export-anki.js`), in ⚙️ → Dati e privacy →
+«Altre opzioni di esportazione», accanto alla sincronizzazione. Il testo spiega la differenza: sincronizzare passa i
+progressi a un altro dispositivo con màndarínō, esportare porta le parole in un'altra app. Prima di salvare servono due
+conferme. Il primo foglio dice che cosa fa e che cosa non fa.
+
+**Il file** è testo UTF-8 separato da tabulazioni (`.txt`, tipo `text/tab-separated-values`), con le intestazioni che Anki
+legge da solo: `#separator:tab`, `#html:true`, `#guid column:1`, `#tags column:7`, `#columns:…`, `#deck:…`, più una riga di
+commento con app, versione e licenza.
+
+| Colonna | Corso di cinese | Corso di italiano |
+|---|---|---|
+| 1 guid | impronta di corso + chiave | impronta di corso + id |
+| 2 Vocabolo | caratteri | parola italiana (per i verbi anche il presente, dalle regole di `CP.ita`) |
+| 3 Pinyin | come lo mostra l'app: `yínháng`, `xī'ān` | pinyin del cinese |
+| 4 Traduzione | italiano (e nota) | cinese |
+| 5 Frase | frase d'esempio con pinyin | frase italiana |
+| 6 Traduzione frase | italiano | cinese |
+| 7 tag | `mandarino`, `hsk1`…`hsk6`/`hsk_plus`, `tappa::<sezione>`, `sicura`/`in-corso`/`nuova` | `mandarino-it`, tipo di parola, stato |
+
+- **Quali parole:** quelle iniziate (default), solo le sicure (`CP.state` = 2), tutte, oppure una sola tappa.
+- **Guid stabile:** è un'impronta della chiave, uguale su ogni dispositivo. Reimportando, Anki aggiorna le note invece di
+  duplicarle.
+- **Limite:** il file porta le carte, non il calendario FSRS, quindi in Anki le parole ripartono dall'inizio (i tag
+  aiutano a filtrarle). Un `.apkg` con il calendario è fuori portata.
+- **Corso di italiano:** genere e articolo vengono dal lessico, cioè da Morph-it! (LGPL), e l'intestazione lo cita. Le
+  coniugazioni le producono le regole dell'app, non Morph-it!.
+
+**Verificato con Anki vero.** `tools/anki-check.py`, uno strumento di sviluppo che usa la libreria `anki` 26.09.3, legge le
+intestazioni come Anki, importa e reimporta. Risultato: 6385 note del corso di cinese e 4780 del corso di italiano, nessun
+doppione alla seconda importazione. In Anki si crea una volta un tipo di nota con i 5 campi (o si sceglie come mapparli
+nella finestra d'importazione). `Store.download(nome, testo, mime)` ora accetta il tipo del file (di base JSON).
+
+## Pleco (facoltativo)
+
+Chi ha il dizionario Pleco sul telefono può accendere ⚙️ → Avanzate → «Mostra il collegamento a Pleco». È spento di base e
+si accende con due conferme, perché porta a un'altra app. Non c'è sul computer né nel corso di italiano. Acceso:
+
+- sotto i 2 secondi non cambia niente (a mezzo secondo si apre il foglio del carattere, come sempre);
+- tenendo premuto un carattere per **2 secondi** (`PLECO_HOLD_MS` in `src/ui/pleco.js`) compare un piccolo pulsante
+  «Apri in Pleco», con un'icona generica di dizionario (non il marchio di Pleco). Si esce verso Pleco solo toccandolo,
+  e prima appare per un attimo una pagina con il logo e il wordmark;
+- nella carta di studio la stessa voce sta anche nel menu «⋯»: è la strada senza gesti.
+
+Passa la parola intera (quella della riga, della carta o del foglio), solo caratteri cinesi e al massimo 16.
+
+**Android.** `Bridge.openPleco` lancia `ACTION_VIEW` su `plecoapi://x-callback-url/s?q=…` con
+`setPackage("com.pleco.chinesesystem")`. Il pacchetto è nelle `<queries>` del manifest, come chiede Android 11+. Se Pleco
+non c'è compare un messaggio discreto, «Pleco non è installato», con «Scarica Pleco» (`Bridge.plecoStore`: `market://`,
+poi la pagina web di Google Play).
+
+**Browser.** Sul telefono è un link `plecoapi://`: se Pleco non c'è non succede niente. Nessuna rete: la parola va a
+Pleco, sul telefono.
+
+**Da verificare.** Lo schema `plecoapi://x-callback-url/s` viene dai forum di Pleco (Android dalla 3.2.10). Non l'ho
+provato su un telefono con Pleco installato: va fatto prima di una release (checklist del Task 6). Nella versione per gli
+store (Task 7D) il link allo store va controllato con le regole di Google Play.
+
+## Privacy
+
+[PRIVACY.md](PRIVACY.md), in italiano e in cinese, dice che cosa resta sul dispositivo (tutto), quando l'app usa la rete
+(controllo aggiornamenti dell'APK, voce online se accesa, riconoscimento vocale del browser, file dello stesso sito, link
+toccati), il backup automatico di Android e come funzionano contributi, Pleco e sigilli. In breve, la stessa cosa sta
+nell'app: ⚙️ → Informazioni e supporto → 🔒 Privacy
+(`src/ui/privacy.js`). **Se aggiungi una richiesta di rete, aggiorna tutti e due**: la tabella di PRIVACY.md e le righe
+`pv.*` in `src/i18n/`.
 
 ## Licenze
 

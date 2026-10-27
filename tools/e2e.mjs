@@ -229,6 +229,97 @@ try {
     check("Versione store (FEATURE_* spenti): niente sostegno né sigilli nel DOM, il link #seal= viene ignorato", await p2.evaluate(() => !document.getElementById("set-support") && !document.querySelector(".seal-svg, .sp-seal, [data-seal-add]") && !CP.seals && location.hash === "" && /cp-seal-v1/.test(Object.keys(localStorage).join(","))));
     await c2.close();
   }
+  /* 4b. contributi con consenso ai Crediti, «Novità» e Crediti in tutte e due le lingue */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    await p.evaluate(() => CP.contribOpen({ op: "fix", target: "你", field: "it" })); await p.waitForSelector("#ct-credit");
+    const off = await p.evaluate(() => !document.getElementById("ct-credit").checked);
+    await p.fill("#ct-nick", "Prova_e2e"); await p.fill("#ct-new", "tu (prova)"); await p.check("#ct-credit"); await p.click("#ct-save"); await p.waitForTimeout(200);
+    await p.evaluate(() => { window.__sent = null; Store.download = (n, t) => { window.__sent = t; }; }); await p.click('[data-ct-send="file"]').catch(() => {}); await p.waitForTimeout(150);
+    const sent = await p.evaluate(() => { try { return JSON.parse(window.__sent); } catch (e) { return null; } });
+    check("Contributi: la casella «compari nei Crediti» è spenta di base; spuntata, la patch porta nickname e credit: 1", off && sent && sent.author === "Prova_e2e" && sent.credit === 1, JSON.stringify(sent || {}).slice(0, 160));
+    await p.evaluate(() => { CP.closeSheet(); CP.openSettings("grp-info"); }); await p.waitForTimeout(200);
+    const news = await p.evaluate(() => { const d = document.getElementById("set-news"); if (!d) return null; d.open = true; const v = d.querySelector(".news-v[open] b"); return { v: v && v.textContent, top: CHANGELOG[0].v, n: d.querySelectorAll(".news-v[open] li").length, lang: d.querySelector(".news-list").getAttribute("lang") }; });
+    check("Novità: in ⚙️ → Informazioni e supporto, l'ultima versione aperta", news && news.v === news.top && news.n > 2 && news.lang === "it", JSON.stringify(news));
+    await p.click("#grp-info [data-credits]").catch(() => p.evaluate(() => CP.credits())); await p.waitForTimeout(150);
+    check("Crediti: la parte «Chi ha contribuito» c'è anche quando l'elenco è vuoto", await p.evaluate(() => /Chi ha contribuito/.test(document.getElementById("fam").textContent)));
+    await p.evaluate(() => { localStorage.setItem("cp-lang", "zh"); }); await p.reload(); await p.waitForTimeout(500);
+    await p.evaluate(() => CP.openSettings("grp-info")); await p.waitForTimeout(200);
+    const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector("summary").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
+    check("Novità in cinese: titolo e righe in cinese", /更新内容/.test(zh || "") && /zh-CN$/.test(zh || ""), zh);
+    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-info") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
+    check("Privacy: voce in ⚙️ → Informazioni e supporto, in cinese, sette punti (anche il backup di Android)", /隐私\|7$/.test(pv || ""), pv);
+    check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* 4c. Pleco: solo su telefono, spento di base, doppia conferma; sotto i 2 s niente cambia, a 2 s compare «Apri in Pleco»,
+     si esce solo toccandolo (dopo la pagina con il logo); la parola intera; nel menu «⋯» della carta; niente sul computer */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    await p.evaluate(() => CP.openSettings("set-pleco")); await p.waitForTimeout(150);
+    const offOk = await p.evaluate(() => !CP.pleco.on() && !!document.getElementById("set-pleco") && CP.pleco.available());
+    await p.click("#opt-pleco"); await p.waitForSelector("[data-pleco-ok1]");
+    const notYet = await p.evaluate(() => !CP.pleco.on());
+    await p.click("[data-pleco-ok1]"); await p.waitForSelector("[data-pleco-ok2]"); await p.click("[data-pleco-ok2]"); await p.waitForTimeout(200);
+    check("Pleco: c'è sul telefono, spento di base, si accende solo dopo due conferme", offOk && notYet && await p.evaluate(() => CP.pleco.on() && localStorage.getItem("cp-pleco-v1") === "1"));
+    await p.evaluate(() => { CP.closeSheet(); const se = document.getElementById("settings"); if (se && !se.hidden) CP.untrap(se); window.__pl = []; window.__open = CP.pleco.open; CP.pleco.open = (q) => { window.__pl.push(q); return true; }; CP.show("words", true, true); }); await p.waitForTimeout(300);
+    /* una parola di almeno due caratteri in una riga di Parole */
+    const box = await p.evaluate(() => { const el = [...document.querySelectorAll("#view-words .m-hz > span")].find((x) => x.getClientRects().length && CP.charTarget(x) && x.closest(".m-hz").textContent.trim().length >= 2); if (!el) return null; el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, w: el.closest(".m-hz").textContent.trim() }; });
+    const press = async (ms) => { await p.mouse.move(box.x, box.y); await p.mouse.down(); await p.waitForTimeout(ms); await p.mouse.up(); await p.waitForTimeout(150); };
+    if (box) await press(700);
+    const short = await p.evaluate(() => ({ chip: !!document.querySelector(".pl-chip"), fam: !document.getElementById("fam").hidden }));
+    await p.evaluate(() => CP.closeSheet()); await p.waitForTimeout(100);
+    if (box) await press(2300);
+    const chip = await p.evaluate(() => { const b = document.querySelector(".pl-chip [data-pleco]"); return b ? b.getAttribute("data-pleco") : null; });
+    const opened0 = await p.evaluate(() => window.__pl.length);
+    if (chip) { await p.click(".pl-chip [data-pleco]"); await p.waitForTimeout(100); }
+    const opened = await p.evaluate(() => window.__pl.join());
+    check("Pleco: sotto i 2 s solo il foglio del carattere; a 2 s compare «Apri in Pleco» con la parola intera; si apre solo toccandolo", !!box && !short.chip && short.fam && chip === box.w && opened0 === 0 && opened === box.w, JSON.stringify({ box, short, chip, opened }));
+    const row = await p.evaluate(() => ({ ok: /data-pleco="你好"/.test(CP.plecoRow("你好")), latin: CP.plecoRow("ciao"), long: CP.pleco.valid("一二三四五六七八九十一二三四五六七") }));
+    check("Pleco: riga nel menu «⋯» della carta; solo caratteri cinesi, al massimo 16", row.ok && row.latin === "" && row.long === "", JSON.stringify(row));
+    /* la pagina d'uscita con logo e wordmark, prima di lasciare l'app */
+    const skel = await p.evaluate(() => { CP.pleco.open = window.__open; history.replaceState(null, "", location.href); const before = location.href; CP.pleco.open("你好"); const s = document.querySelector(".pl-skel"); return { s: !!s && /màndarínō/.test(s.textContent) && !!s.querySelector("use"), before }; });
+    check("Pleco: prima di uscire, la pagina con il logo e il wordmark", skel.s, JSON.stringify(skel));
+    check("Pleco: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+    /* sul computer l'opzione non c'è, anche se la preferenza è accesa */
+    const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 } }); const p2 = await c2.newPage();
+    await c2.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-pleco-v1", "1"); });
+    await p2.goto(base); await p2.waitForTimeout(400); await p2.evaluate(() => CP.openSettings("grp-adv")); await p2.waitForTimeout(150);
+    check("Pleco: sul computer niente opzione né pulsante", await p2.evaluate(() => !CP.pleco.available() && !CP.pleco.on() && !document.getElementById("set-pleco") && CP.plecoRow("你好") === ""));
+    await c2.close();
+  }
+  /* 4d. Anki: solo per chi ha studiato molto, due conferme, file a tabulazioni con guid stabili */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    const hidden = await p.evaluate(() => { CP.openSettings("grp-data"); const h = !document.getElementById("set-export"); CP.untrap(document.getElementById("settings")); return h; });
+    const a = await p.evaluate(() => {
+      CP.grade("你", 3, false, { ms: 900, type: "pi" }); CP.grade("银行", 3, false, { ms: 900, type: "pi" });
+      const mine = CP.anki.build({ which: "mine" }), all = CP.anki.build({ which: "all" }), sec = CP.anki.build({ which: "sec", sec: CP.WORDS["银行"].sec });
+      const lines = all.text.split("\n"), rows = lines.filter((l) => l && l[0] !== "#"), g = rows.map((l) => l.split("\t")[0]), bank = rows.find((l) => l.split("\t")[1] === "银行") || "";
+      return { mine: mine.n, all: all.n, sec: sec.n, secOk: sec.text.split("\n").filter((l) => l && l[0] !== "#").every((l) => / tappa::luoghi /.test(l)), words: CP.ORDER.length, uniq: new Set(g).size,
+        head: lines.slice(0, 4).join("|"), comment: /^# màndarínō 6\.\d+ · contenuti CC BY 4\.0/.test(lines[6]), cols: rows.every((l) => l.split("\t").length === 7), stable: CP.anki.guid("zh", "银行") === bank.split("\t")[0], bank };
+    });
+    check("Anki: guid unici e stabili, 7 colonne, intestazioni e commento, pinyin senza punti, tag di livello, tappa e stato", a.mine === 2 && a.all === a.words && a.uniq === a.all && a.cols && a.stable && a.comment && a.sec > 2 && a.secOk &&
+      a.head === "#separator:tab|#html:true|#guid column:1|#tags column:7" && /\tyínháng\t/.test(a.bank) && /\tmandarino hsk2 tappa::luoghi (sicura|in-corso)$/.test(a.bank), JSON.stringify(a).slice(0, 400));
+    /* sopra la soglia la voce compare; due conferme prima di salvare */
+    await p.evaluate(() => { const S = CP.S(); Object.keys(S).forEach((k) => {}); localStorage.setItem("cp-srs-v1", JSON.stringify(Object.assign(JSON.parse(localStorage.getItem("cp-srs-v1") || "{}"), Object.fromEntries(CP.ORDER.slice(0, 450).map((k) => [k, { n: 1, sd: 2, st: 1, df: 5, lr: Date.now(), d: Date.now() + 864e5 }]))))); });
+    await p.reload(); await p.waitForTimeout(500);
+    await p.evaluate(() => { window.__dl = null; Store.download = (n, t, m) => { window.__dl = { n, m, len: t.length }; return Promise.resolve(); }; CP.openSettings("set-export"); }); await p.waitForTimeout(150);
+    const shown = await p.evaluate(() => !!document.getElementById("set-export") && CP.anki.allowed());
+    await p.click("[data-anki-go]"); await p.waitForSelector("[data-anki-ok1]"); const before = await p.evaluate(() => window.__dl);
+    await p.click("[data-anki-ok1]"); await p.waitForSelector("[data-anki-ok2]"); await p.click("[data-anki-ok2]"); await p.waitForTimeout(200);
+    const dl = await p.evaluate(() => window.__dl);
+    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e privacy → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
+    check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -242,6 +333,9 @@ try {
     check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")));
     if (later) { await later.click(); await p.waitForTimeout(200); }
     check("Corso di italiano: all'inizio solo 课程 e 复习 nella barra (rivelazione progressiva)", await p.evaluate(() => [...document.querySelectorAll(".dock-it .dtab")].filter((b) => !b.hidden).map((b) => b.getAttribute("data-it-tab")).join(",") === "lessons,review"));
+    const ak = await p.evaluate(() => { const r = CP.anki.build({ which: "all" }), rows = r.text.split("\n").filter((l) => l && l[0] !== "#"), g = new Set(rows.map((l) => l.split("\t")[0])), v = rows.find((l) => /\tmandarino-it verb /.test(l)) || ""; return { n: r.n, uniq: g.size, cols: rows.every((l) => l.split("\t").length === 7), deck: /#deck:màndarínō::意大利语/.test(r.text), morph: /Morph-it!/.test(r.text.split("\n")[6]), conj: /io [^,<]+, tu [^,<]+,/.test(v), dots: rows.some((l) => /\.[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(l.split("\t")[2])) }; });
+    check("Pleco: nel corso di italiano l'opzione non c'è", await p.evaluate(() => !CP.pleco.available()));
+    check("Anki, corso di italiano: tutto il lessico, guid unici, 7 colonne, presente dei verbi dalle regole, Morph-it! citato", ak.n > 4000 && ak.uniq === ak.n && ak.cols && ak.deck && ak.morph && ak.conj && !ak.dots, JSON.stringify(ak));
     check("Corso di italiano: interfaccia cinese e schede proprie", await p.evaluate(() => CP.course() === "it" && LANG === "zh" && document.body.classList.contains("course-it") && document.querySelectorAll(".dock-it [data-it-tab]").length === 5));
     const res = await p.evaluate(() => {
       const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
@@ -334,6 +428,44 @@ try {
     check("Musica: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 5d. musica: il loop dei brani senza buchi (Task 10.1). Ogni brano suona dal riproduttore vero dell'app (elemento <audio>
+     in loop dentro il grafo Web Audio); a 0,35 s dalla fine si salta, e dopo il giro un AnalyserNode prende gli ultimi
+     32768 campioni (circa 0,7 s), che contengono la cucitura. Buco = la sequenza più lunga sotto −60 dB: deve stare sotto
+     LOOP_GAP_MS. I file non hanno silenzi ai bordi (al massimo 3 ms sotto −60 dB attorno alla cucitura), quindi un buco
+     lungo viene dal riproduttore. Un caso con un buco finto di 60 ms prova che la misura lo vede. Se un brano supera la
+     soglia, si riprova una volta (un intoppo del runner non è un buco del loop); due volte sopra = il loop ha un buco. */
+  {
+    const LOOP_GAP_MS = 20;
+    const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => localStorage.setItem("cp-ux-v1", '{"onboarded":1}'));
+    await p.goto(base); await p.waitForTimeout(400);
+    const seam = (id, glitch) => p.evaluate(([id, glitch]) => new Promise((res) => {
+      const c = new AudioContext(), an = c.createAnalyser(); an.fftSize = 32768; an.connect(c.destination);
+      const pl = CP.audioFile.player(c, an, id), el = pl.el, t0 = performance.now();
+      const end = (r) => { res(r); pl.stop(); setTimeout(() => c.close(), 800); };
+      const wait = (f, then) => { const iv = setInterval(() => { if (f()) { clearInterval(iv); then(); } else if (performance.now() - t0 > 15000) { clearInterval(iv); end({ err: CP.audioFile.state(id) || "timeout" }); } }, 5); };
+      wait(() => el.duration > 0 && el.currentTime > 1.6, () => {   /* dopo la salita del volume (1,5 s) */
+        el.currentTime = el.duration - 0.35;
+        if (glitch) setTimeout(() => { el.pause(); setTimeout(() => el.play(), glitch); }, 300);
+        wait(() => el.currentTime > 0.3 && el.currentTime < 2, () => {
+          const buf = new Float32Array(an.fftSize); an.getFloatTimeDomainData(buf);
+          let best = 0, cur = 0, q = 0; for (const x of buf) { q += x * x; if (Math.abs(x) < 1e-3) { cur++; if (cur > best) best = cur; } else cur = 0; }
+          end({ gap: Math.round(best / c.sampleRate * 10000) / 10, rms: Math.sqrt(q / buf.length) });
+        });
+      });
+    }), [id, glitch]);
+    const ids = await p.evaluate(() => Object.keys(window.MUSIC_FILES || {})), out = {}, bad = [];
+    for (const id of ids) {
+      let r = await seam(id, 0); if (!r.err && r.gap > LOOP_GAP_MS) r = await seam(id, 0);
+      out[id] = r.err || r.gap; if (r.err || r.gap > LOOP_GAP_MS || !(r.rms > 0.002)) bad.push(id + ":" + (r.err || r.gap + " ms"));
+    }
+    const worst = Math.max(...Object.values(out).filter((x) => typeof x === "number"));
+    check("Musica: loop senza buchi in tutti i " + ids.length + " brani (soglia " + LOOP_GAP_MS + " ms; il peggiore " + worst + " ms)", ids.length >= 20 && !bad.length, bad.join(", "));
+    const fake = await seam(ids[0], 60);
+    check("Musica: la misura del loop vede un buco finto di 60 ms", fake.gap >= 50, JSON.stringify(fake));
+    check("Loop della musica: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5b. Lettore: nomi e termini da Wikidata (file a parte, scaricato al primo uso) */
   {
     const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -393,7 +525,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

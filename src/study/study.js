@@ -152,7 +152,7 @@
       '<div class="sheet-rows">' + row("pad", "✍️", T("more.pad"), full ? T("more.padFull") : T("more.padBlind")) +
       (full ? row("fam", "🔍", T("more.fam"), T("more.famSub")) : "") +
       (full && CP.canScope && CP.canScope() ? row("scope", "〰️", T("more.tone"), T("more.toneSub")) : "") +
-      (full && CP.contribOpen ? row("contrib", "✏️", T("more.contrib"), T("more.contribSub")) : "") + "</div>");
+      (full && CP.contribOpen ? row("contrib", "✏️", T("more.contrib"), T("more.contribSub")) : "") + (full && CP.plecoRow ? CP.plecoRow(w.hz) : "") + "</div>");
   }
   function kbd() { return '<p class="kbd-hint">' + CP.t("sess.kbd") + "</p>"; }
   function togglePad(keep) {
