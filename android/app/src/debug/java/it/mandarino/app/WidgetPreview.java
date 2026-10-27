@@ -30,8 +30,11 @@ public class WidgetPreview extends Activity {
         col.setGravity(Gravity.CENTER_HORIZONTAL);
         col.setBackgroundColor(Color.rgb(96, 120, 132));   /* uno sfondo qualsiasi, come uno sfondo del telefono */
         col.setPadding(0, dp(48), 0, 0);
-        add(col, new TodayWidget().views(this), 340, 140);
-        add(col, new TodayWidgetSmall().views(this), 160, 76);
+        TodayWidget w = new TodayWidget();
+        WidgetState st = WidgetState.load(this);
+        add(col, w.large(this, st, R.layout.widget_large), 340, 140);
+        add(col, w.large(this, st, R.layout.widget_large_narrow), 200, 150);
+        add(col, new TodayWidgetSmall().small(this, st), 160, 76);
         setContentView(col);
     }
 
