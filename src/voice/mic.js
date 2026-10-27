@@ -1,10 +1,10 @@
 /* ===== V6: microfono con flusso persistente + PWA (manifest, service worker, pacchetto per GitHub/Cloudflare) ===== */
 (function () {
   var CP = window.CP, esc = CP.esc;
-  var IDLE_MS = 45 * 1000;      /* V6.7: era 5 minuti, con l'indicatore del microfono del telefono sempre acceso */
+  var IDLE_MS = 45 * 1000;      /* era 5 minuti, con l'indicatore del microfono del telefono sempre acceso */
 
   /* ---- 1. microfono: un solo permesso per sessione. Il flusso resta aperto finche' la scheda e' viva ---- */
-  /* V6.8: guadagno automatico ACCESO. Spento, su molti telefoni la voce arrivava 5-10 volte più bassa e l'altezza non si
+  /* guadagno automatico ACCESO. Spento, su molti telefoni la voce arrivava 5-10 volte più bassa e l'altezza non si
      trovava quasi mai. La cancellazione dell'eco resta spenta: su Android la accende passando in «modalità chiamata»,
      e la voce guida e la musica finiscono nell'altoparlante del telefono, bassissime. */
   var AUDIO = { echoCancellation: false, noiseSuppression: false, autoGainControl: true, channelCount: 1 };

@@ -1,6 +1,6 @@
-/* V6.7 · §5: livello di traduzione dell'interfaccia. Cambia la lingua dei menu, non la direzione di studio:
+/* livello di traduzione dell'interfaccia. Cambia la lingua dei menu, non la direzione di studio:
    il corso resta «cinese per italiani». Ogni testo dell'interfaccia passa da qui: t("chiave", { variabile: valore }).
-   Regola (V6.8, controllata dai test e2e in cinese su 20 schermate): un testo visibile è o una chiave t(), o pinyin,
+   Regola (controllata dai test e2e in cinese su 20 schermate): un testo visibile è o una chiave t(), o pinyin,
    o contenuto di studio in italiano dentro un elemento lang="it" (traduzioni, titoli delle tappe, lezioni, dialoghi).
    Le chiavi mancanti in zh ricadono sull'italiano. Lingua scelta in ⚙️, salvata in cp-lang: cambiarla ricarica l'app. */
 var I18N = {};

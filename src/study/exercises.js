@@ -1,4 +1,4 @@
-/* ===== màndarínō · il motore degli esercizi (Task 12, §12.2-12.3). Non è un ripasso parallelo: la coda, i tempi, «Esci»,
+/* ===== màndarínō · il motore degli esercizi. Non è un ripasso parallelo: la coda, i tempi, «Esci»,
    la barra di avanzamento e il voto restano quelli di study/study.js (CP.studyKit); qui si sceglie e si disegna la carta di
    prova quando lo stile è Misto o Guidato, e il voto passa sempre da CP.grade (con meta.type = tipo di esercizio).
    - Registro: CP.exEngine.register({ id, famiglia (0 riconosci, 1 misto, 2 produci), corso, q (testo della domanda),
@@ -157,7 +157,7 @@
     else if (!typing && (ev.key === " " || ev.code === "Space") && cur.item.say) { ev.preventDefault(); speak(cur.item.say, cur.kit.root.querySelector(".say, [data-it-say]")); }
   });
 
-  /* ---- gli esercizi di T1 (corso di cinese) ---- */
+  /* ---- gli esercizi di base (corso di cinese) ---- */
   function hzpy(w) { return '<div class="cd-py">' + CP.pinyinHTML(w.py) + '</div><div class="cd-hz" lang="zh-CN">' + CP.hanziHTML(w.hz, w.py) + "</div>"; }
   function sylls(py) { return String(py).split(/[.\s']+/).filter(Boolean); }
   function listenBtn(text) { return '<div class="ex-listen">' + CP.sayBtn(text).replace('class="say"', 'class="say big"') + "</div>"; }

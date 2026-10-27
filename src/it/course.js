@@ -187,7 +187,7 @@
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
     open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
     show: show, rerender: function () { render(); },
-    /* Task 12: gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
+    /* gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
     grade: function (v, g, meta) { var e = typeof v === "string" ? BYID[v] : v; if (e) gradeOf(e, g + 1, !!(meta && meta.retry)); },
     entry: function (id) { return BYID[id] || null; }, lex: function () { return LEX; }, rec: function (id) { return sload()[id] || null; },
     example: exOf, sayBtn: sayBtn, zhHTML: zhHTML, gLabel: gLabel, PRON: PRON, detail: detailHTML,
@@ -208,7 +208,7 @@
     if (ls.view === "lesson" && ls.cur) return lessonHTML(ls.cur);
     if (ls.view === "quiz" && ls.quiz) return quizHTML();
     if (ls.view === "result" && ls.quiz) return resultHTML();
-    /* Task 11.2: in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
+    /* in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
        in evidenza, quelle superate con il sigillo «通过» */
     var P = lprog(), L = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }), curId = currentLesson(), done = 0;
     var nodes = L.map(function (l) {
@@ -256,11 +256,11 @@
       if (Q.state === "play") h += '<div class="bank">' + Q.order.bank.map(function (b) { return tile(b, 'data-itl-pick="' + b.id + '"', Q.order.pick.indexOf(b.id) >= 0); }).join("") + '</div><div class="acts"><button type="button" data-itl-undo' + (Q.order.pick.length ? "" : " disabled") + ">" + Z.clear + '</button><button type="button" class="btn-main" data-itl-check style="margin:0"' + (Q.order.pick.length === Q.order.bank.length ? "" : " disabled") + ">" + Z.check + "</button></div>";
       else h += (Q.state === "ok" ? '<p class="verdict ok">' + Z.right + "</p>" : '<p class="verdict ko">' + Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.it) + "</span></p>") + '<div class="acts">' + sayBtn(q.it, true) + '<button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else if (q.k === "scrivi") {
-      /* Task 12: risposta da scrivere in italiano, confrontata come nel ripasso (CP.typing.compareIt) */
+      /* risposta da scrivere in italiano, confrontata come nel ripasso (CP.typing.compareIt) */
       h += '<p class="ask">' + esc(q.q) + '</p><form class="ex-type" data-itl-form><input id="itl-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="it" aria-label="' + CP.attr(q.q) + '"' + (Q.state !== "play" ? ' disabled value="' + CP.attr(Q.typed || "") + '"' : "") + "></form>";
       h += Q.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-itl-type style="margin:0">' + Z.check + "</button></div>" : '<p class="verdict ' + (Q.state === "ok" ? "ok" : "ko") + '">' + (Q.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs) + ' <b lang="it">' + esc(q.a) + "</b>" + (q.why ? " " + esc(q.why) : "") + '</p><div class="acts"><button type="button" class="btn-main" data-itl-next style="margin:0">' + (Q.i + 1 < n ? Z.next : Z.result) + "</button></div>";
     } else {
-      /* «pick» e, dal Task 12, «buco» (la frase italiana con ___; la domanda è facoltativa) */
+      /* «pick» e, ora, «buco» (la frase italiana con ___; la domanda è facoltativa) */
       h += '<p class="ask">' + esc(q.q || tt("itm.holeQ")) + "</p>" + (q.it ? '<p class="it-big" lang="it">' + esc(q.it) + "</p>" : "");
       h += '<div class="ls-opts">' + q.opts.map(function (o, j) {
         var cls = Q.state === "play" ? "" : j === q.a ? " right" : j === Q.choice ? " wrong" : " off";
@@ -323,7 +323,7 @@
   }
   function reviewView() {
     var Q = queue();
-    /* Task 12: negli stili Misto e Guidato la carta la disegnano gli esercizi (it/esercizi.js), che possono riproporre una parola sbagliata */
+    /* negli stili Misto e Guidato la carta la disegnano gli esercizi (it/esercizi.js), che possono riproporre una parola sbagliata */
     var EX = CP.itEx && CP.itEx.on();
     if (!rv.cur) rv.cur = (EX && CP.itEx.pick(Q)) || Q.due[0] || Q.fresh[0] || null;
     var head = tt("itc.162") + Q.due.length + tt("itc.163") + Q.newLeft + tt("itc.164") + Q.learned + tt("itc.165");
@@ -338,7 +338,7 @@
     }
     return h + "</div>";
   }
-  /* r: voto FSRS 1-4. retry (Task 12, dagli esercizi): la ripetizione nella stessa sessione aggiorna la carta solo se chiude
+  /* r: voto FSRS 1-4. retry: la ripetizione nella stessa sessione aggiorna la carta solo se chiude
      un riapprendimento, come CP.grade nel corso di cinese. Stesso formato di cp-it-srs-v1 di sempre: { c, n, lr } */
   function gradeOf(e, r, retry) {
     var S = sload(), now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now), apply = !retry || !rec.c || (r >= 3 && rec.c.state !== FSRS.REVIEW);

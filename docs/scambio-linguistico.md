@@ -1,9 +1,9 @@
-# Scambio linguistico: voci di madrelingua (Task 8.3, progetto)
+# Scambio linguistico: voci di madrelingua (progetto)
 
 > **Stato: progetto, in attesa di approvazione.** Nell'app non c'è ancora niente.
 >
-> La specifica chiede di implementare la registrazione e il salvataggio locale solo dopo l'approvazione dell'autore.
-> Le scelte segnate con **[da decidere]** sono le domande per l'autore.
+> La registrazione e il salvataggio locale si implementano solo dopo l'approvazione di chi gestisce il progetto.
+> Le scelte segnate con **[da decidere]** sono le domande ancora aperte.
 
 ## L'idea
 
@@ -79,10 +79,10 @@ esempio «nord / sud / Taiwan»), utile per gli accenti; è un dato personale e 
 
 1. `tools/merge-contrib.mjs` impara un secondo schema, `mandarino-voice/1`. Controlla che `ref` esista e che `text` sia
    ancora quello della frase (se la frase è cambiata, la registrazione è da rifare), oltre a durata, formato e licenza.
-2. Un riepilogo Markdown con un link a ogni file. **L'autore o un revisore madrelingua ascolta ogni registrazione**:
+2. Un riepilogo Markdown con un link a ogni file. **Chi gestisce il progetto o un revisore madrelingua ascolta ogni registrazione**:
    pronuncia, rumore di fondo, nessuna voce di terzi.
 3. Con `--apply` i file accettati vanno in `src/audio/voices/<lingua>/<ref>.<impronta>.ogg`, con normalizzazione e
-   taglio dei silenzi (ffmpeg, solo sul computer dell'autore). Il nickname va nei Crediti se chiesto.
+   taglio dei silenzi (ffmpeg, solo sul computer di chi gestisce il progetto). Il nickname va nei Crediti se chiesto.
 4. La build scrive l'indice delle voci nella pagina (come `window.MUSIC_FILES`), così l'app sa quali frasi hanno una
    voce vera.
 
@@ -105,10 +105,10 @@ Solo **registrazione e salvataggio locale**, come chiede la specifica:
 Si possono già riusare `CP.canRecord()` (`core/core.js`) e l'IndexedDB di `core/store.js`. L'invio, l'importazione e il
 pacchetto voci vengono dopo, quando ci sono le prime registrazioni da provare.
 
-## Domande per l'autore, riassunte
+## Domande aperte, riassunte
 
 1. Licenza delle registrazioni: CC BY 4.0, come i contenuti (proposta), oppure CC0?
 2. Minori: escluderli (proposta) o chiedere il consenso di un genitore?
 3. Regione di provenienza: non chiederla (proposta) o chiederla per gli accenti?
 4. Registrare anche la lingua che si studia, come «non madrelingua» non pubblicata?
-5. Chi ascolta le registrazioni prima della pubblicazione, oltre all'autore?
+5. Chi ascolta le registrazioni prima della pubblicazione, oltre a chi gestisce il progetto?

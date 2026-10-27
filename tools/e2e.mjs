@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* màndarínō · prove end-to-end in Chromium (Playwright), §8 del prompt V6.7.
+/* màndarínō · prove end-to-end in Chromium (Playwright).
    1. #selftest tutto verde (da file:// e da http://).
    2. PWA su un server http locale: manifest senza errori, installabile, funziona offline, l'avviso
       «Nuova versione disponibile · Aggiorna» compare quando cambia APP_VERSION e rinnova la cache.
@@ -38,7 +38,7 @@ await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const base = "http://127.0.0.1:" + server.address().port + "/";
 
 const browser = await chromium.launch({ args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required"] });
-/* Task 12: le prove scritte prima del motore degli esercizi descrivono il ripasso «Classico»: ogni contesto parte da lì,
+/* le prove scritte prima del motore degli esercizi descrivono il ripasso «Classico»: ogni contesto parte da lì,
    a meno che la prova scelga un altro stile (il suo addInitScript viene dopo e lo sovrascrive) */
 { const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (!localStorage.getItem("cp-ex-style")) localStorage.setItem("cp-ex-style", "classic"); } catch (e) {} }); return c; }; }
 async function selftest(url) {
@@ -137,7 +137,7 @@ try {
     check("Immersione: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4c. benvenuto, test di livello, rivelazione progressiva (Task 1) */
+  /* 4c. benvenuto, test di livello, rivelazione progressiva */
   {
     const tabs = (p) => p.evaluate(() => [...document.querySelectorAll("nav.dock:not(.dock-it) .dtab")].filter((b) => !b.hidden).map((b) => b.id.replace("tab-", "")).join(","));
     /* a. «Parto da zero»: obiettivo, i quattro toni, la prima carta; nella barra solo Percorso e Studia */
@@ -198,7 +198,7 @@ try {
       await ctx.close();
     }
   }
-  /* 4d. sostegno e sigilli di gratitudine (Task 4): chiavi usa-e-getta, nessuna richiesta di rete */
+  /* 4d. sostegno e sigilli di gratitudine: chiavi usa-e-getta, nessuna richiesta di rete */
   {
     const nc = require("crypto"), vmm = require("vm");
     const sctx = vmm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vmm.runInContext(fs.readFileSync(path.join(path.dirname(file), "..", "src/core/seal-code.js"), "utf8"), sctx);
@@ -323,7 +323,7 @@ try {
     check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4e. ritorno quotidiano (Task 6): giorno di riposo, gradi oltre i 10.000 punti, racconto dei progressi */
+  /* 4e. ritorno quotidiano: giorno di riposo, gradi oltre i 10.000 punti, racconto dei progressi */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
@@ -346,7 +346,7 @@ try {
     check("Ritorno quotidiano: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4f. anatomia del carattere (Task 5): foglio del carattere, componenti cliccabili, interruttore, lavagna */
+  /* 4f. anatomia del carattere: foglio del carattere, componenti cliccabili, interruttore, lavagna */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
@@ -363,7 +363,7 @@ try {
     check("Anatomia: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4g. sfida a un amico e pacchetto classe (Task 9): stesso codice → stesse domande su due «telefoni», QR leggibile,
+  /* 4g. sfida a un amico e pacchetto classe: stesso codice → stesse domande su due «telefoni», QR leggibile,
      link che si apre e si toglie dall'indirizzo, pacchetto importato con riquadro nel Percorso, riepilogo solo con consenso */
   {
     const mk = async (init) => { const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message)); await ctx.addInitScript(init || (() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); })); return { ctx, p, errs }; };
@@ -415,8 +415,8 @@ try {
     check("Sfida, corso di italiano: nessun errore JavaScript", !I.errs.length, I.errs[0]);
     await I.ctx.close();
   }
-  /* 4h. golden (Task 12, T0): con lo stile «Classico» la sessione di ripasso è identica alla copia fissa di study.js di prima
-     del Task 12 (tools/fixtures/study-classic-v1.js): stessa coda, stesse carte pi / ip / hp, stessi voti. Profilo e seme fissi. */
+  /* 4h. golden: con lo stile «Classico» la sessione di ripasso è identica alla copia fissa di study.js di prima
+     ora (tools/fixtures/study-classic-v1.js): stessa coda, stesse carte pi / ip / hp, stessi voti. Profilo e seme fissi. */
   {
     const init = () => {
       const now = Date.now(), S = {};
@@ -443,12 +443,12 @@ try {
     };
     const now = await run(false), old = await run(true);
     const firstDiff = now.seq.findIndex((h, i) => h !== old.seq[i]);
-    check("Golden «Classico»: la sessione di ripasso è identica a quella di prima del Task 12 (" + now.seq.length + " schermate)", now.seq.length > 20 && now.seq.length === old.seq.length && firstDiff < 0, firstDiff >= 0 ? "schermata " + firstDiff + ": " + now.seq[firstDiff].slice(0, 200) + " ≠ " + (old.seq[firstDiff] || "").slice(0, 200) : "");
+    check("Golden «Classico»: la sessione di ripasso è identica a quella di prima ora (" + now.seq.length + " schermate)", now.seq.length > 20 && now.seq.length === old.seq.length && firstDiff < 0, firstDiff >= 0 ? "schermata " + firstDiff + ": " + now.seq[firstDiff].slice(0, 200) + " ≠ " + (old.seq[firstDiff] || "").slice(0, 200) : "");
     const tags = await (async () => { const all = now.seq.join(""); return ["Che cosa significa?", "Come si dice?", "Leggi il carattere", 'class="grades"'].map((x) => all.includes(x)); })();
     check("Golden «Classico»: nella sessione ci sono le tre carte (pi, ip, hp) e i quattro voti", tags.every(Boolean), JSON.stringify(tags));
     check("Golden «Classico»: nessun errore JavaScript", !now.errs.length && !old.errs.length, now.errs[0] || old.errs[0]);
   }
-  /* 4i. motore degli esercizi (Task 12, T1): stile Misto, ogni tipo di scelta multipla e il tono, tasti 1-4, «Non ero
+  /* 4i. motore degli esercizi: stile Misto, ogni tipo di scelta multipla e il tono, tasti 1-4, «Non ero
      sicuro», errore che torna a +3 e +8 con un altro tipo, statistiche in cp-ex-v1, intervalli FSRS identici al Classico */
   {
     const prof = (style) => { const now = Date.now(), S = {}; ["妈", "马", "你好", "谢谢", "再见", "早上好", "晚上好", "晚安", "对不起", "没关系"].forEach((k, i) => { S[k] = { n: 3, d: now - 86400000 * (1 + i), b: i % 4 }; }); localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-study-cfg", '{"n":0,"sec":""}'); localStorage.setItem("cp-ex-style", style); };
@@ -500,7 +500,7 @@ try {
     check("Esercizi: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4j. esercizi di T2 (Task 12): frase a buco, buco grammaticale, ordina, digitazione del pinyin e del significato,
+  /* 4j. esercizi con le frasi: frase a buco, buco grammaticale, ordina, digitazione del pinyin e del significato,
      buco digitato, abbina, componente; voti della digitazione (senza toni = Difficile) */
   {
     const prof = (style) => { const now = Date.now(), S = {}; ["妈", "好", "你好", "谢谢", "我", "是", "学生", "老师", "朋友", "吃", "喝", "茶", "书", "请"].forEach((k, i) => { S[k] = { n: 9, d: now - 86400000 * (1 + i), b: 6 }; }); localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", style); };
@@ -525,13 +525,13 @@ try {
       res[t] = await p.evaluate(() => !!document.querySelector(".ex-opt.ok") && /✓/.test(document.querySelector(".ex-verdict").textContent) && (!document.querySelector(".ex-hole") || true));
       await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
     }
-    check("Esercizi T2: frase a buco, buco grammaticale (con la nota) e componente si risolvono con 1-4", Object.values(res).every((x) => x === true), JSON.stringify(res));
+    check("Esercizi con le frasi: frase a buco, buco grammaticale (con la nota) e componente si risolvono con 1-4", Object.values(res).every((x) => x === true), JSON.stringify(res));
     const hole = await p.evaluate(() => { const s = CP.exSent.forWord(CP.WORDS["学生"]); return { n: s.length, okSeg: s.every((x) => x.toks.some((t) => t.w && t.w.key === "学生")) }; });
     check("Frasi a buco: le frasi di una parola la contengono come parola (taglio dell'app)", hole.n > 0 && hole.okSeg, JSON.stringify(hole));
     /* ordina */
     let it = await open("ordina");
     const ord = it && await p.evaluate(() => { const it = CP.exEngine.current().item; it.tiles.forEach((t) => document.querySelector('[data-exo="' + t.id + '"]').click()); document.querySelector("[data-exo-check]").click(); return { ok: /✓/.test(document.querySelector(".ex-verdict").textContent), primaries: document.querySelectorAll("#study-root .btn-main").length }; });
-    check("Esercizi T2: rimetti in ordine la frase (tessere, «Controlla», poi un solo «Continua»)", ord && ord.ok && ord.primaries === 1, JSON.stringify(ord));
+    check("Esercizi con le frasi: rimetti in ordine la frase (tessere, «Controlla», poi un solo «Continua»)", ord && ord.ok && ord.primaries === 1, JSON.stringify(ord));
     await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
     /* digitazione: pinyin con i numeri (esatto), senza toni (Difficile), significato con l'accento sbagliato (Difficile) */
     const typ = [];
@@ -547,7 +547,7 @@ try {
     /* abbina */
     it = await open("abbina");
     const mt = it && await p.evaluate(() => { const it = CP.exEngine.current().item; it.words.forEach((w, i) => { document.querySelector('[data-exm="l:' + i + '"]').click(); document.querySelector('[data-exm="r:' + i + '"]').click(); }); return { n: it.words.length, ok: /✓/.test(document.querySelector(".ex-verdict").textContent) }; });
-    check("Esercizi T2: abbina (almeno quattro coppie)", mt && mt.n >= 4 && mt.ok, JSON.stringify(mt));
+    check("Esercizi con le frasi: abbina (almeno quattro coppie)", mt && mt.n >= 4 && mt.ok, JSON.stringify(mt));
     /* quiz delle lezioni: «buco» e «scrivi» (un quiz inventato, messo solo nella pagina) */
     const lq = await p.evaluate(async () => {
       CP.studyHome(); const L = CP.lessons.list()[0]; L.quiz = [{ k: "buco", zh: "我＿学生。", opts: ["在", "是"], a: 1 }, { k: "scrivi", py: true, a: "shì" }];
@@ -557,10 +557,10 @@ try {
       return { hole, ok1, ok2: !!document.querySelector(".verdict.ok") };
     });
     check("Lezioni: i quiz accettano «buco» e «scrivi» (pinyin con i numeri dei toni)", lq.hole && lq.ok1 && lq.ok2, JSON.stringify(lq));
-    check("Esercizi T2: nessun errore JavaScript", !errs.length, errs[0]);
+    check("Esercizi con le frasi: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4k. percorso guidato (Task 12, T3): carta «Continua» con il passo successivo, impara + esercitati, verifica superata
+  /* 4k. percorso guidato: carta «Continua» con il passo successivo, impara + esercitati, verifica superata
      (tappa verificata, +20 una volta sola) e fallita (le cinque parti, «Rinforza»), «I tuoi errori» e mini-verifica nelle lezioni */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -623,7 +623,7 @@ try {
     check("Guidato: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4l. lettura graduata (Task 12, T4): Frasi → Leggi → Testi, elenco per livello, parole che aprono il foglio, pinyin e
+  /* 4l. lettura graduata: Frasi → Leggi → Testi, elenco per livello, parole che aprono il foglio, pinyin e
      traduzione a richiesta, domande con le risposte mescolate, letto + punti una volta sola, parole nuove nel ripasso */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -656,7 +656,7 @@ try {
     check("Lettura: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4m. corso di italiano alla pari (Task 12, T5): stesso motore e stessi stili, voto da CP.itApi.grade nel formato di
+  /* 4m. corso di italiano alla pari: stesso motore e stessi stili, voto da CP.itApi.grade nel formato di
      sempre di cp-it-srs-v1, ogni tipo di esercizio italiano, il dettato con una voce reale (solo se è sul telefono: prima
      nessuna richiesta), il passo successivo nella carta «今天» (Guidato), la lettura con le domande in cinese */
   {
@@ -729,7 +729,7 @@ try {
     check("Corso di italiano, esercizi: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4n. voci reali (Task 12, T6): prima di «Scarica le voci» nessuna richiesta di clip; il pulsante le mette nella cache
+  /* 4n. voci reali: prima di «Scarica le voci» nessuna richiesta di clip; il pulsante le mette nella cache
      mandarino-voice; poi «ascolta la frase» con la voce vera; in modalità aereo le clip arrivano dalla cache; senza le voci
      cinesi (materiali/audio/zh assente) nessun errore e l'esercizio non si propone */
   {
@@ -838,7 +838,7 @@ try {
     check("Corso di italiano: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 5e. Task 11: punteggio, carta «今天», percorso, traguardi e carte da condividere del corso di italiano */
+  /* 5e. punteggio, carta «今天», percorso, traguardi e carte da condividere del corso di italiano */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, acceptDownloads: true }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     const net = []; await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => { net.push(r.request().url()); r.abort(); });
@@ -869,6 +869,8 @@ try {
     });
     check("Lezione corrente avviata dalla carta e superata: sigillo «通过», «+30 分», serie aggiornata, «分享» a fine lezione", opened && passed.stamp && passed.share && /\+30/.test(passed.gain) && passed.streak >= 1, JSON.stringify(passed));
     await p.waitForTimeout(150);
+    const leafIt = await p.evaluate(() => { const els = document.querySelectorAll('.brand [data-tone="3"]'); if (!els.length) return { n: 0, toast: "" }; els[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); return { n: els.length, toast: (document.getElementById("toast") || {}).textContent || "" }; });
+    check("Logo: le due foglie suonano il terzo tono (avviso «3° tono» o «第三声», secondo la lingua)", leafIt.n === 2 && /3° tono|第三声/.test(leafIt.toast), JSON.stringify(leafIt));
     const mile = await p.evaluate(() => { const sheets = document.querySelectorAll("[role=dialog]:not([hidden]), .sheet:not([hidden])").length; CP.onRankUp({ name: "声调学徒" }); const b = document.querySelector("#toast .toast-act"); const m = JSON.parse(localStorage.getItem("cp-it-cards-v1") || "{}").m || {}; return { act: b ? b.textContent : "", toast: document.getElementById("toast").textContent, sheets: document.querySelectorAll("[role=dialog]:not([hidden]), .sheet:not([hidden])").length - sheets, rec: !!m["rank:声调学徒"] && !!m.first }; });
     check("Traguardo: «分享纪念卡» dentro il messaggio di congratulazioni, nessuna finestra in più, ricordato in cp-it-cards-v1", mile.act === "分享纪念卡" && /恭喜/.test(mile.toast) && mile.sheets === 0 && mile.rec, JSON.stringify(mile));
     await p.evaluate(() => { CP.itShow("lessons"); document.querySelector("[data-itl-back]") && document.querySelector("[data-itl-back]").click(); }); await p.waitForTimeout(200);
@@ -902,10 +904,10 @@ try {
     const off = await p.evaluate(async () => { CP.itShow("review"); CP.itShow("lessons"); const c = document.createElement("canvas"); await CP.shareCard.render(c, "it-day", CP.itCardData(), {}); return !!document.querySelector(".it-today") && c.width === 1080; });
     await ctx.setOffline(false);
     check("Corso di italiano in modalità aereo: carta «今天» e carta da condividere", off);
-    check("Task 11: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, net[0] || errs[0]);
+    check("nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, net[0] || errs[0]);
     await ctx.close();
   }
-  /* 5f. la carta del corso di cinese è identica a prima del Task 11 (stessa pagina, vecchio modulo contro modelli nuovi) */
+  /* 5f. la carta del corso di cinese è identica a prima ora (stessa pagina, vecchio modulo contro modelli nuovi) */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
@@ -923,7 +925,7 @@ try {
       let n = 0; for (let i = 0; i < da.length; i += 4) if (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2]) > 30) n++;
       return n / (da.length / 4);
     }, [now, old]);
-    check("Carta del corso di cinese identica a prima del Task 11 (pixel diversi: " + (diff * 100).toFixed(3) + "%)", diff < 0.001, String(diff));
+    check("Carta del corso di cinese identica a prima ora (pixel diversi: " + (diff * 100).toFixed(3) + "%)", diff < 0.001, String(diff));
     check("Carta del cinese: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -977,7 +979,7 @@ try {
     check("Musica: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 5d. musica: il loop dei brani senza buchi (Task 10.1). Ogni brano suona dal riproduttore vero dell'app (elemento <audio>
+  /* 5d. musica: il loop dei brani senza buchi. Ogni brano suona dal riproduttore vero dell'app (elemento <audio>
      in loop dentro il grafo Web Audio); a 0,35 s dalla fine si salta, e dopo il giro un AnalyserNode prende gli ultimi
      32768 campioni (circa 0,7 s), che contengono la cucitura. Buco = la sequenza più lunga sotto −60 dB: deve stare sotto
      LOOP_GAP_MS. I file non hanno silenzi ai bordi (al massimo 3 ms sotto −60 dB attorno alla cucitura), quindi un buco
@@ -1119,6 +1121,9 @@ try {
     }
     check("Interfaccia in cinese: nessun testo rimasto in italiano in " + areas.length + " schermate", !bad.length, bad.slice(0, 4).join(" ‖ "));
     check("Interfaccia in cinese: nessun errore JavaScript", !errs.length, errs[0]);
+    /* si legge l'avviso subito dopo il tocco: senza una voce cinese (come in CI) l'app, una volta sola, lo sostituisce con «la voce non risponde» */
+    const leafZh = await p.evaluate(() => { const el = document.querySelector('.brand [data-tone="3"]'); if (!el) return ""; el.dispatchEvent(new MouseEvent("click", { bubbles: true })); return (document.getElementById("toast") || {}).textContent || ""; });
+    check("Logo, interfaccia in cinese: toccando una foglia l'avviso dice «第三声»", /第三声/.test(leafZh), leafZh);
     await ctx.close();
   }
 } finally {

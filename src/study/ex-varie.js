@@ -1,4 +1,4 @@
-/* ===== màndarínō · altri esercizi del corso di cinese (Task 12, T2, §12.2 e §12.5): digitazione del pinyin e del
+/* ===== màndarínō · altri esercizi del corso di cinese: digitazione del pinyin e del
    significato (anche nella frase a buco), abbina cinque coppie, traccia il carattere, componente (suono o significato).
    Digitazione: CP.typing confronta; pinyin senza toni o italiano con l'accento sbagliato = Difficile con la spiegazione;
    giusta al primo colpo = Bene, Facile solo se veloce e con la parola già stabile (CP.exEngine.voto). Sotto il campo i

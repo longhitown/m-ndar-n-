@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* màndarínō · estrae da Make Me a Hanzi (dictionary.txt) la struttura dei caratteri del vocabolario e scrive
-   src/data/anatomy.js (Task 5, «anatomia del carattere»). Si rilancia quando si aggiungono parole con caratteri nuovi.
+   src/data/anatomy.js. Si rilancia quando si aggiungono parole con caratteri nuovi.
    dictionary.txt: https://github.com/skishore/makemeahanzi, derivato da Unihan e CJKlib, licenza GNU LGPL 3.0 o successiva
    (vedi COPYING del progetto). Il file generato resta sotto la LGPL.
    Si tengono SOLO i campi strutturali:
@@ -50,7 +50,7 @@ while (queue.length) {
   if (tp) tp.parts.forEach((p) => { if (Array.from(p).length === 1 && !out[p]) queue.push(p); });
 }
 const keys = Object.keys(out), atomic = [...vocab].filter((c) => !out[c][0]).length;
-const head = `/* Struttura dei caratteri (Task 5): ${keys.length} caratteri (${vocab.size} del vocabolario, ${atomic} senza scomposizione: semplici o
+const head = `/* Struttura dei caratteri: ${keys.length} caratteri (${vocab.size} del vocabolario, ${atomic} senza scomposizione: semplici o
    non scomponibili), da Make Me a Hanzi (github.com/skishore/makemeahanzi, file dictionary.txt), derivato da Unihan e
    CJKlib. Questo file è sotto la licenza GNU LGPL 3.0 o successiva: il testo è in LICENZE/LGPL-3.0.txt e nei crediti
    dell'app. Modifiche rispetto a dictionary.txt (tools/anatomy.mjs, ${new Date().toISOString().slice(0, 10)}): tenuti solo i caratteri del vocabolario e

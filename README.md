@@ -9,7 +9,7 @@ tracciamento, e funziona anche senza connessione.
 
 - **Android:** [scarica l'APK](https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk) e, quando
   il telefono lo chiede, consenti l'installazione da questa fonte.
-- **Tutto il resto:** la versione web e la pagina di presentazione sono in preparazione.
+- **Tutto il resto:** apri la versione web da [mandarinoapp.org](https://mandarinoapp.org) e installala dal browser; lì trovi anche la pagina di presentazione.
 
 ## Dove trovi le cose
 

@@ -53,7 +53,7 @@ function sandbox() {
   check("unione: rifarla con gli stessi dati non cambia niente", !again.changed);
 }
 
-/* ---- 2b. test di livello e sblocchi tra dispositivi (Task 1) ---- */
+/* ---- 2b. test di livello e sblocchi tra dispositivi ---- */
 {
   const { Store, LS } = sandbox();
   /* punti del test di livello: lo stesso test visto da due dispositivi conta una volta; due test diversi: vale il più alto;
@@ -105,7 +105,7 @@ function sandbox() {
   check("sblocchi: con l'obiettivo predefinito (10) Parole e Frasi non arrivano il primo giorno", dayOf(10, U.words, U.dw) >= 2 && dayOf(10, U.build, U.db) >= 3, rep);
 }
 
-/* ---- 2c. sigilli di gratitudine (Task 4) ---- */
+/* ---- 2c. sigilli di gratitudine ---- */
 {
   const nodeCrypto = await import("crypto"), { spawnSync } = await import("child_process"), os = await import("os");
   const ctx = vm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vm.runInContext(fs.readFileSync(path.join(SRC, "core/seal-code.js"), "utf8"), ctx); const S = ctx.MDSeal;
@@ -123,7 +123,7 @@ function sandbox() {
   await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-seal-v1": JSON.stringify({ codes: { "2-2026-7": { code: "b" } }, gram: "m", name: "", share: 0, t: 50 }) }, log: [] }, "merge");
   const sm = JSON.parse(LS.getItem("cp-seal-v1"));
   check("sigilli: cp-seal-v1 unisce i codici; le preferenze vengono dal dispositivo più recente", sm.codes["1-2026-3"] && sm.codes["2-2026-7"] && sm.gram === "f" && sm.name === "Ada" && sm.share === 1, JSON.stringify(sm));
-  /* pacchetti classe (Task 9): unione per id, il pacchetto tolto su un dispositivo resta tolto */
+  /* pacchetti classe: unione per id, il pacchetto tolto su un dispositivo resta tolto */
   {
     const { Store: S2, LS: L2 } = sandbox();
     L2.setItem("cp-class-v1", JSON.stringify({ p: { a: { id: "a", t: "A", at: 5 }, b: { id: "b", t: "B", at: 9 } }, x: {} }));
@@ -165,7 +165,7 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-/* ---- rilettura da madrelingua (Task 8.2): modulo → review-import → merge-contrib, con risposte inventate ---- */
+/* ---- rilettura da madrelingua: modulo → review-import → merge-contrib, con risposte inventate ---- */
 {
   const os = await import("os"), { spawnSync } = await import("child_process");
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "md-review-")), sheet = path.join(tmp, "modulo.md"), patch = path.join(tmp, "revisione.json");
@@ -180,19 +180,38 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-/* ---- pagina di presentazione (docs/index.html) e privacy.html: niente script, font, immagini o fogli esterni; due lingue ---- */
+/* ---- sito (docs/): nessuna risorsa esterna, un solo script statico dello stesso sito, riferimenti locali che esistono, due lingue ---- */
 {
-  const h = fs.readFileSync(path.join(ROOT, "docs/index.html"), "utf8");
-  const ext = [...h.matchAll(/<(script|img|link|iframe|source|video|audio)\b[^>]*?(?:src|href|poster)="([^"]+)"/gi)].map((m) => m[2]).filter((u) => /^(https?:)?\/\//i.test(u));
-  const local = [...h.matchAll(/(?:src|poster)="(img\/[^"]+|icon\.svg)"/g)].map((m) => m[1]).filter((f) => !fs.existsSync(path.join(ROOT, "docs", f)));
+  const DOCS = path.join(ROOT, "docs");
+  const h = fs.readFileSync(path.join(DOCS, "index.html"), "utf8");
+  const isExt = (u) => /^(https?:)?\/\//i.test(u);
+  const ext = [...h.matchAll(/<(?:script|img|iframe|source|video|audio)\b[^>]*?(?:src|poster)="([^"]+)"/gi)].map((m) => m[1])
+    .concat([...h.matchAll(/<link\b[^>]*\brel="(?:stylesheet|icon|preload|modulepreload)"[^>]*?href="([^"]+)"/gi)].map((m) => m[1])).filter(isExt);
+  const scripts = [...h.matchAll(/<script\b([^>]*)>/gi)].map((m) => m[1]);
+  const GENERATI = ["app/", "privacy.html", "mandarino.apk"];   /* nascono con la pubblicazione: non stanno in docs/ */
+  const local = [...h.matchAll(/\b(?:src|poster|href)="([^"#?]+)(?:[#?][^"]*)?"/g)].map((m) => m[1])
+    .filter((u) => !/^(https?:|mailto:|tel:|\/\/|data:)/i.test(u) && !GENERATI.includes(u)).filter((f) => !fs.existsSync(path.join(DOCS, f)));
   const ctas = (h.match(/class="btn"/g) || []).length;
-  check("pagina di presentazione: nessuno script né risorsa esterna, un solo invito all'azione, italiano e cinese, immagini presenti, privacy e app", !/<script\b/i.test(h) && !ext.length && !local.length && ctas === 1 && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /href="privacy\.html"/.test(h), ext.concat(local).join(", ") + " cta " + ctas);
+  check("pagina di presentazione: nessuna risorsa esterna, solo assets/sito.js come script, un solo invito all'azione, italiano e cinese, file locali presenti, privacy e app",
+    !ext.length && scripts.length === 1 && /src="assets\/sito\.js"/.test(scripts[0]) && !local.length && ctas === 1 && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /href="privacy\.html"/.test(h),
+    ext.concat(local).join(", ") + " cta " + ctas + " script " + scripts.length);
+  const h404 = fs.readFileSync(path.join(DOCS, "404.html"), "utf8");
+  const abs404 = [...h404.matchAll(/(?:src|href)="(\/[^"]+)"/g)].map((m) => m[1]).filter((u) => !GENERATI.some((g) => u === "/" + g) && u !== "/");
+  const miss404 = abs404.filter((u) => !fs.existsSync(path.join(DOCS, u)));
+  check("404.html: i percorsi dalla radice esistono, nessuno script", abs404.length > 0 && !miss404.length && !/<script\b/i.test(h404), miss404.join(", "));
+  const hz = JSON.parse(fs.readFileSync(path.join(DOCS, "assets/dati/hanzi.json"), "utf8"));
+  const prova = fs.readFileSync(path.join(DOCS, "assets/prova.js"), "utf8");
+  const usati = [...((/var CH = \[([\s\S]*?)\];/.exec(prova) || ["", ""])[1]).matchAll(/\["(.)"/g)].map((m) => m[1]);
+  const manca = usati.filter((c) => !hz[c] || !hz[c].strokes || hz[c].strokes.length !== (hz[c].medians || []).length);
+  check("microprove del sito: hanzi.json ha i tratti di ogni carattere usato da prova.js", usati.length >= 8 && !manca.length, manca.join(" "));
+  const brani = ["biblioteca", "calligrafia", "bambu"].filter((id) => !["ogg", "m4a"].every((e) => fs.existsSync(path.join(DOCS, "audio", id + "." + e))));
+  check("radio del sito: i tre brani esistono in .ogg e .m4a", !brani.length, brani.join(", "));
   const { md2html } = await import("./site.mjs");
   const pv = md2html(fs.readFileSync(path.join(ROOT, "PRIVACY.md"), "utf8"));
   check("privacy.html da PRIVACY.md: tabelle, sezione cinese con lang, nessuno script", /<table>/.test(pv) && /<section lang="zh-CN">[\s\S]*<table>/.test(pv) && !/<script/i.test(pv) && /api\.github\.com/.test(pv));
 }
 
-/* ---- versione per gli store (Task 7D): src/config.js con il ponte Android che dice «store» ---- */
+/* ---- versione per gli store: src/config.js con il ponte Android che dice «store» ---- */
 {
   const cfg = fs.readFileSync(path.join(SRC, "config.js"), "utf8");
   const run = (flavor) => { const w = { MandarinoAndroid: flavor ? { flavor: () => flavor } : undefined }; const c = { window: w }; vm.runInNewContext(cfg + ";this.C=MD_CONFIG;", c); return c.C; };
@@ -203,7 +222,7 @@ function sandbox() {
   check("Android: compileSdk e targetSdk 36, versioni direct e store", /compileSdk 36/.test(g) && /targetSdk 36/.test(g) && /direct \{/.test(g) && /store \{/.test(g));
 }
 
-/* ---- Task 11: i traguardi del corso di italiano si uniscono tra dispositivi (per ognuno la data più vecchia) ---- */
+/* ---- i traguardi del corso di italiano si uniscono tra dispositivi (per ognuno la data più vecchia) ---- */
 {
   const { Store, LS } = sandbox();
   LS.setItem("cp-it-cards-v1", JSON.stringify({ m: { first: 200, s7: 500 } }));
@@ -222,7 +241,7 @@ function sandbox() {
     /<html lang="zh-CN">/.test(h) && h.length < 12000 && !ext.length && scripts.length === 1 && !/src=/.test(scripts[0][1]) && /MicroMessenger/.test(scripts[0][2]) && !/官方/.test(h) && /无需注册/.test(h), ext.join(", "));
 }
 
-/* ---- Task 12: digitazione (src/core/typing.js) con le prove del riferimento (materiali/riferimenti/digitazione.test.mjs) ---- */
+/* ---- digitazione (src/core/typing.js) con le prove del riferimento (materiali/riferimenti/digitazione.test.mjs) ---- */
 {
   const tc = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "core/typing.js"), "utf8"), tc);
   const raw = vm.runInContext("MDTyping", tc);   /* gli array del contesto vm diventano array di questo, per deepEqual */
@@ -234,7 +253,7 @@ function sandbox() {
   check("digitazione: src/core/typing.js passa le prove del riferimento (pinyin con numeri, accenti, senza toni; italiano con accenti e refusi)", !err, err);
 }
 
-/* ---- Task 12: distrattori, regole del voto, unione di cp-ex-v1 ---- */
+/* ---- distrattori, regole del voto, unione di cp-ex-v1 ---- */
 {
   const { tools } = await import("./materiali.mjs");
   const TL = tools(SRC), POOL = Object.values(TL.W);
@@ -310,7 +329,7 @@ function sandbox() {
   console.log("  (avvio: " + KB(js) + " KB di JavaScript da compilare, " + KB(lazy) + " KB di dati e librerie letti solo quando servono)");
   check("avvio: JavaScript da compilare all'apertura sotto i 1500 KB", js < 1500 * 1024, KB(js) + " KB");
   check("avvio: i dati pesanti (esempi, tratti, lessico, jsQR) restano fuori dalla compilazione iniziale", lazy > 700 * 1024, KB(lazy) + " KB");
-  /* Task 12: il gruppo ESERCIZI (motore, distrattori, digitazione…) e i dati dei materiali sono testo letto al primo uso */
+  /* il gruppo ESERCIZI (motore, distrattori, digitazione…) e i dati dei materiali sono testo letto al primo uso */
   const grp = [...html.matchAll(/<script type="text\/plain" id="group-esercizi-\d+">/g)].length, exData = ["frasi_zh", "frasi_it", "voce_zh", "voce_it", "insiemi"].every((n) => html.includes('<script type="application/json" id="lazy-' + n + '">'));
   check("avvio: il gruppo ESERCIZI e i dati dei materiali non si compilano all'apertura (limite di 1500 KB invariato)", grp >= 4 && exData && /__mdLoad = window.__mdLoad/.test(html), "gruppo " + grp + ", dati " + exData);
 }

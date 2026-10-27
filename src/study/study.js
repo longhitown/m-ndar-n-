@@ -1,6 +1,6 @@
 
 /* Scheda "Studia": ripasso a intervalli con sessioni brevi.
-   V6.7: una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
+   Una scheda «Oggi» con un solo pulsante; sessione a schermo pieno (CP.focusMode); carta con due soli
    controlli principali (Ascolta, Parla) e il resto in «⋯»; voti con l'intervallo vero calcolato da FSRS;
    limite giornaliero di parole nuove; fine sessione con un solo gesto. */
 (function () {
@@ -16,7 +16,7 @@
   function dueKeys() {
     return CP.dueList(keysOf(), Date.now()).slice(0, 25);   /* prima le carte con la probabilita' di ricordo piu' bassa */
   }
-  /* §4.2: cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
+  /* cfg.n parole nuove AL GIORNO (non a sessione). Quante ne sono già passate oggi sta in cp-game-v1.days[oggi].nw */
   function newSeen() { return CP.game && CP.game.newToday ? CP.game.newToday() : 0; }
   function newRoom() { return Math.max(0, cfg.n + (CP.game && CP.game.newExtra ? CP.game.newExtra() : 0) - newSeen()); }
   function newKeys() { var S = CP.S(), room = newRoom(); return room ? keysOf().filter(function (k) { return !S[k] || !S[k].n; }).slice(0, room) : []; }
@@ -63,7 +63,7 @@
   CP.exampleFor = example;
   function minutes(n) { return Math.max(1, Math.round(n * 20 / 60)); }
 
-  /* §4.1: l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
+  /* l'intervallo che FSRS darebbe a ogni voto, calcolato senza salvarlo (e senza il «fuzz» casuale) */
   function fmt(ms) { var d = ms / 86400000, T = CP.t; return ms < 3600000 ? T("u.min", { n: Math.max(1, Math.round(ms / 60000)) }) : d < 1 ? T("u.h", { n: Math.round(ms / 3600000) }) : d < 30 ? T("u.d", { n: Math.round(d) }) : d < 365 ? T("u.mo", { n: Math.round(d / 30) }) : T("u.y", { n: Math.round(d / 36.5) / 10 }); }
   function previewIntervals(k) {
     var S = CP.S(), r = S[k], now = Date.now(), sch = CP.srs.scheduler;
@@ -96,7 +96,7 @@
       (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">' + T("study.more5today") + "</button>" : "") + "</details></div>" +
       '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
       (CP.homeNotice ? CP.homeNotice() : "") +
-      /* Task 6.3: i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
+      /* i progressi in evidenza, con il racconto della settimana; i numeri tecnici restano sotto, in un riquadro */
       '<section class="panel progress" id="st-story"><h3>' + T("study.progress") + '</h3><div id="st-body" aria-live="polite"></div>' +
       '<div class="stats"><div class="stat"><b>' + c[0] + "</b><span>" + T("study.toLearn") + '</span></div><div class="stat"><b>' + c[1] + "</b><span>" + T("study.learning") + '</span></div><div class="stat"><b>' + c[2] + "</b><span>" + T("study.known") + "</span></div></div>" +
       '<div class="meter" aria-hidden="true"><i class="k" style="width:' + (c[2] / tot * 100) + '%"></i><i class="l" style="width:' + (c[1] / tot * 100) + '%"></i></div>' +
@@ -107,9 +107,9 @@
   }
 
   /* ---- sessione ---- */
-  /* q0 (Task 12, percorso guidato): una coda già pronta al posto di quella del giorno */
+  /* q0: una coda già pronta al posto di quella del giorno */
   function start(q0) {
-    var q = q0 || [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* Task 12: stili Misto e Guidato */
+    var q = q0 || [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* stili Misto e Guidato */
     if (!q0) {
     dueKeys().forEach(function (k) { q.push({ k: k, kind: "test", type: pickType(k), retry: false }); });
     newKeys().forEach(function (k) { q.push({ k: k, kind: "intro", retry: false }); });
@@ -265,7 +265,7 @@
   function render() {
     if (!sess.q.length) return done();
     var e = sess.q[0];
-    /* Task 12: negli stili Misto e Guidato la carta di prova la disegna il motore degli esercizi (study/exercises.js) */
+    /* negli stili Misto e Guidato la carta di prova la disegna il motore degli esercizi (study/exercises.js) */
     if (e.kind === "test" && e.ex && CP.exEngine && CP.exEngine.render(e, KIT)) return;
     var w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
@@ -288,7 +288,7 @@
     if (fcEl && e.kind === "test") CP.bindCardSwipe(fcEl, function () { var rv = document.getElementById("reveal"); if (rv) rv.click(); }, function (g) { answer(g); }, function () { return !!sess.revealed; });
     if (CP.pref.auto && (e.kind === "intro" || sess.revealed)) CP.say(CP.sayHz(w), root.querySelector(".say"));
   }
-  /* m (Task 12, solo dal motore degli esercizi): { ms, type } della risposta */
+  /* m: { ms, type } della risposta */
   function answer(g, m) {
     if (!(m && m.quiet)) { if (CP.pref.sfx) CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko"); else CP.haptic(8); }
     var e = sess.q.shift();
@@ -397,7 +397,7 @@
   };
   CP.studyCfg = function (o) { if (o) { if (o.n) cfg.n = o.n; if (o.sec !== undefined) cfg.sec = o.sec; saveCfg(); if (!sess) home(); } return { n: cfg.n, sec: cfg.sec }; };
   CP.studyRoot = root;
-  /* per il motore degli esercizi (Task 12): le parti della carta e la risposta, senza duplicare la sessione */
+  /* per il motore degli esercizi: le parti della carta e la risposta, senza duplicare la sessione */
   var KIT = { root: root, head: function () { return head(); }, parts: parts, tools: function (w) { return cardTools(w, true); }, example: example, kbd: kbd,
     answer: function (g, m) { answer(g, m); }, sess: function () { return sess; },
     start: function (q) { sess = null; start(q); }, due: function (n) { return dueKeys().slice(0, n); } };
