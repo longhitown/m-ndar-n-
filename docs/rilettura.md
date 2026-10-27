@@ -1,20 +1,20 @@
-# Rilettura da madrelingua (Task 8.2)
+# Rilettura da madrelingua
 
 L'app ha circa 6400 frasi d'esempio, 32 dialoghi e le frasi di tutti i giorni. Sono state controllate con strumenti
 automatici, ma nessun madrelingua cinese le ha ancora rilette tutte. Questo è il flusso per farlo un campione alla volta.
-**La rilettura è un'azione umana**: lo strumento prepara e raccoglie, l'autore decide che cosa cambiare.
+**La rilettura è un'azione umana**: lo strumento prepara e raccoglie, chi gestisce il progetto decide che cosa cambiare.
 
 ## Chi fa che cosa
 
 | Passo | Chi | Che cosa |
 |---|---|---|
-| 1. Preparare il modulo | autore | `node tools/review-sample.mjs --seme 1 --out revisione-1.md` |
-| 2. Mandarlo | autore | il file `.md`, oppure il suo contenuto incollato in un documento condiviso, per e-mail (mandarinoapp@gmail.com) o via WeChat |
+| 1. Preparare il modulo | chi gestisce il progetto | `node tools/review-sample.mjs --seme 1 --out revisione-1.md` |
+| 2. Mandarlo | chi gestisce il progetto | il file `.md`, oppure il suo contenuto incollato in un documento condiviso, per e-mail (mandarinoapp@gmail.com) o via WeChat |
 | 3. Rileggere | madrelingua | per ogni riga: ✓ / ~ / ✗ nella colonna 判断, e una proposta in 建议 se non è ✓ |
 | 4. Rimandarlo | madrelingua | lo stesso file compilato (o il testo della tabella) |
-| 5. Importarlo | autore | `node tools/review-import.mjs revisione-1.md --nome <chi ha riletto> --out revisione-1.json` |
-| 6. Riassumerlo | autore | `node tools/merge-contrib.mjs revisione-1.json --out riepilogo.md` |
-| 7. Correggere | autore | il cinese a mano nei file di `src/data/` (vedi sotto), poi `npm test` |
+| 5. Importarlo | chi gestisce il progetto | `node tools/review-import.mjs revisione-1.md --nome <chi ha riletto> --out revisione-1.json` |
+| 6. Riassumerlo | chi gestisce il progetto | `node tools/merge-contrib.mjs revisione-1.json --out riepilogo.md` |
+| 7. Correggere | chi gestisce il progetto | il cinese a mano nei file di `src/data/` (vedi sotto), poi `npm test` |
 
 ## Il modulo (passo 1)
 
