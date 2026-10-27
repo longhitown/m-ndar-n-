@@ -100,7 +100,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CHANGELOG` | `data/changelog.js` | `[{ v, d, it, zh }]`, dal più recente; la build vuole lo stesso numero di righe nelle due lingue |
 | «Chi ha contribuito» | `ui/credits.js` | prima parte del foglio Crediti |
 | «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni e supporto |
-| `CP.pleco` / `CP.plecoBtn(testo)` | `ui/pleco.js` | `on`, `open`, `url`; il foglio del carattere (`core/core.js`) chiede il pulsante a `CP.plecoBtn`; la pressione di 2 s usa `CP.charTarget` |
+| `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
 | `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e privacy |
 | `credit: 1` nella patch | `contrib/contrib.js` | solo con un nickname e la casella spuntata (`cp-contrib-credit-v1`) |
 
@@ -120,7 +120,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 `android/…/Bridge.java` espone `window.MandarinoAndroid`. Il codice web non lo chiama quasi mai direttamente:
 `pwa/android.js` lo trasforma nelle API web standard (`speechSynthesis`, `SpeechRecognition`, download, condivisione) e i
 pochi moduli solo-APK (`pwa/sync.js`, `pwa/widget.js`, `pwa/reminder.js`, `pwa/pwa.js` per gli aggiornamenti, `audio/player.js`
-per la notifica della musica, `ui/pleco.js` per `openPleco`) controllano prima `if (window.MandarinoAndroid)`. Le risposte asincrone tornano da
+per la notifica della musica, `ui/pleco.js` per `openPleco` e `plecoStore`) controllano prima `if (window.MandarinoAndroid)`. Le risposte asincrone tornano da
 `window.__mdEvt`.
 
 ## Regole che tengono insieme il tutto

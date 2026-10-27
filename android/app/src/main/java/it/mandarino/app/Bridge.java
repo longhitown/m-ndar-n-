@@ -462,15 +462,33 @@ public class Bridge {
 
     /* ---------------- Pleco ---------------- */
 
-    /** apre una parola nel dizionario Pleco (plecoapi://); false se Pleco non è installato. La chiama solo un gesto di chi
-     *  studia, e solo se ha acceso l'opzione in ⚙️ (ui/pleco.js). */
+    private static final String PLECO = "com.pleco.chinesesystem";
+
+    /** apre una parola nel dizionario Pleco: intento plecoapi://x-callback-url/s?q=… diretto al pacchetto di Pleco.
+     *  Solo caratteri cinesi, al massimo 16. false se Pleco non è installato (ui/pleco.js mostra allora un messaggio).
+     *  La chiama solo un tocco di chi studia, con l'opzione accesa in ⚙️. */
     @JavascriptInterface
     public boolean openPleco(String text) {
-        if (text == null || text.trim().isEmpty() || text.length() > 64) return false;
-        final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("plecoapi://x-callback-url/s?q=" + Uri.encode(text.trim())));
+        if (text == null) return false;
+        final String q = text.trim();
+        if (q.isEmpty() || q.length() > 16 || !q.matches("[\\u3400-\\u9fff\\uf900-\\ufaff]+")) return false;
+        final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("plecoapi://x-callback-url/s?q=" + Uri.encode(q)));
+        i.setPackage(PLECO);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (i.resolveActivity(act.getPackageManager()) == null) return false;
         try { act.startActivity(i); return true; } catch (ActivityNotFoundException e) { return false; }
+    }
+
+    /** la pagina di Pleco nello store (market://), con ripiego sulla pagina web di Google Play */
+    @JavascriptInterface
+    public void plecoStore() {
+        act.runOnUiThread(() -> {
+            try {
+                act.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PLECO)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException e) {
+                act.openExternal(Uri.parse("https://play.google.com/store/apps/details?id=" + PLECO));
+            }
+        });
     }
 
     /* ---------------- aspetto e informazioni ---------------- */
