@@ -287,7 +287,7 @@
 
   /* ---- struttura ---- */
   /* §4.3: tre gruppi invece di sei pillole scorrevoli */
-  var GROUPS = [["learn", "grp.learn", [["lessons", "sub.lessons"], ["pat", "sub.pat"]]], ["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["reader", "sub.reader"]]]];
+  var GROUPS = [["learn", "grp.learn", [["lessons", "sub.lessons"], ["pat", "sub.pat"]]], ["build", "grp.build", [["ex", "sub.ex"], ["lab", "sub.lab"], ["slot", "sub.slot"]]], ["talk", "grp.talk", [["dlg", "sub.dlg"], ["thought", "sub.thought"]]], ["read", "grp.read", [["testi", "sub.testi"], ["reader", "sub.reader"]]]];
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
   function groupOf(x) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].some(function (s) { return s[0] === x; })) return GROUPS[i]; return GROUPS[0]; }

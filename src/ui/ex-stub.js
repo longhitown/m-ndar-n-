@@ -50,6 +50,9 @@
   }
   CP.ex.prossimo = prossimo; CP.ex.guidaHTML = guidaHTML; CP.ex.unit = unit; CP.ex.dur = dur;
   CP.ex.verificata = function (id) { var u = unit(id); return !!(u && u.verifica && u.verifica.ok); };
+  /* Frasi → Leggi → Testi (lettura graduata, phrases/reading.js): il gruppo si carica quando si apre */
+  CP.subs = CP.subs || {};
+  CP.subs.testi = { render: function () { carica(); return CP.reading ? CP.reading.render() : ""; } };
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-gd-go], [data-gd-dur], [data-gd-free]") : null; if (!b) return;
     CP.sfx("tap");
