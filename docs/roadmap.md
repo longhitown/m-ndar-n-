@@ -47,8 +47,6 @@ La lista completa, da spuntare, è in [checklist-dispositivo.md](checklist-dispo
 
 ## Altre cose aperte
 
-- **Licenza di Morph-it!**: la doppia licenza CC BY-SA 2.0 / LGPL risulta da fonti secondarie. Va confermata sul sito ufficiale dell'Università di Bologna (versione della LGPL compresa) e il testo completo
-  copiato in `LICENZE/`. Vedi `THIRD-PARTY-NOTICES.md`.
 - **Servizio per le notifiche di Ko-fi** (per ricevere le donazioni e conservarle per `lo strumento di emissione`): non si fa senza una decisione su dove ospitarlo, su chi è responsabile del
   trattamento dei dati (GDPR) e su un'informativa. Non conterrebbe la chiave dei sigilli né invierebbe e-mail; l'app non lo contatterebbe mai.
 - **Testi cinesi** (corso di italiano, carte, pagina `zh/`): rilettura da parte di madrelingua ([rilettura.md](rilettura.md)).
