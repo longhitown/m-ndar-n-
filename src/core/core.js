@@ -716,12 +716,12 @@
   var famEl = document.getElementById("fam"), famCard = document.getElementById("fam-card"), fam = null;
   function famRender() {
     var ch = fam.cur, selves = CP.homographs(ch), selfW = selves[0];
-    var list = CP.familyOf(ch), h, pb = CP.plecoBtn ? CP.plecoBtn(ch) : "";
+    var list = CP.familyOf(ch), h;
     h = '<div class="fam-head"><div class="big" lang="zh-CN">' + CP.esc(ch) + '</div><div class="meta">' +
       (selfW ? selves.map(function (w) { return '<div class="lp">' + CP.pinyinHTML(w.py) + " " + CP.hskBadge(w.hz) + '</div><div class="small muted" lang="it">' + CP.esc(w.it) + "</div>"; }).join("")
              : '<div class="small muted">' + t("fam.part") + "</div>") +
       "</div>" + (selfW ? CP.audioBtns(CP.sayHz(selfW), true) : "") + '<button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' + (selfW ? CP.polyNote(selfW) : "") +
-      (selfW && CP.contribOpen || pb ? '<div class="acts" style="margin:6px 0 0">' + (selfW && CP.contribOpen ? '<button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ ' + t("fam.fix") + "</button>" : "") + pb + "</div>" : "");
+      (selfW && CP.contribOpen ? '<div class="acts" style="margin:6px 0 0"><button type="button" class="btn-s" data-contrib="' + CP.attr(selfW.key) + '">✏️ ' + t("fam.fix") + "</button></div>" : "");
     if (fam.chars.length > 1) {
       h += '<div class="fam-chars" role="group" aria-label="' + CP.attr(t("fam.chars")) + '">' + fam.chars.map(function (c) {
         return '<button type="button" data-fc="' + CP.attr(c) + '"' + (c === ch ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.esc(c) + "</button>";

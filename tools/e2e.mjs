@@ -254,32 +254,44 @@ try {
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 4c. Pleco: spento di base, doppia conferma, pulsante nel foglio del carattere, pressione di 2 s */
+  /* 4c. Pleco: solo su telefono, spento di base, doppia conferma; sotto i 2 s niente cambia, a 2 s compare «Apri in Pleco»,
+     si esce solo toccandolo (dopo la pagina con il logo); la parola intera; nel menu «⋯» della carta; niente sul computer */
   {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
     await p.goto(base); await p.waitForTimeout(500);
-    await p.evaluate(() => CP.openFamily("好")); await p.waitForTimeout(150);
-    const offBtn = await p.$("[data-pleco]"); await p.evaluate(() => CP.closeSheet());
     await p.evaluate(() => CP.openSettings("set-pleco")); await p.waitForTimeout(150);
+    const offOk = await p.evaluate(() => !CP.pleco.on() && !!document.getElementById("set-pleco") && CP.pleco.available());
     await p.click("#opt-pleco"); await p.waitForSelector("[data-pleco-ok1]");
     const notYet = await p.evaluate(() => !CP.pleco.on());
     await p.click("[data-pleco-ok1]"); await p.waitForSelector("[data-pleco-ok2]"); await p.click("[data-pleco-ok2]"); await p.waitForTimeout(200);
-    check("Pleco: spento di base, si accende solo dopo due conferme", !offBtn && notYet && await p.evaluate(() => CP.pleco.on() && localStorage.getItem("cp-pleco-v1") === "1"));
-    await p.evaluate(() => { CP.closeSheet(); const se = document.getElementById("settings"); if (se && !se.hidden) CP.untrap(se); window.__pl = []; CP.pleco.open = (q) => { window.__pl.push(q); return true; }; CP.openFamily("好"); }); await p.waitForTimeout(150);
-    await p.click("[data-pleco]"); await p.evaluate(() => CP.closeSheet()); await p.waitForTimeout(100);
-    const url = await p.evaluate(() => CP.pleco.url("你好"));
-    check("Pleco: pulsante nel foglio del carattere, link plecoapi://", (await p.evaluate(() => window.__pl.join())) === "好" && url === "plecoapi://x-callback-url/s?q=%E4%BD%A0%E5%A5%BD", url);
-    /* pressione: un carattere di una riga di Parole; 0,6 s apre solo la famiglia, 2,2 s apre anche Pleco */
-    await p.evaluate(() => { window.__pl = []; CP.show("words", true, true); }); await p.waitForTimeout(300);
-    const box = await p.evaluate(() => { const el = [...document.querySelectorAll("#view-words span")].find((x) => x.getClientRects().length && CP.charTarget(x)); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    check("Pleco: c'è sul telefono, spento di base, si accende solo dopo due conferme", offOk && notYet && await p.evaluate(() => CP.pleco.on() && localStorage.getItem("cp-pleco-v1") === "1"));
+    await p.evaluate(() => { CP.closeSheet(); const se = document.getElementById("settings"); if (se && !se.hidden) CP.untrap(se); window.__pl = []; window.__open = CP.pleco.open; CP.pleco.open = (q) => { window.__pl.push(q); return true; }; CP.show("words", true, true); }); await p.waitForTimeout(300);
+    /* una parola di almeno due caratteri in una riga di Parole */
+    const box = await p.evaluate(() => { const el = [...document.querySelectorAll("#view-words .m-hz > span")].find((x) => x.getClientRects().length && CP.charTarget(x) && x.closest(".m-hz").textContent.trim().length >= 2); if (!el) return null; el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, w: el.closest(".m-hz").textContent.trim() }; });
     const press = async (ms) => { await p.mouse.move(box.x, box.y); await p.mouse.down(); await p.waitForTimeout(ms); await p.mouse.up(); await p.waitForTimeout(150); };
-    if (box) { await press(600); }
-    const short = await p.evaluate(() => window.__pl.length); await p.evaluate(() => CP.closeSheet());
-    if (box) { await press(2200); }
-    check("Pleco: 0,6 s apre solo il foglio del carattere, 2 s aprono Pleco", !!box && short === 0 && await p.evaluate(() => window.__pl.length === 1), JSON.stringify({ box, short }));
+    if (box) await press(700);
+    const short = await p.evaluate(() => ({ chip: !!document.querySelector(".pl-chip"), fam: !document.getElementById("fam").hidden }));
+    await p.evaluate(() => CP.closeSheet()); await p.waitForTimeout(100);
+    if (box) await press(2300);
+    const chip = await p.evaluate(() => { const b = document.querySelector(".pl-chip [data-pleco]"); return b ? b.getAttribute("data-pleco") : null; });
+    const opened0 = await p.evaluate(() => window.__pl.length);
+    if (chip) { await p.click(".pl-chip [data-pleco]"); await p.waitForTimeout(100); }
+    const opened = await p.evaluate(() => window.__pl.join());
+    check("Pleco: sotto i 2 s solo il foglio del carattere; a 2 s compare «Apri in Pleco» con la parola intera; si apre solo toccandolo", !!box && !short.chip && short.fam && chip === box.w && opened0 === 0 && opened === box.w, JSON.stringify({ box, short, chip, opened }));
+    const row = await p.evaluate(() => ({ ok: /data-pleco="你好"/.test(CP.plecoRow("你好")), latin: CP.plecoRow("ciao"), long: CP.pleco.valid("一二三四五六七八九十一二三四五六七") }));
+    check("Pleco: riga nel menu «⋯» della carta; solo caratteri cinesi, al massimo 16", row.ok && row.latin === "" && row.long === "", JSON.stringify(row));
+    /* la pagina d'uscita con logo e wordmark, prima di lasciare l'app */
+    const skel = await p.evaluate(() => { CP.pleco.open = window.__open; history.replaceState(null, "", location.href); const before = location.href; CP.pleco.open("你好"); const s = document.querySelector(".pl-skel"); return { s: !!s && /màndarínō/.test(s.textContent) && !!s.querySelector("use"), before }; });
+    check("Pleco: prima di uscire, la pagina con il logo e il wordmark", skel.s, JSON.stringify(skel));
     check("Pleco: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
+    /* sul computer l'opzione non c'è, anche se la preferenza è accesa */
+    const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 } }); const p2 = await c2.newPage();
+    await c2.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-pleco-v1", "1"); });
+    await p2.goto(base); await p2.waitForTimeout(400); await p2.evaluate(() => CP.openSettings("grp-adv")); await p2.waitForTimeout(150);
+    check("Pleco: sul computer niente opzione né pulsante", await p2.evaluate(() => !CP.pleco.available() && !CP.pleco.on() && !document.getElementById("set-pleco") && CP.plecoRow("你好") === ""));
+    await c2.close();
   }
   /* 4d. Anki: solo per chi ha studiato molto, due conferme, file a tabulazioni con guid stabili */
   {
@@ -322,6 +334,7 @@ try {
     if (later) { await later.click(); await p.waitForTimeout(200); }
     check("Corso di italiano: all'inizio solo 课程 e 复习 nella barra (rivelazione progressiva)", await p.evaluate(() => [...document.querySelectorAll(".dock-it .dtab")].filter((b) => !b.hidden).map((b) => b.getAttribute("data-it-tab")).join(",") === "lessons,review"));
     const ak = await p.evaluate(() => { const r = CP.anki.build({ which: "all" }), rows = r.text.split("\n").filter((l) => l && l[0] !== "#"), g = new Set(rows.map((l) => l.split("\t")[0])), v = rows.find((l) => /\tmandarino-it verb /.test(l)) || ""; return { n: r.n, uniq: g.size, cols: rows.every((l) => l.split("\t").length === 7), deck: /#deck:màndarínō::意大利语/.test(r.text), morph: /Morph-it!/.test(r.text.split("\n")[6]), conj: /io [^,<]+, tu [^,<]+,/.test(v), dots: rows.some((l) => /\.[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(l.split("\t")[2])) }; });
+    check("Pleco: nel corso di italiano l'opzione non c'è", await p.evaluate(() => !CP.pleco.available()));
     check("Anki, corso di italiano: tutto il lessico, guid unici, 7 colonne, presente dei verbi dalle regole, Morph-it! citato", ak.n > 4000 && ak.uniq === ak.n && ak.cols && ak.deck && ak.morph && ak.conj && !ak.dots, JSON.stringify(ak));
     check("Corso di italiano: interfaccia cinese e schede proprie", await p.evaluate(() => CP.course() === "it" && LANG === "zh" && document.body.classList.contains("course-it") && document.querySelectorAll(".dock-it [data-it-tab]").length === 5));
     const res = await p.evaluate(() => {

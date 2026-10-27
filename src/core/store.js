@@ -254,7 +254,7 @@
     PROGRESS.concat(personal ? PERSONAL : []).forEach(function (k) { try { if (LS) LS.removeItem(k); } catch (e) {} });
     return logClear().then(function () { return flush(); });
   }
-  /* mime: il tipo del file (di base JSON: backup, contributi); l'esportazione per Anki usa text/plain */
+  /* mime: il tipo del file (di base JSON: backup, contributi); l'esportazione per Anki usa text/tab-separated-values */
   function download(name, text, mime) {
     var cl = window.claude;
     var fb = function () { try { var u = URL.createObjectURL(new Blob([text], { type: mime || "application/json" })), a = document.createElement("a"); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1500); } catch (e) {} };

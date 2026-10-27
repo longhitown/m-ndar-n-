@@ -455,17 +455,28 @@ nella finestra d'importazione). `Store.download(nome, testo, mime)` ora accetta 
 
 ## Pleco (facoltativo)
 
-Chi ha il dizionario Pleco sul telefono può accenderne il collegamento in ⚙️ → Avanzate → 📖 Pleco. Si accende con due
-conferme, perché apre un'altra app; è spento di base. Acceso, ci sono due strade:
+Chi ha il dizionario Pleco sul telefono può accendere ⚙️ → Avanzate → «Mostra il collegamento a Pleco». È spento di base e
+si accende con due conferme, perché porta a un'altra app. Non c'è sul computer né nel corso di italiano. Acceso:
 
-- tenere premuto un carattere per **2 secondi** (`PLECO_HOLD_MS` in `src/ui/pleco.js`). La pressione lunga normale
-  (mezzo secondo) apre come sempre il foglio del carattere; tenendo premuto si passa a Pleco;
-- il pulsante «📖 Pleco» nel foglio del carattere, senza gesti.
+- sotto i 2 secondi non cambia niente (a mezzo secondo si apre il foglio del carattere, come sempre);
+- tenendo premuto un carattere per **2 secondi** (`PLECO_HOLD_MS` in `src/ui/pleco.js`) compare un piccolo pulsante
+  «Apri in Pleco», con un'icona generica di dizionario (non il marchio di Pleco). Si esce verso Pleco solo toccandolo,
+  e prima appare per un attimo una pagina con il logo e il wordmark;
+- nella carta di studio la stessa voce sta anche nel menu «⋯»: è la strada senza gesti.
 
-Nell'APK, `Bridge.openPleco` lancia l'intento `plecoapi://x-callback-url/s?q=…`; il manifest dichiara il pacchetto
-`com.pleco.chinesesystem` nelle `<queries>`, come chiede Android 11+. Se Pleco non c'è, un avviso. Nel browser è un link
-`plecoapi://`, che funziona solo dove Pleco è installato. L'app non manda niente in rete: la parola va a Pleco, sul
-telefono.
+Passa la parola intera (quella della riga, della carta o del foglio), solo caratteri cinesi e al massimo 16.
+
+**Android.** `Bridge.openPleco` lancia `ACTION_VIEW` su `plecoapi://x-callback-url/s?q=…` con
+`setPackage("com.pleco.chinesesystem")`. Il pacchetto è nelle `<queries>` del manifest, come chiede Android 11+. Se Pleco
+non c'è compare un messaggio discreto, «Pleco non è installato», con «Scarica Pleco» (`Bridge.plecoStore`: `market://`,
+poi la pagina web di Google Play).
+
+**Browser.** Sul telefono è un link `plecoapi://`: se Pleco non c'è non succede niente. Nessuna rete: la parola va a
+Pleco, sul telefono.
+
+**Da verificare.** Lo schema `plecoapi://x-callback-url/s` viene dai forum di Pleco (Android dalla 3.2.10). Non l'ho
+provato su un telefono con Pleco installato: va fatto prima di una release (checklist del Task 6). Nella versione per gli
+store (Task 7D) il link allo store va controllato con le regole di Google Play.
 
 ## Privacy
 

@@ -34,7 +34,7 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
   la registrazione non viene salvata né inviata.
 - **Fotocamera:** solo per leggere un QR (passaggio a un altro telefono, sigilli). Le immagini non vengono salvate.
 - **Notifiche (Android):** solo per il promemoria facoltativo e per la musica in secondo piano.
-- **Pleco** (facoltativo, spento di base): se lo accendi, la parola che tieni premuta passa all'app Pleco sul tuo telefono, non a internet.
+- **Pleco** (facoltativo, spento di base, solo sul telefono): se lo accendi e tocchi «Apri in Pleco», la parola passa all'app Pleco sul tuo telefono, non a internet.
 
 ### Sincronizzazione e backup
 
@@ -84,7 +84,7 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 - **麦克风：** 只用于发音练习，并且只在练习时使用。声调示波器在设备上运行；录音不会保存或发送。
 - **相机：** 只用于扫描二维码（换手机、印章）。图像不会保存。
 - **通知（安卓）：** 只用于可选的提醒和后台音乐。
-- **Pleco**（可选，默认关闭）：打开后，你长按的词语会传给你手机上的 Pleco 应用，不会发送到网络。
+- **Pleco**（可选，默认关闭，仅限手机）：打开后点击“在 Pleco 中打开”，词语会传给你手机上的 Pleco 应用，不会发送到网络。
 
 ### 同步和备份
 
