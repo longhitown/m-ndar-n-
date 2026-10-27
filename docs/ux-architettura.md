@@ -173,8 +173,10 @@ grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
 | ☑ | bersagli da 44 px, testi da 13 px, contrasto | gli stessi controlli di `tools/ux-audit.mjs` | fatto |
 | ☑ | `prefers-reduced-motion` | «+N 分», «通过» e l'anello hanno la versione ferma | fatto |
 | ☑ | icone SVG nella barra | le stesse icone SVG, più una per 变位 | fatto |
-| ☑ | ripasso a scelta multipla (stile Misto, Task 12 T1): risposta prima del risultato, segno ✓/✗, un solo «Continua» | arriva con T5 (stesso motore, voto da `CP.itApi.grade`) | cinese fatto, italiano in T5 |
-| ☑ | percorso guidato (T3): carta «Continua» con un solo pulsante che dice il passo, verifica di tappa con le cinque parti | carta «今天» con il passo successivo (T5) | cinese fatto, italiano in T5 |
-| ☑ | lettura graduata (T4): testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso | testi italiani con le domande in cinese (T5) | cinese fatto, italiano in T5 |
+| ☑ | ripasso a scelta multipla (stile Misto, Task 12 T1): risposta prima del risultato, segno ✓/✗, un solo «Continua» | 复习 con lo stesso motore e gli stessi stili, parola nuova presentata prima, voto da `CP.itApi.grade` (T5) | fatto |
+| ☑ | percorso guidato (T3): carta «Continua» con un solo pulsante che dice il passo, verifica di tappa con le cinque parti | carta «今天» con un solo pulsante: esercizi (5/10/15 min), un testo, la lezione con il suo quiz (T5) | fatto |
+| ☑ | lettura graduata (T4): testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso | 句子 → «短文阅读»: testi A1-B1, domande in cinese, «适合你», «已读» (T5) | fatto |
+| ☑ | esercizi a buco, ordina, digitazione (T2) | `it-buco`, `it-buco-gram`, `it-ordina`, `it-scrivi`, `it-dettato`, `it-verbo` (T5) | fatto |
+| ☑ | voci reali (T6) | voce NM1 nelle frasi italiane, dettato con clip (T5) | italiano fatto, cinese in T6 |
 | ☐ | testi riletti da un madrelingua | i testi cinesi del corso, della carta e della pagina zh/ | da far rileggere |
 | ☐ | vuoti curati | «ancora nessuna lezione»: oggi la carta mostra sempre la prossima lezione | da controllare |

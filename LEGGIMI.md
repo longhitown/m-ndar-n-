@@ -674,10 +674,45 @@ caricare il gruppo).
 - Crediti: «Frasi d'esempio degli esercizi», Tatoeba, CC BY 2.0 FR, con l'elenco degli autori in
   `materiali/crediti/autori-frasi.tsv` (le frasi sono negli esercizi da T1).
 
+**Corso di italiano alla pari** (T5; codice in `COURSE_IT`: `src/it/esercizi.js`, `src/it/lettura.js`).
+- **Stessi stili** (⚙️ → Stile di ripasso): Classico = le carte di prima (da girare, quattro voti); Misto e Guidato = gli
+  esercizi dello stesso motore (`CP.exEngine`, con un kit per il corso: parola, scheda, voce italiana, rivelazione).
+  Le parole nuove si presentano prima (parola, cinese, forme, frase) con «记住了，练一练».
+- **Voto** sempre da `CP.itApi.grade(voce, g, meta)`: scrive `cp-it-srs-v1` nel formato di sempre `{ c, n, lr }`; la
+  ripetizione dopo un errore (3 carte dopo, con un altro tipo) aggiorna la scheda solo se chiude un riapprendimento,
+  come nel cinese. Mai Facile da una scelta multipla.
+- **Tipi** (prefisso `it-` nel registro del motore): `it-significato`, `it-parola`, `it-ascolto` (con la voce italiana del
+  telefono), `it-ascolto-frase`, `it-buco`, `it-ordina`, `it-scrivi` (confronto `compareIt` e, se sbagliata, il correttore
+  `it/checker.js`), `it-dettato` (solo con una voce reale), `it-buco-gram` (articoli, preposizioni, avere/essere da
+  `INSIEMI.it`), `it-verbo` (presente da `CP.ita`).
+- **Distrattori** (`CP.distract.itWords`): stessa specie e, per i nomi, stesso genere; livello ±1 dal capitolo della tappa;
+  nessun carattere cinese in comune con la giusta (学校/学生); nessun doppione, né in italiano né in cinese.
+- **Frasi di una parola:** l'esempio, poi le frasi Tatoeba (`FRASI_IT`, solo con traduzione) e gli esempi delle lezioni,
+  con il livello non oltre quello della parola. La parola si cerca tra le sue forme (nomi senza articolo, quattro forme
+  degli aggettivi, presente dei verbi regolari).
+- **Guidato:** la carta «今天» ha un solo pulsante con il passo successivo: esercizi se ci sono almeno 10 ripassi (durata
+  5/10/15 minuti, poi «这次练习完成了»), un testo da leggere (A1 dopo 3 lezioni, A2 dopo 10, B1 dopo 20, al massimo uno
+  ogni 3 lezioni), altrimenti la lezione corrente (la lezione con il suo quiz è «impara + verifica»).
+- **Lettura** (in 句子, sopra le frasi): gli 8 testi A1-B1 con le domande in cinese e le risposte in italiano, «适合你»,
+  «已读», traduzione cinese a richiesta, un tocco su una parola apre il suo foglio, ogni frase si ascolta, parole nuove nel
+  ripasso con un tocco, 5 punti la prima volta.
+
+**Voci reali** (`src/core/voice-clip.js`, `src/ui/voice-dl.js`).
+- `tools/materiali.mjs` scrive anche `src/data/ex/voci-file.js` (`VOICE_FILES`: per lingua, numero della clip → impronta
+  del contenuto; letto al primo uso). La build ricontrolla le impronte e scrive le clip in
+  `dist/audio/voce/<lingua>/<numero>.<impronta>.ogg` (fuori dal repository, come i brani; `--check` le ignora).
+- `CP.speak` chiede la clip della frase (chiave: per l'italiano minuscole senza punteggiatura, per il cinese solo i
+  caratteri); se non parte torna alla voce di sempre. Le clip si usano **solo se sono sul telefono**: nell'APK sempre;
+  sul sito dopo ⚙️ → Voce → «Scarica le voci (7,3 MB)», che le mette nella cache `mandarino-voice` (il service worker non
+  la cancella agli aggiornamenti; `src/pwa/sw.js` e `swSource()` in `src/pwa/pwa.js` restano uguali). Prima di allora
+  nessuna richiesta di rete. Mai il sesso, l'accento o il numero di chi parla.
+- Crediti: «voce: NM1, Tatoeba, CC BY 4.0» e «voci: Mozilla Common Voice, CC0».
+
 **Peso.**
 - Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che
   generalizza `COURSE_IT`; lo esegue `CP.ex.carica()`. All'avvio resta solo `ui/ex-stub.js`.
-- Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1474 KB su 1500.
+- Per fare spazio, `ui/credits.js` e `ui/share-card.js` si caricano al primo uso. Avvio: 1480 KB su 1500 (T5: la ricerca
+  delle voci reali, `core/voice-clip.js`, serve a `CP.speak` fin dall'avvio).
 
 **Materiali** (`materiali/`, dalla cartella «Materiali mandarino» dell'autore; fonti e licenze in
 `materiali/FONTI-E-LICENZE.md`).

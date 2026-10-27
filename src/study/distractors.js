@@ -7,7 +7,7 @@
      - pinyin: al massimo due con la stessa sillaba e altri toni, una con una confusione tipica (zh/z, n/l, an/ang…);
      - ascolto: niente opzioni con la stessa pronuncia della giusta (他/她/它) né parole con più letture;
      - niente doppioni, la giusta in un posto a caso; con meno di 3 candidati la domanda non si fa (null).
-   CP.distract.{ seed, rng, shuffle, gloss, meaning, word, pinyin, listen, options }. Gruppo ESERCIZI (al primo uso). ===== */
+   CP.distract.{ seed, rng, shuffle, gloss, meaning, word, pinyin, listen, options, itWords }. Gruppo ESERCIZI (al primo uso). ===== */
 (function (root) {
   var STOP = { il: 1, lo: 1, la: 1, gli: 1, le: 1, un: 1, una: 1, uno: 1, di: 1, da: 1, del: 1, della: 1, per: 1, con: 1, che: 1, non: 1, essere: 0, qualcosa: 1, qualcuno: 1, molto: 1, piu: 1 };
   /* hash FNV-1a a 32 bit e generatore mulberry32 */
@@ -98,9 +98,27 @@
     return out.length >= 3 ? out : null;
   }
   function toneSig(py) { return sylls(py).map(function (s) { return TY().syllableInfo(s).tone || 5; }).join(""); }
+  /* corso di italiano (voci di it/course.js: { id, it, zh, kind, g, sec }): stessa specie e, per i nomi, stesso genere (così
+     l'articolo non dà la risposta); livello ±1 dal capitolo della tappa; nessun carattere cinese in comune con la giusta
+     (niente quasi sinonimi come 学生/学校); né lo stesso italiano né lo stesso cinese due volte. */
+  function hanSet(s) { var o = {}; Array.from(String(s)).forEach(function (c) { if (/[\u3400-\u9fff]/.test(c)) o[c] = 1; }); return o; }
+  function itWords(e, pool, ctx, r) {
+    var lv = ctx.levelOf(e), H = hanSet(e.zh), same = [], near = [], seenIt = {}, seenZh = {};
+    seenIt[plain(e.it)] = 1; seenZh[e.zh] = 1;
+    pool.forEach(function (x) {
+      if (x.id === e.id || x.kind !== e.kind || (e.kind === "noun" && x.g !== e.g)) return;
+      if (Math.abs(ctx.levelOf(x) - lv) > 1) return;
+      if (Array.from(String(x.zh)).some(function (c) { return H[c]; })) return;
+      (x.sec === e.sec ? same : near).push(x);
+    });
+    same = shuffle(same, r); near = shuffle(near, r);
+    var out = [], take = function (x) { var a = plain(x.it), b = x.zh; if (out.length >= 3 || seenIt[a] || seenZh[b]) return; seenIt[a] = 1; seenZh[b] = 1; out.push(x); };
+    same.slice(0, 1).forEach(take); near.forEach(take); same.forEach(take);
+    return out.length >= 3 ? out : null;
+  }
   /* la giusta in un posto a caso tra le sbagliate */
   function options(right, wrong, r) { var all = shuffle(wrong.concat([right]), r); return { opts: all, right: all.indexOf(right) }; }
 
-  var API = { seed: seed, rng: rng, shuffle: shuffle, gloss: gloss, sharesWord: sharesWord, meaning: meaning, word: word, pinyin: pinyin, listen: listen, options: options, toneSig: toneSig };
+  var API = { seed: seed, rng: rng, shuffle: shuffle, gloss: gloss, sharesWord: sharesWord, meaning: meaning, word: word, pinyin: pinyin, listen: listen, options: options, toneSig: toneSig, itWords: itWords };
   if (root.CP) root.CP.distract = API; else root.MDDistract = API;
 })(typeof window !== "undefined" ? window : this);

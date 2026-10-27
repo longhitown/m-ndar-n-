@@ -1681,6 +1681,14 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .rdg-new { display: flex; flex-wrap: wrap; gap: 6px; }
 .rdg-add { min-height: 44px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
 .rdg-add.ok { border-color: var(--t2); }
+/* Task 12, T5: corso di italiano, la parola cinese della domanda e il testo da leggere */
+.ex-zhq { text-align: center; margin: var(--sp-2) 0; }
+.ex-zhq .lp { display: block; font-size: 1.05rem; }
+.ex-zhq .lh { font-size: 2.4rem; line-height: 1.2; }
+.it-ex .ex-card .it-front { text-align: center; }
+.itq-line { display: block; line-height: 2.6; }
+.itq-w { display: inline-block; font: inherit; line-height: 1.3; color: inherit; background: none; border: 0; border-radius: 6px; padding: 12px 2px; min-height: 44px; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 4px; }
+.itq-w:hover, .itq-w:focus-visible { background: var(--chip); }
 </style>
 </head>
 <body>
@@ -15417,7 +15425,6 @@ Object.assign(I18N.it, {"exs.title": "Stile di ripasso", "exs.guided": "Guidato"
 Object.assign(I18N.it, {"ls.holeQ": "Che cosa va nel buco?", "ls.typePy": "Scrivi il pinyin", "ls.typeIt": "Scrivi la risposta in italiano"});
 Object.assign(I18N.it, {"gd.impara": "Impara {n} parole nuove", "gd.ripassa": "Ripassa", "gd.verifica": "Verifica la tappa", "gd.leggi": "Leggi e ascolta il dialogo", "gd.pR": "{n} ripassi", "gd.pN": "{n} parole nuove", "gd.pV": "12 domande, senza aiuti", "gd.pT": "1 dialogo", "gd.dur": "{n} min", "gd.durAria": "Quanto tempo hai", "gd.free": "Studia libero", "gd.verified": "Tappa verificata", "gd.noNew": "le parole nuove di oggi sono finite", "ls.myErrors": "Rifai i tuoi errori ({n})", "ls.mini": "Mini-verifica: 2 domande nuove"});
 Object.assign(I18N.it, {"sub.testi": "Testi"});
-Object.assign(I18N.it, { "cr.tatoeba": "Frasi d'esempio degli esercizi", "cr.tatoebaT": "<b>Tatoeba</b> (tatoeba.org), dei suoi contributori, licenza <b>CC BY 2.0 FR</b>: le frasi a buco e da riordinare, con la traduzione. L'elenco degli autori è in <b>materiali/crediti/autori-frasi.tsv</b> nel repository (github.com/longhitown/m-ndar-n-)." });
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15552,7 +15559,6 @@ Object.assign(I18N.zh, {"exs.title": "复习方式", "exs.guided": "引导", "ex
 Object.assign(I18N.zh, {"ls.holeQ": "空里填什么？", "ls.typePy": "写出拼音", "ls.typeIt": "用意大利语写出答案"});
 Object.assign(I18N.zh, {"gd.impara": "学习 {n} 个新词", "gd.ripassa": "复习", "gd.verifica": "检测这一站", "gd.leggi": "读一读、听一听对话", "gd.pR": "{n} 个复习", "gd.pN": "{n} 个新词", "gd.pV": "12 道题，没有提示", "gd.pT": "1 段对话", "gd.dur": "{n} 分钟", "gd.durAria": "你有多少时间", "gd.free": "自由学习", "gd.verified": "这一站已通过检测", "gd.noNew": "今天的新词学完了", "ls.myErrors": "重做错题（{n}）", "ls.mini": "小测验：2 道新题"});
 Object.assign(I18N.zh, {"sub.testi": "课文"});
-Object.assign(I18N.zh, { "cr.tatoeba": "练习中的例句", "cr.tatoebaT": "<b>Tatoeba</b>（tatoeba.org），由其贡献者提供，许可证 <b>CC BY 2.0 FR</b>：填空和排序练习中的句子及其翻译。作者名单见代码库中的 <b>materiali/crediti/autori-frasi.tsv</b>（github.com/longhitown/m-ndar-n-）。" });
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -16764,6 +16770,21 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
     failTimer = setTimeout(finish, 6500 + text.length * 900);
+    /* Task 12: la voce reale registrata, se la frase ne ha una sul telefono (core/voice-clip.js); se non parte, la voce di sempre */
+    var clip = !o.noClip && CP.voiceClip ? CP.voiceClip.url(text, zh ? "zh" : "it") : "";
+    if (clip) {
+      var ca = new Audio(clip), back = function () {
+        ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null;
+        if (finished || token !== mine) return;
+        finished = true; clearTimeout(failTimer); clearTimeout(startTimer); if (CP.bus) CP.bus.duck(false); curStop = null;
+        var o2 = {}; Object.keys(o).forEach(function (k) { o2[k] = o[k]; }); o2.noClip = true; CP.speak(text, o2);
+      };
+      curAudio = ca; if (rate < 1) { ca.playbackRate = 0.85; ca.preservesPitch = true; }
+      ca.onended = function () { ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null; finish(); };
+      ca.onerror = back;
+      try { var cp = ca.play(); if (cp && cp.catch) cp.catch(back); } catch (e) { back(); }
+      return;
+    }
     /* V6.8: la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
        accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
@@ -17494,6 +17515,41 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   show(TABS.indexOf(savedTab) >= 0 ? savedTab : "path", true);
 })();
 </script>
+<script>
+/* ---- core/voice-clip.js ---- */
+/* ===== màndarínō · le voci reali registrate (Task 12, T5-T6). Frasi lette da persone vere: italiano dalla voce NM1 di
+   Tatoeba (CC BY 4.0), cinese da Mozilla Common Voice (CC0). Mai il sesso, l'accento o il numero di chi parla.
+   - Indici VOCE_IT / VOCE_ZH (chiave della frase → numero della clip) e catalogo VOICE_FILES (numero → impronta), tutti
+     letti al primo uso; il file è audio/voce/<lingua>/<numero>.<impronta>.ogg (tools/build.mjs).
+   - Si usano solo se sono sul telefono: nell'APK sono dentro il pacchetto; sul sito dopo «Scarica le voci» (una volta, in
+     una cache propria, mandarino-voice, che gli aggiornamenti non cancellano). Altrimenti nessuna richiesta di rete: legge
+     la voce del telefono, come prima. CP.speak (core/core.js) chiede qui la clip e, se non parte, torna alla voce di sempre.
+   - Chiave: per il cinese solo i caratteri; per l'italiano minuscole senza punteggiatura (come tools/materiali.mjs). ===== */
+(function () {
+  var CP = window.CP, BASE = "audio/voce/", DLK = "cp-voice-dl", VCACHE = "mandarino-voice";
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function keyZh(s) { return Array.from(String(s)).filter(function (c) { return /[㐀-鿿]/.test(c); }).join(""); }
+  function keyIt(s) { return String(s).normalize("NFC").toLowerCase().replace(/[’‘`´]/g, "'").replace(/[.,;:!?¿¡"«»“”()…]/g, " ").replace(/\s+/g, " ").trim(); }
+  function cat() { try { return typeof VOICE_FILES !== "undefined" ? VOICE_FILES : null; } catch (e) { return null; } }
+  var IDX = {};
+  function index(lang) {
+    if (IDX[lang]) return IDX[lang];
+    var m = {}, V = null; try { V = lang === "zh" ? (typeof VOCE_ZH !== "undefined" ? VOCE_ZH : null) : (typeof VOCE_IT !== "undefined" ? VOCE_IT : null); } catch (e) {}
+    ((V && V.righe) || []).forEach(function (r) { if (!m[r[1]]) m[r[1]] = r[0]; });
+    return (IDX[lang] = m);
+  }
+  function apk() { return !!(window.MandarinoAndroid || window.__MD_APK); }
+  /* sul telefono: nell'APK sempre; sul sito solo dopo «Scarica le voci» */
+  function local() { return apk() || lsGet(DLK) === "1"; }
+  function fileUrl(lang, id) { var F = cat(), h = F && F[lang] && F[lang][id]; return h ? BASE + lang + "/" + id + "." + h + ".ogg" : ""; }
+  function idOf(text, lang) { return index(lang)[lang === "zh" ? keyZh(text) : keyIt(text)] || null; }
+  /* l'indirizzo della clip di una frase, se c'è ed è sul telefono; altrimenti "" */
+  function url(text, lang) { if (!text || !local()) return ""; var id = idOf(text, lang); return id ? fileUrl(lang, id) : ""; }
+  function langs() { var F = cat() || {}; return ["it", "zh"].filter(function (l) { return F[l] && Object.keys(F[l]).length; }); }
+  /* il pulsante «Scarica le voci» e lo scaricamento stanno in ui/voice-dl.js (CP.voiceDl, al primo uso) */
+  CP.voiceClip = { url: url, local: local, apk: apk, idOf: idOf, fileUrl: fileUrl, keyIt: keyIt, keyZh: keyZh, langs: langs, cat: cat, DLK: DLK, VCACHE: VCACHE };
+})();
+</script>
 <!-- Schede e funzioni -->
 <script>
 /* ---- ui/ex-stub.js ---- */
@@ -18084,7 +18140,7 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
      - pinyin: al massimo due con la stessa sillaba e altri toni, una con una confusione tipica (zh/z, n/l, an/ang…);
      - ascolto: niente opzioni con la stessa pronuncia della giusta (他/她/它) né parole con più letture;
      - niente doppioni, la giusta in un posto a caso; con meno di 3 candidati la domanda non si fa (null).
-   CP.distract.{ seed, rng, shuffle, gloss, meaning, word, pinyin, listen, options }. Gruppo ESERCIZI (al primo uso). ===== */
+   CP.distract.{ seed, rng, shuffle, gloss, meaning, word, pinyin, listen, options, itWords }. Gruppo ESERCIZI (al primo uso). ===== */
 (function (root) {
   var STOP = { il: 1, lo: 1, la: 1, gli: 1, le: 1, un: 1, una: 1, uno: 1, di: 1, da: 1, del: 1, della: 1, per: 1, con: 1, che: 1, non: 1, essere: 0, qualcosa: 1, qualcuno: 1, molto: 1, piu: 1 };
   /* hash FNV-1a a 32 bit e generatore mulberry32 */
@@ -18175,10 +18231,28 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
     return out.length >= 3 ? out : null;
   }
   function toneSig(py) { return sylls(py).map(function (s) { return TY().syllableInfo(s).tone || 5; }).join(""); }
+  /* corso di italiano (voci di it/course.js: { id, it, zh, kind, g, sec }): stessa specie e, per i nomi, stesso genere (così
+     l'articolo non dà la risposta); livello ±1 dal capitolo della tappa; nessun carattere cinese in comune con la giusta
+     (niente quasi sinonimi come 学生/学校); né lo stesso italiano né lo stesso cinese due volte. */
+  function hanSet(s) { var o = {}; Array.from(String(s)).forEach(function (c) { if (/[\u3400-\u9fff]/.test(c)) o[c] = 1; }); return o; }
+  function itWords(e, pool, ctx, r) {
+    var lv = ctx.levelOf(e), H = hanSet(e.zh), same = [], near = [], seenIt = {}, seenZh = {};
+    seenIt[plain(e.it)] = 1; seenZh[e.zh] = 1;
+    pool.forEach(function (x) {
+      if (x.id === e.id || x.kind !== e.kind || (e.kind === "noun" && x.g !== e.g)) return;
+      if (Math.abs(ctx.levelOf(x) - lv) > 1) return;
+      if (Array.from(String(x.zh)).some(function (c) { return H[c]; })) return;
+      (x.sec === e.sec ? same : near).push(x);
+    });
+    same = shuffle(same, r); near = shuffle(near, r);
+    var out = [], take = function (x) { var a = plain(x.it), b = x.zh; if (out.length >= 3 || seenIt[a] || seenZh[b]) return; seenIt[a] = 1; seenZh[b] = 1; out.push(x); };
+    same.slice(0, 1).forEach(take); near.forEach(take); same.forEach(take);
+    return out.length >= 3 ? out : null;
+  }
   /* la giusta in un posto a caso tra le sbagliate */
   function options(right, wrong, r) { var all = shuffle(wrong.concat([right]), r); return { opts: all, right: all.indexOf(right) }; }
 
-  var API = { seed: seed, rng: rng, shuffle: shuffle, gloss: gloss, sharesWord: sharesWord, meaning: meaning, word: word, pinyin: pinyin, listen: listen, options: options, toneSig: toneSig };
+  var API = { seed: seed, rng: rng, shuffle: shuffle, gloss: gloss, sharesWord: sharesWord, meaning: meaning, word: word, pinyin: pinyin, listen: listen, options: options, toneSig: toneSig, itWords: itWords };
   if (root.CP) root.CP.distract = API; else root.MDDistract = API;
 })(typeof window !== "undefined" ? window : this);
 </script>
@@ -18240,19 +18314,22 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
   }
   function familyOf(w) { return famiglia(CP.S()[w.key]); }
   function ladder() { return gradino(LAD.hist); }
-  function choose(e, w) {
-    var lvl = Math.max(0, Math.min(2, familyOf(w) + ladder())), last = LAD.last;
+  /* kit (facoltativo, corso di italiano): corso, ctx, rec(chiave) → { n, st } della scheda */
+  function choose(e, w, kit) {
+    kit = kit || {};
+    var corso = kit.corso || "zh", cx = kit.ctx || CTX, fam = kit.rec ? famiglia(kit.rec(w.key)) : familyOf(w);
+    var lvl = Math.max(0, Math.min(2, fam + ladder())), last = LAD.last;
     var ok = function (id) {
       var d = REG[id];
-      if (!d || d.corso !== "zh" || id === e.lastType) return false;
+      if (!d || d.corso !== corso || id === e.lastType) return false;
       if (last.length >= 2 && last[last.length - 1] === id && last[last.length - 2] === id) return false;
-      return !d.richiede || d.richiede(w, CTX) !== false;
+      return !d.richiede || d.richiede(w, cx) !== false;
     };
-    if (FORCE && REG[FORCE] && ok(FORCE)) { var fi = REG[FORCE].crea(w, CTX, rngFor(w, FORCE)); if (fi) return { id: FORCE, item: fi }; }
+    if (FORCE && REG[FORCE] && ok(FORCE)) { var fi = REG[FORCE].crea(w, cx, rngFor(w, FORCE)); if (fi) return { id: FORCE, item: fi }; }
     for (var f = lvl; f >= 0; f--) {
       var c = FAM[f].filter(ok);
       while (c.length) {
-        var id = c.splice(Math.floor(Math.random() * c.length), 1)[0], item = REG[id].crea(w, CTX, rngFor(w, id, e.retry ? 1 : 0));
+        var id = c.splice(Math.floor(Math.random() * c.length), 1)[0], item = REG[id].crea(w, cx, rngFor(w, id, e.retry ? 1 : 0));
         if (item) return { id: id, item: item };
       }
     }
@@ -18279,33 +18356,37 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
   };
   function render(e, kit) {
     if (SESS !== kit.sess()) { SESS = kit.sess(); LAD = { hist: [], last: [] }; }
-    var w = CP.WORDS[e.k]; if (!w) return false;
-    if (!e.item) { var c = choose(e, w); if (!c) return false; e.exType = c.id; e.item = c.item; }
+    var w = kit.word ? kit.word(e.k) : CP.WORDS[e.k]; if (!w) return false;
+    if (!e.item) { var c = choose(e, w, kit); if (!c) return false; e.exType = c.id; e.item = c.item; }
     var it = e.item, def = REG[e.exType];
     cur = { e: e, kit: kit, item: it, def: def, w: w, t0: Date.now(), done: false, g: 0 };
     kit.root.innerHTML = kit.head() + '<div class="panel fc ex-card enter" data-k="' + CP.attr(w.key) + '" data-ex="' + CP.attr(e.exType) + '"><span class="tag">' + esc(T(def.q)) + "</span>" + it.prompt +
       R[it.kind].html(it) + '<div class="ex-fb" aria-live="polite"></div></div><div class="actbar ex-bar"><p class="kbd-hint">' + esc(T(it.kind === "mc" ? "exm.kbd" : "exm.kbdType")) + "</p></div>";
     kit.root.classList.add("is-card");
     if (R[it.kind].bind) R[it.kind].bind(it, kit.root);
-    if (it.say && it.autoSay) setTimeout(function () { if (cur && cur.item === it) CP.say(it.say, kit.root.querySelector(".ex-card .say")); }, 250);
+    if (it.say && it.autoSay) setTimeout(function () { if (cur && cur.item === it) speak(it.say, kit.root.querySelector(".ex-card .say")); }, 250);
     return true;
   }
+  /* la voce dell'esercizio: quella del corso (kit.speak, l'italiano) o il cinese */
+  function speak(text, el) { if (cur && cur.kit.speak) cur.kit.speak(text, el); else CP.say(text, el); }
   /* dopo la risposta: esito con il segno oltre al colore, la parola completa, la frase d'esempio e un solo «Continua» */
   function after(res) {
     if (!cur || cur.done) return;
-    var w = cur.w, kit = cur.kit, ex = kit.example(w.key);
+    var w = cur.w, kit = cur.kit, ex = kit.example ? kit.example(w.key) : null;
     cur.done = true; cur.g = res.g; cur.ms = Date.now() - cur.t0;
     stat(w.key, cur.e.exType, res.ok); LAD.hist.push(!!res.ok); LAD.last.push(cur.e.exType); if (LAD.last.length > 4) LAD.last.shift();
-    if (cur.def.risposta) cur.def.risposta(cur.item, res, w);
     if (CP.pref.sfx) CP.sfx(res.ok ? "ok" : "ko"); CP.haptic(res.ok ? 8 : [20, 40, 20]);
     var fb = kit.root.querySelector(".ex-fb");
     /* nella verifica del percorso guidato (kit.noReveal) solo l'esito: niente parola completa, esempio né ascolto */
     if (fb && kit.noReveal) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.ok ? T("exm.right") : res.msg || T("exm.wrongShort")) + "</p>";
+    else if (fb && kit.reveal) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.msg || T(res.ok ? "exm.right" : "exm.wrong")) + "</p>" + kit.reveal(w, cur.item);
     else if (fb) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.msg || T(res.ok ? "exm.right" : "exm.wrong")) + "</p>" +
       '<div class="ex-rev">' + kit.parts(w, { py: 1, hz: 1, it: 1 }) + (ex ? '<div class="cd-ex"><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + esc(ex[2]) + "</div></div>" : "") + kit.tools(w) + "</div>";
+    /* dopo l'esito: una nota del tipo di esercizio (grammatica, correttore) va sopra, non viene cancellata */
+    if (cur.def.risposta) cur.def.risposta(cur.item, res, w);
     bar('<button type="button" class="btn-main" data-exc>' + esc(T("exm.cont")) + "</button>" + (res.ok && res.g === 2 && cur.item.kind === "mc" && !kit.noReveal ? '<button type="button" class="btn-quiet ex-unsure" data-exu>' + esc(T("exm.unsure")) + "</button>" : "") + '<p class="kbd-hint">' + esc(T("exm.kbdNext")) + "</p>");
     var c = kit.root.querySelector("[data-exc]"); if (c) c.focus({ preventScroll: true });
-    if (CP.pref.auto && !kit.noReveal) CP.say(CP.sayHz(w), kit.root.querySelector(".ex-rev .say"));
+    if (CP.pref.auto && !kit.noReveal && !kit.speak) CP.say(CP.sayHz(w), kit.root.querySelector(".ex-rev .say"));
   }
   function next(g) {
     if (!cur || !cur.done) return;
@@ -18329,11 +18410,11 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
   });
   document.addEventListener("keydown", function (ev) {
     if (!cur || ev.ctrlKey || ev.metaKey || ev.altKey || (CP.topSheet && CP.topSheet()) || !cur.kit.root.querySelector(".ex-card")) return;
-    var v = document.getElementById("view-study"); if (v && v.hidden) return;
+    var v = cur.kit.view ? cur.kit.view() : document.getElementById("view-study"); if ((v && v.hidden) || !document.body.contains(cur.kit.root)) return;
     var a = document.activeElement, typing = a && /^(INPUT|TEXTAREA)$/.test(a.tagName);
     if (!cur.done && cur.item.kind === "mc" && /^[1-9]$/.test(ev.key) && +ev.key <= cur.item.opts.length) { ev.preventDefault(); after(R.mc.pick(+ev.key - 1)); }
     else if (cur.done && ev.key === "Enter") { ev.preventDefault(); next(); }
-    else if (!typing && (ev.key === " " || ev.code === "Space") && cur.item.say) { ev.preventDefault(); CP.say(cur.item.say, cur.kit.root.querySelector(".say")); }
+    else if (!typing && (ev.key === " " || ev.code === "Space") && cur.item.say) { ev.preventDefault(); speak(cur.item.say, cur.kit.root.querySelector(".say, [data-it-say]")); }
   });
 
   /* ---- gli esercizi di T1 (corso di cinese) ---- */
@@ -18464,7 +18545,9 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
       for (var n = 0; n < 8; n++) { sh = D.shuffle(tiles, r); if (sh.map(function (x) { return x.id; }).join() !== tiles.map(function (x) { return x.id; }).join()) break; }
       return { kind: "order", tiles: tiles, bank: sh, pick: [], it: s.it, say: s.zh, prompt: '<div class="cd-note ex-order-it" lang="it">«' + esc(s.it) + "»</div>" };
     } });
-  function tile(t, attr, used) { return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(t.w.py) + '</span><span class="th" lang="zh-CN">' + CP.hanziHTML(t.w.hz, t.w.py) + "</span></button>"; }
+  /* le tessere italiane (corso di italiano) portano il testo in t.txt */
+  function tile(t, attr, used) { if (t.txt != null) return '<button type="button" class="tile it-tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + ' lang="it"><span class="th">' + esc(t.txt) + "</span></button>";
+    return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(t.w.py) + '</span><span class="th" lang="zh-CN">' + CP.hanziHTML(t.w.hz, t.w.py) + "</span></button>"; }
   ENG.renderers.order = {
     html: function (it) {
       var by = {}; it.bank.forEach(function (t) { by[t.id] = t; });
@@ -18486,7 +18569,9 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
     if (b.hasAttribute("data-exo")) { var id = +b.getAttribute("data-exo"); if (it.pick.indexOf(id) < 0) it.pick.push(id); CP.sfx("tap"); ENG.renderers.order.redraw(it, cur.kit.root); }
     else if (b.hasAttribute("data-exo-un")) { var u = +b.getAttribute("data-exo-un"); it.pick = it.pick.filter(function (x) { return x !== u; }); ENG.renderers.order.redraw(it, cur.kit.root); }
     else {
-      var ok = it.pick.join() === it.tiles.map(function (t) { return t.id; }).join();
+      /* si confronta il testo: due tessere uguali («la … la») si possono scambiare */
+      var by = {}, txt = function (t) { return t.txt != null ? t.txt.toLowerCase() : t.id; }; it.tiles.forEach(function (t) { by[t.id] = t; });
+      var ok = it.pick.map(function (id) { return txt(by[id]); }).join("|") === it.tiles.map(txt).join("|");
       Array.prototype.forEach.call(cur.kit.root.querySelectorAll(".ex-slot .tile, .ex-bank .tile"), function (x) { x.disabled = true; });
       var slot = cur.kit.root.querySelector(".ex-slot"); if (slot) slot.classList.add(ok ? "ok" : "ko");
       ENG.after({ ok: ok, g: ENG.voto({ kind: "mc", ok: ok }), msg: ok ? T("exm.right") : T("exm.orderWas", { s: it.say }) });
@@ -18521,12 +18606,12 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
     var cur = ENG.current(); if (!cur || cur.done || cur.item.kind !== "type") return;
     var inp = cur.kit.root.querySelector("#ex-in"), v = inp ? inp.value : ""; if (!String(v).trim()) { if (inp) inp.focus(); return; }
     var it = cur.item, esito = it.mode === "pinyin" ? TY.comparePinyin(v, it.answer) : TY.compareIt(v, it.accept);
-    var rec = CP.S()[cur.w.key] || {}, g = ENG.voto({ kind: "type", ok: esito === "esatto", esito: esito, ms: Date.now() - cur.t0, st: rec.st || 0 });
+    var rec = (cur.kit.rec ? cur.kit.rec(cur.w.key) : CP.S()[cur.w.key]) || {}, g = ENG.voto({ kind: "type", ok: esito === "esatto", esito: esito, ms: Date.now() - cur.t0, st: rec.st || 0 });
     if (inp) { inp.disabled = true; inp.classList.add(g >= 2 ? "ok" : g === 1 ? "mid" : "ko"); }
     Array.prototype.forEach.call(cur.kit.root.querySelectorAll(".ex-chip"), function (b) { b.disabled = true; });
     var shown = it.mode === "pinyin" ? sylls(it.answer).join(" ") : it.accept[0];
     var msg = esito === "esatto" ? T("exm.right") : esito === "senza-toni" ? T("exm.noTones", { a: shown }) : esito === "toni-sbagliati" ? T("exm.badTones", { a: shown }) : esito === "accento" ? T("exm.accent", { a: shown }) : esito === "quasi" ? T("exm.typo", { a: shown }) : T("exm.was", { a: shown });
-    ENG.after({ ok: g >= 1, g: g, msg: msg, esito: esito });
+    ENG.after({ ok: g >= 1, g: g, msg: msg, esito: esito, typed: v });
   }
   document.addEventListener("submit", function (ev) { if (ev.target && ev.target.hasAttribute && ev.target.hasAttribute("data-ex-form")) { ev.preventDefault(); submit(); } });
   document.addEventListener("click", function (ev) {
@@ -21635,7 +21720,7 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
   /* strumenti per chi sviluppa o pubblica l'app (il pacchetto PWA): nascosti, si accendono con #dev nell'indirizzo */
   CP.dev = function () { try { if (location.hash === "#dev") localStorage.setItem("md-dev", "1"); if (location.hash === "#nodev") localStorage.removeItem("md-dev"); return localStorage.getItem("md-dev") === "1"; } catch (e) { return false; } };
   CP.voiceExtra = function () {
-    var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
+    var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.voiceClip && CP.voiceClip.langs().length ? CP.voiceDl.html() : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
       '<p class="small muted" style="margin:2px 0 6px" id="aud-state">' + CP.t("snd.state", { s: st === "running" ? CP.t("snd.running") : st === "none" ? CP.t("snd.none") : st === "suspended" ? CP.t("snd.susp") : esc(st) }) + "</p>" +
       '<button type="button" class="btn-s" id="snd-test">' + CP.t("snd.test") + "</button>";
     if (vs.length >= 2) {
@@ -21682,6 +21767,64 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
 
   paintVol(); applyMusic();
 })();
+</script>
+<script type="text/plain" id="lazy-mod-voicedl">
+/* ---- i18n/voice.js ---- */
+/* ===== màndarínō · i testi di «Voci reali» (⚙️ → Voce), caricati con ui/voice-dl.js al primo uso di CP.voiceDl. ===== */
+Object.assign(I18N.it, { "vc.title": "Voci reali", "vc.desc": "Frasi lette da persone vere: italiano dalla voce NM1 di Tatoeba, cinese da Mozilla Common Voice. Si scaricano una volta sola e poi funzionano senza rete; senza di loro legge la voce del telefono.", "vc.dl": "Scarica le voci ({mb} MB)", "vc.dec": ",", "vc.dling": "Scarico le voci… {n} / {tot}", "vc.ok": "Le voci reali sono sul telefono.", "vc.del": "Togli le voci dal telefono", "vc.fail": "Alcune voci non sono arrivate ({n}): riprova quando c'è la rete.", "vc.apk": "✓ Le voci reali sono già dentro l'app." });
+Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读的句子：意大利语来自 Tatoeba 的 NM1 录音，中文来自 Mozilla Common Voice。只需下载一次，之后不联网也能用；没有下载时用手机自带的语音朗读。", "vc.dl": "下载真人录音（{mb} MB）", "vc.dec": ".", "vc.dling": "正在下载录音…… {n} / {tot}", "vc.ok": "真人录音已在手机上。", "vc.del": "从手机删除录音", "vc.fail": "有些录音没有下载成功（{n}）：请联网后再试。", "vc.apk": "✓ 真人录音已经包含在应用里。" });
+/* ---- ui/voice-dl.js ---- */
+/* ===== màndarínō · «Scarica le voci» (Task 12): ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
+   volta, nella cache mandarino-voice (il service worker la tiene tra un aggiornamento e l'altro); poi cp-voice-dl = "1" e
+   CP.speak le usa (core/voice-clip.js). Nell'APK sono già dentro. Si carica al primo uso di CP.voiceDl. ===== */
+(function () {
+  var CP = window.CP, V = CP.voiceClip, DL = null, DLK = V.DLK, VCACHE = V.VCACHE;
+  function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  function cat() { return V.cat(); } function langs() { return V.langs(); } function apk() { return V.apk(); } function local() { return V.local(); } function fileUrl(l, id) { return V.fileUrl(l, id); }
+  function mb() { var F = cat() || {}, b = 0; langs().forEach(function (l) { b += (F.byte || {})[l] || 0; }); return b / 1e6; }
+  /* scarica tutte le clip nella cache del telefono, quattro alla volta; onStep(fatti, totale) */
+  function download(onStep) {
+    if (!window.caches) return Promise.reject(new Error("cache"));
+    var F = cat() || {}, list = [];
+    langs().forEach(function (l) { Object.keys(F[l]).forEach(function (id) { list.push(fileUrl(l, id)); }); });
+    var done = 0, fail = 0, i = 0;
+    return caches.open(VCACHE).then(function (c) {
+      function one() {
+        if (i >= list.length) return Promise.resolve();
+        var u = list[i++];
+        return c.match(u).then(function (m) { return m || c.add(u); }).then(function () { done++; }, function () { fail++; }).then(function () { if (onStep) onStep(done + fail, list.length); return one(); });
+      }
+      return Promise.all([one(), one(), one(), one()]);
+    }).then(function () { if (!fail) lsSet(DLK, "1"); return { done: done, fail: fail, tot: list.length }; });
+  }
+  function remove() { lsSet(DLK, ""); return window.caches ? caches.delete(VCACHE) : Promise.resolve(); }
+  /* ⚙️ → Voce: «Voci reali», con il pulsante per scaricarle (sul sito) */
+  function html() {
+    var T = CP.t; if (!langs().length) return "";
+    var h = '<div class="vab vc-box" id="vc-box"><div class="small" style="font-weight:700">' + T("vc.title") + '</div><p class="small muted" style="margin:2px 0 6px">' + T("vc.desc") + "</p>";
+    if (apk()) h += '<p class="small okline" style="margin:0">' + T("vc.apk") + "</p>";
+    else if (DL) h += '<p class="small" style="margin:0" role="status">' + T("vc.dling", DL) + "</p>";
+    else if (local()) h += '<p class="small okline" style="margin:0">✓ ' + T("vc.ok") + '</p><button type="button" class="btn-s" data-vc-del>' + T("vc.del") + "</button>";
+    else if (window.caches && location.protocol !== "file:") h += '<button type="button" class="btn-s" data-vc-dl>' + T("vc.dl", { mb: mb().toFixed(1).replace(".", T("vc.dec")) }) + "</button>";
+    return h + "</div>";
+  }
+  function repaint() { var b = document.getElementById("vc-box"); if (b) b.outerHTML = html(); }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-vc-dl], [data-vc-del]") : null; if (!b) return;
+    CP.sfx("tap");
+    if (b.hasAttribute("data-vc-del")) { remove().then(repaint); return; }
+    DL = { n: 0, tot: 0 }; repaint();
+    download(function (n, tot) { DL = { n: n, tot: tot }; repaint(); }).then(function (r) {
+      DL = null; repaint(); if (r.fail && CP.toast) CP.toast(CP.t("vc.fail", { n: r.fail }));
+    }, function () { DL = null; repaint(); if (CP.toast) CP.toast(CP.t("vc.fail", { n: "" })); });
+  });
+  CP.voiceDl = { html: html, download: download, remove: remove, mb: mb };
+})();
+</script>
+<script>
+/* ---- i18n/voice.js + ui/voice-dl.js (al primo uso di CP.voiceDl) ---- */
+(function () { var P = ["voiceDl"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-voicedl"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
+  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
 </script>
 <script>
 /* ---- voice/mic.js ---- */
@@ -21766,19 +21909,21 @@ Object.assign(I18N.zh, {"exm.q.meaning": "这是什么意思？", "exm.q.word": 
     "const APP_VERSION = '" + String(version).replace(/[^0-9A-Za-z.\-]/g, "") + "';\n" +
     "const CACHE = 'mandarino-' + APP_VERSION + '-' + (self.registration ? self.registration.scope : '');\n" +
     "const MUSIC = 'mandarino-music';\n" +
+    "const VOICE = 'mandarino-voice';\n" +
     "const CORE = ['./', './index.html', './manifest.json', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];\n" +
     "self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => Promise.all(CORE.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => null))))); });\n" +
     "/* la nuova versione aspetta: la pagina mostra «Nuova versione disponibile · Aggiorna» e manda SKIP_WAITING */\n" +
     "self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });\n" +
-    "self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('mandarino-') && k !== CACHE && k !== MUSIC).map(k => caches.delete(k)))).then(() => self.clients.claim())); });\n" +
+    "self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('mandarino-') && k !== CACHE && k !== MUSIC && k !== VOICE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });\n" +
     "self.addEventListener('fetch', e => {\n  const r = e.request; if (r.method !== 'GET' || new URL(r.url).origin !== location.origin) return;\n" +
+    "  if (/\\/audio\\/voce\\//.test(new URL(r.url).pathname)) {\n    e.respondWith(caches.open(VOICE).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));\n    return;\n  }\n" +
     "  if (/\\/(audio\\/music|data\\/wiki)\\//.test(new URL(r.url).pathname)) {\n    e.respondWith(caches.open(MUSIC).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));\n    return;\n  }\n" +
     "  if (r.mode === 'navigate') {\n    e.respondWith(fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return res; }).catch(() => caches.match('./index.html').then(m => m || caches.match('./'))));\n    return;\n  }\n" +
     "  e.respondWith(caches.match(r).then(m => m || fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); return res; })));\n});\n";
   }
   function buildStamp() { var d = new Date(), z = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()); }
   /* intestazioni per Cloudflare Pages (file _headers) */
-  var HEADERS = "/*\n  Permissions-Policy: microphone=(self), camera=(self)\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: same-origin\n/sw.js\n  Cache-Control: no-cache\n/manifest.json\n  Cache-Control: no-cache\n/audio/music/*\n  Cache-Control: public, max-age=604800\n/data/wiki/*\n  Cache-Control: public, max-age=604800\n";
+  var HEADERS = "/*\n  Permissions-Policy: microphone=(self), camera=(self)\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: same-origin\n/sw.js\n  Cache-Control: no-cache\n/manifest.json\n  Cache-Control: no-cache\n/audio/music/*\n  Cache-Control: public, max-age=604800\n/data/wiki/*\n  Cache-Control: public, max-age=604800\n/audio/voce/*\n  Cache-Control: public, max-age=604800\n";
   CP.pwaFiles = { sw: swSource, headers: HEADERS, stamp: buildStamp, manifest: function () { return JSON.stringify(manifestObj(true), null, 2); } };
 
   /* il <link rel="manifest" href="manifest.json"> è statico nel <head>: su https Chrome lo legge subito.
@@ -25716,6 +25861,11 @@ var RADICALS = [[1, "一", "", "uno", "一"],
 /* ---- INSIEMI (lazy, da data/ex/insiemi.js) ---- */
 (function () { var v; Object.defineProperty(window, "INSIEMI", { configurable: true, get: function () { if (v === undefined) { var el = document.getElementById("lazy-insiemi"); v = el ? JSON.parse(el.textContent) : {}; if (el) el.parentNode.removeChild(el); } return v; } }); })();
 </script>
+<script type="application/json" id="lazy-voice_files">{"byte":{"zh":4780633,"it":2562448},"zh":{"cv5ea427f145":"fa6be05c","cv4a5a76615c":"db38a3a3","cv773fccfda2":"ed58fa80","cv608863e5bc":"aa92d616","cv64f6b59e18":"e173d79a","cv15114685a7":"bd53ec0f","cv9aed8255f2":"437e2d43","cv642b8ca051":"7a87ab08","cved5c8983e8":"7dad0156","cv4d7ee65a75":"62931b2b","cv13af313441":"3f2cb239","cv4e3d39ad7b":"157e79d0","cvff20191d89":"970b5768","cvf27c68ebea":"c12f312a","cv323cebe889":"95d39956","cv8b65f4ad41":"2eb8c286","cv74134ec0ec":"6072b8b0","cvaac212784b":"3af3f939","cv0466b691a5":"af883098","cv52a41de479":"8e2d35d0","cv32f32fe6ac":"9d6504ce","cv073a608e68":"b1a0ea32","cv0aee0e2176":"84e2b814","cvb08bd0becf":"48b13807","cve415c5f530":"93d3722b","cved713ac797":"833e3f6b","cve69ee8a44b":"cf001427","cv6bd987bcaa":"a2fbce72","cv517e0ed869":"34c278e7","cvd18e43b9b4":"be6e8595","cvfa03ce0916":"30c6061f","cv75cf06f871":"ea0a4e19","cvb2e4f939cd":"7b92dd4f","cveedf49461b":"6e7c255b","cv38880b99c7":"b7673d9e","cvff2ec46dcb":"048f92f3","cvd4cfc7a9cb":"b7b8fcf2","cv299b21adfd":"a536b412","cvc01096f73c":"5a7e7500","cv7c2be0e807":"5ca278bd","cv6e294266e9":"827146ff","cv6a956e81a4":"aed7e724","cv5cb3b5adcc":"e23f6d7e","cv3628aae62a":"16b3add5","cv1654928152":"e3976211","cvc996d648be":"8f0fed71","cv659fc4e553":"27f48387","cv35d7a1f9e3":"0f157ee6","cve39ec68c10":"f8365f7b","cv9bb5171787":"674772f5","cvc1b98db170":"5712fd5f","cv12153e6f55":"9153c14e","cv009075c65d":"20ce9580","cv893578ee56":"06ec9811","cvb509ef3037":"fab538b5","cv64707f178f":"ec9cc0d2","cva9419b47ff":"538841e7","cv8bd71ce028":"e96c58a0","cv33f727f935":"9da5e441","cv710ffa45aa":"a65c72bf","cvd55b73b7ff":"72b49ff7","cveabc5aed55":"001e2b5d","cvba26501f99":"ae9fff4d","cv11cea68034":"7c29afc9","cv37d8572fcb":"c4b29c65","cv2409537756":"51017c57","cv8f0021c60a":"f510549d","cv4a5c787d95":"b59886e2","cv6d8cf1aa8f":"1589640a","cv498ed4d28b":"1bf726ac","cv1bdb895855":"df36e57e","cvd7594a3087":"c6c59abb","cvfcfd30c899":"18322482","cv30d094908d":"8cec6610","cv17fed34774":"a1285213","cv54d3e292f6":"d689b5af","cv680b51c7ab":"7eb622b7","cv2b64fbb31e":"ed94ce8e","cv23d8db82f1":"0a81ebc5","cv5264da8a6b":"b3c98c69","cvdbd38f9d59":"f1e61069","cvc3823143de":"97db8e7c","cv2e3ad057e9":"a30d8758","cv6653e34749":"7c8c6212","cvf4b1340aea":"6f9cdafd","cvdd76976e33":"dd58dad8","cvc1a436de4b":"d344fb77","cv7cf90e0a2c":"ceb38eda","cv41ecf2604d":"ffb9e034","cv2ac8c5b75f":"8b3d0d82","cv5f8cb6b55f":"42b920f2","cv6c27355aea":"738bd5f7","cva6e50be6aa":"338c0067","cv7c455372ca":"a99d174d","cvd69f4fdd38":"a1f8422f","cvb57763e433":"4706ce17","cv0030278d6c":"ac9b19d0","cve30c7144dd":"eaa7efa9","cv808663334f":"fe0dfb2b","cv9683945660":"a9179135","cv5989e893cd":"7b7853f8","cv70fcd07b5e":"b17c166d","cvc82e2079d5":"079eea5a","cvb69d3baa88":"48944006","cvab9f5e9d5d":"5c43004b","cv480edd0c91":"b1e616e1","cv469aa5e1f0":"4407626b","cva3dfce7dd6":"800884a5","cv660315fd17":"ff043054","cv9b101380d4":"3c032656","cv3a6feedc64":"a3b42bc5","cv4d00229c71":"7163e74b","cv9a51b1d6cc":"b666906e","cvaf26615ce6":"95ef4463","cv0b50c811c3":"1beb1cd0","cvc12c2be640":"ca64bc22","cva7895577e5":"ca74929f","cvd9b1be51da":"7c1cfc21","cv5c4b6e6e4d":"7ce9c78c","cvf5ec2bee46":"11c1c082","cvab34028937":"a4aa8e25","cvb522c72316":"355443f5","cvc2348fc55f":"2a8f7aae","cv6aaf54754a":"0b36e1b4","cv8f1d508775":"9c57e0c2","cv7eff70b557":"dc37b426","cv50df1043e4":"2da44654","cv06ec3978c4":"6516525c","cvde646c1f90":"7811f95c","cvaad2930293":"11629988","cv9b714acfd7":"a2684085","cvecd733818e":"5774599a","cv984f2d03bd":"0265638a","cv54f5351e00":"6a57589f","cvb2e914e53e":"f27f74cb","cvdd618cf5e2":"78dd379e","cvfd56c84cc2":"c4f2ad67","cv67e7d9253b":"cd1a3e21","cv52a9697a0d":"76b6b1ed","cvb99350e437":"4dd3947a","cv4725d1caea":"a4303b7e","cv37d2ebf571":"46420a9f","cv226cb1f13c":"cf2663a1","cv05952586df":"d3e89e5e","cv4d101822dd":"fd6f861b","cv8a8f482553":"3129ef27","cva2f2ffec98":"84f88dd0","cv300babe1cb":"8bba3828","cv2f7f22ace0":"20edb475","cv77dc39ac32":"07436315","cvdc64c95790":"061a259f","cv6c7b7ac4cd":"604e7794","cv27d6367461":"6a5cf094","cv05bf1cac15":"30cd0d03","cv11486aa548":"95b7649b","cv4172d0eb90":"36d10013","cv40ca655487":"3ace56e0","cvaa3b06ddba":"b34708d6","cvae944d9092":"dec85501","cvabf5e48469":"fdbcd2b7","cvae152c8cd2":"91c14a8a","cvac11eebd85":"7a4242d6","cv8d685990c6":"f197eb23","cv45088eda0d":"9917ca4f","cve51a106f9b":"00d607e4","cv278f64f9ca":"83b5ca27","cvc394997b25":"7d515c80","cvb8102a2865":"5e5e8802","cvee36ca89bb":"f6527689","cvec951b9911":"440e9131","cvece0879260":"d6160498","cvb03a23a4bf":"1566489f","cvdcad371e1e":"0e05b346","cv87de1084d3":"a8824811","cve5ac5ce8da":"bb5686ca","cv0b3f25bfa5":"1121eccc","cvb7dde5af38":"e44c680f","cve80f107fc0":"0f0559cc","cv2b8a32f448":"60228eac","cv68b2b23068":"99a4b1cf","cv1a6b55617d":"408218df","cvfaff9d070e":"1ea38137","cv9763991a89":"c8ebfbaf","cvfdda56c974":"d07c1956","cv7fd8c03766":"8add64ba","cv51ee608312":"4b0acc9a","cv93a701357a":"daf9f1cd","cv65d1545994":"73e99020","cv93278c7411":"fdca6457","cvb599365361":"64f7a378","cv20b2098866":"36c60485","cvd87eb062d2":"925ebbbe","cv0f9dd67b6d":"0abe7ef1","cv438201e6cf":"e1b51cf4","cvafadb70882":"8432eb1c","cv4179e1329b":"fa14f40e","cv9527251137":"691e8720","cvba07bd9044":"30c2aa37","cva613e0634e":"d488696c","cv3458ae3284":"8940d030","cv55fac4fdf9":"9203f4df","cv407de81142":"96344301","cv65f6aaf06b":"29242952","cv6537960d7c":"be8c69e3","cv140f2a1dc9":"4324dfbf","cvd828d38869":"393d8a08","cv015fd9d4f0":"860503a7","cvcd70a0e75c":"0750c64e","cv9c5a4a78fd":"3511c9d6","cv0f6a805faa":"e2d52996","cvf0bc3c89b1":"18f26ad1","cv3e098fd5fa":"a6fcd5b5","cvd0a8190812":"27505a8e","cv84854d7d97":"0b2d4e5c","cv0693b9a069":"4a0d0cd9","cvb2fae0838d":"f577a01a","cva4a22d6742":"e9d882bd","cvcde5135177":"77cadb02","cvc7f1ecd80c":"64be6646","cv365f3ea8b7":"88a4c92d","cv389ea7c5ba":"221dbdd7","cv072e2e23ff":"0b02a577","cvc207369566":"31be7db0","cv2d826c2c99":"7faf988f","cve1b0942402":"fc9f18ca","cv55c1a45212":"3cdf09d8","cv146c84ed5f":"7d1b96f5","cv13449b38d0":"761554b9","cva612916d92":"3c22534b","cv3469560b5c":"c1e97103","cv6c3e0abcfe":"93470727","cv1fe37fe2f9":"2d3f55ee","cv3144086ce6":"fc7b7c1d","cv4d8939291a":"a9ce1261","cv7bd8548da5":"7a2be6c0","cvfacbba6c84":"0c4c568c","cv36fd831eca":"33e4ef5b","cvd98a87009c":"bbf2d77e","cv13ab33f3b7":"d9009a1f","cvc9c744a5e6":"0ded7558","cv8329c8408a":"3c4eaa84","cva8f2745fc6":"d4393ffe","cv237289d780":"39cb2c3e","cv796dd7fd03":"928893d9","cv4c14fe95d0":"b28d8cd9","cvc5461df25e":"8ee1c15b","cvda42b99c74":"30fed5f9","cvbaf10b0e93":"52a7fbaa","cvf29343776e":"12ebc875","cvc94abb2ffa":"476ef0ff","cv00a22b5c7b":"9d2ed013","cv0159537db4":"16e90001","cvb84b472458":"9e4056c8","cvc31a6b87e4":"2cd25403","cv68fad54491":"69236009","cv57e1720e8e":"475f8e2e","cv0d58e23810":"e8761bd2","cv47ea2eca99":"a16e68d0","cvc14df51893":"16f6ebbc","cv010ecbdf40":"bbaa5204","cvfdbd3cb009":"eb221927","cv529a696aaf":"7091c98e","cv5ea26faec0":"2ba35cc3","cvb2fb29096d":"c1a3efe6","cvfb8df21984":"4c557d73","cv80f50dd68d":"273b1ea6","cv3b4a557564":"aecb2a3b","cvb9a4289c5e":"aa0d3cbf","cvf007ffaf33":"3eba8d91","cv5da3d45232":"d78e38e0","cvce811ae82d":"23470d3c","cv956dd3a212":"34c6dfad","cvd7f9ceed70":"464c68ba","cve21669772b":"34739236","cvac4580c236":"8babefbc","cv14fc109022":"c9bf882d","cv21055c23c9":"74a0205d","cv699fffdb74":"60839f72","cv62a8dea9d0":"d3f47bd6","cv563d16e8e5":"ae3bd687","cv01adb80b0f":"9b86bb55","cv9b03fd9994":"7ec3c01e","cv2e05d9a2d1":"4e3bdd77","cv24276acbae":"89d0faee","cve098639276":"3023cd6f","cv4b37f2a042":"e69ef53f","cv4f6d0b97d2":"8ec7ae44","cvf91c30f4fc":"0836262e","cve6fc6b8e4c":"22b41bc4","cv9f23693926":"a18c978e","cvcf2764e0e3":"8134f7a7","cvf3234002c2":"79402488","cv0bf91253e0":"1184d158","cvcc3294d84a":"164f84bf","cve163f8b638":"244aba36","cv7803249dee":"5821e26b","cv32d3081e1a":"3592d661","cvd9afe62a17":"e43f874d","cv9d969c9d30":"fcd36993","cv332e9eed1f":"9c21e7c1","cv815114c1d5":"0c63b0a3","cvcd8f1f21a2":"ec3dddd7","cv543efb9d74":"b7727bc8","cv47ce8e4476":"abf6736e","cv71a78691ff":"2718d6e5","cv4e34c9addb":"09bda01e","cvb35c7905db":"669780e1","cvd25295bce1":"b7bd6466","cve0a7272d0b":"2760b3f0","cv7c5446b3a6":"f21d9987","cv4e552c86af":"ade9a5c2","cv74e7b2e2f5":"da6ef95c","cv8d879fc8d0":"dd81c377","cvd69532c726":"982ca640","cv7a0bebe1f9":"d9ce7d71","cva3ddb8d801":"190c7e6a","cvf4b66c4026":"d507ad52","cv2c5ef14f15":"95933738","cv1badf53b76":"6156161b","cv1f40d13113":"2cb6bdbf","cv7a24bc5073":"62c335f6","cvc16d07f361":"d874a34e","cv370ef27932":"67ca20eb","cv423a1a8c3e":"331ff241","cv2246a83c53":"ad9f65a5","cv5535adb3fa":"4c17f127","cve63137127a":"8d980c6b","cv950a45b909":"85e829a8","cvb47871dc82":"5e4373f1","cv07d8e0c513":"2efe7db6","cv2933707464":"020a8282","cv632a624bfe":"1027ab43","cv39858fbf9d":"015bca96","cvb28ba0c79b":"c09e79e0","cv898e7db9e9":"8a88e7f5","cv070d376781":"1381352b","cv1e9c76b977":"dea97878","cv5c29845796":"e1a96017","cv3a2ec6ad63":"6a189112","cv357d9f2c03":"9cb41489","cv4fec18e226":"e6738e3e","cv244075bf60":"4d7f33d3","cvfa275543a7":"a981c6df","cvbd3c5fa3e4":"139e7a15","cv4e64837335":"5125b019","cvf8b23b8f1b":"daef2454","cvb3e1887124":"72f0ab41","cv2fd0281007":"374337a3","cv64d074fde6":"6bc9b8fa","cvf35b48608a":"201df492","cv2ae88fdd16":"50622ecb","cva787d3a45d":"1bfc0ecf","cv32f24fe4e2":"599f22c4","cv12ed0c7e0a":"e9117244","cvcda8a45b72":"2701f065","cv236bba7f37":"2ff6d3e5","cvd16f75a9b0":"b6017f36","cv258f708176":"d47521d2","cv2840f1f728":"1e1273a0","cv649c8d1afd":"12ae0c5b","cvd1de0d5b65":"8fd76a96","cvca0560d244":"c8b3cbd7","cv85d37548c2":"82792b09","cv6a61ff3148":"da248a38","cvda01c6c91f":"fd766fb4","cv78acc7767f":"747f7765","cv43b9865187":"8354d81a","cv7e2b08d7cf":"96685bdb","cvf6c2a8b616":"42cb668c","cv0c83134293":"30fe2abc","cv10aaa0587b":"fa362dbc","cv624ecb0874":"684a20f6","cv0c1f2eccde":"19bc487f","cvfb82653fa2":"e499deae","cv111b824364":"606a5b35","cv6fbf21bacb":"bf7fe36c","cv7842feaaba":"78e0b810","cv9c0b4603c6":"482b8463","cva74ea09598":"a69cf0e0","cv8ac4402246":"01f1fd1a","cv5d3e01499c":"bd7d34a6","cv814e1f567b":"84fae5b4","cv1dbc8159af":"6b1abe13","cvccc7edef78":"ef0c2b48","cvfb213ba7a8":"501d3371","cvb5d649a78a":"9d4c5a94","cv498754ac3e":"9f4eb95b","cv7ad5f96fb3":"802ecc2d","cv246b7a52ac":"1fdec6ab","cv71a0f4aced":"14d6b280","cva18502e718":"fc038bd8","cv059a8d3f44":"49de19df","cv8cf995822c":"821034a8","cv0ff86840c4":"0c123e98","cv80b71abe6d":"0c5f0557","cv37a5b0dfe2":"a6954782","cv4ff808b106":"cf6d68bc","cv489bcbe0b2":"e08a4b81","cva13a51d765":"61700474","cvc31e20ab2e":"09d9a732","cvf50d2061d3":"fddb23a1","cv17b6d4d272":"fec854e6","cvdf42be8207":"e4edec0c","cvcde1f50a13":"e05d4e72","cv1d2263a9ac":"a99d1955","cv667370cca9":"0eb1cdda","cv6c544f9933":"6d229938","cv4ba715dd2e":"34bc2a75","cv691f5b39c0":"7603bd5f","cv6db9bf9237":"07b9b3b2","cv5fcc23ddcc":"3746596e","cv35d9483719":"fb77ebde","cv70317dfba6":"2670569a","cv420baed127":"c32da8f4","cv73c3aa427d":"f09754a9","cv7b3cb62394":"3b386011","cv6ef0cb7f21":"10522782","cv3e79e4fdb7":"f2e54533","cv7eaa2c635f":"790dd08a","cv7720d10b15":"78069564","cv9957de2d1e":"61c1f312","cv1eafb3ed2b":"c48b764f","cvbf4ef038e2":"777a072a","cva6d165adfd":"31832729","cvf2181e1f9d":"5447c663","cv3c94f83bf9":"8a7ec420","cv7c75572a21":"6712d4a3","cv75741d615f":"4feac8b9","cv54fbc678a1":"83baedd6","cv18234858e8":"728663c7","cva1736ca1e6":"7ee4b4b3","cvd02d0fc34c":"60599e7e","cv16edf3203e":"8b7327ab","cv47dbb98808":"8a1c90e4","cv6cec58e915":"49af7315","cv38cfcc0728":"d4890c15","cv686466dad3":"d9b83f61","cva027af313a":"3eaee81c","cvb0927ed397":"c127d6a6","cvf1014d0960":"22276ee8","cvd485f615a7":"7e988e33","cv4a6c48215e":"0a69ef72","cvcc27ca0063":"91fa6cc2","cvc7a621934a":"ab855a4b","cvb8a6b649d9":"7888ca3d","cv245cbc3589":"7cffd915","cvb7a7501ab3":"9cb56296","cv9c95bd287f":"dc71789c","cve48826a8b1":"40225138","cva844dd25ae":"fccbcc7d","cv944fd7287e":"584a263f","cv07fba9b583":"8e491619","cvc951ce7e7c":"a4527ec9","cv4d5b22e01d":"a42a3b69","cveb16d27e68":"db59d2af","cv600e966832":"449d952f","cv343888ba09":"e9147816","cvc2aa27fd1b":"1d8e5374","cvc8444eeea8":"27eba439","cv904e16139a":"bc6c4431","cv70b2e3f46b":"ea5c8a2c","cvc066a730b7":"a4a31368","cv72555427a1":"63162e7d","cv9bc4eb2ed8":"63c79fe0","cv001f520277":"0e47c433","cvdba61e4d77":"80c05e67","cv6bd739d125":"ce3e2e34","cv73a33f4716":"9122aa11","cv6e6ff82ce0":"56a3ab87","cv07e46cbcbb":"49870544","cv9653de79ac":"599ad9f9","cv0eb75cad00":"312f0571","cv8301289257":"0e192251","cvdb85484362":"9be052c1","cv7bcf0ae3cd":"cdedd732","cv0393b1493e":"f8e8a57a","cv0544a5c0b2":"451f6e42","cvdb80ad5a8d":"4a36b849","cv3ee76506f6":"e36971b6","cvd3769bad08":"aa25a465","cvc2bd201372":"7bea8a85","cv13b086b7bf":"be8cf86f","cv4b6c4b754e":"a0a93996","cve8fc9c51df":"58488a93","cv6c70688828":"2dfce755","cvf01012c2c3":"d0e0e868","cvd0b9eef84f":"db2f77b7","cv04a9837ee1":"85fb27e3","cva716c24c24":"edbf60b2","cvec4b2254c8":"84a70973","cv428afd7026":"892bc3e9","cvb745f6732b":"e7c963d1","cva109adc512":"c682ce6b","cv0c9ca8949d":"5f4314ee","cv62b9ae033c":"1a7f765e","cv22122f0de8":"629d358e","cv96a73462f9":"1e1069f0","cv60dad210c3":"c887d830","cv0380f0467d":"be065d5c","cv9d6ff1a445":"25b793ba","cv7d406b1e3d":"8a74bf1c","cvd68b4229b8":"d57ff2cb","cv9554184d5e":"cd287ccd","cv3975983aaf":"87e9509e","cv4c6473ae24":"ddf90be8","cv544b50f7da":"34decf63","cv711e3cb456":"ced17a03","cvd7ffd57162":"38dea237","cv97e85442cb":"6e7cd6d0","cvdf45cf162f":"403b8d06","cv7d204b4931":"413f4b9c","cv2ec641b6a2":"156050b9","cvd7abe8cfeb":"24293389","cv4c68218351":"e553cd15","cvf2b2960e9f":"c836b622","cv30c56395ac":"93a755bf","cv478988d4c0":"0805a881","cv9dec117129":"09b721c4","cv36298a1ab0":"68e04163","cv43e11f9166":"de3a3272","cv0eb2e06944":"9b60b54f","cvfca0161b6f":"3d8cf2e4","cv27f3260cf9":"b07d4a21","cv29b546d97e":"6e08f6ea","cvc3a60d33ee":"0b641b16","cv2c1c52891d":"7e5fe2e3","cv9ba763f656":"7b4cde08","cv49dcd6f933":"54df0aa7","cv74d03e7776":"e465b0b2","cv5c9ac85998":"7f6067a6","cv8041b04e8f":"1b358496","cv931e767ec5":"b0ce9791","cv1c229cfc42":"01552730","cvb9b6117e26":"82257940","cv0a00fbe482":"fcc585c7","cv4550dd64a1":"8e73009e","cvefb2d1ec3f":"e3c820c2","cv74319da0dd":"764783f6","cvfa4a47b201":"fa4a5d70","cv946a6ae3a2":"30c463f7","cvcc68052ff3":"a5023adb","cv5f9b4fc85c":"5d43111a","cvf9cc5c2a5a":"ef9c29b8","cvb109b82eab":"cf011e89","cv3a69211f3b":"29ba5e45","cvb14581e653":"72584992","cv1f847f9559":"f2d26632","cvcbe2f07bf6":"9bfae6e6","cvd98ce8298e":"6b163429","cv829199f44c":"29d4526e","cv8378632489":"ea3128c6","cv67927f7793":"b8c9f2f2","cv13df494616":"3d0cb53a","cv39e37093c1":"781d1751","cv2d13f27bef":"d05fdc37","cv2b1fc8b83b":"79a31e83","cveacff88b94":"15a67eb3","cv9299aaba09":"2cf9f22c","cv98179b12a2":"f7264332","cvdd7c130597":"66d1affa","cv6bf0612311":"e76e0769","cv48f60f1f74":"d68664cd","cv609888617d":"42ae4a14","cv8cb1eb306c":"70ea52b4","cv04d19bdc0a":"20934760","cv2a60dc8336":"20f65e98","cv930ad94398":"1621ff97","cvb74752b2f9":"3451c5e5","cv1b927c9c6d":"76517777","cve9c2241f53":"0dfea072","cvda55378f82":"9034d52b","cv0550803628":"b4b1ce72","cvbb9366318a":"3d9c2634","cv8ee4e743bb":"f8f80014","cvb0ba3ccd73":"7437dc6c","cvd206ee3dc7":"a06b5be3","cv89fe6a9aa8":"bff1dbdd","cv18e642b736":"1fadc4ae","cv96607b052a":"f4b29a1e","cv47276a35ea":"3697055b","cvbddd92ed55":"7d98a860","cv585eccef55":"25bd07a8","cv74efba76b0":"b3ce9d1c","cvc4ed17dcc0":"e79962a1","cv6b7647c2c6":"780df9b7","cvfc42e4000f":"74668d72","cv6a27f1abd4":"a640062f","cvdf2e9e7c97":"0bc9b906","cv4b90ccc9f1":"f049dc16","cvf796ba6bab":"396cd0e6","cv575c4bee40":"5b8da292","cv6969d9a7f5":"5bb9e34d","cv8a0031cdfd":"376597e8","cv7bf255ac1b":"96c95232","cv1d709e0e1c":"b961228a","cv1fe960dbfc":"ac3f6455","cv0d048415de":"59b88e1c","cv735a222083":"852c11da","cv335376deaa":"20ce92a1","cvd307ebc4d7":"e53c3c94","cvbdefdd7fa3":"99fc9328","cv08e02042d3":"bc82f417","cvf65174d2c5":"38690b2a","cv5276ed70d4":"ecb3bad7","cvef4dcac91e":"51914e0e","cvfcb1c29d94":"64dc42a0","cvd36b31d756":"5e2d817d","cvb7c151d1aa":"c70a45f5","cv7609a0fd87":"dc0bdd8a","cvfcb9e688d3":"7a2faf06","cv9686f879fc":"8aaab0cf","cv8b9db2b60e":"df30b786","cv55e674ac6a":"ad5b069b","cv6b0eca3ed5":"1eec4d63","cve0e1c2be28":"36f18cd7","cv534544d757":"93e52251","cvd56fc6210f":"15a3cf1b","cvc4c37f053e":"eee2e058","cv02f2f98f23":"ec278a23","cv073a8e4f8f":"b83e5280","cv5700081cfb":"5fbb4579","cv3e4d1b5fb0":"650d88aa","cv3c6f5acc71":"2868847e","cv6333528e49":"87590434","cv72a1e24e3d":"9d8159f9","cvdd49c3ac8f":"04d45ad8","cv46b0f23b3a":"66260ff7","cvdb8c5395d3":"ca641a1d","cva083420809":"bbb1c770","cv1f195eee55":"822fa338","cv830a314152":"b449ed4b","cv168e63c318":"88257e99","cv5b4b38e41f":"529f3e4c","cvc3ecb23270":"9fb67095","cv673b504636":"b28c99ee","cv73f6959cef":"28d12b52","cv7e9e432778":"9dd23aa0","cv5c4767239e":"b66c19da","cva2cc3328ab":"4dbfe103","cv82f6bb21d0":"2cea9651","cv55d017bdac":"938e7192","cv7553d38d84":"b04a5dab","cv65788994f5":"892ed472","cv2e5339007e":"7e0537d0","cvb489b3f7d6":"dcc4a35a","cv9b58654812":"88838fad","cvaa2ef43dd0":"7a6b371d","cv5d49d768b9":"77c6c8b1","cvb1a160057e":"6043affb","cvd37ee531f8":"062f465a","cv2de71b6e66":"86331944","cv3f3dd02567":"ddc51a5c","cv1b10adcc6a":"30d21467","cv6af246a14d":"613b13f4","cvdd9c5d41b8":"73bdd1fc","cv39a494af58":"946f24b4","cv88270ac5c3":"f518509e","cvc0c971aed2":"0a6b4b5f","cvb54d4b8837":"9803e371","cv51d10b02a7":"17400036","cv715ffcc8f3":"3ce78d0e","cvf564ece7ec":"89237176","cvc7e8e2fbc5":"b1eb4c7d","cve64f8d38c9":"4d7829cc","cv8a58b4f8dd":"aec3b038","cv19a3747438":"a92b3b8b","cv7bb4b08faf":"f510bb6e","cv79757696f1":"c06c49dc","cvdb7795a227":"d9829b08","cva0e828dba0":"09511bf2","cv08a76a2f70":"ce8f87ef","cv542a05c6d4":"ad461a50","cvb67d57317f":"62744cd9","cv67b02842e8":"83febe8f","cva09c58234f":"9abfcecb","cv1f371072e1":"1cb82845","cv16dbc8f84f":"2f72094a","cve59dc7d087":"eb9622b8","cv0619a09a10":"f9e4680d","cv8c2b7495ad":"5696b3c0","cv459b34de85":"f3768d07","cv3801db4998":"f4e12274","cvef45b27f18":"e0090eb2","cv61e3d855c3":"d482d101","cv9c17d35bec":"5dff4569","cvd6717a70b1":"1ee96093","cv54a25dcd74":"8311c4d3","cv76d09f19da":"9f1cdcdb","cv10f72bb91b":"e2392603","cv384cf3fb1b":"060e93e2","cv283a0f1530":"2a54fdb0","cv195115113b":"973a00ee","cv7517fd654c":"145fb422","cv1442ca6908":"5eb8eaee","cv8b6c73207e":"0cf99e4a","cvb8b97b2404":"dfbf99d3","cvd171777309":"e3ab28ef","cv0da1f00df0":"ebebb309","cv9871f45e36":"f0bcf0a0","cvff3f877c9e":"b240d327","cvf34556b47c":"9f9922e1","cv3492fdfad1":"2328a3c7","cv331633f336":"41e12743","cvf7f822b50f":"43dd7d7b","cv5a3bd5b240":"3abe63b9","cv6a042ecede":"a096d4f0","cved040fedbf":"bfe96d6c","cv58e580b970":"ab309d1d","cvc74ed3d8e4":"051c6d50","cv337e71aed4":"70ebc172","cv615cd3c99c":"c0062630","cvcdfdddf658":"a4355a7b","cv62747b1362":"53f84991","cv566f86aa7d":"13ef953e","cva8b6be6fa0":"8fd0a3d5","cvbe97f755d8":"4ffca642","cvda2b9237ed":"cf988c5f","cv740126357d":"05fad59f","cv69521e47ba":"5b194da0","cv8574a5b574":"76bfae65"},"it":{"993379":"5db0c680","993380":"8e9fe9dd","993383":"25e2d53f","993387":"50189ccc","993388":"0a09bb57","993389":"da5596de","993392":"3782617a","993396":"74745b2e","993399":"ad511827","993400":"9c6b4df1","993401":"8e83e256","993404":"347d2aba","993405":"73b6e50e","993406":"2fb53f12","993407":"32aabce7","993408":"080d0dd4","993410":"db3a7eda","993412":"a51ab3dd","993414":"440d4e28","993416":"ed244792","993421":"e30de526","993422":"37fd38c2","993423":"26df3586","993425":"8ffbd30a","993429":"55da3d97","993431":"410bcdd9","993432":"7d390a9b","993438":"75b7e921","993439":"d07f4e9e","993444":"18c29281","993445":"f9f69a7b","993446":"ec126941","993450":"a9cc2273","993451":"20b46ea4","993452":"d3665a0b","993455":"8406953d","993458":"94aa287c","993469":"e8ee3261","993474":"6a55d0a4","993475":"b273db45","993476":"5c059788","993479":"093a900d","993480":"bd6461e2","993482":"d60c4c74","993483":"6aa400d9","993485":"121f31aa","993496":"1724b673","993497":"9b7dd3c8","993500":"0ac6f00f","993505":"7fabac37","993512":"f35a5469","993528":"b722c331","993531":"4011b674","993535":"eaea5902","994212":"7411b9bf","994215":"547b994b","994218":"15243b1e","994220":"4d6ab4e5","994221":"ab9ea8a4","994225":"0c89408e","994227":"fb69c9a6","994230":"37b1e3ca","994238":"2a4a683e","994239":"096a1047","994240":"2833bae2","1000150":"068b43b8","1000151":"2a0d903d","1000152":"d49ca15c","1000153":"0d178d33","1000154":"53892423","1000156":"59a9043f","1000157":"65c9b3fe","1000158":"d34ac9f2","1000159":"245b9c67","1000160":"de36d9c0","1000161":"9b87b5d4","1000170":"2b08ba17","1000171":"559ae51c","1000173":"e6e78749","1000176":"27a2a8b8","1000177":"be4bd4be","1000180":"d1f0a85b","1000182":"600e8051","1000184":"9c0433dc","1000185":"5b5abba5","1000190":"453588e1","1000193":"c5fe5ebd","1000195":"27bda2ec","1000202":"288806cb","1000203":"fad9c4cf","1000207":"ab8db3c8","1000208":"09cf68c8","1000210":"4d86cf5a","1000212":"6ff5a080","1000220":"592ce826","1000221":"5af8b685","1000222":"3049b0b7","1000224":"5d2fc10a","1000225":"9c6f9f96","1000230":"a7d7be5f","1000233":"105764bd","1000235":"b031c40b","1000237":"a9f06b12","1000247":"2f42092f","1000249":"4a1bb6ee","1000250":"ea051efc","1000251":"9cde8f17","1000252":"5c6e9fa6","1000254":"e3dfbad8","1000255":"76f49382","1000256":"a573a41e","1000266":"d7815235","1000269":"7a4e9696","1000270":"d864e75c","1000271":"9d73d9ba","1000272":"c3da13e5","1000273":"9a3e22a7","1000274":"b1f8cd9f","1000275":"6d0d287d","1000277":"23186b12","1000286":"8a6a0c7e","1000291":"ba68204e","1000304":"b3d7a6ca","1000307":"33c59031","1000308":"7862aa8c","1000311":"c1eaf253","1000312":"ac57aafd","1000313":"c923edc4","1000314":"2e8edcc2","1000316":"9f4521ff","1000318":"25a41406","1000322":"cb728c90","1000328":"42a4ea59","1000329":"29dea8ec","1000330":"436bed86","1000331":"ef9edd12","1000337":"4e82e881","1000338":"98f94e10","1000339":"1f0449d5","1000340":"3b3e9cfd","1000341":"40516654","1000345":"0d3dd587","1001284":"e7da1cc5","1001290":"4d68607f","1001291":"ea25846f","1001293":"4f14e6bc","1001294":"c88d00e1","1001300":"d2d7f14a","1001302":"9acb1474","1001303":"42115f46","1001311":"4d44ca72","1001315":"94a5a8e1","1001316":"c73373b0","1001319":"f623cc68","1001322":"ab090e08","1001329":"9b4213c0","1001332":"3abfbc10","1001340":"1ce669a6","1001343":"98780872","1001344":"38821a80","1001345":"4171c995","1001347":"4fac0202","1001352":"f5889a23","1001353":"5fa9db31","1001357":"3cdd4d9c","1001358":"810ca8b0","1001359":"6411b538","1001360":"a8a5b60f","1001361":"4790a7ed","1001362":"18f61a3c","1001363":"9d65da09","1001366":"49282647","1001369":"f70fd5d8","1001373":"8ffb0477","1001374":"fbe8c4a2","1001376":"ab4d3ca2","1001377":"8e4b398e","1001381":"e2ab00b3","1001386":"786a8d94","1001387":"8bfd086d","1001390":"54cafaef","1001391":"26c324db","1001394":"8999f8c5","1001406":"998a527f","1001407":"1b80c5b5","1001410":"83004458","1001412":"31fbc2e2","1001415":"7e5a8acc","1001416":"c85f8eeb","1001433":"3e3606d6","1001434":"6a8418e2","1001438":"a2280961","1001442":"9d5b5a71","1001450":"b02b4546","1001461":"550557df","1001463":"49a4a25d","1001465":"30d31265","1001466":"037dd9bc","1001469":"6212ac77","1001470":"cea3d957","1001472":"a56a4147","1001473":"e74d498e","1001474":"c7eac603","1003182":"f47536c4","1003184":"841095cd","1003185":"585aab2b","1003189":"f10e3e87","1003190":"474960c9","1003191":"38a9fb7c","1003192":"71a18bf4","1003193":"6e7d6347","1003195":"46a0f2cb","1003198":"da1f8089","1003199":"1e2354bb","1003204":"e97651f4","1003206":"bbf41079","1003207":"9bb89eae","1003209":"0521a7a3","1003211":"10c90ebd","1003212":"8ef74804","1003213":"9340a164","1003220":"4011d645","1003222":"4cf6c81b","1003227":"5a0eaa53","1003229":"71d646df","1003230":"e6a709c1","1003232":"9eb4bdac","1003236":"f5cee703","1003238":"355fa63e","1003241":"68959499","1003244":"789cf4a2","1003247":"e84e18e6","1003254":"1bd3cb2e","1003261":"31d0cb3b","1003262":"92c8fcb8","1003266":"7b1adfbc","1003273":"3e9924d6","1003276":"82c49581","1003280":"1a7d748f","1003281":"da9d86f9","1003291":"83189c59","1003300":"d5f8c853","1003312":"3207bde5","1003316":"4709beb0","1003317":"70d93159","1003318":"db65bbc0","1003323":"022b10aa","1003324":"0959b632","1003325":"d4735d6e","1003329":"493a3fb0","1003331":"240a301c","1003332":"b8e9baa3","1003348":"2265dfa1","1003353":"7bb0d626","1003361":"535d76a6","1003365":"3442cfdb","1003369":"ee136d6d","1003375":"d00d67d3","1003378":"01d6f1b1","1003380":"6ad03f9e","1003884":"733dbefc","1003887":"0d79caa4","1003888":"f81aac8f","1003890":"08e2a014","1003891":"5bf4d168","1003892":"17c39df0","1003894":"eb921163","1003896":"ab52724e","1003897":"37d37b52","1003903":"3f47a608","1003905":"d8c651fb","1003907":"b84da83c","1003912":"71c6aea7","1003917":"beec1127","1003925":"0fa13af3","1003931":"5233fb29","1003932":"4aefc28f","1003933":"900c781e","1003934":"f9ea10f1","1003939":"b732fc03","1003941":"7b63cd01","1003950":"c09884ea","1003956":"517a03d9","1003962":"7310f162","1003972":"85ac010b","1003974":"62da1e64","1003980":"2bf6dafa","1003983":"e0996047","1003995":"28a0c7a3","1003999":"7d247e89","1004001":"ae4e2746","1004009":"a1855675","1004012":"706cb70c","1004013":"63b49847","1004014":"f678f9ab","1004019":"10e459b4","1004020":"118df25c","1004022":"937ae22a","1004025":"5792b650","1004029":"44378ad7","1004030":"16f7d3f1","1004044":"bb9d11a8","1004048":"f66f68a4","1004051":"5b735b44","1004052":"d6412a81","1004056":"4f4478f1","1004058":"019ddf0c","1004063":"0a8b9b4a","1004638":"6937f8a1","1004645":"ee990c62","1004658":"9bf189e6","1004662":"a7470d03","1004664":"f86f5c75","1004665":"261375bd","1004666":"1bf988f4","1004691":"817a1b35","1004695":"1a8399f5","1004704":"75a424d4","1004707":"d8c79504","1004715":"c7b30b12","1004718":"738f1fd6","1004722":"3193b0ee","1004724":"f83ac86b","1004725":"200474f2","1004728":"24268da6","1004729":"be29c319","1004734":"4821bf3b","1004735":"4cff8644","1004740":"e4a7c50b","1004742":"6213c6b0","1004746":"0d32172d","1004747":"773c796e","1004749":"781538aa","1004755":"6fda2b3a","1004757":"028f26ed","1004766":"485d005a","1004777":"27d3c4b7","1004778":"38c30deb","1004786":"f170947a","1004795":"186329cc","1004799":"686e2ca9","1004801":"b907e563","1004804":"6320b145","1004806":"e43dcb46","1004807":"fe40e533","1004808":"74d86d51","1004812":"9f33008b","1004816":"27f8038e","1004817":"3ba9f7a9","1004821":"61cb6beb","1004825":"e9b2d30b","1004828":"4b69c1c1","1004833":"8ab3e76c","1006366":"84d68994","1006372":"f31e94e2","1006374":"7955e43c","1006386":"5102d51a","1006387":"61831d92","1006390":"b8cedd5d","1006395":"ac3c0121","1006396":"cc962256","1006398":"62f71c42","1006400":"84eee5d3","1006407":"a393a5a1","1006408":"4d9be496","1006412":"5b812de7","1006416":"47606c55","1006417":"a7b6428c","1006421":"b384af9c","1006423":"b0f35305","1006425":"5442d815","1006427":"5044488a","1006430":"255d69da","1006441":"0833f845","1006443":"4fa0ca2f","1006447":"9e01b1c4","1006451":"0cac47de","1006453":"70752334","1006457":"ee1866e5","1006462":"17d6dd2a","1006483":"777effc6","1006484":"0d0b1272","1006491":"f729fb29","1006505":"6d3f8894","1006509":"34966924","1006531":"868a2399","1006538":"39664723","1006541":"d9dce2d2","1006542":"3c359fcd","1006551":"2db8d92a","1006552":"9343b7b0","1006553":"c454230e","1009973":"ed2ff061","1009980":"5f921d02","1009983":"fddea798","1009985":"7650f600","1009992":"eafa61fd","1009998":"588d123b","1010009":"84967f72","1010015":"0ff66d78","1010033":"311cd29f","1010044":"5e4dd9a5","1010049":"1a0ad5aa","1010053":"6fb5bdce","1010056":"a95d441b","1010058":"59a1fcc2","1010062":"5e49dd9c","1010068":"fe36ceb6","1010069":"e5e454c3","1010070":"68986559","1010071":"e933949e","1010073":"c655de0b","1010085":"1e3ccc89","1010088":"04cb5b20","1010090":"7f94dbfa","1010098":"064abc96","1010103":"dfcc8f6a","1010110":"4b2ce9b2","1010112":"74435482","1010118":"ea59a537","1010120":"9fc3f370","1010122":"6d49ed15","1010123":"016c6743","1010128":"d26e12e3","1010129":"395ad32c","1010135":"e237f165","1010143":"cdf9de60","1010145":"44ee55ae","1010146":"108d9307","1010148":"ed9210d2","1010152":"8529e9e1","1010155":"24a6ade8","1010161":"ef41c24e","1010166":"59e5f875"}}</script>
+<script>
+/* ---- VOICE_FILES (lazy, da data/ex/voci-file.js) ---- */
+(function () { var v; Object.defineProperty(window, "VOICE_FILES", { configurable: true, get: function () { if (v === undefined) { var el = document.getElementById("lazy-voice_files"); v = el ? JSON.parse(el.textContent) : {}; if (el) el.parentNode.removeChild(el); } return v; } }); })();
+</script>
 <script type="application/json" id="lazy-testi_zh">[{"id":"zh-t01-la-mia-giornata","livello":1,"titolo":{"zh":"我的一天","it":"La mia giornata"},"domande":[{"frase":2,"domanda_it":"A che ora si alza?","scelte_it":["Alle sette","Alle otto","Alle dieci"],"giusta":0},{"frase":5,"domanda_it":"Che cosa mangia a pranzo?","scelte_it":["Riso e verdure","Pane e uova","Spaghetti"],"giusta":0},{"frase":7,"domanda_it":"Dove guarda la televisione?","scelte_it":["A casa","A scuola","Al bar"],"giusta":0}],"frasi":[{"zh":"我是学生。","it":"Sono uno studente."},{"zh":"我住在北京。","it":"Abito a Pechino."},{"zh":"早上七点，我起床。","it":"Al mattino, alle sette, mi alzo."},{"zh":"我吃早饭，喝牛奶。","it":"Faccio colazione e bevo del latte."},{"zh":"八点，我去学校。","it":"Alle otto vado a scuola."},{"zh":"中午，我吃米饭和菜。","it":"A mezzogiorno mangio riso e verdure."},{"zh":"下午，我学习汉语。","it":"Nel pomeriggio studio cinese."},{"zh":"晚上，我在家看电视。","it":"La sera guardo la televisione a casa."},{"zh":"十点，我睡觉。","it":"Alle dieci vado a dormire."}]},{"id":"zh-t02-la-mia-famiglia","livello":1,"titolo":{"zh":"我的家","it":"La mia famiglia"},"domande":[{"frase":0,"domanda_it":"Quante persone ci sono in famiglia?","scelte_it":["Cinque","Quattro","Sei"],"giusta":0},{"frase":2,"domanda_it":"Che lavoro fa la madre?","scelte_it":["L'insegnante","La dottoressa","La studentessa"],"giusta":0},{"frase":4,"domanda_it":"Quanti anni ha la sorella?","scelte_it":["Otto","Dieci","Cinque"],"giusta":0}],"frasi":[{"zh":"我家有五口人。","it":"Nella mia famiglia siamo in cinque."},{"zh":"有爸爸、妈妈、哥哥、妹妹和我。","it":"Ci sono papà, mamma, mio fratello maggiore, mia sorella minore e io."},{"zh":"爸爸是医生，妈妈是老师。","it":"Mio padre è medico, mia madre è insegnante."},{"zh":"哥哥在大学学习。","it":"Mio fratello studia all'università."},{"zh":"妹妹今年八岁，她是小学生。","it":"Mia sorella ha otto anni quest'anno ed è alle elementari."},{"zh":"我们家不大，很干净。","it":"La nostra casa non è grande, ma è pulita."},{"zh":"星期天，我们一起吃饭。","it":"La domenica mangiamo insieme."},{"zh":"我爱我的家。","it":"Amo la mia famiglia."}]},{"id":"zh-t03-al-negozio","livello":2,"titolo":{"zh":"在商店","it":"Al negozio"},"domande":[{"frase":1,"domanda_it":"Che cosa vuole comprare?","scelte_it":["Frutta e latte","Pane e uova","Tè e riso"],"giusta":0},{"frase":4,"domanda_it":"Quanto costa?","scelte_it":["Tre yuan","Dieci yuan","Un yuan"],"giusta":0},{"frase":5,"domanda_it":"Quanto paga?","scelte_it":["Dieci yuan","Tre yuan","Cinque yuan"],"giusta":0}],"frasi":[{"zh":"今天我去商店。","it":"Oggi vado al negozio."},{"zh":"我想买水果和牛奶。","it":"Voglio comprare della frutta e del latte."},{"zh":"水果很好吃，也不贵。","it":"La frutta è molto buona e non è cara."},{"zh":"我问：“这个多少钱？”","it":"Chiedo: «Quanto costa questo?»"},{"zh":"他说：“三块钱。”","it":"Lui dice: «Tre yuan.»"},{"zh":"我买了一些，给了十块钱。","it":"Ne compro un po' e do dieci yuan."},{"zh":"我说：“谢谢，再见！”","it":"Dico: «Grazie, arrivederci!»"}]},{"id":"zh-t04-al-parco","livello":2,"titolo":{"zh":"在公园","it":"Al parco"},"domande":[{"frase":0,"domanda_it":"Che tempo fa?","scelte_it":["Né freddo né caldo","Fa molto caldo","Piove"],"giusta":0},{"frase":4,"domanda_it":"Dove si siedono?","scelte_it":["Sotto un albero","Su una panchina","Al bar"],"giusta":0},{"frase":5,"domanda_it":"Perché tornano a casa?","scelte_it":["Il cielo si è fatto nuvoloso","Hanno fame","È tardi"],"giusta":0}],"frasi":[{"zh":"今天天气很好，不冷也不热。","it":"Oggi il tempo è bello, né freddo né caldo."},{"zh":"我和朋友去公园玩。","it":"Vado a giocare al parco con un amico."},{"zh":"公园里有很多人。","it":"Nel parco c'è molta gente."},{"zh":"有的人在走路，有的人在唱歌。","it":"Alcuni camminano, altri cantano."},{"zh":"我们坐在树下，吃水果，喝水。","it":"Ci sediamo sotto un albero, mangiamo frutta e beviamo acqua."},{"zh":"下午，天阴了，我们回家。","it":"Nel pomeriggio il cielo si copre e torniamo a casa."}]},{"id":"zh-t05-il-mio-compleanno","livello":2,"titolo":{"zh":"我的生日","it":"Il mio compleanno"},"domande":[{"frase":0,"domanda_it":"Quando è il compleanno?","scelte_it":["Domani","Oggi","Ieri"],"giusta":0},{"frase":2,"domanda_it":"Che cosa fa il padre?","scelte_it":["Compra un regalo","Cucina","Canta"],"giusta":0},{"frase":3,"domanda_it":"Che cosa mangiano la sera?","scelte_it":["Ravioli","Pesce","Noodles"],"giusta":0}],"frasi":[{"zh":"明天是我的生日。","it":"Domani è il mio compleanno."},{"zh":"朋友们都来我家。","it":"Gli amici vengono tutti a casa mia."},{"zh":"妈妈做饭，爸爸给我买了一个礼物。","it":"La mamma cucina e il papà mi ha comprato un regalo."},{"zh":"晚上，我们吃饺子，唱歌。","it":"La sera mangiamo ravioli e cantiamo."},{"zh":"大家说：“生日快乐！”","it":"Tutti dicono: «Buon compleanno!»"},{"zh":"我很开心，我说：“谢谢大家！”","it":"Sono molto felice e dico: «Grazie a tutti!»"}]},{"id":"zh-t06-chiedere-la-strada","livello":2,"titolo":{"zh":"问路","it":"Chiedere la strada"},"domande":[{"frase":0,"domanda_it":"Dove vuole andare?","scelte_it":["Alla stazione","All'aeroporto","In ospedale"],"giusta":0},{"frase":3,"domanda_it":"Che cosa deve fare?","scelte_it":["Andare dritto e poi a sinistra","Girare subito a destra","Prendere un taxi"],"giusta":0},{"frase":4,"domanda_it":"Dov'è la stazione?","scelte_it":["Sulla destra","Sulla sinistra","Di fronte"],"giusta":0}],"frasi":[{"zh":"我在街上，我想去火车站。","it":"Sono in strada e voglio andare alla stazione."},{"zh":"我问一个人：“请问，火车站在哪儿？”","it":"Chiedo a una persona: «Scusi, dov'è la stazione?»"},{"zh":"他说：“离这儿不远。”","it":"Lui dice: «Non è lontano da qui.»"},{"zh":"“你一直往前走，然后往左。”","it":"«Vada sempre dritto e poi giri a sinistra.»"},{"zh":"“火车站就在右边。”","it":"«La stazione è subito sulla destra.»"},{"zh":"我说：“谢谢你！”他说：“不客气。”","it":"Dico: «Grazie!» Lui risponde: «Prego.»"}]},{"id":"zh-t07-al-ristorante","livello":2,"titolo":{"zh":"在饭店","it":"Al ristorante"},"domande":[{"frase":2,"domanda_it":"Che cosa ordina chi parla?","scelte_it":["Pesce e riso","Noodles e tè","Carne e verdure"],"giusta":0},{"frase":1,"domanda_it":"Com'è il ristorante?","scelte_it":["Piccolo e pulito","Grande e rumoroso","Caro"],"giusta":0},{"frase":5,"domanda_it":"Come finisce la serata?","scelte_it":["Tornano a casa sazi","Vanno al cinema","Restano a cena"],"giusta":0}],"frasi":[{"zh":"周末我和朋友去饭店吃饭。","it":"Nel fine settimana vado a mangiare al ristorante con un amico."},{"zh":"饭店不大，可是很干净。","it":"Il ristorante non è grande, ma è molto pulito."},{"zh":"我们看菜单，我要鱼和米饭。","it":"Guardiamo il menù: io prendo il pesce e il riso."},{"zh":"朋友要面条和一杯茶。","it":"Il mio amico prende gli spaghetti di riso e una tazza di tè."},{"zh":"鱼很好吃，面条也不错。","it":"Il pesce è buonissimo e anche i noodles non sono male."},{"zh":"我们吃得很饱，然后回家。","it":"Mangiamo a sazietà e poi torniamo a casa."}]},{"id":"zh-t08-il-fine-settimana","livello":2,"titolo":{"zh":"周末的计划","it":"I programmi del fine settimana"},"domande":[{"frase":0,"domanda_it":"Che cosa vuole fare nel fine settimana?","scelte_it":["Un'escursione in montagna","Andare al mare","Restare a casa"],"giusta":0},{"frase":1,"domanda_it":"Come arrivano ai piedi della montagna?","scelte_it":["In metropolitana","In autobus","A piedi"],"giusta":0},{"frase":5,"domanda_it":"Come si sentono alla fine?","scelte_it":["Stanchi ma contenti","Tristi","Annoiati"],"giusta":0}],"frasi":[{"zh":"这个周末，我打算和同学一起去爬山。","it":"Questo fine settimana ho intenzione di andare a fare un'escursione con i compagni."},{"zh":"我们早上六点出发，坐地铁去山下。","it":"Partiamo alle sei del mattino e prendiamo la metropolitana fino ai piedi della montagna."},{"zh":"爬山很累，可是山上的空气很好。","it":"Salire in montagna è faticoso, ma l'aria lassù è ottima."},{"zh":"中午，我们在山上吃面包和水果。","it":"A mezzogiorno mangiamo pane e frutta in montagna."},{"zh":"下午四点，我们回到家。","it":"Alle quattro del pomeriggio torniamo a casa."},{"zh":"我们都很累，但是很开心。","it":"Siamo tutti stanchi, ma contenti."}]},{"id":"zh-t12-acquisto-online","livello":2,"titolo":{"zh":"网上买衣服","it":"Comprare un vestito online"},"domande":[{"frase":2,"domanda_it":"Qual era il problema?","scelte_it":["Era troppo grande","Era troppo caro","Era rotto"],"giusta":0},{"frase":3,"domanda_it":"Che cosa ha fatto?","scelte_it":["Ha telefonato al negozio","Ha scritto una lettera","È andato in banca"],"giusta":0},{"frase":5,"domanda_it":"Com'è alla fine?","scelte_it":["Soddisfatto","Arrabbiato","Indifferente"],"giusta":0}],"frasi":[{"zh":"最近我在网上买了一件衣服。","it":"Di recente ho comprato un vestito online."},{"zh":"衣服很漂亮，也不贵。","it":"Il vestito è bello e non è caro."},{"zh":"可是我收到以后，发现太大了。","it":"Ma dopo averlo ricevuto mi sono accorto che era troppo grande."},{"zh":"我给商店打电话，他们说可以换。","it":"Ho telefonato al negozio e mi hanno detto che si può cambiare."},{"zh":"第二天，我拿到了新的，大小正好。","it":"Il giorno dopo ho ricevuto quello nuovo, della misura giusta."},{"zh":"我很满意，以后还想在这个网站买东西。","it":"Sono molto soddisfatto e in futuro vorrei comprare ancora su questo sito."}]},{"id":"zh-t09-i-miei-hobby","livello":3,"titolo":{"zh":"我的爱好","it":"I miei hobby"},"domande":[{"frase":1,"domanda_it":"Che cosa gli piace?","scelte_it":["Ascoltare musica e disegnare","Leggere e cucinare","Dormire"],"giusta":0},{"frase":3,"domanda_it":"Quante volte a settimana gioca?","scelte_it":["Due","Una","Tre"],"giusta":0},{"frase":5,"domanda_it":"Che cosa pensa della vita con degli hobby?","scelte_it":["È molto interessante","È faticosa","È inutile"],"giusta":0}],"frasi":[{"zh":"我有很多爱好。","it":"Ho molti hobby."},{"zh":"我喜欢听音乐，也喜欢画画。","it":"Mi piace ascoltare musica e anche disegnare."},{"zh":"音乐让我很快乐。","it":"La musica mi rende molto felice."},{"zh":"我还喜欢运动，每个星期打两次球。","it":"Mi piace anche fare sport: ogni settimana gioco a palla due volte."},{"zh":"有时候，我也和朋友一起去旅游。","it":"A volte vado anche in viaggio con gli amici."},{"zh":"我认为，有爱好的生活很有意思。","it":"Penso che una vita con degli hobby sia molto interessante."}]},{"id":"zh-t10-un-viaggio","livello":3,"titolo":{"zh":"一次旅行","it":"Un viaggio"},"domande":[{"frase":0,"domanda_it":"Quando è avvenuto il viaggio?","scelte_it":["L'estate scorsa","Quest'inverno","L'anno prossimo"],"giusta":0},{"frase":3,"domanda_it":"Come si sono spostati tra le città?","scelte_it":["In treno","In aereo","In bicicletta"],"giusta":0},{"frase":7,"domanda_it":"Che cosa vuole fare l'anno prossimo?","scelte_it":["Tornare in Cina","Restare in Italia","Cambiare lavoro"],"giusta":0}],"frasi":[{"zh":"去年夏天，我和家人去中国旅行。","it":"L'estate scorsa sono andato in viaggio in Cina con la mia famiglia."},{"zh":"我们先到北京，住在一个小酒店。","it":"Siamo arrivati prima a Pechino e abbiamo alloggiato in un piccolo albergo."},{"zh":"白天，我们去公园和商店，晚上吃好吃的中国菜。","it":"Di giorno andavamo ai parchi e nei negozi, la sera mangiavamo ottimi piatti cinesi."},{"zh":"后来，我们坐火车去别的城市。","it":"In seguito abbiamo preso il treno per altre città."},{"zh":"路上，我认识了很多新朋友。","it":"Lungo la strada ho conosciuto molti nuovi amici."},{"zh":"他们热情地帮助我，让我觉得很温暖。","it":"Mi hanno aiutato con calore e mi hanno fatto sentire accolto."},{"zh":"回国以后，我常常想起这次旅行。","it":"Dopo il ritorno ripenso spesso a questo viaggio."},{"zh":"明年我还想再去中国。","it":"L'anno prossimo voglio tornare in Cina."}]},{"id":"zh-t13-studiare-cinese","livello":3,"titolo":{"zh":"我学汉语","it":"Studio il cinese"},"domande":[{"frase":0,"domanda_it":"Da quanto tempo studia cinese?","scelte_it":["Da due anni","Da un mese","Da cinque anni"],"giusta":0},{"frase":1,"domanda_it":"Che cosa trovava difficile all'inizio?","scelte_it":["I caratteri","La grammatica italiana","La cucina"],"giusta":0},{"frase":5,"domanda_it":"Che cosa vuole fare l'anno prossimo?","scelte_it":["Sostenere l'esame di cinese","Andare a vivere in Cina","Smettere di studiare"],"giusta":0}],"frasi":[{"zh":"我学汉语已经两年了。","it":"Studio cinese ormai da due anni."},{"zh":"刚开始，我觉得汉字很难，说得也不好。","it":"All'inizio mi sembravano difficili i caratteri e parlavo male."},{"zh":"可是我每天复习，慢慢地，我习惯了。","it":"Ma ripassavo ogni giorno e a poco a poco mi sono abituato."},{"zh":"现在我可以和中国朋友说话，也能看简单的新闻。","it":"Ora posso parlare con amici cinesi e leggere semplici notizie."},{"zh":"我知道，学语言需要时间，也需要努力。","it":"So che imparare una lingua richiede tempo e impegno."},{"zh":"我打算明年参加汉语水平考试。","it":"Ho intenzione di sostenere l'esame di livello di cinese l'anno prossimo."}]},{"id":"zh-t14-in-citta","livello":3,"titolo":{"zh":"住在城市","it":"Vivere in città"},"domande":[{"frase":1,"domanda_it":"Come va al lavoro?","scelte_it":["In metropolitana","In macchina","In bicicletta"],"giusta":0},{"frase":3,"domanda_it":"Qual è lo svantaggio della città?","scelte_it":["Aria non buona e rumore","Pochi negozi","Pochi trasporti"],"giusta":0},{"frase":5,"domanda_it":"Che cosa pensa di fare in futuro?","scelte_it":["Trasferirsi in un posto più piccolo","Comprare una casa più grande","Cambiare città"],"giusta":0}],"frasi":[{"zh":"我住在一个大城市，这里的交通很方便。","it":"Vivo in una grande città, dove i trasporti sono molto comodi."},{"zh":"我每天坐地铁去上班，路上要四十分钟。","it":"Ogni giorno vado al lavoro in metropolitana e ci metto quaranta minuti."},{"zh":"城市里有很多商场和饭店，生活很方便。","it":"In città ci sono molti centri commerciali e ristoranti, e la vita è comoda."},{"zh":"可是，这里的空气不太好，也很吵。","it":"Però l'aria non è molto buona e c'è molto rumore."},{"zh":"周末，我常常去公园，那里很安静。","it":"Nel fine settimana vado spesso al parco, dove è tranquillo."},{"zh":"我想，以后我会搬到一个小地方住。","it":"Penso che in futuro mi trasferirò in un posto più piccolo."}]},{"id":"zh-t11-dal-medico","livello":6,"titolo":{"zh":"看医生","it":"Dal medico"},"domande":[{"frase":0,"domanda_it":"Che cosa aveva ieri?","scelte_it":["Mal di testa","Mal di pancia","Mal di schiena"],"giusta":0},{"frase":4,"domanda_it":"Che cosa gli consiglia il medico?","scelte_it":["Bere molta acqua e riposare","Fare sport","Andare al lavoro"],"giusta":0},{"frase":5,"domanda_it":"Quante volte al giorno prende la medicina?","scelte_it":["Tre","Una","Due"],"giusta":0}],"frasi":[{"zh":"昨天我有点不舒服，头很疼。","it":"Ieri non mi sentivo molto bene e avevo un forte mal di testa."},{"zh":"我去医院看医生。","it":"Sono andato in ospedale a farmi visitare."},{"zh":"医生问我：“你哪儿不舒服？”","it":"Il medico mi ha chiesto: «Che cosa non va?»"},{"zh":"我说：“我头疼，还有点发烧。”","it":"Ho risposto: «Ho mal di testa e un po' di febbre.»"},{"zh":"医生说我感冒了，要多喝水，多休息。","it":"Il medico ha detto che ho il raffreddore e devo bere molta acqua e riposare."},{"zh":"他给我开了药，我一天吃三次。","it":"Mi ha prescritto una medicina, che prendo tre volte al giorno."},{"zh":"今天我觉得好多了。","it":"Oggi mi sento molto meglio."}]},{"id":"zh-t15-una-lettera","livello":5,"titolo":{"zh":"给朋友的一封信","it":"Una lettera a un amico"},"domande":[{"frase":2,"domanda_it":"Che cosa ha di speciale la nuova casa?","scelte_it":["Un piccolo giardino","Una grande terrazza","Una piscina"],"giusta":0},{"frase":3,"domanda_it":"Com'è il vicinato?","scelte_it":["Gentile e disponibile","Rumoroso","Sconosciuto"],"giusta":0},{"frase":4,"domanda_it":"Che cosa propone all'amico?","scelte_it":["Di venirlo a trovare","Di scrivergli di nuovo","Di telefonare"],"giusta":0}],"frasi":[{"zh":"亲爱的朋友，你好！","it":"Caro amico, ciao!"},{"zh":"好久不见，你最近怎么样？","it":"Quanto tempo, come stai in questi giorni?"},{"zh":"我刚搬了新家，房子不大，但是有一个小花园。","it":"Ho appena traslocato: la casa non è grande, ma ha un piccolo giardino."},{"zh":"邻居们都很友好，经常帮助我。","it":"I vicini sono tutti gentili e mi aiutano spesso."},{"zh":"希望你有时间来看我，我们可以一起做饭，看电影。","it":"Spero che tu abbia tempo per venirmi a trovare: potremo cucinare insieme e guardare un film."},{"zh":"请代我向你的家人问好。","it":"Saluta da parte mia la tua famiglia."},{"zh":"祝你工作顺利，身体健康！","it":"Ti auguro buon lavoro e buona salute!"}]}]</script>
 <script>
 /* ---- TESTI_ZH (lazy, da data/reading/testi-zh.js) ---- */
@@ -25806,6 +25956,12 @@ var RADICALS = [[1, "一", "", "uno", "一"],
 })();
 </script>
 <script type="text/plain" id="lazy-mod-credits">
+/* ---- i18n/credits-t12.js ---- */
+/* ===== màndarínō · i testi dei Crediti aggiunti con il Task 12 (frasi Tatoeba, voci reali), caricati con ui/credits.js al primo uso di CP.credits. ===== */
+Object.assign(I18N.it, { "cr.tatoeba": "Frasi d'esempio degli esercizi", "cr.tatoebaT": "<b>Tatoeba</b> (tatoeba.org), dei suoi contributori, licenza <b>CC BY 2.0 FR</b>: le frasi a buco e da riordinare, con la traduzione. L'elenco degli autori è in <b>materiali/crediti/autori-frasi.tsv</b> nel repository (github.com/longhitown/m-ndar-n-)." });
+Object.assign(I18N.it, { "cr.voiceIt": "Voci italiane reali", "cr.voiceItT": "Frasi lette da una persona vera, per il corso di italiano: <b>voce: NM1, Tatoeba, CC BY 4.0</b>.", "cr.voiceZh": "Voci cinesi reali", "cr.voiceZhT": "Frasi lette da persone vere, per l'ascolto: <b>voci: Mozilla Common Voice, CC0</b>. Nessun dato di chi parla." });
+Object.assign(I18N.zh, { "cr.tatoeba": "练习中的例句", "cr.tatoebaT": "<b>Tatoeba</b>（tatoeba.org），由其贡献者提供，许可证 <b>CC BY 2.0 FR</b>：填空和排序练习中的句子及其翻译。作者名单见代码库中的 <b>materiali/crediti/autori-frasi.tsv</b>（github.com/longhitown/m-ndar-n-）。" });
+Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT": "意大利语课程中由真人朗读的句子：<b>录音：NM1，Tatoeba，CC BY 4.0</b>。", "cr.voiceZh": "中文真人录音", "cr.voiceZhT": "听力练习中由真人朗读的句子：<b>录音：Mozilla Common Voice，CC0</b>。不包含任何朗读者的个人信息。" });
 /* ---- ui/credits.js ---- */
 /* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Come funziona → Crediti e licenze).
    I testi delle licenze sono anche in LICENZE/ nel repository. */
@@ -25838,6 +25994,8 @@ var RADICALS = [[1, "一", "", "uno", "一"],
     ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."],
     ["cr.mmhd", "cr.mmhdT", "GNU Lesser General Public License, versione 3 o successiva.\nhttps://www.gnu.org/licenses/lgpl-3.0.html\n\nIl testo completo è in LICENZE/LGPL-3.0.txt (con LICENZE/GPL-3.0.txt) nel repository."],
     ["cr.tatoeba", "cr.tatoebaT", "Creative Commons Attribution 2.0 France (CC BY 2.0 FR) · https://creativecommons.org/licenses/by/2.0/fr/\n\nFrasi d'esempio: Tatoeba (tatoeba.org), dei suoi contributori. L'elenco degli autori delle frasi usate è in materiali/crediti/autori-frasi.tsv nel repository:\nhttps://github.com/longhitown/m-ndar-n-/blob/mandarino/materiali/crediti/autori-frasi.tsv\nOgni frase conserva il suo numero Tatoeba (src/data/ex/)."],
+    ["cr.voiceIt", "cr.voiceItT", "Creative Commons Attribution 4.0 International (CC BY 4.0) · https://creativecommons.org/licenses/by/4.0/\n\nVoce: NM1, Tatoeba (tatoeba.org). Le registrazioni sono usate così come sono, convertite in Ogg Opus e tagliate ai silenzi."],
+    ["cr.voiceZh", "cr.voiceZhT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nMozilla Common Voice, Scripted Speech, cinese (Cina). Nessun dato di chi parla è nell'app."],
     ["cr.morph", "cr.morphT", "Morph-it! è distribuito con una doppia licenza: Creative Commons Attribution-ShareAlike 2.0 e GNU Lesser General Public License (LGPL). màndarínō ne usa i dati con la LGPL.\nhttps://www.gnu.org/licenses/lgpl-3.0.html\n\nVedi LICENZE/MORPH-IT.txt e THIRD-PARTY-NOTICES.md nel repository."]
   ];
   var DEV = "cr.dev";
@@ -25854,7 +26012,7 @@ var RADICALS = [[1, "一", "", "uno", "一"],
 })();
 </script>
 <script>
-/* ---- ui/credits.js (al primo uso di CP.credits) ---- */
+/* ---- i18n/credits-t12.js + ui/credits.js (al primo uso di CP.credits) ---- */
 (function () { var P = ["credits"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-credits"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
   P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
 </script>
@@ -27222,6 +27380,8 @@ Object.assign(I18N.zh, {"itd.passed": "通过", "itd.lessonN": "第 {n} 课", "i
 Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", "itd.best": "miglior risultato {p}%", "itd.pathT": "Il percorso delle lezioni", "itd.pathSub": "Superate {d} / {n} · servono almeno il {p}% di risposte giuste", "itd.share": "Condividi", "itd.morning": "Buongiorno", "itd.noon": "Buongiorno", "itd.afternoon": "Buon pomeriggio", "itd.evening": "Buonasera", "itd.continue": "Continua: lezione {n} · {t}", "itd.min": "circa {m} min", "itd.reviewN": "Ripassa {n} carte", "itd.allDone": "Tutte le 30 lezioni superate! Ripassa le parole", "itd.toNext": "Mancano {n} punti al prossimo grado", "itd.points": "{x} punti · prossimo grado a {n}", "itd.goal": "obiettivo di oggi", "itd.streak": "{n} giorni di fila", "itd.phraseT": "L'italiano di oggi", "itd.listen": "Ascolta", "itd.progress": "I miei progressi", "itd.gain": "+{n} punti", "itd.shareCard": "Condividi la carta ricordo", "itd.cards": "Carte ricordo", "itd.shareWeek": "Condividi la carta della settimana", "itd.ciaoZh": "你好！", "itm.first": "Primo gradino: la prima lezione superata", "itm.s7": "7 giorni di fila", "itm.s30": "30 giorni di fila", "itm.s100": "100 giorni di fila", "itm.w100": "100 parole imparate", "itm.w500": "500 parole imparate", "itm.w1000": "1000 parole imparate", "itm.all": "Tutte le 30 lezioni superate", "itm.rank": "Nuovo grado: {r}", "itm.congrats": "Complimenti! {m}", "itcard.sub": "L'italiano per chi parla cinese", "itcard.weekT": "La mia settimana", "itcard.rank": "Il mio grado", "itcard.points": "{n} punti", "itcard.wDays": "giorni di studio", "itcard.wWords": "parole nuove", "itcard.wLessons": "lezioni superate", "itcard.streak": "giorni di fila", "itcard.words": "parole imparate", "itcard.lessons": "lezioni superate", "itcard.phrase": "L'italiano di oggi", "itcard.foot": "gratis · offline · senza pubblicità · senza registrazione", "itcard.scan": "Inquadra per conoscere màndarínō", "itcard.alt": "Carta da condividere: l'italiano di oggi «{p}», grado {r}", "itcard.title": "Carta da condividere", "itcard.privacy": "L'immagine nasce sul tuo telefono; quello che ne fai è una tua scelta.", "itcard.format": "Formato", "itcard.theme": "Colore", "itcard.th.light": "Chiaro", "itcard.th.sepia": "Carta di riso", "itcard.th.dark": "Scuro", "itcard.sign": "Firma la carta", "itcard.namePh": "Il tuo nome (resta solo su questo telefono)", "itcard.share": "Condividi"});
 Object.assign(I18N.zh, {"itm.holeQ": "空里填什么？"});
 Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
+Object.assign(I18N.zh, {"itx.q.sig": "这个意大利语词是什么意思？", "itx.q.par": "用意大利语怎么说？", "itx.q.asc": "听一听：是哪个词？", "itx.q.ascF": "听一听：这句话是什么意思？", "itx.q.buco": "空里填哪个词？", "itx.q.gram": "空里填哪个？（语法）", "itx.q.ord": "把意大利语句子排好", "itx.q.scrivi": "用意大利语写出来", "itx.q.dett": "听写：听录音，写出这句话", "itx.q.verbo": "选出动词的正确形式", "itx.listen": "听", "itx.real": "真人录音", "itx.intro": "新词", "itx.learn": "记住了，练一练", "itx.done": "这次练习完成了！", "itx.doneSub": "做了 {n} 个练习。明天再来，记得更牢。", "itx.back": "回到课程", "itx.more": "再练一会儿", "itx.stepPractice": "练习：{n} 个词 · 约 {m} 分钟", "itx.stepLesson": "第 {n} 课：学习 + 小测验", "itx.stepRead": "读一篇短文：{t}", "itq.title": "短文阅读", "itq.lede": "用学过的词读意大利语短文。点一个词看意思，读完回答几个问题。", "itq.read": "已读", "itq.fit": "适合你", "itq.all": "所有短文", "itq.show": "显示", "itq.tr": "中文翻译", "itq.tap": "点一个词查看意思；点 🔊 听整句。", "itq.questions": "回答 {n} 个问题", "itq.score": "答对 {ok} / {n}", "itq.xp": "+{n} 分", "itq.new": "新词 {n} 个：点一下加入复习", "itq.added": "已加入复习"});
+Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?", "itx.q.par": "Come si dice in italiano?", "itx.q.asc": "Ascolta: quale parola è?", "itx.q.ascF": "Ascolta: che cosa vuol dire la frase?", "itx.q.buco": "Quale parola va nel buco?", "itx.q.gram": "Che cosa va nel buco? (grammatica)", "itx.q.ord": "Rimetti in ordine la frase italiana", "itx.q.scrivi": "Scrivilo in italiano", "itx.q.dett": "Dettato: ascolta e scrivi la frase", "itx.q.verbo": "Scegli la forma giusta del verbo", "itx.listen": "Ascolta", "itx.real": "voce reale", "itx.intro": "Parola nuova", "itx.learn": "Fatto, esercitiamoci", "itx.done": "Pratica finita!", "itx.doneSub": "{n} esercizi fatti. Domani di nuovo, per ricordare meglio.", "itx.back": "Torna al corso", "itx.more": "Ancora un po'", "itx.stepPractice": "Esercitati: {n} parole · circa {m} minuti", "itx.stepLesson": "Lezione {n}: studia + mini-verifica", "itx.stepRead": "Leggi un testo: {t}", "itq.title": "Lettura graduata", "itq.lede": "Testi italiani con le parole che hai studiato. Tocca una parola per il significato; alla fine qualche domanda.", "itq.read": "letto", "itq.fit": "giusto per te", "itq.all": "Tutti i testi", "itq.show": "Mostra", "itq.tr": "Traduzione cinese", "itq.tap": "Tocca una parola per il significato; 🔊 per ascoltare la frase.", "itq.questions": "Rispondi a {n} domande", "itq.score": "Giuste {ok} su {n}", "itq.xp": "+{n} punti", "itq.new": "{n} parole nuove: un tocco per metterle nel ripasso", "itq.added": "Messa nel ripasso"});
 </script>
 <script>/* ---- i18n/it-course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-i18n-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="course-it-it-today-js">
@@ -27269,6 +27429,8 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
     var curId = A.current(), cur = curId ? A.lessons().filter(function (l) { return l.id === curId; })[0] : null, q = A.queue(), due = q.due.length, ph = phraseOfDay();
     var main = cur ? '<button type="button" class="btn-main itd-go" data-itd-go="' + CP.attr(cur.id) + '">' + esc(T("itd.continue", { n: cur.n, t: cur.title })) + "<small>" + esc(T("itd.min", { m: minutes(cur) })) + "</small></button>"
       : '<button type="button" class="btn-main itd-go" data-itd-review>' + esc(T(due ? "itd.reviewN" : "itd.allDone", { n: due })) + "</button>";
+    /* Task 12: nello stile Guidato il pulsante dice il passo successivo (lezione, esercizi, lettura: it/esercizi.js) */
+    var gs = CP.itEx ? CP.itEx.stepHTML() : ""; if (gs) main = gs;
     return '<section class="panel it-today" aria-labelledby="itd-h">' +
       '<h2 id="itd-h" class="itd-hi">' + esc(T(g[0])) + ' <span class="muted" lang="it">· ' + g[1] + "</span></h2>" + main +
       '<div class="itd-row">' +
@@ -27545,11 +27707,17 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
     lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
     open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
-    show: show, rerender: function () { render(); }
+    show: show, rerender: function () { render(); },
+    /* Task 12: gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
+    grade: function (v, g, meta) { var e = typeof v === "string" ? BYID[v] : v; if (e) gradeOf(e, g + 1, !!(meta && meta.retry)); },
+    entry: function (id) { return BYID[id] || null; }, lex: function () { return LEX; }, rec: function (id) { return sload()[id] || null; },
+    example: exOf, sayBtn: sayBtn, zhHTML: zhHTML, gLabel: gLabel, PRON: PRON, detail: detailHTML,
+    nextCard: function () { rv.cur = null; rv.shown = false; rv.done++; }
   };
   function render() {
     var h = tab === "lessons" ? lessonsView() : tab === "words" ? wordsView() : tab === "review" ? reviewView() : tab === "conj" ? conjView() : phrasesView();
     view.innerHTML = h;
+    if (tab === "review" && CP.itEx) CP.itEx.mount(view);
   }
 
   /* ---------------- 课程: lezioni ---------------- */
@@ -27676,10 +27844,13 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
   }
   function reviewView() {
     var Q = queue();
-    if (!rv.cur) rv.cur = Q.due[0] || Q.fresh[0] || null;
+    /* Task 12: negli stili Misto e Guidato la carta la disegnano gli esercizi (it/esercizi.js), che possono riproporre una parola sbagliata */
+    var EX = CP.itEx && CP.itEx.on();
+    if (!rv.cur) rv.cur = (EX && CP.itEx.pick(Q)) || Q.due[0] || Q.fresh[0] || null;
     var head = tt("itc.162") + Q.due.length + tt("itc.163") + Q.newLeft + tt("itc.164") + Q.learned + tt("itc.165");
     if (!rv.cur) return head + tt("itc.166") + '<div class="acts"><button type="button" class="btn-s" data-itd-share>' + esc(tt("itd.share")) + "</button></div>";
     var e = rv.cur, isNew = !sload()[e.id];
+    var exh = EX ? CP.itEx.card(e, isNew) : null; if (exh) return head + exh;
     var h = head + '<div class="panel it-card"><span class="tag muted small">' + (isNew ? tt("itc.167") : tt("itc.020")) + " · " + esc(gLabel(e)) + '</span><div class="it-front" lang="it">' + esc(e.it) + "</div><div>" + sayBtn(e.say) + "</div>";
     if (!rv.shown) h += tt("itc.168") + Z.showAnswer + "</button>";
     else {
@@ -27688,14 +27859,17 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
     }
     return h + "</div>";
   }
-  function grade(r) {
-    var S = sload(), e = rv.cur, now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now);
+  /* r: voto FSRS 1-4. retry (Task 12, dagli esercizi): la ripetizione nella stessa sessione aggiorna la carta solo se chiude
+     un riapprendimento, come CP.grade nel corso di cinese. Stesso formato di cp-it-srs-v1 di sempre: { c, n, lr } */
+  function gradeOf(e, r, retry) {
+    var S = sload(), now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now), apply = !retry || !rec.c || (r >= 3 && rec.c.state !== FSRS.REVIEW);
     if (!rec.c) { var m = S.__meta && S.__meta.d === today() ? S.__meta : { d: today(), nw: 0 }; m.nw = (m.nw || 0) + 1; S.__meta = m; }
-    var nc = SCH.review(card, r, now);
-    S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: now };
-    ssave(S); rv.cur = null; rv.shown = false; rv.done++;
+    var nc = apply ? SCH.review(card, r, now) : card;
+    S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: apply ? now : (rec.lr || now) };
+    ssave(S);
     if (CP.game && CP.game.addWord && r >= 2) { try { CP.game.addWord(e.id); } catch (x) {} }   /* 10 punti, una volta al giorno per parola, come nel corso di cinese */
   }
+  function grade(r) { gradeOf(rv.cur, r); rv.cur = null; rv.shown = false; rv.done++; }
 
   /* ---------------- 变位: coniugazioni ---------------- */
   var VERBS = (function () { var seen = {}, out = []; LEX.forEach(function (e) { if (e.kind === "verb" && e.aux && !seen[e.it]) { seen[e.it] = 1; out.push(e); } }); return out; })();
@@ -27755,12 +27929,13 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
     CP.sfx("tap"); pxPaint();
   });
   function phrasesView() {
+    if (CP.itRead && CP.itRead.active()) return CP.itRead.html();
     if (ph.dlg) {
       var d = DIALOGS.filter(function (x) { return x.id === ph.dlg; })[0];
       return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itp-back>' + Z.back + "</button></div><h2>" + esc(DLG_ZH[d.id] || d.title) + '</h2><p class="small muted" lang="it">' + esc(d.title + " — " + d.sub) + "</p>" +
         d.lines.map(function (l) { return '<div class="it-line it-' + (l[0] === "B" ? "b" : "a") + '"><div class="it-big" lang="it">' + esc(l[3]) + '</div><div class="small">' + zhHTML(l[2], l[1]) + "</div>" + sayBtn(l[3], true) + "</div>"; }).join("");
     }
-    var h = pxHTML() + (CP.itCheckHTML ? CP.itCheckHTML() : "") + tt("itc.178");
+    var h = pxHTML() + (CP.itRead ? CP.itRead.listHTML() : "") + (CP.itCheckHTML ? CP.itCheckHTML() : "") + tt("itc.178");
     h += PHRASES.map(function (g, gi) {
       return '<details class="pat"><summary>' + esc(PHR_ZH[gi] || g.title) + "</summary>" + g.items.map(function (p) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(p[2]) + '</div><div class="small">' + zhHTML(p[1], p[0]) + "</div><div>" + sayBtn(p[2], true) + "</div></div>"; }).join("") + "</details>";
     }).join("");
@@ -27824,6 +27999,7 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
   window.__mdBack = function () {
     if (CP.topSheet && CP.topSheet()) return prevBack ? prevBack() : false;
     if (tab === "lessons" && ls.view !== "list") { ls.view = "list"; ls.cur = null; ls.quiz = null; render(); return true; }
+    if (tab === "phrases" && CP.itRead && CP.itRead.active()) { CP.itRead.close(); render(); return true; }
     if (tab === "phrases" && ph.dlg) { ph.dlg = null; render(); return true; }
     if (tab !== "lessons") { show("lessons"); return true; }
     return false;
@@ -27831,6 +28007,388 @@ Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
 })();
 </script>
 <script>/* ---- it/course.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-course-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-it-esercizi-js">
+/* ===== màndarínō · corso di italiano: gli esercizi del ripasso (Task 12, T5, parità con il corso di cinese).
+   Stesso motore (CP.exEngine, gruppo ESERCIZI, caricato al primo uso), stessi stili (⚙️: Guidato, Misto, Classico = le
+   carte di prima), stesse regole del voto (mai Facile da una scelta multipla); il voto passa da CP.itApi.grade(voce, g,
+   meta), che scrive cp-it-srs-v1 nel formato di sempre. Le parole nuove si presentano prima (parola, cinese, forme, frase).
+   Tipi (prefisso «it-», distinti da quelli del cinese nel registro del motore):
+     riconoscimento: it-significato (italiano → cinese), it-parola (cinese → italiano);
+     misto: it-ascolto (la parola, con la voce italiana del telefono), it-ascolto-frase (una frase, con la voce reale se è
+       sul telefono), it-buco (la parola nella frase), it-ordina (le tessere della frase);
+     produzione: it-scrivi (dal cinese, confronto CP.typing.compareIt e, se sbagliata, il correttore it/checker.js),
+       it-dettato (solo con una voce reale), it-buco-gram (articoli, preposizioni, avere/essere: INSIEMI.it), it-verbo
+       (la forma del presente da CP.ita).
+   Distrattori: CP.distract.itWords (stessa specie e, per i nomi, stesso genere; livello ±1 dal capitolo della tappa;
+   nessun carattere cinese in comune). Frasi: l'esempio della parola, le frasi Tatoeba (FRASI_IT, con traduzione) e gli
+   esempi delle lezioni, con un livello non oltre quello della parola. Dopo un errore la parola torna dopo 3 carte con un
+   altro tipo. Percorso guidato: il passo successivo nella carta «今天» (CP.itEx.step). Testi in i18n/it-course.js. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc;
+  var IT = (function () { try { return localStorage.getItem("cp-course") === "it"; } catch (e) { return false; } })();
+  if (!IT) return;
+  function A() { return CP.itApi; }
+  function D() { return CP.distract; }
+  function on() { return !!(CP.ex && CP.ex.stile() !== "classic"); }
+  var E = null, KEYED = false;
+  function eng() { if (E) return E; if (!CP.ex) return null; E = CP.ex.carica(); if (E && !E.REG["it-significato"]) register(E); return E; }
+  function pool() { var L = A().lex(); if (!KEYED) { L.forEach(function (e) { e.key = e.id; }); KEYED = true; } return L; }
+  function word(id) { pool(); return A().entry(id); }
+
+  /* ---- contesto ---- */
+  var CEFR = { A1: 1, A2: 2, B1: 3, "B2+": 4 };
+  function levelOf(e) { var ch = typeof SECTION_CHAPTER !== "undefined" ? SECTION_CHAPTER[e.sec] : 0; return ch || 6; }
+  function ttsIt() {
+    var An = window.MandarinoAndroid; try { if (An && An.ttsHasLang && An.ttsHasLang("it-IT")) return true; } catch (e) {}
+    var s = window.speechSynthesis; return !!(s && s.getVoices && (s.getVoices() || []).some(function (v) { return /^it/i.test(v.lang || ""); }));
+  }
+  function clip(text) { return CP.voiceClip ? CP.voiceClip.url(text, "it") : ""; }
+  var CTX = { levelOf: levelOf, pool: pool, hasVoice: ttsIt, poly: function () { return false; } };
+
+  /* ---- forme e frasi ---- */
+  var WRE = /[A-Za-zÀ-ÖØ-öø-ÿ]+['’]?/g;
+  function bare(s) { return String(s).replace(/[（(].*$/, "").replace(/^(il|lo|la|i|gli|le|un|uno|una)\s+/i, "").replace(/^(l|un|dell|dall|nell|all|sull)['’]\s*/i, "").trim(); }
+  function forms(e) {
+    var out = [];
+    if (e.kind === "noun") (e.forms || [e.it]).forEach(function (f) { String(f).split(" / ").forEach(function (x) { out.push(bare(x)); }); });
+    else if (e.kind === "adj" || e.kind === "nat") (e.forms || []).forEach(function (f) { out.push(f); });
+    else if (e.kind === "verb") { out.push(e.it); if (e.aux && CP.ita) for (var p = 0; p < 6; p++) { try { out.push(CP.ita.present(e.it, p)); } catch (x) {} } }
+    else out.push(e.say || e.it);
+    var seen = {}; return out.map(function (x) { return String(x).toLowerCase(); }).filter(function (x) { if (!x || /\s/.test(x) || seen[x]) return false; seen[x] = 1; return true; });
+  }
+  var SI = null;
+  function sindex() {
+    if (SI) return SI;
+    SI = {};
+    var add = function (it, zh, lv, src) {
+      if (!it || !zh) return; var seen = {};
+      (String(it).match(WRE) || []).forEach(function (t) { t = t.toLowerCase(); if (seen[t]) return; seen[t] = 1; (SI[t] = SI[t] || []).push({ it: it, zh: zh, lv: lv, src: src }); });
+    };
+    try { if (typeof FRASI_IT !== "undefined") FRASI_IT.righe.forEach(function (r) { add(r[0], r[1], CEFR[r[2]] || 4, "tatoeba"); }); } catch (e) {}
+    (typeof ITLESSONS !== "undefined" ? ITLESSONS : []).forEach(function (l) { (l.ex || []).forEach(function (x) { add(x[0], x[1], 1, "lesson"); }); });
+    return SI;
+  }
+  /* le frasi di una parola: l'esempio, poi Tatoeba e le lezioni, con livello non oltre quello della parola */
+  function sentences(e) {
+    var F = forms(e), out = [], seen = {}, max = Math.max(2, levelOf(e) - 1), x = A().example(e);
+    var push = function (s, form) { if (seen[s.it]) return; seen[s.it] = 1; out.push({ it: s.it, zh: s.zh, form: form, src: s.src }); };
+    if (x) { var tk = (x.it.match(WRE) || []).map(function (t) { return t.toLowerCase(); }); F.some(function (f) { if (tk.indexOf(f) >= 0) { push({ it: x.it, zh: x.zh, src: "example" }, f); return true; } return false; }); }
+    var I = sindex();
+    F.forEach(function (f) { (I[f] || []).forEach(function (s) { if (s.lv <= max) push(s, f); }); });
+    return out;
+  }
+  /* la frase con un buco al posto della forma (la prima volta che compare come parola) */
+  function holed(s, form) {
+    var done = false;
+    return esc(s.it).replace(WRE, function (t) { if (done || t.toLowerCase() !== form) return t; done = true; return '<span class="ex-hole" aria-label="' + CP.attr(T("exm.hole")) + '">' + new Array(Math.max(3, t.length) + 1).join("＿") + "</span>"; });
+  }
+  function pick(list, r, ok) { var c = list.filter(ok || function () { return true; }); return c.length ? c[Math.floor(r() * Math.min(c.length, 4))] : null; }
+  function words(s) { return String(s).replace(/[.,!?¿¡;:«»"]/g, "").split(/\s+/).filter(Boolean); }
+
+  /* ---- disegno ---- */
+  function sayIt(text, big) { return '<div class="ex-listen"><button type="button" class="say' + (big ? " big" : "") + '" data-it-say="' + CP.attr(text) + '" aria-label="' + CP.attr(T("itx.listen")) + '">🔊</button>' + (clip(text) ? '<span class="tag small">' + esc(T("itx.real")) + "</span>" : "") + "</div>"; }
+  function itBig(e) { return '<div class="it-front" lang="it">' + esc(e.it) + "</div>"; }
+  function zhBig(e) { return '<div class="ex-zhq">' + A().zhHTML(e.zh, e.py) + "</div>"; }
+  function mc(right, wrong, r, extra) { var o = D().options(right, wrong, r); return Object.assign({ kind: "mc", opts: o.opts, right: o.right }, extra || {}); }
+  function formAt(x, e, form) {
+    /* la forma della risposta sbagliata che corrisponde a quella giusta (stesso posto tra le forme, o la stessa persona del verbo) */
+    var Fe = forms(e), Fx = forms(x), i = Fe.indexOf(form);
+    return Fx[i] || Fx[0] || "";
+  }
+  function register(ENG) {
+    var reg = function (d) { d.corso = "it"; ENG.register(d); };
+    reg({ id: "it-significato", famiglia: 0, q: "itx.q.sig",
+      crea: function (e, ctx, r) { var x = D().itWords(e, ctx.pool(), ctx, r); return x && mc(esc(e.zh), x.map(function (y) { return esc(y.zh); }), r, { prompt: itBig(e) + sayIt(e.say), lang: "zh-CN", say: e.say }); } });
+    reg({ id: "it-parola", famiglia: 0, q: "itx.q.par",
+      crea: function (e, ctx, r) { var x = D().itWords(e, ctx.pool(), ctx, r); return x && mc(esc(e.it), x.map(function (y) { return esc(y.it); }), r, { prompt: zhBig(e), lang: "it", wide: true }); } });
+    reg({ id: "it-ascolto", famiglia: 1, q: "itx.q.asc",
+      richiede: function (e, ctx) { return ctx.hasVoice() || !!clip(e.say); },
+      crea: function (e, ctx, r) { var x = D().itWords(e, ctx.pool(), ctx, r); return x && mc(esc(e.it), x.map(function (y) { return esc(y.it); }), r, { prompt: sayIt(e.say, true), lang: "it", wide: true, say: e.say, autoSay: true }); } });
+    reg({ id: "it-ascolto-frase", famiglia: 1, q: "itx.q.ascF",
+      richiede: function (e, ctx) { return sentences(e).some(function (s) { return clip(s.it) || ctx.hasVoice(); }); },
+      crea: function (e, ctx, r) {
+        var S = sentences(e), s = pick(S, r, function (x) { return !!clip(x.it); }) || (ctx.hasVoice() ? pick(S, r) : null); if (!s) return null;
+        var I = sindex(), other = [], seen = {}; seen[s.zh] = 1;
+        D().shuffle(Object.keys(I), r).some(function (k) { var c = I[k][0]; if (c && !seen[c.zh] && Math.abs(words(c.it).length - words(s.it).length) <= 3) { seen[c.zh] = 1; other.push(esc(c.zh)); } return other.length >= 3; });
+        return other.length >= 3 && mc(esc(s.zh), other, r, { prompt: sayIt(s.it, true), lang: "zh-CN", wide: true, say: s.it, autoSay: true, sentence: s });
+      } });
+    reg({ id: "it-buco", famiglia: 1, q: "itx.q.buco",
+      richiede: function (e) { return sentences(e).length > 0; },
+      crea: function (e, ctx, r) {
+        var s = pick(sentences(e), r), x = D().itWords(e, ctx.pool(), ctx, r); if (!s || !x) return null;
+        var wrong = x.map(function (y) { return formAt(y, e, s.form); }).filter(function (f, i, a) { return f && f !== s.form && a.indexOf(f) === i; });
+        if (wrong.length < 2) return null;
+        return mc(esc(s.form), wrong.map(esc), r, { prompt: '<div class="ex-sent" lang="it">' + holed(s, s.form) + '</div><div class="cd-note" lang="zh-CN">' + esc(s.zh) + "</div>", lang: "it", say: s.it, sentence: s });
+      } });
+    /* buco grammaticale: articoli, preposizioni (anche articolate), avere ed essere */
+    var SETS = function () { return (typeof INSIEMI !== "undefined" && INSIEMI.it) || []; };
+    var gramSpot = function (e) {
+      var res = [];
+      sentences(e).forEach(function (s) {
+        (s.it.match(WRE) || []).forEach(function (t) {
+          var lt = t.toLowerCase().replace("’", "'"); if (lt === s.form) return;
+          SETS().forEach(function (set) { if (set.membri.indexOf(lt) >= 0) res.push({ s: s, t: lt, set: set }); });
+        });
+      });
+      return res;
+    };
+    reg({ id: "it-buco-gram", famiglia: 2, q: "itx.q.gram",
+      richiede: function (e) { return gramSpot(e).length > 0; },
+      crea: function (e, ctx, r) {
+        var c = gramSpot(e); if (!c.length) return null;
+        var g = c[Math.floor(r() * c.length)], wrong = D().shuffle(g.set.membri.filter(function (m) { return m !== g.t; }), r).slice(0, 3); if (!wrong.length) return null;
+        return mc(esc(g.t), wrong.map(esc), r, { prompt: '<div class="ex-sent" lang="it">' + holed(g.s, g.t) + '</div><div class="cd-note" lang="zh-CN">' + esc(g.s.zh) + "</div>", lang: "it", say: g.s.it, sentence: g.s, note: g.set.nota_zh });
+      },
+      risposta: function (it) { if (it.note) { var fb = document.querySelector("#it-ex-root .ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="zh-CN">💡 ' + esc(it.note) + "</p>"); } } });
+    reg({ id: "it-ordina", famiglia: 1, q: "itx.q.ord",
+      richiede: function (e) { return sentences(e).some(function (s) { var n = words(s.it).length; return n >= 3 && n <= 8; }); },
+      crea: function (e, ctx, r) {
+        var s = pick(sentences(e), r, function (x) { var n = words(x.it).length; return n >= 3 && n <= 8; }); if (!s) return null;
+        var tiles = words(s.it).map(function (w, i) { return { id: i, txt: w }; }), sh = tiles;
+        for (var n = 0; n < 8; n++) { sh = D().shuffle(tiles, r); if (sh.map(function (x) { return x.txt.toLowerCase(); }).join() !== tiles.map(function (x) { return x.txt.toLowerCase(); }).join()) break; }
+        return { kind: "order", tiles: tiles, bank: sh, pick: [], it: s.zh, say: s.it, sentence: s, prompt: '<div class="cd-note ex-order-it" lang="zh-CN">「' + esc(s.zh) + "」</div>" };
+      } });
+    /* risposte accettate: per i nomi con o senza articolo */
+    var accept = function (e) { var a = [e.say || e.it]; if (e.kind === "noun") a.push(bare(e.say || e.it)); if (e.kind === "adj" || e.kind === "nat") a.push((e.forms || [])[0]); return a.filter(Boolean); };
+    var checkNote = function (it, res) {
+      if (!res.typed || res.ok || !CP.itCheck) return;
+      var c = CP.itCheck(res.typed), fb = document.querySelector("#it-ex-root .ex-fb");
+      if (fb && c && c.issues && c.issues.length) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="zh-CN">💡 ' + c.issues.map(function (x) { return esc(x.zh) + (x.fix ? ' → <b lang="it">' + esc(x.fix) + "</b>" : ""); }).join("<br>") + "</p>");
+    };
+    reg({ id: "it-scrivi", famiglia: 2, q: "itx.q.scrivi",
+      richiede: function (e) { return String(e.say || e.it).length <= 28; },
+      crea: function (e) { return { kind: "type", mode: "it", accept: accept(e), say: e.say, prompt: zhBig(e) }; },
+      risposta: checkNote });
+    reg({ id: "it-dettato", famiglia: 2, q: "itx.q.dett",
+      richiede: function (e) { return sentences(e).some(function (s) { return clip(s.it) && words(s.it).length <= 7; }); },
+      crea: function (e, ctx, r) {
+        var s = pick(sentences(e), r, function (x) { return clip(x.it) && words(x.it).length <= 7; }); if (!s) return null;
+        return { kind: "type", mode: "it", accept: [s.it], say: s.it, autoSay: true, sentence: s, prompt: sayIt(s.it, true) };
+      },
+      risposta: checkNote });
+    reg({ id: "it-verbo", famiglia: 2, q: "itx.q.verbo",
+      richiede: function (e) { return e.kind === "verb" && !!e.aux && !!CP.ita; },
+      crea: function (e, ctx, r) {
+        var P = A().PRON, p = P[Math.floor(r() * P.length)], right = CP.ita.present(e.it, p[1]), opts = [];
+        D().shuffle(P, r).forEach(function (o) { var f = CP.ita.present(e.it, o[1]); if (f !== right && opts.indexOf(f) < 0 && opts.length < 3) opts.push(f); });
+        if (opts.length < 2) return null;
+        return mc(esc(right), opts.map(esc), r, { prompt: '<p class="ask"><b lang="it">' + esc(p[0]) + '</b> + <b lang="it">' + esc(e.it) + "</b></p>" + zhBig(e), lang: "it", say: p[0] + " " + right });
+      } });
+  }
+
+  /* ---- la carta del ripasso ---- */
+  var SESS = { n: 0 }, RETRY = [], INTRO = {}, CUR = null, FALLBACK = {}, BUDGET = 0;
+  function speak(text, el) { CP.speak(text, { lang: "it-IT", el: el, voiceURI: CP.itVoiceURI ? CP.itVoiceURI() : "" }); }
+  function reveal(e, item) {
+    var s = item && item.sentence, x = s || A().example(e);
+    return '<div class="ex-rev it-rev">' + itBig(e) + '<div class="acts" style="margin:4px 0">' + A().sayBtn(e.say) + "</div><p>" + A().zhHTML(e.zh, e.py) + "</p>" +
+      (e.forms && e.kind !== "verb" ? '<p class="small" lang="it">' + esc(e.forms.join(" · ")) + "</p>" : "") +
+      (x ? '<div class="cd-ex"><div lang="it">' + esc(x.it) + " " + A().sayBtn(x.it, true) + '</div><div class="cd-note" lang="zh-CN">' + esc(x.zh) + "</div></div>" : "") + "</div>";
+  }
+  var KIT = {
+    root: null, corso: "it", ctx: CTX, word: word, speak: speak, reveal: reveal,
+    rec: function (id) { var r = A().rec(id); return r && r.c ? { n: r.n, st: r.c.st } : null; },
+    view: function () { return document.getElementById("view-it"); },
+    head: function () { return ""; },
+    sess: function () { return SESS; },
+    answer: function (g, m) {
+      var c = CUR; if (!c) return;
+      A().grade(c.e.k, g, { retry: !!c.e.retry, type: m && m.type });
+      SESS.n++;
+      /* dopo un errore la parola torna dopo 3 carte, con un altro tipo */
+      if (g < 2 && !c.e.retry) RETRY.push({ k: c.e.k, at: SESS.n + 3, lastType: c.e.exType });
+      CUR = null; A().nextCard(); A().rerender();
+    }
+  };
+  var FORCED = null;   /* per le prove: la prossima carta (CP.itEx.only) */
+  function pickNext(Q) {
+    if (FORCED) { var f = FORCED; FORCED = null; INTRO[f] = 1; CUR = { e: { k: f, kind: "test", ex: 1 } }; return A().entry(f); }
+    if (BUDGET && SESS.n >= BUDGET) return null;
+    for (var i = 0; i < RETRY.length; i++) if (RETRY[i].at <= SESS.n || (!Q.due.length && !Q.fresh.length)) { var r = RETRY.splice(i, 1)[0]; CUR = { e: { k: r.k, kind: "test", ex: 1, retry: true, lastType: r.lastType } }; return A().entry(r.k); }
+    return null;
+  }
+  function card(e, isNew) {
+    if (!eng() || FALLBACK[e.id]) return null;
+    if (BUDGET && SESS.n >= BUDGET) return doneHTML();
+    if (isNew && !INTRO[e.id] && !(CUR && CUR.e.k === e.id && CUR.e.retry)) {
+      var x = A().example(e);
+      return '<div class="panel it-card it-intro"><span class="tag">' + esc(T("itx.intro")) + " · " + esc(A().gLabel(e)) + "</span>" + itBig(e) + '<div class="acts" style="margin:4px 0">' + A().sayBtn(e.say) + "</div><p>" + A().zhHTML(e.zh, e.py) + "</p>" +
+        (e.forms && e.kind !== "verb" ? '<p class="small" lang="it">' + esc(e.forms.join(" · ")) + "</p>" : "") +
+        (x ? '<div class="cd-ex"><div lang="it">' + esc(x.it) + " " + A().sayBtn(x.it, true) + '</div><div class="cd-note" lang="zh-CN">' + esc(x.zh) + "</div></div>" : "") +
+        '<button type="button" class="btn-main" data-itx-learn="' + CP.attr(e.id) + '">' + esc(T("itx.learn")) + "</button></div>";
+    }
+    if (!CUR || CUR.e.k !== e.id) CUR = { e: { k: e.id, kind: "test", ex: 1 } };
+    return '<div id="it-ex-root" class="it-ex"></div>';
+  }
+  function doneHTML() {
+    return '<div class="panel done it-ex-done"><h3>' + esc(T("itx.done")) + '</h3><p class="small muted">' + esc(T("itx.doneSub", { n: SESS.n })) + '</p><button type="button" class="btn-main" data-itx-home>' + esc(T("itx.back")) + '</button><button type="button" class="btn-quiet" data-itx-more>' + esc(T("itx.more")) + "</button></div>";
+  }
+  function mount(view) {
+    var root = view.querySelector("#it-ex-root"); if (!root || !CUR) return;
+    KIT.root = root;
+    var ok = false; try { ok = E.render(CUR.e, KIT); } catch (x) { ok = false; }
+    if (!ok) { FALLBACK[CUR.e.k] = 1; CUR = null; A().rerender(); }
+  }
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("[data-itx-learn], [data-itx-home], [data-itx-more], [data-itg-go], [data-itg-dur]") : null; if (!b) return;
+    CP.sfx("tap");
+    if (b.hasAttribute("data-itx-learn")) { INTRO[b.getAttribute("data-itx-learn")] = 1; A().rerender(); }
+    else if (b.hasAttribute("data-itx-home")) { BUDGET = 0; SESS.n = 0; A().show("lessons"); }
+    else if (b.hasAttribute("data-itx-more")) { BUDGET = 0; A().rerender(); }
+    else if (b.hasAttribute("data-itg-dur")) { try { localStorage.setItem("cp-ex-dur", b.getAttribute("data-itg-dur")); } catch (x) {} A().rerender(); }
+    else if (b.hasAttribute("data-itg-go")) go(step());
+  });
+
+  /* ---- percorso guidato: il passo successivo nella carta «今天» ---- */
+  /* testi: A1 dopo 3 lezioni superate, A2 dopo 10, B1 dopo 20; e al massimo un testo ogni 3 lezioni, così la lettura non
+     ferma le lezioni */
+  var UNLOCK = { A1: 3, A2: 10, B1: 20 };
+  function passed() { var P = A().progress(); return A().lessons().filter(function (l) { var p = P[l.id] || {}; return p.done || (p.best || 0) >= A().PASS; }).length; }
+  function readText() {
+    var L = CP.itRead ? CP.itRead.texts() : [], rd = CP.itRead ? CP.itRead.readMap() : {}, n = passed();
+    if (n < 3 * (Object.keys(rd).length + 1)) return null;
+    return L.filter(function (t) { return !rd[t.id] && n >= (UNLOCK[t.livello] || 30); })[0] || null;
+  }
+  function step() {
+    var q = A().queue(), due = q.due.length, d = CP.ex.dur(), cur = A().current(), t = readText();
+    if (due >= 10) return { kind: "practice", n: Math.min(due, d * 3), d: d };
+    if (t) return { kind: "read", t: t };
+    if (cur) return { kind: "lesson", l: A().lessons().filter(function (l) { return l.id === cur; })[0] };
+    if (due || q.fresh.length) return { kind: "practice", n: Math.min(due + q.fresh.length, d * 3), d: d };
+    return { kind: "done" };
+  }
+  function go(s) {
+    if (s.kind === "practice") { eng(); BUDGET = s.n; SESS.n = 0; A().show("review"); }
+    else if (s.kind === "read" && CP.itRead) { CP.itRead.open(s.t.id); A().show("phrases"); }
+    else if (s.kind === "lesson" && s.l) A().open(s.l.id);
+    window.scrollTo(0, 0);
+  }
+  /* il pulsante primario della carta «今天» nello stile Guidato ("" = quello di sempre) */
+  function stepHTML() {
+    if (!CP.ex || CP.ex.stile() !== "guided") return "";
+    var s = step(); if (s.kind === "done") return "";
+    var label = s.kind === "practice" ? T("itx.stepPractice", { n: s.n, m: s.d }) : s.kind === "read" ? T("itx.stepRead", { t: s.t.titolo.zh }) : T("itx.stepLesson", { n: s.l.n, t: s.l.title }),
+      sub = s.kind === "read" ? '<small lang="it">' + esc(s.t.titolo.it) + "</small>" : s.kind === "lesson" ? "<small>" + esc(s.l.title) + "</small>" : "";
+    var d = CP.ex.dur();
+    return (s.kind === "practice" ? '<div class="seg gd-dur" role="group" aria-label="' + CP.attr(T("gd.durAria")) + '">' + [5, 10, 15].map(function (x) { return '<button type="button" data-itg-dur="' + x + '" aria-pressed="' + (x === d) + '"' + (x === d ? ' class="on"' : "") + ">" + esc(T("gd.dur", { n: x })) + "</button>"; }).join("") + "</div>" : "") +
+      '<button type="button" class="btn-main itd-go" data-itg-go>' + esc(label) + sub + "</button>";
+  }
+  CP.itEx = { on: on, pick: pickNext, card: card, mount: mount, step: step, stepHTML: stepHTML, forms: forms, sentences: sentences, engine: eng, kit: KIT, session: function () { return SESS; },
+    only: function (id) { FORCED = id; CUR = null; A().nextCard(); A().rerender(); } };
+  /* il corso è già disegnato (it/course.js gira prima): se si è sul ripasso, lo si ridisegna con gli esercizi */
+  if (A() && on()) A().rerender();
+})();
+</script>
+<script>/* ---- it/esercizi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-esercizi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-it-lettura-js">
+/* ===== màndarínō · corso di italiano: lettura graduata (Task 12, T5; la stessa del corso di cinese, phrases/reading.js).
+   In 句子, sopra le frasi: i testi italiani A1-B1 (TESTI_IT, da tools/lettura.mjs, letti al primo uso), per livello, con
+   «适合你» quando almeno il 90% delle parole è già nel ripasso e il segno «已读». Nel testo: ogni frase si ascolta (con la
+   voce reale, se è sul telefono), la traduzione cinese si accende e spegne, un tocco su una parola apre il suo foglio.
+   In fondo le domande in cinese (risposte in italiano, mescolate con un seme), le parole nuove con un tocco per metterle
+   nel ripasso (CP.itApi.grade, voto 0), 5 punti la prima volta e il segno in cp-ex-v1.read. Testi in i18n/it-course.js. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc;
+  var IT = (function () { try { return localStorage.getItem("cp-course") === "it"; } catch (e) { return false; } })();
+  if (!IT) return;
+  var XP = 5, FIT = 0.9, KEY = "cp-ex-v1", WRE = /[A-Za-zÀ-ÖØ-öø-ÿ]+['’]?/g;
+  var R = { view: "list", t: null, tr: true, ans: {} };
+  function A() { return CP.itApi; }
+  function texts() { try { return typeof TESTI_IT !== "undefined" ? TESTI_IT : []; } catch (e) { return []; } }
+  function load() { try { var o = JSON.parse(localStorage.getItem(KEY) || "null"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
+  function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
+  function readMap() { return load().read || {}; }
+  /* forma → voce del lessico (le forme di it/esercizi.js: nomi senza articolo, aggettivi, verbi con il presente) */
+  var FI = null;
+  function formIndex() {
+    if (FI) return FI; FI = {};
+    if (!CP.itEx) return FI;
+    A().lex().forEach(function (e) { CP.itEx.forms(e).forEach(function (f) { if (!FI[f]) FI[f] = e; }); });
+    return FI;
+  }
+  function entriesOf(t) { var I = formIndex(), seen = {}, out = []; t.frasi.forEach(function (f) { (f.it.match(WRE) || []).forEach(function (w) { var e = I[w.toLowerCase()]; if (e && !seen[e.id]) { seen[e.id] = 1; out.push(e); } }); }); return out; }
+  function known(e) { var r = A().rec(e.id); return !!(r && r.c); }
+  function knownPct(t) { var es = entriesOf(t); return es.length ? es.filter(known).length / es.length : 0; }
+  /* un generatore con seme (lo stesso del gruppo ESERCIZI, qui per non caricarlo solo per mescolare tre risposte) */
+  function rng(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } var a = h >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var x = a; x = Math.imul(x ^ (x >>> 15), x | 1); x ^= x + Math.imul(x ^ (x >>> 7), x | 61); return ((x ^ (x >>> 14)) >>> 0) / 4294967296; }; }
+  function shuffled(t, i, d) {
+    var r = rng(t.id + "|" + i), a = d.scelte_it.slice();
+    for (var j = a.length - 1; j > 0; j--) { var k = Math.floor(r() * (j + 1)), x = a[j]; a[j] = a[k]; a[k] = x; }
+    return { opts: a, right: a.indexOf(d.scelte_it[d.giusta]) };
+  }
+
+  function listHTML() {
+    var L = texts(); if (!L.length) return "";
+    var rd = readMap(), lv = {};
+    L.forEach(function (t) { (lv[t.livello] = lv[t.livello] || []).push(t); });
+    return '<section class="itr-read"><h2 class="it-topic">' + esc(T("itq.title")) + '</h2><p class="small muted" style="margin:0 0 8px">' + esc(T("itq.lede")) + "</p>" + Object.keys(lv).sort().map(function (l) {
+      return '<h3 class="rdg-h">' + esc(l) + '</h3><div class="rdg-list">' + lv[l].map(function (t) {
+        var fit = knownPct(t) >= FIT;
+        return '<button type="button" class="rdg-item" data-itq="' + CP.attr(t.id) + '"><span class="rdg-zh" lang="it">' + esc(t.titolo.it) + '</span><span class="rdg-it" lang="zh-CN">' + esc(t.titolo.zh) + "</span>" +
+          '<span class="rdg-tags">' + (rd[t.id] ? '<span class="tag">✓ ' + esc(T("itq.read")) + "</span>" : "") + (fit ? '<span class="tag rdg-fit">★ ' + esc(T("itq.fit")) + "</span>" : "") + "</span></button>";
+      }).join("") + "</div>";
+    }).join("") + "</section>";
+  }
+  function sentHTML(f) {
+    var I = formIndex(), line = esc(f.it).replace(WRE, function (w) { var e = I[w.toLowerCase()]; return e ? '<button type="button" class="itq-w" data-itq-w="' + CP.attr(e.id) + '">' + w + "</button>" : w; });
+    return '<div class="rdg-s"><div class="itq-line it-big" lang="it">' + line + '</div><div class="rdg-tools">' + A().sayBtn(f.it, true) + (R.tr ? '<span class="cd-note" lang="zh-CN">' + esc(f.zh) + "</span>" : "") + "</div></div>";
+  }
+  function textHTML(t) {
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itq-back>← ' + esc(T("itq.all")) + "</button></div>" +
+      '<article class="panel rdg-text"><span class="tag muted small">' + esc(t.livello) + '</span><h3 lang="it">' + esc(t.titolo.it) + '</h3><p class="small muted" lang="zh-CN" style="margin:0">' + esc(t.titolo.zh) + "</p>" +
+      '<div class="seg rdg-togs" role="group" aria-label="' + CP.attr(T("itq.show")) + '"><button type="button" data-itq-tr aria-pressed="' + R.tr + '"' + (R.tr ? ' class="on"' : "") + ">" + esc(T("itq.tr")) + "</button></div>" +
+      t.frasi.map(sentHTML).join("") + '<p class="small muted">' + esc(T("itq.tap")) + '</p><div class="acts"><button type="button" class="btn-main" data-itq-q style="margin:0">' + esc(T("itq.questions", { n: (t.domande || []).length })) + "</button></div></article>";
+  }
+  function questionsHTML(t) {
+    var all = (t.domande || []).length, ok = 0;
+    var h = '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itq-text>← ' + esc(t.titolo.it) + '</button></div><div class="panel rdg-qs">';
+    (t.domande || []).forEach(function (d, i) {
+      var o = shuffled(t, i, d), a = R.ans[i];
+      if (a != null && a === o.right) ok++;
+      h += '<div class="rdg-q"><p class="ask" lang="zh-CN">' + esc(d.domanda_zh) + '</p><div class="ex-opts wide">' + o.opts.map(function (x, j) {
+        var cls = a == null ? "" : j === o.right ? " ok" : j === a ? " ko" : "";
+        return '<button type="button" class="ex-opt' + cls + '" data-itq-a="' + i + ":" + j + '"' + (a != null ? " disabled" : "") + ' lang="it"><span class="ex-n" aria-hidden="true">' + (j + 1) + '</span><span class="ex-t">' + esc(x) + "</span>" + (a != null && j === o.right ? '<span class="ex-mark" aria-hidden="true">✓</span>' : a === j ? '<span class="ex-mark" aria-hidden="true">✗</span>' : "") + "</button>";
+      }).join("") + "</div>" + (a != null && a !== o.right ? '<p class="small muted" lang="it">' + esc(t.frasi[d.frase].it) + "</p>" : "") + "</div>";
+    });
+    if (Object.keys(R.ans).length === all) {
+      var nw = entriesOf(t).filter(function (e) { return !known(e); });
+      h += '<div class="rdg-end"><p class="gd-score"><b>' + esc(T("itq.score", { ok: ok, n: all })) + "</b></p>" + (R.gotXp ? '<p class="small okline">' + esc(T("itq.xp", { n: XP })) + "</p>" : "") +
+        (nw.length ? "<h4>" + esc(T("itq.new", { n: nw.length })) + '</h4><div class="rdg-new">' + nw.map(function (e) { return '<button type="button" class="rdg-add" data-itq-add="' + CP.attr(e.id) + '"><span lang="it">' + esc(e.it) + '</span> <small lang="zh-CN">' + esc(e.zh) + "</small> <b>+</b></button>"; }).join("") + "</div>" : "") +
+        '<div class="acts"><button type="button" class="btn-main" data-itq-back style="margin:0">' + esc(T("itq.all")) + "</button></div></div>";
+    }
+    return h + "</div>";
+  }
+  function html() { return R.view === "q" && R.t ? questionsHTML(R.t) : R.t ? textHTML(R.t) : ""; }
+  function open(id) { var t = texts().filter(function (x) { return x.id === id; })[0]; if (!t) return; R.t = t; R.view = "text"; R.ans = {}; R.gotXp = false; }
+  function finish(t) {
+    var o = load(); o.read = o.read || {};
+    if (!o.read[t.id]) { o.read[t.id] = Date.now(); save(o); if (CP.game && CP.game.xp) CP.game.xp(XP); R.gotXp = true; if (window.Store && Store.flush) Store.flush(); }
+  }
+  function paint() { A().rerender(); window.scrollTo(0, 0); }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-itq], [data-itq-back], [data-itq-text], [data-itq-tr], [data-itq-w], [data-itq-q], [data-itq-a], [data-itq-add]") : null; if (!b) return;
+    CP.sfx("tap");
+    if (b.hasAttribute("data-itq")) { open(b.getAttribute("data-itq")); paint(); }
+    else if (b.hasAttribute("data-itq-back")) { R.t = null; R.view = "list"; paint(); }
+    else if (b.hasAttribute("data-itq-text")) { R.view = "text"; paint(); }
+    else if (b.hasAttribute("data-itq-tr")) { R.tr = !R.tr; A().rerender(); }
+    else if (b.hasAttribute("data-itq-w")) { var w = A().entry(b.getAttribute("data-itq-w")); if (w && A().detail) CP.openSheet(A().detail(w)); }
+    else if (b.hasAttribute("data-itq-q")) { R.view = "q"; paint(); }
+    else if (b.hasAttribute("data-itq-a")) {
+      var p = b.getAttribute("data-itq-a").split(":"), i = +p[0], t = R.t; if (!t || R.ans[i] != null) return;
+      R.ans[i] = +p[1]; CP.sfx(R.ans[i] === shuffled(t, i, t.domande[i]).right ? "ok" : "ko");
+      if (Object.keys(R.ans).length === (t.domande || []).length) finish(t);
+      A().rerender();
+    }
+    else if (b.hasAttribute("data-itq-add")) {
+      var id = b.getAttribute("data-itq-add"), en = A().entry(id); if (en && !known(en)) A().grade(en, 0, { type: "lettura" });
+      b.disabled = true; b.classList.add("ok"); b.querySelector("b").textContent = "✓"; CP.toast(T("itq.added"));
+    }
+  });
+  CP.itRead = { texts: texts, readMap: readMap, open: open, active: function () { return !!R.t; }, html: html, listHTML: listHTML, knownPct: knownPct, state: function () { return R; }, close: function () { R.t = null; R.view = "list"; } };
+})();
+</script>
+<script>/* ---- it/lettura.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-lettura-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="lazy-mod-sharecard">
 /* ---- ui/share-card.js ---- */
 /* ===== màndarínō · le carte da condividere: un'immagine (canvas) che nasce sul telefono, senza server.

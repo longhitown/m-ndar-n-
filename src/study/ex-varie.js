@@ -23,12 +23,12 @@
     var cur = ENG.current(); if (!cur || cur.done || cur.item.kind !== "type") return;
     var inp = cur.kit.root.querySelector("#ex-in"), v = inp ? inp.value : ""; if (!String(v).trim()) { if (inp) inp.focus(); return; }
     var it = cur.item, esito = it.mode === "pinyin" ? TY.comparePinyin(v, it.answer) : TY.compareIt(v, it.accept);
-    var rec = CP.S()[cur.w.key] || {}, g = ENG.voto({ kind: "type", ok: esito === "esatto", esito: esito, ms: Date.now() - cur.t0, st: rec.st || 0 });
+    var rec = (cur.kit.rec ? cur.kit.rec(cur.w.key) : CP.S()[cur.w.key]) || {}, g = ENG.voto({ kind: "type", ok: esito === "esatto", esito: esito, ms: Date.now() - cur.t0, st: rec.st || 0 });
     if (inp) { inp.disabled = true; inp.classList.add(g >= 2 ? "ok" : g === 1 ? "mid" : "ko"); }
     Array.prototype.forEach.call(cur.kit.root.querySelectorAll(".ex-chip"), function (b) { b.disabled = true; });
     var shown = it.mode === "pinyin" ? sylls(it.answer).join(" ") : it.accept[0];
     var msg = esito === "esatto" ? T("exm.right") : esito === "senza-toni" ? T("exm.noTones", { a: shown }) : esito === "toni-sbagliati" ? T("exm.badTones", { a: shown }) : esito === "accento" ? T("exm.accent", { a: shown }) : esito === "quasi" ? T("exm.typo", { a: shown }) : T("exm.was", { a: shown });
-    ENG.after({ ok: g >= 1, g: g, msg: msg, esito: esito });
+    ENG.after({ ok: g >= 1, g: g, msg: msg, esito: esito, typed: v });
   }
   document.addEventListener("submit", function (ev) { if (ev.target && ev.target.hasAttribute && ev.target.hasAttribute("data-ex-form")) { ev.preventDefault(); submit(); } });
   document.addEventListener("click", function (ev) {

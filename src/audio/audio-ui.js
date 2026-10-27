@@ -71,7 +71,7 @@
   /* strumenti per chi sviluppa o pubblica l'app (il pacchetto PWA): nascosti, si accendono con #dev nell'indirizzo */
   CP.dev = function () { try { if (location.hash === "#dev") localStorage.setItem("md-dev", "1"); if (location.hash === "#nodev") localStorage.removeItem("md-dev"); return localStorage.getItem("md-dev") === "1"; } catch (e) { return false; } };
   CP.voiceExtra = function () {
-    var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
+    var itc = CP.course && CP.course() === "it", vs = itc ? [] : CP.voices(), st = CP.audioState(), h = (!itc && window.__mdVoiceHelp ? window.__mdVoiceHelp("zh-CN") : "") + (CP.voiceClip && CP.voiceClip.langs().length ? CP.voiceDl.html() : "") + (CP.jukeboxUI ? CP.jukeboxUI() : "") + '<div class="vab" id="vab"><div class="small" style="font-weight:700">' + CP.t("snd.title") + '</div>' +
       '<p class="small muted" style="margin:2px 0 6px" id="aud-state">' + CP.t("snd.state", { s: st === "running" ? CP.t("snd.running") : st === "none" ? CP.t("snd.none") : st === "suspended" ? CP.t("snd.susp") : esc(st) }) + "</p>" +
       '<button type="button" class="btn-s" id="snd-test">' + CP.t("snd.test") + "</button>";
     if (vs.length >= 2) {

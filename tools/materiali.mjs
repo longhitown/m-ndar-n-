@@ -5,11 +5,12 @@
        non sopra quello dichiarato. Le frasi che non passano si scartano e si contano (è normale che qualcuna cada);
      - clip (voce-zh, voce-it): il file .ogg c'è, sotto i 60 KB; le frasi di materiali/escludi-frasi.txt si tolgono;
      - insiemi confondibili: si tengono i membri che sono parole del vocabolario (cinese).
-   Scrive src/data/ex/{frasi-zh,frasi-it,voce-zh,voce-it,insiemi}.js; tools/build.mjs li ricontrolla e fallisce se qualcosa
+   Scrive src/data/ex/{frasi-zh,frasi-it,voce-zh,voce-it,voci-file,insiemi}.js; tools/build.mjs li ricontrolla e fallisce se qualcosa
    non torna. Uso: node tools/materiali.mjs [--check]   (--check: non scrive, dice solo se i file sono aggiornati) */
 import fs from "fs";
 import path from "path";
 import vm from "vm";
+import crypto from "crypto";
 import { fileURLToPath } from "url";
 import { load, keysOf } from "./lib/data.mjs";
 
@@ -37,6 +38,8 @@ export function tools(srcDir) {
   return { W, segment, check, levelOf };
 }
 
+/* impronta di una clip: 8 cifre esadecimali dello SHA-256 (la build la ricontrolla) */
+export const voiceHash = (b) => crypto.createHash("sha256").update(b).digest("hex").slice(0, 8);
 const readJ = (f) => JSON.parse(fs.readFileSync(f, "utf8"));
 const rows = (o) => (o && o.righe) || [];
 const head = (what, lic) => "/* màndarínō · " + what + ". Generato da tools/materiali.mjs a partire da materiali/: non modificarlo a mano.\n   " + lic + " */\n";
@@ -77,6 +80,10 @@ export function build(srcDir, matDir) {
       bytes += sz; keep.push(r);
     }
     out[name] = { campi: v.campi, righe: keep, credito: v.credito || "", ext: v.ext || "ogg" };
+    /* il catalogo dei file (Task 12, T5-T6): per ogni clip l'impronta del contenuto, che va nel nome del file in dist/ */
+    const F = (out.VOICE_FILES = out.VOICE_FILES || { byte: {} });
+    F[lang] = {}; F.byte[lang] = 0;
+    for (const r of keep) { const b = fs.readFileSync(path.join(matDir, "audio", lang, r[0] + ".ogg")); F[lang][r[0]] = voiceHash(b); F.byte[lang] += b.length; }
     report.push(`voce-${lang}: ${keep.length} clip su ${rows(v).length} (${miss} senza file, ${big} oltre 60 KB, ${bad} con parole fuori dal vocabolario, ${exV} escluse a mano)`);
   }
   if (bytes > AUDIO_MAX) throw new Error("voci oltre il tetto di 10 MB: " + (bytes / 1048576).toFixed(2) + " MB");
@@ -96,6 +103,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     "frasi-it.js": js("FRASI_IT", out.FRASI_IT, head("frasi italiano → cinese per il corso di italiano (Task 12): frase, traduzione, livello stimato, numero su Tatoeba, numero della clip", "Fonte: Tatoeba (tatoeba.org), licenza CC BY 2.0 FR; autori in materiali/crediti/autori-frasi.tsv.")),
     "voce-zh.js": js("VOCE_ZH", out.VOCE_ZH, head("indice delle voci cinesi reali (Task 12): clip, chiave (solo caratteri), frase, livello, durata", "Fonte: Mozilla Common Voice Scripted Speech 27.0, licenza CC0-1.0. Nessun dato dei parlanti.")),
     "voce-it.js": js("VOCE_IT", out.VOCE_IT, head("indice delle voci italiane reali (Task 12): clip, chiave, frase, livello stimato, durata", "Fonte: Tatoeba, voce NM1, licenza CC BY 4.0.")),
+    "voci-file.js": js("VOICE_FILES", out.VOICE_FILES || { byte: {} }, head("catalogo dei file delle voci reali (Task 12): per lingua, numero della clip → impronta del contenuto; byte per lingua", "I file vanno in dist/audio/voce/<lingua>/<numero>.<impronta>.ogg (tools/build.mjs).")),
     "insiemi.js": js("INSIEMI", out.INSIEMI, "/* màndarínō · insiemi di elementi grammaticali da confondere, per le frasi a buco grammaticali (Task 12). Generato da\n   tools/materiali.mjs a partire da materiali/dati/insiemi-confondibili.json (scritti per il progetto): non modificarlo a mano. */\n")
   };
   fs.mkdirSync(OUT, { recursive: true });

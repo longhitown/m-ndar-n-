@@ -186,11 +186,17 @@
     lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
     open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
-    show: show, rerender: function () { render(); }
+    show: show, rerender: function () { render(); },
+    /* Task 12: gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
+    grade: function (v, g, meta) { var e = typeof v === "string" ? BYID[v] : v; if (e) gradeOf(e, g + 1, !!(meta && meta.retry)); },
+    entry: function (id) { return BYID[id] || null; }, lex: function () { return LEX; }, rec: function (id) { return sload()[id] || null; },
+    example: exOf, sayBtn: sayBtn, zhHTML: zhHTML, gLabel: gLabel, PRON: PRON, detail: detailHTML,
+    nextCard: function () { rv.cur = null; rv.shown = false; rv.done++; }
   };
   function render() {
     var h = tab === "lessons" ? lessonsView() : tab === "words" ? wordsView() : tab === "review" ? reviewView() : tab === "conj" ? conjView() : phrasesView();
     view.innerHTML = h;
+    if (tab === "review" && CP.itEx) CP.itEx.mount(view);
   }
 
   /* ---------------- 课程: lezioni ---------------- */
@@ -317,10 +323,13 @@
   }
   function reviewView() {
     var Q = queue();
-    if (!rv.cur) rv.cur = Q.due[0] || Q.fresh[0] || null;
+    /* Task 12: negli stili Misto e Guidato la carta la disegnano gli esercizi (it/esercizi.js), che possono riproporre una parola sbagliata */
+    var EX = CP.itEx && CP.itEx.on();
+    if (!rv.cur) rv.cur = (EX && CP.itEx.pick(Q)) || Q.due[0] || Q.fresh[0] || null;
     var head = tt("itc.162") + Q.due.length + tt("itc.163") + Q.newLeft + tt("itc.164") + Q.learned + tt("itc.165");
     if (!rv.cur) return head + tt("itc.166") + '<div class="acts"><button type="button" class="btn-s" data-itd-share>' + esc(tt("itd.share")) + "</button></div>";
     var e = rv.cur, isNew = !sload()[e.id];
+    var exh = EX ? CP.itEx.card(e, isNew) : null; if (exh) return head + exh;
     var h = head + '<div class="panel it-card"><span class="tag muted small">' + (isNew ? tt("itc.167") : tt("itc.020")) + " · " + esc(gLabel(e)) + '</span><div class="it-front" lang="it">' + esc(e.it) + "</div><div>" + sayBtn(e.say) + "</div>";
     if (!rv.shown) h += tt("itc.168") + Z.showAnswer + "</button>";
     else {
@@ -329,14 +338,17 @@
     }
     return h + "</div>";
   }
-  function grade(r) {
-    var S = sload(), e = rv.cur, now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now);
+  /* r: voto FSRS 1-4. retry (Task 12, dagli esercizi): la ripetizione nella stessa sessione aggiorna la carta solo se chiude
+     un riapprendimento, come CP.grade nel corso di cinese. Stesso formato di cp-it-srs-v1 di sempre: { c, n, lr } */
+  function gradeOf(e, r, retry) {
+    var S = sload(), now = Date.now(), rec = S[e.id] || {}, card = rec.c || SCH.newCard(now), apply = !retry || !rec.c || (r >= 3 && rec.c.state !== FSRS.REVIEW);
     if (!rec.c) { var m = S.__meta && S.__meta.d === today() ? S.__meta : { d: today(), nw: 0 }; m.nw = (m.nw || 0) + 1; S.__meta = m; }
-    var nc = SCH.review(card, r, now);
-    S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: now };
-    ssave(S); rv.cur = null; rv.shown = false; rv.done++;
+    var nc = apply ? SCH.review(card, r, now) : card;
+    S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: apply ? now : (rec.lr || now) };
+    ssave(S);
     if (CP.game && CP.game.addWord && r >= 2) { try { CP.game.addWord(e.id); } catch (x) {} }   /* 10 punti, una volta al giorno per parola, come nel corso di cinese */
   }
+  function grade(r) { gradeOf(rv.cur, r); rv.cur = null; rv.shown = false; rv.done++; }
 
   /* ---------------- 变位: coniugazioni ---------------- */
   var VERBS = (function () { var seen = {}, out = []; LEX.forEach(function (e) { if (e.kind === "verb" && e.aux && !seen[e.it]) { seen[e.it] = 1; out.push(e); } }); return out; })();
@@ -396,12 +408,13 @@
     CP.sfx("tap"); pxPaint();
   });
   function phrasesView() {
+    if (CP.itRead && CP.itRead.active()) return CP.itRead.html();
     if (ph.dlg) {
       var d = DIALOGS.filter(function (x) { return x.id === ph.dlg; })[0];
       return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itp-back>' + Z.back + "</button></div><h2>" + esc(DLG_ZH[d.id] || d.title) + '</h2><p class="small muted" lang="it">' + esc(d.title + " — " + d.sub) + "</p>" +
         d.lines.map(function (l) { return '<div class="it-line it-' + (l[0] === "B" ? "b" : "a") + '"><div class="it-big" lang="it">' + esc(l[3]) + '</div><div class="small">' + zhHTML(l[2], l[1]) + "</div>" + sayBtn(l[3], true) + "</div>"; }).join("");
     }
-    var h = pxHTML() + (CP.itCheckHTML ? CP.itCheckHTML() : "") + tt("itc.178");
+    var h = pxHTML() + (CP.itRead ? CP.itRead.listHTML() : "") + (CP.itCheckHTML ? CP.itCheckHTML() : "") + tt("itc.178");
     h += PHRASES.map(function (g, gi) {
       return '<details class="pat"><summary>' + esc(PHR_ZH[gi] || g.title) + "</summary>" + g.items.map(function (p) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(p[2]) + '</div><div class="small">' + zhHTML(p[1], p[0]) + "</div><div>" + sayBtn(p[2], true) + "</div></div>"; }).join("") + "</details>";
     }).join("");
@@ -465,6 +478,7 @@
   window.__mdBack = function () {
     if (CP.topSheet && CP.topSheet()) return prevBack ? prevBack() : false;
     if (tab === "lessons" && ls.view !== "list") { ls.view = "list"; ls.cur = null; ls.quiz = null; render(); return true; }
+    if (tab === "phrases" && CP.itRead && CP.itRead.active()) { CP.itRead.close(); render(); return true; }
     if (tab === "phrases" && ph.dlg) { ph.dlg = null; render(); return true; }
     if (tab !== "lessons") { show("lessons"); return true; }
     return false;

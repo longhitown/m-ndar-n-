@@ -87,7 +87,9 @@
       for (var n = 0; n < 8; n++) { sh = D.shuffle(tiles, r); if (sh.map(function (x) { return x.id; }).join() !== tiles.map(function (x) { return x.id; }).join()) break; }
       return { kind: "order", tiles: tiles, bank: sh, pick: [], it: s.it, say: s.zh, prompt: '<div class="cd-note ex-order-it" lang="it">«' + esc(s.it) + "»</div>" };
     } });
-  function tile(t, attr, used) { return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(t.w.py) + '</span><span class="th" lang="zh-CN">' + CP.hanziHTML(t.w.hz, t.w.py) + "</span></button>"; }
+  /* le tessere italiane (corso di italiano) portano il testo in t.txt */
+  function tile(t, attr, used) { if (t.txt != null) return '<button type="button" class="tile it-tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + ' lang="it"><span class="th">' + esc(t.txt) + "</span></button>";
+    return '<button type="button" class="tile' + (used ? " used" : "") + '" ' + attr + (used ? " disabled" : "") + '><span class="tp">' + CP.pinyinHTML(t.w.py) + '</span><span class="th" lang="zh-CN">' + CP.hanziHTML(t.w.hz, t.w.py) + "</span></button>"; }
   ENG.renderers.order = {
     html: function (it) {
       var by = {}; it.bank.forEach(function (t) { by[t.id] = t; });
@@ -109,7 +111,9 @@
     if (b.hasAttribute("data-exo")) { var id = +b.getAttribute("data-exo"); if (it.pick.indexOf(id) < 0) it.pick.push(id); CP.sfx("tap"); ENG.renderers.order.redraw(it, cur.kit.root); }
     else if (b.hasAttribute("data-exo-un")) { var u = +b.getAttribute("data-exo-un"); it.pick = it.pick.filter(function (x) { return x !== u; }); ENG.renderers.order.redraw(it, cur.kit.root); }
     else {
-      var ok = it.pick.join() === it.tiles.map(function (t) { return t.id; }).join();
+      /* si confronta il testo: due tessere uguali («la … la») si possono scambiare */
+      var by = {}, txt = function (t) { return t.txt != null ? t.txt.toLowerCase() : t.id; }; it.tiles.forEach(function (t) { by[t.id] = t; });
+      var ok = it.pick.map(function (id) { return txt(by[id]); }).join("|") === it.tiles.map(txt).join("|");
       Array.prototype.forEach.call(cur.kit.root.querySelectorAll(".ex-slot .tile, .ex-bank .tile"), function (x) { x.disabled = true; });
       var slot = cur.kit.root.querySelector(".ex-slot"); if (slot) slot.classList.add(ok ? "ok" : "ko");
       ENG.after({ ok: ok, g: ENG.voto({ kind: "mc", ok: ok }), msg: ok ? T("exm.right") : T("exm.orderWas", { s: it.say }) });

@@ -605,3 +605,11 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .rdg-new { display: flex; flex-wrap: wrap; gap: 6px; }
 .rdg-add { min-height: 44px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
 .rdg-add.ok { border-color: var(--t2); }
+/* Task 12, T5: corso di italiano, la parola cinese della domanda e il testo da leggere */
+.ex-zhq { text-align: center; margin: var(--sp-2) 0; }
+.ex-zhq .lp { display: block; font-size: 1.05rem; }
+.ex-zhq .lh { font-size: 2.4rem; line-height: 1.2; }
+.it-ex .ex-card .it-front { text-align: center; }
+.itq-line { display: block; line-height: 2.6; }
+.itq-w { display: inline-block; font: inherit; line-height: 1.3; color: inherit; background: none; border: 0; border-radius: 6px; padding: 12px 2px; min-height: 44px; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 4px; }
+.itq-w:hover, .itq-w:focus-visible { background: var(--chip); }
