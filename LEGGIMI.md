@@ -482,7 +482,8 @@ store (Task 7D) il link allo store va controllato con le regole di Google Play.
 
 [PRIVACY.md](PRIVACY.md), in italiano e in cinese, dice che cosa resta sul dispositivo (tutto), quando l'app usa la rete
 (controllo aggiornamenti dell'APK, voce online se accesa, riconoscimento vocale del browser, file dello stesso sito, link
-toccati) e come funzionano contributi e sigilli. In breve, la stessa cosa sta nell'app: ⚙️ → Dati e privacy → 🔒 Privacy
+toccati), il backup automatico di Android e come funzionano contributi, Pleco e sigilli. In breve, la stessa cosa sta
+nell'app: ⚙️ → Informazioni e supporto → 🔒 Privacy
 (`src/ui/privacy.js`). **Se aggiungi una richiesta di rete, aggiorna tutti e due**: la tabella di PRIVACY.md e le righe
 `pv.*` in `src/i18n/`.
 
