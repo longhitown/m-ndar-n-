@@ -148,6 +148,13 @@ function sandbox() {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
+/* ---- pagina di presentazione (site/): niente script, font, immagini o fogli esterni; due lingue ---- */
+{
+  const h = fs.readFileSync(path.join(ROOT, "site/index.html"), "utf8");
+  const ext = [...h.matchAll(/<(script|img|link|iframe|source|video|audio)\b[^>]*?(?:src|href)="([^"]+)"/gi)].map((m) => m[2]).filter((u) => /^(https?:)?\/\//i.test(u));
+  check("pagina di presentazione: nessuno script né risorsa esterna, italiano e cinese, link all'app e alla privacy", !/<script\b/i.test(h) && !ext.length && /lang="zh-CN"/.test(h) && /href="app\/"/.test(h) && /PRIVACY\.md/.test(h), ext.join(", "));
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

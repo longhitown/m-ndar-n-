@@ -1,0 +1,49 @@
+# màndarínō · sito su GitHub Pages: la pagina di presentazione (site/) alla radice e l'app (dist/) in app/.
+# Una volta sola: Settings → Pages → Build and deployment → Source: «GitHub Actions».
+# Parte a ogni push sul ramo principale che tocca l'app o la pagina, oppure a mano (Actions → pages → Run workflow).
+# Niente chiavi né segreti: usa solo il token del workflow, con i permessi minimi di Pages.
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["src/**", "site/**", "tools/build.mjs", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  sito:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Costruisce l'app e mette insieme il sito
+        run: |
+          node tools/build.mjs
+          mkdir -p _site/app
+          cp -r site/. _site/
+          cp -r dist/. _site/app/
+          rm -f _site/app/_headers
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
