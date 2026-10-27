@@ -202,9 +202,8 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 **Aggiornare:** basta `node tools/build.mjs` e un push: `APP_VERSION` cambia da solo e i telefoni vedono
 «Nuova versione disponibile · Aggiorna». **Scaricare l'app come file:** `dist/index.html` funziona da solo, anche offline.
 
-**Nome del repository:** GitHub ha tolto gli accenti e il repository si chiama `m-ndar-n-`. Conviene rinominarlo
-`mandarino` (Settings → General → Repository name): i vecchi indirizzi, le release e le API vengono reindirizzati.
-Dopo, per ordine, aggiorna `REPO` in `src/pwa/pwa.js` (controllo aggiornamenti dell'APK) e il link qui sotto.
+**Nome del repository:** `longhitown/mandarino` (prima `m-ndar-n-`, perché GitHub aveva tolto gli accenti; i vecchi indirizzi,
+le release e le API vengono reindirizzati). Il nome è in un solo punto, `MD_CONFIG.REPO` in `src/config.js`.
 
 ## L'APK per Android (gratis, senza Play Store)
 
@@ -212,9 +211,9 @@ Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk
 costruisce l'APK, lo verifica con Android lint e `apksigner` e, sul ramo principale, lo pubblica come Release.
 Il link da mandare a chi vuole l'app non cambia mai:
 
-`https://github.com/longhitown/m-ndar-n-/releases/latest/download/mandarino.apk`
+`https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk`
 
-(se rinomini il repository, cambia la parte `longhitown/m-ndar-n-`). Chi lo apre sul telefono deve consentire
+(il vecchio indirizzo con `m-ndar-n-` continua a funzionare: GitHub lo reindirizza). Chi lo apre sul telefono deve consentire
 l'installazione «da questa fonte» la prima volta. Android 8.0 o più recente.
 
 **La chiave di firma (una volta sola, poi mai più):** perché ogni nuova versione si installi sopra la vecchia senza perdere

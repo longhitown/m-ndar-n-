@@ -3,7 +3,7 @@
    Se il repository cambia nome, se cambia la pagina di sostegno o l'indirizzo di contatto, si cambia solo questo file.
    Gli interruttori FEATURE_* li può sovrascrivere la build (versione «store», vedi tools/build.mjs --flavor store). ===== */
 var MD_CONFIG = {
-  REPO: "longhitown/m-ndar-n-",                       /* GitHub: issue dei contributi, controllo delle release dell'APK */
+  REPO: "longhitown/mandarino",                       /* GitHub: issue dei contributi, controllo delle release dell'APK */
   CONTACT_EMAIL: "mandarinoapp@gmail.com",            /* canale secondario dei contributi */
   SUPPORT_URL: "https://ko-fi.com/mandarinoapp",      /* sostegno volontario (link aperto solo da un tocco) */
   STORE_URLS: { play: "", fdroid: "" },               /* indirizzi degli store, quando ci saranno */
