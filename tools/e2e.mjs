@@ -254,6 +254,33 @@ try {
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4c. Pleco: spento di base, doppia conferma, pulsante nel foglio del carattere, pressione di 2 s */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    await p.evaluate(() => CP.openFamily("好")); await p.waitForTimeout(150);
+    const offBtn = await p.$("[data-pleco]"); await p.evaluate(() => CP.closeSheet());
+    await p.evaluate(() => CP.openSettings("set-pleco")); await p.waitForTimeout(150);
+    await p.click("#opt-pleco"); await p.waitForSelector("[data-pleco-ok1]");
+    const notYet = await p.evaluate(() => !CP.pleco.on());
+    await p.click("[data-pleco-ok1]"); await p.waitForSelector("[data-pleco-ok2]"); await p.click("[data-pleco-ok2]"); await p.waitForTimeout(200);
+    check("Pleco: spento di base, si accende solo dopo due conferme", !offBtn && notYet && await p.evaluate(() => CP.pleco.on() && localStorage.getItem("cp-pleco-v1") === "1"));
+    await p.evaluate(() => { CP.closeSheet(); const se = document.getElementById("settings"); if (se && !se.hidden) CP.untrap(se); window.__pl = []; CP.pleco.open = (q) => { window.__pl.push(q); return true; }; CP.openFamily("好"); }); await p.waitForTimeout(150);
+    await p.click("[data-pleco]"); await p.evaluate(() => CP.closeSheet()); await p.waitForTimeout(100);
+    const url = await p.evaluate(() => CP.pleco.url("你好"));
+    check("Pleco: pulsante nel foglio del carattere, link plecoapi://", (await p.evaluate(() => window.__pl.join())) === "好" && url === "plecoapi://x-callback-url/s?q=%E4%BD%A0%E5%A5%BD", url);
+    /* pressione: un carattere di una riga di Parole; 0,6 s apre solo la famiglia, 2,2 s apre anche Pleco */
+    await p.evaluate(() => { window.__pl = []; CP.show("words", true, true); }); await p.waitForTimeout(300);
+    const box = await p.evaluate(() => { const el = [...document.querySelectorAll("#view-words span")].find((x) => x.getClientRects().length && CP.charTarget(x)); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    const press = async (ms) => { await p.mouse.move(box.x, box.y); await p.mouse.down(); await p.waitForTimeout(ms); await p.mouse.up(); await p.waitForTimeout(150); };
+    if (box) { await press(600); }
+    const short = await p.evaluate(() => window.__pl.length); await p.evaluate(() => CP.closeSheet());
+    if (box) { await press(2200); }
+    check("Pleco: 0,6 s apre solo il foglio del carattere, 2 s aprono Pleco", !!box && short === 0 && await p.evaluate(() => window.__pl.length === 1), JSON.stringify({ box, short }));
+    check("Pleco: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -456,7 +483,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {
