@@ -18,6 +18,7 @@
     <string name="w_large_desc">Serie, ripassi in scadenza e parola del giorno</string>
     <string name="m_play">Riprendi</string>
     <string name="m_pause">Pausa</string>
+    <string name="m_prev">Precedente</string>
     <string name="m_next">Successivo</string>
     <string name="w_study">Studia ora</string>
     <string name="w_tap_meaning">Tocca per il significato</string>

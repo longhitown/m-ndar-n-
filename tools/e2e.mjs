@@ -979,6 +979,34 @@ try {
     check("Musica: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 5e. musica: i brani dell'utente (⚙️ → Musica). Un WAV vero, un file rotto con estensione .mp3 e uno troppo grande;
+     copia nella memoria dell'app (IndexedDB), elenco, riascolto dopo il ricaricamento, «Solo i miei brani», «Rimuovi». */
+  {
+    const wav = (sec) => { const rate = 8000, n = rate * sec, b = Buffer.alloc(44 + n * 2); b.write("RIFF", 0); b.writeUInt32LE(36 + n * 2, 4); b.write("WAVEfmt ", 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(rate, 24); b.writeUInt32LE(rate * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write("data", 36); b.writeUInt32LE(n * 2, 40); for (let i = 0; i < n; i++) b.writeInt16LE(Math.round(Math.sin(i / 8 * Math.PI) * 6000), 44 + i * 2); return b; };
+    const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload();
+    await p.evaluate(() => { document.getElementById("settings-btn").click(); document.getElementById("grp-adv").open = true; document.getElementById("vset").open = true; }); await p.waitForSelector("#ub-box");
+    check("Brani tuoi: il pannello dice che restano sul dispositivo e non entrano nel backup", await p.evaluate(() => /backup/.test(document.getElementById("ub-box").textContent) && !!document.querySelector("[data-ub-add]")));
+    const pick = p.waitForEvent("filechooser"); await p.click("[data-ub-add]");
+    const fc = await pick;
+    check("Brani tuoi: il selettore accetta più file", fc.isMultiple());
+    await fc.setFiles([{ name: "Il_mio_brano.wav", mimeType: "audio/wav", buffer: wav(6) }, { name: "rotto.mp3", mimeType: "audio/mpeg", buffer: Buffer.from("non sono audio") }]);
+    await p.waitForFunction(() => /Aggiunti|已添加/.test(document.getElementById("ub-msg").textContent), null, { timeout: 20000 });
+    const r = await p.evaluate(() => ({ list: document.querySelector(".ub-list").textContent, msg: document.getElementById("ub-msg").textContent, ls: JSON.parse(localStorage.getItem("md-ubl")), tr: CP.audioTracks.list.filter((t) => t.user).length, bk: Object.keys(localStorage).filter((k) => k.indexOf("cp-") === 0 && /md-ubl/.test(k)).length }));
+    check("Brani tuoi: il file buono è in elenco col nome del file, quello rotto è rifiutato con il suo nome", /Il mio brano/.test(r.list) && /rotto\.mp3/.test(r.msg) && r.ls.length === 1 && r.ls[0].sec === 6 && r.tr === 1 && !r.bk, JSON.stringify(r));
+    const id = await p.evaluate(() => JSON.parse(localStorage.getItem("md-ubl"))[0].id);
+    await p.evaluate((id) => CP.jukebox.play(id), id); await p.waitForFunction((id) => CP.audioFile.state(id) === "ok" && CP.musicState().track === id, id, { timeout: 15000 });
+    check("Brani tuoi: il brano suona dalla memoria dell'app, senza rete", true);
+    await p.reload(); await p.evaluate(() => { document.getElementById("settings-btn").click(); document.getElementById("grp-adv").open = true; document.getElementById("vset").open = true; }); await p.waitForSelector("#ub-box .ub-list");
+    check("Brani tuoi: dopo il ricaricamento l'elenco c'è ancora", await p.evaluate(() => /Il mio brano/.test(document.querySelector(".ub-list").textContent) && CP.audioTracks.list.some((t) => t.user)));
+    await p.click("[data-ub-mode=only]");
+    check("Brani tuoi: «Solo i miei brani» lascia nel mescolamento solo i tuoi", await p.evaluate(() => CP.audioTracks.list.filter((t) => t.user).length === 1 && localStorage.getItem("cp-ubmode") === "only"));
+    await p.click("[data-ub-rm]"); await p.waitForFunction(() => !document.querySelector(".ub-list"));
+    const left = await p.evaluate(() => new Promise((res) => { const rq = indexedDB.open("mandarino-user-music", 1); rq.onsuccess = () => { const q = rq.result.transaction("tracks").objectStore("tracks").count(); q.onsuccess = () => res(q.result); }; }));
+    check("Brani tuoi: «Rimuovi» toglie il brano dall'elenco e dalla memoria dell'app", left === 0 && await p.evaluate(() => !CP.audioTracks.list.some((t) => t.user)));
+    check("Brani tuoi: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5d. musica: il loop dei brani senza buchi. Ogni brano suona dal riproduttore vero dell'app (elemento <audio>
      in loop dentro il grafo Web Audio); a 0,35 s dalla fine si salta, e dopo il giro un AnalyserNode prende gli ultimi
      32768 campioni (circa 0,7 s), che contengono la cucitura. Buco = la sequenza più lunga sotto −60 dB: deve stare sotto
