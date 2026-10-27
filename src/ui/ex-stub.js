@@ -1,4 +1,4 @@
-/* ===== màndarínō · stile di ripasso, la parte sempre presente: ⚙️ → Avanzate → «Stile di ripasso»
+/* ===== màndarínō · stile di ripasso, la parte sempre presente: ⚙️ → Studio → «Stile di ripasso»
    (Guidato, Misto, Classico) e CP.ex.carica(), che esegue al primo uso il gruppo ESERCIZI (tools/build.mjs, GROUPS: il
    motore degli esercizi, i distrattori, la digitazione, il percorso guidato, la lettura). Con lo stile Classico non si
    carica nulla e il ripasso è quello di sempre. Preferenza del dispositivo: cp-ex-style. ===== */

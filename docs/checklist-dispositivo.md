@@ -15,11 +15,11 @@ telefono vero. Dieci minuti, prima di ogni release importante. Segna data, telef
 | **Promemoria**: accendilo per tra due minuti | arriva la notifica (e chiede il permesso la prima volta, Android 13+) |
 | **Indietro** (gesto e tasto, Android 13+ e 16) | chiude prima il foglio aperto, poi la sessione, poi torna al Percorso; solo alla fine esce |
 | **Bordi dello schermo** (Android 15+) | niente sotto la barra di stato, la barra di navigazione o il ritaglio della fotocamera; la tastiera non copre i campi |
-| **Fotocamera e QR**: ⚙️ → Sincronizzazione → passa a un altro telefono | il QR si legge; nessuna immagine salvata |
+| **Fotocamera e QR**: ⚙️ → Dati e sincronizzazione → Sincronizzazione → passa a un altro telefono | il QR si legge; nessuna immagine salvata |
 | **Pleco** (se installato): accendi l'opzione, tieni premuto un carattere 2 s, tocca «Apri in Pleco» | si apre Pleco sulla parola giusta. Senza Pleco: messaggio «Pleco non è installato» e «Scarica Pleco» |
 | **Carta da condividere** (corso di italiano): 分享, poi in WeChat pressione lunga sul QR | WeChat riconosce il QR e apre la pagina (vedi docs/cina.md) |
-| **Sfida a un amico**: Percorso → 🎯, poi inquadra il QR con un secondo telefono (⚙️ → Sfide e classe → Inquadra il QR) | sul secondo telefono le stesse domande; il link (se c'è il sito) si apre anche dalla fotocamera di sistema |
-| **Foglio della classe**: ⚙️ → Sfide e classe → Prepara un pacchetto → Foglio da stampare, stampato su A4 | i due QR si leggono dalla carta; il pacchetto si importa |
+| **Sfida a un amico**: Percorso → 🎯, poi inquadra il QR con un secondo telefono (⚙️ → Studio → Sfide e classe → Inquadra il QR) | sul secondo telefono le stesse domande; il link (se c'è il sito) si apre anche dalla fotocamera di sistema |
+| **Foglio della classe**: ⚙️ → Studio → Sfide e classe → Prepara un pacchetto → Foglio da stampare, stampato su A4 | i due QR si leggono dalla carta; il pacchetto si importa |
 | **Aggiornamento sopra la versione precedente** | i progressi restano |
 
 Se qualcosa non va: una issue con telefono, versione di Android e che cosa hai visto.

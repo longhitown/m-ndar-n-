@@ -124,7 +124,7 @@
   document.addEventListener("visibilitychange", function () { if (document.hidden) writeOnly(); });
   window.addEventListener("pagehide", function () { writeOnly(); });
 
-  /* ---- ⚙️ → Sincronizzazione ---- */
+  /* ---- ⚙️ → Dati e sincronizzazione → Sincronizzazione ---- */
   function when(ts) { if (!ts) return T("sy.never"); var d = new Date(ts); return d.toLocaleDateString(LANG === "zh" ? "zh-CN" : "it-IT") + " " + d.toLocaleTimeString(LANG === "zh" ? "zh-CN" : "it-IT", { hour: "2-digit", minute: "2-digit" }); }
   function bodyHTML(note) {
     var c = cfg(), h = '<p class="small muted" style="margin:0">' + T("sy.lede") + "</p>";

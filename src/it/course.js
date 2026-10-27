@@ -1,5 +1,5 @@
 /* ===== Corso di italiano per chi parla cinese (意大利语课程) — la direzione «al contrario» dell'app.
-   Si sceglie dal benvenuto o da ⚙️ → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
+   Si sceglie dal benvenuto o da ⚙️ → Studio → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
    In modalità "it" l'interfaccia è in cinese e le quattro schede diventano: 课程 (lezioni), 单词 (parole), 复习 (ripasso),
    变位 (coniugazioni), 句子 (frasi e dialoghi). Le parole italiane non sono scritte a mano qui: nascono dalle schede
    grammaticali di data/grammar.js (genere, plurale, ausiliare) e dalla morfologia di phrases/italian.js, controllate con
@@ -13,7 +13,7 @@
   if (course !== "it") return;
 
   /* ================= da qui: modalità corso di italiano ================= */
-  /* ⚙️ → 语音: la voce italiana (velocità, scelta della voce, prova), poi musica e suono */
+  /* ⚙️ → 声音和音乐 → 语音: la voce italiana (velocità, scelta della voce, prova), poi musica e suono */
   var IVK = "cp-it-voice";
   function itVoices() { var s = window.speechSynthesis; return s && s.getVoices ? (s.getVoices() || []).filter(function (v) { return /^it/i.test(v.lang || ""); }) : []; }
   CP.itVoiceURI = function () { var u = lsGet(IVK) || "", vs = itVoices(); return vs.some(function (v) { return v.voiceURI === u; }) ? u : (vs[0] ? vs[0].voiceURI : ""); };

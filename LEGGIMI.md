@@ -13,7 +13,7 @@ Questa guida racconta come si usa. Chi vuole capire com'è fatta o contribuire a
 - **意大利语课程, l'italiano per chi parla cinese**: 30 lezioni in cinese, 4780 parole, coniugazione dei verbi, frasi, dialoghi e un
   controllo degli accordi nelle frasi che scrivi.
 
-Si sceglie dal benvenuto o da ⚙️ → Corso. I due corsi hanno progressi separati.
+Si sceglie dal benvenuto o da ⚙️ → Studio → Corso. I due corsi hanno progressi separati.
 
 ## La prima volta
 
@@ -21,10 +21,10 @@ All'apertura trovi tre porte:
 
 - **Parto da zero**: scegli un obiettivo, senti i quattro toni (o, nel corso di italiano, l'accento di «ciao», «grazie», «buongiorno») e fai la prima carta.
 - **Conosco già le basi**: cinque domande su di te e un test di livello di al massimo dieci domande. Il test non dice se hai risposto bene e «non lo so» non è una colpa.
-  Il livello proposto si corregge prima di confermare, e da ⚙️ → Avanzate puoi rifare il test o annullare il salto.
+  Il livello proposto si corregge prima di confermare, e da ⚙️ → Studio puoi rifare il test o annullare il salto.
 - **Ho già un backup o un altro dispositivo**: vai dritto a sincronizzazione, QR o backup.
 
-Le schede si aprono man mano, così all'inizio vedi poco: nel corso di cinese prima **Percorso** e **Studia**, poi **Parole** e **Frasi**. Se vuoi tutto subito, ⚙️ → Avanzate → «Mostra tutto, subito».
+Le schede si aprono man mano, così all'inizio vedi poco: nel corso di cinese prima **Percorso** e **Studia**, poi **Parole** e **Frasi**. Se vuoi tutto subito, ⚙️ → Studio → «Livello e schede» → «Mostra tutto, subito».
 
 ## Studiare ogni giorno
 
@@ -35,7 +35,7 @@ Le schede si aprono man mano, così all'inizio vedi poco: nel corso di cinese pr
 
 ### Tre stili di ripasso
 
-Da ⚙️ → Avanzate → «Stile di ripasso»:
+Da ⚙️ → Studio → «Stile di ripasso»:
 
 - **Guidato** (consigliato a chi comincia): «impara, esercitati, verifica», una tappa alla volta. Cinque parole nuove con frase e ascolto, poi esercizi sulle stesse
   parole e ripassi in scadenza. Con l'80% delle parole avviate arriva la **verifica**: 12 domande senza aiuti, e la tappa è «verificata» con l'80%. Il risultato dice
@@ -66,16 +66,22 @@ Le schede sono 课程 (30 lezioni con quiz), 复习 (ripasso), 单词 (4780 paro
 ## Voci e musica
 
 - **Voci reali:** per l'italiano e il cinese ci sono clip registrate da persone (Tatoeba e Mozilla Common Voice). Nell'app Android ci sono già; nella versione web si scaricano da
-  ⚙️ → Voce → «Scarica le voci» (circa 7 MB). Finché non lo fai, l'app non fa nessuna richiesta di rete e usa la voce del telefono.
+  ⚙️ → Suoni e musica → Voce → «Scarica le voci» (circa 7 MB). Finché non lo fai, l'app non fa nessuna richiesta di rete e usa la voce del telefono.
 - **Musica:** 22 brani originali, nel jukebox 🎵. Nell'app Android continua anche in secondo piano.
+
+## Le impostazioni
+
+⚙️ apre una pagina con la ricerca e cinque riquadri: **Aspetto** (tema, caratteri, lingua dei menu), **Suoni e musica** (audio, voce, microfono),
+**Studio** (corso, stile di ripasso, livello e schede, promemoria, sfide e classe), **Dati e sincronizzazione** (sincronizzazione, backup, esportazione, contributi) e **Informazioni**
+(come funziona, novità, privacy, sostieni il progetto). Ogni riquadro apre la sua pagina; «Indietro» (o il tasto Indietro di Android) torna ai riquadri. Se non trovi una voce, scrivine una parola nella ricerca.
 
 ## I tuoi dati
 
-- **Sincronizzare:** ⚙️ → Sincronizza scrive un file nel tuo cloud (Drive, Dropbox, OneDrive, iCloud…) e lo riunisce all'avvio, oppure passa tutto a un altro telefono con una sequenza di QR.
+- **Sincronizzare:** ⚙️ → Dati e sincronizzazione → Sincronizzazione scrive un file nel tuo cloud (Drive, Dropbox, OneDrive, iCloud…) e lo riunisce all'avvio, oppure passa tutto a un altro telefono con una sequenza di QR.
   Nessun account, nessun server.
-- **Backup:** un file che scarichi tu, da ⚙️ → Dati e privacy.
-- **Esportare per Anki:** dopo 400 parole iniziate (o 400 ripassi), ⚙️ → Dati e privacy → «Altre opzioni di esportazione». Il file porta le parole, non il calendario del ripasso.
-- **Cancellare tutto:** ⚙️ → Dati e privacy, oppure disinstalla l'app.
+- **Backup:** un file che scarichi tu, da ⚙️ → Dati e sincronizzazione.
+- **Esportare per Anki:** dopo 400 parole iniziate (o 400 ripassi), ⚙️ → Dati e sincronizzazione → «Altre opzioni di esportazione». Il file porta le parole, non il calendario del ripasso.
+- **Cancellare tutto:** ⚙️ → Dati e sincronizzazione, oppure disinstalla l'app.
 
 ## Con altre persone
 
@@ -86,16 +92,16 @@ Le schede sono 课程 (30 lezioni con quiz), 复习 (ripasso), 单词 (4780 paro
 
 ## Pleco
 
-Se hai il dizionario Pleco sul telefono, ⚙️ → Avanzate → «Mostra il collegamento a Pleco» (spento di base). Poi, tenendo premuto un carattere per due secondi, compare «Apri in Pleco». Non c'è sul computer né nel corso di italiano.
+Se hai il dizionario Pleco sul telefono, ⚙️ → Studio → «Mostra il collegamento a Pleco» (spento di base). Poi, tenendo premuto un carattere per due secondi, compare «Apri in Pleco». Non c'è sul computer né nel corso di italiano.
 
 ## Sostenere il progetto
 
-⚙️ → Informazioni e supporto → «Sostieni il progetto» porta a Ko-fi. Una donazione è libera e non sblocca nulla. Se vuoi un segno di gratitudine, scrivi «SIGILLO» nel messaggio: ti mando un sigillo
+⚙️ → Informazioni → «Sostieni il progetto» porta a Ko-fi. Una donazione è libera e non sblocca nulla. Se vuoi un segno di gratitudine, scrivi «SIGILLO» nel messaggio: ti mando un sigillo
 (支 Sostegno, 交 Cultura, 永 Custodire), un codice firmato che puoi riscattare nell'app e che è solo estetico. L'app non sa chi ha donato. Come funziona: [docs/sigilli.md](docs/sigilli.md).
 
 ## Privacy e licenze
 
-Nessun account, nessuna statistica, nessun tracciamento: tutto resta sul tuo dispositivo. I dettagli, anche in cinese, sono in [PRIVACY.md](PRIVACY.md) e nell'app, in ⚙️ → Informazioni e supporto → Privacy.
+Nessun account, nessuna statistica, nessun tracciamento: tutto resta sul tuo dispositivo. I dettagli, anche in cinese, sono in [PRIVACY.md](PRIVACY.md) e nell'app, in ⚙️ → Informazioni → Privacy.
 
 Il codice è MIT, i contenuti didattici e la musica CC BY 4.0, le parti di altri hanno la loro licenza: [NOTICE.md](NOTICE.md) e [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
