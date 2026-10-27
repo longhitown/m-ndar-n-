@@ -1126,6 +1126,29 @@ try {
     check("Logo, interfaccia in cinese: toccando una foglia l'avviso dice «第三声»", /第三声/.test(leafZh), leafZh);
     await ctx.close();
   }
+  /* microfono: un errore passeggero del riconoscitore (servizio occupato) si ritenta una volta, in silenzio, e non spegne il riconoscimento */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 740 }, permissions: ["microphone"] });
+    await ctx.addInitScript(() => {
+      window.__srStarts = 0;
+      function FakeSR() { this.onresult = this.onerror = this.onend = null; }
+      FakeSR.prototype.start = function () {
+        const me = this, n = ++window.__srStarts;
+        setTimeout(() => {
+          if (n === 1) { me.onerror && me.onerror({ error: "service-not-allowed" }); me.onend && me.onend(); }
+          else { me.onresult && me.onresult({ results: [[{ transcript: "我" }]] }); me.onend && me.onend(); }
+        }, 30);
+      };
+      FakeSR.prototype.stop = FakeSR.prototype.abort = function () {};
+      window.SpeechRecognition = window.webkitSpeechRecognition = FakeSR;
+    });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload(); await p.waitForTimeout(600);
+    const r = await p.evaluate(() => new Promise((ok) => { CP.listen("我", (o) => ok({ o, starts: window.__srStarts, down: CP._srDown || null })); }));
+    check("Microfono: un errore passeggero del riconoscitore si ritenta e il risultato arriva", r.o.ok === true && r.starts === 2 && !r.down, JSON.stringify(r));
+    check("Microfono: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
 } finally {
   await browser.close(); server.close();
 }
