@@ -40,5 +40,5 @@
       }).join("") +
       '<h3 class="cred-h">' + CP.t("cr.devT") + '</h3><p class="small muted">' + esc(CP.t(DEV)) + "</p>");
   };
-  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-credits]") : null; if (b) CP.credits(); });
+  /* il tocco su [data-credits] lo ascolta ui/settings.js: questo file si carica al primo uso di CP.credits (tools/build.mjs, LAZYMOD) */
 })();

@@ -77,7 +77,12 @@ l'immersione.
 
 - `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
 - `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`;
-- `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`.
+- `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`;
+- `ui/credits.js`, al primo accesso a `CP.credits`.
+
+**Gruppi caricati al primo uso** (`GROUPS` in `tools/build.mjs`, Task 12): i file restano testo e `window.__mdLoad[NOME]()`
+li esegue in ordine, una volta sola. Gruppo ESERCIZI: `i18n/exercises.js`, `core/typing.js`, `study/distractors.js`,
+`study/exercises.js` (poi il percorso guidato e la lettura), eseguito da `CP.ex.carica()`.
 
 L'elenco è `LAZYMOD` in `tools/build.mjs`.
 
@@ -105,6 +110,9 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.anatomy` / `CP.anatomyHTML(ch)` | `words/anatomy.js` | `get`, `html`, `svg`, `radical`, `groups` (componente di ogni tratto, per la lavagna), `on`/`set`; il foglio del carattere (`core/core.js`) chiede l'HTML |
 | `CP.challenge` | `ui/challenge.js` (al primo uso) | `create()`, `open(testo)`, `encode`/`decode` del codice `MDC1-…`, `build(sfida)` (domande dal seme), `link`, `base`; la sfida a un amico |
 | `CP.classroom` | `ui/classroom.js` (al primo uso) | `section()` (⚙️), `banner()`, `list`/`add`/`remove`, `progress(pacchetto)`, `report(pacchetto, nome)`, `table(riepiloghi)`, `sheet(canvas, pacchetto)` (foglio A4), `encode`/`decode`/`link` del codice `MDK1-…` |
+| `CP.ex` | `ui/ex-stub.js` (all'avvio) | `stile()` (`guided` / `mixed` / `classic`, `cp-ex-style`), `set(stile)`, `carica(cb)`: esegue il gruppo ESERCIZI |
+| `CP.exEngine` | `study/exercises.js` (gruppo ESERCIZI) | `register(def)`, `render(e, kit)`, `requeue`, `voto`, `famiglia`, `gradino`, `renderers`, `force(tipo)` (prove); `CP.studyKit` (in `study/study.js`) gli dà testa, parti della carta, esempio e `answer(g, meta)` |
+| `CP.distract` / `CP.typing` | `study/distractors.js` / `core/typing.js` (gruppo ESERCIZI) | risposte sbagliate credibili (funzioni pure con seme); confronto di pinyin e italiano digitati |
 | `CP.togetherOpen(testo)` / `CP.classBanner()` | `ui/together.js` (all'avvio) | apre una sfida o importa un pacchetto da un testo qualsiasi (link, codice, QR); il riquadro del pacchetto in cima al Percorso e alle lezioni di italiano |
 | `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
 | `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
