@@ -2,10 +2,15 @@
 <resources>
     <color name="paper">#F4EFE6</color>
     <color name="accent">#14594A</color>
-    <!-- widget «Oggi» -->
+    <!-- widget «Oggi»: carta di riso, verde dell'app, arancione del mandarino (solo per segni grandi e per il tasto: sul testo non arriva a 4,5:1) -->
     <color name="w_bg">#F4EFE6</color>
+    <color name="w_card">#FFFCF6</color>
+    <color name="w_stroke">#1F14594A</color>
     <color name="w_ink">#1E2420</color>
-    <color name="w_muted">#5E6A64</color>
+    <color name="w_muted">#56625B</color>
     <color name="w_accent">#14594A</color>
     <color name="w_on_accent">#FFFFFF</color>
+    <color name="w_orange">#F37905</color>
+    <color name="w_on_orange">#1E1409</color>
+    <color name="w_ripple">#33000000</color>
 </resources>

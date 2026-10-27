@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- widget «Oggi» grande, versione stretta (meno di ~280 dp): tutto in colonna -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center_vertical" android:padding="10dp" android:background="@drawable/widget_bg">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_w_flame" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/w_streak" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginStart="6dp" android:maxLines="1" android:ellipsize="end"
+            android:text="@string/w_sample_streak" android:textColor="@color/w_ink" android:textSize="13sp" android:textStyle="bold" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/w_word" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
+        android:layout_marginTop="4dp" android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="2dp" android:paddingBottom="2dp" android:background="@drawable/widget_card">
+        <TextView android:id="@+id/w_hz" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1"
+            android:text="@string/w_sample_hz" android:textColor="@color/w_ink" android:textSize="28sp" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:orientation="vertical">
+            <TextView android:id="@+id/w_py" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                android:text="@string/w_sample_py" android:textColor="@color/w_accent" android:textSize="14sp" android:textStyle="bold" />
+            <TextView android:id="@+id/w_it" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                android:text="@string/w_sample_it" android:textColor="@color/w_muted" android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/w_due_n" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/w_sample_n" android:textColor="@color/w_accent" android:textSize="24sp" android:textStyle="bold" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:orientation="vertical">
+            <TextView android:id="@+id/w_due_l" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                android:text="@string/w_sample_label" android:textColor="@color/w_ink" android:textSize="13sp" />
+            <TextView android:id="@+id/w_due_d" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                android:text="@string/w_sample_detail" android:textColor="@color/w_muted" android:textSize="13sp" />
+        </LinearLayout>
+        <TextView android:id="@+id/w_study" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="48dp"
+            android:gravity="center" android:paddingStart="16dp" android:paddingEnd="16dp" android:background="@drawable/widget_btn" android:text="@string/w_study"
+            android:textColor="@color/w_on_orange" android:textSize="14sp" android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>
