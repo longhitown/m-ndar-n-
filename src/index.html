@@ -149,34 +149,40 @@
 </div>
 <div id="settings" class="sheet" hidden role="dialog" aria-labelledby="set-title">
   <div class="fam-card set-card">
-    <div class="fam-head"><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
-    <!-- quattro gruppi (docs/ux-architettura.md): i moduli si aggiungono con CP.settingsExtras.push({ group, html }) -->
-    <div class="set-grp" id="grp-ess"><h3 class="set-gh" data-i18n="set.gEss">Essenziali</h3>
-    <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look" data-i18n="set.look">Aspetto</h3>
+    <div class="fam-head set-head"><button type="button" class="set-back btn-s" data-set-back hidden aria-label="Torna alle impostazioni" data-i18n-aria="set.backAria"><span aria-hidden="true">‹</span> <span data-i18n="set.back">Indietro</span></button><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
+    <!-- una pagina con cinque carte; ogni carta apre una schermata propria (docs/ux-architettura.md). I moduli si aggiungono con
+         CP.settingsExtras.push({ group, html }) e finiscono nella pagina del loro id (PAGE_OF in ui/settings.js) o del loro gruppo -->
+    <div id="set-home">
+      <div class="set-search"><label class="sr" for="set-q" data-i18n="set.search">Cerca nelle impostazioni</label><span class="mag" aria-hidden="true">🔎</span><input type="search" id="set-q" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cerca nelle impostazioni" data-i18n-ph="set.search"></div>
+      <div class="set-tiles" id="set-tiles"><button type="button" class="set-tile" data-set-open="look"><span class="ico" aria-hidden="true">🎨</span><span class="txt"><b data-i18n="set.p.look">Aspetto</b><small data-i18n="set.p.lookD">Tema, grandezza dei caratteri, lingua dei menu</small></span></button><button type="button" class="set-tile" data-set-open="sound"><span class="ico" aria-hidden="true">🔊</span><span class="txt"><b data-i18n="set.p.sound">Suoni e musica</b><small data-i18n="set.p.soundD">Volume, musica, voce e microfono</small></span></button><button type="button" class="set-tile" data-set-open="study"><span class="ico" aria-hidden="true">📚</span><span class="txt"><b data-i18n="set.p.study">Studio</b><small data-i18n="set.p.studyD">Corso, stile di ripasso, livello, promemoria, sfide</small></span></button><button type="button" class="set-tile" data-set-open="data"><span class="ico" aria-hidden="true">💾</span><span class="txt"><b data-i18n="set.p.data">Dati e sincronizzazione</b><small data-i18n="set.p.dataD">Backup, sincronizzazione, esportazione, contributi</small></span></button><button type="button" class="set-tile" data-set-open="info"><span class="ico" aria-hidden="true">📖</span><span class="txt"><b data-i18n="set.p.info">Informazioni</b><small data-i18n="set.p.infoD">Come funziona, novità, privacy, sostieni il progetto</small></span></button></div>
+      <div class="set-hits" id="set-hits" aria-live="polite" hidden></div>
+    </div>
+    <div id="set-pages">
+    <div class="set-page" data-set-page="look" hidden><div class="set-list">
+    <section class="set-sec" id="set-look" aria-labelledby="set-h-look"><h3 class="set-h" id="set-h-look" data-i18n="set.look">Aspetto</h3>
       <div class="seg" id="set-theme" role="group" aria-label="Tema" data-i18n-aria="set.theme"><button type="button" data-theme-set="light" data-i18n="theme.light">☀️ Chiaro</button><button type="button" data-theme-set="sepia" data-i18n="theme.sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark" data-i18n="theme.dark">🌙 Notte</button></div>
       <div class="hzrow"><span data-i18n="set.hz">Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli" data-i18n-aria="set.hzMinus">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi" data-i18n-aria="set.hzPlus">A+</button></div>
       <label class="chk"><input type="checkbox" id="opt-toneshapes"> <span data-i18n="set.toneshapes">Toni anche con un segno, non solo col colore</span></label>
     </section>
-    <section class="set-sec" aria-labelledby="set-h-audio"><h3 id="set-h-audio" data-i18n="set.audio">Audio</h3>
+    <section class="set-sec" id="set-lang" aria-labelledby="set-lang-h"><h3 class="set-h" id="set-lang-h" data-i18n="set.lang">Lingua dell'interfaccia</h3><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it" lang="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></section>
+    </div></div>
+    <div class="set-page" data-set-page="sound" hidden><div class="set-list">
+    <section class="set-sec" id="set-sound" aria-labelledby="set-h-audio"><h3 class="set-h" id="set-h-audio" data-i18n="set.audio">Audio</h3>
       <div class="seg" id="set-audio" role="group" aria-label="Audio" data-i18n-aria="set.audio"><button type="button" data-audio-set="all" data-i18n="audio.all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx" data-i18n="audio.fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute" data-i18n="audio.mute">🔇 Muto</button></div>
       <label class="jk-vol small muted"><span data-i18n="set.sfxvol">🔔 Volume effetti</span> <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
       <button type="button" class="btn-s" id="set-music" data-i18n="set.music">🎵 Musica per studiare…</button>
     </section>
-    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it" lang="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
+    <section class="set-sec" id="vset" aria-labelledby="vset-h"><h3 class="set-h" id="vset-h" data-i18n="set.voice">Voce</h3><div class="vbody" id="vset-body"></div></section>
+    <section class="set-sec" id="set-mic-box" aria-labelledby="set-mic-box-h"><h3 class="set-h" id="set-mic-box-h" data-i18n="set.mic">Microfono</h3><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></section>
+    </div></div>
+    <div class="set-page" data-set-page="study" hidden><div class="set-list"></div></div>
+    <div class="set-page" data-set-page="data" hidden><div class="set-list">
+    <section class="set-sec" id="set-data" aria-labelledby="set-data-h"><h3 class="set-h" id="set-data-h" data-i18n="set.data">Backup e ripristino</h3><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></section>
+    </div></div>
+    <div class="set-page" data-set-page="info" hidden><div class="set-list">
+    <section class="set-sec" id="set-about" aria-labelledby="set-about-h"><h3 class="set-h" id="set-about-h" data-i18n="set.about">Come funziona</h3><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div><p class="small muted" style="margin:6px 0 0" data-i18n="card.privacy">Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta.</p><p class="small" id="about-support" hidden></p></section>
+    </div></div>
     </div>
-    <details class="set-grp" id="grp-data"><summary class="set-gh" data-i18n="set.gData">Dati e privacy</summary>
-    <details class="set-sec" id="set-data"><summary data-i18n="set.data">Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
-    <div id="set-extra-data"></div>
-    </details>
-    <details class="set-grp" id="grp-adv"><summary class="set-gh" data-i18n="set.gAdv">Avanzate</summary>
-    <details class="set-sec" id="vset"><summary data-i18n="set.voice">Voce</summary><div class="vbody" id="vset-body"></div></details>
-    <details class="set-sec" id="set-mic-box"><summary data-i18n="set.mic">Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></details>
-    <div id="set-extra"></div>
-    </details>
-    <details class="set-grp" id="grp-info"><summary class="set-gh" data-i18n="set.gInfo">Informazioni e supporto</summary>
-    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div><p class="small muted" style="margin:6px 0 0" data-i18n="card.privacy">Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta.</p><p class="small" id="about-support" hidden></p></details>
-    <div id="set-extra-info"></div>
-    </details>
   </div>
 </div>
 
@@ -629,6 +635,8 @@
 <script src="i18n/credits-t12.js"></script>
 <script src="ui/credits.js"></script>
 <script src="ui/settings.js"></script>
+<script src="i18n/settings.js"></script>
+<script src="ui/settings-pages.js"></script>
 <script src="ui/finder.js"></script>
 <script src="ui/gestures.js"></script>
 <script src="words/toolbar.js"></script>

@@ -13,7 +13,7 @@ terze parti. Tutto quello che fai nell'app resta sul tuo dispositivo. Lo stesso 
 
 I progressi (parole, ripassi, punti, lezioni), le impostazioni, i contributi non ancora mandati, i sigilli e il nickname
 facoltativo stanno nella memoria del browser o dell'app (`localStorage` e IndexedDB, chiavi `cp-*`). Nessuno li riceve.
-Si cancellano con ⚙️ → Dati e privacy, oppure cancellando i dati del sito o disinstallando l'app.
+Si cancellano con ⚙️ → Dati e sincronizzazione, oppure cancellando i dati del sito o disinstallando l'app.
 
 ### Quando l'app usa la rete
 
@@ -22,7 +22,7 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
 | Che cosa | Quando | Che cosa parte | Dove |
 |---|---|---|---|
 | **Controllo degli aggiornamenti** (solo app Android) | al massimo una volta al giorno; si spegne in ⚙️ | una richiesta senza dati personali | GitHub (`api.github.com`) |
-| **Voce online** | solo se la accendi in ⚙️ → Voce (spenta di base) | il testo cinese da leggere | un servizio di sintesi vocale di Google, non ufficiale |
+| **Voce online** | solo se la accendi in ⚙️ → Suoni e musica → Voce (spenta di base) | il testo cinese da leggere | un servizio di sintesi vocale di Google, non ufficiale |
 | **Riconoscimento della voce** negli esercizi di pronuncia | solo quando tocchi il microfono | l'audio di quello che dici | nel browser Chrome lo elabora il fornitore del browser (Google); nell'app Android il riconoscitore del telefono, che può funzionare anche offline |
 | **Link esterni** (sostegno, GitHub, e-mail) | solo quando li tocchi | quello che apri tu | il sito che apri |
 | **Musica e dizionario dei nomi** (versione web) | al primo ascolto di un brano, al primo uso dei «nomi e termini» del Lettore | la richiesta del file | lo stesso sito dell'app |
@@ -110,7 +110,7 @@ dati dal mio registro. Il codice del sigillo non contiene dati personali.
 ### 保存在你设备上的内容
 
 学习进度（词语、复习、积分、课程）、设置、尚未发送的贡献、印章和可选的昵称保存在浏览器或应用的存储中（`localStorage` 和 IndexedDB，键名 `cp-*`）。
-没有人会收到这些数据。可以在 ⚙️ → 数据和隐私 中删除，或清除网站数据、卸载应用。
+没有人会收到这些数据。可以在 ⚙️ → 数据与同步 中删除，或清除网站数据、卸载应用。
 
 ### 应用什么时候联网
 
@@ -119,7 +119,7 @@ dati dal mio registro. Il codice del sigillo non contiene dati personali.
 | 内容 | 时间 | 发送什么 | 发往哪里 |
 |---|---|---|---|
 | **检查更新**（仅安卓应用） | 每天最多一次；可在 ⚙️ 中关闭 | 一个不含个人数据的请求 | GitHub（`api.github.com`） |
-| **在线语音** | 只有在 ⚙️ → 语音 中打开后（默认关闭） | 要朗读的文字 | 谷歌的一个非官方语音合成服务 |
+| **在线语音** | 只有在 ⚙️ → 声音和音乐 → 语音 中打开后（默认关闭） | 要朗读的文字 | 谷歌的一个非官方语音合成服务 |
 | **语音识别**（发音练习） | 只有点麦克风时 | 你说话的音频 | 在 Chrome 浏览器中由浏览器提供方（谷歌）处理；在安卓应用中由手机的识别器处理，可能离线 |
 | **外部链接**（支持、GitHub、电子邮件） | 只有点击时 | 你打开的内容 | 你打开的网站 |
 | **音乐和人名地名词典**（网页版） | 第一次播放某首曲子、第一次使用阅读器的“人名和术语”时 | 文件请求 | 应用所在的同一网站 |

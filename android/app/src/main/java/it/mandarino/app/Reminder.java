@@ -13,7 +13,7 @@ import android.content.SharedPreferences;
 import java.util.Calendar;
 
 /**
- * Promemoria giornaliero, spento finché chi studia non lo accende (⚙️ → Promemoria). Un solo avviso al giorno all'ora
+ * Promemoria giornaliero, spento finché chi studia non lo accende (⚙️ → Studio → Promemoria). Un solo avviso al giorno all'ora
  * scelta, calcolato sul telefono dallo stato del widget (WidgetState): nessun server. Non insiste: se oggi hai già
  * studiato, o non c'è niente da fare, non arriva niente. AlarmManager inesatto (nessun permesso speciale), riprogrammato
  * a ogni avviso e dopo il riavvio del telefono.

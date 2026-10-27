@@ -243,17 +243,17 @@ try {
     await p.evaluate(() => { window.__sent = null; Store.download = (n, t) => { window.__sent = t; }; }); await p.click('[data-ct-send="file"]').catch(() => {}); await p.waitForTimeout(150);
     const sent = await p.evaluate(() => { try { return JSON.parse(window.__sent); } catch (e) { return null; } });
     check("Contributi: la casella «compari nei Crediti» è spenta di base; spuntata, la patch porta nickname e credit: 1", off && sent && sent.author === "Prova_e2e" && sent.credit === 1, JSON.stringify(sent || {}).slice(0, 160));
-    await p.evaluate(() => { CP.closeSheet(); CP.openSettings("grp-info"); }); await p.waitForTimeout(200);
+    await p.evaluate(() => { CP.closeSheet(); CP.openSettings("info"); }); await p.waitForTimeout(200);
     const news = await p.evaluate(() => { const d = document.getElementById("set-news"); if (!d) return null; d.open = true; const v = d.querySelector(".news-v[open] b"); return { v: v && v.textContent, top: CHANGELOG[0].v, n: d.querySelectorAll(".news-v[open] li").length, lang: d.querySelector(".news-list").getAttribute("lang") }; });
-    check("Novità: in ⚙️ → Informazioni e supporto, l'ultima versione aperta", news && news.v === news.top && news.n > 2 && news.lang === "it", JSON.stringify(news));
-    await p.click("#grp-info [data-credits]").catch(() => p.evaluate(() => CP.credits())); await p.waitForTimeout(150);
+    check("Novità: in ⚙️ → Informazioni, l'ultima versione aperta", news && news.v === news.top && news.n > 2 && news.lang === "it", JSON.stringify(news));
+    await p.click("#set-about [data-credits]").catch(() => p.evaluate(() => CP.credits())); await p.waitForTimeout(150);
     check("Crediti: la parte «Chi ha contribuito» c'è anche quando l'elenco è vuoto", await p.evaluate(() => /Chi ha contribuito/.test(document.getElementById("fam").textContent)));
     await p.evaluate(() => { localStorage.setItem("cp-lang", "zh"); }); await p.reload(); await p.waitForTimeout(500);
-    await p.evaluate(() => CP.openSettings("grp-info")); await p.waitForTimeout(200);
-    const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector("summary").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
+    await p.evaluate(() => CP.openSettings("info")); await p.waitForTimeout(200);
+    const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector(".set-h").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
     check("Novità in cinese: titolo e righe in cinese", /更新内容/.test(zh || "") && /zh-CN$/.test(zh || ""), zh);
-    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-info") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
-    check("Privacy: voce in ⚙️ → Informazioni e supporto, in cinese, otto punti (anche il backup di Android e le sfide)", /隐私\|8$/.test(pv || ""), pv);
+    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("[data-set-page=info]") && d.querySelector(".set-h").textContent + "|" + d.querySelectorAll("li").length : ""; });
+    check("Privacy: voce in ⚙️ → Informazioni, in cinese, otto punti (anche il backup di Android e le sfide)", /隐私\|8$/.test(pv || ""), pv);
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -319,7 +319,7 @@ try {
     await p.click("[data-anki-go]"); await p.waitForSelector("[data-anki-ok1]"); const before = await p.evaluate(() => window.__dl);
     await p.click("[data-anki-ok1]"); await p.waitForSelector("[data-anki-ok2]"); await p.click("[data-anki-ok2]"); await p.waitForTimeout(200);
     const dl = await p.evaluate(() => window.__dl);
-    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e privacy → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
+    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e sincronizzazione → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
     check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -740,9 +740,9 @@ try {
     const r0 = await p.evaluate(() => { CP.ex.carica(); const E = CP.exEngine, any = CP.ORDER.some((k) => E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx)); CP.say("还有很多时间"); return { any, url: CP.voiceClip.url("还有很多时间", "zh") }; });
     await p.waitForTimeout(150);
     check("Voci reali: prima di scaricarle nessuna clip, nessuna richiesta, «ascolta la frase» non si propone", !r0.any && !r0.url && !voce.length, JSON.stringify({ r0, voce: voce.length }));
-    /* ⚙️ → Voce → «Voci reali» → «Scarica le voci» */
+    /* ⚙️ → Suoni e musica → Voce → «Voci reali» → «Scarica le voci» */
     const label = await p.evaluate(() => { CP.show("settings"); const d = document.getElementById("set-voice") || document.querySelector("#vset-body"); const b = document.querySelector("[data-vc-dl]"); return b ? b.textContent : (document.getElementById("vc-box") || {}).textContent || null; });
-    check("Voci reali: in ⚙️ → Voce il pulsante «Scarica le voci» con i MB", /Scarica le voci \(\d+,\d MB\)/.test(label || ""), label);
+    check("Voci reali: in ⚙️ → Suoni e musica → Voce il pulsante «Scarica le voci» con i MB", /Scarica le voci \(\d+,\d MB\)/.test(label || ""), label);
     await p.evaluate(() => document.querySelector("[data-vc-dl]").click());
     await p.waitForFunction(() => localStorage.getItem("cp-voice-dl") === "1", null, { timeout: 120000 }).catch(() => {});
     const r1 = await p.evaluate(async () => { const c = await caches.open("mandarino-voice"), ks = await c.keys(), F = VOICE_FILES; return { dl: localStorage.getItem("cp-voice-dl"), n: ks.length, want: Object.keys(F.zh).length + Object.keys(F.it).length, box: (document.getElementById("vc-box") || {}).textContent }; });
@@ -1148,6 +1148,64 @@ try {
     check("Microfono: un errore passeggero del riconoscitore si ritenta e il risultato arriva", r.o.ok === true && r.starts === 2 && !r.down, JSON.stringify(r));
     check("Microfono: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
+  }
+  /* 8. Impostazioni a pagine: cinque carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */
+  {
+    /* l'elenco di prima (quattro gruppi con sezioni annidate), voce per voce: id della sezione, pagina in cui sta ora, un comando che deve esserci */
+    const VOCI = [
+      ["set-look", "look", "[data-theme-set=sepia]"], ["set-look", "look", "#hz-plus"], ["set-look", "look", "#opt-toneshapes"], ["set-lang", "look", "[data-lang-set=zh]"],
+      ["set-sound", "sound", "[data-audio-set=fx]"], ["set-sound", "sound", "#set-sfxvol"], ["set-sound", "sound", "#set-music"], ["vset", "sound", "#vset-body"], ["set-mic-box", "sound", "#set-mic-close"],
+      ["set-course", "study", "[data-course-set=it]"], ["set-exstyle", "study", "[data-exs=guided]"], ["set-level", "study", "[data-unl-redo]"], ["set-level", "study", "#opt-showall"], ["set-reminder", "study", "#rm-body"], ["set-together", "study", "[data-chal-open]"],
+      ["set-data", "data", "#set-bk-down"], ["set-data", "data", "#set-bk-up"], ["set-sync", "data", "#sy-body"], ["set-contrib", "data", "[data-ct-find]"],
+      ["set-about", "info", "#set-welcome"], ["set-about", "info", "#set-selftest"], ["set-about", "info", "[data-credits]"], ["set-news", "info", ".news-list"], ["set-privacy", "info", ".pv-list"], ["set-support", "info", "#set-support .vbody"]
+    ];
+    for (const [course, lang] of [["zh", "it"], ["zh", "zh"], ["it", "it"], ["it", "zh"]]) {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await ctx.addInitScript(([c, l]) => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-course", c); localStorage.setItem("cp-lang", l); }, [course, lang]);
+      await p.goto(base); await p.waitForTimeout(700);
+      const tag = " (" + course + "/" + lang + ")";
+      await p.evaluate(() => CP.openSettings()); await p.waitForTimeout(150);
+      const home = await p.evaluate(() => ({ tiles: document.querySelectorAll("#set-tiles .set-tile").length, pagesShown: [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).length, details: document.querySelectorAll("#settings details.set-sec, #settings details.set-grp").length, raw: /set\.p\./.test(document.getElementById("settings").innerText), title: document.getElementById("set-title").textContent, back: document.querySelector("[data-set-back]").hidden }));
+      check("Impostazioni: la pagina iniziale ha cinque carte e la ricerca, nessuna pagina aperta, nessuna sezione a cascata, testi nella lingua scelta" + tag, home.tiles === 5 && !home.pagesShown && !home.details && !home.raw && home.back && (lang === "zh" ? /设置/.test(home.title) : /Impostazioni/.test(home.title)), JSON.stringify(home));
+      const missing = [];
+      for (const [id, page, sel] of VOCI) {
+        if (course === "it" && (id === "set-contrib")) continue;   /* nel corso di italiano i contributi non ci sono (come prima) */
+        const r = await p.evaluate(([i, pg, s]) => {
+          CP.openSettings(i); const sec = document.getElementById(i); if (!sec) return "manca la sezione";
+          const hostPage = sec.closest("[data-set-page]"); if (!hostPage || hostPage.getAttribute("data-set-page") !== pg) return "pagina " + (hostPage && hostPage.getAttribute("data-set-page"));
+          if (hostPage.hidden) return "pagina nascosta"; if (!document.getElementById("set-home").hidden) return "la pagina iniziale resta visibile";
+          const c = sec.querySelector(s) || (sec.matches(s) ? sec : null); if (!c) return "manca il comando " + s;
+          if (c.closest("details:not([open])")) return "dentro un riquadro chiuso"; return "";
+        }, [id, page, sel]);
+        if (r) missing.push(id + " " + sel + ": " + r);
+      }
+      check("Impostazioni: ogni voce di prima è raggiungibile con un solo passo dalla pagina iniziale (" + VOCI.length + " voci controllate)" + tag, !missing.length, missing.slice(0, 4).join(" | "));
+      /* vecchi nomi dei gruppi e sezioni assenti: aprono la pagina giusta */
+      const al = await p.evaluate(() => ["grp-ess", "grp-data", "grp-adv", "grp-info", "set-export", "page-sound"].map((g) => { CP.openSettings(g); const v = [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).map((x) => x.getAttribute("data-set-page")); return g + ":" + v.join(","); }).join(" "));
+      check("Impostazioni: i vecchi collegamenti (grp-ess, grp-data, grp-adv, grp-info, set-export) aprono la pagina giusta" + tag, al === "grp-ess:look grp-data:data grp-adv:study grp-info:info set-export:data page-sound:sound", al);
+      /* un solo pulsante primario in ogni pagina */
+      const prim = await p.evaluate(() => ["look", "sound", "study", "data", "info"].map((g) => { CP.openSettings(g); return g + ":" + [...document.querySelectorAll("#settings .btn-main")].filter((b) => b.offsetParent && b.getBoundingClientRect().height > 0).length; }).join(" "));
+      check("Impostazioni: al massimo un pulsante primario per pagina" + tag, prim.split(" ").every((x) => +x.split(":")[1] <= 1), prim);
+      /* ricerca */
+      await p.evaluate(() => CP.openSettings()); await p.fill("#set-q", lang === "zh" ? "备份" : "Backup"); await p.waitForTimeout(100);
+      const hit = await p.evaluate(() => ({ tilesHidden: document.getElementById("set-tiles").hidden, ids: [...document.querySelectorAll("#set-hits [data-set-goto]")].map((b) => b.getAttribute("data-set-goto")) }));
+      await p.click('#set-hits [data-set-goto="set-data"]'); await p.waitForTimeout(150);
+      const after = await p.evaluate(() => ({ page: [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).map((x) => x.getAttribute("data-set-page")).join(), q: document.getElementById("set-q").value, focus: document.activeElement && document.activeElement.hasAttribute("data-set-back") }));
+      check("Impostazioni: la ricerca trova «Backup» (anche in cinese), il risultato apre la pagina giusta" + tag, hit.tilesHidden && hit.ids.includes("set-data") && after.page === "data" && after.q === "" && after.focus, JSON.stringify({ hit, after }));
+      const none = await p.evaluate(() => { CP.openSettings(); const q = document.getElementById("set-q"); q.value = "zzzqqq"; q.dispatchEvent(new Event("input", { bubbles: true })); return document.getElementById("set-hits").textContent.trim().length > 5 && !document.querySelector("#set-hits [data-set-goto]"); });
+      check("Impostazioni: una ricerca senza risultati lo dice" + tag, none);
+      /* Esc e Indietro di Android: pagina → pagina iniziale → chiusa */
+      await p.evaluate(() => CP.openSettings("data")); await p.keyboard.press("Escape"); await p.waitForTimeout(80);
+      const e1 = await p.evaluate(() => ({ open: !document.getElementById("settings").hidden, home: !document.getElementById("set-home").hidden }));
+      await p.keyboard.press("Escape"); await p.waitForTimeout(80);
+      const e2 = await p.evaluate(() => !document.getElementById("settings").hidden);
+      await p.evaluate(() => CP.openSettings("sound")); const b1 = await p.evaluate(() => { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return !document.getElementById("settings").hidden && !document.getElementById("set-home").hidden; });
+      const b2 = await p.evaluate(() => { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return !document.getElementById("settings").hidden; });
+      await p.evaluate(() => { CP.openSettings("sound"); document.querySelector("[data-set-back]").click(); }); const bk = await p.evaluate(() => !document.getElementById("set-home").hidden && document.getElementById("set-title").textContent);
+      check("Impostazioni: Esc e il tasto Indietro di Android (che per l'app è lo stesso Esc, android.js) tornano dalla pagina alla pagina iniziale e poi chiudono; «Indietro» a schermo torna alla pagina iniziale" + tag, e1.open && e1.home && !e2 && b1 && !b2 && bk, JSON.stringify({ e1, e2, b1, b2, bk }));
+      check("Impostazioni: nessun errore JavaScript" + tag, !errs.length, errs[0]);
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close(); server.close();

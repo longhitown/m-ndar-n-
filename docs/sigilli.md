@@ -14,7 +14,7 @@ e `tools/seal-issue.mjs`. Gli strumenti stanno nel repository, ma non entrano ma
    - firma il codice;
    - prepara e-mail, link e QR.
 3. Chi gestisce il progetto rilegge e manda l'e-mail dal proprio programma di posta. Nessun invio automatico.
-4. La persona apre il link, oppure incolla il codice o inquadra il QR, in ⚙️ → Informazioni e supporto → Sostieni il progetto.
+4. La persona apre il link, oppure incolla il codice o inquadra il QR, in ⚙️ → Informazioni → Sostieni il progetto.
 
 Un'app offline e senza server non può controllare un pagamento. Può controllare soltanto che il codice sia firmato da chi gestisce il progetto, e infatti nell'app compare «sigillo autentico», mai
 «pagamento verificato». Il pagamento si controlla sul pannello di Ko-fi.
