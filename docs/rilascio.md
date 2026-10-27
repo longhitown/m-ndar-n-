@@ -68,3 +68,4 @@ Il sito è su `https://mandarinoapp.org` (GitHub Pages, pubblicato da `pages.yml
 - **Namecheap** (Domain List → Manage → Advanced DNS): quattro record **A** per `@` verso `185.199.108.153`, `185.199.109.153`, `185.199.110.153` e `185.199.111.153`, e un solo record
   **CNAME** per `www` verso `longhitown.github.io` (un nome può avere un solo CNAME). Nessun record di parcheggio.
 - **Controlli:** `https://mandarinoapp.org/`, `…/privacy.html`, `…/app/`, `…/zh/` e `…/mandarino.apk`.
+  Se `…/app/` o `…/privacy.html` danno 404 mentre la pagina iniziale si apre, la fonte di Pages è tornata a «Deploy from a branch»: va rimessa su «GitHub Actions» (Settings → Pages), perché quei file li produce solo `pages.yml`.
