@@ -7,7 +7,7 @@ Ultimo aggiornamento · 最后更新：2026-10
 ## Italiano
 
 **In breve: màndarínō non raccoglie dati.** Non ha account, server, pubblicità, statistiche d'uso, tracciamento o cookie di
-terze parti. Tutto quello che fai nell'app resta sul tuo dispositivo.
+terze parti. Tutto quello che fai nell'app resta sul tuo dispositivo. Lo stesso vale per il sito mandarinoapp.org.
 
 ### Che cosa resta sul tuo dispositivo
 
@@ -25,8 +25,22 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
 | **Voce online** | solo se la accendi in ⚙️ → Voce (spenta di base) | il testo cinese da leggere | un servizio di sintesi vocale di Google, non ufficiale |
 | **Riconoscimento della voce** negli esercizi di pronuncia | solo quando tocchi il microfono | l'audio di quello che dici | nel browser Chrome lo elabora il fornitore del browser (Google); nell'app Android il riconoscitore del telefono, che può funzionare anche offline |
 | **Link esterni** (sostegno, GitHub, e-mail) | solo quando li tocchi | quello che apri tu | il sito che apri |
-| **Musica e dizionario dei nomi** (sito web) | al primo ascolto di un brano, al primo uso dei «nomi e termini» del Lettore | la richiesta del file | lo stesso sito dell'app |
-| **Aggiornamenti del sito** (sito web) | all'apertura, se c'è rete | la richiesta della versione nuova | lo stesso sito dell'app |
+| **Musica e dizionario dei nomi** (versione web) | al primo ascolto di un brano, al primo uso dei «nomi e termini» del Lettore | la richiesta del file | lo stesso sito dell'app |
+| **Aggiornamenti dell'app** (versione web) | all'apertura, se c'è rete | la richiesta della versione nuova | lo stesso sito dell'app |
+
+### Il sito mandarinoapp.org
+
+Il sito presenta l'app e ne contiene la versione web. Non usa cookie, statistiche, pubblicità né servizi di terzi, e non
+salva niente nel tuo browser: font, script e immagini arrivano tutti dal sito stesso.
+
+- **«Provala qui».** Le tre microprove (toni, scrittura dei caratteri, parole) lavorano nel tuo browser. I toni sono generati
+  sul momento dal tuo dispositivo. Quello che fai e i punti che totalizzi non vengono salvati né inviati.
+- **Voce del dispositivo.** Il pulsante «Ascolta» delle parole usa una voce cinese già presente sul tuo dispositivo o nel
+  tuo browser. In alcuni browser, come Chrome, certe voci possono essere elaborate online dal fornitore del browser.
+- **Musica.** I brani del sito si scaricano solo dopo che tocchi il pulsante di ascolto, dallo stesso sito.
+- **Dove sta il sito.** È ospitato da GitHub Pages. Come ogni servizio di hosting, GitHub può registrare dati tecnici delle
+  visite (per esempio l'indirizzo IP) secondo la propria informativa. Io non ricevo questi dati.
+- **Scaricare l'APK.** Dal sito o da GitHub: vale quello che sopra per il sito che apri.
 
 ### Fotocamera, microfono, notifiche
 
@@ -34,18 +48,19 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
   la registrazione non viene salvata né inviata.
 - **Fotocamera:** solo per leggere un QR (passaggio a un altro telefono, sigilli). Le immagini non vengono salvate.
 - **Notifiche (Android):** solo per il promemoria facoltativo e per la musica in secondo piano.
-- **Pleco** (facoltativo, spento di base, solo sul telefono): se lo accendi e tocchi «Apri in Pleco», la parola passa all'app Pleco sul tuo telefono, non a internet.
+- **Pleco** (facoltativo, spento di base, solo sul telefono): se lo accendi e tocchi «Apri in Pleco», la parola passa
+  all'app Pleco sul tuo telefono, non a internet.
 
 ### Backup automatico di Android
 
 Nell'app Android, se il backup è acceso nelle impostazioni del telefono, Android copia i dati dell'app (i progressi)
-nel backup del tuo account Google e li riporta su un telefono nuovo. È un servizio del sistema, non di màndarínō: noi non
-vediamo niente. Si spegne nelle impostazioni del telefono (Sistema → Backup).
+nel backup del tuo account Google e li riporta su un telefono nuovo. È un servizio del sistema, non di màndarínō: io
+non vedo niente. Si spegne nelle impostazioni del telefono (Sistema → Backup).
 
 ### Sincronizzazione e backup
 
 La sincronizzazione scrive un file che scegli tu, nel tuo cloud (Google Drive, OneDrive, Dropbox, iCloud…), oppure passa
-i dati da un telefono all'altro con dei QR. Noi non vediamo né il file né i QR. Il backup è un file che scarichi tu.
+i dati da un telefono all'altro con dei QR. Non vedo né il file né i QR. Il backup è un file che scarichi tu.
 
 ### Contributi
 
@@ -80,9 +95,9 @@ Nessun registro dei ripassi. L'app non lo manda da sola: lo scarichi o lo condiv
 
 ### Donazioni e sigilli
 
-L'app non sa chi ha donato. Una donazione passa da Ko-fi, con la sua informativa. L'autore vede solo quello che Ko-fi gli
-mostra (nome, e-mail, importo, messaggio) e lo usa soltanto per mandare il sigillo a chi lo chiede. Su richiesta cancella
-questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
+L'app non sa chi ha donato. Una donazione passa da Ko-fi, con la sua informativa. Vedo solo quello che Ko-fi mi mostra
+(nome, e-mail, importo, messaggio) e lo uso soltanto per mandare il sigillo a chi lo chiede. Su richiesta cancello questi
+dati dal mio registro. Il codice del sigillo non contiene dati personali.
 
 ### Contatti
 
@@ -90,7 +105,7 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 
 ## 中文
 
-**简而言之：màndarínō 不收集任何数据。** 没有账号、服务器、广告、使用统计、跟踪或第三方 Cookie。你在应用里的一切都只保存在你的设备上。
+**简而言之：màndarínō 不收集任何数据。** 没有账号、服务器、广告、使用统计、跟踪或第三方 Cookie。你在应用里的一切都只保存在你的设备上。网站 mandarinoapp.org 也是如此。
 
 ### 保存在你设备上的内容
 
@@ -108,7 +123,17 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 | **语音识别**（发音练习） | 只有点麦克风时 | 你说话的音频 | 在 Chrome 浏览器中由浏览器提供方（谷歌）处理；在安卓应用中由手机的识别器处理，可能离线 |
 | **外部链接**（支持、GitHub、电子邮件） | 只有点击时 | 你打开的内容 | 你打开的网站 |
 | **音乐和人名地名词典**（网页版） | 第一次播放某首曲子、第一次使用阅读器的“人名和术语”时 | 文件请求 | 应用所在的同一网站 |
-| **网站更新**（网页版） | 打开应用且有网络时 | 新版本请求 | 应用所在的同一网站 |
+| **应用更新**（网页版） | 打开应用且有网络时 | 新版本请求 | 应用所在的同一网站 |
+
+### 网站 mandarinoapp.org
+
+网站介绍应用，也提供网页版。它不使用 Cookie、统计、广告或第三方服务，也不会在你的浏览器里保存任何东西：字体、脚本和图片都来自网站本身。
+
+- **“试一试”：** 三个小练习（声调、写汉字、词语）都在你的浏览器里运行。声调由你的设备当场生成。你做了什么、得了多少分，既不会保存，也不会发送。
+- **设备语音：** 词语练习里的“听”按钮使用你的设备或浏览器里已有的中文语音。在某些浏览器（例如 Chrome）里，部分语音可能由浏览器提供方在线处理。
+- **音乐：** 只有在你点击播放后，才会从网站本身下载曲子。
+- **网站托管：** 网站由 GitHub Pages 托管。和所有托管服务一样，GitHub 可能依照其隐私政策记录访问的技术信息（例如 IP 地址）。我不会收到这些信息。
+- **下载 APK：** 可从网站或 GitHub 下载，适用你所打开网站的规则。
 
 ### 相机、麦克风、通知
 
@@ -119,11 +144,11 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 
 ### 安卓自动备份
 
-在安卓应用中，如果手机设置里打开了备份，安卓系统会把应用数据（学习进度）复制到你的 Google 账号备份中，并在换新手机时恢复。这是系统服务，不是 màndarínō 的服务：我们什么也看不到。可以在手机设置中关闭（系统 → 备份）。
+在安卓应用中，如果手机设置里打开了备份，安卓系统会把应用数据（学习进度）复制到你的 Google 账号备份中，并在换新手机时恢复。这是系统服务，不是 màndarínō 的服务：我什么也看不到。可以在手机设置中关闭（系统 → 备份）。
 
 ### 同步和备份
 
-同步会写入一个由你选择、保存在你自己云端（Google Drive、OneDrive、Dropbox、iCloud 等）的文件，或者通过二维码在两部手机之间传输数据。我们看不到文件，也看不到二维码。备份是你自己下载的文件。
+同步会写入一个由你选择、保存在你自己云端（Google Drive、OneDrive、Dropbox、iCloud 等）的文件，或者通过二维码在两部手机之间传输数据。我看不到文件，也看不到二维码。备份是你自己下载的文件。
 
 ### 贡献
 
@@ -139,7 +164,7 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 
 ### 捐助和印章
 
-应用不知道谁捐助过。捐助通过 Ko-fi 进行，适用其隐私政策。作者只能看到 Ko-fi 显示的信息（姓名、电子邮件、金额、留言），并且只用来给提出请求的人发送印章。应要求，作者会从记录中删除这些数据。印章代码不含个人数据。
+应用不知道谁捐助过。捐助通过 Ko-fi 进行，适用其隐私政策。我只能看到 Ko-fi 显示的信息（姓名、电子邮件、金额、留言），并且只用来给提出请求的人发送印章。应要求，我会从记录中删除这些数据。印章代码不含个人数据。
 
 ### 联系方式
 
