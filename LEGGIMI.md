@@ -44,6 +44,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
   vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
+site/                      la pagina di presentazione (GitHub Pages, con l'app in app/): solo HTML e CSS
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
@@ -196,6 +197,20 @@ Lo stesso comando controlla anche il pinyin di **ogni frase** dell'app (frasi, d
 percorso: 678 frasi) tagliandola con CC-CEDICT, e i classificatori del correttore (`NCLF` in `src/phrases/grammar.js`) contro
 le indicazioni «CL:». Con `--prova` aggiunge errori messi apposta, per vedere che il controllo li trova. Secondo giro: nessuna
 sillaba né tono sbagliato nelle frasi, nessun classificatore diverso; corretti 5 significati italiani (取消, 信任, 清蒸, 蒸菜, 保守秘密).
+
+## Pubblicare su GitHub Pages (pagina di presentazione + app)
+
+`.github/workflows/pages.yml` pubblica due cose insieme:
+
+- alla radice, la **pagina di presentazione** `site/index.html`, in italiano e in cinese, con i link all'app, all'APK, a
+  CONTRIBUTING, PRIVACY e alle licenze. Non ha script, font, immagini o servizi esterni né cookie (lo controlla
+  `tools/unit.mjs`); il sostegno è un link semplice, mai un widget;
+- in `app/`, l'**app** (`dist/` appena costruito).
+
+Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi parte da sola a ogni push sul
+ramo `main` che tocca `src/`, `site/` o la build (oppure: Actions → pages → Run workflow). L'indirizzo sarà
+`https://longhitown.github.io/mandarino/` (app in `…/mandarino/app/`). Quando è attivo, scrivilo in `SITE_URL` in
+`src/config.js`: lo usano i link dei sigilli.
 
 ## Pubblicare (Cloudflare Pages, il più semplice)
 

@@ -4,6 +4,7 @@ Il cinese per italiani, l'italiano per chi parla cinese. App web offline in un f
 come PWA, e APK Android senza Play Store.
 
 - Scarica l'APK: <https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk>
+- Pagina di presentazione: `site/index.html`, pubblicata con GitHub Pages ([come](LEGGIMI.md#pubblicare-su-github-pages-pagina-di-presentazione--app))
 - Documentazione completa (in italiano): **[LEGGIMI.md](LEGGIMI.md)**
 - Come sono fatti i moduli: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)
 - Privacy: [PRIVACY.md](PRIVACY.md) (nessun dato raccolto · 不收集任何数据)
