@@ -1,0 +1,19 @@
+màndarínō · contenuti didattici
+© 2026 Claudio Longhitano
+
+I contenuti didattici di màndarínō sono rilasciati con la licenza Creative Commons Attribuzione 4.0 Internazionale
+(CC BY 4.0): https://creativecommons.org/licenses/by/4.0/legalcode.it
+
+Sono contenuti: il vocabolario curato (pinyin, significati e note in italiano), le frasi d'esempio, le lezioni di
+grammatica, i dialoghi, gli esercizi, i modelli, le frasi verificate del laboratorio e tutto il corso di italiano per chi
+parla cinese (lezioni, frasi, spiegazioni in cinese). Stanno in src/data/ nel repository.
+
+Puoi copiarli, ridistribuirli, adattarli e usarli anche a fini commerciali, purché tu citi l'autore («màndarínō, di Claudio
+Longhitano»), indichi il link alla licenza e dica se hai fatto modifiche.
+
+Non sono coperti da questa licenza, perché hanno la licenza della loro fonte (vedi THIRD-PARTY-NOTICES.md):
+src/data/strokes.js (Arphic Public License), src/data/levels.js e src/data/freq.js (MIT, complete-hsk-vocabulary),
+src/data/wiki/zh-it.txt (CC0, Wikidata), src/data/it/lexicon.js (LGPL, Morph-it!).
+
+I contributi della comunità (correzioni, parole, traduzioni proposte dall'app o con una issue) sono accolti con la stessa
+licenza: chi li manda accetta che siano pubblicati così.

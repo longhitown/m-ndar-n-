@@ -1,4 +1,4 @@
-/* ===== màndarínō · codici QR (scrittura), scritti da zero per l'app: modalità alfanumerica, versioni 1-40, correzione L/M.
+/* ===== màndarínō · codici QR (scrittura), scritti da zero per l'app: modalità alfanumerica e byte, versioni 1-40, correzione L/M.
    Serve al passaggio dei progressi da un telefono all'altro (pwa/qr-transfer.js): i dati vanno in base45 (RFC 9285), che
    usa esattamente i 45 caratteri della modalità alfanumerica, e quindi entrano nel QR con la resa migliore.
    Algoritmo dello standard ISO/IEC 18004: segmento → blocchi con Reed-Solomon su GF(256) → posa a zig-zag → maschera
@@ -45,16 +45,22 @@
   }
 
   function encode(text, level) {
-    var e = level === "L" ? 0 : 1, s = String(text).toUpperCase(), i;
-    for (i = 0; i < s.length; i++) if (ALNUM.indexOf(s[i]) < 0) throw new Error("carattere non alfanumerico: " + s[i]);
-    var segBits = 4 + Math.floor(s.length / 2) * 11 + (s.length % 2) * 6, v;
-    for (v = 1; v <= 40; v++) if (segBits + countBits(v) <= dataCodewords(v, e) * 8) break;
+    var e = level === "L" ? 0 : 1, raw0 = String(text), i;
+    /* modalità alfanumerica quando basta (i fotogrammi del passaggio tra telefoni); altrimenti byte, UTF-8 (minuscole,
+       «_», link: i codici dei sigilli di gratitudine) */
+    var byteMode = /[^0-9A-Z $%*+\-.\/:]/.test(raw0), s = byteMode ? raw0 : raw0.toUpperCase(), B = byteMode ? new TextEncoder().encode(raw0) : null;
+    var cb = function (v) { return byteMode ? (v < 10 ? 8 : 16) : countBits(v); };
+    var segBits = byteMode ? 4 + B.length * 8 : 4 + Math.floor(s.length / 2) * 11 + (s.length % 2) * 6, v;
+    for (v = 1; v <= 40; v++) if (segBits + cb(v) <= dataCodewords(v, e) * 8) break;
     if (v > 40) throw new Error("testo troppo lungo per un QR");
     /* bit dei dati */
     var bits = [], put = function (val, n) { for (var k = n - 1; k >= 0; k--) bits.push((val >>> k) & 1); };
-    put(2, 4); put(s.length, countBits(v));
-    for (i = 0; i + 1 < s.length; i += 2) put(ALNUM.indexOf(s[i]) * 45 + ALNUM.indexOf(s[i + 1]), 11);
-    if (s.length % 2) put(ALNUM.indexOf(s[s.length - 1]), 6);
+    if (byteMode) { put(4, 4); put(B.length, cb(v)); for (i = 0; i < B.length; i++) put(B[i], 8); }
+    else {
+      put(2, 4); put(s.length, cb(v));
+      for (i = 0; i + 1 < s.length; i += 2) put(ALNUM.indexOf(s[i]) * 45 + ALNUM.indexOf(s[i + 1]), 11);
+      if (s.length % 2) put(ALNUM.indexOf(s[s.length - 1]), 6);
+    }
     var cap = dataCodewords(v, e) * 8;
     put(0, Math.min(4, cap - bits.length)); put(0, (8 - bits.length % 8) % 8);
     for (var pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) put(pad, 8);

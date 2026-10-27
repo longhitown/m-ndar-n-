@@ -1,5 +1,5 @@
-/* Lessico del corso di italiano, generato da tools/itlex.mjs dal vocabolario e controllato con Morph-it! (LGPL, solo in
-   sviluppo). Non modificarlo a mano. Una voce per riga: [chiavi cinesi separate da |, tipo, italiano, …]
+/* Lessico del corso di italiano, generato da tools/itlex.mjs dal vocabolario e con genere, plurale e forme presi da Morph-it! (Università di Bologna, usato con la licenza LGPL: vedi
+   THIRD-PARTY-NOTICES.md e LICENZE/MORPH-IT.txt). Non modificarlo a mano. Una voce per riga: [chiavi cinesi separate da |, tipo, italiano, …]
    tipo n = nome [genere, plurale] · j = aggettivo [[m.s, f.s, m.p, f.p]] · v = verbo all'infinito · x = altro (avverbi, espressioni). */
 var IT_LEXICON = [
   ["我","x","io"],

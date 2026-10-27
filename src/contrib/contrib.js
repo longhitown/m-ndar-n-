@@ -4,7 +4,7 @@
   /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).
      form = URL «viewform» di un Modulo Google con un campo testo lungo; formEntry = il suo numero (entry.<N>).
      repo = repository PUBBLICO dei contributi (es. «utente/mandarino-contributi»): su uno privato gli estranei non aprono issue. */
-  var CFG = { email: "", form: "", formEntry: "", repo: "longhitown/m-ndar-n-" };   /* repo: le proposte come issue, che .github/workflows/contrib.yml controlla da sola */
+  var CFG = { email: MD_CONFIG.CONTACT_EMAIL, form: "", formEntry: "", repo: MD_CONFIG.REPO };   /* src/config.js; repo: le proposte come issue, che .github/workflows/contrib.yml controlla da sola */
   var NICK = "cp-contrib-nick";
   function nick() { try { return localStorage.getItem(NICK) || ""; } catch (e) { return ""; } }
   function list() { return CP.contrib.list(); }
@@ -125,7 +125,7 @@
   }
 
   /* ---- ⚙️ → Contributi ---- */
-  (CP.settingsExtras = CP.settingsExtras || []).push(function () {
+  (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () {
     var l = list().slice().reverse();
     return '<details class="set-sec" id="set-contrib"><summary>✏️ ' + T("ct.title") + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
       '<p class="small muted" style="margin:0">' + T("ct.lede") + "</p>" +
@@ -135,7 +135,7 @@
           (it.op === "fix" || it.op === "tr" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + T(it.undone ? "ct.redo" : "ct.undo") + "</button>" : "") +
           '<button type="button" class="btn-s" data-ct-del="' + CP.attr(it.id) + '" aria-label="' + CP.attr(T("lab.del")) + '">×</button></li>';
       }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
-  });
+  } });
   function finder(q) {
     var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">' + T("ct.findHint") + "</p>";
     var out = [];

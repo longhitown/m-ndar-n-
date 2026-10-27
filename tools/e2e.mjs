@@ -122,6 +122,7 @@ try {
     const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload();
     await p.click("#tab-build"); await p.waitForTimeout(200);
+    await p.click('[data-group="build"]'); await p.waitForTimeout(150);   /* Frasi si apre sulle quattro carte */
     await p.click(".fx-go"); await p.waitForTimeout(200);
     check("Immersione: ⛶ nasconde schede e menu, resta la barra con l'avanzamento", await p.evaluate(() => document.body.classList.contains("in-focus") && getComputedStyle(document.querySelector(".dock")).display === "none" && !document.getElementById("fx-bar").hidden && document.querySelector("#fx-bar .fx-n").textContent === "0/10"));
     await p.keyboard.press("Escape"); await p.waitForTimeout(150);
@@ -133,13 +134,114 @@ try {
     check("Immersione: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4c. benvenuto, test di livello, rivelazione progressiva (Task 1) */
+  {
+    const tabs = (p) => p.evaluate(() => [...document.querySelectorAll("nav.dock:not(.dock-it) .dtab")].filter((b) => !b.hidden).map((b) => b.id.replace("tab-", "")).join(","));
+    /* a. «Parto da zero»: obiettivo, i quattro toni, la prima carta; nella barra solo Percorso e Studia */
+    {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await p.goto(base); const door = await p.waitForSelector('[data-onb-door="zero"]', { timeout: 8000 }).catch(() => null);
+      check("Benvenuto: l'intro dura meno di 6 secondi", !!door);
+      if (door) {
+        await door.click(); await p.click('[data-onb-next="goal"]'); await p.click('[data-onb-goal="5"]'); await p.click('[data-onb-next="first"]');
+        await p.click('[data-onb-tq="0"]'); await p.click('[data-onb-next="finish"]'); await p.waitForTimeout(300);
+      }
+      check("Da zero: la prima carta parte subito e l'obiettivo è quello scelto", await p.evaluate(() => document.body.classList.contains("in-session") && CP.game.goal() === 5 && CP.ux.get("onboarded") === 1));
+      await p.evaluate(() => { if (document.getElementById("quit")) document.getElementById("quit").click(); });
+      check("Da zero: nella barra solo Percorso e Studia", (await tabs(p)) === "path,study", await tabs(p));
+      await p.evaluate(() => CP.go("frasi")); await p.waitForTimeout(150);
+      check("?go=frasi con Frasi ancora chiusa porta alla scheda aperta più vicina, senza errori", await p.evaluate(() => !document.getElementById("view-path").hidden && document.getElementById("view-build").hidden));
+      await p.evaluate(() => CP.unlock.peek("build", () => CP.build.openLesson(CP.lessons.list()[0].id), "Frasi")); await p.waitForTimeout(250);
+      check("Lezione dal Percorso con Frasi chiusa: si apre in immersione, senza la scheda Frasi", await p.evaluate(() => document.body.classList.contains("in-focus") && getComputedStyle(document.querySelector("nav.dock")).display === "none" && document.getElementById("tab-build").hidden));
+      await p.keyboard.press("Escape"); await p.waitForTimeout(250);
+      check("…e all'uscita si torna al Percorso", await p.evaluate(() => !document.body.classList.contains("in-focus") && !document.getElementById("view-path").hidden));
+      await p.evaluate(() => CP.finder()); await p.fill("#fd-q", "laboratorio"); await p.waitForTimeout(150);
+      check("Cerca ovunque: uno strumento ancora chiuso compare con «si apre…» e non porta a una scheda nascosta", /🔒/.test(await p.textContent("#fd-res")));
+      await p.keyboard.press("Escape");
+      /* «Mostra tutto»: due conferme */
+      await p.evaluate(() => { CP.openSettings("set-level"); }); await p.waitForTimeout(150);
+      await p.click("#opt-showall"); await p.click("[data-unl-all1]"); await p.click("[data-unl-all2]"); await p.waitForTimeout(200);
+      check("Mostra tutto (con doppia conferma): tutte le schede", (await tabs(p)) === "path,study,words,build", await tabs(p));
+      check("Benvenuto da zero: nessun errore JavaScript", !errs.length, errs[0]);
+      await ctx.close();
+    }
+    /* b. «Conosco già le basi»: dichiarazione, test, livello corretto a mano, conferma, poi «Annulla il salto» */
+    {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await p.goto(base); await p.waitForSelector('[data-onb-door="basics"]', { timeout: 8000 });
+      await p.click('[data-onb-door="basics"]'); await p.click('[data-onb-purpose="exam"]'); await p.click('[data-onb-next="declare"]');
+      for (let i = 0; i < 5; i++) await p.click(`[data-onb-decl="${i}:1"]`);
+      await p.click('[data-onb-next="test"]'); let n = 0;
+      while (n < 12 && (await p.$("[data-pl-idk]"))) { await p.click("[data-pl-idk]"); n++; }
+      check("Test di livello: al massimo 10 domande, «Non lo so» sempre possibile", n >= 6 && n <= 10, n + " domande");
+      while (await p.$('[data-onb-r="1"]:not([disabled])') && (await p.textContent(".onb-step span")) !== "Capitolo 3") await p.click('[data-onb-r="1"]');
+      await p.click("[data-onb-confirm]"); await p.waitForTimeout(150);
+      const r = await p.evaluate(() => { const S = CP.S(), pl = Object.keys(S).filter((k) => S[k].pl); return { n: pl.length, ch: [...new Set(pl.map((k) => SECTION_CHAPTER[CP.WORDS[k].sec]))].join(","), log: (localStorage.getItem("cp-log") || "").length, days: CP.game.activeDays(), xp: CP.game.rank().xp, goal: (document.querySelector("[data-onb-goal].on") || {}).textContent }; });
+      check("Livello confermato (capitolo 3): le parole dei capitoli 1-2 sono note, senza registro né serie, con i punti del grado", r.n > 1000 && r.ch === "1,2" && r.log === 0 && r.days === 0 && r.xp === 600 && r.goal === "20", JSON.stringify(r));
+      await p.click('[data-onb-next="finish"]'); await p.waitForTimeout(300);
+      check("Livello avanzato: tutte le schede subito; il Percorso riparte dal capitolo 3", (await tabs(p)) === "path,study,words,build" && await p.evaluate(() => SECTION_CHAPTER[SECTIONS.filter((s) => (document.querySelector("#path-root .resume .small") || {}).textContent.indexOf(s.title.replace(/^\d+\.\s*/, "")) >= 0)[0].id] === 3));
+      await p.evaluate(() => CP.openSettings("set-level")); await p.click("[data-unl-undo]"); await p.click("[data-unl-undo-ok]"); await p.waitForTimeout(200);
+      check("Annulla il salto: via le parole del test e i punti, le schede tornano come prima", await p.evaluate(() => !Object.values(CP.S()).some((x) => x.pl) && CP.game.rank().xp === 0) && (await tabs(p)) === "path,study", await tabs(p));
+      check("Benvenuto e test di livello: nessun errore JavaScript", !errs.length, errs[0]);
+      await ctx.close();
+    }
+    /* c. profilo di prima di questa versione: nessuna perdita, tutto aperto, niente benvenuto */
+    {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await p.addInitScript(() => { if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded", "1"); localStorage.setItem("cp-srs-v1", JSON.stringify({ 我: { n: 2, st: 3, df: 5, sd: 2, sp: null, lr: Date.now() - 864e5, d: Date.now() + 864e5 } })); localStorage.setItem("cp-game-v1", JSON.stringify({ xp: 40, goal: 10, days: {} })); localStorage.setItem("cp-tab", "words"); } });
+      await p.goto(base); await p.waitForTimeout(1200);
+      check("Profilo vecchio: tutte le schede, l'ultima scheda aperta, nessun benvenuto, progressi intatti", (await tabs(p)) === "path,study,words,build" && await p.evaluate(() => !document.getElementById("view-words").hidden && !document.getElementById("onb") && CP.S()["我"].n === 2 && CP.game.rank().xp === 40));
+      check("Profilo vecchio: nessun errore JavaScript", !errs.length, errs[0]);
+      await ctx.close();
+    }
+  }
+  /* 4d. sostegno e sigilli di gratitudine (Task 4): chiavi usa-e-getta, nessuna richiesta di rete */
+  {
+    const nc = require("crypto"), vmm = require("vm");
+    const sctx = vmm.createContext({ btoa, atob, TextEncoder, TextDecoder, crypto: globalThis.crypto }); vmm.runInContext(fs.readFileSync(path.join(path.dirname(file), "..", "src/core/seal-code.js"), "utf8"), sctx);
+    const { privateKey, publicKey } = nc.generateKeyPairSync("ec", { namedCurve: "P-256" }), jwk = publicKey.export({ format: "jwk" });
+    const mk = (lvl, num) => { const pl = sctx.MDSeal.make("e2e", lvl, 2026, num); return sctx.MDSeal.encode(pl, new Uint8Array(nc.sign("sha256", Buffer.from(pl), { key: privateKey, dsaEncoding: "ieee-p1363" }))); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const net = []; await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => { net.push(r.request().url()); r.abort(); });
+    await ctx.addInitScript(([jwk]) => { window.__mdConfigTest = { SEAL_PUBKEYS: [{ kid: "e2e", jwk }] }; if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", 1); localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); } }, [jwk]);
+    await p.goto(base + "#seal=" + encodeURIComponent(mk(2, 17))); await p.waitForSelector("[data-seal-add]", { timeout: 5000 }).catch(() => null);
+    check("Sigillo da link: il codice sparisce dall'indirizzo e l'app chiede conferma prima di salvarlo", (await p.evaluate(() => location.hash)) === "" && !!(await p.$("[data-seal-add]")) && !(await p.evaluate(() => localStorage.getItem("cp-seal-v1"))));
+    await p.click("[data-seal-add]"); await p.waitForSelector("[data-seal-prefs]");
+    check("Sigillo: senza un titolo è la scelta predefinita; il sigillo non va nelle immagini senza consenso", await p.evaluate(() => document.querySelector('input[name="seal-gram"]:checked').value === "n" && !document.getElementById("seal-share").checked && CP.seals.forShare() === null));
+    await p.check("#seal-share"); await p.click("[data-seal-prefs]"); await p.waitForTimeout(300);
+    check("Sigillo: con il consenso compare nella carta da condividere", await p.evaluate(() => !!CP.seals.forShare() && document.querySelectorAll("#set-support .seal-main").length === 1));
+    /* da testo incollato, poi da QR (codice scritto con il generatore dell'app, letto con jsQR) */
+    await p.evaluate(() => { document.querySelector(".seal-redeem").open = true; }); await p.fill("#seal-code", mk(1, 4)); await p.click("[data-seal-try]"); await p.click("[data-seal-add]"); await p.waitForTimeout(300); await p.click("[data-seal-prefs]");
+    const qrOk = await p.evaluate((code) => { const q = CP.qr.encode(code, "M"), cv = document.createElement("canvas"); CP.qr.draw(cv, q, 4); const img = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), r = window.jsQR(img.data, cv.width, cv.height); if (!r) return false; CP.seals.offer(r.data); return true; }, mk(3, 9));
+    if (qrOk) { await p.waitForSelector("[data-seal-add]"); await p.click("[data-seal-add]"); await p.waitForTimeout(300); }
+    check("Sigillo da testo e da QR: tre sigilli nella raccolta, il più alto in primo piano", qrOk && await p.evaluate(() => CP.seals.list().length === 3 && CP.seals.best().lvl === 3));
+    await p.evaluate(() => { CP.closeSheet(); }); await p.evaluate(() => { document.getElementById("seal-code") && (document.getElementById("seal-code").value = "MDS1.abc"); });
+    await p.evaluate(() => CP.seals.offer("MDS1.abc")); await p.waitForTimeout(150);
+    check("Sigillo: un codice rotto dà un messaggio gentile", /incompleto/.test(await p.textContent(".seal-sheet")));
+    await p.reload(); await p.waitForTimeout(400);
+    check("Avvio con un sigillo: il suo carattere dietro il frutto, senza attendere la verifica", await p.evaluate(() => (document.querySelector("#splash .sp-seal") || {}).textContent === "永"));
+    check("Sostegno e sigilli: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, net[0] || errs[0]);
+    await ctx.close();
+    /* interruttori spenti (versione per gli store): nessuna traccia, nemmeno con codici arrivati da un backup */
+    const c2 = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p2 = await c2.newPage();
+    await c2.addInitScript(([jwk, code]) => { window.__mdConfigTest = { FEATURE_DONATE: false, FEATURE_SEALS: false, SEAL_PUBKEYS: [{ kid: "e2e", jwk }] }; localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-seal-v1", JSON.stringify({ codes: { "3-2026-9": { code, ok: true } }, share: 1 })); }, [jwk, mk(3, 9)]);
+    await p2.goto(base + "#seal=" + encodeURIComponent(mk(1, 5))); await p2.waitForTimeout(1200); await p2.evaluate(() => CP.openSettings("grp-info")); await p2.waitForTimeout(200);
+    check("Versione store (FEATURE_* spenti): niente sostegno né sigilli nel DOM, il link #seal= viene ignorato", await p2.evaluate(() => !document.getElementById("set-support") && !document.querySelector(".seal-svg, .sp-seal, [data-seal-add]") && !CP.seals && location.hash === "" && /cp-seal-v1/.test(Object.keys(localStorage).join(","))));
+    await c2.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await p.goto(pathToFileURL(file).href); await p.waitForTimeout(700);
-    const btn = await p.$('#fam [data-course-set="it"]');
-    check("Benvenuto: «我是中国人，我想学意大利语»", !!btn);
+    /* il benvenuto (ui/welcome.js): intro di qualche secondo, poi le porte; in piccolo, l'altro corso */
+    const btn = await p.waitForSelector('#onb [data-course-set="it"]', { timeout: 8000 }).catch(() => null);
+    check("Benvenuto: intro, porte e «我是中国人，我想学意大利语»", !!btn && (await p.$$("#onb [data-onb-door]")).length === 3);
     if (btn) { await Promise.all([p.waitForNavigation(), btn.click()]); await p.waitForTimeout(700); }
+    /* il corso di italiano ha lo stesso benvenuto, in cinese (l'intro non si ripete nella stessa sessione) */
+    const later = await p.waitForSelector("#onb [data-onb-later]", { timeout: 8000 }).catch(() => null);
+    check("Corso di italiano: benvenuto in cinese con le tre porte", !!later && /从零开始/.test(await p.textContent("#onb")));
+    if (later) { await later.click(); await p.waitForTimeout(200); }
+    check("Corso di italiano: all'inizio solo 课程 e 复习 nella barra (rivelazione progressiva)", await p.evaluate(() => [...document.querySelectorAll(".dock-it .dtab")].filter((b) => !b.hidden).map((b) => b.getAttribute("data-it-tab")).join(",") === "lessons,review"));
     check("Corso di italiano: interfaccia cinese e schede proprie", await p.evaluate(() => CP.course() === "it" && LANG === "zh" && document.body.classList.contains("course-it") && document.querySelectorAll(".dock-it [data-it-tab]").length === 5));
     const res = await p.evaluate(() => {
       const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
@@ -160,8 +262,11 @@ try {
     check("Corso di italiano: le " + res.length + " lezioni si superano con le risposte giuste", res.length >= 10 && res.every((x) => !/ /.test(x)), res.join(" "));
     await p.evaluate(() => CP.itShow("review")); await p.click("[data-itr-show]"); await p.click('[data-itr-grade="3"]');
     check("Corso di italiano: ripasso FSRS in cp-it-srs-v1", await p.evaluate(() => { const s = JSON.parse(localStorage.getItem("cp-it-srs-v1") || "{}"); return Object.keys(s).filter((k) => k !== "__meta").length === 1; }));
+    /* superate le 30 lezioni: 变位 si apre (lezione sul presente); 句子 aspetta anche i giorni di studio */
+    check("Corso di italiano: dopo le lezioni si apre 变位, 句子 aspetta i giorni di studio", await p.evaluate(() => { CP.unlock.check(true); return CP.unlock.ok("conj") && !CP.unlock.ok("phrases"); }));
     /* correttore di frasi (it/checker.js): nessuna segnalazione sulle frasi giuste dell'app, gli errori tipici trovati */
     const itc = await p.evaluate(() => {
+      CP.unlock.unlockAll();
       const S = [];
       ITLESSONS.forEach((l) => { l.ex.forEach((e) => S.push(e[0])); l.traps.forEach((t) => S.push(t[1])); });
       Object.values(EXAMPLES).forEach((x) => S.push(x[1])); PHRASES.forEach((g) => g.items.forEach((i) => S.push(i[2]))); DIALOGS.forEach((d) => d.lines.forEach((l) => S.push(l[3])));
@@ -288,7 +393,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

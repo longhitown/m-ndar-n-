@@ -313,7 +313,7 @@
     return '<div class="panel" id="itc" style="margin-top:20px"><span class="tag muted small">✍️ 句子检查</span>' +
       '<p class="small muted" style="margin:4px 0 8px">写一句意大利语，我来检查冠词、名词、形容词和动词是否配合，还有一些拼写。我不检查意思和语序。</p>' +
       '<form data-itc-form style="display:flex;gap:8px;flex-wrap:wrap"><input id="itc-in" type="text" lang="it" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="意大利语句子" placeholder="La ragazza è alta." value="' + CP.attr(last) + '" style="flex:1 1 220px;min-width:0">' +
-      '<button type="submit" class="btn-main" style="margin:0">检查</button></form><div id="itc-out" aria-live="polite">' + resultHTML(last) + "</div></div>";
+      '<button type="submit" class="btn-s" style="margin:0">检查</button></form><div id="itc-out" aria-live="polite">' + resultHTML(last) + "</div></div>";
   };
   document.addEventListener("submit", function (e) {
     var f = e.target; if (!f || !f.hasAttribute || !f.hasAttribute("data-itc-form")) return;

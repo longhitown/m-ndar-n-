@@ -8,6 +8,14 @@ dall'elenco senza rompere gli altri.
 
 Ci sono quattro modi di agganciarsi, sempre gli stessi.
 
+## 0. Configurazione
+
+`src/config.js` è il primo script dopo `boot.js`. Definisce `MD_CONFIG`, che è l'unico posto con l'identità del progetto:
+repository GitHub, e-mail di contatto, pagina di sostegno, indirizzi degli store, il *flavor* (`direct` | `store`), gli
+interruttori `FEATURE_DONATE` e `FEATURE_SEALS` e le chiavi pubbliche dei sigilli. Lo leggono `pwa/pwa.js`
+(aggiornamenti dell'APK) e `contrib/contrib.js` (issue ed e-mail dei contributi). La mappa delle schede, dei fogli e
+delle impostazioni, con le regole di rivelazione progressiva, sta in `docs/ux-architettura.md`.
+
 ## 1. Funzioni di servizio (definite una volta, chiamate da tutti)
 
 | Che cosa | Dove nasce | A cosa serve |
@@ -43,7 +51,7 @@ chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo o
 
 | Registro | Chi lo legge | Chi ci scrive |
 |---|---|---|
-| `CP.settingsExtras` (array di funzioni → HTML) | `ui/settings.js`, in fondo a ⚙️ | `pwa/sync.js` (Sincronizza), `it/course.js` (Corso), `contrib/contrib.js`, `pwa/reminder.js` (🔔) |
+| `CP.settingsExtras`: una funzione → HTML (gruppo «Avanzate») oppure `{ group: "data" \| "adv" \| "info", html }` | `ui/settings.js`, nei quattro gruppi di ⚙️ | `pwa/sync.js` e `contrib/contrib.js` (Dati e privacy); `it/course.js`, `pwa/reminder.js`, `ui/unlock.js` (Avanzate) |
 | `CP.subs[id] = { render, after }` | `phrases/frasi.js`, i sottomenu di Frasi | `dialogs.js`, `lessons.js`, `reader.js`, `slot.js`, `thought.js` |
 | `CP.audioTracks.add({ id, … make })` | `audio/player.js` (jukebox) | ogni `audio/tracks/<id>.js`; l'ordine è `audio/tracks/index.js` |
 | `SECTIONS`, `DIALOGS` (globali di `boot.js`) | vocabolario, dialoghi | `data/vocab/*.js`, `data/dialogs/*.js` |
@@ -51,6 +59,38 @@ chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo o
 
 Pezzi di HTML che altre schede inseriscono se ci sono: `CP.homeProgress`, `CP.homeBackup`, `CP.homeNotice`
 (`study/memory.js`, nella home di Studio), `CP.voiceExtra` (`audio/audio-ui.js`, nel pannello voce).
+
+## 3b. Benvenuto, test di livello, rivelazione progressiva
+
+| Che cosa | Dove | Note |
+|---|---|---|
+| `CP.unlock` | `ui/unlock.js` | `ok(scheda)`, `toolOk(strumento)`, `why()`, `check()`, `peek(scheda, fn, titolo)`, `nearest()`, `tabs()`, `showAll()`. **Prima di portare l'utente su una scheda, si chiede a `CP.unlock.ok`.** |
+| `CP.onboarding` | `ui/onboarding.js` | `open(passo)`, `redoTest()`. Si carica al primo uso; l'innesco è `ui/welcome.js` |
+| `CP.placement` | `data/placement.js` (motore, `PLACEMENT`) + `ui/placement.js` | `run`, `apply`, `undo`, `preview`. Si carica al primo uso |
+| `CP.game.grant(n)` / `ungrant()` / `granted()` / `activeDays()` | `core/game.js` | punti iniziali che non toccano la serie; ogni corso ha la sua chiave |
+
+`core.js` (`CP.show`), `ui/gestures.js`, `ui/launch.js` (`?go=`), `ui/finder.js`, `path/path.js` e `it/course.js` usano
+`CP.unlock` per non mostrare mai una scheda chiusa. `CP.show(nome, instant, force)` con `force` la mostra solo per
+l'immersione.
+
+**Moduli caricati al primo uso.** Nel file unico non vengono compilati all'avvio:
+
+- `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
+- `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`.
+
+L'elenco è `LAZYMOD` in `tools/build.mjs`.
+
+## 3c. Sostegno e sigilli
+
+| Che cosa | Dove | Note |
+|---|---|---|
+| `MDSeal` | `core/seal-code.js` | `parse`, `verify(code, keys)` con WebCrypto, `make` / `encode`; puro, lo usano anche `lo strumento di emissione` e le prove |
+| `CP.seals` | `ui/seals.js` | `svg(livello, px)`, `paint(ctx, …)` per il canvas, `list`, `best`, `offer(codice)`, `forShare()` (lo usa `ui/share-card.js`) |
+| `CP.qrScan(titolo, aiuto, onText)` | `pwa/qr-transfer.js` | la fotocamera che legge un QR qualsiasi; `onText` restituisce true per chiudere |
+| `tg(chiave, forma)` / `CP.tg` | `i18n/titles.js` | titoli con forma m / f / n (senza titolo); in cinese una forma sola |
+
+`#seal=…` lo legge `ui/seals.js` all'avvio, e convive con `#dev`, `#nodev`, `#selftest` e `?go=`. Gli interruttori
+`FEATURE_DONATE` e `FEATURE_SEALS` e le chiavi stanno in `MD_CONFIG`. `window.__mdConfigTest` serve solo alle prove.
 
 ## 4. Punti d'ingresso dall'esterno
 
