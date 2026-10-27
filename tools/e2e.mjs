@@ -412,6 +412,39 @@ try {
     check("Sfida, corso di italiano: nessun errore JavaScript", !I.errs.length, I.errs[0]);
     await I.ctx.close();
   }
+  /* 4h. golden (Task 12, T0): con lo stile «Classico» la sessione di ripasso è identica alla copia fissa di study.js di prima
+     del Task 12 (tools/fixtures/study-classic-v1.js): stessa coda, stesse carte pi / ip / hp, stessi voti. Profilo e seme fissi. */
+  {
+    const init = () => {
+      const now = Date.now(), S = {};
+      ["你好", "谢谢", "再见", "早上好", "晚上好", "晚安", "对不起", "没关系", "请", "不客气", "欢迎", "朋友"].forEach((k, i) => { S[k] = { n: 3, d: now - 86400000 * (1 + i), b: i % 4 }; });
+      localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}');
+      localStorage.setItem("cp-study-cfg", '{"n":3,"sec":""}'); localStorage.setItem("cp-ex-style", "classic");
+      window.__seed = (n) => { let s = n >>> 0; Math.random = () => { s = (Math.imul(s, 1103515245) + 12345) >>> 0; return s / 4294967296; }; };
+    };
+    const run = async (fixture) => {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await ctx.addInitScript(init); await p.goto(base); await p.waitForTimeout(700);
+      if (fixture) await p.evaluate((code) => { const r = document.getElementById("study-root"); r.replaceWith(r.cloneNode(false)); (0, eval)(code); }, fs.readFileSync(path.join(path.dirname(fileURLToPathSafe(import.meta.url)), "fixtures/study-classic-v1.js"), "utf8"));
+      const seq = await p.evaluate(() => {
+        __seed(20261027); CP.show("study", true); CP.studyStart();
+        const out = [], root = document.getElementById("study-root"), clean = (h) => h.replace(/ enter"/g, '"');
+        for (let i = 0; i < 40; i++) {
+          out.push(clean(root.innerHTML));
+          const b = root.querySelector("#next") || root.querySelector("#reveal") || root.querySelector('[data-g="' + (i % 7 === 3 ? 0 : i % 5 === 1 ? 1 : 2) + '"]');
+          if (!b) break; b.click();
+        }
+        return out;
+      });
+      await ctx.close(); return { seq, errs };
+    };
+    const now = await run(false), old = await run(true);
+    const firstDiff = now.seq.findIndex((h, i) => h !== old.seq[i]);
+    check("Golden «Classico»: la sessione di ripasso è identica a quella di prima del Task 12 (" + now.seq.length + " schermate)", now.seq.length > 20 && now.seq.length === old.seq.length && firstDiff < 0, firstDiff >= 0 ? "schermata " + firstDiff + ": " + now.seq[firstDiff].slice(0, 200) + " ≠ " + (old.seq[firstDiff] || "").slice(0, 200) : "");
+    const tags = await (async () => { const all = now.seq.join(""); return ["Che cosa significa?", "Come si dice?", "Leggi il carattere", 'class="grades"'].map((x) => all.includes(x)); })();
+    check("Golden «Classico»: nella sessione ci sono le tre carte (pi, ip, hp) e i quattro voti", tags.every(Boolean), JSON.stringify(tags));
+    check("Golden «Classico»: nessun errore JavaScript", !now.errs.length && !old.errs.length, now.errs[0] || old.errs[0]);
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));

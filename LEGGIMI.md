@@ -337,6 +337,9 @@ node tools/e2e.mjs          # 81 prove su dist/ (benvenuto e test di livello, co
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
+**Golden del ripasso (Task 12).** `tools/fixtures/study-classic-v1.js` è una copia fissa di `src/study/study.js` di prima
+del Task 12: `tools/e2e.mjs` fa la stessa sessione (profilo e seme fissi) con l'app in stile «Classico» e con la copia, e
+controlla che le 40 schermate (coda, carte pi / ip / hp, voti) siano identiche. Non va nell'app.
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi). `#dev` accende il modo sviluppatore
 (in ⚙️ compare «Scarica pacchetto PWA per GitHub»), `#nodev` lo spegne.
 
