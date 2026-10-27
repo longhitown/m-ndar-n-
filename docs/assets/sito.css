@@ -230,3 +230,73 @@ footer a { display: inline-block; min-height: 44px; line-height: 44px; padding: 
 .credits a { padding: 0; line-height: inherit; min-height: 0; }
 
 @media (prefers-reduced-motion: reduce) { .drift { display: none; } .eq i { animation: none; } }
+
+/* ======================================================================
+   Seconda versione della pagina: due lingue complete, clip dell'app, titolo su due righe
+   ====================================================================== */
+/* lingua: interruttore nella barra, voci di menu e testi del pulsante secondo la lingua */
+.lang { display: inline-flex; margin: 0; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.lang button { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 0; background: none; font: inherit; font-size: .9rem; font-weight: 600; color: var(--mute); cursor: pointer; transition: background .2s, color .2s; }
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+html[data-lang="it"] .nav-zh, html[data-lang="it"] .l-zh, html[data-lang="zh"] .nav-it, html[data-lang="zh"] .l-it { display: none; }
+@media (max-width: 760px) { .nav-it, .nav-zh { display: none; } }
+
+/* le due versioni: quella scelta in cima e nitida, l'altra sotto, sfocata, come anteprima che si può toccare */
+.langstack { display: flex; flex-direction: column; }
+.pgwrap { position: relative; }
+.js .pgwrap.on { order: 0; }
+.js .pgwrap.off { order: 1; }
+.js .pgwrap .pg { transition: filter .5s var(--ease), opacity .5s var(--ease); }
+.js .pgwrap.off .pg { max-height: 78vh; overflow: hidden; filter: blur(7px) saturate(.8); opacity: .5; pointer-events: none; user-select: none;
+  -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent); }
+.peek-cta { display: none; }
+.js .pgwrap.off .peek-cta { display: inline-flex; position: absolute; z-index: 5; left: 50%; top: min(28vh, 260px); transform: translateX(-50%); max-width: calc(100% - 32px); align-items: center; justify-content: center; text-align: center;
+  min-height: 52px; padding: 12px 24px; border-radius: 999px; border: 2px solid var(--accent); background: var(--card); color: var(--accent); font: inherit; font-weight: 700; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s var(--ease), box-shadow .2s; }
+.js .pgwrap.off .peek-cta:hover { transform: translateX(-50%) translateY(-2px); }
+html[lang="zh-CN"] body { font-family: system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Segoe UI", sans-serif; }
+
+/* titolo su due righe, mai spezzato: la grandezza segue la larghezza della colonna */
+.htext { container-type: inline-size; min-width: 0; }
+.hero h1 { font-size: clamp(1.05rem, 4.6vw, 2.3rem); font-size: clamp(1.05rem, 5.4cqi, 2.4rem); line-height: 1.18; letter-spacing: -.02em; }
+.hero h1 span { display: block; white-space: nowrap; }
+.hero h1 span + span { color: var(--accent); }
+.pg[lang="zh-CN"] .hero h1 { font-size: clamp(1.3rem, 6.5vw, 2.6rem); font-size: clamp(1.3rem, 8cqi, 2.7rem); letter-spacing: 0; }
+.hero .mark { margin-bottom: 18px; }
+
+/* le quattro garanzie su una sola riga */
+.badges { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+.badges li { padding: 7px 14px; font-size: .88rem; line-height: 1.25; text-align: center; white-space: nowrap; }
+@media (max-width: 620px) { .badges { grid-template-columns: repeat(4, 1fr); gap: 5px; } .badges li { padding: 7px 4px; font-size: .68rem; white-space: normal; border-radius: 12px; display: flex; align-items: center; justify-content: center; } }
+
+/* telefono */
+.phone { aspect-ratio: 468 / 960; }
+.phone video { background: var(--card); }
+
+/* schede delle funzioni: una piccola clip dell'app in loop e il testo */
+.cards { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+.fcard { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 22px 18px 20px; text-align: center; }
+.fcard .ft { text-align: left; width: 100%; }
+.fcard h3 { font-size: 1.1rem; margin-bottom: 4px; }
+.phone.mini { width: min(170px, 58%); border-width: 6px; border-radius: 26px; box-shadow: 0 1px 2px rgba(22,32,27,.1), 0 12px 28px rgba(20,89,74,.16); transition: transform .35s var(--ease); }
+.fcard:hover .phone.mini { transform: translateY(-4px) scale(1.03); }
+.fcard video { transition: filter .3s; filter: saturate(.92); } .fcard:hover video { filter: saturate(1.08); }
+@media (max-width: 560px) { .fcard { flex-direction: row; align-items: center; text-align: left; gap: 16px; padding: 16px; } .phone.mini { width: 104px; flex: none; border-width: 4px; border-radius: 18px; } .fcard .ft { flex: 1; } }
+
+/* microprove: domanda e pulsante «ascolta» */
+.stem { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 6px 0 2px; }
+.stem .word { margin: 0; }
+.btn.pulse { animation: pulse-btn 1.6s var(--ease) infinite; }
+@keyframes pulse-btn { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); } 70%, 100% { box-shadow: 0 0 0 12px transparent; } }
+.hz.it { font-family: Georgia, "Noto Serif", "Times New Roman", serif; font-style: italic; font-weight: 600; font-size: 2.4rem; }
+
+/* banda dei dati: più spazio per il perché */
+.band { padding: clamp(26px, 5vw, 44px); gap: 12px; }
+.band h3 { font-size: 1.15rem; margin-top: 10px; color: inherit; }
+.band p { max-width: 62ch; opacity: .96; }
+.band .btn.inv { margin-top: 18px; }
+
+@media (prefers-reduced-motion: reduce) { .btn.pulse { animation: none; } .js .pgwrap .pg { transition: none; } }
+
+.statsec { padding-top: 0; }
+.hero { padding-bottom: 28px; }
+.phone video[controls] { cursor: pointer; }

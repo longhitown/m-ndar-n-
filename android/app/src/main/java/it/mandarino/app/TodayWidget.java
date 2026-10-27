@@ -8,14 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
+import android.util.ArrayMap;
+import android.util.SizeF;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Widget «Oggi», 4×2: serie di giorni con un messaggio, ripassi in scadenza, parola del giorno (un tocco mostra il
- * significato), «Studia ora». La versione 2×1 è TodayWidgetSmall. I dati arrivano dalla pagina (WidgetState).
+ * significato), «Studia ora». Da Android 12 ha due disegni (largo e stretto) tra cui sceglie il launcher secondo la
+ * misura. La versione 2×1 è TodayWidgetSmall. I dati arrivano dalla pagina (WidgetState), i testi stanno in res/values.
  */
 public class TodayWidget extends AppWidgetProvider {
     static final String REVEAL = "it.mandarino.app.WIDGET_REVEAL";
@@ -42,23 +47,38 @@ public class TodayWidget extends AppWidgetProvider {
 
     RemoteViews views(Context c) {
         WidgetState s = WidgetState.load(c);
-        RemoteViews v = new RemoteViews(c.getPackageName(), layout());
+        if (layout() == R.layout.widget_small) return small(c, s);
+        RemoteViews wide = large(c, s, R.layout.widget_large);
+        if (Build.VERSION.SDK_INT < 31) return wide;
+        /* da Android 12 il launcher sceglie il disegno secondo la misura: stretto sotto ~280 dp, largo oltre */
+        Map<SizeF, RemoteViews> sizes = new ArrayMap<>();
+        sizes.put(new SizeF(110f, 120f), large(c, s, R.layout.widget_large_narrow));
+        sizes.put(new SizeF(280f, 120f), wide);
+        return new RemoteViews(sizes);
+    }
+
+    RemoteViews small(Context c, WidgetState s) {
+        RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.widget_small);
+        v.setOnClickPendingIntent(R.id.w_root, open(c, "study"));
+        v.setTextViewText(R.id.w_due_n, s.dueNumber());
+        v.setTextViewText(R.id.w_due_l, s.dueLabel());
+        v.setTextViewText(R.id.w_streak, s.streakShort());
+        return v;
+    }
+
+    RemoteViews large(Context c, WidgetState s, int layout) {
+        RemoteViews v = new RemoteViews(c.getPackageName(), layout);
         v.setOnClickPendingIntent(R.id.w_root, open(c, "study"));
         v.setTextViewText(R.id.w_streak, s.streakLine());
-        if (layout() == R.layout.widget_small) {
-            v.setTextViewText(R.id.w_due_n, s.shortDue());
-            v.setTextViewText(R.id.w_due_l, s.shortDueLabel());
-            return v;
-        }
-        v.setTextViewText(R.id.w_title, s.title());
-        v.setTextViewText(R.id.w_due, s.dueLine());
+        v.setTextViewText(R.id.w_due_n, s.dueNumber());
+        v.setTextViewText(R.id.w_due_l, s.dueLabel());
+        v.setTextViewText(R.id.w_due_d, s.dueDetail());
         v.setTextViewText(R.id.w_study, s.study());
         v.setOnClickPendingIntent(R.id.w_study, open(c, "study"));
         boolean has = !s.hz.isEmpty();
         v.setViewVisibility(R.id.w_word, has ? View.VISIBLE : View.GONE);
         if (has) {
             boolean shown = c.getSharedPreferences(WidgetState.PREFS, Context.MODE_PRIVATE).getInt("reveal", -1) == today();
-            v.setTextViewText(R.id.w_label, s.wordLabel());
             v.setTextViewText(R.id.w_hz, s.hz);
             v.setTextViewText(R.id.w_py, s.py);
             v.setTextViewText(R.id.w_it, shown ? s.it : s.tapMeaning());

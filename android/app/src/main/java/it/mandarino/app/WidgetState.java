@@ -2,11 +2,14 @@ package it.mandarino.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Lo stato del widget «Oggi», come l'ha mandato la pagina (pwa/widget.js → Bridge.setWidgetState) e come vale ADESSO:
@@ -20,9 +23,12 @@ final class WidgetState {
     int due, fresh, streak, goal;
     boolean activeToday, empty = true;
     String lang = "it", hz = "", py = "", it = "";
+    /** i testi stanno in res/values (it) e res/values-zh: nella lingua del corso scelta nell'app, non in quella del telefono */
+    Resources r;
 
     static WidgetState load(Context c) {
         WidgetState w = new WidgetState();
+        w.r = c.getResources();
         SharedPreferences p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String json = p.getString("widget", null);
         if (json == null) return w;
@@ -52,7 +58,14 @@ final class WidgetState {
                 if (x != null) { w.hz = x.optString(0); w.py = x.optString(1); w.it = x.optString(2); }
             }
         } catch (Exception e) { w.empty = true; }
+        w.r = localized(c, w.lang);
         return w;
+    }
+
+    static Resources localized(Context c, String lang) {
+        Configuration cfg = new Configuration(c.getResources().getConfiguration());
+        cfg.setLocale(new Locale("zh".equals(lang) ? "zh" : "it"));
+        return c.createConfigurationContext(cfg).getResources();
     }
 
     static int daysBetween(long a, long b) {
@@ -66,27 +79,36 @@ final class WidgetState {
 
     boolean zh() { return "zh".equals(lang); }
 
+    private String days(int n) { return r.getQuantityString(R.plurals.w_days, n, n); }
+
     /** la riga della serie: un messaggio gentile, non solo un numero */
     String streakLine() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if (empty) return zh() ? "打开应用开始学习" : "Apri l'app per cominciare";
-        if (activeToday) return zh() ? "🔥 连续 " + streak + " 天 · 今天完成 ✓" : "🔥 " + streak + (streak == 1 ? " giorno" : " giorni") + " di fila · oggi fatto ✓";
-        if (streak > 0 && hour >= 18) return zh() ? "🔥 连续 " + streak + " 天：今晚学 3 分钟就不会中断" : "🔥 " + streak + (streak == 1 ? " giorno" : " giorni") + ": stasera bastano 3 minuti per non spezzarla";
-        if (streak > 0) return zh() ? "🔥 连续 " + streak + " 天：今天继续" : "🔥 " + streak + (streak == 1 ? " giorno" : " giorni") + " di fila: continua oggi";
-        return zh() ? "今天学一张卡片，连续天数重新开始" : "Una carta oggi e la serie riparte";
+        if (empty) return r.getString(R.string.w_open_app);
+        if (activeToday) return r.getString(R.string.w_msg_done, days(streak));
+        if (streak > 0 && hour >= 18) return r.getString(R.string.w_msg_evening, days(streak));
+        if (streak > 0) return r.getString(R.string.w_msg_keep, days(streak));
+        return r.getString(R.string.w_msg_restart);
     }
 
-    String dueLine() {
+    /** la serie in poco spazio (widget piccolo) */
+    String streakShort() {
+        if (empty || streak == 0) return r.getString(R.string.w_short_restart);
+        return activeToday ? r.getString(R.string.w_short_done, days(streak)) : days(streak);
+    }
+
+    /** il grande numero: ripassi scaduti, «✓» se è tutto in ordine, «—» se l'app non ha ancora mandato nulla */
+    String dueNumber() { return empty ? "—" : due > 0 ? String.valueOf(due) : "✓"; }
+    String dueLabel() { return due > 0 ? r.getQuantityString(R.plurals.w_reviews, due) : r.getString(R.string.w_label_ok); }
+
+    /** sotto il numero: il tempo stimato, o le parole nuove, o niente */
+    String dueDetail() {
         if (empty) return "";
-        if (due > 0) { int m = Math.max(1, Math.round(due * 20f / 60f)); return zh() ? due + " 个复习 · 约 " + m + " 分钟" : due + (due == 1 ? " ripasso" : " ripassi") + " · ~" + m + " min"; }
-        if (fresh > 0) return zh() ? fresh + " 个新词等你学" : fresh + " parole nuove pronte";
-        return zh() ? "暂时都复习完了" : "Tutto in ordine per ora";
+        if (due > 0) return r.getString(R.string.w_minutes, Math.max(1, Math.round(due * 20f / 60f)));
+        if (fresh > 0) return r.getQuantityString(R.plurals.w_fresh, fresh, fresh);
+        return r.getString(R.string.w_all_ok);
     }
 
-    String shortDue() { return empty ? "—" : due > 0 ? String.valueOf(due) : "✓"; }
-    String shortDueLabel() { return zh() ? (due > 0 ? "个复习" : "已完成") : (due > 0 ? (due == 1 ? "ripasso" : "ripassi") : "in ordine"); }
-    String title() { return zh() ? "màndarínō · 今天" : "màndarínō · Oggi"; }
-    String study() { return zh() ? "现在学习" : "Studia ora"; }
-    String tapMeaning() { return zh() ? "点一下看意思" : "Tocca per il significato"; }
-    String wordLabel() { return zh() ? "今日一词" : "Parola del giorno"; }
+    String study() { return r.getString(R.string.w_study); }
+    String tapMeaning() { return r.getString(R.string.w_tap_meaning); }
 }

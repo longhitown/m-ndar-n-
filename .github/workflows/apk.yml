@@ -165,3 +165,22 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
           script: node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk
+
+      - name: Schermate dei widget (solo debug)
+        if: always()
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: adb install -r -g android/app/build/outputs/apk/direct/debug/app-direct-debug.apk && sh tools/widget-shots.sh widget-shots
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: widget-shots-api${{ matrix.api }}
+          path: widget-shots/

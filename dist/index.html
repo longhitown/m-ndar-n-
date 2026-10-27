@@ -17015,34 +17015,55 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
   CP.voices = function () { return voices.slice(); };
   CP.canListen = function () { return !!SR; };
+  /* errori che di solito passano da soli: il riconoscitore di Android ancora occupato dal giro prima, il microfono appena
+     rilasciato, una richiesta annullata. Si riprova una volta, in silenzio, prima di dire all'utente che qualcosa non va. */
+  var TRANSIENT_ERR = /^(service-not-allowed|audio-capture|aborted|busy|start)$/;
   CP.listen = function (targetHz, onResult) {
     if (!SR) return null;
-    var rec, done = false;
+    var cur = null, done = false, tries = 0, stopped = false;
     var finish = function (o) { if (done) return; done = true; onResult(o); };
     /* in Chrome il riconoscimento manda l'audio ai server: senza rete non ci si prova nemmeno (nell'app Android sì: il
        riconoscitore di sistema può avere la lingua scaricata sul telefono) */
     if (navigator.onLine === false && !window.MandarinoAndroid) { finish({ ok: false, heard: "", error: "offline" }); return null; }
     /* su molti Android, se il flusso dell'oscilloscopio è ancora aperto, il riconoscimento fallisce (audio-capture / no-speech) */
-    if (CP.micInfo && CP.micInfo().live && !CP.micInfo().users && CP.micClose) CP.micClose();
-    try {
-      rec = new SR();
-      rec.lang = "zh-CN"; rec.interimResults = false; rec.maxAlternatives = 3; rec.continuous = false;
-      rec.onresult = function (ev) {
-        /* si confronta il suono, non il carattere: 他/她/它 o 在/再 sono la stessa pronuncia, e il riconoscitore sceglie a caso */
-        var alts = [], best = { level: -1 }, heard = "";
-        for (var i = 0; i < ev.results[0].length; i++) {
-          var tr = ev.results[0][i].transcript, m = CP.soundMatch ? CP.soundMatch(targetHz, tr) : { level: tr.indexOf(targetHz) >= 0 ? 2 : 0 };
-          alts.push(tr);
-          if (m.level > best.level || (m.level === best.level && m.exact && !best.exact)) { best = m; heard = tr; }
-        }
-        finish({ ok: best.level === 2, near: best.level === 1, homophone: best.level === 2 && !best.exact, heard: heard || alts[0] || "", alts: alts, goal: targetHz });
-      };
-      rec.onerror = function (ev) { finish({ ok: false, heard: "", error: (ev && ev.error) || "error" }); };
-      rec.onnomatch = function () { finish({ ok: false, heard: "", error: "no-speech" }); };
-      rec.onend = function () { finish({ ok: false, heard: "", error: "no-speech" }); };
-      rec.start();
-    } catch (e) { finish({ ok: false, heard: "", error: "start" }); return null; }
-    return rec;
+    var closed = false;
+    if (CP.micInfo && CP.micInfo().live && !CP.micInfo().users && CP.micClose) { CP.micClose(); closed = true; }
+    var run = function () {
+      var rec, got = false, retrying = false;
+      try {
+        rec = new SR();
+        rec.lang = "zh-CN"; rec.interimResults = false; rec.maxAlternatives = 3; rec.continuous = false;
+        rec.onresult = function (ev) {
+          got = true;
+          /* si confronta il suono, non il carattere: 他/她/它 o 在/再 sono la stessa pronuncia, e il riconoscitore sceglie a caso */
+          var alts = [], best = { level: -1 }, heard = "";
+          for (var i = 0; i < ev.results[0].length; i++) {
+            var tr = ev.results[0][i].transcript, m = CP.soundMatch ? CP.soundMatch(targetHz, tr) : { level: tr.indexOf(targetHz) >= 0 ? 2 : 0 };
+            alts.push(tr);
+            if (m.level > best.level || (m.level === best.level && m.exact && !best.exact)) { best = m; heard = tr; }
+          }
+          finish({ ok: best.level === 2, near: best.level === 1, homophone: best.level === 2 && !best.exact, heard: heard || alts[0] || "", alts: alts, goal: targetHz });
+        };
+        rec.onerror = function (ev) {
+          var e = (ev && ev.error) || "error";
+          if (!got && !done && !stopped && tries < 1 && TRANSIENT_ERR.test(e)) { tries++; retrying = true; setTimeout(run, 420); return; }
+          finish({ ok: false, heard: "", error: e });
+        };
+        rec.onnomatch = function () { finish({ ok: false, heard: "", error: "no-speech" }); };
+        rec.onend = function () { if (!retrying) finish({ ok: false, heard: "", error: "no-speech" }); };
+        cur = rec; rec.start();
+      } catch (e) {
+        if (!done && !stopped && tries < 1) { tries++; setTimeout(run, 420); return; }
+        finish({ ok: false, heard: "", error: "start" });
+      }
+    };
+    /* il microfono appena chiuso ha bisogno di un attimo per tornare libero */
+    if (closed) setTimeout(run, 220); else run();
+    /* chi chiama può fermare o annullare l'ascolto: vale per il tentativo in corso, qualunque sia */
+    return {
+      stop: function () { stopped = true; if (cur) try { cur.stop(); } catch (e) {} },
+      abort: function () { stopped = true; done = true; if (cur) try { cur.abort(); } catch (e) {} }
+    };
   };
   /* ripiego universale: senza riconoscimento vocale (Firefox, iOS installata, offline) si registra e si confronta */
   CP.canRecord = function () { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); };
@@ -17054,6 +17075,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   /* messaggi per i codici d'errore del riconoscimento vocale (chiavi mic.e.*) */
   var MIC_ERR = {}; ["not-allowed", "service-not-allowed", "audio-capture", "network", "offline", "language-not-supported", "no-speech", "start"].forEach(function (c) { MIC_ERR[c] = t("mic.e." + c); });
   var SR_DOWN = /^(network|offline|language-not-supported|service-not-allowed|audio-capture|start)$/;
+  /* «il riconoscimento qui non va» vale per tutta la sessione solo se è definitivo (nessuna rete, lingua assente); un errore
+     passeggero (servizio occupato, microfono appena rilasciato) lo si dimentica dopo 45 secondi e si riprova */
+  var srDown = function () {
+    if (CP._srDown && TRANSIENT_ERR.test(CP._srDown) && Date.now() - (CP._srDownAt || 0) > 45000) CP._srDown = null;
+    return CP._srDown;
+  };
   window.addEventListener("online", function () { if (CP._srDown === "network" || CP._srDown === "offline") CP._srDown = null; });
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-vp-open]") : null; if (!b || !CP.voicePanel) return;
@@ -17066,7 +17093,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     CP.stopSpeak();
     var goal = b.getAttribute("data-mic"), host = b.closest("[data-heard-host], .ln, .fc, .fw") || (b.closest(".acts") ? b.closest(".acts").parentNode : b.parentNode);
     /* senza riconoscimento (o se qui non funziona) si apre il pannello «Parla», che va anche offline */
-    var down = !SR ? "" : CP._srDown ? MIC_ERR[CP._srDown] || "" : navigator.onLine === false && !window.MandarinoAndroid ? MIC_ERR.offline : null;
+    var down = !SR ? "" : srDown() ? MIC_ERR[CP._srDown] || "" : navigator.onLine === false && !window.MandarinoAndroid ? MIC_ERR.offline : null;
     if (down !== null && CP.canScope && CP.canScope() && CP.voicePanel) { CP.voicePanel(host, goal, { note: down }); return; }
     var out = host.querySelector(".heard");
     if (!out) { out = document.createElement("div"); out.setAttribute("aria-live", "polite"); host.appendChild(out); }
@@ -17078,7 +17105,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       if (b._abort) { b._abort = false; if (out.parentNode) out.parentNode.removeChild(out); return; }
       if (r.error && SR_DOWN.test(r.error) && CP.canScope && CP.canScope() && CP.voicePanel) {
         /* il riconoscimento qui non va (rete, lingua non installata, servizio assente): per questa sessione si usa il pannello */
-        CP._srDown = r.error; if (out.parentNode) out.parentNode.removeChild(out);
+        CP._srDown = r.error; CP._srDownAt = Date.now(); if (out.parentNode) out.parentNode.removeChild(out);
         CP.voicePanel(host, goal, { note: CP.micErrText(r.error) }); return;
       }
       if (r.error) {
