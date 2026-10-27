@@ -28,7 +28,7 @@
   function base() {
     var app = !!window.MandarinoAndroid || location.hostname === "appassets.androidplatform.net";
     if (!app && /^https?:$/.test(location.protocol)) return location.origin + location.pathname;
-    return C.SITE_URL ? C.SITE_URL.replace(/\/?$/, "/") + "app/" : "";
+    return C.SITE_URL ? C.SITE_URL.replace(/\/?$/, "/").replace(/app\/$/, "") + "app/" : "";
   }
   function link(code) { var b = base(); return b ? b + HASH + code : ""; }
 

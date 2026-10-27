@@ -91,16 +91,22 @@ function copyDir(a, b, skip = new Set()) {
     if (e.isDirectory()) copyDir(s, d, skip); else fs.copyFileSync(s, d);
   }
 }
+const SITE = "https://mandarinoapp.org";
 function assemble(out) {
   if (!fs.existsSync(path.join(ROOT, "dist/index.html"))) throw new Error("Manca dist/: lancia prima node tools/build.mjs");
   fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
   for (const f of ["index.html", "icon.svg", "tester.html"]) fs.copyFileSync(path.join(ROOT, "docs", f), path.join(out, f));
   copyDir(path.join(ROOT, "docs/img"), path.join(out, "img"));
+  for (const dir of ["assets", "audio", "licenze"]) copyDir(path.join(ROOT, "docs", dir), path.join(out, dir));   /* stile e script, musica, testi delle licenze */
+  fs.copyFileSync(path.join(ROOT, "docs/404.html"), path.join(out, "404.html"));
+  fs.writeFileSync(path.join(out, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
+  fs.writeFileSync(path.join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    ["/", "/zh/", "/privacy.html"].map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join("\n") + `\n</urlset>\n`);
   copyDir(path.join(ROOT, "docs/zh"), path.join(out, "zh"));   /* la pagina cinese, quella del QR delle carte */
   fs.writeFileSync(path.join(out, "privacy.html"), privacyPage());
   copyDir(path.join(ROOT, "dist"), path.join(out, "app"), new Set(["_headers"]));
   fs.writeFileSync(path.join(out, ".nojekyll"), "");
-  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, zh/, privacy.html, tester.html, img/, app/");
+  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, 404.html, zh/, privacy.html, tester.html, img/, assets/, audio/, licenze/, robots.txt, sitemap.xml, app/");
 }
 
 async function assets() {

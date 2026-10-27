@@ -1,14 +1,17 @@
 # màndarínō · sito su GitHub Pages: la pagina di presentazione (docs/index.html) alla radice, privacy.html ricavata da
 # PRIVACY.md e l'app (dist/) in app/. Tutto lo mette insieme tools/site.mjs.
 # Una volta sola: Settings → Pages → Build and deployment → Source: «GitHub Actions».
-# Parte a ogni push sul ramo principale che tocca l'app o la pagina, oppure a mano (Actions → pages → Run workflow).
+# Parte a ogni push sul ramo principale che tocca l'app o la pagina, a ogni nuova Release (così l'APK sul sito è sempre l'ultimo; la Release
+# creata dal workflow «APK Android» lo lancia con workflow_dispatch) o a mano (Actions → pages → Run workflow).
 # Niente chiavi né segreti: usa solo il token del workflow, con i permessi minimi di Pages.
 name: pages
 
 on:
   push:
     branches: [main]
-    paths: ["src/**", "docs/index.html", "docs/zh/**", "docs/tester.html", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "tools/build.mjs", "tools/site.mjs", ".github/workflows/pages.yml"]
+    paths: ["src/**", "docs/index.html", "docs/404.html", "docs/assets/**", "docs/audio/**", "docs/licenze/**", "docs/zh/**", "docs/tester.html", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "tools/build.mjs", "tools/site.mjs", ".github/workflows/pages.yml"]
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -35,6 +38,17 @@ jobs:
 
       - name: Costruisce l'app e mette insieme il sito
         run: node tools/build.mjs && node tools/site.mjs --out _site
+
+      - name: Aggiunge l'APK dell'ultima Release (se c'è)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download --repo "$GITHUB_REPOSITORY" --pattern mandarino.apk --dir _site; then
+            (cd _site && sha256sum mandarino.apk > mandarino.apk.sha256)
+            ls -l _site/mandarino.apk
+          else
+            echo "Nessuna Release con mandarino.apk: il sito esce senza. La pagina rimanda a GitHub."
+          fi
 
       - uses: actions/upload-pages-artifact@v3
         with:
