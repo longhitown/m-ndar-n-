@@ -25,3 +25,6 @@ android/app/build/
 .mandarino-sigilli/
 registro.json
 cambi.json
+__pycache__/
+_site/
+build-demo-*/

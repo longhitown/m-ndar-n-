@@ -773,6 +773,7 @@
     if (sp.classList.contains("big")) return sp.textContent;
     return /^t[1-5]$/.test(sp.className) ? sp.textContent : "";
   }
+  CP.charTarget = charTarget;   /* anche ui/pleco.js (pressione di 2 s) */
   var suppress = 0, pressHandled = false, lastPT = "mouse", lp = null;
   function lpCancel() { if (lp) { clearTimeout(lp.t); lp = null; } }
   /* il click che segue una pressione lunga non deve né leggere la parola né chiudere il pannello appena aperto */
