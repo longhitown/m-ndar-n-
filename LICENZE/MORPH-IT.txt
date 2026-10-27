@@ -1,15 +1,79 @@
-Morph-it! · A free morphological resource for the Italian language
-Eros Zanchetta, Marco Baroni · SSLMIT, Università di Bologna
+Morph-it! · A free morphological lexicon for the Italian Language · versione 0.4.8 (23 febbraio 2009)
+Copyright (C) 2004-2009 Marco Baroni, Eros Zanchetta · SSLMIT, Università di Bologna
 https://docs.sslmit.unibo.it/doku.php?id=resources:morph-it
 
-Morph-it! è distribuito con una doppia licenza: Creative Commons Attribuzione-Condividi allo stesso modo 2.0 e GNU Lesser
-General Public License (LGPL). màndarínō ne usa i dati con la LGPL.
+Che cosa se ne usa. Per le parole del corso di italiano: il genere e il plurale dei nomi e le quattro forme degli aggettivi
+(file src/data/it/lexicon.js, generato da tools/itlex.mjs dal file morph-it_048.txt). Il file di Morph-it! non è nel
+repository. lexicon.js è un estratto modificato: contiene solo le parole del corso e solo quei campi; l'ultima modifica è di
+ottobre 2026. Lo si distribuisce con la licenza LGPL (testo in LICENZE/LGPL-2.1.txt), una delle due licenze di Morph-it!, con
+l'attribuzione agli autori (Marco Baroni ed Eros Zanchetta) qui e nei Crediti dell'app.
 
-Dati usati: per le parole del corso di italiano, il genere e il plurale dei nomi e le quattro forme degli aggettivi
-(file src/data/it/lexicon.js, generato da tools/itlex.mjs). Il file di Morph-it! non è nel repository.
+Qui sotto, tradotte alla lettera solo nel titolo, le informazioni sulla licenza e i ringraziamenti del file
+readme-morph-it.txt che accompagna la versione 0.4.8 (scaricato dal sito ufficiale; il testo è in inglese, com'è).
 
-Testo della LGPL: https://www.gnu.org/licenses/lgpl-3.0.html (versione 3) e
-https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html (versione 2.1).
+----------------------------------------------------------------------------------------------------------------------------
+LICENSING INFORMATION
 
-DA VERIFICARE PRIMA DELLA PUBBLICAZIONE: licenza e versione della LGPL sono state ricavate da fonti secondarie. Quando le
-avrai confermate sul sito ufficiale, sostituisci questa nota con il testo completo della licenza indicata.
+This program is dual-licensed free software; you can redistribute it and/or modify it under the terms of the under the Creative
+Commons Attribution ShareAlike 2.0 License and the GNU Lesser General Public License.
+
+Creative Commons Attribution ShareAlike 2.0
+
+Morph-it! is licensed under the Creative Commons Attribution ShareAlike 2.0 License.
+
+You are free:
+
+- to copy, distribute and display the resource;
+- to make derivative works;
+- to make commercial use of the resource;
+
+under the following conditions:
+
+- you must give the original authors credit;
+- if you alter, transform, or build upon this work, you may distribute the resulting work only under a license identical to this one;
+- for any reuse or distribution, you must make clear to others the license terms of this work;
+- any of these conditions can be waived if you get permission from the copyright holders.
+
+Your fair use and other rights are in no way affected by the above.
+
+You can find a link to the full license from the Morph-it! website.
+
+Copyright (C) 2004-2007 Marco Baroni and Eros Zanchetta.
+
+GNU Lesser General Public License
+
+Morph-it! A free morphological lexicon for the Italian Language
+Copyright (C) 2004-2007 Marco Baroni and Eros Zanchetta
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+AKNOWLEDGMENTS
+
+The main data source for the Morph-it! lexicon was the "la Repubblica" corpus. Thus, we would like to thank the colleagues who
+developed this resource with us: Lorenzo Piccioni, Guy Aston, Silvia Bernardini, Federica Comastri, Alessandra Volpi, Marco
+Mazzoleni.
+
+We would like to thank the developers of the tools we used to tag, lemmatize and index the Repubblica corpus: the (Italian)
+TreeTagger (Helmut Schmid, Achim Stein), the ACOPOST taggers (Ingo Schroeder) and the IMS Corpus WorkBench (Oli Christ, Arne
+Fitschen and Stefan Evert).
+
+Thanks to Helmut Schmid also for converting the Morph-it! lexicon into a SFST transducer.
+
+We would like to thank Aldo Calpini, who developed the perl module Lingua:IT:Conjugate.
+
+We are also very grateful to Jan Daciuk for creating his finite-state utilities and for helping us learn to use them.
+
+Finally, a big thanks to the members of the FoLUG, SannioLUG and Scuola (software libero nella scuola) mailing lists, for advice
+about licensing and dissemination.
+----------------------------------------------------------------------------------------------------------------------------
+
+Nota. Nel readme la sezione «GNU Lesser General Public License» riporta l'avviso standard che cita la GNU General Public
+License versione 2 o successiva; insieme al file ci sono il testo della LGPL 2.1 (LICENZE/LGPL-2.1.txt) e l'indicazione di
+usare la LGPL. Per le parti che riguardano màndarínō vale la LGPL, a scelta di chi riceve i dati anche la CC BY-SA 2.0.

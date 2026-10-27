@@ -1,4 +1,4 @@
-/* ===== V6.7 · UX (prompt §4 e §4-bis) ===== */
+/* ===== UX ===== */
 :root { --fs-s: 13px; --fs-m: 16px; --fs-l: 20px; --fs-xl: 28px; --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; }
 
 /* U1 · sessione a schermo pieno: restano intestazione della sessione, carta e barra delle azioni */
@@ -76,7 +76,7 @@ body.in-session .actbar { flex: none; }
 .done .stats { margin-top: 0; }
 .done-seal { justify-self: center; }
 
-/* §4.3 · barra in alto: mini-logo, cammino, 🎙️ (solo col microfono aperto), 🎧, 🎵, ⚙️. Tutti i bersagli da 44 px */
+/* barra in alto: mini-logo, cammino, 🎙️ (solo col microfono aperto), 🎧, 🎵, ⚙️. Tutti i bersagli da 44 px */
 .bar .grp button, .bar .grp .iconbtn { flex: none; width: 44px; min-width: 44px; }
 .mini-logo { width: 44px; min-width: 44px; }
 @media (max-width: 340px) { .bar { flex-wrap: nowrap; justify-content: space-between; } .bar .grp button, .bar .grp .iconbtn { min-width: 44px; } }
@@ -140,13 +140,13 @@ th { font-size: var(--fs-s); }
   tr.st-1 { box-shadow: inset 3px 0 0 var(--muted); } tr.st-2 { box-shadow: inset 3px 0 0 var(--accent); }
 }
 
-/* §4.3 · Frasi: tre gruppi */
+/* Frasi: tre gruppi */
 nav.chips[hidden] { display: none; }
 .pills.groups { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
 .pills.groups button { min-height: 44px; padding: 0 6px; white-space: nowrap; font-size: 14px; }
 .pills button, .seg button, .cpills button, .mpick button, .xr-sample button { min-height: 44px; }
 
-/* §4.4 · tessere in stile Mahjong: ovunque ci sia qualcosa da toccare e spostare */
+/* tessere in stile Mahjong: ovunque ci sia qualcosa da toccare e spostare */
 .tactile, .tile, .xw, .reel .rc, .choices button { background: var(--surface); border: 1px solid var(--line); border-bottom: 4px solid color-mix(in srgb, var(--line) 70%, var(--ink)); border-radius: 12px; transition: transform 0.08s, border-bottom-width 0.08s; }
 .tb, .pzb { border-bottom-width: 4px; border-radius: 12px; transition: transform 0.08s, border-bottom-width 0.08s; }
 .tactile:active:not(:disabled), .tile:active:not(:disabled), .xw:active, .reel .rc:active, .choices button:active:not(:disabled), .pzb:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
@@ -182,7 +182,7 @@ body.tone-shapes .tone .tshape { display: inline; }
 .welcome-goal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .welcome-goal button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
-/* §6 · contributi */
+/* contributi */
 .ct-form { display: grid; gap: 10px; margin-top: 12px; }
 .ct-form label { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
 .ct-form select { width: 100%; }
@@ -404,9 +404,9 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .pl-skel-logo { width: 96px; height: 96px; }
 .pl-skel-wm { font-size: 1.8rem; font-weight: 700; letter-spacing: .5px; }
 @media (prefers-reduced-motion: no-preference) { .pl-chip { animation: plIn .18s ease-out; } @keyframes plIn { from { opacity: 0; transform: translate(-50%, 8px); } } }
-/* Task 6.1: giorno di riposo nella settimana (segno ☾, non solo colore) */
+/* giorno di riposo nella settimana (segno ☾, non solo colore) */
 .week .rest i { border-style: dashed; border-color: var(--accent); color: var(--accent); font-style: normal; font-size: 13px; line-height: 18px; }
-/* Task 6.3: il racconto dei progressi */
+/* il racconto dei progressi */
 .st-sum { margin: 0 0 10px; }
 .st-bars { margin: 10px 0 0; }
 .st-cols { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; align-items: end; margin-top: 6px; }
@@ -418,7 +418,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .st-col small { color: var(--muted); font-size: 13px; }
 .st-more { margin-top: 10px; }
 .st-more > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
-/* ===== Task 11: corso di italiano, carta «今天», percorso delle lezioni, «+N 分», carte da condividere ===== */
+/* ===== corso di italiano, carta «今天», percorso delle lezioni, «+N 分», carte da condividere ===== */
 .it-today { display: grid; gap: 12px; margin-top: 14px; }
 .itd-hi { margin: 0; font-size: 1.25rem; }
 .itd-go { display: grid; gap: 2px; text-align: center; margin: 0; }
@@ -481,7 +481,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 :root[data-theme="dark"] { --stamp-red: #FF8A7E; }
 .it-today small, .itd-ring small { font-size: 13px; }
 .it-tile { min-height: 44px; justify-content: center; }
-/* Task 5: anatomia del carattere */
+/* anatomia del carattere */
 .anat { margin: 10px 0 0; padding: 10px 12px; border-radius: 14px; background: var(--chip); }
 .anat h4 { margin: 0 0 6px; }
 .anat-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -493,7 +493,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .anat-role { font-size: 13px; color: var(--accent); }
 .anat-part small { font-size: 13px; color: var(--muted); }
 
-/* ---- Task 9: sfida a un amico e pacchetto classe (ui/challenge.js, ui/classroom.js) ---- */
+/* ---- sfida a un amico e pacchetto classe (ui/challenge.js, ui/classroom.js) ---- */
 .chal-lead { font-size: 18px; font-weight: 700; margin: 4px 0; }
 .chal-q { font-family: var(--f-han); font-size: 52px; line-height: 1.2; text-align: center; margin: 6px 0 0; }
 .chal-q[lang="it"] { font-family: var(--f-display); font-size: 34px; }
@@ -524,7 +524,7 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .cls-banner > span:first-child { font-size: 24px; } .cls-banner small { display: block; color: var(--muted); }
 .cls-table-w { overflow-x: auto; } .cls-table { border-collapse: collapse; width: 100%; font-size: 14px; } .cls-table th, .cls-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
 
-/* ---- Task 12: il motore degli esercizi (study/exercises.js) ---- */
+/* ---- il motore degli esercizi (study/exercises.js) ---- */
 .ex-card { align-content: start; }
 body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .ex-card > .cd-hz { margin-top: var(--sp-2); }
@@ -577,7 +577,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .ex-m .ex-han { font-size: 26px; }
 .ex-pad { width: 100%; }
 .ex-pad .pad2 .pad-stage { width: min(100%, 300px); }
-/* percorso guidato (Task 12, T3) */
+/* percorso guidato */
 .gd-card { display: grid; gap: 8px; }
 .gd-dur { justify-self: start; } .gd-dur button { min-height: 44px; min-width: 64px; }
 .gd-card .linklike { justify-self: start; min-height: 44px; }
@@ -586,7 +586,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .gd-parts { display: grid; gap: 4px; text-align: left; margin: 6px 0; }
 .gd-part { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; border-radius: 10px; background: var(--chip); }
 .gd-ok { color: var(--accent); }
-/* lettura graduata (Task 12, T4) */
+/* lettura graduata */
 .rdg-h { margin: 14px 0 6px; font-size: 15px; }
 .rdg-list { display: grid; gap: 8px; }
 .rdg-item { display: grid; gap: 2px; min-height: 56px; padding: 10px 12px; text-align: left; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; }
@@ -605,7 +605,7 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .rdg-new { display: flex; flex-wrap: wrap; gap: 6px; }
 .rdg-add { min-height: 44px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
 .rdg-add.ok { border-color: var(--t2); }
-/* Task 12, T5: corso di italiano, la parola cinese della domanda e il testo da leggere */
+/* corso di italiano, la parola cinese della domanda e il testo da leggere */
 .ex-zhq { text-align: center; margin: var(--sp-2) 0; }
 .ex-zhq .lp { display: block; font-size: 1.05rem; }
 .ex-zhq .lh { font-size: 2.4rem; line-height: 1.2; }

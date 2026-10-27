@@ -1,4 +1,4 @@
-/* ===== màndarínō · il racconto dei progressi (Task 6.3 e 11.1), per i due corsi, dai dati che ci sono già:
+/* ===== màndarínō · il racconto dei progressi, per i due corsi, dai dati che ci sono già:
    - giorni attivi e parole studiate per settimana: i giorni del cammino (cp-game-v1 / cp-it-game-v1, CP.game.days);
    - corso di cinese: ripassi riusciti dal registro (Store.logAll: [ora, chiave, voto 1-4, ms, tipo, previsione, ripetizione]),
      parole sicure (CP.state = 2) e il tono più sbagliato nelle parole mancate negli ultimi 60 giorni;

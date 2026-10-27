@@ -1,11 +1,11 @@
-# Perché la carta funzioni davvero in Cina (Task 11.6): che cosa è pronto e che cosa va verificato
+# Perché la carta funzioni davvero in Cina : che cosa è pronto e che cosa va verificato
 
 Il QR delle carte da condividere del corso di italiano porta all'indirizzo `SHARE_URL` di `src/config.js`. Senza
 parametri, senza codici di campagna: l'app non sa e non conta chi condivide.
 
 ## Pronto
 
-- **Pagina cinese** `docs/zh/index.html`, pubblicata con il sito in `…/mandarino/zh/`:
+- **Pagina cinese** `docs/zh/index.html`, pubblicata con il sito in `https://mandarinoapp.org/zh/`:
   - cinese per primo e leggera (circa 7 KB), senza font, immagini o script esterni;
   - dice in poche righe che cosa fa l'app, come installarla e come usarla.
 - **Il browser interno di WeChat** (User-Agent con `MicroMessenger`). Lì l'installazione di app web e il download di APK
@@ -16,16 +16,15 @@ parametri, senza codici di campagna: l'app non sa e non conta chi condivide.
   - occupa il 22% della larghezza della carta, scuro su chiaro, con margine bianco e niente disegnato sopra;
   - le prove lo rileggono con jsQR e controllano che restituisca esattamente l'indirizzo.
 
-## Da decidere e da verificare (non si può fare da qui)
+## Da decidere e da verificare
 
-1. **`SHARE_URL`**. Oggi è vuoto, quindi il QR porta all'ultimo APK su GitHub. Quando GitHub Pages è attivo, scrivi
-   `https://longhitown.github.io/mandarino/zh/`.
+1. **`SHARE_URL`** punta a `https://mandarinoapp.org/zh/`. Senza parametri e senza codici di campagna.
 2. **Raggiungibilità dalla Cina.** Da una rete cinese (telefono con SIM cinese, senza VPN) prova:
    - che la pagina e l'APK si aprano in tempi accettabili. GitHub Pages e GitHub Releases sono spesso lenti o instabili
      in Cina; annota tempi e risultati;
    - che WeChat riconosca il QR della carta con la pressione lunga e apra la pagina;
    - che 小红书 e Weibo accettino l'immagine (formato 3:4).
-3. **Alternative, solo se le prove vanno male.** Vanno valutate dall'autore, perché ognuna ha costi e regole sue:
+3. **Alternative, solo se le prove vanno male.** Vanno valutate caso per caso, perché ognuna ha costi e regole sue:
    - un altro ospite statico già documentato, come Cloudflare Pages. In Cina è anch'esso variabile;
    - un mirror della pagina e dell'APK su un servizio raggiungibile dalla Cina.
 

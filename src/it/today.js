@@ -1,5 +1,4 @@
-/* ===== màndarínō · corso di italiano: la carta «今天», i progressi «我的进步», i traguardi e le carte da condividere
-   (Task 11). Gira prima di it/course.js e legge i dati del corso solo quando servono, da CP.itApi (nessun dato duplicato):
+/* ===== màndarínō · corso di italiano: la carta «今天», i progressi «我的进步», i traguardi e le carte da condividere. Gira prima di it/course.js e legge i dati del corso solo quando servono, da CP.itApi (nessun dato duplicato):
    - carta «今天» in cima a 课程: saluto, un solo pulsante primario («继续：第 N 课»), anello dell'obiettivo e serie, sigillo del
      grado con la barra, «复习 N 张» solo se ci sono carte in scadenza, «今日意大利语» (una frase scelta per il giorno);
    - «+N 分» che sale dopo ogni esercizio, con il sigillo che si riempie verso il grado successivo;
@@ -42,7 +41,7 @@
     var curId = A.current(), cur = curId ? A.lessons().filter(function (l) { return l.id === curId; })[0] : null, q = A.queue(), due = q.due.length, ph = phraseOfDay();
     var main = cur ? '<button type="button" class="btn-main itd-go" data-itd-go="' + CP.attr(cur.id) + '">' + esc(T("itd.continue", { n: cur.n, t: cur.title })) + "<small>" + esc(T("itd.min", { m: minutes(cur) })) + "</small></button>"
       : '<button type="button" class="btn-main itd-go" data-itd-review>' + esc(T(due ? "itd.reviewN" : "itd.allDone", { n: due })) + "</button>";
-    /* Task 12: nello stile Guidato il pulsante dice il passo successivo (lezione, esercizi, lettura: it/esercizi.js) */
+    /* nello stile Guidato il pulsante dice il passo successivo (lezione, esercizi, lettura: it/esercizi.js) */
     var gs = CP.itEx ? CP.itEx.stepHTML() : ""; if (gs) main = gs;
     return '<section class="panel it-today" aria-labelledby="itd-h">' +
       '<h2 id="itd-h" class="itd-hi">' + esc(T(g[0])) + ' <span class="muted" lang="it">· ' + g[1] + "</span></h2>" + main +

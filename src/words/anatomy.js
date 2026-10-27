@@ -1,8 +1,8 @@
-/* ===== màndarínō · anatomia del carattere (Task 5), solo nel corso di cinese, nel foglio del carattere (non sul fronte
+/* ===== màndarínō · anatomia del carattere, solo nel corso di cinese, nel foglio del carattere (non sul fronte
    della carta di studio). Il carattere si «smonta» nei componenti del primo livello, disegnati in SVG con le linee centrali
    dei tratti (data/strokes.js) colorate per componente (il campo matches di Make Me a Hanzi, data/anatomy.js). Ogni
    componente è un pulsante: apre il foglio della sua famiglia (le altre parole che lo contengono), con il suo significato
-   quando lo sappiamo: dal vocabolario dell'app o dai 214 radicali (data/radicals.js, scritti da noi).
+   quando lo sappiamo: dal vocabolario dell'app o dai 214 radicali (data/radicals.js, scritti per il progetto).
    Solo struttura: per i caratteri fonetico-semantici si dice quale parte dà il suono e quale il significato; nessuna
    «storia» o etimologia popolare (i dati non hanno una fonte affidabile per raccontarle).
    Interruttore: ⚙️ → Avanzate → «Anatomia dei caratteri» (cp-anatomy, acceso di base). I dati pesanti (ANATOMY, STROKES)

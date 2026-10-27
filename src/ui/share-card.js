@@ -1,5 +1,5 @@
 /* ===== màndarínō · le carte da condividere: un'immagine (canvas) che nasce sul telefono, senza server.
-   Motore e modelli (Task 11.4): CP.shareCard.templates, alimentati da un oggetto dati per corso.
+   Motore e modelli: CP.shareCard.templates, alimentati da un oggetto dati per corso.
    - «zh-day»: la carta del giorno del corso di cinese (1080×1350), identica a prima;
    - «it-day», «it-milestone», «it-week»: le carte del corso di italiano (testo in cinese), in tre formati (FORMATS) e tre
      colori (i temi dell'app), con il QR della pagina dell'app (MD_CONFIG.SHARE_URL, senza parametri), un nome facoltativo
@@ -17,7 +17,7 @@
     var src = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="300 10 200 210" width="400" height="420">' + defs.outerHTML + sym.outerHTML.replace(/class="[^"]*"/g, "") + "</svg>";
     return new Promise(function (res) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src); });
   }
-  /* il modello del corso di cinese: lo stesso disegno di prima del Task 11, riga per riga (tools/e2e.mjs lo confronta con
+  /* il modello del corso di cinese: lo stesso disegno di prima ora, riga per riga (tools/e2e.mjs lo confronta con
      la copia fissa in tools/fixtures/share-card-v1.js) */
   function drawZh(cv) {
     var x = cv.getContext("2d"), W = 1080, H = 1350, r = CP.game.rank(), s = CP.game.streak(), c = CP.counts(), w = CP.wordOfDay();

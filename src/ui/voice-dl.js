@@ -1,4 +1,4 @@
-/* ===== màndarínō · «Scarica le voci» (Task 12): ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
+/* ===== màndarínō · «Scarica le voci»: ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
    volta, nella cache mandarino-voice (il service worker la tiene tra un aggiornamento e l'altro); poi cp-voice-dl = "1" e
    CP.speak le usa (core/voice-clip.js). Nell'APK sono già dentro. Si carica al primo uso di CP.voiceDl. ===== */
 (function () {

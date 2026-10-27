@@ -1,14 +1,14 @@
 # Pubblicare negli store: che cosa è già pronto
 
 L'app non è ancora negli store. Qui c'è tutto quello che si può preparare prima, per rendere semplice il giorno della
-pubblicazione. **Non pubblicare niente da qui senza una decisione dell'autore.**
+pubblicazione. **La pubblicazione la decide chi gestisce il progetto.**
 
 | Che cosa | Dove | Stato |
 |---|---|---|
 | Due versioni di build: `direct` (GitHub) e `store` | `android/app/build.gradle` (`productFlavors`), `src/config.js` | pronto: la versione store spegne controllo degli aggiornamenti, sostegno e sigilli |
 | Livello API 36 (richiesto da Google Play dal 31 agosto 2026) | `compileSdk`/`targetSdk` 36, AGP 8.11.1 | pronto: compila, lint pulito, prova in emulatore 34 e 36 nel CI |
 | Pacchetto `.aab` | artefatto `mandarino-store-<versione>` della corsa «APK Android» | pronto, mai pubblicato da solo |
-| Firma | [firma.md](firma.md) | da fare dall'autore, nella Play Console |
+| Firma | [firma.md](firma.md) | da fare nella Play Console |
 | Testi, immagini, note di versione | `fastlane/metadata/android/<lingua>/`, [it-IT.md](it-IT.md), [zh-CN.md](zh-CN.md) | pronti (`node tools/store-assets.mjs`) |
 | Moduli dello store | [moduli.md](moduli.md) | risposte pronte |
 | F-Droid | [f-droid.md](f-droid.md) | struttura pronta, anti-caratteristiche segnalate |

@@ -1,4 +1,4 @@
-/* ===== màndarínō · risposte sbagliate credibili per la scelta multipla (Task 12, §12.3). Funzioni pure: ricevono il pool
+/* ===== màndarínō · risposte sbagliate credibili per la scelta multipla. Funzioni pure: ricevono il pool
    delle parole e un seme, quindi le stesse domande escono uguali nelle prove (seme = hash(parola + data + tipo)).
    Regole:
      - livello vicino (±1) e, per il 40%, la stessa tappa; lunghezza simile, per non dare indizi;

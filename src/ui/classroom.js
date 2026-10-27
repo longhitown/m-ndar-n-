@@ -1,4 +1,4 @@
-/* ===== màndarínō · pacchetto classe per chi insegna, senza server (Task 9.2), in tutti e due i corsi.
+/* ===== màndarínō · pacchetto classe per chi insegna, senza server, in tutti e due i corsi.
    - Chi insegna sceglie un tratto del Percorso (tappe del corso di cinese, lezioni del corso di italiano), un obiettivo
      (la percentuale da completare) e una data: ne esce un codice MDK1-… (base64url del JSON), un file .json con lo stesso
      contenuto e un foglio da stampare (PNG A4) con due QR, uno verso l'app (lo stesso della carta da condividere) e uno con

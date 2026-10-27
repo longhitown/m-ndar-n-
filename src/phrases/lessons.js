@@ -61,7 +61,7 @@
 
   /* ---- esercizi ---- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  /* items (Task 12): un quiz in più, con altre domande («i tuoi errori», mini-verifica); non cambia il risultato della lezione */
+  /* items: un quiz in più, con altre domande («i tuoi errori», mini-verifica); non cambia il risultato della lezione */
   function startQuiz(l, items) {
     quiz = { l: items ? Object.assign({}, l, { quiz: items }) : l, base: l, extra: !!items, wrong: [], i: 0, score: 0, state: "play", choice: null, order: null };
     prepare();
@@ -93,13 +93,13 @@
         h += '<div class="acts">' + CP.audioBtns(q.zh) + '<button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
       }
     } else if (q.k === "scrivi") {
-      /* Task 12: risposta da scrivere (pinyin se q.py, altrimenti italiano); il confronto è quello del ripasso (CP.typing) */
+      /* risposta da scrivere (pinyin se q.py, altrimenti italiano); il confronto è quello del ripasso (CP.typing) */
       h += '<p class="ask" lang="it">' + rich(q.q || T(q.py ? "ls.typePy" : "ls.typeIt")) + "</p>" + (q.zh ? zhHTML(q.zh) : "") +
         '<form class="ex-type" data-ls-form><input id="ls-in" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" lang="' + (q.py ? "zh-Latn" : "it") + '" aria-label="' + CP.attr(T("ls.answers")) + '"' + (quiz.state !== "play" ? ' disabled value="' + CP.attr(quiz.typed || "") + '"' : "") + "></form>";
       h += quiz.state === "play" ? '<div class="acts"><button type="button" class="btn-main" data-ls-type style="margin:0">' + T("ex.check") + "</button></div>" :
         (quiz.state === "ok" ? '<p class="verdict ok">' + T("ls.right") : '<p class="verdict ko">' + T("ls.notThis")) + ' <b lang="' + (q.py ? "zh-Latn" : "it") + '">' + esc(q.a) + "</b>" + (q.why ? ' <span lang="it">' + rich(q.why) + "</span>" : "") + '</p><div class="acts"><button type="button" class="btn-main" data-ls-next style="margin:0">' + (quiz.i + 1 < n ? T("common.next") : T("ls.result")) + "</button></div>";
     } else {
-      /* «pick» e, dal Task 12, «buco» (la frase con il buco in zh, la domanda è facoltativa) */
+      /* «pick» e, ora, «buco» (la frase con il buco in zh, la domanda è facoltativa) */
       h += '<p class="ask" lang="it">' + rich(q.q || T("ls.holeQ")) + "</p>" + (q.zh ? zhHTML(q.zh) : "");
       h += '<div class="ls-opts" role="group" aria-label="' + CP.attr(T("ls.answers")) + '">' + q.opts.map(function (op, j) {
         var cls = quiz.state === "play" ? "" : j === q.a ? " right" : j === quiz.choice ? " wrong" : " off";

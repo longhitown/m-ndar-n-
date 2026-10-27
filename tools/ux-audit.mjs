@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* màndarínō · audit UX (prompt V6.7, §4-bis.9)
+/* màndarínō · audit UX
    Apre l'app in Chromium (Playwright) a 320×568, 360×740 e 390×844, nei temi chiaro, Carta di Riso e notte,
    e fallisce se trova uno di questi difetti:
      1. overflow orizzontale (scrollWidth > innerWidth);
@@ -181,7 +181,7 @@ async function auditView(browser, file, vw, vh, theme) {
   /* Frasi */
   await tab(page, "build");
   await screen("Frasi");
-  /* ogni sotto-scheda di Frasi (se c'è la navigazione a gruppi della V6.7) */
+  /* ogni sotto-scheda di Frasi (se c'è la navigazione a gruppi di prima) */
   /* Frasi si apre sulle quattro carte (docs/ux-architettura.md): si torna alle carte e si entra nel gruppo dello strumento */
   const SUBS = { lessons: "learn", pat: "learn", ex: "build", lab: "build", slot: "build", dlg: "talk", thought: "talk", reader: "read" };
   for (const sub of Object.keys(SUBS)) {
@@ -241,7 +241,7 @@ async function auditView(browser, file, vw, vh, theme) {
   return { fails, m };
 }
 
-/* il corso di italiano per chi parla cinese (Task 11): carta «今天» e percorso, le altre schede, «我的进步», la carta */
+/* il corso di italiano per chi parla cinese: carta «今天» e percorso, le altre schede, «我的进步», la carta */
 async function auditIt(browser, file, vw, vh, theme) {
   const fails = [];
   const seed = { "cp-course": "it", "cp-lang": "zh", "cp-it-welcome": "1", "cp-ux-v1": JSON.stringify({ onboarded: 1, legendSeen: 1, swipeHints: 9, unlv: 1, showAll: 1 }),

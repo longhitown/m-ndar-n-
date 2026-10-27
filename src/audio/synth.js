@@ -97,7 +97,7 @@
   }
 
 
-  /* ---------- V6.7: batteria sintetica e motore a sequencer (tutto da oscillatori e dal buffer di rumore, zero file) ---------- */
+  /* ---------- batteria sintetica e motore a sequencer (tutto da oscillatori e dal buffer di rumore, zero file) ---------- */
   function kick(c, out, t, v, f0, f1) { var o = track(c.createOscillator()), g = c.createGain(); o.frequency.setValueAtTime(f0 || 150, t); o.frequency.exponentialRampToValueAtTime(f1 || 45, t + 0.12); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.3); }
   function snare(c, out, t, v, f) { var s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(); s.buffer = noiseLoop(c); fl.type = "bandpass"; fl.frequency.value = f || 1800; fl.Q.value = 0.8; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16); s.connect(fl); fl.connect(g); g.connect(out); s.start(t, Math.random() * 2); s.stop(t + 0.18); }
   function hat(c, out, t, v, open, brush) {

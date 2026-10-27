@@ -129,3 +129,4 @@ Object.assign(I18N.zh, {"exs.title": "复习方式", "exs.guided": "引导", "ex
 Object.assign(I18N.zh, {"ls.holeQ": "空里填什么？", "ls.typePy": "写出拼音", "ls.typeIt": "用意大利语写出答案"});
 Object.assign(I18N.zh, {"gd.impara": "学习 {n} 个新词", "gd.ripassa": "复习", "gd.verifica": "检测这一站", "gd.leggi": "读一读、听一听对话", "gd.pR": "{n} 个复习", "gd.pN": "{n} 个新词", "gd.pV": "12 道题，没有提示", "gd.pT": "1 段对话", "gd.dur": "{n} 分钟", "gd.durAria": "你有多少时间", "gd.free": "自由学习", "gd.verified": "这一站已通过检测", "gd.noNew": "今天的新词学完了", "ls.myErrors": "重做错题（{n}）", "ls.mini": "小测验：2 道新题"});
 Object.assign(I18N.zh, {"sub.testi": "课文"});
+Object.assign(I18N.zh, {"logo.t1": "第一声：高而平，「高」gāo", "logo.t2": "第二声：上扬，「来」lái", "logo.t3": "第三声：先降后升，「好」hǎo", "logo.t4": "第四声：急降，「大」dà"});

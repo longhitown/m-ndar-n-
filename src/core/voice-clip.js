@@ -1,4 +1,4 @@
-/* ===== màndarínō · le voci reali registrate (Task 12, T5-T6). Frasi lette da persone vere: italiano dalla voce NM1 di
+/* ===== màndarínō · le voci reali registrate. Frasi lette da persone vere: italiano dalla voce NM1 di
    Tatoeba (CC BY 4.0), cinese da Mozilla Common Voice (CC0). Mai il sesso, l'accento o il numero di chi parla.
    - Indici VOCE_IT / VOCE_ZH (chiave della frase → numero della clip) e catalogo VOICE_FILES (numero → impronta), tutti
      letti al primo uso; il file è audio/voce/<lingua>/<numero>.<impronta>.ogg (tools/build.mjs).

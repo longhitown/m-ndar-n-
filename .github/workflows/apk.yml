@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # per lanciare «pages» dopo una Release: il sito offre l'APK appena pubblicato
 
 concurrency:
   group: apk-${{ github.ref }}
@@ -113,6 +114,8 @@ jobs:
             gh release create "$TAG" mandarino.apk --title "màndarínō $VERSION" --notes-file notes.md --target "$GITHUB_SHA" --latest
           fi
           echo "Scarica: https://github.com/${{ github.repository }}/releases/latest/download/mandarino.apk" >> "$GITHUB_STEP_SUMMARY"
+          # una Release creata con il token del workflow non lancia altri workflow da sola: si lancia «pages» a mano
+          gh workflow run pages.yml --ref "$GITHUB_REF_NAME" || echo "pages.yml non lanciato (non è un problema: parte al prossimo push)"
 
   # Prova sul dispositivo: l'APK di prova gira in emulatori Android 14 e 16 (API 36, il livello richiesto da Google Play) veri (con l'accelerazione KVM dei runner
   # Linux di GitHub) e tools/android-smoke.mjs controlla dentro la WebView: caricamento, #selftest, backup in

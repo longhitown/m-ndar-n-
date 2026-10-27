@@ -226,7 +226,7 @@
     if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
     /* pacchetti classe: unione per id; chi è stato tolto su un dispositivo resta tolto (la data più recente) */
     if (k === "cp-class-v1") { var P = {}, X = {}; [a, b].forEach(function (o) { o = o || {}; Object.keys(o.p || {}).forEach(function (id) { if (!P[id] || (o.p[id].at || 0) < (P[id].at || 0)) P[id] = o.p[id]; }); Object.keys(o.x || {}).forEach(function (id) { X[id] = Math.max(X[id] || 0, o.x[id]); }); }); return { p: P, x: X }; }
-    /* esercizi (Task 12): per ogni unità il passo più avanzato e la verifica più recente; per ogni parola e tipo la voce con n
+    /* esercizi: per ogni unità il passo più avanzato e la verifica più recente; per ogni parola e tipo la voce con n
        più alto (mai la somma: un backup ripristinato non conta due volte); i testi letti si sommano */
     if (k === "cp-ex-v1") return mergeEx(a, b);
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */

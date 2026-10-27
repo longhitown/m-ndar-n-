@@ -1,6 +1,6 @@
 # Moduli della Play Console: risposte pronte
 
-**Indirizzo della privacy:** `https://longhitown.github.io/mandarino/privacy.html` (pubblicata da GitHub Pages, ricavata da
+**Indirizzo della privacy:** `https://mandarinoapp.org/privacy.html` (pubblicata da GitHub Pages, ricavata da
 PRIVACY.md; controlla che si apra prima di inviare).
 
 ## Sicurezza dei dati (Data safety)

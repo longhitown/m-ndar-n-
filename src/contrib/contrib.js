@@ -1,4 +1,4 @@
-/* ===== V6.7 · §6 contributi della community: correggi, segnala, proponi; invia senza account ===== */
+/* ===== contributi della community: correggi, segnala, proponi; invia senza account ===== */
 (function () {
   var CP = window.CP, esc = CP.esc, T = CP.t, fam = document.getElementById("fam");
   /* canali configurabili dall'autore: vuoto = nascosto (l'email resta, senza destinatario precompilato).

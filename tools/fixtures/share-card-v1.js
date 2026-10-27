@@ -1,4 +1,4 @@
-/* COPIA FISSA di src/ui/share-card.js prima del Task 11 (commit fbbbe3a): serve solo a tools/e2e.mjs per controllare che la
+/* COPIA FISSA di src/ui/share-card.js prima del passaggio ai modelli (commit fbbbe3a): serve solo a tools/e2e.mjs per controllare che la
    carta del corso di cinese resti identica dopo il passaggio ai modelli (CP.shareCard.templates). Non va nell'app. */
 /* ===== màndarínō · la card del giorno: un'immagine (canvas, 1080×1350) con il sigillo del grado, la serie di giorni,
    le parole imparate e la parola del giorno, da condividere (WeChat, WhatsApp, Instagram…). Nessun server: l'immagine
