@@ -1,0 +1,15 @@
+Morph-it! · A free morphological resource for the Italian language
+Eros Zanchetta, Marco Baroni · SSLMIT, Università di Bologna
+https://docs.sslmit.unibo.it/doku.php?id=resources:morph-it
+
+Morph-it! è distribuito con una doppia licenza: Creative Commons Attribuzione-Condividi allo stesso modo 2.0 e GNU Lesser
+General Public License (LGPL). màndarínō ne usa i dati con la LGPL.
+
+Dati usati: per le parole del corso di italiano, il genere e il plurale dei nomi e le quattro forme degli aggettivi
+(file src/data/it/lexicon.js, generato da tools/itlex.mjs). Il file di Morph-it! non è nel repository.
+
+Testo della LGPL: https://www.gnu.org/licenses/lgpl-3.0.html (versione 3) e
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html (versione 2.1).
+
+DA VERIFICARE PRIMA DELLA PUBBLICAZIONE: licenza e versione della LGPL sono state ricavate da fonti secondarie. Quando le
+avrai confermate sul sito ufficiale, sostituisci questa nota con il testo completo della licenza indicata.

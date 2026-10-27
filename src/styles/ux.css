@@ -362,3 +362,4 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 /* corso di italiano: il grado e la serie in cima alle lezioni */
 .it-rank { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
 .it-rank .seal { flex: none; }
+.cred-h { margin: 18px 0 6px; font-size: 18px; }

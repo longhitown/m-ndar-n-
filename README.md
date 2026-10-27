@@ -8,4 +8,4 @@ come PWA, e APK Android senza Play Store.
 - Come sono fatti i moduli: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)
 - Prove: `npm install && npm test`
 
-Codice MIT, musica CC BY 4.0, terze parti in `LICENZE/`. © 2026 Claudio Longhitano.
+Codice MIT ([LICENSE](LICENSE)); contenuti didattici e musica CC BY 4.0; parti di altri in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Che cosa vale per che cosa: [NOTICE.md](NOTICE.md). © 2026 Claudio Longhitano.

@@ -10,7 +10,7 @@
     ["Karoryfer Samples", "cr.m4"], ["sfzinstruments", "cr.m5"], ["jSteelDrum", "cr.m6"], ["BigSoundBank (Joseph Sardin)", "cr.m7"]];
   function headHTML() {
     return '<section class="cred cred-author"><h4>' + CP.t("cr.authorT") + '</h4><p>' + CP.t("cr.author") + '</p><p class="small muted">' + CP.t("cr.coauthor") + "</p>" +
-      '<p class="small">' + CP.t("cr.code") + "</p></section>" +
+      '<p class="small">' + CP.t("cr.code") + '</p><p class="small">' + CP.t("cr.content") + "</p></section>" +
       '<section class="cred"><h4>🎵 ' + CP.t("cr.music") + '</h4><p class="small">' + CP.t("cr.musicT") + '</p><ul class="small cred-libs">' +
       MUSIC_LIBS.map(function (m) { return "<li><b data-noi18n>" + esc(m[0]) + "</b> · " + esc(CP.t(m[1])) + "</li>"; }).join("") + '</ul><p class="small muted">' + CP.t("cr.musicSynth") + "</p></section>";
   }
@@ -19,14 +19,18 @@
     ["cr.hsk", "cr.hskT", MIT_HSK],
     ["cr.fsrs", "cr.fsrsT", MIT_FSRS],
     ["cr.jsqr", "cr.jsqrT", APACHE],
-    ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."]
+    ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."],
+    ["cr.morph", "cr.morphT", "Morph-it! è distribuito con una doppia licenza: Creative Commons Attribution-ShareAlike 2.0 e GNU Lesser General Public License (LGPL). màndarínō ne usa i dati con la LGPL.\nhttps://www.gnu.org/licenses/lgpl-3.0.html\n\nVedi LICENZE/MORPH-IT.txt e THIRD-PARTY-NOTICES.md nel repository."]
   ];
   var DEV = "cr.dev";
   CP.credits = function () {
     CP.openSheet('<div class="fam-head"><div class="meta"><b>' + CP.t("cr.title") + '</b><div class="small muted">' + CP.t("cr.sub") + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + CP.t("common.close") + '</button></div>' +
-      headHTML() + ITEMS.map(function (it) {
+      /* tre parti: chi ha fatto che cosa, le parti di altri (con il testo della licenza), gli strumenti di sviluppo */
+      '<h3 class="cred-h">' + CP.t("cr.whoT") + "</h3>" + headHTML() +
+      '<h3 class="cred-h">' + CP.t("cr.thirdT") + '</h3><p class="small muted" style="margin:0 0 8px">' + CP.t("cr.thirdSub") + "</p>" + ITEMS.map(function (it) {
         return '<section class="cred"><h4>' + esc(CP.t(it[0])) + '</h4><p class="small">' + CP.t(it[1]) + '</p><details><summary class="small">' + CP.t("cr.lic") + '</summary><pre class="lic" lang="en">' + esc(it[2]) + "</pre></details></section>";
-      }).join("") + '<p class="small muted">' + esc(CP.t(DEV)) + "</p>");
+      }).join("") +
+      '<h3 class="cred-h">' + CP.t("cr.devT") + '</h3><p class="small muted">' + esc(CP.t(DEV)) + "</p>");
   };
   document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-credits]") : null; if (b) CP.credits(); });
 })();

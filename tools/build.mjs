@@ -67,6 +67,19 @@ for (const s of scripts) {
   catch (e) { fail("errore di sintassi in src/" + s.src + ": " + e.message); }
 }
 
+/* parti di altri: ogni file di src/vendor/ e ogni dato esterno di src/data/ (intestazione con «licenza»/«license», o
+   generato da una fonte esterna senza intestazione) deve avere una voce in THIRD-PARTY-NOTICES.md */
+{
+  const tpn = fs.existsSync(path.join(SRC, "..", "THIRD-PARTY-NOTICES.md")) ? fs.readFileSync(path.join(SRC, "..", "THIRD-PARTY-NOTICES.md"), "utf8") : "";
+  const EXTERNAL_NOHEAD = ["data/wiki/zh-it.txt"];
+  const walk = (d) => fs.existsSync(d) ? fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]) : [];
+  const ext = walk(path.join(SRC, "vendor")).map((f) => path.relative(SRC, f))
+    .concat(walk(path.join(SRC, "data")).filter((f) => /\.js$/.test(f) && /licen[sz]/i.test(fs.readFileSync(f, "utf8").slice(0, 400))).map((f) => path.relative(SRC, f)))
+    .concat(EXTERNAL_NOHEAD);
+  const miss = ext.filter((f) => tpn.indexOf("src/" + f.split(path.sep).join("/")) < 0);
+  if (miss.length) fail("parti di altri senza una voce in THIRD-PARTY-NOTICES.md: " + miss.join(", "));
+}
+
 /* 3. un file unico */
 let out = html;
 const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, "") + " ---- */\n" + fs.readFileSync(path.join(SRC, s.href), "utf8").trimEnd()).join("\n\n");
