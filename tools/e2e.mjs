@@ -249,6 +249,8 @@ try {
     await p.evaluate(() => CP.openSettings("grp-info")); await p.waitForTimeout(200);
     const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector("summary").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
     check("Novità in cinese: titolo e righe in cinese", /更新内容/.test(zh || "") && /zh-CN$/.test(zh || ""), zh);
+    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-data") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
+    check("Privacy: voce in ⚙️ → Dati e privacy, in cinese, sei punti", /隐私\|6$/.test(pv || ""), pv);
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -454,7 +456,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

@@ -51,7 +51,7 @@ chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo o
 
 | Registro | Chi lo legge | Chi ci scrive |
 |---|---|---|
-| `CP.settingsExtras`: una funzione → HTML (gruppo «Avanzate») oppure `{ group: "data" \| "adv" \| "info", html }` | `ui/settings.js`, nei quattro gruppi di ⚙️ | `pwa/sync.js` e `contrib/contrib.js` (Dati e privacy); `it/course.js`, `pwa/reminder.js`, `ui/unlock.js` (Avanzate); `ui/seals.js`, `ui/news.js` (Informazioni e supporto) |
+| `CP.settingsExtras`: una funzione → HTML (gruppo «Avanzate») oppure `{ group: "data" \| "adv" \| "info", html }` | `ui/settings.js`, nei quattro gruppi di ⚙️ | `pwa/sync.js` e `contrib/contrib.js` (Dati e privacy); `it/course.js`, `pwa/reminder.js`, `ui/unlock.js` (Avanzate); `ui/seals.js`, `ui/news.js` (Informazioni e supporto); `ui/privacy.js` (Dati e privacy) |
 | `CP.subs[id] = { render, after }` | `phrases/frasi.js`, i sottomenu di Frasi | `dialogs.js`, `lessons.js`, `reader.js`, `slot.js`, `thought.js` |
 | `CP.audioTracks.add({ id, … make })` | `audio/player.js` (jukebox) | ogni `audio/tracks/<id>.js`; l'ordine è `audio/tracks/index.js` |
 | `SECTIONS`, `DIALOGS` (globali di `boot.js`) | vocabolario, dialoghi | `data/vocab/*.js`, `data/dialogs/*.js` |

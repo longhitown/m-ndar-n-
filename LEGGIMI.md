@@ -402,6 +402,14 @@ La build si ferma se trova nel repository:
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
 
+## Privacy
+
+[PRIVACY.md](PRIVACY.md), in italiano e in cinese, dice che cosa resta sul dispositivo (tutto), quando l'app usa la rete
+(controllo aggiornamenti dell'APK, voce online se accesa, riconoscimento vocale del browser, file dello stesso sito, link
+toccati) e come funzionano contributi e sigilli. In breve, la stessa cosa sta nell'app: ⚙️ → Dati e privacy → 🔒 Privacy
+(`src/ui/privacy.js`). **Se aggiungi una richiesta di rete, aggiorna tutti e due**: la tabella di PRIVACY.md e le righe
+`pv.*` in `src/i18n/`.
+
 ## Licenze
 
 | Parte | Licenza | Testo |
