@@ -62,11 +62,11 @@ jobs:
       - name: Costruisci e controlla l'APK
         env:
           MD_KEYSTORE_PASSWORD: ${{ secrets.MD_KEYSTORE_PASSWORD }}
-        run: gradle -p android --no-daemon assembleRelease lintRelease
+        run: gradle -p android --no-daemon assembleDirectRelease assembleStoreRelease bundleStoreRelease lintDirectRelease lintStoreRelease
 
       - name: Verifica firma e contenuto
         run: |
-          APK=android/app/build/outputs/apk/release/app-release.apk
+          APK=android/app/build/outputs/apk/direct/release/app-direct-release.apk
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           "$BT/apksigner" verify --print-certs "$APK" | grep -E "Signer|SHA-256" || true
           "$BT/apksigner" verify "$APK"
@@ -80,6 +80,25 @@ jobs:
         with:
           name: mandarino-${{ env.VERSION }}
           path: mandarino.apk
+
+      # versione per gli store: il pacchetto .aab (Google Play) e l'APK «store», solo come artefatti della corsa (mai pubblicati da soli)
+      - name: Pacchetto per gli store (.aab)
+        run: |
+          cp android/app/build/outputs/bundle/storeRelease/app-store-release.aab mandarino-store.aab
+          cp android/app/build/outputs/apk/store/release/app-store-release.apk mandarino-store.apk
+          VC=$(git rev-list --count HEAD)
+          node tools/store-assets.mjs --notes "$VC"
+          mkdir -p note && for L in it-IT zh-CN; do cp "fastlane/metadata/android/$L/changelogs/$VC.txt" "note/$L-$VC.txt"; done
+          ls -l mandarino-store.aab mandarino-store.apk
+          echo "Pacchetto per gli store: $(du -h mandarino-store.aab | cut -f1) (.aab)" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mandarino-store-${{ env.VERSION }}
+          path: |
+            mandarino-store.aab
+            mandarino-store.apk
+            note/
 
       - name: Pubblica la Release
         if: env.SIGNED == '1' && github.ref_name == github.event.repository.default_branch
@@ -95,12 +114,16 @@ jobs:
           fi
           echo "Scarica: https://github.com/${{ github.repository }}/releases/latest/download/mandarino.apk" >> "$GITHUB_STEP_SUMMARY"
 
-  # Prova sul dispositivo: l'APK di prova gira in un emulatore Android 14 vero (con l'accelerazione KVM dei runner
+  # Prova sul dispositivo: l'APK di prova gira in emulatori Android 14 e 16 (API 36, il livello richiesto da Google Play) veri (con l'accelerazione KVM dei runner
   # Linux di GitHub) e tools/android-smoke.mjs controlla dentro la WebView: caricamento, #selftest, backup in
   # Download, microfono, dati che restano, tasto Indietro, nessun crash.
   dispositivo:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [34, 36]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -120,7 +143,7 @@ jobs:
           gradle-version: "8.14.3"
 
       - name: Costruisci l'APK di prova
-        run: node tools/build.mjs && gradle -p android --no-daemon assembleDebug
+        run: node tools/build.mjs && gradle -p android --no-daemon assembleDirectDebug
 
       - name: Abilita KVM
         run: |
@@ -128,14 +151,14 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Prova nell'emulatore Android 14
+      - name: Prova nell'emulatore (API ${{ matrix.api }})
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: ${{ matrix.api }}
           target: google_apis
           arch: x86_64
           ram-size: 4096M
           disk-size: 4096M
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
-          script: node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk
+          script: node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk

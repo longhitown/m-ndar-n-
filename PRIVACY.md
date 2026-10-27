@@ -53,6 +53,15 @@ Una correzione o una parola proposta parte solo quando la mandi tu, con il canal
 GitHub). Contiene le tue proposte e, se lo scrivi, un nickname. Se scegli GitHub o l'e-mail, valgono le regole di quei
 servizi, e chi riceve vede il tuo account o il tuo indirizzo.
 
+### Carte da condividere
+
+Le carte da condividere (corso di cinese e corso di italiano) nascono **sul tuo telefono**. Usano solo dati creati lì:
+- grado, serie, parole e la frase del giorno;
+- il nome, ma solo se scegli di firmare. È spento di base e resta solo su questo telefono.
+
+Le vedi prima di inviarle; quello che ne fai è una tua scelta. Il QR porta alla pagina dell'app senza parametri né codici,
+e l'app non registra se e dove condividi.
+
 ### Donazioni e sigilli
 
 L'app non sa chi ha donato. Una donazione passa da Ko-fi, con la sua informativa. L'autore vede solo quello che Ko-fi gli
@@ -103,6 +112,10 @@ questi dati dal suo registro. Il codice del sigillo non contiene dati personali.
 ### 贡献
 
 更正或新词只有在你自己发送时才会发出，通过你选择的方式（分享、电子邮件、文件、GitHub）。内容只有你的建议，以及你填写的昵称（如有）。通过 GitHub 或电子邮件发送时，适用这些服务的规则，收件人会看到你的账号或邮箱。
+
+### 分享卡片
+
+分享卡片在**你的手机上**生成，只使用手机上的数据：等级、连续天数、单词、今日句子，以及你选择署名时填写的名字（默认关闭，只保存在这台手机上）。发送前你可以先看到图片；要不要分享由你决定。二维码指向应用的介绍页，不带任何参数或代码，应用也不会记录你是否分享、分享到哪里。
 
 ### 捐助和印章
 

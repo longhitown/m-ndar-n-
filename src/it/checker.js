@@ -12,7 +12,7 @@
    Prova di sicurezza: tools/e2e.mjs passa al correttore tutte le frasi italiane dell'app (giuste) e non vuole segnalazioni.
    CP.itCheck(testo) → { toks, issues: [{ at, len, kind, zh, fix }], fixed, unknown, known }; CP.itCheckHTML() = il pannello. ===== */
 (function () {
-  var CP = window.CP, esc = CP.esc;
+  var CP = window.CP, tt = CP.t, esc = CP.esc;
   var IDX = null;
   var ARTS = { il: ["m", "s", "d"], lo: ["m", "s", "d"], la: ["f", "s", "d"], "l'": ["x", "s", "d"], i: ["m", "p", "d"], gli: ["m", "p", "d"], le: ["f", "p", "d"],
     un: ["m", "s", "i"], uno: ["m", "s", "i"], una: ["f", "s", "i"], "un'": ["f", "s", "i"] };
@@ -44,8 +44,8 @@
   var NOACC = { menu: 1, papa: 1, pero: 1, te: 1, se: 1, da: 1, ne: 1, si: 1, li: 1, la: 1 };   /* parole giuste anche senza accento */
   /* verbi che con il passato prossimo vogliono sempre essere: solo qui «ho andato» è un errore sicuro */
   var ESSERE_ONLY = { andare: 1, venire: 1, arrivare: 1, partire: 1, tornare: 1, entrare: 1, uscire: 1, restare: 1, rimanere: 1, stare: 1, essere: 1, nascere: 1, morire: 1, diventare: 1, sembrare: 1, cadere: 1, piacere: 1, succedere: 1, riuscire: 1 };
-  var PNAME = ["第一人称单数（io）", "第二人称单数（tu）", "第三人称单数（lui / lei）", "第一人称复数（noi）", "第二人称复数（voi）", "第三人称复数（loro）"];
-  var GN = { ms: "阳性单数", fs: "阴性单数", mp: "阳性复数", fp: "阴性复数" };
+  var PNAME = [tt("itc.180"), tt("itc.181"), tt("itc.182"), tt("itc.183"), tt("itc.184"), tt("itc.185")];
+  var GN = { ms: tt("itc.186"), fs: tt("itc.187"), mp: tt("itc.188"), fp: tt("itc.189") };
 
   function push(m, k, v) { (m[k] = m[k] || []).push(v); }
   function strip(s) { return String(s).replace(/（[^）]*）/g, "").trim(); }
@@ -68,8 +68,8 @@
       if (e.kind === "noun") {
         var f = e.forms || [], gs = e.g === "mf" ? ["m", "f"] : [e.g === "f" ? "f" : "m"], sg = "", pl = "";
         f.forEach(function (x, i) {
-          if (/女）/.test(x)) { push(N, bare(x).toLowerCase(), { g: "f", n: "s" }); return; }
-          var n = /只用复数/.test(x) || i > 0 ? "p" : "s";
+          if (x.indexOf(tt("itc.108").trim()) >= 0) { push(N, bare(x).toLowerCase(), { g: "f", n: "s" }); return; }
+          var n = x.indexOf(tt("itc.107").trim()) >= 0 || i > 0 ? "p" : "s";
           strip(x).split(" / ").forEach(function (y) {
             var m = /^(il|lo|la|i|gli|le|l')\s*(.+)$/.exec(y.trim()), w = (m ? m[2] : y).toLowerCase(), a = m ? ARTS[m[1]] : null;
             if (n === "s" && !sg) sg = w; if (n === "p" && !pl) pl = w;
@@ -133,7 +133,7 @@
     function after(p, c, head) {
       var s = skipAdv(p.j + 1), at = adj2(s.k - 1, s.k) ? T[s.k] : null, aa = at && X.A[at.lw];
       if (!aa || X.V[at.lw] || X.N[at.lw] || s.cmp) return p.j;
-      if (!aa.some(function (x) { return x.g === c.g && x.n === c.n; })) one(s.k, "adj", "「" + head + " " + at.w + "」：" + head + " 是" + GN[c.g + c.n] + "，形容词要变成「" + adjFix(aa[0], c.g, c.n) + "」。", cap(at.w, adjFix(aa[0], c.g, c.n)));
+      if (!aa.some(function (x) { return x.g === c.g && x.n === c.n; })) one(s.k, "adj", "「" + head + " " + at.w + "」：" + head + tt("itc.190") + GN[c.g + c.n] + tt("itc.191") + adjFix(aa[0], c.g, c.n) + "」。", cap(at.w, adjFix(aa[0], c.g, c.n)));
       return s.k;
     }
     /* il soggetto ricorda tutte le letture possibili del nome (vite: «la vite» e «le vite»): si segnala solo se nessuna va */
@@ -149,12 +149,12 @@
            (gerundi, imperfetti, «favore»…) e i suggerimenti sbagliati sarebbero più di quelli giusti */
         if (lw.length >= 3 && !/'$/.test(lw)) {
           var acc = X.BARE[noAcc(lw)], sug = acc && acc.length === 1 && !NOACC[lw] ? acc[0] : null;
-          if (sug) one(i, "spell", "「" + t.w + "」是不是「" + sug + "」？", cap(t.w, sug));
+          if (sug) one(i, "spell", "「" + t.w + tt("itc.192") + sug + "」？", cap(t.w, sug));
         }
       }
       /* nazionalità e lingue: minuscole in italiano */
       var A0 = X.A[lw];
-      if (A0 && A0.some(function (x) { return x.nat; }) && /^[A-ZÀ-Ö]/.test(t.w) && i > 0 && adj2(i - 1, i)) one(i, "case", "「" + t.w + "」：意大利语里国籍和语言要小写：「" + lw + "」。", lw);
+      if (A0 && A0.some(function (x) { return x.nat; }) && /^[A-ZÀ-Ö]/.test(t.w) && i > 0 && adj2(i - 1, i)) one(i, "case", "「" + t.w + tt("itc.193") + lw + "」。", lw);
 
       /* articolo (+ aggettivo) + nome, con la preposizione davanti se c'è */
       var clitic = CLIT[lw] && T[i + 1] && X.V[T[i + 1].lw] && (i === 0 || !adj2(i - 1, i) || PRON[T[i - 1].lw] || /^(non|te|me|se|ce|ve|glie)$/.test(T[i - 1].lw));
@@ -165,22 +165,22 @@
           var nt = T[p.n0], ok = p.cands.filter(function (c) { return c.n === a[1] && (a[0] === "x" || c.g === a[0]); }), c0 = ok[0] || p.cands[0];
           var next = T[p.mid != null ? p.mid : p.n0].w, nn = /^(ch|h|w|y|j|k|x)/i.test(next);
           var want = a[2] === "i" ? (c0.n === "s" ? I.indef(next, c0.g) : null) : I.def(next, c0.g, c0.n);
-          if (a[2] === "i" && c0.n === "p") one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + " 是复数，不定冠词 un / una 只能用在单数前面。可以用定冠词「" + I.def(next, c0.g, "p") + "」。", cap(t.w, I.def(next, c0.g, "p")));
+          if (a[2] === "i" && c0.n === "p") one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + tt("itc.194") + I.def(next, c0.g, "p") + "」。", cap(t.w, I.def(next, c0.g, "p")));
           else if (want && (!ok.length || (want !== lw && !nn))) {
-            if (prp < 0) one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + " 是" + GN[c0.g + c0.n] + "，" + (ok.length ? "这个词前面要用「" + want + "」（看后面一个词的开头字母）。" : "冠词要用「" + want + "」。"), cap(t.w, want));
+            if (prp < 0) one(i, "art", "「" + t.w + " " + nt.w + "」：" + nt.w + tt("itc.190") + GN[c0.g + c0.n] + "，" + (ok.length ? tt("itc.195") + want + tt("itc.196") : tt("itc.197") + want + "」。"), cap(t.w, want));
             artNow = want;
           }
-          if (p.mid != null) { var ma = X.A[T[p.mid].lw]; if (!ma.some(function (x) { return x.g === c0.g && x.n === c0.n; })) one(p.mid, "adj", "「" + T[p.mid].w + " " + nt.w + "」：" + nt.w + " 是" + GN[c0.g + c0.n] + "，形容词要变成「" + adjFix(ma[0], c0.g, c0.n) + "」。", cap(T[p.mid].w, adjFix(ma[0], c0.g, c0.n))); }
+          if (p.mid != null) { var ma = X.A[T[p.mid].lw]; if (!ma.some(function (x) { return x.g === c0.g && x.n === c0.n; })) one(p.mid, "adj", "「" + T[p.mid].w + " " + nt.w + "」：" + nt.w + tt("itc.190") + GN[c0.g + c0.n] + tt("itc.191") + adjFix(ma[0], c0.g, c0.n) + "」。", cap(T[p.mid].w, adjFix(ma[0], c0.g, c0.n))); }
           var end = after(p, c0, nt.w);
           if (prp < 0) subjectAt(end, c0, i, p.n0, ok);
         }
-        if (prp >= 0) { var comb = I.prep(T[prp].lw, artNow); issue(prp, i, "prep", "「" + T[prp].w + " " + t.w + "」：介词 " + T[prp].lw + " 和冠词要合成一个词「" + comb + "」。", cap(T[prp].w, comb)); }
+        if (prp >= 0) { var comb = I.prep(T[prp].lw, artNow); issue(prp, i, "prep", "「" + T[prp].w + " " + t.w + tt("itc.198") + T[prp].lw + tt("itc.199") + comb + "」。", cap(T[prp].w, comb)); }
       }
       /* numero + nome: plurale */
       if (NUMS[lw] && adj2(i, i + 1)) {
         var q = np(i + 1);
         if (q && !q.cands.some(function (c) { return c.n === "p"; }) && q.cands[0].pl && q.cands[0].pl !== T[q.n0].lw) {
-          var c1 = q.cands[0]; one(q.n0, "num", "「" + t.w + " " + T[q.n0].w + "」：两个以上要用复数「" + c1.pl + "」。", cap(T[q.n0].w, c1.pl));
+          var c1 = q.cands[0]; one(q.n0, "num", "「" + t.w + " " + T[q.n0].w + tt("itc.200") + c1.pl + "」。", cap(T[q.n0].w, c1.pl));
           after(q, { g: c1.g, n: "p" }, c1.pl);
         } else if (q) after(q, q.cands.filter(function (c) { return c.n === "p"; })[0] || q.cands[0], T[q.n0].w);
       }
@@ -188,7 +188,7 @@
       var POS = POSSOF[lw], isDem = DEM[lw];
       /* la mia madre → mia madre (i parenti al singolare non vogliono l'articolo; con «loro» sì: la loro madre) */
       if (POS && i > 0 && adj2(i - 1, i) && ARTS[T[i - 1].lw] && ARTS[T[i - 1].lw][2] === "d" && ARTS[T[i - 1].lw][1] === "s" && T[i + 1] && adj2(i, i + 1) && FAM[T[i + 1].lw] && !(T[i + 2] && adj2(i + 1, i + 2) && X.A[T[i + 2].lw]))
-        issue(i - 1, i - 1, "poss", "「" + T[i - 1].w + " " + t.w + " " + T[i + 1].w + "」：单数的家人（madre、padre、fratello…）前面，物主形容词不加冠词。", "");
+        issue(i - 1, i - 1, "poss", "「" + T[i - 1].w + " " + t.w + " " + T[i + 1].w + tt("itc.201"), "");
       if ((POS || isDem) && adj2(i, i + 1)) {
         var r = np(i + 1);
         if (r && isDem && r.mid == null && X.A[T[r.n0].lw]) r = null;   /* «quella cinese»: pronome + aggettivo */
@@ -200,11 +200,11 @@
           var gi = (cc.g === "f" ? 1 : 0) + (cc.n === "p" ? 2 : 0);
           var wantP = POS ? POS.forms[gi] : /^quest/.test(lw) ? QUESTO[gi] : QUELLO[I.def(nx, cc.g, cc.n)];
           var okP = r.cands.some(function (c) { var w2 = wantOf(c); return w2 === lw || (lw === "quest'" && c.n === "s" && I.vowel(nx)); });
-          if (!okP) one(i, "poss", "「" + t.w + " " + head + "」：" + head + " 是" + GN[cc.g + cc.n] + "，要说「" + wantP + "」。", cap(t.w, wantP));
+          if (!okP) one(i, "poss", "「" + t.w + " " + head + "」：" + head + tt("itc.190") + GN[cc.g + cc.n] + tt("itc.202") + wantP + "」。", cap(t.w, wantP));
           var fam = FAM[T[r.n0].lw] && cc.n === "s" && r.n0 === i + 1;
           if (POS && fam && artP && artP[2] === "d" && artP[1] === "s") { /* già segnalato sopra */ }
-          else if (artP && artP[2] === "d" && I.def(wantP, cc.g, cc.n) !== prev) issue(i - 1, i - 1, "art", "「" + T[i - 1].w + " " + t.w + " " + head + "」：" + head + " 是" + GN[cc.g + cc.n] + "，冠词要用「" + I.def(wantP, cc.g, cc.n) + "」。", cap(T[i - 1].w, I.def(wantP, cc.g, cc.n)));
-          else if (POS && !hasArt && !fam && start(i) && !/^[A-ZÀ-Ö]/.test(head) && !/^(caro|cara|cari|care)$/.test(T[r.n0].lw)) one(i, "poss", "「" + t.w + " " + head + "」：物主形容词前面一般要加冠词：「" + I.def(wantP, cc.g, cc.n) + " " + wantP + "」。", cap(t.w, I.join(I.def(wantP, cc.g, cc.n), wantP)));
+          else if (artP && artP[2] === "d" && I.def(wantP, cc.g, cc.n) !== prev) issue(i - 1, i - 1, "art", "「" + T[i - 1].w + " " + t.w + " " + head + "」：" + head + tt("itc.190") + GN[cc.g + cc.n] + tt("itc.203") + I.def(wantP, cc.g, cc.n) + "」。", cap(T[i - 1].w, I.def(wantP, cc.g, cc.n)));
+          else if (POS && !hasArt && !fam && start(i) && !/^[A-ZÀ-Ö]/.test(head) && !/^(caro|cara|cari|care)$/.test(T[r.n0].lw)) one(i, "poss", "「" + t.w + " " + head + tt("itc.204") + I.def(wantP, cc.g, cc.n) + " " + wantP + "」。", cap(t.w, I.join(I.def(wantP, cc.g, cc.n), wantP)));
           var e2 = after(r, cc, head);
           if (!hasArt || artP) subjectAt(e2, cc, artP ? i - 1 : i, r.n0, r.cands.filter(function (c) { return wantOf(c) === lw; }));
         }
@@ -221,31 +221,31 @@
       var vs = X.V[vt.lw], inf = X.INF[vt.lw];
       if (inf && !vs && I.present(inf.inf, subj.pi)) {
         var fi = I.present(inf.inf, subj.pi).split(" "), fw = fi[/^\S+rsi(\s|$)/.test(inf.inf) ? 1 : 0];
-        one(k, "verb", "「" + subj.w + " " + vt.w + "」：动词要变位，不能用原形。主语是" + PNAME[subj.pi] + "：「" + fw + "」。", cap(vt.w, fw));
+        one(k, "verb", "「" + subj.w + " " + vt.w + tt("itc.205") + PNAME[subj.pi] + "：「" + fw + "」。", cap(vt.w, fw));
         continue;
       }
       if (!vs || X.N[vt.lw] || X.A[vt.lw]) continue;
       var piac = vs.some(function (v) { return v.inf === "piacere"; });
       if (piac && subj.pron && T[k + 1] && adj2(k, k + 1) && (ARTS[T[k + 1].lw] || isNoun(k + 1))) {
         var pl2 = ARTS[T[k + 1].lw] ? ARTS[T[k + 1].lw][1] === "p" : false;
-        issue(i, k, "verb", "「" + subj.w + " " + vt.w + "」：意大利语说「" + CL[subj.pron] + " piace / piacciono …」，喜欢的东西才是主语。", cap(subj.w, CL[subj.pron]) + " " + (pl2 ? "piacciono" : "piace"));
+        issue(i, k, "verb", "「" + subj.w + " " + vt.w + tt("itc.206") + CL[subj.pron] + tt("itc.207"), cap(subj.w, CL[subj.pron]) + " " + (pl2 ? "piacciono" : "piace"));
         continue;
       }
       var pis = subj.all ? subj.all.map(function (c) { return c.n === "p" ? 5 : 2; }) : [subj.pi];
       if (!vs.some(function (v) { return pis.indexOf(v.pi) >= 0; }) && (subj.pron || vs.every(function (v) { return v.pi === 2 || v.pi === 5; }))) {
         var right = I.present(vs[0].inf, subj.pi), rw = right ? right.split(" ")[/^\S+rsi(\s|$)/.test(vs[0].inf) ? 1 : 0] : "";
-        if (rw) { one(k, "verb", "「" + subj.w + " … " + vt.w + "」：主语是" + PNAME[subj.pi] + "，动词 " + vs[0].inf + " 应该是「" + rw + "」。", cap(vt.w, rw)); continue; }
+        if (rw) { one(k, "verb", "「" + subj.w + " … " + vt.w + tt("itc.208") + PNAME[subj.pi] + tt("itc.209") + vs[0].inf + tt("itc.210") + rw + "」。", cap(vt.w, rw)); continue; }
       }
       /* essere + aggettivo: il predicato si accorda con il soggetto */
       var ess = ESS.indexOf(vt.lw) >= 0, sk = skipAdv(k + 1), pt = adj2(sk.k - 1, sk.k) ? T[sk.k] : null, pa = pt && !X.N[pt.lw] && X.A[pt.lw];
       if (ess && pa && !sk.cmp && !(T[sk.k + 1] && adj2(sk.k, sk.k + 1) && !FUNC[T[sk.k + 1].lw])) {
-        if (!pa.some(function (x) { return (subj.all || [subj]).some(function (c) { return x.n === c.n && (!c.g || x.g === c.g); }); })) { var pg = subj.g || "m", pf = adjFix(pa[0], pg, subj.n); one(sk.k, "adj", "「" + subj.w + " " + vt.w + " " + pt.w + "」：主语是" + (subj.g ? GN[subj.g + subj.n] : subj.n === "p" ? "复数" : "单数") + "，形容词要变成「" + pf + "」" + (subj.g ? "" : "（女性用「" + adjFix(pa[0], "f", subj.n) + "」）") + "。", cap(pt.w, pf)); }
+        if (!pa.some(function (x) { return (subj.all || [subj]).some(function (c) { return x.n === c.n && (!c.g || x.g === c.g); }); })) { var pg = subj.g || "m", pf = adjFix(pa[0], pg, subj.n); one(sk.k, "adj", "「" + subj.w + " " + vt.w + " " + pt.w + tt("itc.208") + (subj.g ? GN[subj.g + subj.n] : subj.n === "p" ? tt("itc.211") : tt("itc.212")) + tt("itc.191") + pf + "」" + (subj.g ? "" : tt("itc.213") + adjFix(pa[0], "f", subj.n) + "」）") + "。", cap(pt.w, pf)); }
       }
       /* essere + participio di un verbo con essere: accordo */
       var pp = T[k + 1] && adj2(k, k + 1) ? X.PPI[T[k + 1].lw] : null;
       if (ess && pp && pp[0].aux === "e" && subj.g && !pp.some(function (x) { return (subj.all || [subj]).some(function (c) { return x.g === c.g && x.n === c.n; }); })) {
         var pw = pp[0].st + (subj.g === "f" ? (subj.n === "p" ? "e" : "a") : (subj.n === "p" ? "i" : "o"));
-        one(k + 1, "pp", "「" + subj.w + " " + vt.w + " " + T[k + 1].w + "」：用 essere 的时候，过去分词要和主语一致：「" + pw + "」。", cap(T[k + 1].w, pw));
+        one(k + 1, "pp", "「" + subj.w + " " + vt.w + " " + T[k + 1].w + tt("itc.214") + pw + "」。", cap(T[k + 1].w, pw));
       }
     }
 
@@ -259,17 +259,17 @@
       /* il participio può venire da due verbi (chiamato: chiamare con avere, chiamarsi con essere): si segnala solo se tutti dicono così */
       if (ai >= 0 && P2 && (refl ? P2.some(function (x) { return x.refl; }) : !clit && P2.every(function (x) { return ESSERE_ONLY[x.inf.split(" ")[0]] && !x.refl; }))) {
         var g0 = P2.some(function (x) { return x.g === "m" && x.n === (ai >= 3 ? "p" : "s"); }) ? nx2 : P2[0].st + (ai >= 3 ? "i" : "o");
-        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + " 的近过去时用 essere：「" + ESS[ai] + " " + g0 + "」（分词和主语一致）。", cap(T[h].w, ESS[ai] + " " + g0));
+        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + tt("itc.215") + ESS[ai] + " " + g0 + tt("itc.216"), cap(T[h].w, ESS[ai] + " " + g0));
       } else if (ei >= 0 && w0 !== "è" && P2 && /o$/.test(nx2) && P2.every(function (x) { return x.aux === "a" && !x.refl; }) && !clit && !(T[h + 2] && adj2(h + 1, h + 2) && /^(da|dal|dalla|dai|dalle|dallo|dagli)$/.test(T[h + 2].lw))) {
         var who = w0 === "sono" ? 0 : ei;
-        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + " 的近过去时用 avere：「" + AVE[who] + " " + P2[0].st + "o」。", cap(T[h].w, AVE[who] + " " + P2[0].st + "o"));
+        issue(h, h + 1, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：" + P2[0].inf + tt("itc.217") + AVE[who] + " " + P2[0].st + "o」。", cap(T[h].w, AVE[who] + " " + P2[0].st + "o"));
       } else if (ei >= 0 && HAVE[nx2] && !clit) {
-        issue(h, h, "aux", "「" + T[h].w + " " + T[h + 1].w + "」：意大利语说「avere " + nx2 + "」：「" + AVE[w0 === "sono" ? 0 : ei] + " " + nx2 + "」。", cap(T[h].w, AVE[w0 === "sono" ? 0 : ei]));
+        issue(h, h, "aux", "「" + T[h].w + " " + T[h + 1].w + tt("itc.218") + nx2 + "」：「" + AVE[w0 === "sono" ? 0 : ei] + " " + nx2 + "」。", cap(T[h].w, AVE[w0 === "sono" ? 0 : ei]));
       }
       /* mi piace + plurale → mi piacciono; mi piacciono + singolare → mi piace */
       if (/^(mi|ti|gli|le|ci|vi)$/.test(w0) && (nx2 === "piace" || nx2 === "piacciono") && T[h + 2] && adj2(h + 1, h + 2) && ARTS[T[h + 2].lw] && T[h + 3] && X.N[T[h + 3].lw]) {
         var pn = ARTS[T[h + 2].lw][1] === "p", wantV = pn ? "piacciono" : "piace";
-        if (wantV !== nx2) one(h + 1, "verb", "「" + T[h + 1].w + " " + T[h + 2].w + " " + T[h + 3].w + "」：喜欢的东西是" + (pn ? "复数" : "单数") + "，要用「" + wantV + "」。", wantV);
+        if (wantV !== nx2) one(h + 1, "verb", "「" + T[h + 1].w + " " + T[h + 2].w + " " + T[h + 3].w + tt("itc.219") + (pn ? tt("itc.211") : tt("itc.212")) + tt("itc.220") + wantV + "」。", wantV);
       }
     }
 
@@ -297,23 +297,23 @@
     if (!s.trim()) return "";
     var r = check(s), h = "";
     if (!r.toks.length) return "";
-    if (!r.known) return '<p class="small muted">这些词我都还不认识，没法检查。</p>';
+    if (!r.known) return tt("itc.221");
     if (r.issues.length) {
       var marked = "", pos = 0;
       r.issues.forEach(function (x) { marked += esc(s.slice(pos, x.at)) + '<mark class="itc-bad">' + esc(s.slice(x.at, x.at + x.len)) + "</mark>"; pos = x.at + x.len; });
       marked += esc(s.slice(pos));
       h += '<p class="it-big" lang="it">' + marked + "</p>" + r.issues.map(function (x) { return '<p class="verdict ' + (x.kind === "spell" ? "" : "ko ") + 'small" style="margin:4px 0">' + (x.kind === "spell" ? "❓ " : "✗ ") + esc(x.zh) + "</p>"; }).join("") +
-        '<p style="margin:8px 0 0">建议：<b lang="it">' + esc(r.fixed) + '</b> <button type="button" class="say" data-it-say="' + CP.attr(r.fixed) + '" aria-label="朗读">🔊</button></p>';
-    } else h += '<p class="verdict ok">✓ 没有发现配合错误。</p>';
+        tt("itc.222") + esc(r.fixed) + '</b> <button type="button" class="say" data-it-say="' + CP.attr(r.fixed) + tt("itc.223");
+    } else h += tt("itc.224");
     var unk = r.unknown.filter(function (w) { return !r.issues.some(function (x) { return x.kind === "spell" && x.w === w; }); });
-    if (unk.length) h += '<p class="small muted">没检查的词（词库里没有）：<span lang="it">' + esc(unk.slice(0, 12).join("、")) + "</span></p>";
+    if (unk.length) h += tt("itc.225") + esc(unk.slice(0, 12).join("、")) + "</span></p>";
     return h;
   }
   CP.itCheckHTML = function () {
-    return '<div class="panel" id="itc" style="margin-top:20px"><span class="tag muted small">✍️ 句子检查</span>' +
-      '<p class="small muted" style="margin:4px 0 8px">写一句意大利语，我来检查冠词、名词、形容词和动词是否配合，还有一些拼写。我不检查意思和语序。</p>' +
-      '<form data-itc-form style="display:flex;gap:8px;flex-wrap:wrap"><input id="itc-in" type="text" lang="it" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="意大利语句子" placeholder="La ragazza è alta." value="' + CP.attr(last) + '" style="flex:1 1 220px;min-width:0">' +
-      '<button type="submit" class="btn-s" style="margin:0">检查</button></form><div id="itc-out" aria-live="polite">' + resultHTML(last) + "</div></div>";
+    return tt("itc.226") +
+      tt("itc.227") +
+      tt("itc.228") + CP.attr(last) + '" style="flex:1 1 220px;min-width:0">' +
+      tt("itc.229") + resultHTML(last) + "</div></div>";
   };
   document.addEventListener("submit", function (e) {
     var f = e.target; if (!f || !f.hasAttribute || !f.hasAttribute("data-itc-form")) return;

@@ -11,8 +11,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.widget.FrameLayout;
+import android.window.OnBackInvokedDispatcher;
 import android.webkit.PermissionRequest;
 import android.webkit.RenderProcessGoneDetail;
 import android.webkit.ValueCallback;
@@ -45,6 +49,7 @@ public class MainActivity extends Activity {
     private PermissionRequest pendingCamera;
 
     WebView web;
+    private FrameLayout root;
     private Bridge bridge;
     private ValueCallback<Uri[]> fileCallback;
     private PermissionRequest pendingWebPermission;
@@ -56,7 +61,23 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         if (BuildConfig.DEBUG) WebView.setWebContentsDebuggingEnabled(true);   /* solo le build di prova: chrome://inspect */
         web = new WebView(this);
-        setContentView(web);
+        /* Android 15+ (targetSdk 35/36): l'app va «da bordo a bordo» per forza. La WebView sta in un contenitore che riceve
+           come margine le barre di sistema, il ritaglio dello schermo e la tastiera; il colore del contenitore fa da colore
+           delle barre (setBars). Prima di Android 11 le barre si colorano come sempre. */
+        root = new FrameLayout(this);
+        root.addView(web, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setContentView(root);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            root.setOnApplyWindowInsetsListener((v, ins) -> {
+                android.graphics.Insets b = ins.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
+                v.setPadding(b.left, b.top, b.right, b.bottom);
+                return WindowInsets.CONSUMED;
+            });
+        }
+        /* Indietro con Android 13+: con targetSdk 36 il sistema non chiama più onBackPressed (indietro predittivo) */
+        if (Build.VERSION.SDK_INT >= 33) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, this::back);
+        }
 
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
@@ -274,17 +295,24 @@ public class MainActivity extends Activity {
     }
 
     /* Indietro: chiude prima il foglio aperto, poi la sessione, poi torna al Percorso; solo alla fine esce */
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onBackPressed() {
+    private void back() {
         web.evaluateJavascript("(window.__mdBack && window.__mdBack()) ? 1 : 0", value -> {
-            if (!"1".equals(value)) MainActivity.super.onBackPressed();
+            if (!"1".equals(value)) finish();
         });
     }
 
+    /* fino ad Android 12 (da 13 in su c'è il callback registrato in onCreate, che vale anche per il gesto di Android 16:
+       per questo l'avviso GestureBackNavigation non si applica; AndroidX non lo usiamo, il progetto ha solo l'SDK) */
+    @Override
+    @SuppressWarnings("deprecation")
+    @SuppressLint("GestureBackNavigation")
+    public void onBackPressed() { back(); }
+
     /** colore delle barre di sistema, scelto dalla pagina (tema chiaro, scuro, carta di riso) */
+    @SuppressWarnings("deprecation")   /* setStatusBarColor non ha effetto da Android 15: lì il colore è quello del contenitore */
     void setBars(int color) {
         Window w = getWindow();
+        if (root != null) root.setBackgroundColor(color);
         w.setStatusBarColor(color);
         w.setNavigationBarColor(color);
         double lum = (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255.0;

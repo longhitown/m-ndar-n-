@@ -7,9 +7,13 @@
 
   /* ---- avviso breve ---- */
   var toastEl = document.getElementById("toast"), toastT = 0;
-  CP.toast = function (msg) {
-    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.add("on");
-    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, 2000);   /* U9: una riga, al massimo 2 s */
+  /* act (facoltativo, Task 11.5): { label, run } → un pulsante dentro lo stesso messaggio, che resta qualche secondo in più.
+     Mai una finestra in più. Senza act è il messaggio di sempre. */
+  CP.toast = function (msg, act) {
+    toastEl.textContent = msg; toastEl.title = msg; toastEl.classList.toggle("act", !!act);
+    if (act) { var b = document.createElement("button"); b.type = "button"; b.className = "btn-s toast-act"; b.textContent = act.label; b.onclick = function () { toastEl.classList.remove("on"); act.run(); }; toastEl.appendChild(b); }
+    toastEl.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("on"); }, act ? 6000 : 2000);   /* U9: una riga, al massimo 2 s */
   };
 
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
@@ -17,9 +21,15 @@
   var IT = lsGet("cp-course") === "it", GK = IT ? "cp-it-game-v1" : "cp-game-v1";
   var RANKS = [
     { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
-    { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" }
+    { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" },
+    /* Task 6.2: oltre i 10.000 punti la strada continua; dopo l'ultimo grado, una «stagione» ogni SEASON punti */
+    { n: "Calligrafo d'Inchiostro", z: "墨韵书家", x: 15000, c: "墨" }, { n: "Viandante dei Classici", z: "经典行者", x: 22000, c: "经" },
+    { n: "Saggio del Fiume Giallo", z: "黄河贤者", x: 30000, c: "河" }, { n: "Maestro dei Quattro Mari", z: "四海宗师", x: 40000, c: "海" }
   ];
+  var SEASON = 10000;
   function rankName(r) { return LANG === "zh" ? r.z : r.n; }
+  /* la stagione oltre l'ultimo grado: 0 sotto, poi 1, 2, 3… */
+  function season(xp) { var top = RANKS[RANKS.length - 1].x; return xp < top ? 0 : 1 + Math.floor((xp - top) / SEASON); }
   /* V6.8: i punti sono contati per dispositivo (xpBy) sopra una base comune (base = i punti di prima della divisione):
      unendo due dispositivi (sincronizzazione, backup) per ognuno vale il conteggio più alto e la somma non conta mai due
      volte la stessa cosa. L'identità del dispositivo sta in «md-device», fuori dai dati che si esportano. */
@@ -57,28 +67,48 @@
   }
   function active(r) { return !!r && !!((r.w && r.w.length) || r.s || r.e); }
   function rankIdx(xp) { var i = 0; RANKS.forEach(function (r, j) { if (xp >= r.x) i = j; }); return i; }
-  function streak() {
-    var d = new Date(), n = 0;
+  /* Task 6.1: la serie conta i giorni attivi; un giorno di riposo a settimana (da lunedì a domenica) non la spezza, purché
+     non siano due di fila. Gratuito, automatico, calcolato solo dai giorni attivi: unendo due dispositivi si unisce anche lui.
+     rest() dice quali giorni della serie attuale sono stati di riposo. */
+  function weekKey(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7); return dkey(x); }
+  function walk() {
+    var d = new Date(), n = 0, rest = {}, used = {}, prevRest = false;
     if (!active(G.days[dkey(d)])) d.setDate(d.getDate() - 1);
-    while (active(G.days[dkey(d)])) { n++; d.setDate(d.getDate() - 1); }
-    return n;
+    for (var guard = 0; guard < 4000; guard++) {
+      if (active(G.days[dkey(d)])) { n++; prevRest = false; }
+      else {
+        var wk = weekKey(d);
+        if (prevRest || used[wk] || !n && !active(G.days[dkey(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1))])) break;
+        used[wk] = 1; rest[dkey(d)] = 1; prevRest = true;
+      }
+      d.setDate(d.getDate() - 1);
+    }
+    /* un riposo in fondo alla serie (prima del primo giorno attivo) non conta */
+    var k = dkey(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)); if (prevRest) delete rest[k];
+    return { n: n, rest: rest };
   }
+  function streak() { return walk().n; }
   function weekDots() {
-    var d = new Date(), dow = (d.getDay() + 6) % 7, out = [];
+    var d = new Date(), dow = (d.getDay() + 6) % 7, out = [], R = walk().rest;
     for (var i = 0; i < 7; i++) {
       var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow + i);
-      out.push({ on: active(G.days[dkey(x)]), td: i === dow });
+      out.push({ on: active(G.days[dkey(x)]), td: i === dow, rest: !!R[dkey(x)] });
     }
     return out;
   }
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
   function award(n) {
-    var b = rankIdx(G.xp); G.xp += n; G.xpBy[DEV] = (G.xpBy[DEV] | 0) + n; var a = rankIdx(G.xp);
-    if (a > b) { CP.toast(CP.t("rank.toast", { r: rankName(RANKS[a]) })); CP.sfx("level"); }
+    var b = rankIdx(G.xp), sb = season(G.xp); G.xp += n; G.xpBy[DEV] = (G.xpBy[DEV] | 0) + n; var a = rankIdx(G.xp), sa = season(G.xp);
+    if (CP.onAward) try { CP.onAward(n); } catch (e) {}
+    if (a > b || sa > sb) { var r = rankInfo(); CP.toast(CP.t("rank.toast", { r: r.name })); CP.sfx("level"); if (CP.onRankUp) try { CP.onRankUp(r); } catch (e) {} }
   }
   function rankInfo() {
-    var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null;
-    return { i: i, name: rankName(r), ch: r.c, xp: G.xp, next: nx ? nx.x : null, nextName: nx ? rankName(nx) : null, pct: nx ? Math.round((G.xp - r.x) / (nx.x - r.x) * 100) : 100 };
+    var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null, se = season(G.xp);
+    if (!nx) {   /* oltre l'ultimo grado: la prossima stagione */
+      var from = r.x + (se - 1) * SEASON, to = from + SEASON;
+      return { i: i, name: rankName(r) + (se > 1 ? " · " + CP.t("rank.season", { n: se }) : ""), ch: r.c, xp: G.xp, next: to, nextName: rankName(r) + " · " + CP.t("rank.season", { n: se + 1 }), season: se, pct: Math.round((G.xp - from) / SEASON * 100) };
+    }
+    return { i: i, name: rankName(r), ch: r.c, xp: G.xp, next: nx.x, nextName: rankName(nx), season: 0, pct: Math.round((G.xp - r.x) / (nx.x - r.x) * 100) };
   }
   CP.stamp = function (r, lg) {
     return '<span class="seal stamp' + (lg ? " lg" : "") + (r.i === RANKS.length - 1 ? " max" : "") + '" aria-hidden="true"><svg viewBox="300 30 200 200" focusable="false"><use href="#mandarin-symbol"/></svg><b>' + r.ch + "</b></span>";
@@ -103,7 +133,7 @@
     setBest: function (v) { if (v > G.best) { G.best = v; save(); return true; } return false; },
     setGoal: function (n) { G.goal = n; save(); ui(); },
     goal: function () { return G.goal; },
-    streak: streak, weekDots: weekDots, wordsToday: wordsToday, rank: rankInfo,
+    streak: streak, rest: function () { return walk().rest; }, weekDots: weekDots, days: function () { return G.days; }, wordsToday: wordsToday, rank: rankInfo,
     activeToday: function () { return active(G.days[dkey(new Date())]); },
     activeDays: function () { return Object.keys(G.days).filter(function (d) { return active(G.days[d]); }).length; },
     /* punti iniziali del test di livello: non segnano il giorno come attivo (la serie non cambia) e sostituiscono quelli di
