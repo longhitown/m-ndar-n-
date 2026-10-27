@@ -115,7 +115,7 @@ const VOICE_CLIPS = [];
 {
   const MATD = path.join(SRC, "..", "materiali"), exd = path.join(SRC, "data/ex");
   if (fs.existsSync(exd)) {
-    const { tools, CLIP_MAX, AUDIO_MAX } = await import("./materiali.mjs");
+    const { tools, CLIP_MAX, AUDIO_MAX, voiceHash } = await import("./materiali.mjs");
     const TL = tools(SRC), ctx = {};
     for (const f of fs.readdirSync(exd).filter((x) => x.endsWith(".js"))) vm.runInNewContext(fs.readFileSync(path.join(exd, f), "utf8"), ctx);
     for (const r of (ctx.FRASI_ZH || {}).righe || []) { const c = TL.check(r[0]); if (!c.ok) fail("src/data/ex/frasi-zh.js: «" + r[0] + "» ha parole fuori dal vocabolario: " + c.unknown.join("")); if (c.lv > r[2]) fail("src/data/ex/frasi-zh.js: «" + r[0] + "» è di livello " + c.lv + ", non " + r[2]); }
@@ -125,7 +125,11 @@ const VOICE_CLIPS = [];
       if (!fs.existsSync(f)) fail("materiali/audio/" + lang + "/" + r[0] + ".ogg manca (è nell'indice)");
       const b = fs.statSync(f).size; if (b > CLIP_MAX) fail("materiali/audio/" + lang + "/" + r[0] + ".ogg supera i 60 KB");
       if (lang === "zh") { const c = TL.check(r[2]); if (!c.ok) fail("src/data/ex/voce-zh.js: «" + r[2] + "» ha parole fuori dal vocabolario"); }
-      tot += b; VOICE_CLIPS.push([lang, r[0], f]);
+      tot += b;
+      /* il catalogo (src/data/ex/voci-file.js) deve avere l'impronta di adesso: il file in dist/ porta quella nel nome */
+      const h = ((ctx.VOICE_FILES || {})[lang] || {})[r[0]], buf = fs.readFileSync(f);
+      if (h !== voiceHash(buf)) fail("src/data/ex/voci-file.js non è aggiornato per " + lang + "/" + r[0] + " (node tools/materiali.mjs)");
+      VOICE_CLIPS.push([lang, r[0] + "." + h + ".ogg", buf]);
     }
     if (tot > AUDIO_MAX) fail("le voci superano i 10 MB: " + (tot / 1048576).toFixed(2) + " MB");
     /* testi graduati: stesse regole di tools/lettura.mjs */
@@ -160,7 +164,7 @@ out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
    compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
    STROKES o IT_LEXICON (il lessico del corso di italiano). Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
-const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"], ["FRASI_ZH", (s) => s === "data/ex/frasi-zh.js"], ["FRASI_IT", (s) => s === "data/ex/frasi-it.js"], ["VOCE_ZH", (s) => s === "data/ex/voce-zh.js"], ["VOCE_IT", (s) => s === "data/ex/voce-it.js"], ["INSIEMI", (s) => s === "data/ex/insiemi.js"], ["TESTI_ZH", (s) => s === "data/reading/testi-zh.js"], ["TESTI_IT", (s) => s === "data/reading/testi-it.js"]];
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"], ["FRASI_ZH", (s) => s === "data/ex/frasi-zh.js"], ["FRASI_IT", (s) => s === "data/ex/frasi-it.js"], ["VOCE_ZH", (s) => s === "data/ex/voce-zh.js"], ["VOCE_IT", (s) => s === "data/ex/voce-it.js"], ["INSIEMI", (s) => s === "data/ex/insiemi.js"], ["VOICE_FILES", (s) => s === "data/ex/voci-file.js"], ["TESTI_ZH", (s) => s === "data/reading/testi-zh.js"], ["TESTI_IT", (s) => s === "data/reading/testi-it.js"]];
 for (const [name, test] of LAZY) {
   const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
   const lctx = vm.createContext({});
@@ -187,7 +191,7 @@ for (const [name, src] of LAZYCODE) {
 /* moduli dell'app che servono solo a qualcuno e solo in certi momenti (il test di livello, il correttore di frasi italiane):
    testo inerte nel file unico, eseguito la prima volta che il codice tocca una delle loro proprietà di CP. Il blocco va al
    posto dell'ultimo file del gruppo, quando CP esiste già. */
-const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }, { props: ["challenge", "classroom"], files: ["i18n/together.js", "ui/challenge.js", "ui/classroom.js"] }, { props: ["credits"], files: ["ui/credits.js"] }, { props: ["shareCard"], files: ["ui/share-card.js"] }];
+const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }, { props: ["challenge", "classroom"], files: ["i18n/together.js", "ui/challenge.js", "ui/classroom.js"] }, { props: ["credits"], files: ["i18n/credits-t12.js", "ui/credits.js"] }, { props: ["shareCard"], files: ["ui/share-card.js"] }, { props: ["voiceDl"], files: ["i18n/voice.js", "ui/voice-dl.js"] }];
 for (const m of LAZYMOD) {
   const group = m.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("LAZYMOD: manca uno di " + m.files.join(", ") + " in src/index.html");
   const code = group.map((x) => "/* ---- " + x.src + " ---- */\n" + fs.readFileSync(path.join(SRC, x.src), "utf8").trimEnd()).join("\n").replace(/<\/script/gi, "<\\/script");
@@ -201,7 +205,7 @@ for (const m of LAZYMOD) {
 /* COURSE_IT: il corso di italiano per chi parla cinese (testi, carta «今天», corso) serve solo a chi lo ha scelto. Nel file
    unico questi file restano testo (type="text/plain") e si eseguono al loro posto, in ordine, solo se cp-course è "it":
    chi studia cinese non li compila all'avvio. Il comportamento è identico a quello degli script normali. */
-const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js"];
+const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js", "it/esercizi.js", "it/lettura.js"];
 for (const f of COURSE_IT) {
   const sc = scripts.find((x) => x.src === f); if (!sc) fail("COURSE_IT: manca " + f + " in src/index.html");
   const code = fs.readFileSync(path.join(SRC, f), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script"), id = "course-it-" + f.replace(/[^a-z0-9]+/gi, "-");
@@ -254,14 +258,17 @@ for (const f of fs.readdirSync(path.join(SRC, "pwa"))) if (!/\.js$/.test(f)) fil
 /* «nomi e termini» del Lettore (tools/wikidict.mjs): un file a parte, scaricato solo quando serve */
 if (WIKIB) files["data/wiki/" + WIKIF] = WIKIB;
 for (const [name, b] of MUSICB) files["audio/music/" + name] = b;
+/* le voci reali (Task 12): dist/audio/voce/<lingua>/<numero>.<impronta>.ogg; nell'APK sono dentro il pacchetto, sul sito si
+   scaricano solo con «Scarica le voci» (core/voice-clip.js) */
+for (const [lang, name, b] of VOICE_CLIPS) files["audio/voce/" + lang + "/" + name] = b;
 for (const s of scripts.filter((s) => /^audio\/tracks\/(?!index)/.test(s.src))) {
   const m = /file: true[\s\S]*?player\(c, bus, "([\w-]+)"\)/.exec(fs.readFileSync(path.join(SRC, s.src), "utf8"));
   if (m && !ogg.includes(m[1] + ".ogg")) fail(`${s.src} vuole audio/music/${m[1]}.ogg, che non c'è`);
 }
 
 if (onlyCheck) {
-  /* i file pesanti (brani, nomi e termini) non stanno nel repository: si generano a ogni build (CI, Cloudflare) */
-  const stale = Object.keys(files).filter((f) => !/^(audio\/music|data\/wiki)\//.test(f)).filter((f) => { const p = path.join(OUT, f); return !fs.existsSync(p) || !Buffer.from(files[f]).equals(fs.readFileSync(p)); });
+  /* i file pesanti (brani, voci, nomi e termini) non stanno nel repository: si generano a ogni build (CI, Cloudflare) */
+  const stale = Object.keys(files).filter((f) => !/^(audio\/(music|voce)|data\/wiki)\//.test(f)).filter((f) => { const p = path.join(OUT, f); return !fs.existsSync(p) || !Buffer.from(files[f]).equals(fs.readFileSync(p)); });
   if (stale.length) fail("dist/ non è aggiornato (" + stale.join(", ") + "): lancia «node tools/build.mjs»");
   console.log("✓ dist/ è aggiornato · versione " + version);
   process.exit(0);

@@ -54,19 +54,22 @@
   }
   function familyOf(w) { return famiglia(CP.S()[w.key]); }
   function ladder() { return gradino(LAD.hist); }
-  function choose(e, w) {
-    var lvl = Math.max(0, Math.min(2, familyOf(w) + ladder())), last = LAD.last;
+  /* kit (facoltativo, corso di italiano): corso, ctx, rec(chiave) → { n, st } della scheda */
+  function choose(e, w, kit) {
+    kit = kit || {};
+    var corso = kit.corso || "zh", cx = kit.ctx || CTX, fam = kit.rec ? famiglia(kit.rec(w.key)) : familyOf(w);
+    var lvl = Math.max(0, Math.min(2, fam + ladder())), last = LAD.last;
     var ok = function (id) {
       var d = REG[id];
-      if (!d || d.corso !== "zh" || id === e.lastType) return false;
+      if (!d || d.corso !== corso || id === e.lastType) return false;
       if (last.length >= 2 && last[last.length - 1] === id && last[last.length - 2] === id) return false;
-      return !d.richiede || d.richiede(w, CTX) !== false;
+      return !d.richiede || d.richiede(w, cx) !== false;
     };
-    if (FORCE && REG[FORCE] && ok(FORCE)) { var fi = REG[FORCE].crea(w, CTX, rngFor(w, FORCE)); if (fi) return { id: FORCE, item: fi }; }
+    if (FORCE && REG[FORCE] && ok(FORCE)) { var fi = REG[FORCE].crea(w, cx, rngFor(w, FORCE)); if (fi) return { id: FORCE, item: fi }; }
     for (var f = lvl; f >= 0; f--) {
       var c = FAM[f].filter(ok);
       while (c.length) {
-        var id = c.splice(Math.floor(Math.random() * c.length), 1)[0], item = REG[id].crea(w, CTX, rngFor(w, id, e.retry ? 1 : 0));
+        var id = c.splice(Math.floor(Math.random() * c.length), 1)[0], item = REG[id].crea(w, cx, rngFor(w, id, e.retry ? 1 : 0));
         if (item) return { id: id, item: item };
       }
     }
@@ -93,33 +96,37 @@
   };
   function render(e, kit) {
     if (SESS !== kit.sess()) { SESS = kit.sess(); LAD = { hist: [], last: [] }; }
-    var w = CP.WORDS[e.k]; if (!w) return false;
-    if (!e.item) { var c = choose(e, w); if (!c) return false; e.exType = c.id; e.item = c.item; }
+    var w = kit.word ? kit.word(e.k) : CP.WORDS[e.k]; if (!w) return false;
+    if (!e.item) { var c = choose(e, w, kit); if (!c) return false; e.exType = c.id; e.item = c.item; }
     var it = e.item, def = REG[e.exType];
     cur = { e: e, kit: kit, item: it, def: def, w: w, t0: Date.now(), done: false, g: 0 };
     kit.root.innerHTML = kit.head() + '<div class="panel fc ex-card enter" data-k="' + CP.attr(w.key) + '" data-ex="' + CP.attr(e.exType) + '"><span class="tag">' + esc(T(def.q)) + "</span>" + it.prompt +
       R[it.kind].html(it) + '<div class="ex-fb" aria-live="polite"></div></div><div class="actbar ex-bar"><p class="kbd-hint">' + esc(T(it.kind === "mc" ? "exm.kbd" : "exm.kbdType")) + "</p></div>";
     kit.root.classList.add("is-card");
     if (R[it.kind].bind) R[it.kind].bind(it, kit.root);
-    if (it.say && it.autoSay) setTimeout(function () { if (cur && cur.item === it) CP.say(it.say, kit.root.querySelector(".ex-card .say")); }, 250);
+    if (it.say && it.autoSay) setTimeout(function () { if (cur && cur.item === it) speak(it.say, kit.root.querySelector(".ex-card .say")); }, 250);
     return true;
   }
+  /* la voce dell'esercizio: quella del corso (kit.speak, l'italiano) o il cinese */
+  function speak(text, el) { if (cur && cur.kit.speak) cur.kit.speak(text, el); else CP.say(text, el); }
   /* dopo la risposta: esito con il segno oltre al colore, la parola completa, la frase d'esempio e un solo «Continua» */
   function after(res) {
     if (!cur || cur.done) return;
-    var w = cur.w, kit = cur.kit, ex = kit.example(w.key);
+    var w = cur.w, kit = cur.kit, ex = kit.example ? kit.example(w.key) : null;
     cur.done = true; cur.g = res.g; cur.ms = Date.now() - cur.t0;
     stat(w.key, cur.e.exType, res.ok); LAD.hist.push(!!res.ok); LAD.last.push(cur.e.exType); if (LAD.last.length > 4) LAD.last.shift();
-    if (cur.def.risposta) cur.def.risposta(cur.item, res, w);
     if (CP.pref.sfx) CP.sfx(res.ok ? "ok" : "ko"); CP.haptic(res.ok ? 8 : [20, 40, 20]);
     var fb = kit.root.querySelector(".ex-fb");
     /* nella verifica del percorso guidato (kit.noReveal) solo l'esito: niente parola completa, esempio né ascolto */
     if (fb && kit.noReveal) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.ok ? T("exm.right") : res.msg || T("exm.wrongShort")) + "</p>";
+    else if (fb && kit.reveal) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.msg || T(res.ok ? "exm.right" : "exm.wrong")) + "</p>" + kit.reveal(w, cur.item);
     else if (fb) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.msg || T(res.ok ? "exm.right" : "exm.wrong")) + "</p>" +
       '<div class="ex-rev">' + kit.parts(w, { py: 1, hz: 1, it: 1 }) + (ex ? '<div class="cd-ex"><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + esc(ex[2]) + "</div></div>" : "") + kit.tools(w) + "</div>";
+    /* dopo l'esito: una nota del tipo di esercizio (grammatica, correttore) va sopra, non viene cancellata */
+    if (cur.def.risposta) cur.def.risposta(cur.item, res, w);
     bar('<button type="button" class="btn-main" data-exc>' + esc(T("exm.cont")) + "</button>" + (res.ok && res.g === 2 && cur.item.kind === "mc" && !kit.noReveal ? '<button type="button" class="btn-quiet ex-unsure" data-exu>' + esc(T("exm.unsure")) + "</button>" : "") + '<p class="kbd-hint">' + esc(T("exm.kbdNext")) + "</p>");
     var c = kit.root.querySelector("[data-exc]"); if (c) c.focus({ preventScroll: true });
-    if (CP.pref.auto && !kit.noReveal) CP.say(CP.sayHz(w), kit.root.querySelector(".ex-rev .say"));
+    if (CP.pref.auto && !kit.noReveal && !kit.speak) CP.say(CP.sayHz(w), kit.root.querySelector(".ex-rev .say"));
   }
   function next(g) {
     if (!cur || !cur.done) return;
@@ -143,11 +150,11 @@
   });
   document.addEventListener("keydown", function (ev) {
     if (!cur || ev.ctrlKey || ev.metaKey || ev.altKey || (CP.topSheet && CP.topSheet()) || !cur.kit.root.querySelector(".ex-card")) return;
-    var v = document.getElementById("view-study"); if (v && v.hidden) return;
+    var v = cur.kit.view ? cur.kit.view() : document.getElementById("view-study"); if ((v && v.hidden) || !document.body.contains(cur.kit.root)) return;
     var a = document.activeElement, typing = a && /^(INPUT|TEXTAREA)$/.test(a.tagName);
     if (!cur.done && cur.item.kind === "mc" && /^[1-9]$/.test(ev.key) && +ev.key <= cur.item.opts.length) { ev.preventDefault(); after(R.mc.pick(+ev.key - 1)); }
     else if (cur.done && ev.key === "Enter") { ev.preventDefault(); next(); }
-    else if (!typing && (ev.key === " " || ev.code === "Space") && cur.item.say) { ev.preventDefault(); CP.say(cur.item.say, cur.kit.root.querySelector(".say")); }
+    else if (!typing && (ev.key === " " || ev.code === "Space") && cur.item.say) { ev.preventDefault(); speak(cur.item.say, cur.kit.root.querySelector(".say, [data-it-say]")); }
   });
 
   /* ---- gli esercizi di T1 (corso di cinese) ---- */

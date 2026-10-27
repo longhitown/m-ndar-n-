@@ -283,6 +283,21 @@
     };
     liveTimer = setTimeout(function () { if (live === els) clearLive(); }, 1500 + text.length * 700);
     failTimer = setTimeout(finish, 6500 + text.length * 900);
+    /* Task 12: la voce reale registrata, se la frase ne ha una sul telefono (core/voice-clip.js); se non parte, la voce di sempre */
+    var clip = !o.noClip && CP.voiceClip ? CP.voiceClip.url(text, zh ? "zh" : "it") : "";
+    if (clip) {
+      var ca = new Audio(clip), back = function () {
+        ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null;
+        if (finished || token !== mine) return;
+        finished = true; clearTimeout(failTimer); clearTimeout(startTimer); if (CP.bus) CP.bus.duck(false); curStop = null;
+        var o2 = {}; Object.keys(o).forEach(function (k) { o2[k] = o[k]; }); o2.noClip = true; CP.speak(text, o2);
+      };
+      curAudio = ca; if (rate < 1) { ca.playbackRate = 0.85; ca.preservesPitch = true; }
+      ca.onended = function () { ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null; finish(); };
+      ca.onerror = back;
+      try { var cp = ca.play(); if (cp && cp.catch) cp.catch(back); } catch (e) { back(); }
+      return;
+    }
     /* V6.8: la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
        accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {

@@ -656,6 +656,79 @@ try {
     check("Lettura: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4m. corso di italiano alla pari (Task 12, T5): stesso motore e stessi stili, voto da CP.itApi.grade nel formato di
+     sempre di cp-it-srs-v1, ogni tipo di esercizio italiano, il dettato con una voce reale (solo se è sul telefono: prima
+     nessuna richiesta), il passo successivo nella carta «今天» (Guidato), la lettura con le domande in cinese */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    const voce = []; p.on("request", (r) => { if (/\/audio\/voce\//.test(r.url())) voce.push(r.url()); });
+    await ctx.addInitScript(() => { if (!localStorage.getItem("cp-course")) { localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh"); localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-ex-style", "mixed"); } });
+    await p.goto(base); await p.waitForTimeout(800);
+    await p.evaluate(() => { window.__itRight = function () {
+      const cur = CP.exEngine.current(); if (!cur) return "nessuna carta"; const it = cur.item, root = document.getElementById("it-ex-root");
+      if (it.kind === "mc") root.querySelectorAll("[data-exa]")[it.right].click();
+      else if (it.kind === "type") { root.querySelector("#ex-in").value = it.accept[0]; root.querySelector("[data-ex-submit]").click(); }
+      else if (it.kind === "order") { it.tiles.forEach((t) => root.querySelector('[data-exo="' + t.id + '"]').click()); root.querySelector("[data-exo-check]").click(); }
+      const ok = !!root.querySelector(".ex-verdict.ok"), type = cur.e.exType; root.querySelector("[data-exc]").click(); return type + (ok ? "" : ":sbagliata");
+    }; });
+    const r1 = await p.evaluate(async () => {
+      CP.unlock.unlockAll(); CP.itShow("review"); await new Promise((r) => setTimeout(r, 200));
+      const intro = !!document.querySelector("[data-itx-learn]"); document.querySelector("[data-itx-learn]").click(); await new Promise((r) => setTimeout(r, 200));
+      const card = document.querySelector("#it-ex-root .ex-card"), t = card && card.getAttribute("data-ex"), a = window.__itRight();
+      return { intro, t, a };
+    });
+    check("Corso di italiano, stile Misto: la parola nuova si presenta, poi un esercizio di riconoscimento al posto della carta da girare", r1.intro && /^it-(significato|parola)$/.test(r1.t) && r1.a === r1.t, JSON.stringify(r1));
+    const TYPES = ["it-significato", "it-parola", "it-buco", "it-ordina", "it-scrivi", "it-buco-gram", "it-verbo"];
+    const r2 = await p.evaluate(async (TYPES) => {
+      const E = CP.exEngine, K = CP.itEx.kit, L = CP.itApi.lex(), out = {};
+      for (const T of TYPES) {
+        const w = L.find((e) => { e.key = e.id; const d = E.REG[T]; return (!d.richiede || d.richiede(e, K.ctx) !== false) && d.crea(e, K.ctx, CP.distract.rng(7)); });
+        if (!w) { out[T] = "nessuna parola"; continue; }
+        E.force(T); CP.itEx.only(w.id); await new Promise((r) => setTimeout(r, 60));
+        const shown = (document.querySelector("#it-ex-root .ex-card") || {}).getAttribute && document.querySelector("#it-ex-root .ex-card").getAttribute("data-ex");
+        out[T] = shown === T ? window.__itRight() : "mostrato " + shown;
+      }
+      E.force(null);
+      const S = JSON.parse(localStorage.getItem("cp-it-srs-v1")), recs = Object.keys(S).filter((k) => k !== "__meta").map((k) => S[k]);
+      return { out, fmt: recs.length >= 2 && recs.every((r) => Object.keys(r).sort().join() === "c,lr,n" && r.c.due > 0), n: recs.length };
+    }, TYPES);
+    check("Corso di italiano: ogni tipo di esercizio si risolve con la risposta giusta (" + TYPES.length + " tipi)", TYPES.every((t) => r2.out[t] === t), JSON.stringify(r2.out));
+    check("Corso di italiano: il voto passa da CP.itApi.grade, cp-it-srs-v1 resta { c, n, lr } per parola", r2.fmt, JSON.stringify(r2));
+    check("Corso di italiano: senza voci scaricate nessuna richiesta di clip (si usa la voce del telefono)", !voce.length, voce[0]);
+    /* il dettato con una voce reale: le clip sono sul telefono (qui come dopo «Scarica le voci») */
+    const r3 = await p.evaluate(async () => {
+      localStorage.setItem("cp-voice-dl", "1");
+      const E = CP.exEngine, K = CP.itEx.kit, L = CP.itApi.lex(), w = L.find((e) => E.REG["it-dettato"].richiede(e, K.ctx));
+      if (!w) return { w: null };
+      E.force("it-dettato"); CP.itEx.only(w.id); await new Promise((r) => setTimeout(r, 700));
+      const cur = E.current(), real = !!document.querySelector("#it-ex-root .ex-listen .tag"), url = CP.voiceClip.url(cur.item.say, "it");
+      const a = window.__itRight(); E.force(null);
+      return { w: w.id, s: cur.item.say, real, url, a };
+    });
+    await p.waitForTimeout(200);
+    check("Corso di italiano: dettato con la voce reale (la clip parte da sola, la frase scritta giusta passa)", r3.w && r3.real && /audio\/voce\/it\/\d+\.[0-9a-f]{8}\.ogg$/.test(r3.url) && voce.some((u) => u.endsWith(r3.url)) && r3.a === "it-dettato", JSON.stringify({ r3, voce: voce.slice(0, 2) }));
+    /* stile Guidato: la carta «今天» dice il passo (qui: un testo, dopo 3 lezioni superate); la lettura con le domande in cinese */
+    const r4 = await p.evaluate(async () => {
+      localStorage.setItem("cp-ex-style", "guided");
+      const P = {}; CP.itApi.lessons().slice(0, 3).forEach((l) => { P[l.id] = { done: Date.now(), best: 100 }; }); localStorage.setItem("cp-it-lessons-v1", JSON.stringify(P));
+      CP.itShow("lessons"); await new Promise((r) => setTimeout(r, 100));
+      const b = document.querySelector(".it-today [data-itg-go]"), label = b && b.textContent, xp0 = CP.game.rank().xp; if (!b) return { label: null };
+      b.click(); await new Promise((r) => setTimeout(r, 150));
+      const text = !!document.querySelector(".rdg-text"), t = CP.itRead.state().t;
+      document.querySelector("[data-itq-q]").click(); await new Promise((r) => setTimeout(r, 50));
+      t.domande.forEach((d, i) => { const bs = [...document.querySelectorAll('[data-itq-a^="' + i + ':"]')]; bs.find((x) => x.textContent.includes(d.scelte_it[d.giusta])).click(); });
+      const q = (document.querySelector(".rdg-qs .ask") || {}).textContent, score = (document.querySelector(".rdg-end .gd-score") || {}).textContent;
+      CP.itRead.close(); CP.itShow("lessons"); await new Promise((r) => setTimeout(r, 50));
+      const next = (document.querySelector(".it-today [data-itg-go]") || {}).textContent;
+      return { label, text, id: t.id, q, score, read: !!JSON.parse(localStorage.getItem("cp-ex-v1")).read[t.id], xp: CP.game.rank().xp - xp0, next };
+    });
+    check("Corso di italiano, Guidato: «今天» dice il passo (un testo), la lettura ha domande in cinese, «已读» e +5 una volta, poi la lezione successiva", /短文/.test(r4.label) && r4.text && /[一-鿿]/.test(r4.q) && /3 \/ 3/.test(r4.score) && r4.read && r4.xp === 5 && /第 4 课/.test(r4.next), JSON.stringify(r4));
+    /* Classico: le carte di prima */
+    const r5 = await p.evaluate(async () => { localStorage.setItem("cp-ex-style", "classic"); CP.itApi.nextCard(); CP.itShow("review"); await new Promise((r) => setTimeout(r, 100)); return { classic: !!document.querySelector("[data-itr-show]"), ex: !!document.querySelector("#it-ex-root") }; });
+    check("Corso di italiano, Classico: il ripasso di prima (carta da girare, quattro voti)", r5.classic && !r5.ex, JSON.stringify(r5));
+    check("Corso di italiano, esercizi: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -951,7 +1024,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown".split(" "));
+      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown nm mozilla common voice ogg opus".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {

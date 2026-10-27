@@ -291,6 +291,12 @@ function sandbox() {
   const ta = POOL.find((w) => w.hz === "他"), L = DS.listen(ta, POOL, CTX, DS.rng(7));
   const sameSound = (L || []).filter((x) => plain(x.py) === "ta");
   check("distrattori dell'ascolto: per 他 niente 她/它 (stessa pronuncia) né parole con più letture", L && !sameSound.length && !L.some((x) => CTX.poly(x.hz)), (L || []).map((x) => x.hz).join(","));
+  /* corso di italiano (dati inventati): stessa specie e genere, niente caratteri cinesi in comune, niente doppioni */
+  const IP = [["a", "il libro", "书", "m"], ["b", "il tavolo", "桌子", "m"], ["c", "il gatto", "猫", "m"], ["d", "il cane", "狗", "m"], ["e", "lo studente", "学生", "m"], ["f", "il treno", "火车", "m"], ["g", "la casa", "房子", "f"], ["h", "la scuola", "学校", "m"], ["i", "il tavolo", "台子", "m"]]
+    .map((r) => ({ id: r[0], key: r[0], it: r[1], zh: r[2], g: r[3], kind: "noun", sec: "s" + r[0] }));
+  const IW = DS.itWords(IP[7], IP, { levelOf: () => 1 }, DS.rng(11)) || [];
+  const iwBad = IW.filter((x) => x.g !== "m" || /学/.test(x.zh) || x.id === "h");
+  check("distrattori del corso di italiano: tre nomi dello stesso genere, nessun carattere cinese in comune (学校/学生), nessun doppione", IW.length === 3 && !iwBad.length && new Set(IW.map((x) => x.it)).size === 3 && new Set(IW.map((x) => x.zh)).size === 3, IW.map((x) => x.it + "/" + x.zh).join(", "));
   const o = DS.options("x", ["a", "b", "c"], DS.rng(3));
   check("distrattori: la giusta sta tra le quattro, in un posto deciso dal seme", o.opts.length === 4 && o.opts[o.right] === "x");
   /* regole del motore, caricate senza pagina */
