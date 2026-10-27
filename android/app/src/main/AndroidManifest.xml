@@ -21,6 +21,12 @@
     <queries>
         <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
         <intent><action android:name="android.speech.RecognitionService" /></intent>
+        <!-- Pleco (facoltativo, ⚙️ → Avanzate): per aprire una parola nel dizionario, se installato -->
+        <package android:name="com.pleco.chinesesystem" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="plecoapi" />
+        </intent>
     </queries>
 
     <application

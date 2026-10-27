@@ -460,6 +460,19 @@ public class Bridge {
         act.runOnUiThread(() -> act.requestNotif(ok -> emit("notif-perm", id, ok ? "1" : "0")));
     }
 
+    /* ---------------- Pleco ---------------- */
+
+    /** apre una parola nel dizionario Pleco (plecoapi://); false se Pleco non è installato. La chiama solo un gesto di chi
+     *  studia, e solo se ha acceso l'opzione in ⚙️ (ui/pleco.js). */
+    @JavascriptInterface
+    public boolean openPleco(String text) {
+        if (text == null || text.trim().isEmpty() || text.length() > 64) return false;
+        final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("plecoapi://x-callback-url/s?q=" + Uri.encode(text.trim())));
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (i.resolveActivity(act.getPackageManager()) == null) return false;
+        try { act.startActivity(i); return true; } catch (ActivityNotFoundException e) { return false; }
+    }
+
     /* ---------------- aspetto e informazioni ---------------- */
 
     @JavascriptInterface

@@ -358,6 +358,7 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
 - `cp-contrib-credit-v1`: «1» se chi contribuisce vuole comparire nei Crediti; preferenza del dispositivo (nell'unione vince quello corrente, come `cp-contrib-nick`).
 - `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
 - `cp-it-game-v1`: punti e serie del corso di italiano, stessa struttura e stessa unione di `cp-game-v1`.
@@ -416,6 +417,20 @@ La build si ferma se trova nel repository:
 - un file di chiave (`.pem`, `.key`, `.jks`);
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
+
+## Pleco (facoltativo)
+
+Chi ha il dizionario Pleco sul telefono può accenderne il collegamento in ⚙️ → Avanzate → 📖 Pleco. Si accende con due
+conferme, perché apre un'altra app; è spento di base. Acceso, ci sono due strade:
+
+- tenere premuto un carattere per **2 secondi** (`PLECO_HOLD_MS` in `src/ui/pleco.js`). La pressione lunga normale
+  (mezzo secondo) apre come sempre il foglio del carattere; tenendo premuto si passa a Pleco;
+- il pulsante «📖 Pleco» nel foglio del carattere, senza gesti.
+
+Nell'APK, `Bridge.openPleco` lancia l'intento `plecoapi://x-callback-url/s?q=…`; il manifest dichiara il pacchetto
+`com.pleco.chinesesystem` nelle `<queries>`, come chiede Android 11+. Se Pleco non c'è, un avviso. Nel browser è un link
+`plecoapi://`, che funziona solo dove Pleco è installato. L'app non manda niente in rete: la parola va a Pleco, sul
+telefono.
 
 ## Privacy
 
