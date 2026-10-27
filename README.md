@@ -9,6 +9,7 @@ come PWA, e APK Android senza Play Store.
 - Come sono fatti i moduli: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)
 - Privacy: [PRIVACY.md](PRIVACY.md) (nessun dato raccolto · 不收集任何数据)
 - Prove: `npm install && npm test`
+- Pubblicare una versione: [docs/rilascio.md](docs/rilascio.md) · che cosa manca: [docs/roadmap.md](docs/roadmap.md) · prove su un telefono vero: [docs/checklist-dispositivo.md](docs/checklist-dispositivo.md)
 - Vuoi aiutare? Anche senza programmare: [CONTRIBUTING.md](CONTRIBUTING.md) · 不会编程也能参与 · chi ha contribuito: [CONTRIBUTORS.md](CONTRIBUTORS.md)
 
 [![Sostieni il progetto](docs/img/sostieni.svg)](https://ko-fi.com/mandarinoapp)
