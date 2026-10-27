@@ -93,6 +93,74 @@ I brani non stanno dentro `index.html`: nell'APK sono nel pacchetto; sul sito il
 `mandarino-music` al primo ascolto (o tutti insieme con «Scarica tutta la musica» nel pannello 🎵), che resta tra un
 aggiornamento e l'altro. Aperta da `file://` l'app funziona, ma il browser non le lascia leggere i brani e il pannello lo dice.
 
+## Benvenuto, test di livello, rivelazione progressiva
+
+**Benvenuto** (`src/ui/welcome.js` + `src/ui/onboarding.js`, uguale per i due corsi):
+
+1. Un'intro di circa 4 secondi (ferma con *riduci movimento*).
+2. Tre porte:
+   - **Parto da zero**: obiettivo, prova dei quattro toni (corso di italiano: l'accento di ciao / grazie / buongiorno), prima carta.
+   - **Conosco già le basi**: cinque domande su di sé, poi il test.
+   - **Ho già un backup o un altro dispositivo**: dritto a sincronizzazione, QR o backup, senza test.
+3. In piccolo, l'altro corso. Lo scopo (viaggio, lavoro…) è facoltativo: suggerisce l'obiettivo e mette una ⭐ ai temi
+   in Parole.
+
+**Test di livello** (`src/data/placement.js` è il motore, `src/ui/placement.js` le domande):
+
+- Al massimo 10 domande. Non dice se la risposta è giusta.
+- «Non lo so» conta come errore, senza colpa.
+- Le domande d'ascolto si saltano se manca una voce cinese.
+
+| | Corso di cinese | Corso di italiano |
+|---|---|---|
+| Livelli | capitoli HSK 1-5 (il 6 solo dopo risposte giuste al 5) | 0-30 lezioni |
+| Scelta della domanda | scala a gradini | la domanda che riduce di più l'incertezza |
+| Stima | massima verosimiglianza | mediana del posteriore |
+
+`node tools/unit.mjs` simula utenti di ogni livello. Il cinese resta entro ±1 livello nel 95-99% dei casi, l'italiano entro
+±3 lezioni nel 92-98%.
+
+Il livello proposto si corregge con − / + prima di confermare. Alla conferma:
+
+- **Corso di cinese**: le parole dei capitoli precedenti entrano nel ripasso come note. I record hanno `pl:1`, stabilità
+  da 30 a 7 giorni e scadenze sparse tra 2 e 4 settimane. Nessun XP, nessuna voce nel registro, la serie non cambia.
+- **Corso di italiano**: le lezioni note risultano superate e le parole dei livelli HSK corrispondenti entrano in
+  `cp-it-srs-v1`.
+- **Punti iniziali** con `CP.game.grant(n)`: stanno in `cp-game-v1.pl` / `cp-it-game-v1.pl`. L'unione tra dispositivi
+  prende il più alto (mai la somma) e un «annulla» vince sempre.
+
+⚙️ → Avanzate → «Livello e schede» ha tre comandi: «Rifai il test di livello», «Annulla il salto» (toglie le parole del
+test mai ripassate, i punti e gli sblocchi del test) e «Mostra tutto, subito» (con doppia conferma).
+
+**Rivelazione progressiva** (`src/ui/unlock.js`, soglie nella costante `UNLOCK`):
+
+| Corso | All'inizio | 200 XP e 2 giorni di studio | 300 XP e 3 giorni | Altro |
+|---|---|---|---|---|
+| Cinese | Percorso, Studia | Parole | Frasi | — |
+| Italiano | 课程, 复习 | 单词 | 句子 | 变位: dopo la lezione sul presente o con 300 XP e 3 giorni |
+
+Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; Modelli e Pensiero dopo 3 lezioni; Laboratorio, Slot e Lettore dopo 6
+lezioni o 1000 XP. Quando scatta c'è un messaggio caldo sopra la barra, una novità alla volta.
+
+Simulazione con le sole carte (`tools/unit.mjs`):
+
+| Obiettivo giornaliero | Parole si apre | Frasi si apre |
+|---|---|---|
+| 5 parole | al 4° giorno | al 6° giorno |
+| 10 parole | al 2° giorno | al 3° giorno |
+| 20 parole | al 2° giorno | al 3° giorno |
+
+Chi aveva già progressi o aveva già visto il benvenuto ha tutto aperto. Uno sblocco resta, e tra dispositivi vale «basta
+uno» (`cp-ux-v1.unl`). Una scheda chiusa non si apre mai per sbaglio:
+
+- `?go=` porta alla scheda aperta più vicina;
+- «Cerca ovunque» mostra «si apre…»;
+- lezioni e dialoghi della tappa si aprono in immersione;
+- widget e scorciatoie di Android portano solo a Studia, ripasso e musica.
+
+**Impostazioni** in quattro gruppi: Essenziali, Dati e privacy, Avanzate, Informazioni e supporto. Vedi
+`docs/ux-architettura.md`.
+
 ## La grammatica del laboratorio: come si migliora
 
 Il traduttore (cinese → italiano) è prudente: traduce solo quando conosce tutte le parole e la costruzione.
@@ -250,6 +318,17 @@ node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ so
 ```
 
 ## Chiavi salvate (tutte `cp-*`, tutte con una regola nel ripristino «unisci»)
+
+Nuove in V6.9:
+
+- `cp-it-game-v1`: punti e serie del corso di italiano, stessa struttura e stessa unione di `cp-game-v1`.
+- `cp-game-v1.pl` / `cp-it-game-v1.pl`: punti del test di livello; nell'unione vale il più alto, −1 = annullato.
+- Nuove voci in `cp-ux-v1`:
+  - `unl` e `showAll`: sblocchi, uniti con «basta uno»;
+  - `unlv`: segna che il profilo è già passato alla rivelazione progressiva;
+  - `pl`: riepilogo del test di livello;
+  - `purpose`: lo scopo scelto nel benvenuto.
+- Record di ripasso con `pl:1`: segnati come noti dal test di livello.
 
 Nuove in V6.7: `cp-community-contribs` (unione per id, vince la voce più recente; contiene anche le traduzioni proposte, tipo `tr`),
 `cp-lessons-v1` e `cp-it-lessons-v1` (lezioni: per ognuna il punteggio migliore, la prima volta superata, l'ultima letta),

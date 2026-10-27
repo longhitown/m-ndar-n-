@@ -13,7 +13,8 @@
   };
 
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
-  var GK = "cp-game-v1";
+  /* il corso di italiano ha il suo conteggio (cp-it-game-v1), con la stessa struttura e la stessa regola d'unione */
+  var IT = lsGet("cp-course") === "it", GK = IT ? "cp-it-game-v1" : "cp-game-v1";
   var RANKS = [
     { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
     { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" }
@@ -23,16 +24,29 @@
      unendo due dispositivi (sincronizzazione, backup) per ognuno vale il conteggio più alto e la somma non conta mai due
      volte la stessa cosa. L'identità del dispositivo sta in «md-device», fuori dai dati che si esportano. */
   var DEV = (function () { var d = lsGet("md-device"); if (!d) { d = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); lsSet("md-device", d); } return d; })();
-  var G = { xp: 0, base: 0, xpBy: {}, goal: 10, days: {}, best: 0 };
+  /* pl: i punti iniziali del test di livello, { id: punti } (−1 = annullato). Non si sommano: vale il più alto, così due
+     dispositivi che uniscono i dati non li contano mai due volte; un «annulla» vince sempre sull'unione */
+  var G = { xp: 0, base: 0, xpBy: {}, goal: 10, days: {}, best: 0, pl: {} };
+  function plBonus(pl) { var m = 0; Object.keys(pl || {}).forEach(function (k) { if (pl[k] > m) m = pl[k]; }); return m; }
   function adopt(o) {
     if (!o || typeof o !== "object") return;
     G.xpBy = (o.xpBy && typeof o.xpBy === "object") ? o.xpBy : {};
     G.base = Math.max(0, (o.xpBy ? o.base : o.xp) | 0);
-    G.xp = G.base; Object.keys(G.xpBy).forEach(function (k) { G.xp += Math.max(0, G.xpBy[k] | 0); });
+    G.pl = (o.pl && typeof o.pl === "object") ? o.pl : {};
+    G.xp = G.base + plBonus(G.pl); Object.keys(G.xpBy).forEach(function (k) { G.xp += Math.max(0, G.xpBy[k] | 0); });
     G.goal = [5, 10, 15, 20].indexOf(o.goal) >= 0 ? o.goal : 10;
     G.days = (o.days && typeof o.days === "object") ? o.days : {}; G.best = Math.max(0, o.best | 0);
   }
   try { adopt(JSON.parse(lsGet(GK) || "null")); } catch (e) {}
+  /* primo avvio del conteggio del corso di italiano: chi aveva già studiato parte dai punti che quei progressi valgono
+     (10 per parola, 30 per lezione superata) e tiene i giorni di studio già fatti (prima stavano in cp-game-v1) */
+  if (IT && !lsGet(GK)) {
+    try {
+      var srs0 = JSON.parse(lsGet("cp-it-srs-v1") || "{}") || {}, ls0 = JSON.parse(lsGet("cp-it-lessons-v1") || "{}") || {}, old = JSON.parse(lsGet("cp-game-v1") || "null") || {};
+      var nw = Object.keys(srs0).filter(function (k) { return k !== "__meta"; }).length, nl = Object.keys(ls0).filter(function (k) { return ls0[k] && ls0[k].done; }).length;
+      if (nw || nl) adopt({ base: nw * 10 + nl * 30, xpBy: {}, goal: old.goal, days: old.days || {}, best: 0 });
+    } catch (e) {}
+  }
   function save() { lsSet(GK, JSON.stringify(G)); }
   function pad2(n) { return n < 10 ? "0" + n : "" + n; }
   function dkey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
@@ -91,6 +105,16 @@
     goal: function () { return G.goal; },
     streak: streak, weekDots: weekDots, wordsToday: wordsToday, rank: rankInfo,
     activeToday: function () { return active(G.days[dkey(new Date())]); },
+    activeDays: function () { return Object.keys(G.days).filter(function (d) { return active(G.days[d]); }).length; },
+    /* punti iniziali del test di livello: non segnano il giorno come attivo (la serie non cambia) e sostituiscono quelli di
+       un test precedente */
+    grant: function (n) {
+      Object.keys(G.pl).forEach(function (k) { if (G.pl[k] > 0) G.pl[k] = -1; });
+      if (n > 0) G.pl[DEV + "-" + Date.now().toString(36)] = n | 0;
+      adopt(G); save(); ui();
+    },
+    granted: function () { return plBonus(G.pl); },
+    ungrant: function () { Object.keys(G.pl).forEach(function (k) { G.pl[k] = -1; }); adopt(G); save(); ui(); },
     dump: function () { return JSON.parse(JSON.stringify(G)); },
     load: function (o) { adopt(o); save(); ui(); }
   };
@@ -102,6 +126,7 @@
     pill.innerHTML = CP.stamp(r) + "<span>🔥 <b>" + s + "</b></span><span class=\"muted\">" + r.xp + " XP</span>";
     pill.setAttribute("aria-label", CP.t("pill.aria", { r: r.name, s: s, x: r.xp }));
     if (CP.pathDirty) CP.pathDirty();
+    if (CP.unlock) CP.unlock.check();
   }
   pill.addEventListener("click", function () { CP.show("path"); });
   ui();
@@ -153,7 +178,9 @@
     ["🏥 Salute", ["corpo"]], ["🎎 Cultura", ["cultura"]]
   ];
   var tagsEl = document.getElementById("tags"), tagOn = -1;
-  tagsEl.innerHTML = TAGS.map(function (t, i) { return '<button type="button" data-tag="' + i + '" aria-pressed="false">' + t[0] + "</button>"; }).join("");
+  /* lo scopo scelto nel benvenuto (cp-ux-v1.purpose) mette in evidenza i temi che gli servono */
+  var SUGG = { travel: [1, 3], work: [8], family: [6, 4], curious: [10] }[CP.ux.get("purpose")] || [];
+  tagsEl.innerHTML = TAGS.map(function (t, i) { return '<button type="button" data-tag="' + i + '" aria-pressed="false"' + (SUGG.indexOf(i) >= 0 ? ' class="sugg"' : "") + ">" + (SUGG.indexOf(i) >= 0 ? "⭐ " : "") + t[0] + "</button>"; }).join("");
   function paintTags() {
     Array.prototype.forEach.call(tagsEl.querySelectorAll("button"), function (b, i) { b.classList.toggle("on", i === tagOn); b.setAttribute("aria-pressed", i === tagOn ? "true" : "false"); });
   }

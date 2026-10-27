@@ -168,13 +168,16 @@
   var main = document.querySelector("main") || document.body;
   var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
   if (CP.immerse) CP.immerse.watch(view);
-  var TABS = [["lessons", "📘", Z.lessons], ["words", "📖", Z.words], ["review", "🎴", Z.review], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
+  /* l'ordine è quello in cui le schede si aprono (ui/unlock.js, docs/ux-architettura.md) */
+  var TABS = [["lessons", "📘", Z.lessons], ["review", "🎴", Z.review], ["words", "📖", Z.words], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
   var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", "意大利语课程");
   dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");
   document.body.appendChild(dock);
   var tab = lsGet("cp-it-tab") || "lessons";
   if (!TABS.some(function (t) { return t[0] === tab; })) tab = "lessons";
+  if (CP.unlock) { CP.unlock.paint(); tab = CP.unlock.nearest(tab); }
   function show(t) {
+    if (CP.unlock) { t = CP.unlock.nearest(t); CP.unlock.seen(t); }
     tab = t; lsSet("cp-it-tab", t);
     Array.prototype.forEach.call(dock.querySelectorAll("[data-it-tab]"), function (b) { var on = b.getAttribute("data-it-tab") === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
     render(); window.scrollTo(0, 0);
@@ -199,7 +202,10 @@
       var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
       return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-itl-open="' + CP.attr(l.id) + '"><span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + '</span><span class="ls-t"><b>' + esc(l.title) + '</b><span class="small muted">' + esc(l.goal) + '</span></span><span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? "已读" : "") + "</span></button>";
     }).join("");
-    return '<h2 style="margin-top:20px">意大利语课程</h2><p class="lede" style="margin:4px 0">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ' + PASS + "% 以上就算通过。</p>" +
+    /* grado e serie anche in questo corso (cp-it-game-v1), con i nomi cinesi dei gradi */
+    var rk = CP.game ? CP.game.rank() : null, sk = CP.game ? CP.game.streak() : 0;
+    var rkH = rk ? '<div class="panel it-rank">' + CP.stamp(rk) + '<div><b>' + esc(rk.name) + '</b><div class="small muted">' + esc(CP.t(rk.next ? "itr.line" : "itr.lineMax", { xp: rk.xp, s: sk, n: rk.next })) + "</div></div></div>" : "";
+    return rkH + '<h2 style="margin-top:20px">意大利语课程</h2><p class="lede" style="margin:4px 0">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ' + PASS + "% 以上就算通过。</p>" +
       '<p class="small muted" style="margin:0 0 10px">已通过 ' + done + " / " + ITLESSONS.length + ' 课。</p><div class="ls-list">' + cards + "</div>";
   }
   function lessonHTML(l) {
@@ -311,7 +317,7 @@
     var nc = SCH.review(card, r, now);
     S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: now };
     ssave(S); rv.cur = null; rv.shown = false; rv.done++;
-    if (CP.game && CP.game.sentence && r >= 3) { try { CP.game.sentence(); } catch (x) {} }
+    if (CP.game && CP.game.addWord && r >= 2) { try { CP.game.addWord(e.id); } catch (x) {} }   /* 10 punti, una volta al giorno per parola, come nel corso di cinese */
   }
 
   /* ---------------- 变位: coniugazioni ---------------- */
@@ -367,7 +373,7 @@
     else if (b.hasAttribute("data-itx-check")) {
       var by = {}; px.bank.forEach(function (x) { by[x.id] = x.w; });
       var got = px.pick.map(function (id) { return by[id]; }).join(" ").toLowerCase(), ok = got === px.t.join(" ").toLowerCase();
-      px.state = ok ? "ok" : "ko"; CP.sfx(ok ? "ok" : "ko"); if (ok) CP.speak(px.it, { lang: "it-IT", voiceURI: CP.itVoiceURI() });
+      px.state = ok ? "ok" : "ko"; CP.sfx(ok ? "ok" : "ko"); if (ok && CP.game && CP.game.sentence) CP.game.sentence(); if (ok) CP.speak(px.it, { lang: "it-IT", voiceURI: CP.itVoiceURI() });
     } else if (b.hasAttribute("data-itx-next")) px = pxNew();
     CP.sfx("tap"); pxPaint();
   });
@@ -415,7 +421,7 @@
       if (a("data-itl-opt") !== null && Q.state === "play") { Q.choice = +a("data-itl-opt"); Q.state = Q.choice === q.a ? "ok" : "ko"; if (Q.state === "ok") Q.score++; CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return; }
       if (b.hasAttribute("data-itl-next")) {
         if (Q.i + 1 < Q.l.quiz.length) { Q.i++; prepare(); ls.view = "quiz"; }
-        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) patch.done = Date.now(); lmark(Q.l.id, patch); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
+        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) { patch.done = Date.now(); if (CP.game && CP.game.xp) CP.game.xp(30); } lmark(Q.l.id, patch); if (CP.unlock) CP.unlock.check(); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
         render(); window.scrollTo(0, 0); return;
       }
     }
@@ -426,31 +432,15 @@
     if (a("data-itr-grade") !== null) { grade(+a("data-itr-grade")); CP.sfx("tap"); render(); return; }
     /* coniugazioni */
     if (a("data-itc-tense") !== null) { cj.tense = a("data-itc-tense"); cj.q = null; render(); return; }
-    if (a("data-itc-opt") !== null && cj.state === "play") { cj.choice = +a("data-itc-opt"); cj.n++; cj.state = cj.q.opts[cj.choice] === cj.q.right ? "ok" : "ko"; if (cj.state === "ok") cj.score++; CP.sfx(cj.state === "ok" ? "ok" : "ko"); render(); return; }
+    if (a("data-itc-opt") !== null && cj.state === "play") { cj.choice = +a("data-itc-opt"); cj.n++; cj.state = cj.q.opts[cj.choice] === cj.q.right ? "ok" : "ko"; if (cj.state === "ok") { cj.score++; if (CP.game && CP.game.xp) CP.game.xp(3); } CP.sfx(cj.state === "ok" ? "ok" : "ko"); render(); return; }
     if (b.hasAttribute("data-itc-next")) { cj.q = null; render(); return; }
     /* frasi */
     if (a("data-itp-dlg") !== null) { ph.dlg = a("data-itp-dlg"); render(); window.scrollTo(0, 0); return; }
     if (b.hasAttribute("data-itp-back")) { ph.dlg = null; render(); return; }
   });
 
-  /* benvenuto in cinese, una volta sola */
-  var welcomed = false;
-  CP.welcome = function (force) {
-    if (!force && (welcomed || lsGet("cp-it-welcome"))) return;
-    welcomed = true;
-    CP.openSheet('<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">欢迎来到意大利语课程！</h2><button type="button" class="fam-x btn-s" data-famclose data-itw-ok>好的</button></div>' +
-      "<p>这里有 " + ITLESSONS.length + " 课语法、" + LEX.length + " 个常用词、动词变位练习和中意对照的句子。所有内容都可以离线使用。</p>" +
-      '<p class="small muted">建议从第 1 课「发音」开始。想听意大利语，手机里需要有意大利语的语音（一般在「文字转语音」设置里下载）。</p>' +
-      '<button type="button" class="btn-main" data-itw-ok>开始第 1 课</button></div>');
-  };
-  document.getElementById("fam").addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("[data-itw-ok]") : null; if (!b) return;
-    lsSet("cp-it-welcome", "1");
-    if (b.classList.contains("btn-main")) { CP.closeSheet(); ls.cur = ITLESSONS[0]; ls.view = "lesson"; show("lessons"); }
-  });
-  if (CP.ux) CP.ux.set("onboarded", 1);   /* il benvenuto del corso di cinese non deve comparire qui */
+  /* il benvenuto (in cinese) è quello comune, ui/welcome.js: intro, porte, test di livello sulle 30 lezioni */
   show(tab);
-  setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 500);
   /* tasto Indietro dell'APK: prima i fogli (già gestiti), poi la lezione aperta, poi la prima scheda */
   var prevBack = window.__mdBack;
   window.__mdBack = function () {

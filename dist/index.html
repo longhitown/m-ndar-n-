@@ -1337,6 +1337,105 @@ body.in-focus #ls-root > .acts:first-child, body.in-focus #build-root .ls-prog {
 .qr-grid i { width: 10px; height: 10px; border-radius: 3px; background: color-mix(in srgb, var(--muted) 30%, transparent); transition: background .2s, transform .2s; }
 .qr-grid i.on { background: var(--t2); transform: scale(1.15); }
 .qr-x { justify-self: center; }
+/* rivelazione progressiva (ui/unlock.js): la barra si stringe con meno schede; la scheda appena aperta ha un punto */
+.dtab[hidden] { display: none; }
+.dock[data-n="2"] { width: min(280px, calc(100% - 24px)); }
+.dock[data-n="3"] { width: min(400px, calc(100% - 24px)); }
+.dtab.is-new::after { content: ""; position: absolute; top: 7px; right: calc(50% - 20px); width: 9px; height: 9px; border-radius: 50%; background: var(--seal); box-shadow: 0 0 0 2px var(--surface); }
+.unl-note { position: fixed; z-index: 31; left: 50%; transform: translateX(-50%); bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) + 76px); width: min(500px, calc(100% - 24px)); display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); color: var(--ink); }
+.unl-note .unl-ico { font-size: 22px; }
+.unl-note .unl-tx { flex: 1; display: grid; gap: 2px; font-weight: 700; font-size: 15px; }
+.unl-note .unl-tx small { font-weight: 500; font-size: 13px; color: var(--muted); }
+.unl-note .btn-s { min-height: 44px; margin: 0; }
+.unl-note .unl-x { min-width: 44px; padding: 0; }
+@media (prefers-reduced-motion: no-preference) { .unl-note { animation: unlIn 0.35s ease-out; } @keyframes unlIn { from { opacity: 0; transform: translate(-50%, 12px); } } }
+body.in-session .unl-note, body.in-focus .unl-note { display: none; }
+/* Frasi: pagina d'ingresso con quattro carte (docs/ux-architettura.md) */
+.fr-cards { display: grid; gap: 10px; }
+@media (min-width: 560px) { .fr-cards { grid-template-columns: 1fr 1fr; } }
+.fr-card { display: flex; gap: 14px; align-items: flex-start; text-align: left; padding: 16px; min-height: 44px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.fr-card .fr-ico { font-size: 28px; line-height: 1; }
+.fr-card .fr-tx { display: grid; gap: 4px; }
+.fr-card b { font-size: 17px; }
+.fr-card small { font-size: 14px; color: var(--muted); }
+.fr-card .fr-tools { font-size: 13px; font-weight: 600; color: var(--muted); }
+.fr-card.locked { opacity: 0.75; }
+.fr-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.fx-row { flex-wrap: wrap; }
+.fr-back { flex: 0 0 auto; min-height: 44px; margin: 0; }
+.seg.inner button[data-locked] { color: var(--muted); }
+/* ===== benvenuto a schermo pieno (ui/welcome.js) e test di livello (ui/placement.js) ===== */
+.onb { position: fixed; inset: 0; z-index: 60; background: var(--bg); color: var(--ink); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.onb[hidden] { display: none; }
+body.in-onb { overflow: hidden; }
+body.in-onb .dock, body.in-onb .unl-note { display: none; }
+.onb-in { max-width: 520px; margin: 0 auto; min-height: 100%; padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; }
+.onb-head h2 { margin: 0 0 6px; font-size: 24px; line-height: 1.2; }
+.onb-head p { margin: 0; color: var(--muted); }
+.onb-mini { width: 56px; height: 56px; display: block; margin-bottom: 6px; }
+.onb-intro { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 80vh; text-align: center; }
+.onb-logo { width: 150px; height: 150px; }
+.onb-wm { font: 700 46px/1 var(--f-display); letter-spacing: -0.5px; }
+.onb-sub { margin: 0; color: var(--muted); font-size: 17px; }
+.wm-t4 { color: var(--t4); } .wm-t2 { color: var(--t2); } .wm-t1 { color: var(--t1); }
+@media (prefers-reduced-motion: no-preference) {
+  .onb-intro:not(.still) .onb-logo { animation: onbPop 0.9s cubic-bezier(.2, .9, .3, 1.2) both; }
+  .onb-intro:not(.still) .onb-wm { animation: onbUp 0.6s 0.5s ease-out both; }
+  .onb-intro:not(.still) .onb-sub { animation: onbUp 0.6s 2.4s ease-out both; }
+  .onb-intro:not(.still) .wm-t4 { animation: onbTone 0.5s 1.0s both; --tc: var(--t4); }
+  .onb-intro:not(.still) .wm-t2 { animation: onbTone 0.5s 1.5s both; --tc: var(--t2); }
+  .onb-intro:not(.still) .wm-t1 { animation: onbTone 0.5s 2.0s both; --tc: var(--t1); }
+  @keyframes onbPop { from { opacity: 0; transform: scale(0.6) rotate(-8deg); } }
+  @keyframes onbUp { from { opacity: 0; transform: translateY(12px); } }
+  @keyframes onbTone { 0% { color: var(--ink); transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { color: var(--tc); transform: translateY(0); } }
+}
+.onb-intro .wm-t4, .onb-intro .wm-t2, .onb-intro .wm-t1 { display: inline-block; }
+.onb-doors { display: grid; gap: 10px; }
+.onb-door { display: flex; gap: 14px; align-items: center; text-align: left; padding: 16px; min-height: 64px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.onb-door b { display: block; font-size: 17px; }
+.onb-door small { display: block; font-size: 14px; color: var(--muted); margin-top: 2px; }
+.onb-dico { font-size: 28px; }
+.onb-door:focus-visible, .onb-tone:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.onb-foot { display: grid; gap: 6px; justify-items: center; margin-top: auto; }
+.onb-link { background: none; border: 0; color: var(--muted); font: 600 15px var(--f-body); min-height: 44px; padding: 0 12px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.onb-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.onb-chips button { min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 15px var(--f-body); }
+.onb-chips button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.onb .btn-main { margin: 4px 0 0; }
+.onb-decl { display: grid; gap: 6px; }
+.onb-decl .seg button { font-size: 13px; padding-inline: 4px; }
+.onb-tones { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.onb-tones.it { grid-template-columns: 1fr; }
+.onb-tone { display: grid; justify-items: center; gap: 4px; padding: 14px 8px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; min-height: 44px; }
+.onb-tone .han { font-size: 40px; line-height: 1.1; }
+.onb-tone small { color: var(--muted); font-size: 13px; }
+.onb-tone .t-curves svg { width: 40px; height: 20px; }
+.onb-it { font: 600 26px var(--f-display); }
+.onb-it b { color: var(--t1); text-decoration: underline; text-underline-offset: 5px; }
+.onb-res .onb-step { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 0 8px; }
+.onb-res .onb-step .btn-s { min-width: 44px; margin: 0; font-size: 20px; }
+.onb-res .onb-step span { font-weight: 700; text-align: center; }
+.onb-test { display: flex; flex-direction: column; gap: 12px; }
+.pl-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pl-top .btn-s { margin: 0; }
+.pl-bar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.pl-bar i { display: block; height: 100%; background: var(--accent); }
+.pl-big { text-align: center; font-size: 44px; line-height: 1.2; padding: 6px 0; }
+.pl-big .pl-sent { font-size: 24px; }
+.pl-big [lang="it"] { font-size: 20px; }
+.pl-opts .ls-opt .han { font-size: 22px; }
+.pl-idk { align-self: center; }
+/* Impostazioni in quattro gruppi */
+.set-grp { display: grid; gap: var(--sp-2); border-top: 2px solid var(--line); padding-top: var(--sp-3); }
+.set-grp > .set-gh, .set-grp > summary.set-gh { margin: 0; min-height: 44px; display: flex; align-items: center; font: 800 var(--fs-m) var(--f-body); letter-spacing: 0.01em; cursor: pointer; }
+details.set-grp > summary.set-gh { list-style: none; }
+details.set-grp > summary.set-gh::-webkit-details-marker { display: none; }
+details.set-grp > summary.set-gh::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform 0.15s; }
+details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
+.set-grp > .set-sec:first-of-type { border-top: 0; }
+/* corso di italiano: il grado e la serie in cima alle lezioni */
+.it-rank { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.it-rank .seal { flex: none; }
 </style>
 </head>
 <body>
@@ -1395,8 +1494,8 @@ body.in-focus #ls-root > .acts:first-child, body.in-focus #build-root .ls-prog {
 
 <nav class="dock" role="tablist" aria-label="Sezioni" data-i18n-aria="nav.tabs">
   <button class="dtab on" role="tab" id="tab-path" aria-selected="true" aria-controls="view-path" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></svg><span data-i18n="nav.path">Percorso</span></button>
-  <button class="dtab" role="tab" id="tab-words" aria-selected="false" aria-controls="view-words" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 1h13v-3"/><path d="M9 8h6"/></svg><span data-i18n="nav.words">Parole</span></button>
   <button class="dtab" role="tab" id="tab-study" aria-selected="false" aria-controls="view-study" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="13" height="12" rx="2"/><path d="M7.5 4.5H19a1.5 1.5 0 0 1 1.5 1.5v10"/></svg><span data-i18n="nav.study">Studia</span></button>
+  <button class="dtab" role="tab" id="tab-words" aria-selected="false" aria-controls="view-words" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 1h13v-3"/><path d="M9 8h6"/></svg><span data-i18n="nav.words">Parole</span></button>
   <button class="dtab" role="tab" id="tab-build" aria-selected="false" aria-controls="view-build" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M8 9.5h8"/></svg><span data-i18n="nav.build">Frasi</span></button>
 </nav>
 
@@ -1463,6 +1562,8 @@ body.in-focus #ls-root > .acts:first-child, body.in-focus #build-root .ls-prog {
 <div id="settings" class="sheet" hidden role="dialog" aria-labelledby="set-title">
   <div class="fam-card set-card">
     <div class="fam-head"><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
+    <!-- quattro gruppi (docs/ux-architettura.md): i moduli si aggiungono con CP.settingsExtras.push({ group, html }) -->
+    <div class="set-grp" id="grp-ess"><h3 class="set-gh" data-i18n="set.gEss">Essenziali</h3>
     <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look" data-i18n="set.look">Aspetto</h3>
       <div class="seg" id="set-theme" role="group" aria-label="Tema" data-i18n-aria="set.theme"><button type="button" data-theme-set="light" data-i18n="theme.light">☀️ Chiaro</button><button type="button" data-theme-set="sepia" data-i18n="theme.sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark" data-i18n="theme.dark">🌙 Notte</button></div>
       <div class="hzrow"><span data-i18n="set.hz">Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli" data-i18n-aria="set.hzMinus">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi" data-i18n-aria="set.hzPlus">A+</button></div>
@@ -1473,12 +1574,21 @@ body.in-focus #ls-root > .acts:first-child, body.in-focus #build-root .ls-prog {
       <label class="jk-vol small muted"><span data-i18n="set.sfxvol">🔔 Volume effetti</span> <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
       <button type="button" class="btn-s" id="set-music" data-i18n="set.music">🎵 Musica per studiare…</button>
     </section>
+    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it" lang="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
+    </div>
+    <details class="set-grp" id="grp-data"><summary class="set-gh" data-i18n="set.gData">Dati e privacy</summary>
+    <details class="set-sec" id="set-data"><summary data-i18n="set.data">Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
+    <div id="set-extra-data"></div>
+    </details>
+    <details class="set-grp" id="grp-adv"><summary class="set-gh" data-i18n="set.gAdv">Avanzate</summary>
     <details class="set-sec" id="vset"><summary data-i18n="set.voice">Voce</summary><div class="vbody" id="vset-body"></div></details>
     <details class="set-sec" id="set-mic-box"><summary data-i18n="set.mic">Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></details>
-    <details class="set-sec" id="set-data"><summary data-i18n="set.data">Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
-    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it" lang="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
     <div id="set-extra"></div>
+    </details>
+    <details class="set-grp" id="grp-info"><summary class="set-gh" data-i18n="set.gInfo">Informazioni e supporto</summary>
     <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div></details>
+    <div id="set-extra-info"></div>
+    </details>
   </div>
 </div>
 
@@ -15017,6 +15127,16 @@ Object.assign(I18N.it, { "amb.hint": "Più parole hanno questo significato: si c
 Object.assign(I18N.it, { "upd.title": "Nuova versione disponibile.", "upd.keep": "I tuoi progressi restano dove sono.", "upd.go": "Aggiorna", "upd.going": "Aggiorno…", "upd.apk": "È uscita la versione {v} dell'app.", "upd.apkKeep": "Si installa sopra questa: i progressi restano.", "upd.dl": "Scarica", "upd.check": "Controlla se c'è una versione nuova (una richiesta a GitHub al giorno, solo con la rete)" });
 /* Voce online su richiesta */
 Object.assign(I18N.it, { "vo.mute": "La voce del telefono non risponde: installa la voce cinese, o accendi la voce online in ⚙️ → Voce." });
+/* Rivelazione progressiva (ui/unlock.js) */
+Object.assign(I18N.it, {"unl.need": "Si apre a {xp} punti e {d} giorni di studio (ora: {have} punti).", "unl.needLs": "Si apre dopo {n} lezioni superate (ora: {have}) o a {xp} punti.", "unl.new": "Nuovo: {n}", "unl.go": "Vai", "unl.words": "Tutte le parole, con ricerca e filtri.", "unl.build": "Lezioni, esercizi e dialoghi per mettere insieme le frasi.", "unl.fr_pat": "I modelli: le strutture che tornano sempre.", "unl.fr_thought": "L'ordine del pensiero: come un cinese mette in fila le idee.", "unl.fr_lab": "Il laboratorio: costruisci frasi tue e vedi la traduzione.", "unl.fr_slot": "Lo slot: frasi nuove combinando pezzi che conosci.", "unl.fr_reader": "Il lettore: incolla un testo e leggilo parola per parola.", "unl.it_words": "Tutte le parole italiane del corso, con la ricerca.", "unl.it_conj": "Esercizi di coniugazione.", "unl.it_phrases": "Frasi, dialoghi e il correttore di frasi.", "unl.itWords": "Parole", "unl.itConj": "Coniugazioni", "unl.itPhrases": "Frasi", "unl.locked": "🔒 {w}"});
+/* Frasi: pagina d'ingresso */
+Object.assign(I18N.it, {"fr.choose": "Scegli da dove partire. Ogni carta ha i suoi strumenti.", "fr.d.learn": "Le regole, una alla volta, con esempi e un piccolo quiz.", "fr.d.build": "Metti in fila le parole e costruisci frasi tue.", "fr.d.talk": "Dialoghi da ascoltare e recitare, e l'ordine del pensiero.", "fr.d.read": "Un testo da leggere parola per parola.", "fr.back": "Torna alle carte di Frasi", "fr.lockedHint": "Intanto puoi usare gli altri strumenti di questa carta. In ⚙️ → Avanzate c'è «Mostra tutto»."});
+/* Benvenuto e test di livello (ui/welcome.js, ui/placement.js) */
+Object.assign(I18N.it, {"onb.aria": "Benvenuto in màndarínō", "onb.lZh": "il cinese", "onb.lIt": "l'italiano", "onb.tag": "Per imparare {l}, offline e senza account.", "onb.hello": "Ciao! Da dove partiamo?", "onb.helloSub": "Scegli la porta che ti somiglia di più. Potrai cambiare idea quando vuoi.", "onb.zero": "Parto da zero", "onb.zeroSub": "Ti accompagno passo passo, dalla prima parola.", "onb.basics": "Conosco già le basi", "onb.basicsSub": "Un breve test, al massimo 10 domande, per partire dal punto giusto.", "onb.have": "Ho già un backup o un altro dispositivo", "onb.haveSub": "Riprendi i tuoi progressi da dove li avevi lasciati.", "onb.later": "Più tardi", "onb.why": "Perché vuoi imparare {l}?", "onb.whySub": "Facoltativo. Serve a suggerirti un ritmo; resta sul tuo telefono.", "onb.p.travel": "✈️ Viaggio", "onb.p.work": "💼 Lavoro", "onb.p.exam": "🎓 Esame", "onb.p.family": "❤️ Famiglia e amici", "onb.p.curious": "✨ Curiosità", "onb.next": "Avanti", "onb.skip": "Salta", "onb.back": "Indietro", "onb.start": "Inizia", "onb.goal": "Quante parole nuove al giorno?", "onb.goalSub": "Meglio poche ogni giorno che tante una volta sola.", "onb.goalHint": "{n} parole nuove: circa {m} minuti al giorno, ripassi compresi.", "onb.tonesT": "I quattro toni", "onb.tonesSub": "In cinese la stessa sillaba cambia significato con il tono. Tocca ogni carta per sentirla.", "onb.t1": "1° tono: alto e piatto", "onb.t2": "2° tono: sale", "onb.t3": "3° tono: scende e risale", "onb.t4": "4° tono: cade deciso", "onb.toneQ": "Ascolta: quale hai sentito?", "onb.toneAgain": "Riascolta", "onb.toneOk": "Esatto! Hai appena distinto un tono cinese.", "onb.toneNo": "Era {c}. Normale all'inizio: l'orecchio si allena in pochi giorni.", "onb.stressT": "L'accento italiano", "onb.stressSub": "In italiano una sillaba si pronuncia più forte delle altre.", "onb.stressQ": "In «buongiorno», quale sillaba è più forte?", "onb.stressOk": "Esatto!", "onb.stressNo": "È «gior»: buon·GIOR·no.", "onb.firstCard": "La tua prima carta", "onb.declT": "Che cosa sai già?", "onb.declSub": "Rispondi a occhio: il test che segue controlla.", "onb.d0": "Leggere il pinyin e i toni", "onb.d1": "Riconoscere i caratteri", "onb.d2": "Vocabolario", "onb.d3": "Ordine delle frasi (grammatica)", "onb.d4": "Ascolto e pronuncia", "onb.d0it": "Leggere e pronunciare l'italiano", "onb.d1it": "Accenti e ortografia", "onb.d2it": "Vocabolario", "onb.d3it": "Grammatica e coniugazioni", "onb.d4it": "Ascolto e pronuncia", "onb.s0": "Mai", "onb.s1": "Un po'", "onb.s2": "Abbastanza", "onb.s3": "Bene", "onb.testGo": "Inizia il test", "onb.resT": "Ecco il tuo punto di partenza", "onb.resZh": "Conosci già bene l'HSK {k}. Partiamo dal capitolo {r}.", "onb.resZh1": "Partiamo dall'inizio, dal capitolo 1: andrà veloce.", "onb.resIt": "Sai già le lezioni da 1 a {l}. Partiamo dalla lezione {n}.", "onb.resIt0": "Partiamo dalla lezione 1.", "onb.resN": "{n} parole dei capitoli precedenti entrano nel ripasso come già note: torneranno tra 2 e 4 settimane, per conferma.", "onb.resNIt": "{n} parole entrano nel ripasso come già note: torneranno tra 2 e 4 settimane, per conferma.", "onb.cmpSame": "Il test conferma quello che avevi detto.", "onb.cmpMore": "Sai più di quanto pensavi!", "onb.cmpLess": "Partiamo un po' più indietro: meglio consolidare le basi.", "onb.adjust": "Cambia il punto di partenza", "onb.less": "Più indietro", "onb.more": "Più avanti", "onb.stepZh": "Capitolo {r}", "onb.stepIt": "Lezioni note: {r}", "onb.undoHint": "Puoi cambiarlo anche dopo, in ⚙️ → Avanzate.", "onb.confirm": "Conferma", "onb.redo": "Rifai il test", "onb.haveT": "Riprendi i tuoi progressi", "onb.haveSub2": "I dati passano da un tuo file o dalla fotocamera: nessun server.", "onb.hSync": "File di sincronizzazione", "onb.hSyncSub": "Nella tua cartella cloud (Drive, Dropbox, OneDrive…).", "onb.hQr": "Dall'altro telefono con i QR", "onb.hQrSub": "Inquadra i codici che mostra l'altro telefono.", "onb.hFile": "Da un file di backup", "onb.hFileSub": "Il file .json salvato in precedenza.", "pl.count": "Domanda {n} di {m}", "pl.stop": "Interrompi", "pl.idk": "Non lo so", "pl.listen": "Ascolta", "pl.qMean": "Che cosa vuol dire?", "pl.qPy": "Come si legge?", "pl.qTone": "Ascolta: quale hai sentito?", "pl.qSent": "Che cosa vuol dire questa frase?", "pl.qOrder": "Quale frase cinese dice così?", "pl.noVoice": "Sul telefono non c'è una voce cinese: le domande d'ascolto si saltano e non contano."});
+/* Impostazioni a gruppi; livello e schede */
+Object.assign(I18N.it, {"set.gEss": "Essenziali", "set.gData": "Dati e privacy", "set.gAdv": "Avanzate", "set.gInfo": "Informazioni e supporto", "unl.setT": "Livello e schede", "unl.setHint": "Le schede e gli strumenti compaiono man mano che studi. Qui puoi rifare il test di livello, annullare un salto o vedere subito tutto.", "unl.redo": "Rifai il test di livello", "unl.undo": "Annulla il salto", "unl.undoQ": "Tolgo le {n} parole segnate come note dal test che non hai ancora ripassato, e i punti che il test ti aveva dato. Le schede tornano com'erano prima del test. Quello che hai studiato davvero resta.", "unl.undone": "Fatto: tolte {n} parole segnate dal test.", "unl.showAll": "Mostra tutto, subito", "unl.all1": "Così compaiono subito tutte le schede e tutti gli strumenti, senza la guida passo passo. È pensato per chi conosce già l'app.", "unl.all2": "Ultima conferma: vuoi vedere tutto adesso? Puoi tornare indietro da qui quando vuoi.", "unl.allYes": "Sì, mostra tutto", "unl.allDone": "Tutto visibile."});
+/* Corso di italiano: grado e serie */
+Object.assign(I18N.it, {"itr.line": "{xp} punti · 🔥 {s} giorni di fila · prossimo grado a {n}", "itr.lineMax": "{xp} punti · 🔥 {s} giorni di fila"});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15118,6 +15238,16 @@ Object.assign(I18N.zh, { "amb.hint": "有几个词是这个意思，这里问的
 Object.assign(I18N.zh, { "upd.title": "有新版本。", "upd.keep": "你的学习进度会保留。", "upd.go": "更新", "upd.going": "正在更新……", "upd.apk": "应用新版本 {v} 已发布。", "upd.apkKeep": "直接覆盖安装：学习进度会保留。", "upd.dl": "下载", "upd.check": "检查是否有新版本（每天向 GitHub 请求一次，仅在联网时）" });
 /* Voce online su richiesta */
 Object.assign(I18N.zh, { "vo.mute": "手机语音没有反应：请安装中文语音，或在 ⚙️ → 语音 里打开在线语音。" });
+/* Rivelazione progressiva (ui/unlock.js) */
+Object.assign(I18N.zh, {"unl.need": "{xp} 积分、学习 {d} 天后开放（现在：{have} 积分）。", "unl.needLs": "通过 {n} 课后开放（现在：{have} 课），或达到 {xp} 积分。", "unl.new": "新开放：{n}", "unl.go": "去看看", "unl.words": "全部词语，可以搜索和筛选。", "unl.build": "课程、练习和对话，学会把词连成句子。", "unl.fr_pat": "句型：常用的固定结构。", "unl.fr_thought": "思维顺序：中文怎么排列想法。", "unl.fr_lab": "实验室：自己造句，看看翻译。", "unl.fr_slot": "组句机：用学过的部分组合新句子。", "unl.fr_reader": "阅读器：粘贴一段文字，一个词一个词地读。", "unl.it_words": "全部意大利语单词，可以搜索。", "unl.it_conj": "动词变位练习。", "unl.it_phrases": "常用句子、对话和句子检查。", "unl.itWords": "单词", "unl.itConj": "变位", "unl.itPhrases": "句子", "unl.locked": "🔒 {w}"});
+/* Frasi: pagina d'ingresso */
+Object.assign(I18N.zh, {"fr.choose": "选一个开始。每张卡片里有自己的工具。", "fr.d.learn": "一次学一条规则，有例句和小测验。", "fr.d.build": "把词排成句子，自己造句。", "fr.d.talk": "听对话、演对话，还有思维顺序。", "fr.d.read": "一个词一个词地读一段文字。", "fr.back": "回到句子卡片", "fr.lockedHint": "可以先用这张卡片里的其他工具。设置 → 高级 里有「全部显示」。"});
+/* Benvenuto e test di livello (ui/welcome.js, ui/placement.js) */
+Object.assign(I18N.zh, {"onb.aria": "欢迎使用 màndarínō", "onb.lZh": "中文", "onb.lIt": "意大利语", "onb.tag": "学{l}，离线可用，不用注册。", "onb.hello": "你好！从哪里开始？", "onb.helloSub": "选一个最像你的选项。以后随时可以改。", "onb.zero": "从零开始", "onb.zeroSub": "一步一步带你学，从第一个词开始。", "onb.basics": "我已经会一点", "onb.basicsSub": "做一个小测试（最多 10 题），从合适的地方开始。", "onb.have": "我有备份或另一台设备", "onb.haveSub": "接着之前的进度继续学。", "onb.later": "以后再说", "onb.why": "你为什么想学{l}？", "onb.whySub": "可以跳过。只用来建议学习节奏，信息只保存在你的手机上。", "onb.p.travel": "✈️ 旅行", "onb.p.work": "💼 工作", "onb.p.exam": "🎓 考试", "onb.p.family": "❤️ 家人和朋友", "onb.p.curious": "✨ 好奇", "onb.next": "下一步", "onb.skip": "跳过", "onb.back": "返回", "onb.start": "开始", "onb.goal": "每天学几个新词？", "onb.goalSub": "每天学一点，比一次学很多更好。", "onb.goalHint": "每天 {n} 个新词：大约 {m} 分钟，包括复习。", "onb.tonesT": "四个声调", "onb.tonesSub": "中文里，同一个音节声调不同，意思就不同。点每张卡片听一听。", "onb.t1": "第一声：高而平", "onb.t2": "第二声：往上升", "onb.t3": "第三声：先降后升", "onb.t4": "第四声：快速下降", "onb.toneQ": "听一听：你听到的是哪一个？", "onb.toneAgain": "再听一遍", "onb.toneOk": "对了！你刚刚分辨出了一个声调。", "onb.toneNo": "是 {c}。刚开始很正常，耳朵几天就能练出来。", "onb.stressT": "意大利语的重音", "onb.stressSub": "意大利语的单词里，有一个音节读得比其他音节重。", "onb.stressQ": "「buongiorno」里哪个音节读得最重？", "onb.stressOk": "对了！", "onb.stressNo": "是「gior」：buon·GIOR·no。", "onb.firstCard": "开始第一张卡片", "onb.declT": "你已经会什么？", "onb.declSub": "凭感觉回答就好，后面的测试会帮你确认。", "onb.d0": "读拼音和声调", "onb.d1": "认汉字", "onb.d2": "词汇", "onb.d3": "句子顺序（语法）", "onb.d4": "听力和发音", "onb.d0it": "读意大利语和发音", "onb.d1it": "重音和拼写", "onb.d2it": "词汇", "onb.d3it": "语法和动词变位", "onb.d4it": "听力和发音", "onb.s0": "完全不会", "onb.s1": "会一点", "onb.s2": "还可以", "onb.s3": "很好", "onb.testGo": "开始测试", "onb.resT": "这是你的起点", "onb.resZh": "你已经掌握了 HSK {k}。从第 {r} 章开始。", "onb.resZh1": "从头开始，第 1 章：会很快的。", "onb.resIt": "你已经掌握了第 1 到第 {l} 课。从第 {n} 课开始。", "onb.resIt0": "从第 1 课开始。", "onb.resN": "前面章节的 {n} 个词会作为“已掌握”放进复习：2 到 4 周后再出现，确认一下。", "onb.resNIt": "{n} 个词会作为“已掌握”放进复习：2 到 4 周后再出现，确认一下。", "onb.cmpSame": "测试结果和你说的一样。", "onb.cmpMore": "你会的比你想的多！", "onb.cmpLess": "我们从稍早一点的地方开始，先把基础打牢。", "onb.adjust": "调整起点", "onb.less": "往前", "onb.more": "往后", "onb.stepZh": "第 {r} 章", "onb.stepIt": "已掌握的课：{r}", "onb.undoHint": "以后也可以在 设置 → 高级 里修改。", "onb.confirm": "确认", "onb.redo": "重新测试", "onb.haveT": "接着之前的进度", "onb.haveSub2": "数据通过你自己的文件或相机传输，不经过任何服务器。", "onb.hSync": "同步文件", "onb.hSyncSub": "放在你的云盘文件夹里（Drive、Dropbox、OneDrive……）。", "onb.hQr": "用二维码从另一台手机传", "onb.hQrSub": "扫描另一台手机上显示的二维码。", "onb.hFile": "从备份文件恢复", "onb.hFileSub": "以前保存的 .json 文件。", "pl.count": "第 {n} 题，共 {m} 题", "pl.stop": "停止", "pl.idk": "不知道", "pl.listen": "听", "pl.qMean": "这是什么意思？", "pl.qPy": "怎么读？", "pl.qTone": "听一听：你听到的是哪一个？", "pl.qSent": "这句话是什么意思？", "pl.qOrder": "哪个中文句子是这个意思？", "pl.noVoice": "手机上没有中文语音：听力题会跳过，不计分。"});
+/* Impostazioni a gruppi; livello e schede */
+Object.assign(I18N.zh, {"set.gEss": "基本", "set.gData": "数据和隐私", "set.gAdv": "高级", "set.gInfo": "说明和支持", "unl.setT": "水平和页面", "unl.setHint": "页面和工具会随着学习慢慢出现。在这里可以重新做水平测试、撤销跳级，或者马上显示全部。", "unl.redo": "重新做水平测试", "unl.undo": "撤销跳级", "unl.undoQ": "我会去掉测试标为“已掌握”、你还没有复习过的 {n} 个词，以及测试给的积分。页面恢复到测试之前的样子。你真正学过的内容都会保留。", "unl.undone": "完成：去掉了测试标记的 {n} 个词。", "unl.showAll": "马上显示全部", "unl.all1": "这样所有页面和工具都会马上出现，没有一步一步的引导。适合已经熟悉这个应用的人。", "unl.all2": "最后确认：现在就显示全部吗？以后可以在这里改回来。", "unl.allYes": "是的，显示全部", "unl.allDone": "已全部显示。"});
+/* Corso di italiano: grado e serie */
+Object.assign(I18N.zh, {"itr.line": "{xp} 积分 · 🔥 连续 {s} 天 · 下一级：{n} 积分", "itr.lineMax": "{xp} 积分 · 🔥 连续 {s} 天"});
 </script>
 <!-- Nucleo: ripasso FSRS, archivio, tabella delle parole (crea window.CP), stato condiviso -->
 <script>
@@ -15446,7 +15576,21 @@ Object.assign(I18N.zh, { "vo.mute": "手机语音没有反应：请安装中文�
       var o = { w: w }; ["s", "e", "nw", "nx"].forEach(function (f) { var v = Math.max(x[f] | 0, y[f] | 0); if (v) o[f] = v; });
       days[d] = o;
     });
-    return { xp: xp, base: base, xpBy: by, goal: a.goal || b.goal || 10, days: days, best: Math.max(a.best | 0, b.best | 0) };
+    /* punti del test di livello: per ogni test vale il valore più alto, ma «annullato» (−1) vince; nel totale conta il più alto */
+    var pl = {}, pa = a.pl || {}, pb = b.pl || {}, bonus = 0;
+    Object.keys(pa).concat(Object.keys(pb)).forEach(function (k) { pl[k] = pa[k] === -1 || pb[k] === -1 ? -1 : Math.max(pa[k] | 0, pb[k] | 0); if (pl[k] > bonus) bonus = pl[k]; });
+    var out = { xp: xp + bonus, base: base, xpBy: by, goal: a.goal || b.goal || 10, days: days, best: Math.max(a.best | 0, b.best | 0) };
+    if (Object.keys(pl).length) out.pl = pl;
+    return out;
+  }
+  /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo; ma gli sblocchi (unl) e
+     «mostra tutto» si uniscono con «basta uno»: una scheda sbloccata su un dispositivo è sbloccata anche sull'altro */
+  function mergeUx(a, b) {
+    a = a || {}; b = b || {};
+    var o = Object.assign({}, b, a), u = Object.assign({}, b.unl || {}, a.unl || {});
+    if (Object.keys(u).length) o.unl = u;
+    if (a.showAll || b.showAll) o.showAll = 1;
+    return o;
   }
   /* orecchio: matrice di confusione dei toni, cella per cella il valore più alto */
   function mergeEar(a, b) {
@@ -15472,11 +15616,11 @@ Object.assign(I18N.zh, { "vo.mute": "手机语音没有反应：请安装中文�
     if (k === "cp-lessons-v1" || k === "cp-it-lessons-v1") return mergeLessons(a, b);
     /* corso di italiano: per ogni parola vince la scheda ripassata più di recente; il conteggio dei nuovi del giorno, il più alto */
     if (k === "cp-it-srs-v1") return mergeItSrs(a, b);
-    if (k === "cp-game-v1") return mergeGame(a, b);
+    if (k === "cp-game-v1" || k === "cp-it-game-v1") return mergeGame(a, b);
     if (k === "cp-ear-v1") return mergeEar(a, b);
     if (k === "cp-mine") return mergeMine(a, b);
     /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
-    if (k === "cp-ux-v1") return Object.assign({}, b || {}, a || {});
+    if (k === "cp-ux-v1") return mergeUx(a, b);
     return null;   /* preferenze del dispositivo (KEEP) e le altre chiavi: vince il dispositivo corrente */
   }
   /* JSON con le chiavi in ordine: due valori uguali danno lo stesso testo, qualunque sia l'ordine in cui sono stati costruiti */
@@ -16844,8 +16988,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   stEl.addEventListener("change", refilter);
 
   /* ---- schede ---- */
-  var TABS = ["path", "words", "study", "build"];
-  function show(name, instant) {
+  var TABS = ["path", "study", "words", "build"];   /* l'ordine della barra: è anche l'ordine in cui le schede si aprono (ui/unlock.js) */
+  function show(name, instant, force) {
+    /* una scheda ancora chiusa porta alla più vicina aperta; force solo per aprirla in immersione (CP.unlock.peek) */
+    if (!force && CP.unlock && !CP.unlock.ok(name)) name = CP.unlock.nearest(name);
     /* la pagina nuova entra dal lato della scheda: da destra se è più avanti nel dock, da sinistra se è prima */
     var from = TABS.filter(function (t) { return !document.getElementById("view-" + t).hidden; })[0], di = TABS.indexOf(name) - TABS.indexOf(from);
     if (from && di) document.documentElement.setAttribute("data-dir", di > 0 ? "next" : "prev");
@@ -16863,7 +17009,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       if (name === "study" && CP.onStudy) CP.onStudy();
       if (name === "build" && CP.onBuild) CP.onBuild();
       CP.topVis();
-      try { localStorage.setItem("cp-tab", name); } catch (e) {}
+      if (!force) try { localStorage.setItem("cp-tab", name); } catch (e) {}
+      if (CP.unlock) CP.unlock.seen(name);
     };
     if (!instant && document.startViewTransition && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
       try { var vt = document.startViewTransition(run); if (vt) [vt.ready, vt.updateCallbackDone].forEach(function (pr) { if (pr && pr.catch) pr.catch(function () {}); });   /* se la finestra cambia misura la transizione si annulla: non è un errore */
@@ -17705,22 +17852,32 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
   function groupOf(x) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].some(function (s) { return s[0] === x; })) return GROUPS[i]; return GROUPS[0]; }
+  /* docs/ux-architettura.md: Frasi si apre su quattro carte (una riga di spiegazione ciascuna) invece che su due file di
+     pulsanti; dentro una carta, i suoi strumenti. Gli strumenti più avanzati si aprono per gradi (ui/unlock.js). */
+  var GICO = { learn: "📘", build: "🧩", talk: "💬", read: "📖" }, home = true;
+  function tOk(x) { return !CP.unlock || CP.unlock.toolOk(x); }
+  function landing() {
+    return '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><p class="lede" style="margin:4px 0 12px">' + esc(CP.t("fr.choose")) + '</p><div class="fr-cards">' + GROUPS.map(function (g) {
+      var open = g[2].filter(function (s) { return tOk(s[0]); }), tools = g[2].map(function (s) { return tOk(s[0]) ? CP.t(s[1]) : "🔒 " + CP.t(s[1]); }).join(" · ");
+      return '<button type="button" class="fr-card' + (open.length ? "" : " locked") + '" data-group="' + g[0] + '"><span class="fr-ico" aria-hidden="true">' + GICO[g[0]] + '</span><span class="fr-tx"><b>' + CP.t(g[1]).replace(/^[^\p{L}]+/u, "") + "</b><small>" + esc(CP.t("fr.d." + g[0])) + '</small><span class="fr-tools">' + esc(tools) + "</span></span></button>";
+    }).join("") + "</div>";
+  }
   function render() {
+    if (home) { root.innerHTML = landing(); return; }
     var cs = curSub(), g = groupOf(cs);
-    var segs = GROUPS.map(function (x) {
-      return '<button type="button" role="tab" data-group="' + x[0] + '"' + (x === g ? ' class="on" aria-selected="true"' : ' aria-selected="false"') + ">" + CP.t(x[1]) + "</button>";
-    }).join("");
-    var inner = '<div class="fx-row"><div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
-      return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.t(s[1]) + "</button>";
+    var inner = '<div class="fx-row"><button type="button" class="btn-s fr-back" data-fr-home aria-label="' + CP.attr(CP.t("fr.back")) + '">← ' + CP.t(g[1]) + '</button><div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
+      var lk = !tOk(s[0]);
+      return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + (lk ? ' data-locked="1"' : "") + ">" + (lk ? "🔒 " : "") + CP.t(s[1]) + "</button>";
     }).join("") + '</div><button type="button" class="fx-go" data-fx-go title="' + CP.attr(CP.t("fx.enter")) + '" aria-label="' + CP.attr(CP.t("fx.enter")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>';
     var body;
-    if (sub === "ex") body = renderEx();
+    if (!tOk(cs)) body = '<div class="panel"><p style="margin:0">' + esc(CP.unlock.why("fr:" + cs)) + '</p><p class="small muted" style="margin:6px 0 0">' + esc(CP.t("fr.lockedHint")) + "</p></div>";
+    else if (sub === "ex") body = renderEx();
     else if (sub === "lab") body = labMode === "slot" && CP.subs && CP.subs.slot ? CP.subs.slot.render() : renderLab();
     else if (sub === "pat") body = renderPat();
     else body = (CP.subs && CP.subs[sub]) ? CP.subs[sub].render() : "";
-    root.innerHTML = '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><div class="pills groups" role="tablist" aria-label="' + CP.attr(CP.t("build.tools")) + '">' + segs + "</div>" + inner + body;
-    if (CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
-    if (sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
+    root.innerHTML = inner + body;
+    if (tOk(cs) && CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
+    if (tOk(cs) && sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
     if (CP.immerse && CP.immerse.active()) {
       if (sub === "ex") { CP.immerse.progress(round.n, ROUND); CP.immerse.combo(round.run); }
     }
@@ -17731,7 +17888,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var t = ev.target.closest ? ev.target.closest("button") : null;
     if (!t) return;
     var a = function (n) { return t.getAttribute(n); };
-    if (a("data-group")) { var gg = GROUPS.filter(function (x) { return x[0] === a("data-group"); })[0]; if (gg && groupOf(curSub()) !== gg) { var f = gg[2][0][0]; if (f === "slot") { sub = "lab"; labMode = "slot"; } else { sub = f; if (f === "lab") labMode = "build"; } } render(); return; }
+    if (t.hasAttribute("data-fr-home")) { home = true; CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
+    if (a("data-group")) {
+      var gg = GROUPS.filter(function (x) { return x[0] === a("data-group"); })[0]; if (!gg) return;
+      var avail = gg[2].filter(function (x) { return tOk(x[0]); });
+      if (!avail.length) { CP.toast(CP.unlock.why("fr:" + gg[2][0][0])); return; }
+      home = false; CP.sfx("tap");
+      if (groupOf(curSub()) !== gg || !tOk(curSub())) { var f = avail[0][0]; if (f === "slot") { sub = "lab"; labMode = "slot"; } else { sub = f; if (f === "lab") labMode = "build"; } }
+      render(); window.scrollTo(0, 0); return;
+    }
+    if (a("data-sub") && t.hasAttribute("data-locked")) { CP.toast(CP.unlock.why("fr:" + a("data-sub"))); return; }
     if (a("data-sub")) { var sv = a("data-sub"); if (sv === "slot") { sub = "lab"; labMode = "slot"; } else { sub = sv; if (sv === "lab") labMode = "build"; } render(); return; }
     if (a("data-labmode")) { labMode = a("data-labmode"); render(); return; }
     if (t.id === "exf-clear") { exFilter = ""; ex = null; queue = []; render(); return; }
@@ -17799,22 +17965,23 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   CP.build = {
     render: function () { render(); },
     immerse: immerse,
-    setSub: function (s) { sub = s; render(); },
+    setSub: function (s) { home = false; sub = s; render(); },
     practice: function (secId) {
-      exFilter = secId || ""; ex = null; queue = []; sub = "ex";
+      home = false; exFilter = secId || ""; ex = null; queue = []; sub = "ex";
       if (!exPoolFor(exFilter).length) { exFilter = ""; lab.sec = secId; sub = "lab"; labMode = "build"; }
       render();
     },
     exCount: function (secId) { return exPoolFor(secId).length; },
     openPattern: function (i) {
-      sub = "pat"; render();
+      home = false; sub = "pat"; render();
       var d = document.getElementById("pat-" + i);
       if (d) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: "center" }); }, 30); }
     },
-    setSlot: function () { sub = "lab"; labMode = "slot"; render(); },
-    labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); },
-    labLoad: function (t, p) { lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
-    openLesson: function (id) { sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); }
+    setSlot: function () { home = false; sub = "lab"; labMode = "slot"; render(); },
+    labSection: function (id) { home = false; lab.sec = id; sub = "lab"; labMode = "build"; render(); },
+    labLoad: function (t, p) { home = false; lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
+    openLesson: function (id) { home = false; sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); },
+    home: function () { home = true; render(); }
   };
   CP.subs = CP.subs || {};
   CP.onBuild = function () { if (!root.innerHTML) render(); };
@@ -17839,7 +18006,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   };
 
   /* ---- cammino: serie di giorni, obiettivo, gradi ---- */
-  var GK = "cp-game-v1";
+  /* il corso di italiano ha il suo conteggio (cp-it-game-v1), con la stessa struttura e la stessa regola d'unione */
+  var IT = lsGet("cp-course") === "it", GK = IT ? "cp-it-game-v1" : "cp-game-v1";
   var RANKS = [
     { n: "Viaggiatore Curioso", z: "好奇的旅人", x: 0, c: "游" }, { n: "Apprendista dei Toni", z: "声调学徒", x: 200, c: "调" }, { n: "Custode di Caratteri", z: "汉字守护者", x: 600, c: "字" },
     { n: "Mercante di Seta", z: "丝绸商人", x: 1500, c: "丝" }, { n: "Poeta del Bambù", z: "竹林诗人", x: 3000, c: "竹" }, { n: "Maestro di Giada", z: "玉石大师", x: 6000, c: "玉" }, { n: "Saggio Mandarino", z: "柑橘智者", x: 10000, c: "贤" }
@@ -17849,16 +18017,29 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
      unendo due dispositivi (sincronizzazione, backup) per ognuno vale il conteggio più alto e la somma non conta mai due
      volte la stessa cosa. L'identità del dispositivo sta in «md-device», fuori dai dati che si esportano. */
   var DEV = (function () { var d = lsGet("md-device"); if (!d) { d = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); lsSet("md-device", d); } return d; })();
-  var G = { xp: 0, base: 0, xpBy: {}, goal: 10, days: {}, best: 0 };
+  /* pl: i punti iniziali del test di livello, { id: punti } (−1 = annullato). Non si sommano: vale il più alto, così due
+     dispositivi che uniscono i dati non li contano mai due volte; un «annulla» vince sempre sull'unione */
+  var G = { xp: 0, base: 0, xpBy: {}, goal: 10, days: {}, best: 0, pl: {} };
+  function plBonus(pl) { var m = 0; Object.keys(pl || {}).forEach(function (k) { if (pl[k] > m) m = pl[k]; }); return m; }
   function adopt(o) {
     if (!o || typeof o !== "object") return;
     G.xpBy = (o.xpBy && typeof o.xpBy === "object") ? o.xpBy : {};
     G.base = Math.max(0, (o.xpBy ? o.base : o.xp) | 0);
-    G.xp = G.base; Object.keys(G.xpBy).forEach(function (k) { G.xp += Math.max(0, G.xpBy[k] | 0); });
+    G.pl = (o.pl && typeof o.pl === "object") ? o.pl : {};
+    G.xp = G.base + plBonus(G.pl); Object.keys(G.xpBy).forEach(function (k) { G.xp += Math.max(0, G.xpBy[k] | 0); });
     G.goal = [5, 10, 15, 20].indexOf(o.goal) >= 0 ? o.goal : 10;
     G.days = (o.days && typeof o.days === "object") ? o.days : {}; G.best = Math.max(0, o.best | 0);
   }
   try { adopt(JSON.parse(lsGet(GK) || "null")); } catch (e) {}
+  /* primo avvio del conteggio del corso di italiano: chi aveva già studiato parte dai punti che quei progressi valgono
+     (10 per parola, 30 per lezione superata) e tiene i giorni di studio già fatti (prima stavano in cp-game-v1) */
+  if (IT && !lsGet(GK)) {
+    try {
+      var srs0 = JSON.parse(lsGet("cp-it-srs-v1") || "{}") || {}, ls0 = JSON.parse(lsGet("cp-it-lessons-v1") || "{}") || {}, old = JSON.parse(lsGet("cp-game-v1") || "null") || {};
+      var nw = Object.keys(srs0).filter(function (k) { return k !== "__meta"; }).length, nl = Object.keys(ls0).filter(function (k) { return ls0[k] && ls0[k].done; }).length;
+      if (nw || nl) adopt({ base: nw * 10 + nl * 30, xpBy: {}, goal: old.goal, days: old.days || {}, best: 0 });
+    } catch (e) {}
+  }
   function save() { lsSet(GK, JSON.stringify(G)); }
   function pad2(n) { return n < 10 ? "0" + n : "" + n; }
   function dkey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
@@ -17917,6 +18098,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     goal: function () { return G.goal; },
     streak: streak, weekDots: weekDots, wordsToday: wordsToday, rank: rankInfo,
     activeToday: function () { return active(G.days[dkey(new Date())]); },
+    activeDays: function () { return Object.keys(G.days).filter(function (d) { return active(G.days[d]); }).length; },
+    /* punti iniziali del test di livello: non segnano il giorno come attivo (la serie non cambia) e sostituiscono quelli di
+       un test precedente */
+    grant: function (n) {
+      Object.keys(G.pl).forEach(function (k) { if (G.pl[k] > 0) G.pl[k] = -1; });
+      if (n > 0) G.pl[DEV + "-" + Date.now().toString(36)] = n | 0;
+      adopt(G); save(); ui();
+    },
+    granted: function () { return plBonus(G.pl); },
+    ungrant: function () { Object.keys(G.pl).forEach(function (k) { G.pl[k] = -1; }); adopt(G); save(); ui(); },
     dump: function () { return JSON.parse(JSON.stringify(G)); },
     load: function (o) { adopt(o); save(); ui(); }
   };
@@ -17928,6 +18119,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     pill.innerHTML = CP.stamp(r) + "<span>🔥 <b>" + s + "</b></span><span class=\"muted\">" + r.xp + " XP</span>";
     pill.setAttribute("aria-label", CP.t("pill.aria", { r: r.name, s: s, x: r.xp }));
     if (CP.pathDirty) CP.pathDirty();
+    if (CP.unlock) CP.unlock.check();
   }
   pill.addEventListener("click", function () { CP.show("path"); });
   ui();
@@ -17979,7 +18171,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     ["🏥 Salute", ["corpo"]], ["🎎 Cultura", ["cultura"]]
   ];
   var tagsEl = document.getElementById("tags"), tagOn = -1;
-  tagsEl.innerHTML = TAGS.map(function (t, i) { return '<button type="button" data-tag="' + i + '" aria-pressed="false">' + t[0] + "</button>"; }).join("");
+  /* lo scopo scelto nel benvenuto (cp-ux-v1.purpose) mette in evidenza i temi che gli servono */
+  var SUGG = { travel: [1, 3], work: [8], family: [6, 4], curious: [10] }[CP.ux.get("purpose")] || [];
+  tagsEl.innerHTML = TAGS.map(function (t, i) { return '<button type="button" data-tag="' + i + '" aria-pressed="false"' + (SUGG.indexOf(i) >= 0 ? ' class="sugg"' : "") + ">" + (SUGG.indexOf(i) >= 0 ? "⭐ " : "") + t[0] + "</button>"; }).join("");
   function paintTags() {
     Array.prototype.forEach.call(tagsEl.querySelectorAll("button"), function (b, i) { b.classList.toggle("on", i === tagOn); b.setAttribute("aria-pressed", i === tagOn ? "true" : "false"); });
   }
@@ -18071,6 +18265,162 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     e.preventDefault(); e.stopPropagation();
     CP.openPhon(syl, ctx.length <= 12 ? ctx : "");
   }, true);
+})();
+</script>
+<script>
+/* ---- ui/unlock.js ---- */
+/* ===== màndarínō · rivelazione progressiva: le schede (e gli strumenti di Frasi) compaiono quando hanno senso.
+   docs/ux-architettura.md spiega il perché; qui stanno le soglie, in un solo punto (UNLOCK).
+   - Corso di cinese: all'inizio Percorso e Studia; Parole e Frasi arrivano con i punti E un minimo di giorni di studio.
+   - Corso di italiano: all'inizio 课程 e 复习; 单词, 变位 e 句子 con la stessa logica (变位 anche dopo la lezione sul presente).
+   - Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; gli strumenti più avanzati dopo qualche lezione superata.
+   Chi aveva già progressi (o aveva già visto il benvenuto) ha tutto sbloccato. Uno sblocco non si perde mai, nemmeno
+   azzerando i progressi; tra dispositivi vale «basta uno» (cp-ux-v1.unl, regola d'unione in core/store.js).
+   ⚙️ → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
+   ovunque», ?go= e il corso di italiano prima di portare l'utente da qualche parte. ===== */
+(function () {
+  var CP = window.CP, T = CP.t;
+  var UNLOCK = {
+    words: 200, build: 300, minDays: { words: 2, build: 3 },   /* punti (XP) e giorni attivi per le schede del corso di cinese */
+    advancedXp: 1500,                                          /* da qui (grado «Mercante di Seta») tutto è aperto */
+    frasi: { pat: 3, thought: 3, lab: 6, slot: 6, reader: 6 }, /* lezioni superate per gli strumenti di Frasi */
+    frasiXp: 1000,                                             /* ...oppure questi punti */
+    it: { words: [200, 2], conj: [300, 3], phrases: [300, 3], conjLesson: "presente" }
+  };
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function jget(k) { try { return JSON.parse(lsGet(k) || "null"); } catch (e) { return null; } }
+  var IT = lsGet("cp-course") === "it";
+  var BASE = IT ? { lessons: 1, review: 1 } : { path: 1, study: 1 };
+  var ALL_ZH = ["words", "build", "fr:pat", "fr:thought", "fr:lab", "fr:slot", "fr:reader"], ALL_IT = ["it:words", "it:conj", "it:phrases"];
+  function unl() { var u = CP.ux.get("unl"); return u && typeof u === "object" ? u : {}; }
+  function setUnl(u) { CP.ux.set("unl", u); }
+  function hasProgress() {
+    if (Object.keys(CP.S()).length) return true;
+    var s = jget("cp-it-srs-v1"); if (s && Object.keys(s).some(function (k) { return k !== "__meta"; })) return true;
+    return !!(lsGet("cp-game-v1") || lsGet("cp-lessons-v1") || lsGet("cp-it-lessons-v1"));
+  }
+  /* utenti di prima di questa versione: nessuna perdita, tutto aperto */
+  if (!CP.ux.get("unlv")) {
+    if (CP.ux.get("onboarded") || hasProgress()) { var u0 = unl(); ALL_ZH.concat(ALL_IT).forEach(function (k) { u0[k] = 1; }); setUnl(u0); }
+    CP.ux.set("unlv", 1);
+  }
+  function key(tab) { return (IT ? "it:" : "") + tab; }
+  function ok(tab) { return !!BASE[tab] || !!CP.ux.get("showAll") || !!unl()[key(tab)]; }
+  function toolOk(t) { return !UNLOCK.frasi[t] || !!CP.ux.get("showAll") || !!unl()["fr:" + t]; }
+  function xpDays() { return CP.game ? [CP.game.rank().xp, CP.game.activeDays ? CP.game.activeDays() : 0] : [0, 0]; }
+  function lessonsDone() { return CP.lessons && CP.lessons.list ? CP.lessons.list().filter(function (l) { return (CP.lessons.progress(l.id).best || 0) >= 80; }).length : 0; }
+  function itLessonDone(id) { var o = jget("cp-it-lessons-v1") || {}; return !!(o[id] && o[id].done); }
+  /* perché è ancora chiuso: il testo «si apre…» per la scheda o lo strumento */
+  function why(k) {
+    var xd = xpDays();
+    if (k === "words" || k === "build") return T("unl.need", { xp: UNLOCK[k], d: UNLOCK.minDays[k], have: xd[0] });
+    if (/^it:/.test(k)) { var c = UNLOCK.it[k.slice(3)]; return T("unl.need", { xp: c[0], d: c[1], have: xd[0] }); }
+    if (/^fr:/.test(k)) return T("unl.needLs", { n: UNLOCK.frasi[k.slice(3)], have: lessonsDone(), xp: UNLOCK.frasiXp });
+    return "";
+  }
+  /* che cosa si apre adesso, dato lo stato */
+  function due() {
+    var xd = xpDays(), xp = xd[0], days = xd[1], u = unl(), out = [], pl = CP.ux.get("pl") || {};
+    var adv = xp >= UNLOCK.advancedXp || (pl.adv && !pl.undone);
+    function want(k, cond) { if (!u[k] && (cond || adv)) out.push(k); }
+    if (IT) {
+      Object.keys(UNLOCK.it).forEach(function (t) { var c = UNLOCK.it[t]; if (!Array.isArray(c)) return; want("it:" + t, (xp >= c[0] && days >= c[1]) || (t === "conj" && itLessonDone(UNLOCK.it.conjLesson))); });
+    } else {
+      want("words", xp >= UNLOCK.words && days >= UNLOCK.minDays.words);
+      want("build", xp >= UNLOCK.build && days >= UNLOCK.minDays.build);
+      var ld = lessonsDone();
+      Object.keys(UNLOCK.frasi).forEach(function (t) { want("fr:" + t, ld >= UNLOCK.frasi[t] || xp >= UNLOCK.frasiXp); });
+    }
+    return out;
+  }
+  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases" };
+  var queue = [], noteEl = null;
+  /* il messaggio dello sblocco: una riga dentro la pagina, sopra la barra in basso; una novità alla volta, mai un pop-up */
+  function announce() {
+    if (noteEl || !queue.length || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return;
+    var k = queue.shift(), tabK = k === "words" || k === "build" ? k : /^it:/.test(k) ? k.slice(3) : /^fr:/.test(k) ? "build" : null;
+    noteEl = document.createElement("div"); noteEl.className = "unl-note"; noteEl.setAttribute("role", "status");
+    noteEl.innerHTML = '<span class="unl-ico" aria-hidden="true">✨</span><span class="unl-tx">' + CP.esc(T("unl.new", { n: T(NAME[k]) })) + "<small>" + CP.esc(T("unl." + k.replace(":", "_"))) + "</small></span>" +
+      (tabK ? '<button type="button" class="btn-s" data-unl-go="' + tabK + '">' + CP.esc(T("unl.go")) + "</button>" : "") + '<button type="button" class="btn-s unl-x" data-unl-x aria-label="' + CP.attr(T("common.close")) + '">✕</button>';
+    document.body.appendChild(noteEl);
+  }
+  function closeNote() { if (noteEl && noteEl.parentNode) noteEl.parentNode.removeChild(noteEl); noteEl = null; setTimeout(announce, 400); }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target.closest("[data-unl-go], [data-unl-x]") : null; if (!t) return;
+    var g = t.getAttribute("data-unl-go"); closeNote(); CP.sfx("tap");
+    if (g) { if (IT && CP.itShow) CP.itShow(g); else CP.show(g); }
+  });
+  /* la barra in basso: solo le schede aperte, con le colonne giuste */
+  function paintDock() {
+    var dock = IT ? document.querySelector(".dock-it") : document.querySelector("nav.dock:not(.dock-it)"); if (!dock) return;
+    var n = 0;
+    Array.prototype.forEach.call(dock.querySelectorAll(".dtab"), function (b) {
+      var t = IT ? b.getAttribute("data-it-tab") : (b.id || "").replace("tab-", ""), on = ok(t);
+      b.hidden = !on; if (on) n++;
+      b.classList.toggle("is-new", on && !!unl()["new:" + key(t)]);
+    });
+    dock.setAttribute("data-n", n); dock.style.gridTemplateColumns = "repeat(" + n + ", 1fr)";
+  }
+  function check(silent) {
+    var add = due(); if (!add.length) { paintDock(); return; }
+    var u = unl(); add.forEach(function (k) { u[k] = 1; if (!silent && !/^fr:/.test(k)) u["new:" + k] = 1; }); setUnl(u);
+    /* molte novità insieme (un test di livello, un dispositivo unito): si annunciano solo le schede, non ogni strumento */
+    if (!silent) { add.filter(function (k) { return add.length <= 2 || !/^fr:/.test(k); }).forEach(function (k) { if (queue.indexOf(k) < 0) queue.push(k); }); setTimeout(announce, 600); }
+    paintDock();
+    if (CP.build && CP.build.render && !IT && add.some(function (k) { return /^fr:/.test(k); })) { try { if (!document.getElementById("view-build").hidden) CP.build.render(); } catch (e) {} }
+  }
+  /* la scheda visitata non è più «nuova» */
+  function seen(tab) { var u = unl(); if (u["new:" + key(tab)]) { delete u["new:" + key(tab)]; setUnl(u); paintDock(); } }
+  /* aprire una lezione, un dialogo o le parole di una tappa quando la loro scheda è ancora chiusa: in immersione, senza
+     mostrare la scheda; all'uscita si torna dov'eri */
+  function peek(tab, run, title) {
+    if (ok(tab)) { CP.show(tab); setTimeout(run, 60); return; }
+    var prev = ["path", "study", "words", "build"].filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0] || "path";
+    CP.show(tab, true, true);
+    if (CP.immerse) CP.immerse.enter({ title: title || "", onExit: function () { CP.show(prev, true); } });
+    setTimeout(run, 60);
+  }
+  CP.unlock = {
+    UNLOCK: UNLOCK, ok: ok, toolOk: toolOk, why: why, check: check, seen: seen, peek: peek, paint: paintDock,
+    tabs: function () { return (IT ? ["lessons", "review", "words", "conj", "phrases"] : ["path", "study", "words", "build"]).filter(ok); },
+    /* la scheda più vicina che si può aprire (per ?go=, cp-tab, gesti) */
+    nearest: function (tab) { if (ok(tab)) return tab; return IT ? (tab === "conj" || tab === "phrases" ? "lessons" : "review") : (tab === "words" ? "study" : "path"); },
+    unlockAll: function () { var u = unl(); ALL_ZH.concat(ALL_IT).forEach(function (k) { u[k] = 1; }); setUnl(u); paintDock(); },
+    showAll: function (on) { CP.ux.set("showAll", on ? 1 : 0); paintDock(); if (CP.build && CP.build.render) try { CP.build.render(); } catch (e) {} },
+    isShowAll: function () { return !!CP.ux.get("showAll"); },
+    count: function () { return IT ? ALL_IT.filter(function (k) { return unl()[k]; }).length : ALL_ZH.filter(function (k) { return unl()[k]; }).length; }
+  };
+  /* ---- ⚙️ → Avanzate → «Livello e schede»: rifare il test, annullare il salto, mostrare tutto (con doppia conferma) ---- */
+  (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
+    var pl = CP.ux.get("pl"), canUndo = pl && !pl.undone && (pl.n > 0 || (CP.game && CP.game.granted && CP.game.granted() > 0));
+    return '<details class="set-sec" id="set-level"><summary>📶 ' + CP.esc(T("unl.setT")) + '</summary><div class="vbody">' +
+      '<p class="small muted" style="margin:0">' + CP.esc(T("unl.setHint")) + "</p>" +
+      '<div class="acts" style="margin:0"><button type="button" class="btn-s" data-unl-redo>🧭 ' + CP.esc(T("unl.redo")) + "</button>" +
+      (canUndo ? '<button type="button" class="btn-s" data-unl-undo>↩️ ' + CP.esc(T("unl.undo")) + "</button>" : "") + "</div>" +
+      '<label class="chk"><input type="checkbox" id="opt-showall"' + (CP.ux.get("showAll") ? " checked" : "") + "> " + CP.esc(T("unl.showAll")) + "</label></div></details>";
+  } });
+  /* la conferma va sopra: le Impostazioni si chiudono e si riaprono a lavoro fatto */
+  function setClose() { var se = document.getElementById("settings"); if (se && !se.hidden) CP.untrap(se); }
+  function setBack() { CP.closeSheet(); if (CP.openSettings) CP.openSettings("set-level"); }
+  function sheet(body) { setClose(); CP.openSheet('<div class="unl-sheet"><div class="fam-head"><b>' + CP.esc(T("unl.setT")) + '</b><button type="button" class="fam-x btn-s" data-famclose>' + CP.esc(T("common.close")) + "</button></div>" + body + "</div>"); }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-unl-redo], [data-unl-undo], [data-unl-all1], [data-unl-all2], [data-unl-undo-ok]") : null; if (!b) return;
+    if (b.hasAttribute("data-unl-redo")) { setClose(); CP.onboarding.redoTest(); return; }
+    if (b.hasAttribute("data-unl-undo")) { var pl = CP.ux.get("pl") || {}; sheet('<p>' + CP.esc(T("unl.undoQ", { n: pl.n || 0 })) + '</p><button type="button" class="btn-main" data-unl-undo-ok>' + CP.esc(T("unl.undo")) + "</button>"); return; }
+    if (b.hasAttribute("data-unl-undo-ok")) { var n = CP.placement.undo(); setBack(); CP.toast(T("unl.undone", { n: n })); return; }
+    /* «Mostra tutto»: due conferme, perché toglie la guida passo passo */
+    if (b.hasAttribute("data-unl-all1")) { sheet('<p><b>' + CP.esc(T("unl.all2")) + '</b></p><button type="button" class="btn-main" data-unl-all2>' + CP.esc(T("unl.allYes")) + "</button>"); return; }
+    if (b.hasAttribute("data-unl-all2")) { CP.unlock.showAll(true); setBack(); CP.toast(T("unl.allDone")); }
+  });
+  document.addEventListener("change", function (e) {
+    if (e.target.id !== "opt-showall") return;
+    if (e.target.checked) { e.target.checked = false; sheet('<p>' + CP.esc(T("unl.all1")) + '</p><button type="button" class="btn-main" data-unl-all1>' + CP.esc(T("unl.showAll")) + "</button>"); }
+    else CP.unlock.showAll(false);
+  });
+  paintDock();
+  /* core.js ha già aperto la scheda dell'ultima volta: se è ancora chiusa si va alla più vicina */
+  if (!IT) { var curTab = ["path", "study", "words", "build"].filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0]; if (curTab && !ok(curTab)) CP.show(CP.unlock.nearest(curTab), true); }
+  setTimeout(function () { check(false); }, 1500);
 })();
 </script>
 <script>
@@ -18212,9 +18562,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 
   function goWords(id) {
     CP.resetFilters();
-    CP.show("words");
-    setTimeout(function () { CP.gotoSection(id, false); }, 200);
+    CP.unlock.peek("words", function () { CP.gotoSection(id, false); }, title(SECTIONS.filter(function (x) { return x.id === id; })[0] || { title: "" }));
   }
+  /* lezioni, dialoghi, esercizi della tappa: in Frasi, o in immersione se Frasi non è ancora aperta (ui/unlock.js) */
+  function inBuild(run) { CP.unlock.peek("build", run, CP.t("build.title")); }
   root.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
     if (t.hasAttribute("data-chap")) { chap = parseInt(t.getAttribute("data-chap"), 10); CP.sfx("tap"); render(); var ch = root.querySelector(".chap-head"); if (ch && ch.scrollIntoView) ch.scrollIntoView({ block: "nearest" }); return; }
@@ -18234,10 +18585,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     var go = t.getAttribute("data-go"), id = t.getAttribute("data-id");
     if (go === "words") goWords(id);
     else if (go === "study") { CP.studySection(id); CP.show("study"); }
-    else if (go === "practice") { CP.build.practice(id); CP.show("build"); }
-    else if (t.hasAttribute("data-pat")) { CP.build.openPattern(parseInt(t.getAttribute("data-pat"), 10)); CP.show("build"); }
-    else if (t.hasAttribute("data-dlg")) { CP.dlg.open(t.getAttribute("data-dlg")); CP.show("build"); }
-    else if (t.hasAttribute("data-lesson")) { CP.build.openLesson(t.getAttribute("data-lesson")); CP.show("build"); }
+    else if (go === "practice") inBuild(function () { CP.build.practice(id); });
+    else if (t.hasAttribute("data-pat")) { var pi = parseInt(t.getAttribute("data-pat"), 10); inBuild(function () { CP.build.openPattern(pi); }); }
+    else if (t.hasAttribute("data-dlg")) { var di = t.getAttribute("data-dlg"); inBuild(function () { CP.dlg.open(di); }); }
+    else if (t.hasAttribute("data-lesson")) { var li = t.getAttribute("data-lesson"); inBuild(function () { CP.build.openLesson(li); }); }
   });
   root.addEventListener("change", function (e) {
     if (e.target.id === "goal-sel") { CP.game.setGoal(parseInt(e.target.value, 10)); render(); }
@@ -20264,9 +20615,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     return h;
   }
   function paint(note) { var b = document.getElementById("sy-body"); if (b) b.innerHTML = bodyHTML(note); }
-  (CP.settingsExtras = CP.settingsExtras || []).unshift(function () {
+  (CP.settingsExtras = CP.settingsExtras || []).unshift({ group: "data", html: function () {
     return '<details class="set-sec" id="set-sync"><summary>🔄 ' + T("sy.title") + '</summary><div class="vbody" id="sy-body">' + bodyHTML() + "</div></details>";
-  });
+ } });
   var merging = document.createElement("input"); merging.type = "file"; merging.accept = "application/json,.json"; merging.hidden = true; document.body.appendChild(merging);
   merging.addEventListener("change", function () { var f = merging.files && merging.files[0]; if (f && CP.restoreFile) CP.restoreFile(f); merging.value = ""; });
   document.addEventListener("click", function (e) {
@@ -23525,8 +23876,9 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
 </script>
 <script>
 /* ---- ui/settings.js ---- */
-/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso). Tema, caratteri, audio, voce, microfono, backup, e i riquadri
-   che altri moduli aggiungono in #set-extra (lingua, contributi). ===== */
+/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
+   audio, lingua), Dati e privacy, Avanzate, Informazioni e supporto. I moduli aggiungono le loro sezioni con
+   CP.settingsExtras: una funzione che rende HTML (va in «Avanzate») o { group, html }. ===== */
 (function () {
   var CP = window.CP, el = document.getElementById("settings"), btn = document.getElementById("settings-btn");
   if (!el || !btn) return;
@@ -23543,8 +23895,12 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var v = document.getElementById("set-sfxvol"); if (v && CP.bus) v.value = CP.bus.sfxVol();
     var ts = document.getElementById("opt-toneshapes"); if (ts) ts.checked = document.body.classList.contains("tone-shapes");
     if (CP.audioMode) Array.prototype.forEach.call(el.querySelectorAll("[data-audio-set]"), function (b) { var on = b.getAttribute("data-audio-set") === CP.audioMode(); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
-    var ex = document.getElementById("set-extra");
-    if (ex && CP.settingsExtras) { var open = {}; Array.prototype.forEach.call(ex.querySelectorAll("details[id]"), function (d) { open[d.id] = d.open; }); ex.innerHTML = CP.settingsExtras.map(function (f) { return f(); }).join(""); Object.keys(open).forEach(function (id) { var d = document.getElementById(id); if (d) d.open = open[id]; }); }
+    /* le sezioni dei moduli, ognuna nel suo gruppo: una funzione (gruppo «Avanzate») oppure { group: "data"|"adv"|"info", html: funzione } */
+    var BOX = { data: "set-extra-data", adv: "set-extra", info: "set-extra-info" }, parts = { data: [], adv: [], info: [] }, open = {};
+    Array.prototype.forEach.call(el.querySelectorAll("#set-extra-data details[id], #set-extra details[id], #set-extra-info details[id]"), function (d) { open[d.id] = d.open; });
+    (CP.settingsExtras || []).forEach(function (f) { var g = typeof f === "function" ? "adv" : (BOX[f.group] ? f.group : "adv"); try { parts[g].push(typeof f === "function" ? f() : f.html()); } catch (e) {} });
+    Object.keys(BOX).forEach(function (g) { var b = document.getElementById(BOX[g]); if (b) b.innerHTML = parts[g].join(""); });
+    Object.keys(open).forEach(function (id) { var d = document.getElementById(id); if (d) d.open = open[id]; });
     paintMic();
   }
   function close() { CP.untrap(el); }
@@ -23563,7 +23919,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   CP.openSettings = function (sec) {
     paint(); CP.trap(el, close);
     var x = el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
-    if (sec) { var d = document.getElementById(sec); if (d) { if (d.tagName === "DETAILS") d.open = true; d.scrollIntoView({ block: "start" }); } }
+    if (sec) { var d = document.getElementById(sec); if (d) { for (var x = d; x && x !== el; x = x.parentElement) if (x.tagName === "DETAILS") x.open = true; d.scrollIntoView({ block: "start" }); } }
     CP.sfx("tap");
   };
   btn.addEventListener("click", function () { CP.openSettings(); });
@@ -23600,7 +23956,15 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var CP = window.CP, esc = CP.esc, T = CP.t;
   var btn = document.getElementById("find-btn");
   function norm(s) { return " " + String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9㐀-鿿]+/g, " ").trim() + " "; }
-  function go(tab, fn) { CP.closeSheet(); CP.show(tab); if (fn) setTimeout(fn, 60); }
+  /* una scheda ancora chiusa (ui/unlock.js) si apre in immersione, senza mostrarla */
+  function go(tab, fn) { CP.closeSheet(); if (CP.unlock && !CP.unlock.ok(tab)) { CP.unlock.peek(tab, fn || function () {}); return; } CP.show(tab); if (fn) setTimeout(fn, 60); }
+  /* gli strumenti avanzati di Frasi ancora chiusi: si vedono, con «si apre…», ma non portano da nessuna parte */
+  var LOCK = { "fd.t5": "fr:pat", "fd.t7": "fr:lab", "fd.t8": "fr:slot", "fd.t10": "fr:thought", "fd.t11": "fr:reader", "fd.t13": "words" };
+  function lockOf(id) {
+    var k = LOCK[id]; if (!k || !CP.unlock) return "";
+    if (k === "words") return CP.unlock.ok("words") ? "" : CP.unlock.why("words");
+    return CP.unlock.toolOk(k.slice(3)) && CP.unlock.ok("build") ? "" : CP.unlock.why(CP.unlock.ok("build") ? k : "build");
+  }
   /* strumenti: [icona, nome, parole chiave, azione] */
   var TOOLS = [
     ["🎴", "fd.t0", "ripasso carte flashcard sessione oggi fsrs", function () { go("study", function () { if (CP.studyStart) CP.studyStart(); }); }],
@@ -23625,7 +23989,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   function index() {
     if (IDX) return IDX;
     IDX = [];
-    TOOLS.forEach(function (t) { var n = T(t[1]); IDX.push({ g: 0, ico: t[0], t: n, sub: "", k: norm(n + " " + I18N.it[t[1]] + " " + t[2]), run: t[3] }); });
+    TOOLS.forEach(function (t) { var n = T(t[1]); IDX.push({ g: 0, ico: t[0], t: n, sub: "", id: t[1], k: norm(n + " " + I18N.it[t[1]] + " " + t[2]), run: t[3] }); });
     (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) {
       IDX.push({ g: 1, ico: "📘", t: l.title, sub: l.goal || "", k: norm(l.title + " " + (l.goal || "") + " " + (l.id || "")), run: function () { go("build", function () { CP.build.openLesson(l.id); }); } });
     });
@@ -23664,9 +24028,10 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var h = "", last = -1;
     cur.forEach(function (x, i) {
       if (x.g !== last) { h += '<div class="fd-g">' + GN[x.g] + "</div>"; last = x.g; }
+      x.lock = x.id ? lockOf(x.id) : ""; var sub = x.lock ? "🔒 " + x.lock : x.sub;
       h += '<button type="button" class="fd-it" data-fd="' + i + '">' +
         (x.hz ? '<span class="fd-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="fd-t"><b>' + CP.pinyinHTML(x.py) + "</b><i lang=\"it\">" + esc(x.t) + "</i></span>"
-              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"' + (x.g ? ' lang="it"' : "") + "><b>" + esc(x.t) + "</b>" + (x.sub ? "<i>" + esc(x.sub) + "</i>" : "") + "</span>") + "</button>";
+              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"' + (x.g ? ' lang="it"' : "") + "><b>" + esc(x.t) + "</b>" + (sub ? "<i>" + esc(sub) + "</i>" : "") + "</span>") + "</button>";
     });
     box.innerHTML = h;
   }
@@ -23680,7 +24045,9 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     q.addEventListener("keydown", function (e) { if (e.key === "Enter" && cur[0]) { e.preventDefault(); cur[0].run(); } });
     document.getElementById("fd-res").addEventListener("click", function (e) {
       var b = e.target.closest ? e.target.closest("[data-fd]") : null; if (!b) return;
-      var x = cur[+b.getAttribute("data-fd")]; if (x) { CP.sfx("tap"); x.run(); }
+      var x = cur[+b.getAttribute("data-fd")]; if (!x) return;
+      if (x.lock) { CP.toast(x.lock); return; }
+      CP.sfx("tap"); x.run();
     });
   }
   CP.finder = open;
@@ -23698,7 +24065,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
    sistema). Non scatta dove lo scorrimento ha già un altro senso: carte da girare, lavagna, cursori, campi di testo, righe
    che scorrono di lato, fogli aperti, sessione di studio, corso di italiano. ===== */
 (function () {
-  var CP = window.CP, TABS = ["path", "words", "study", "build"], x0 = 0, y0 = 0, t0 = 0, ok = false;
+  var CP = window.CP, ALL = ["path", "study", "words", "build"], x0 = 0, y0 = 0, t0 = 0, ok = false;
   function scrollsX(el) {
     for (; el && el !== document.body; el = el.parentElement) {
       if (el.scrollWidth > el.clientWidth + 4) { var o = getComputedStyle(el).overflowX; if (o === "auto" || o === "scroll") return true; }
@@ -23724,7 +24091,8 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     if (dt > 700 || Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 2.2) return;
     /* dal bordo sinistro è il gesto «indietro» del sistema: non lo si contende */
     if (x0 < 24 && dx > 0) return;
-    var cur = TABS.filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0], i = TABS.indexOf(cur), j = i + (dx < 0 ? 1 : -1);
+    var TABS = CP.unlock ? CP.unlock.tabs() : ALL;   /* solo le schede già aperte (ui/unlock.js) */
+    var cur = ALL.filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0], i = TABS.indexOf(cur), j = i + (dx < 0 ? 1 : -1);
     if (i < 0 || j < 0 || j >= TABS.length) { if (CP.haptic) CP.haptic(6); return; }
     CP.show(TABS[j]); if (CP.haptic) CP.haptic(10);
   }, { passive: true });
@@ -23925,7 +24293,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   }
 
   /* ---- ⚙️ → Contributi ---- */
-  (CP.settingsExtras = CP.settingsExtras || []).push(function () {
+  (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () {
     var l = list().slice().reverse();
     return '<details class="set-sec" id="set-contrib"><summary>✏️ ' + T("ct.title") + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
       '<p class="small muted" style="margin:0">' + T("ct.lede") + "</p>" +
@@ -23935,7 +24303,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
           (it.op === "fix" || it.op === "tr" ? '<button type="button" class="btn-s" data-ct-undo="' + CP.attr(it.id) + '">' + T(it.undone ? "ct.redo" : "ct.undo") + "</button>" : "") +
           '<button type="button" class="btn-s" data-ct-del="' + CP.attr(it.id) + '" aria-label="' + CP.attr(T("lab.del")) + '">×</button></li>';
       }).join("") + "</ul>" : "") + sendHTML() + "</div></details>";
-  });
+  } });
   function finder(q) {
     var S = CP.search, sq = S.query(q || ""); q = sq.c || sq.w; if (!q) return '<p class="small muted">' + T("ct.findHint") + "</p>";
     var out = [];
@@ -23978,46 +24346,519 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   });
 })();
 </script>
+<script type="text/plain" id="lazy-mod-placement">
+/* ---- data/placement.js ---- */
+/* màndarínō · test di livello: parametri e motore (funzioni pure, nessun accesso alla pagina: le prove in Node lo usano
+   così com'è, tools/unit.mjs simula utenti di ogni livello). Le domande le costruisce ui/placement.js con i dati dell'app.
+
+   Corso di cinese (livelli HSK 1-5, il 6 si apre dopo risposte giuste al 5). Una scala a gradini sceglie il livello della
+   domanda: giusta → si sale, sbagliata o «non lo so» → si scende. Dopo al massimo 10 domande, o prima se le ultime quattro
+   oscillano tra due livelli vicini, si stima il «livello di rottura»: il livello T che spiega meglio le risposte, se chi sa
+   fino a T risponde giusto quasi sempre (P_KNOW) e oltre T tira a indovinare (1 / numero di opzioni). È la stima di massima
+   verosimiglianza; a parità vince il valore più basso, perché sbagliare per difetto costa meno che per eccesso.
+
+   Corso di italiano (0-30 lezioni note, quiz a 3 opzioni). Qui la scala a gradini sbagliava troppo, quindi la domanda è
+   quella che più riduce l'incertezza sul livello (entropia attesa) e la stima è la mediana del posteriore, con la
+   dichiarazione iniziale come prior. Simulazione (tools/unit.mjs): entro ±1 livello (cinese) e ±3 lezioni (italiano) in
+   più del 90% delle prove, per ogni livello vero. */
+var PLACEMENT = (function () {
+  var P = {
+    MAX_Q: 10,
+    P_KNOW: 0.9,
+    zh: {
+      min: 1, max: 5, top: 6,                 /* il 6 («oltre l'HSK») solo dopo risposte giuste al 5 */
+      guess: 0.25,                            /* 4 opzioni */
+      /* punti iniziali per capitolo di partenza: portano il grado al punto corrispondente, con un tetto */
+      grant: { 1: 0, 2: 200, 3: 600, 4: 1500, 5: 3000, 6: 3000 },
+      /* stabilità (giorni) delle parole segnate come note: più alta per i capitoli più facili */
+      stab: { 1: 30, 2: 21, 3: 14, 4: 10, 5: 7, 6: 7 },
+      advanced: 2                             /* da questo capitolo di partenza tutte le schede sono aperte */
+    },
+    it: {
+      min: 1, max: 30, guess: 1 / 3,          /* 3 opzioni nei quiz delle lezioni */
+      grant: [[22, 3000], [15, 1500], [10, 600], [5, 200]],   /* [lezioni note almeno, punti] */
+      stab: 14, advanced: 6,
+      /* parole del lessico che diventano note: quelle dei livelli HSK fino a floor(lezioni / 6) */
+      hskPerLessons: 6
+    },
+    SPREAD: [14, 28]                          /* le scadenze dei ripassi si spargono tra 2 e 4 settimane */
+  };
+  function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  /* dichiarazione: 5 valori da 0 (mai) a 3 (bene) → livello di partenza */
+  function startOf(course, decl) {
+    var d = (decl || []).filter(function (x) { return x >= 0; }), avg = d.length ? d.reduce(function (a, b) { return a + b; }, 0) / d.length : 0;
+    return course === "it" ? clamp(1 + Math.round(avg * 10), 1, P.it.max) : clamp(1 + Math.round(avg * 1.4), 1, P.zh.max);
+  }
+  /* corso di italiano: 31 possibili livelli (0-30 lezioni note) e quiz a 3 opzioni. Qui una scala a gradini sbaglia troppo
+     (prova: ±3 lezioni solo nell'85% dei casi), quindi la domanda si sceglie sul posteriore: si chiede la lezione per cui
+     la probabilità di saperla è più vicina al 50%. Il punto di partenza dichiarato fa da prior (larghezza PRIOR_SD). */
+  P.it.PRIOR_SD = 7;
+  function post(s) {
+    var top = P.it.max, m = s.lv0, w = [];
+    for (var T = 0; T <= top; T++) {
+      var L = -0.5 * Math.pow((T - m) / P.it.PRIOR_SD, 2);
+      s.hist.forEach(function (x) { var p = x[0] <= T ? P.P_KNOW : P.it.guess; L += Math.log(x[1] ? p : 1 - p); });
+      w.push(L);
+    }
+    var mx = Math.max.apply(null, w), z = 0; w = w.map(function (l) { var e = Math.exp(l - mx); z += e; return e; });
+    return w.map(function (e) { return e / z; });
+  }
+  /* la domanda che più riduce l'incertezza (entropia attesa del posteriore dopo la risposta) */
+  function nextIt(s) {
+    var p = post(s), best = 1, bH = Infinity, K = P.P_KNOW, g = P.it.guess;
+    function H(q) { var z = 0, h = 0; q.forEach(function (x) { z += x; }); q.forEach(function (x) { if (x > 0) { var y = x / z; h -= y * Math.log(y); } }); return [h, z]; }
+    for (var l = 1; l <= P.it.max; l++) {
+      var okq = p.map(function (x, T) { return x * (T >= l ? K : g); }), koq = p.map(function (x, T) { return x * (T >= l ? 1 - K : 1 - g); });
+      var a = H(okq), b = H(koq), e = a[1] * a[0] + b[1] * b[0];
+      if (e < bH - 1e-12) { bH = e; best = l; }
+    }
+    return best;
+  }
+  function start(course, decl) {
+    var s = { course: course, lv: startOf(course, decl), step: 1, dir: 0, hist: [] };
+    if (course === "it") { s.lv0 = s.lv; s.lv = nextIt(s); }
+    return s;
+  }
+  function cap(s) {
+    if (s.course === "it") return P.it.max;
+    return s.hist.some(function (h) { return h[0] === 5 && h[1]; }) ? P.zh.top : P.zh.max;
+  }
+  function answer(s, ok) {
+    s.hist.push([s.lv, !!ok]);
+    if (s.course === "it") { s.lv = nextIt(s); return s; }
+    s.lv = clamp(s.lv + (ok ? 1 : -1), P.zh.min, cap(s));
+    return s;
+  }
+  /* fine: 10 domande, oppure le ultime 4 risposte oscillano tra due livelli vicini (giusta sotto, sbagliata sopra) */
+  function done(s) {
+    var h = s.hist, n = h.length;
+    if (n >= P.MAX_Q) return true;
+    if (n < 6) return false;
+    var last = h.slice(-4), lv = last.map(function (x) { return x[0]; }), lo = Math.min.apply(null, lv), hi = Math.max.apply(null, lv);
+    if (s.course === "it") return false;   /* l'italiano usa tutte le 10 domande: con 31 livelli servono */
+    if (hi - lo !== 1) return false;
+    return last.every(function (x) { return (x[0] === lo) === x[1]; });
+  }
+  /* stima: il livello noto più alto (0 = nessuno) che rende più probabili le risposte date */
+  function estimate(s) {
+    var c = s.course === "it" ? P.it : P.zh, top = s.course === "it" ? P.it.max : P.zh.top, best = 0, bestL = -Infinity;
+    if (s.course === "it") { var p = post(s), acc = 0; for (var i = 0; i < p.length; i++) { acc += p[i]; if (acc >= 0.5) return i; } return p.length - 1; }
+    for (var T = 0; T <= top; T++) {
+      var L = 0;
+      s.hist.forEach(function (x) { var p = x[0] <= T ? P.P_KNOW : c.guess; L += Math.log(x[1] ? p : 1 - p); });
+      if (L > bestL + 1e-9) { bestL = L; best = T; }
+    }
+    return best;
+  }
+  /* corso di cinese: il capitolo da cui ripartire; corso di italiano: le lezioni note */
+  function result(s) { var e = estimate(s); return s.course === "it" ? e : Math.min(P.zh.top, e + 1); }
+  function grantFor(course, r) {
+    if (course === "it") { for (var i = 0; i < P.it.grant.length; i++) if (r >= P.it.grant[i][0]) return P.it.grant[i][1]; return 0; }
+    return P.zh.grant[r] || 0;
+  }
+  return { P: P, startOf: startOf, start: start, answer: answer, done: done, estimate: estimate, result: result, grantFor: grantFor };
+})();
+/* ---- ui/placement.js ---- */
+/* ===== màndarínō · test di livello: le domande e il loro svolgimento. Il motore (scala, stima, punti) sta in
+   data/placement.js; qui si costruiscono le domande con i dati dell'app e si disegnano, una alla volta.
+   Corso di cinese: per il livello HSK richiesto, una parola della fascia centrale di frequenza di quel livello
+   (data/levels.js, data/freq.js) e distrattori dello stesso livello. Cinque tipi di domanda, scelti secondo ciò che
+   l'utente ha dichiarato: significato del carattere, pinyin, ascolto (solo se c'è una voce cinese sul telefono: niente
+   rete, mai), frase da tradurre (data/examples), ordine delle parole. Corso di italiano: le domande a scelta dei quiz
+   delle 30 lezioni. Il test non dice se una risposta è giusta: va avanti e basta. «Non lo so» conta come errore, senza
+   colpa. Si può interrompere: la stima usa le risposte date fin lì.
+   CP.placement.run(box, corso, dichiarazione[5], fine(stato)) ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, PL = window.PLACEMENT;
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var FREQ = null;
+  function freqOf(k) { if (!FREQ) { FREQ = {}; String(window.WORD_FREQ || "").split("|").forEach(function (w, i) { if (!(w in FREQ)) FREQ[w] = i; }); } return k in FREQ ? FREQ[k] : 1e6; }
+  var POOLS = {};
+  /* le parole del livello che ci sono nel vocabolario, ordinate per frequenza: si tiene la metà centrale */
+  function pool(L) {
+    if (POOLS[L]) return POOLS[L];
+    var lv = Math.min(L, 6), ks = String((window.HSK_LEVEL || {})[lv] || "").split("|").filter(function (k) { return CP.WORDS[k]; });
+    if (L === 6 && !ks.length) ks = CP.ORDER.slice(-800);   /* «oltre l'HSK»: le parole in fondo al vocabolario */
+    ks.sort(function (a, b) { return freqOf(a) - freqOf(b); });
+    var n = ks.length, mid = n > 12 ? ks.slice(Math.floor(n * 0.25), Math.ceil(n * 0.75)) : ks;
+    return (POOLS[L] = mid.length ? mid : ks);
+  }
+  function others(L, k, n, keyFn) {
+    var seen = {}, out = [], p = shuffle(pool(L)); seen[keyFn(CP.WORDS[k])] = 1;
+    for (var i = 0; i < p.length && out.length < n; i++) { var w = CP.WORDS[p[i]], kk = keyFn(w); if (!seen[kk]) { seen[kk] = 1; out.push(w); } }
+    return out;
+  }
+  function hasVoice() { return !!window.MandarinoAndroid || (CP.voices && CP.voices().length > 0); }
+  function opts(right, wrong) { var all = shuffle([right].concat(wrong)); return { o: all, a: all.indexOf(right) }; }
+  var BUILD = {
+    /* significato di una parola scritta in caratteri */
+    mean: function (L) {
+      var k = pick(pool(L)), w = CP.WORDS[k], d = others(L, k, 3, CP.gloss), x = opts(CP.gloss(w), d.map(CP.gloss));
+      return { ask: T("pl.qMean"), big: '<span class="han" lang="zh-CN">' + esc(w.hz) + "</span>", o: x.o.map(function (s) { return '<span lang="it">' + esc(s) + "</span>"; }), a: x.a };
+    },
+    /* il pinyin giusto, leggendo i caratteri */
+    py: function (L) {
+      var k = pick(pool(L)), w = CP.WORDS[k], n = CP.syllables(w.py).length, d = others(L, k, 12, function (v) { return v.py; }).filter(function (v) { return CP.syllables(v.py).length === n; }).slice(0, 3);
+      if (d.length < 3) d = others(L, k, 3, function (v) { return v.py; });
+      var x = opts(w.py, d.map(function (v) { return v.py; }));
+      return { ask: T("pl.qPy"), big: '<span class="han" lang="zh-CN">' + esc(w.hz) + "</span>", o: x.o.map(function (p) { return CP.pinyinHTML(p); }), a: x.a };
+    },
+    /* ascolto: quale pinyin hai sentito */
+    tone: function (L) {
+      var q = BUILD.py(L), hz = /lang="zh-CN">([^<]+)</.exec(q.big)[1];
+      return { ask: T("pl.qTone"), audio: hz, big: "", o: q.o, a: q.a };
+    },
+    /* una frase d'esempio da capire */
+    sent: function (L) {
+      var E = window.EXAMPLES || {}, ks = shuffle(pool(L)).filter(function (k) { return E[k]; });
+      if (ks.length < 4) return BUILD.mean(L);
+      var x = opts(E[ks[0]][1], [E[ks[1]][1], E[ks[2]][1], E[ks[3]][1]]);
+      return { ask: T("pl.qSent"), big: '<span class="han pl-sent" lang="zh-CN">' + esc(E[ks[0]][0]) + "</span>", o: x.o.map(function (s) { return '<span lang="it">' + esc(s) + "</span>"; }), a: x.a };
+    },
+    /* l'ordine giusto delle parole */
+    order: function (L) {
+      var E = window.EXAMPLES || {}, ks = shuffle(pool(L)).filter(function (k) { return E[k]; });
+      for (var i = 0; i < ks.length && i < 30; i++) {
+        var zh = E[ks[i]][0], parts = CP.segment(zh.replace(/[。！？，、]/g, "")).filter(function (s) { return !s.p; }).map(function (s) { return s.raw; }).filter(Boolean);
+        if (parts.length < 4) continue;
+        var right = parts.join(""), wr = [], tries = 0;
+        while (wr.length < 2 && tries++ < 20) { var sh = shuffle(parts).join(""); if (sh !== right && wr.indexOf(sh) < 0) wr.push(sh); }
+        if (wr.length < 2) continue;
+        var x = opts(right, wr);
+        return { ask: T("pl.qOrder"), big: '<span class="pl-sent" lang="it">' + esc(E[ks[i]][1]) + "</span>", o: x.o.map(function (s) { return '<span class="han" lang="zh-CN">' + esc(s) + "</span>"; }), a: x.a };
+      }
+      return BUILD.sent(L);
+    }
+  };
+  /* i tipi di domanda pesati sulla dichiarazione: [pinyin e toni, caratteri, vocabolario, ordine, ascolto] */
+  function types(decl) {
+    var d = decl.map(function (x) { return Math.max(0, x | 0); }), w = { py: d[0], mean: d[1] + d[2], sent: d[2], order: d[3], tone: hasVoice() ? d[4] : 0 };
+    if (!Object.keys(w).some(function (k) { return w[k] > 0; })) w.mean = 1;
+    return w;
+  }
+  function chooseType(w, last) {
+    var ks = Object.keys(w).filter(function (k) { return w[k] > 0 && k !== last; }); if (!ks.length) ks = Object.keys(w).filter(function (k) { return w[k] > 0; });
+    var tot = ks.reduce(function (a, k) { return a + w[k]; }, 0), r = Math.random() * tot;
+    for (var i = 0; i < ks.length; i++) { r -= w[ks[i]]; if (r <= 0) return ks[i]; }
+    return ks[0];
+  }
+  /* corso di italiano: una domanda a scelta del quiz della lezione richiesta */
+  var asked = {};
+  function itQuestion(lv) {
+    var ls = (window.ITLESSONS || []).slice().sort(function (a, b) { return a.n - b.n; }), l = ls[Math.max(0, Math.min(ls.length - 1, lv - 1))];
+    var qs = l.quiz.filter(function (q) { return q.k !== "order" && q.opts && !asked[l.id + "|" + q.q]; }); if (!qs.length) qs = l.quiz.filter(function (q) { return q.k !== "order" && q.opts; });
+    var q = pick(qs); asked[l.id + "|" + q.q] = 1;
+    var x = opts(q.opts[q.a], q.opts.filter(function (o, j) { return j !== q.a; }));
+    return { ask: esc(q.q), big: q.it ? '<span lang="it">' + esc(q.it) + "</span>" : "", o: x.o.map(function (s) { return '<span lang="it">' + esc(s) + "</span>"; }), a: x.a };
+  }
+
+  function run(box, course, decl, done) {
+    var st = PL.start(course, decl), w = course === "it" ? null : types(decl), last = null, q = null, skippedAudio = false;
+    asked = {};
+    function next() {
+      if (PL.done(st)) { done(st); return; }
+      if (course === "it") q = itQuestion(st.lv);
+      else { last = chooseType(w, last); try { q = BUILD[last](st.lv); } catch (e) { q = BUILD.mean(st.lv); } }
+      paint();
+      if (q.audio) setTimeout(function () { CP.speak(q.audio, { rate: 0.85 }); }, 250);
+    }
+    function paint() {
+      var n = st.hist.length + 1, M = PL.P.MAX_Q;
+      box.innerHTML = '<div class="pl-top"><span class="small muted">' + esc(T("pl.count", { n: n, m: M })) + '</span><button type="button" class="btn-s pl-stop" data-pl-stop>' + esc(T("pl.stop")) + "</button></div>" +
+        '<div class="pl-bar" aria-hidden="true"><i style="width:' + Math.round((n - 1) / M * 100) + '%"></i></div>' +
+        '<p class="ask pl-ask">' + q.ask + "</p>" + (q.big ? '<div class="pl-big">' + q.big + "</div>" : "") +
+        (q.audio ? '<button type="button" class="btn-s pl-play" data-pl-play>🔊 ' + esc(T("pl.listen")) + "</button>" : "") +
+        '<div class="ls-opts pl-opts">' + q.o.map(function (o, j) { return '<button type="button" class="ls-opt" data-pl-opt="' + j + '">' + o + "</button>"; }).join("") + "</div>" +
+        '<button type="button" class="btn-s pl-idk" data-pl-idk>' + esc(T("pl.idk")) + "</button>" +
+        (skippedAudio ? '<p class="small muted">' + esc(T("pl.noVoice")) + "</p>" : "");
+      var f = box.querySelector("[data-pl-opt]"); if (f) f.focus({ preventScroll: true });
+    }
+    function onClick(e) {
+      var b = e.target.closest ? e.target.closest("[data-pl-opt], [data-pl-idk], [data-pl-stop], [data-pl-play]") : null; if (!b || !q) return;
+      if (b.hasAttribute("data-pl-play")) { CP.speak(q.audio, { rate: 0.85, el: b }); return; }
+      if (b.hasAttribute("data-pl-stop")) { box.removeEventListener("click", onClick); done(st, true); return; }
+      CP.sfx("tap");
+      var ok = b.hasAttribute("data-pl-opt") && +b.getAttribute("data-pl-opt") === q.a;
+      PL.answer(st, ok); q = null; next();
+    }
+    box.addEventListener("click", onClick);
+    if (course !== "it" && !hasVoice() && decl[4] > 0) skippedAudio = true;
+    next();
+    return st;
+  }
+  /* ---- applicare il livello confermato: parole e lezioni già note, senza XP né registro dei ripassi ---- */
+  var DAY = 86400000;
+  function due(now) { var a = PL.P.SPREAD[0], b = PL.P.SPREAD[1]; return now + Math.round((a + Math.random() * (b - a)) * DAY); }
+  function hskOf() { var m = {}; Object.keys(window.HSK_LEVEL || {}).forEach(function (l) { String(HSK_LEVEL[l]).split("|").forEach(function (k) { if (!m[k]) m[k] = +l; }); }); return m; }
+  /* quante parole diventerebbero «note» partendo dal capitolo r (corso di cinese) */
+  function zhKeys(r) {
+    var out = [], S = CP.S();
+    if (r < 2) return out;
+    CP.ORDER.forEach(function (k) { var ch = (window.SECTION_CHAPTER || {})[CP.WORDS[k].sec] || 6; if (ch < r && !(S[k] && S[k].n)) out.push([k, ch]); });
+    return out;
+  }
+  function itEntries(l) {
+    var lv = Math.floor(l / PL.P.it.hskPerLessons), H = hskOf(), S = itSrs();
+    if (lv < 1) return [];
+    return (CP.itLexicon ? CP.itLexicon() : []).filter(function (e) { var h = H[e.zh]; return h && h <= lv && !(S[e.id] && S[e.id].c); });
+  }
+  function jget(k) { try { var o = JSON.parse(localStorage.getItem(k) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
+  function jset(k, o) { try { localStorage.setItem(k, JSON.stringify(o)); } catch (e) {} }
+  function itSrs() { return jget("cp-it-srs-v1"); }
+  function apply(course, r, decl, est) {
+    var now = Date.now(), n = 0, before = CP.unlock ? JSON.stringify(CP.ux.get("unl") || {}) : "{}";
+    undo(true);   /* un test rifatto sostituisce quello di prima */
+    if (course === "it") {
+      var S = itSrs(), L = jget("cp-it-lessons-v1");
+      itEntries(r).forEach(function (e) { S[e.id] = { c: { state: FSRS.REVIEW, step: null, st: PL.P.it.stab, df: 5, due: due(now), last: now }, n: 0, lr: now, pl: 1 }; n++; });
+      (window.ITLESSONS || []).forEach(function (l) { if (l.n <= r) { var x = L[l.id] || {}; if (!x.done) { L[l.id] = { best: Math.max(x.best || 0, 80), done: now, seen: x.seen || 0, pl: 1 }; } } });
+      jset("cp-it-srs-v1", S); jset("cp-it-lessons-v1", L);
+    } else {
+      var Z = CP.S();
+      zhKeys(r).forEach(function (kc) {
+        var st = PL.P.zh.stab[kc[1]] || 7;
+        Z[kc[0]] = { n: 1, st: st, df: 5, sd: FSRS.REVIEW, sp: null, lr: now, d: due(now), rp: 0, lp: 0, pl: 1, b: Math.max(1, Math.min(6, Math.floor(Math.log2(st)) + 1)) };
+        n++;
+      });
+      CP.setS(Z);
+    }
+    var adv = course === "it" ? r >= PL.P.it.advanced : r >= PL.P.zh.advanced;
+    CP.ux.set("pl", { d: now, c: course, decl: decl || [], est: est, r: r, n: n, adv: adv ? 1 : 0, unl0: JSON.parse(before) });
+    if (CP.game && CP.game.grant) CP.game.grant(PL.grantFor(course, r));
+    if (CP.unlock) CP.unlock.check(true);
+    return n;
+  }
+  /* annullare il salto: via le parole segnate dal test e mai ripassate, via i punti, gli sblocchi tornano come prima */
+  function undo(quiet) {
+    var pl = CP.ux.get("pl"); if (!pl || pl.undone) return 0;
+    var n = 0;
+    if (pl.c === "it") {
+      var S = itSrs(), L = jget("cp-it-lessons-v1");
+      Object.keys(S).forEach(function (k) { if (S[k] && S[k].pl && !S[k].n) { delete S[k]; n++; } });
+      Object.keys(L).forEach(function (k) { var x = L[k]; if (x && x.pl && (x.best || 0) <= 80) delete L[k]; });
+      jset("cp-it-srs-v1", S); jset("cp-it-lessons-v1", L);
+    } else {
+      var Z = CP.S();
+      Object.keys(Z).forEach(function (k) { if (Z[k] && Z[k].pl && Z[k].n === 1) { delete Z[k]; n++; } });
+      CP.setS(Z);
+    }
+    if (CP.game && CP.game.ungrant) CP.game.ungrant();
+    pl.undone = 1; CP.ux.set("pl", pl);
+    if (!quiet && pl.unl0) { CP.ux.set("unl", pl.unl0); if (CP.unlock) CP.unlock.check(true); }
+    return n;
+  }
+  CP.placement = { PL: PL, run: run, build: BUILD, pool: pool, apply: apply, undo: undo, preview: function (course, r) { return course === "it" ? itEntries(r).length : zhKeys(r).length; } };
+})();
+/* ---- ui/onboarding.js ---- */
+/* ===== màndarínō · il flusso del benvenuto (caricato al primo uso: lo apre ui/welcome.js). Benvenuto una volta sola (corso di cinese: cp-ux-v1.onboarded; corso di italiano: cp-it-welcome).
+   Un flusso a schermo pieno, uguale per i due corsi (cambiano i testi e la prima prova):
+     1. intro animata (al massimo 6 s, senza «salta»: logo e wordmark, à í ō prendono il colore del loro tono; con
+        prefers-reduced-motion è ferma);
+     2. le porte: «Parto da zero», «Conosco già le basi», «Ho già un backup o un altro dispositivo»; in piccolo, l'altro corso;
+     3. lo scopo (facoltativo: suggerisce l'obiettivo e resta sul dispositivo);
+     a. da zero: obiettivo, primo successo in meno di un minuto (cinese: i quattro toni di 妈 麻 马 骂; italiano: l'accento di
+        ciao / grazie / buongiorno), poi la prima carta;
+     b. le basi: cinque domande su di sé, il test (ui/placement.js), il livello proposto che si può correggere, la conferma;
+     c. un altro dispositivo: niente test, direttamente a sincronizzazione, QR o backup (pwa/sync.js, pwa/qr-transfer.js).
+   CP.onboarding.open(passo) lo riapre (⚙️ → «Rifai il test di livello»). Un'azione primaria per schermata. ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var IT = lsGet("cp-course") === "it", C = IT ? "it" : "zh";
+  var GOALS = [5, 10, 20], PURPOSE = { travel: 10, work: 10, exam: 20, family: 10, curious: 5 };
+  var st = { goal: 10, purpose: null, path: null, decl: [-1, -1, -1, -1, -1], r: 1, est: 0 };
+  var box = null;
+  function reduce() { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function done() { return IT ? !!lsGet("cp-it-welcome") : !!CP.ux.get("onboarded"); }
+  function markDone() { if (IT) lsSet("cp-it-welcome", "1"); else CP.ux.set("onboarded", 1); }
+  function L(k, v) { return T(k, Object.assign({ l: T(IT ? "onb.lIt" : "onb.lZh") }, v || {})); }
+
+  function open(step) {
+    if (!box) {
+      box = document.createElement("div"); box.id = "onb"; box.className = "onb"; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", T("onb.aria"));
+      document.body.appendChild(box);
+      box.addEventListener("click", onClick);
+    }
+    CP.trap(box, function () { if (!/^(intro|test)$/.test(cur)) later(); });
+    document.body.classList.add("in-onb");
+    go(step || (sessionIntro() ? "door" : "intro"));
+  }
+  function close() { if (!box) return; CP.untrap(box); document.body.classList.remove("in-onb"); box.innerHTML = ""; }
+  function sessionIntro() { try { return sessionStorage.getItem("md-intro") === "1"; } catch (e) { return false; } }
+  var cur = "", timer = 0;
+  function go(step) {
+    cur = step; clearTimeout(timer);
+    box.innerHTML = '<div class="onb-in">' + SCREENS[step]() + "</div>";
+    box.scrollTop = 0;
+    if (step === "intro") {
+      try { sessionStorage.setItem("md-intro", "1"); } catch (e) {}
+      timer = setTimeout(function () { go("door"); }, reduce() ? 1600 : 3800);   /* sempre sotto i 6 s */
+    } else CP.focusFirst(box);
+    if (step === "test") startTest();
+  }
+  function later() { markDone(); close(); }
+
+  /* ---- le schermate ---- */
+  function wordmark() {
+    return '<div class="onb-wm" aria-hidden="true">m<span class="wm-t4">à</span>ndar<span class="wm-t2">í</span>n<span class="wm-t1">ō</span></div>';
+  }
+  function choice(attr, val, on, label) { return '<button type="button" ' + attr + '="' + val + '"' + (on ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + label + "</button>"; }
+  var SCREENS = {
+    intro: function () {
+      return '<div class="onb-intro' + (reduce() ? " still" : "") + '"><svg class="onb-logo" viewBox="300 30 200 200" aria-hidden="true" focusable="false"><use href="#mandarin-symbol"/></svg>' + wordmark() +
+        '<p class="onb-sub">' + esc(L("onb.tag")) + '</p><span class="sr">màndarínō</span></div>';
+    },
+    door: function () {
+      var other = IT ? '<button type="button" class="onb-link" data-course-set="zh" lang="it">🇮🇹 Voglio imparare il cinese</button>' : '<button type="button" class="onb-link" data-course-set="it" lang="zh-CN">🇨🇳 我是中国人，我想学意大利语</button>';
+      return '<div class="onb-head"><svg class="onb-mini" viewBox="300 30 200 200" aria-hidden="true" focusable="false"><use href="#mandarin-symbol"/></svg><h2>' + esc(L("onb.hello")) + "</h2><p>" + esc(L("onb.helloSub")) + "</p></div>" +
+        '<div class="onb-doors">' +
+        door("zero", "🌱", L("onb.zero"), L("onb.zeroSub")) + door("basics", "🧭", L("onb.basics"), L("onb.basicsSub")) + door("have", "📲", L("onb.have"), L("onb.haveSub")) + "</div>" +
+        '<div class="onb-foot">' + other + '<button type="button" class="onb-link" data-onb-later>' + esc(T("onb.later")) + "</button></div>";
+    },
+    purpose: function () {
+      return '<div class="onb-head"><h2>' + esc(L("onb.why")) + "</h2><p>" + esc(T("onb.whySub")) + '</p></div><div class="onb-chips" role="group" aria-label="' + CP.attr(L("onb.why")) + '">' +
+        Object.keys(PURPOSE).map(function (p) { return choice("data-onb-purpose", p, st.purpose === p, esc(T("onb.p." + p))); }).join("") + "</div>" +
+        '<button type="button" class="btn-main" data-onb-next="' + (st.path === "zero" ? "goal" : "declare") + '">' + esc(T(st.purpose ? "onb.next" : "onb.skip")) + "</button>" + back("door");
+    },
+    goal: function () {
+      return '<div class="onb-head"><h2>' + esc(T("onb.goal")) + "</h2><p>" + esc(T("onb.goalSub")) + '</p></div><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("onb.goal")) + '">' +
+        GOALS.map(function (n) { return choice("data-onb-goal", n, st.goal === n, n); }).join("") + '</div><p class="small muted">' + esc(T("onb.goalHint", { n: st.goal, m: Math.max(3, Math.round(st.goal * 0.9)) })) + "</p>" +
+        '<button type="button" class="btn-main" data-onb-next="' + (st.path === "zero" ? "first" : "finish") + '">' + esc(T(st.path === "zero" ? "onb.next" : "onb.start")) + "</button>" + back(st.path === "zero" ? "purpose" : "result");
+    },
+    first: function () { return IT ? firstIt() : firstZh(); },
+    declare: function () {
+      var rows = [0, 1, 2, 3, 4].map(function (i) {
+        return '<div class="onb-decl"><b>' + esc(T("onb.d" + i + (IT ? "it" : ""))) + '</b><div class="seg" role="group" aria-label="' + CP.attr(T("onb.d" + i + (IT ? "it" : ""))) + '">' +
+          [0, 1, 2, 3].map(function (v) { return choice("data-onb-decl", i + ":" + v, st.decl[i] === v, esc(T("onb.s" + v))); }).join("") + "</div></div>";
+      }).join("");
+      var all = st.decl.every(function (x) { return x >= 0; });
+      return '<div class="onb-head"><h2>' + esc(T("onb.declT")) + "</h2><p>" + esc(T("onb.declSub")) + "</p></div>" + rows +
+        '<button type="button" class="btn-main" data-onb-next="test"' + (all ? "" : " disabled") + ">" + esc(T("onb.testGo")) + "</button>" + back("purpose");
+    },
+    test: function () { return '<div class="onb-test" id="onb-test"></div>'; },
+    result: function () {
+      var n = CP.placement.preview(C, st.r), h;
+      if (IT) h = st.r ? T("onb.resIt", { l: st.r, n: st.r + 1 }) : T("onb.resIt0");
+      else h = st.r <= 1 ? T("onb.resZh1") : T("onb.resZh", { k: st.r - 1, r: st.r });
+      var dv = st.decl.filter(function (x) { return x >= 0; }), avg = dv.length ? dv.reduce(function (a, b) { return a + b; }, 0) / dv.length : 0, decl = CP.placement.PL.startOf(C, st.decl);
+      var cmp = st.r > decl + (IT ? 3 : 0) ? "onb.cmpMore" : st.r < decl - (IT ? 3 : 1) ? "onb.cmpLess" : "onb.cmpSame";
+      var max = IT ? 30 : 6, min = IT ? 0 : 1;
+      return '<div class="onb-head"><h2>' + esc(T("onb.resT")) + "</h2><p>" + esc(T(cmp)) + "</p></div>" +
+        '<div class="panel onb-res"><p style="margin:0"><b>' + esc(h) + "</b></p>" + (n ? '<p class="small muted" style="margin:6px 0 0">' + esc(T(IT ? "onb.resNIt" : "onb.resN", { n: n })) + "</p>" : "") +
+        '<div class="onb-step" role="group" aria-label="' + CP.attr(T("onb.adjust")) + '"><button type="button" class="btn-s" data-onb-r="-1"' + (st.r <= min ? " disabled" : "") + ' aria-label="' + CP.attr(T("onb.less")) + '">−</button><span>' + esc(T(IT ? "onb.stepIt" : "onb.stepZh", { r: st.r })) + '</span><button type="button" class="btn-s" data-onb-r="1"' + (st.r >= max ? " disabled" : "") + ' aria-label="' + CP.attr(T("onb.more")) + '">+</button></div>' +
+        '<p class="small muted" style="margin:0">' + esc(T("onb.undoHint")) + "</p></div>" +
+        '<button type="button" class="btn-main" data-onb-confirm>' + esc(T("onb.confirm")) + '</button><button type="button" class="btn-s" data-onb-next="declare">' + esc(T("onb.redo")) + "</button>";
+    },
+    have: function () {
+      return '<div class="onb-head"><h2>' + esc(T("onb.haveT")) + "</h2><p>" + esc(T("onb.haveSub2")) + '</p></div><div class="onb-doors">' +
+        door("h-sync", "☁️", T("onb.hSync"), T("onb.hSyncSub")) + door("h-qr", "📷", T("onb.hQr"), T("onb.hQrSub")) + door("h-file", "💾", T("onb.hFile"), T("onb.hFileSub")) + "</div>" + back("door");
+    }
+  };
+  function door(id, ico, t, sub) { return '<button type="button" class="onb-door" data-onb-door="' + id + '"><span class="onb-dico" aria-hidden="true">' + ico + '</span><span><b>' + esc(t) + "</b><small>" + esc(sub) + "</small></span></button>"; }
+  function back(to) { return '<button type="button" class="onb-link" data-onb-back="' + to + '">← ' + esc(T("onb.back")) + "</button>"; }
+
+  /* ---- primo successo ---- */
+  var TONES = [["妈", "mā", "onb.t1"], ["麻", "má", "onb.t2"], ["马", "mǎ", "onb.t3"], ["骂", "mà", "onb.t4"]], quiz = null;
+  function firstZh() {
+    if (!quiz) quiz = { a: Math.floor(Math.random() * 4), got: -1 };
+    var cards = TONES.map(function (t, i) {
+      return '<button type="button" class="onb-tone t' + (i + 1) + '" data-onb-say="' + t[0] + '"><span class="han" lang="zh-CN">' + t[0] + '</span><span class="py">' + CP.pinyinHTML(t[1]) + "</span>" + CP.toneCurveHTML(t[1]) + "<small>" + esc(T(t[2])) + "</small></button>";
+    }).join("");
+    var q = quiz.got < 0 ? '<p><b>' + esc(T("onb.toneQ")) + '</b></p><button type="button" class="btn-s" data-onb-say="' + TONES[quiz.a][0] + '" data-onb-q>🔊 ' + esc(T("onb.toneAgain")) + '</button><div class="onb-chips">' + TONES.map(function (t, i) { return '<button type="button" data-onb-tq="' + i + '"><span class="han" lang="zh-CN">' + t[0] + "</span> " + CP.pinyinHTML(t[1]) + "</button>"; }).join("") + "</div>"
+      : '<p class="verdict ' + (quiz.got === quiz.a ? "ok" : "") + '">' + esc(T(quiz.got === quiz.a ? "onb.toneOk" : "onb.toneNo", { c: TONES[quiz.a][0] + " " + TONES[quiz.a][1] })) + "</p>";
+    return '<div class="onb-head"><h2>' + esc(T("onb.tonesT")) + "</h2><p>" + esc(T("onb.tonesSub")) + '</p></div><div class="onb-tones">' + cards + "</div>" + q +
+      '<button type="button" class="btn-main" data-onb-next="finish"' + (quiz.got < 0 ? " disabled" : "") + ">" + esc(T("onb.firstCard")) + "</button>";
+  }
+  var WORDS_IT = [["ciao", "CIA·o", "你好；再见"], ["grazie", "GRA·zie", "谢谢"], ["buongiorno", "buon·GIOR·no", "早上好"]];
+  function firstIt() {
+    if (!quiz) quiz = { got: -1 };
+    var cards = WORDS_IT.map(function (w) {
+      var syl = w[1].split("·").map(function (s) { return s === s.toUpperCase() ? "<b>" + esc(s.toLowerCase()) + "</b>" : esc(s); }).join("·");
+      return '<button type="button" class="onb-tone" data-onb-sayit="' + w[0] + '"><span class="onb-it" lang="it">' + syl + "</span><small>" + esc(w[2]) + " 🔊</small></button>";
+    }).join("");
+    var opts = ["buon", "gior", "no"];
+    var q = quiz.got < 0 ? '<p><b>' + esc(T("onb.stressQ")) + '</b></p><div class="onb-chips">' + opts.map(function (o, i) { return '<button type="button" data-onb-sq="' + i + '" lang="it">' + o + "</button>"; }).join("") + "</div>"
+      : '<p class="verdict ' + (quiz.got === 1 ? "ok" : "") + '">' + esc(T(quiz.got === 1 ? "onb.stressOk" : "onb.stressNo")) + "</p>";
+    return '<div class="onb-head"><h2>' + esc(T("onb.stressT")) + "</h2><p>" + esc(T("onb.stressSub")) + '</p></div><div class="onb-tones it">' + cards + "</div>" + q +
+      '<button type="button" class="btn-main" data-onb-next="finish"' + (quiz.got < 0 ? " disabled" : "") + ">" + esc(T("onb.firstCard")) + "</button>";
+  }
+
+  /* ---- il test ---- */
+  function startTest() {
+    var el = document.getElementById("onb-test");
+    CP.placement.run(el, C, st.decl, function (s) { st.est = CP.placement.PL.estimate(s); st.r = CP.placement.PL.result(s); go("result"); });
+  }
+
+  /* ---- fine ---- */
+  function finish() {
+    markDone();
+    if (st.purpose) CP.ux.set("purpose", st.purpose);
+    if (CP.game && CP.game.setGoal) CP.game.setGoal(st.goal);
+    if (!IT && CP.studyCfg) CP.studyCfg({ n: st.goal });
+    close();
+    if (IT) { if (CP.itShow) CP.itShow(st.path === "zero" ? "review" : "lessons"); return; }
+    if (st.path === "zero") { CP.show("study"); if (CP.studyStart) CP.studyStart(); }
+    else CP.show("path");
+  }
+  function onClick(e) {
+    var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.disabled) return;
+    var a = function (n) { return b.getAttribute(n); };
+    if (b.hasAttribute("data-course-set")) return;   /* lo gestisce il corso (it/course.js): ricarica la pagina */
+    if (b.hasAttribute("data-onb-later")) { CP.sfx("tap"); later(); return; }
+    if (a("data-onb-back")) { CP.sfx("tap"); go(a("data-onb-back")); return; }
+    if (a("data-onb-door")) {
+      var d = a("data-onb-door"); CP.sfx("tap");
+      if (d === "zero" || d === "basics") { st.path = d; go("purpose"); return; }
+      if (d === "have") { go("have"); return; }
+      /* chi arriva da un altro dispositivo non rifà il benvenuto né il test, e ritrova tutte le schede */
+      if (CP.unlock) CP.unlock.unlockAll(); markDone(); close();
+      if (d === "h-qr" && CP.qrReceive) CP.qrReceive();
+      else CP.openSettings(d === "h-sync" ? "set-sync" : "set-data");
+      return;
+    }
+    if (a("data-onb-purpose")) { st.purpose = a("data-onb-purpose"); st.goal = PURPOSE[st.purpose]; CP.sfx("tap"); go("purpose"); return; }
+    if (a("data-onb-goal")) { st.goal = +a("data-onb-goal"); CP.sfx("tap"); go("goal"); return; }
+    if (a("data-onb-decl")) { var p = a("data-onb-decl").split(":"); st.decl[+p[0]] = +p[1]; CP.sfx("tap"); go("declare"); var r = box.querySelectorAll(".onb-decl")[+p[0] + 1]; if (r) r.scrollIntoView({ block: "nearest" }); return; }
+    if (a("data-onb-r")) { var mx = IT ? 30 : 6, mn = IT ? 0 : 1; st.r = Math.max(mn, Math.min(mx, st.r + +a("data-onb-r"))); CP.sfx("tap"); go("result"); return; }
+    if (b.hasAttribute("data-onb-confirm")) { CP.placement.apply(C, st.r, st.decl.slice(), st.est); CP.sfx("ok"); go("goal"); return; }
+    if (a("data-onb-say")) { CP.speak(a("data-onb-say"), { el: b, rate: 0.8 }); return; }
+    if (a("data-onb-sayit")) { CP.speak(a("data-onb-sayit"), { lang: "it-IT", el: b, voiceURI: CP.itVoiceURI ? CP.itVoiceURI() : "" }); return; }
+    if (a("data-onb-tq") !== null) { quiz.got = +a("data-onb-tq"); CP.sfx(quiz.got === quiz.a ? "ok" : "tap"); go("first"); return; }
+    if (a("data-onb-sq") !== null) { quiz.got = +a("data-onb-sq"); CP.sfx(quiz.got === 1 ? "ok" : "tap"); go("first"); return; }
+    if (a("data-onb-next")) { var n = a("data-onb-next"); CP.sfx("tap"); if (n === "finish") finish(); else go(n); }
+  }
+
+  CP.onboarding = { open: open, redoTest: function () { st.path = "basics"; open("declare"); }, isOpen: function () { return !!box && !box.hidden; }, done: done };
+})();
+</script>
+<script>
+/* ---- data/placement.js + ui/placement.js + ui/onboarding.js (al primo uso di CP.placement, CP.onboarding) ---- */
+(function () { var P = ["placement","onboarding"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-placement"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
+  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
+</script>
 <script>
 /* ---- ui/welcome.js ---- */
-/* ===== V6.7 · U8: benvenuto, una volta sola (cp-ux-v1.onboarded) ===== */
+/* ===== màndarínō · benvenuto: l'innesco. Il flusso (intro, porte, test di livello) sta in ui/onboarding.js e nel file
+   unico si carica solo quando serve (tools/build.mjs, LAZYMOD): chi ha già fatto il benvenuto non lo paga all'avvio.
+   Corso di cinese: cp-ux-v1.onboarded; corso di italiano: cp-it-welcome. ===== */
 (function () {
-  var CP = window.CP, goal = 5;
-  function html() {
-    var w = CP.WORDS["我"], T = CP.t;
-    return '<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">' + T("wel.title") + '</h2><button type="button" class="fam-x btn-s" data-famclose id="w-later">' + T("common.later") + "</button></div>" +
-      '<p style="margin:0">' + CP.esc(T("wel.intro", { n: CP.ORDER.length })) + "</p>" +
-      '<div class="fc"><div class="order"><span>' + T("wel.read") + "</span><span>" + T("wel.write") + "</span><span>" + T("wel.mean") + "</span></div>" +
-      '<div class="order" style="align-items:center;color:var(--ink)"><span class="cd-py" style="font-size:26px">' + CP.pinyinHTML(w.py) + '</span><span class="cd-hz han" lang="zh-CN" style="font-size:48px">' + CP.hanziHTML(w.hz, w.py) + '</span><span style="font-size:18px;font-weight:600">' + CP.esc(CP.gloss(w)) + "</span></div>" +
-      '<p class="small muted" style="margin:0">' + T("wel.tones") + "</p></div>" +
-      "<div><b>" + T("wel.goal") + '</b><div class="welcome-goal" role="group" aria-label="' + CP.attr(T("wel.goal")) + '" style="margin-top:8px">' +
-      [5, 10, 20].map(function (n) { return '<button type="button" data-wgoal="' + n + '"' + (n === goal ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + n + "</button>"; }).join("") + "</div>" +
-      '<p class="small muted" style="margin:6px 0 0">' + T("wel.goalHint") + "</p></div>" +
-      '<button type="button" class="btn-main" id="w-start" style="margin-top:0">' + T("wel.start", { n: goal }) + "</button>" +
-      '<button type="button" class="btn-s" data-course-set="it" lang="zh-CN">🇨🇳 我是中国人，我想学意大利语</button></div>';
-  }
-  CP.welcome = function (force) {
-    if (!force && CP.ux.get("onboarded")) return;
-    CP.openSheet(html());
-  };
-  var fam = document.getElementById("fam");
-  fam.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("[data-wgoal], #w-start, #w-later") : null; if (!b) return;
-    if (b.hasAttribute("data-wgoal")) { goal = parseInt(b.getAttribute("data-wgoal"), 10); var card = fam.querySelector(".welcome-card"); if (card) { CP.openSheet(html()); } return; }
-    CP.ux.set("onboarded", 1);
-    if (b.id === "w-start") {
-      if (CP.studyCfg) CP.studyCfg({ n: goal }); if (CP.game && CP.game.setGoal) CP.game.setGoal(goal === 20 ? 20 : goal);
-      CP.closeSheet(); CP.show("study"); if (CP.studyStart) CP.studyStart();
-    }
-  });
+  var CP = window.CP;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  var IT = lsGet("cp-course") === "it";
+  function done() { return IT ? !!lsGet("cp-it-welcome") : !!CP.ux.get("onboarded"); }
+  function markDone() { if (IT) { try { localStorage.setItem("cp-it-welcome", "1"); } catch (e) {} } else CP.ux.set("onboarded", 1); }
+  CP.welcome = function (force) { if (!force && done()) return; CP.onboarding.open(); };
   /* chi ha già dei progressi non è nuovo */
-  if (!CP.ux.get("onboarded")) {
-    if (Object.keys(CP.S()).length) CP.ux.set("onboarded", 1);
+  if (!done()) {
+    var progress = IT ? (function () { try { var o = JSON.parse(lsGet("cp-it-srs-v1") || "{}"); return Object.keys(o).some(function (k) { return k !== "__meta"; }); } catch (e) { return false; } })() : Object.keys(CP.S()).length > 0;
+    if (progress) markDone();
     else setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest" && !window.__mdGoing) CP.welcome(); }, 400);
   }
 })();
 </script>
-<script>
+<script type="text/plain" id="lazy-mod-itcheck">
 /* ---- it/checker.js ---- */
 /* ===== màndarínō · 句子检查: il correttore di frasi italiane del corso per chi parla cinese.
    Chi studia scrive una frase in italiano; il correttore controlla solo quello che sa controllare con sicurezza, con le
@@ -24334,7 +25175,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     return '<div class="panel" id="itc" style="margin-top:20px"><span class="tag muted small">✍️ 句子检查</span>' +
       '<p class="small muted" style="margin:4px 0 8px">写一句意大利语，我来检查冠词、名词、形容词和动词是否配合，还有一些拼写。我不检查意思和语序。</p>' +
       '<form data-itc-form style="display:flex;gap:8px;flex-wrap:wrap"><input id="itc-in" type="text" lang="it" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="意大利语句子" placeholder="La ragazza è alta." value="' + CP.attr(last) + '" style="flex:1 1 220px;min-width:0">' +
-      '<button type="submit" class="btn-main" style="margin:0">检查</button></form><div id="itc-out" aria-live="polite">' + resultHTML(last) + "</div></div>";
+      '<button type="submit" class="btn-s" style="margin:0">检查</button></form><div id="itc-out" aria-live="polite">' + resultHTML(last) + "</div></div>";
   };
   document.addEventListener("submit", function (e) {
     var f = e.target; if (!f || !f.hasAttribute || !f.hasAttribute("data-itc-form")) return;
@@ -24344,6 +25185,11 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var r = check(last); if (last.trim() && r.known) CP.sfx(r.issues.some(function (x) { return x.kind !== "spell"; }) ? "ko" : "ok");
   });
 })();
+</script>
+<script>
+/* ---- it/checker.js (al primo uso di CP.itCheck, CP.itCheckHTML) ---- */
+(function () { var P = ["itCheck","itCheckHTML"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-itcheck"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
+  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
 </script>
 <script>
 /* ---- it/course.js ---- */
@@ -24517,13 +25363,16 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var main = document.querySelector("main") || document.body;
   var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
   if (CP.immerse) CP.immerse.watch(view);
-  var TABS = [["lessons", "📘", Z.lessons], ["words", "📖", Z.words], ["review", "🎴", Z.review], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
+  /* l'ordine è quello in cui le schede si aprono (ui/unlock.js, docs/ux-architettura.md) */
+  var TABS = [["lessons", "📘", Z.lessons], ["review", "🎴", Z.review], ["words", "📖", Z.words], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
   var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", "意大利语课程");
   dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");
   document.body.appendChild(dock);
   var tab = lsGet("cp-it-tab") || "lessons";
   if (!TABS.some(function (t) { return t[0] === tab; })) tab = "lessons";
+  if (CP.unlock) { CP.unlock.paint(); tab = CP.unlock.nearest(tab); }
   function show(t) {
+    if (CP.unlock) { t = CP.unlock.nearest(t); CP.unlock.seen(t); }
     tab = t; lsSet("cp-it-tab", t);
     Array.prototype.forEach.call(dock.querySelectorAll("[data-it-tab]"), function (b) { var on = b.getAttribute("data-it-tab") === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
     render(); window.scrollTo(0, 0);
@@ -24548,7 +25397,10 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
       return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-itl-open="' + CP.attr(l.id) + '"><span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + '</span><span class="ls-t"><b>' + esc(l.title) + '</b><span class="small muted">' + esc(l.goal) + '</span></span><span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? "已读" : "") + "</span></button>";
     }).join("");
-    return '<h2 style="margin-top:20px">意大利语课程</h2><p class="lede" style="margin:4px 0">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ' + PASS + "% 以上就算通过。</p>" +
+    /* grado e serie anche in questo corso (cp-it-game-v1), con i nomi cinesi dei gradi */
+    var rk = CP.game ? CP.game.rank() : null, sk = CP.game ? CP.game.streak() : 0;
+    var rkH = rk ? '<div class="panel it-rank">' + CP.stamp(rk) + '<div><b>' + esc(rk.name) + '</b><div class="small muted">' + esc(CP.t(rk.next ? "itr.line" : "itr.lineMax", { xp: rk.xp, s: sk, n: rk.next })) + "</div></div></div>" : "";
+    return rkH + '<h2 style="margin-top:20px">意大利语课程</h2><p class="lede" style="margin:4px 0">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ' + PASS + "% 以上就算通过。</p>" +
       '<p class="small muted" style="margin:0 0 10px">已通过 ' + done + " / " + ITLESSONS.length + ' 课。</p><div class="ls-list">' + cards + "</div>";
   }
   function lessonHTML(l) {
@@ -24660,7 +25512,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var nc = SCH.review(card, r, now);
     S[e.id] = { c: nc, n: (rec.n || 0) + 1, lr: now };
     ssave(S); rv.cur = null; rv.shown = false; rv.done++;
-    if (CP.game && CP.game.sentence && r >= 3) { try { CP.game.sentence(); } catch (x) {} }
+    if (CP.game && CP.game.addWord && r >= 2) { try { CP.game.addWord(e.id); } catch (x) {} }   /* 10 punti, una volta al giorno per parola, come nel corso di cinese */
   }
 
   /* ---------------- 变位: coniugazioni ---------------- */
@@ -24716,7 +25568,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     else if (b.hasAttribute("data-itx-check")) {
       var by = {}; px.bank.forEach(function (x) { by[x.id] = x.w; });
       var got = px.pick.map(function (id) { return by[id]; }).join(" ").toLowerCase(), ok = got === px.t.join(" ").toLowerCase();
-      px.state = ok ? "ok" : "ko"; CP.sfx(ok ? "ok" : "ko"); if (ok) CP.speak(px.it, { lang: "it-IT", voiceURI: CP.itVoiceURI() });
+      px.state = ok ? "ok" : "ko"; CP.sfx(ok ? "ok" : "ko"); if (ok && CP.game && CP.game.sentence) CP.game.sentence(); if (ok) CP.speak(px.it, { lang: "it-IT", voiceURI: CP.itVoiceURI() });
     } else if (b.hasAttribute("data-itx-next")) px = pxNew();
     CP.sfx("tap"); pxPaint();
   });
@@ -24764,7 +25616,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       if (a("data-itl-opt") !== null && Q.state === "play") { Q.choice = +a("data-itl-opt"); Q.state = Q.choice === q.a ? "ok" : "ko"; if (Q.state === "ok") Q.score++; CP.sfx(Q.state === "ok" ? "ok" : "ko"); render(); return; }
       if (b.hasAttribute("data-itl-next")) {
         if (Q.i + 1 < Q.l.quiz.length) { Q.i++; prepare(); ls.view = "quiz"; }
-        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) patch.done = Date.now(); lmark(Q.l.id, patch); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
+        else { var pct = Math.round(Q.score * 100 / Q.l.quiz.length), pr = lprog()[Q.l.id] || {}, patch = { best: Math.max(pr.best || 0, pct) }; if (pct >= PASS && !pr.done) { patch.done = Date.now(); if (CP.game && CP.game.xp) CP.game.xp(30); } lmark(Q.l.id, patch); if (CP.unlock) CP.unlock.check(); ls.view = "result"; CP.sfx(pct >= PASS ? "ok" : "tap"); }
         render(); window.scrollTo(0, 0); return;
       }
     }
@@ -24775,31 +25627,15 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     if (a("data-itr-grade") !== null) { grade(+a("data-itr-grade")); CP.sfx("tap"); render(); return; }
     /* coniugazioni */
     if (a("data-itc-tense") !== null) { cj.tense = a("data-itc-tense"); cj.q = null; render(); return; }
-    if (a("data-itc-opt") !== null && cj.state === "play") { cj.choice = +a("data-itc-opt"); cj.n++; cj.state = cj.q.opts[cj.choice] === cj.q.right ? "ok" : "ko"; if (cj.state === "ok") cj.score++; CP.sfx(cj.state === "ok" ? "ok" : "ko"); render(); return; }
+    if (a("data-itc-opt") !== null && cj.state === "play") { cj.choice = +a("data-itc-opt"); cj.n++; cj.state = cj.q.opts[cj.choice] === cj.q.right ? "ok" : "ko"; if (cj.state === "ok") { cj.score++; if (CP.game && CP.game.xp) CP.game.xp(3); } CP.sfx(cj.state === "ok" ? "ok" : "ko"); render(); return; }
     if (b.hasAttribute("data-itc-next")) { cj.q = null; render(); return; }
     /* frasi */
     if (a("data-itp-dlg") !== null) { ph.dlg = a("data-itp-dlg"); render(); window.scrollTo(0, 0); return; }
     if (b.hasAttribute("data-itp-back")) { ph.dlg = null; render(); return; }
   });
 
-  /* benvenuto in cinese, una volta sola */
-  var welcomed = false;
-  CP.welcome = function (force) {
-    if (!force && (welcomed || lsGet("cp-it-welcome"))) return;
-    welcomed = true;
-    CP.openSheet('<div class="welcome-card"><div class="fam-head"><h2 style="margin:0">欢迎来到意大利语课程！</h2><button type="button" class="fam-x btn-s" data-famclose data-itw-ok>好的</button></div>' +
-      "<p>这里有 " + ITLESSONS.length + " 课语法、" + LEX.length + " 个常用词、动词变位练习和中意对照的句子。所有内容都可以离线使用。</p>" +
-      '<p class="small muted">建议从第 1 课「发音」开始。想听意大利语，手机里需要有意大利语的语音（一般在「文字转语音」设置里下载）。</p>' +
-      '<button type="button" class="btn-main" data-itw-ok>开始第 1 课</button></div>');
-  };
-  document.getElementById("fam").addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("[data-itw-ok]") : null; if (!b) return;
-    lsSet("cp-it-welcome", "1");
-    if (b.classList.contains("btn-main")) { CP.closeSheet(); ls.cur = ITLESSONS[0]; ls.view = "lesson"; show("lessons"); }
-  });
-  if (CP.ux) CP.ux.set("onboarded", 1);   /* il benvenuto del corso di cinese non deve comparire qui */
+  /* il benvenuto (in cinese) è quello comune, ui/welcome.js: intro, porte, test di livello sulle 30 lezioni */
   show(tab);
-  setTimeout(function () { if (!CP.topSheet() && location.hash !== "#selftest") CP.welcome(); }, 500);
   /* tasto Indietro dell'APK: prima i fogli (già gestiti), poi la lezione aperta, poi la prima scheda */
   var prevBack = window.__mdBack;
   window.__mdBack = function () {
@@ -24914,6 +25750,8 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     if (document.body.classList.contains("course-it")) return false;   /* le azioni sono del corso di cinese */
     if (CP.topSheet && CP.topSheet() && CP.closeSheet) CP.closeSheet();
     if (CP.immerse && CP.immerse.active()) CP.immerse.leave();
+    /* una scheda ancora chiusa (ui/unlock.js): la più vicina aperta, senza errori */
+    if (CP.unlock && (a === "words" || a === "frasi") && !CP.unlock.ok(a === "frasi" ? "build" : "words")) { CP.show(CP.unlock.nearest(a === "frasi" ? "build" : "words")); return true; }
     try { f(); } catch (e) {}
     return true;
   };

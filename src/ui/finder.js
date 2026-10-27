@@ -5,7 +5,15 @@
   var CP = window.CP, esc = CP.esc, T = CP.t;
   var btn = document.getElementById("find-btn");
   function norm(s) { return " " + String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9㐀-鿿]+/g, " ").trim() + " "; }
-  function go(tab, fn) { CP.closeSheet(); CP.show(tab); if (fn) setTimeout(fn, 60); }
+  /* una scheda ancora chiusa (ui/unlock.js) si apre in immersione, senza mostrarla */
+  function go(tab, fn) { CP.closeSheet(); if (CP.unlock && !CP.unlock.ok(tab)) { CP.unlock.peek(tab, fn || function () {}); return; } CP.show(tab); if (fn) setTimeout(fn, 60); }
+  /* gli strumenti avanzati di Frasi ancora chiusi: si vedono, con «si apre…», ma non portano da nessuna parte */
+  var LOCK = { "fd.t5": "fr:pat", "fd.t7": "fr:lab", "fd.t8": "fr:slot", "fd.t10": "fr:thought", "fd.t11": "fr:reader", "fd.t13": "words" };
+  function lockOf(id) {
+    var k = LOCK[id]; if (!k || !CP.unlock) return "";
+    if (k === "words") return CP.unlock.ok("words") ? "" : CP.unlock.why("words");
+    return CP.unlock.toolOk(k.slice(3)) && CP.unlock.ok("build") ? "" : CP.unlock.why(CP.unlock.ok("build") ? k : "build");
+  }
   /* strumenti: [icona, nome, parole chiave, azione] */
   var TOOLS = [
     ["🎴", "fd.t0", "ripasso carte flashcard sessione oggi fsrs", function () { go("study", function () { if (CP.studyStart) CP.studyStart(); }); }],
@@ -30,7 +38,7 @@
   function index() {
     if (IDX) return IDX;
     IDX = [];
-    TOOLS.forEach(function (t) { var n = T(t[1]); IDX.push({ g: 0, ico: t[0], t: n, sub: "", k: norm(n + " " + I18N.it[t[1]] + " " + t[2]), run: t[3] }); });
+    TOOLS.forEach(function (t) { var n = T(t[1]); IDX.push({ g: 0, ico: t[0], t: n, sub: "", id: t[1], k: norm(n + " " + I18N.it[t[1]] + " " + t[2]), run: t[3] }); });
     (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) {
       IDX.push({ g: 1, ico: "📘", t: l.title, sub: l.goal || "", k: norm(l.title + " " + (l.goal || "") + " " + (l.id || "")), run: function () { go("build", function () { CP.build.openLesson(l.id); }); } });
     });
@@ -69,9 +77,10 @@
     var h = "", last = -1;
     cur.forEach(function (x, i) {
       if (x.g !== last) { h += '<div class="fd-g">' + GN[x.g] + "</div>"; last = x.g; }
+      x.lock = x.id ? lockOf(x.id) : ""; var sub = x.lock ? "🔒 " + x.lock : x.sub;
       h += '<button type="button" class="fd-it" data-fd="' + i + '">' +
         (x.hz ? '<span class="fd-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="fd-t"><b>' + CP.pinyinHTML(x.py) + "</b><i lang=\"it\">" + esc(x.t) + "</i></span>"
-              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"' + (x.g ? ' lang="it"' : "") + "><b>" + esc(x.t) + "</b>" + (x.sub ? "<i>" + esc(x.sub) + "</i>" : "") + "</span>") + "</button>";
+              : '<span class="fd-ico" aria-hidden="true">' + x.ico + '</span><span class="fd-t"' + (x.g ? ' lang="it"' : "") + "><b>" + esc(x.t) + "</b>" + (sub ? "<i>" + esc(sub) + "</i>" : "") + "</span>") + "</button>";
     });
     box.innerHTML = h;
   }
@@ -85,7 +94,9 @@
     q.addEventListener("keydown", function (e) { if (e.key === "Enter" && cur[0]) { e.preventDefault(); cur[0].run(); } });
     document.getElementById("fd-res").addEventListener("click", function (e) {
       var b = e.target.closest ? e.target.closest("[data-fd]") : null; if (!b) return;
-      var x = cur[+b.getAttribute("data-fd")]; if (x) { CP.sfx("tap"); x.run(); }
+      var x = cur[+b.getAttribute("data-fd")]; if (!x) return;
+      if (x.lock) { CP.toast(x.lock); return; }
+      CP.sfx("tap"); x.run();
     });
   }
   CP.finder = open;

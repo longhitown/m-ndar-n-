@@ -2,7 +2,7 @@
    sistema). Non scatta dove lo scorrimento ha già un altro senso: carte da girare, lavagna, cursori, campi di testo, righe
    che scorrono di lato, fogli aperti, sessione di studio, corso di italiano. ===== */
 (function () {
-  var CP = window.CP, TABS = ["path", "words", "study", "build"], x0 = 0, y0 = 0, t0 = 0, ok = false;
+  var CP = window.CP, ALL = ["path", "study", "words", "build"], x0 = 0, y0 = 0, t0 = 0, ok = false;
   function scrollsX(el) {
     for (; el && el !== document.body; el = el.parentElement) {
       if (el.scrollWidth > el.clientWidth + 4) { var o = getComputedStyle(el).overflowX; if (o === "auto" || o === "scroll") return true; }
@@ -28,7 +28,8 @@
     if (dt > 700 || Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 2.2) return;
     /* dal bordo sinistro è il gesto «indietro» del sistema: non lo si contende */
     if (x0 < 24 && dx > 0) return;
-    var cur = TABS.filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0], i = TABS.indexOf(cur), j = i + (dx < 0 ? 1 : -1);
+    var TABS = CP.unlock ? CP.unlock.tabs() : ALL;   /* solo le schede già aperte (ui/unlock.js) */
+    var cur = ALL.filter(function (t) { var v = document.getElementById("view-" + t); return v && !v.hidden; })[0], i = TABS.indexOf(cur), j = i + (dx < 0 ? 1 : -1);
     if (i < 0 || j < 0 || j >= TABS.length) { if (CP.haptic) CP.haptic(6); return; }
     CP.show(TABS[j]); if (CP.haptic) CP.haptic(10);
   }, { passive: true });
