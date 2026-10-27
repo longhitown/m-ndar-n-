@@ -1154,6 +1154,55 @@ try {
     check("Logo, interfaccia in cinese: toccando una foglia l'avviso dice «第三声»", /第三声/.test(leafZh), leafZh);
     await ctx.close();
   }
+  /* Taccuino del viaggiatore (corso di cinese): senza errori è bello lo stesso; con una coppia davvero scambiata compare l'aneddoto;
+     una pagina diventa un'immagine solo se la persona lo sceglie; nessuna richiesta di rete */
+  for (const lang of ["it", "zh"]) {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+    await ctx.addInitScript((l) => { try { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); localStorage.setItem("cp-lang", l); } catch (e) {} }, lang);
+    const p = await ctx.newPage(); const errs = [], ext = []; p.on("pageerror", (e) => errs.push(e.message));
+    p.on("request", (r) => { const u = r.url(); if (!/^(http:\/\/127\.0\.0\.1|data:|blob:|file:)/.test(u)) ext.push(u); });
+    await p.goto(base); await p.waitForTimeout(700);
+    const L = lang.toUpperCase() + " · ";
+    /* mille parole iniziate: arrivo a Xi'an (città 7) */
+    await p.evaluate(() => { SECTIONS.slice(0, 46).forEach((s) => CP.ORDER.forEach((k) => { if (CP.WORDS[k].sec === s.id) CP.S()[k] = { n: 3, sd: 2, st: 6, d: 1 }; })); CP.save(); CP.show("study", true, true); });
+    await p.waitForTimeout(800);
+    const c0 = await p.evaluate(() => ({ card: !!document.querySelector("#st-story .dy-card"), btn: !!document.querySelector("#st-story [data-diary-open]"), strip: !!document.querySelector("#st-story .dy-strip"), main: document.querySelectorAll("#st-story .btn-main").length }));
+    check(L + "Taccuino: la carta compare tra i progressi, con un solo pulsante secondario", c0.card && c0.btn && c0.strip && c0.main === 0, JSON.stringify(c0));
+    await p.click("[data-diary-open]"); await p.waitForTimeout(500);
+    const t0 = await p.evaluate(() => ({ map: !!document.querySelector(".dy-map"), aria: (document.querySelector(".dy-map") || { getAttribute: () => "" }).getAttribute("aria-label"), stops: document.querySelectorAll(".dy-city").length, off: document.querySelectorAll(".dy-city.off").length, pages: document.querySelectorAll(".dy-page").length, anec: document.querySelectorAll(".dy-note .dy-hand").length, empty: !!document.querySelector(".dy-empty"), over: document.documentElement.scrollWidth > innerWidth + 1 }));
+    check(L + "Taccuino senza errori: mappa con 11 città (4 ancora da raggiungere), 7 pagine di diario, nessun aneddoto, nessun «punto perso»", t0.map && /7/.test(t0.aria) && t0.stops === 11 && t0.off === 4 && t0.pages === 7 && t0.anec === 0 && t0.empty && !t0.over, JSON.stringify(t0));
+    /* una coppia nota: 妈/马 scambiate in una scelta multipla, 买/卖 nel tono (Dottore dei Toni) */
+    await p.evaluate(() => { CP.closeSheet(); CP.exConf("马", "妈", "mc-parola"); CP.confuse(3, 4, "买"); CP.show("study", true, true); }); await p.waitForTimeout(500);
+    await p.click("[data-diary-open]"); await p.waitForTimeout(500);
+    const t1 = await p.evaluate(() => { const ns = [...document.querySelectorAll(".dy-note .dy-hand")].map((e) => e.textContent); return { ns, lang: (document.querySelector(".dy-note .dy-hand") || { lang: "" }).lang, pair: [...document.querySelectorAll(".dy-pair .dy-hz")].map((e) => e.textContent).join(""), empty: !!document.querySelector(".dy-empty") }; });
+    const want = lang === "it" ? /cavallo/ : /马/;
+    check(L + "Taccuino con errori veri: compaiono solo gli aneddoti delle coppie scambiate (妈/马 e 买/卖), nella lingua dell'interfaccia, con la città al posto di {c}", t1.ns.length === 2 && t1.ns.some((x) => want.test(x)) && t1.ns.every((x) => !/\{c\}/.test(x) && /Xi'an|西安/.test(x)) && /妈马|马妈/.test(t1.pair) && /买卖|卖买/.test(t1.pair) && !t1.empty && t1.lang === (lang === "it" ? "it" : "zh-CN"), JSON.stringify(t1));
+    const never = await p.evaluate(() => CP.diary.earned().map((e) => e.note.id).sort().join());
+    check(L + "Taccuino: un aneddoto compare solo per le coppie davvero scambiate", never === "ma-mamma-cavallo,mai-comprare-vendere", never);
+    /* la scelta multipla registra la coppia: le opzioni ricordano la parola dietro ognuna */
+    const keys = await p.evaluate(() => { if (CP.ex && CP.ex.carica) CP.ex.carica(); const E = CP.exEngine, w = CP.WORDS["马"], r = () => 0.3, out = []; ["mc-parola", "mc-significato", "mc-ascolto"].forEach((id) => { const it = E.REG[id] && E.REG[id].crea(w, E.ctx, r); if (it) out.push({ id, ok: !!it.keys && it.keys.length === it.opts.length && it.keys[it.right] === "马" && new Set(it.keys).size === it.keys.length }); }); return out; });
+    check(L + "Esercizi a scelta multipla: ogni opzione ricorda la sua parola (per il Taccuino), la giusta è quella del quesito", keys.length >= 2 && keys.every((k) => k.ok), JSON.stringify(keys));
+    /* condivisione: solo se si sceglie, 3 formati × 3 colori, il QR rende l'indirizzo */
+    const reqBefore = ext.length;
+    const cards = await p.evaluate(async () => {
+      const out = [], pg = CP.diary.build().pages[0], d = CP.diary.shareData(pg.notes[0].note.id, pg.i);
+      for (const f of Object.keys(CP.shareCard.FORMATS)) for (const th of ["light", "sepia", "dark"]) {
+        const cv = document.createElement("canvas"); await CP.shareCard.render(cv, "zh-diary", Object.assign({}, d, { name: "小明" }), { format: f, theme: th });
+        const img = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), q = window.jsQR(img.data, cv.width, cv.height);
+        out.push({ k: f + " " + th, w: cv.width, h: cv.height, cut: cv.__cut.length, qr: q ? q.data : null });
+      }
+      const e = CP.diary.shareData("", 0), cv2 = document.createElement("canvas"); await CP.shareCard.render(cv2, "zh-diary", e, { format: "4:5", theme: "light" }); out.push({ k: "senza aneddoto", w: cv2.width, h: cv2.height, cut: cv2.__cut.length, qr: "x" });
+      return { out, url: CP.shareCard.url() };
+    });
+    const badC = cards.out.filter((c) => c.cut || (c.qr !== cards.url && c.qr !== "x") || c.w !== 1080);
+    check(L + "Pagina del taccuino come immagine: 3 formati × 3 colori (e una pagina senza aneddoto), nessun testo tagliato, il QR rende esattamente l'indirizzo", cards.out.length === 10 && !badC.length && cards.out.some((c) => c.h === 1920), JSON.stringify(badC.slice(0, 2)));
+    await p.click("[data-diary-share]"); await p.waitForTimeout(700);
+    const sh = await p.evaluate(() => ({ cv: !!document.querySelector(".card-cv"), alt: (document.querySelector(".card-cv") || { getAttribute: () => "" }).getAttribute("aria-label"), signOff: !document.getElementById("card-sign").checked && document.getElementById("card-name").hidden, main: document.querySelector("[data-famclose]").parentElement.parentElement.querySelectorAll(".btn-main").length }));
+    const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 4000 }).catch(() => null), p.click("[data-card-share]")]);
+    check(L + "Taccuino: la carta si apre solo dal tocco su «Condividi questa pagina», con testo alternativo, «firma» spenta e un solo pulsante principale; senza condivisione di file si scarica il PNG", sh.cv && /Xi'an|西安/.test(sh.alt) && sh.signOff && sh.main === 1 && !!dl && /zh-diary\.png$/.test(dl.suggestedFilename()), JSON.stringify(sh) + " " + (dl ? dl.suggestedFilename() : "nessun download"));
+    check(L + "Taccuino: nessuna richiesta di rete e nessun errore JavaScript", !errs.length && !ext.length && ext.length === reqBefore, (errs[0] || "") + ext.slice(0, 2).join(" "));
+    await ctx.close();
+  }
   /* microfono: un errore passeggero del riconoscitore (servizio occupato) si ritenta una volta, in silenzio, e non spegne il riconoscimento */
   {
     const ctx = await browser.newContext({ viewport: { width: 360, height: 740 }, permissions: ["microphone"] });

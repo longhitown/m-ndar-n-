@@ -526,6 +526,18 @@ La build si ferma se trova nel repository:
   sicure, i ripassi riusciti delle ultime sei settimane e il tono che dà più filo da torcere (dalle parole mancate negli
   ultimi 60 giorni). I numeri tecnici (memoria, matrice dei toni) restano sotto, in un riquadro chiuso. Lo stesso modulo fa
   la pagina 我的进步 del corso di italiano.
+- **Taccuino del viaggiatore** (corso di cinese; `src/ui/diary.js`, `src/data/diary.js`, `src/i18n/diary.js`,
+  `src/styles/diary.css`). Un viaggio immaginario Roma → Guilin: 11 città, ognuna si apre quando sono finite abbastanza
+  tappe del Percorso (`th` in `DIARY.stops`, contate da `CP.pathDoneCount`). Gli sbagli non tolgono niente: se la persona
+  ha davvero scambiato una coppia, sulla pagina della città compare l'aneddoto scritto a mano (`DIARY.notes`, 72 righe
+  italiano/cinese, ogni membro controllato con il vocabolario da `tools/unit.mjs`). Come si sa che l'ha scambiata:
+  `cp-ex-v1.conf` (scritto da `CP.exConf`, in `study/memory.js`) tiene `«a|b»` quando in una scelta multipla (significato,
+  parola, ascolto, frase a buco, buco grammaticale) la risposta giusta era a e si è scelta b, e `«a|~N»` quando al posto
+  del tono di a si è scelto il tono N (esercizio «tono», pinyin a una sillaba, orecchio e sprint: `CP.confuse`). Si
+  tengono le 300 coppie più recenti; l'unione tra dispositivi non somma mai (`mergeEx`). Per aggiungere un aneddoto basta
+  una riga in `DIARY.notes` con i membri come nel vocabolario. La mappa è un SVG disegnato nel codice con un tremolio
+  fisso: nessuna libreria (rough.js non serve). Una pagina diventa un'immagine con il modello `zh-diary` di
+  `ui/share-card.js` (3 formati, 3 colori, QR), solo dal tocco su «Condividi questa pagina». Niente esce dal telefono.
 - **Prove su un telefono vero**: [docs/checklist-dispositivo.md](checklist-dispositivo.md).
 
 ## Anatomia del carattere (solo corso di cinese)

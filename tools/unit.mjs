@@ -320,6 +320,42 @@ function sandbox() {
   check("cp-ex-v1: passo più avanzato, verifica più recente, per ogni tipo la voce con n più alto (mai la somma, anche ripristinando due volte), testi letti uniti", xm.units.a.passo === 2 && xm.units.a.verifica.pct === 90 && xm.units.b.passo === 3 && xm.ex["你"]["mc-pinyin"].n === 4 && xm.ex["你"].tono.n === 1 && xm.read.t1 === 5 && xm.read.t2 === 7, JSON.stringify(xm));
 }
 
+/* ---- Taccuino del viaggiatore (src/data/diary.js, ui/diary.js): la tabella degli aneddoti e le coppie scambiate ---- */
+{
+  const dctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/diary.js"), "utf8"), dctx);
+  const DI = vm.runInContext("DIARY", dctx);
+  const vocab = {};
+  (L.D ? L.D.SECTIONS : []).forEach((s) => s.words.forEach((w) => { (vocab[w[1]] = vocab[w[1]] || []).push(w[0].replace(/\./g, "")); }));
+  const bad = [], ids = new Set();
+  for (const n of DI.notes) {
+    if (ids.has(n.id)) bad.push("id doppio " + n.id); ids.add(n.id);
+    if (!Array.isArray(n.m) || n.m.length < 2) bad.push(n.id + ": servono almeno due membri");
+    for (const m of n.m || []) { const [hz, py] = m.split(" "); if (!vocab[hz]) bad.push(n.id + ": " + hz + " non è nel vocabolario"); else if (!vocab[hz].includes(py)) bad.push(n.id + ": " + hz + " si legge " + vocab[hz].join("/") + ", non " + py); }
+    if (!/\{c\}/.test(n.it) || !/\{c\}/.test(n.zh)) bad.push(n.id + ": manca {c}");
+    if (!/[一-鿿]/.test(n.zh) || n.it.length < 30 || n.it.length > 220 || n.zh.length < 12 || n.zh.length > 90) bad.push(n.id + ": testi troppo corti o troppo lunghi");
+    if (/Task\s*\d|TODO|XXX/i.test(n.it + n.zh)) bad.push(n.id + ": nota interna nel testo");
+    if (n.m.filter((m) => (n.it + n.zh).includes(m.split(" ")[0])).length < 2) bad.push(n.id + ": almeno due membri devono comparire nei testi");
+  }
+  check("Taccuino: almeno 40 aneddoti, id unici, ogni membro è nel vocabolario con lo stesso pinyin, {c} e testi nelle due lingue (" + DI.notes.length + ")", DI.notes.length >= 40 && !bad.length, bad.slice(0, 4).join("; "));
+  const st = DI.stops, up = st.every((s, i) => !i || s.th > st[i - 1].th) && st[0].th === 0;
+  check("Taccuino: le città hanno soglie crescenti dalla prima (0) e un nome in italiano e in cinese (" + st.length + ")", up && st.every((s) => s.it && /[一-鿿]/.test(s.zh) && s.x > 0 && s.y > 0), st.map((s) => s.th).join());
+  /* i testi del taccuino (caricati al primo uso): stesse chiavi nelle due lingue e nessuna chiave usata che manchi */
+  const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc); vm.runInContext(fs.readFileSync(path.join(SRC, "i18n/diary.js"), "utf8"), tc);
+  const TI = vm.runInContext("I18N", tc), ki = Object.keys(TI.it).sort().join(), kz = Object.keys(TI.zh).sort().join();
+  const usedD = new Set(["ui/diary.js", "ui/share-card.js"].flatMap((f) => [...fs.readFileSync(path.join(SRC, f), "utf8").matchAll(/T\(\s*"((?:dy|dcard)\.[\w.]+)"/g)].map((m) => m[1])));
+  ["light", "sepia", "dark"].forEach((t) => usedD.add("dcard.th." + t));
+  const missD = [...usedD].filter((k) => !TI.it[k] || !TI.zh[k]);
+  check("Taccuino: stessi testi in italiano e in cinese e nessun testo usato che manchi (" + Object.keys(TI.it).length + ")", ki === kz && !missD.length, missD.join(", "));
+  /* le coppie scambiate (cp-ex-v1.conf) si uniscono senza sommarsi */
+  const { Store: S4, LS: L4 } = sandbox();
+  L4.setItem("cp-ex-v1", JSON.stringify({ units: {}, ex: {}, read: {}, conf: { "妈|马": { n: 2, ultimo: 50, d: 4 }, "买|~4": { n: 1, ultimo: 5, d: 2 } } }));
+  const cinc = JSON.stringify({ units: {}, ex: {}, read: {}, conf: { "妈|马": { n: 3, ultimo: 40, d: 2 }, "九|酒": { n: 1, ultimo: 9, d: 7 } } });
+  await S4.importObj({ app: "mandarino", v: 5, kv: { "cp-ex-v1": cinc }, log: [] }, "merge");
+  await S4.importObj({ app: "mandarino", v: 5, kv: { "cp-ex-v1": cinc }, log: [] }, "merge");
+  const cm = JSON.parse(L4.getItem("cp-ex-v1")).conf;
+  check("Taccuino: cp-ex-v1.conf si unisce (n più alto, mai la somma; ultima volta più recente; prima tappa più bassa) anche ripristinando due volte", cm["妈|马"].n === 3 && cm["妈|马"].ultimo === 50 && cm["妈|马"].d === 2 && cm["九|酒"].n === 1 && cm["买|~4"].n === 1, JSON.stringify(cm));
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");

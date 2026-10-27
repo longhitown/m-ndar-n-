@@ -136,6 +136,9 @@
   };
   CP.onPath = function () { render(); };
   CP.pathCurrent = function () { return currentIdx(); };
+  /* quante tappe sono finite (80% delle parole iniziate): serve al Taccuino del viaggiatore (ui/diary.js) */
+  CP.pathDoneCount = function () { var n = 0; SECTIONS.forEach(function (s) { if (stats(s.id).done) n++; }); return n; };
+  CP.pathStats = stats;
 
   function goWords(id) {
     CP.resetFilters();

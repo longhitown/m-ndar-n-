@@ -61,7 +61,8 @@
         ? [[sure, T("itst.sure")], [lessonsDone() + "/30", T("itst.lessons")], [CP.game ? CP.game.activeDays() : 0, T("st.days")]]
         : [[sure, T("st.sure")], [W[W.length - 1].good, T("st.goodWeek")], [CP.game ? CP.game.activeDays() : 0, T("st.days")]];
       return '<p class="st-sum">' + summary(course, W, tone) + "</p>" +
-        '<div class="stats">' + nums.map(function (x) { return '<div class="stat"><b>' + x[0] + "</b><span>" + esc(x[1]) + "</span></div>"; }).join("") + "</div>" + bars(W, course);
+        '<div class="stats">' + nums.map(function (x) { return '<div class="stat"><b>' + x[0] + "</b><span>" + esc(x[1]) + "</span></div>"; }).join("") + "</div>" + bars(W, course) +
+        (course === "zh" && CP.diary ? CP.diary.card() : "");   /* il Taccuino del viaggiatore (ui/diary.js, caricato al primo uso) */
     });
   }
   CP.story = { weeks: weeks, html: html, hardTone: hardTone, sureCount: sureCount };
