@@ -357,6 +357,44 @@ try {
     check("Musica: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 5d. musica: il loop dei brani senza buchi (Task 10.1). Ogni brano suona dal riproduttore vero dell'app (elemento <audio>
+     in loop dentro il grafo Web Audio); a 0,35 s dalla fine si salta, e dopo il giro un AnalyserNode prende gli ultimi
+     32768 campioni (circa 0,7 s), che contengono la cucitura. Buco = la sequenza più lunga sotto −60 dB: deve stare sotto
+     LOOP_GAP_MS. I file non hanno silenzi ai bordi (al massimo 3 ms sotto −60 dB attorno alla cucitura), quindi un buco
+     lungo viene dal riproduttore. Un caso con un buco finto di 60 ms prova che la misura lo vede. Se un brano supera la
+     soglia, si riprova una volta (un intoppo del runner non è un buco del loop); due volte sopra = il loop ha un buco. */
+  {
+    const LOOP_GAP_MS = 20;
+    const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => localStorage.setItem("cp-ux-v1", '{"onboarded":1}'));
+    await p.goto(base); await p.waitForTimeout(400);
+    const seam = (id, glitch) => p.evaluate(([id, glitch]) => new Promise((res) => {
+      const c = new AudioContext(), an = c.createAnalyser(); an.fftSize = 32768; an.connect(c.destination);
+      const pl = CP.audioFile.player(c, an, id), el = pl.el, t0 = performance.now();
+      const end = (r) => { res(r); pl.stop(); setTimeout(() => c.close(), 800); };
+      const wait = (f, then) => { const iv = setInterval(() => { if (f()) { clearInterval(iv); then(); } else if (performance.now() - t0 > 15000) { clearInterval(iv); end({ err: CP.audioFile.state(id) || "timeout" }); } }, 5); };
+      wait(() => el.duration > 0 && el.currentTime > 1.6, () => {   /* dopo la salita del volume (1,5 s) */
+        el.currentTime = el.duration - 0.35;
+        if (glitch) setTimeout(() => { el.pause(); setTimeout(() => el.play(), glitch); }, 300);
+        wait(() => el.currentTime > 0.3 && el.currentTime < 2, () => {
+          const buf = new Float32Array(an.fftSize); an.getFloatTimeDomainData(buf);
+          let best = 0, cur = 0, q = 0; for (const x of buf) { q += x * x; if (Math.abs(x) < 1e-3) { cur++; if (cur > best) best = cur; } else cur = 0; }
+          end({ gap: Math.round(best / c.sampleRate * 10000) / 10, rms: Math.sqrt(q / buf.length) });
+        });
+      });
+    }), [id, glitch]);
+    const ids = await p.evaluate(() => Object.keys(window.MUSIC_FILES || {})), out = {}, bad = [];
+    for (const id of ids) {
+      let r = await seam(id, 0); if (!r.err && r.gap > LOOP_GAP_MS) r = await seam(id, 0);
+      out[id] = r.err || r.gap; if (r.err || r.gap > LOOP_GAP_MS || !(r.rms > 0.002)) bad.push(id + ":" + (r.err || r.gap + " ms"));
+    }
+    const worst = Math.max(...Object.values(out).filter((x) => typeof x === "number"));
+    check("Musica: loop senza buchi in tutti i " + ids.length + " brani (soglia " + LOOP_GAP_MS + " ms; il peggiore " + worst + " ms)", ids.length >= 20 && !bad.length, bad.join(", "));
+    const fake = await seam(ids[0], 60);
+    check("Musica: la misura del loop vede un buco finto di 60 ms", fake.gap >= 50, JSON.stringify(fake));
+    check("Loop della musica: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5b. Lettore: nomi e termini da Wikidata (file a parte, scaricato al primo uso) */
   {
     const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
