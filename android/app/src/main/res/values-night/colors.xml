@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="w_bg">#1B201D</color>
+    <color name="w_card">#262E2A</color>
+    <color name="w_stroke">#33FFFFFF</color>
     <color name="w_ink">#ECEFEA</color>
-    <color name="w_muted">#A3AEA8</color>
+    <color name="w_muted">#A9B4AE</color>
     <color name="w_accent">#5CC4A5</color>
     <color name="w_on_accent">#0E1A15</color>
+    <color name="w_orange">#FF9A3C</color>
+    <color name="w_on_orange">#1E1409</color>
+    <color name="w_ripple">#33FFFFFF</color>
 </resources>
