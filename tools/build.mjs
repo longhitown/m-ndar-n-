@@ -67,6 +67,32 @@ for (const s of scripts) {
   catch (e) { fail("errore di sintassi in src/" + s.src + ": " + e.message); }
 }
 
+/* parti di altri: ogni file di src/vendor/ e ogni dato esterno di src/data/ (intestazione con «licenza»/«license», o
+   generato da una fonte esterna senza intestazione) deve avere una voce in THIRD-PARTY-NOTICES.md */
+{
+  const tpn = fs.existsSync(path.join(SRC, "..", "THIRD-PARTY-NOTICES.md")) ? fs.readFileSync(path.join(SRC, "..", "THIRD-PARTY-NOTICES.md"), "utf8") : "";
+  const EXTERNAL_NOHEAD = ["data/wiki/zh-it.txt"];
+  const walk = (d) => fs.existsSync(d) ? fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]) : [];
+  const ext = walk(path.join(SRC, "vendor")).map((f) => path.relative(SRC, f))
+    .concat(walk(path.join(SRC, "data")).filter((f) => /\.js$/.test(f) && /licen[sz]/i.test(fs.readFileSync(f, "utf8").slice(0, 400))).map((f) => path.relative(SRC, f)))
+    .concat(EXTERNAL_NOHEAD);
+  const miss = ext.filter((f) => tpn.indexOf("src/" + f.split(path.sep).join("/")) < 0);
+  if (miss.length) fail("parti di altri senza una voce in THIRD-PARTY-NOTICES.md: " + miss.join(", "));
+}
+
+/* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
+   nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in tools/seal-issue.mjs
+   e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
+const SECRET = [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, /verification_token/i, /kofi_transaction_id/i, /webhook/i];
+{
+  const skip = new Set([".git", "node_modules", "build", ".gradle", ".idea", "music"]);
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => skip.has(e.name) ? [] : e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+  const keyFiles = walk(path.join(SRC, "..")).filter((f) => /\.(pem|key|p8|jks|keystore)$/i.test(f));
+  if (keyFiles.length) fail("file di chiave nel repository (vanno fuori, vedi docs/sigilli.md): " + keyFiles.map((f) => path.relative(path.join(SRC, ".."), f)).join(", "));
+  const bad = walk(SRC).filter((f) => /\.(js|html|json|css|txt|md)$/.test(f) && SECRET.some((re) => re.test(fs.readFileSync(f, "utf8"))));
+  if (bad.length) fail("in src/ c'è qualcosa che sembra un segreto o un dato dei donatori: " + bad.map((f) => path.relative(SRC, f)).join(", "));
+}
+
 /* 3. un file unico */
 let out = html;
 const css = styles.map((s) => "/* ---- styles/" + s.href.replace(/^styles\//, "") + " ---- */\n" + fs.readFileSync(path.join(SRC, s.href), "utf8").trimEnd()).join("\n\n");
@@ -99,12 +125,27 @@ for (const [name, src] of LAZYCODE) {
     "(function () { Object.defineProperty(window, " + JSON.stringify(name) + ", { configurable: true, get: function () { delete window[" + JSON.stringify(name) + "]; var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); return window[" + JSON.stringify(name) + "]; } }); })();\n</script>");
   scripts.splice(scripts.indexOf(s), 1);
 }
+/* moduli dell'app che servono solo a qualcuno e solo in certi momenti (il test di livello, il correttore di frasi italiane):
+   testo inerte nel file unico, eseguito la prima volta che il codice tocca una delle loro proprietà di CP. Il blocco va al
+   posto dell'ultimo file del gruppo, quando CP esiste già. */
+const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }];
+for (const m of LAZYMOD) {
+  const group = m.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("LAZYMOD: manca uno di " + m.files.join(", ") + " in src/index.html");
+  const code = group.map((x) => "/* ---- " + x.src + " ---- */\n" + fs.readFileSync(path.join(SRC, x.src), "utf8").trimEnd()).join("\n").replace(/<\/script/gi, "<\\/script");
+  const id = "lazy-mod-" + m.props[0].toLowerCase(), last = group[group.length - 1];
+  group.forEach((x) => { if (x !== last) out = out.replace(x.tag + "\n", ""); });
+  out = out.replace(last.tag, () => '<script type="text/plain" id="' + id + '">\n' + code + "\n</script>\n<script>\n/* ---- " + m.files.join(" + ") + " (al primo uso di CP." + m.props.join(", CP.") + ") ---- */\n" +
+    "(function () { var P = " + JSON.stringify(m.props) + ", done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById(" + JSON.stringify(id) + "), sc = document.createElement(\"script\"); sc.textContent = el ? el.textContent : \"\"; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }\n" +
+    "  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();\n</script>");
+  group.forEach((x) => scripts.splice(scripts.indexOf(x), 1));
+}
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
   out = out.replace(s.tag, () => "<script" + (s.id ? ' id="' + s.id + '"' : "") + ">\n/* ---- " + s.src + " ---- */\n" + code + "\n</script>");   /* funzione: i «$» nel codice restano com'erano */
 }
 out = out.replace(/<!-- =+\n[\s\S]*?=+ -->\n/, "<!-- màndarínō: file generato da tools/build.mjs a partire da src/. Per modificare l'app lavora in src/. -->\n");
 if (/<script\b[^>]*\bsrc=|<link\b[^>]*rel="stylesheet"/.test(out)) fail("è rimasto un riferimento esterno in dist/index.html");
+if (SECRET.some((re) => re.test(out))) fail("dist/index.html contiene qualcosa che sembra un segreto o un dato dei donatori");
 
 /* i brani del jukebox restano file a parte, con l'impronta nel nome (dist/audio/music/<id>.<hash>.ogg): un brano sostituito
    ha un nome nuovo e arriva anche a chi aveva già quello vecchio nella cache. Il catalogo (nome del file, byte) va nella

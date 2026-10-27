@@ -16,3 +16,12 @@ android/app/build/
 # dipendenze di sviluppo (Playwright, solo per le prove)
 /node_modules/
 /package-lock.json
+# chiavi e dati dei sigilli di gratitudine: mai nel repository (tools/seal-keygen.mjs, tools/seal-issue.mjs)
+*.pem
+*.key
+*.p8
+*.jks
+*.keystore
+.mandarino-sigilli/
+registro.json
+cambi.json

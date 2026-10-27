@@ -291,22 +291,32 @@
   function subList() { var l = []; GROUPS.forEach(function (g) { l = l.concat(g[2]); }); return l; }
   function curSub() { return sub === "lab" && labMode === "slot" ? "slot" : sub; }
   function groupOf(x) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i][2].some(function (s) { return s[0] === x; })) return GROUPS[i]; return GROUPS[0]; }
+  /* docs/ux-architettura.md: Frasi si apre su quattro carte (una riga di spiegazione ciascuna) invece che su due file di
+     pulsanti; dentro una carta, i suoi strumenti. Gli strumenti più avanzati si aprono per gradi (ui/unlock.js). */
+  var GICO = { learn: "📘", build: "🧩", talk: "💬", read: "📖" }, home = true;
+  function tOk(x) { return !CP.unlock || CP.unlock.toolOk(x); }
+  function landing() {
+    return '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><p class="lede" style="margin:4px 0 12px">' + esc(CP.t("fr.choose")) + '</p><div class="fr-cards">' + GROUPS.map(function (g) {
+      var open = g[2].filter(function (s) { return tOk(s[0]); }), tools = g[2].map(function (s) { return tOk(s[0]) ? CP.t(s[1]) : "🔒 " + CP.t(s[1]); }).join(" · ");
+      return '<button type="button" class="fr-card' + (open.length ? "" : " locked") + '" data-group="' + g[0] + '"><span class="fr-ico" aria-hidden="true">' + GICO[g[0]] + '</span><span class="fr-tx"><b>' + CP.t(g[1]).replace(/^[^\p{L}]+/u, "") + "</b><small>" + esc(CP.t("fr.d." + g[0])) + '</small><span class="fr-tools">' + esc(tools) + "</span></span></button>";
+    }).join("") + "</div>";
+  }
   function render() {
+    if (home) { root.innerHTML = landing(); return; }
     var cs = curSub(), g = groupOf(cs);
-    var segs = GROUPS.map(function (x) {
-      return '<button type="button" role="tab" data-group="' + x[0] + '"' + (x === g ? ' class="on" aria-selected="true"' : ' aria-selected="false"') + ">" + CP.t(x[1]) + "</button>";
-    }).join("");
-    var inner = '<div class="fx-row"><div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
-      return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.t(s[1]) + "</button>";
+    var inner = '<div class="fx-row"><button type="button" class="btn-s fr-back" data-fr-home aria-label="' + CP.attr(CP.t("fr.back")) + '">← ' + CP.t(g[1]) + '</button><div class="seg inner" role="group" aria-label="' + CP.attr(CP.t(g[1])) + '">' + g[2].map(function (s) {
+      var lk = !tOk(s[0]);
+      return '<button type="button" data-sub="' + s[0] + '"' + (cs === s[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + (lk ? ' data-locked="1"' : "") + ">" + (lk ? "🔒 " : "") + CP.t(s[1]) + "</button>";
     }).join("") + '</div><button type="button" class="fx-go" data-fx-go title="' + CP.attr(CP.t("fx.enter")) + '" aria-label="' + CP.attr(CP.t("fx.enter")) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>';
     var body;
-    if (sub === "ex") body = renderEx();
+    if (!tOk(cs)) body = '<div class="panel"><p style="margin:0">' + esc(CP.unlock.why("fr:" + cs)) + '</p><p class="small muted" style="margin:6px 0 0">' + esc(CP.t("fr.lockedHint")) + "</p></div>";
+    else if (sub === "ex") body = renderEx();
     else if (sub === "lab") body = labMode === "slot" && CP.subs && CP.subs.slot ? CP.subs.slot.render() : renderLab();
     else if (sub === "pat") body = renderPat();
     else body = (CP.subs && CP.subs[sub]) ? CP.subs[sub].render() : "";
-    root.innerHTML = '<h2 style="margin-top:20px">' + CP.t("build.title") + '</h2><div class="pills groups" role="tablist" aria-label="' + CP.attr(CP.t("build.tools")) + '">' + segs + "</div>" + inner + body;
-    if (CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
-    if (sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
+    root.innerHTML = inner + body;
+    if (tOk(cs) && CP.subs && CP.subs[sub] && CP.subs[sub].after) CP.subs[sub].after(root);
+    if (tOk(cs) && sub === "lab" && labMode === "slot" && CP.subs && CP.subs.slot && CP.subs.slot.after) CP.subs.slot.after(root);
     if (CP.immerse && CP.immerse.active()) {
       if (sub === "ex") { CP.immerse.progress(round.n, ROUND); CP.immerse.combo(round.run); }
     }
@@ -317,7 +327,16 @@
     var t = ev.target.closest ? ev.target.closest("button") : null;
     if (!t) return;
     var a = function (n) { return t.getAttribute(n); };
-    if (a("data-group")) { var gg = GROUPS.filter(function (x) { return x[0] === a("data-group"); })[0]; if (gg && groupOf(curSub()) !== gg) { var f = gg[2][0][0]; if (f === "slot") { sub = "lab"; labMode = "slot"; } else { sub = f; if (f === "lab") labMode = "build"; } } render(); return; }
+    if (t.hasAttribute("data-fr-home")) { home = true; CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
+    if (a("data-group")) {
+      var gg = GROUPS.filter(function (x) { return x[0] === a("data-group"); })[0]; if (!gg) return;
+      var avail = gg[2].filter(function (x) { return tOk(x[0]); });
+      if (!avail.length) { CP.toast(CP.unlock.why("fr:" + gg[2][0][0])); return; }
+      home = false; CP.sfx("tap");
+      if (groupOf(curSub()) !== gg || !tOk(curSub())) { var f = avail[0][0]; if (f === "slot") { sub = "lab"; labMode = "slot"; } else { sub = f; if (f === "lab") labMode = "build"; } }
+      render(); window.scrollTo(0, 0); return;
+    }
+    if (a("data-sub") && t.hasAttribute("data-locked")) { CP.toast(CP.unlock.why("fr:" + a("data-sub"))); return; }
     if (a("data-sub")) { var sv = a("data-sub"); if (sv === "slot") { sub = "lab"; labMode = "slot"; } else { sub = sv; if (sv === "lab") labMode = "build"; } render(); return; }
     if (a("data-labmode")) { labMode = a("data-labmode"); render(); return; }
     if (t.id === "exf-clear") { exFilter = ""; ex = null; queue = []; render(); return; }
@@ -385,22 +404,23 @@
   CP.build = {
     render: function () { render(); },
     immerse: immerse,
-    setSub: function (s) { sub = s; render(); },
+    setSub: function (s) { home = false; sub = s; render(); },
     practice: function (secId) {
-      exFilter = secId || ""; ex = null; queue = []; sub = "ex";
+      home = false; exFilter = secId || ""; ex = null; queue = []; sub = "ex";
       if (!exPoolFor(exFilter).length) { exFilter = ""; lab.sec = secId; sub = "lab"; labMode = "build"; }
       render();
     },
     exCount: function (secId) { return exPoolFor(secId).length; },
     openPattern: function (i) {
-      sub = "pat"; render();
+      home = false; sub = "pat"; render();
       var d = document.getElementById("pat-" + i);
       if (d) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: "center" }); }, 30); }
     },
-    setSlot: function () { sub = "lab"; labMode = "slot"; render(); },
-    labSection: function (id) { lab.sec = id; sub = "lab"; labMode = "build"; render(); },
-    labLoad: function (t, p) { lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
-    openLesson: function (id) { sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); }
+    setSlot: function () { home = false; sub = "lab"; labMode = "slot"; render(); },
+    labSection: function (id) { home = false; lab.sec = id; sub = "lab"; labMode = "build"; render(); },
+    labLoad: function (t, p) { home = false; lab.t = t.slice(); lab.p = p || "auto"; lab.fixLog = null; sub = "lab"; labMode = "build"; render(); window.scrollTo(0, 0); },
+    openLesson: function (id) { home = false; sub = "lessons"; if (CP.lessons) CP.lessons.open(id); render(); window.scrollTo(0, 0); },
+    home: function () { home = true; render(); }
   };
   CP.subs = CP.subs || {};
   CP.onBuild = function () { if (!root.innerHTML) render(); };

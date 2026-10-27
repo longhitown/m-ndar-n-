@@ -143,9 +143,9 @@
     return h;
   }
   function paint(note) { var b = document.getElementById("sy-body"); if (b) b.innerHTML = bodyHTML(note); }
-  (CP.settingsExtras = CP.settingsExtras || []).unshift(function () {
+  (CP.settingsExtras = CP.settingsExtras || []).unshift({ group: "data", html: function () {
     return '<details class="set-sec" id="set-sync"><summary>🔄 ' + T("sy.title") + '</summary><div class="vbody" id="sy-body">' + bodyHTML() + "</div></details>";
-  });
+ } });
   var merging = document.createElement("input"); merging.type = "file"; merging.accept = "application/json,.json"; merging.hidden = true; document.body.appendChild(merging);
   merging.addEventListener("change", function () { var f = merging.files && merging.files[0]; if (f && CP.restoreFile) CP.restoreFile(f); merging.value = ""; });
   document.addEventListener("click", function (e) {

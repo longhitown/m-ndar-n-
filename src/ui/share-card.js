@@ -52,6 +52,10 @@
         x.fillStyle = "#5E6A64"; x.font = "500 34px " + SANS; x.fillText(CP.gloss(w).slice(0, 40), W / 2, 1192);
       }
       x.fillStyle = "#8A948F"; x.font = "500 24px " + SANS; x.fillText(T("card.foot"), W / 2, 1300);
+      /* il sigillo di gratitudine, solo se la persona ha scelto di mostrarlo (ui/seals.js): rivela che ha sostenuto il
+         progetto. Nessun «verificato»: da un'immagine nessuno può controllarlo */
+      var sl = CP.seals && CP.seals.forShare && CP.seals.forShare();
+      if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = "#8A948F"; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
       return cv;
     });
   }

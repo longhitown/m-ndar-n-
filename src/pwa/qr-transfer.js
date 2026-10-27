@@ -76,7 +76,7 @@
     var o = overlay('<h3 style="margin:0">📷 ' + esc(T("qr.recv")) + '</h3><p class="small muted" style="margin:0">' + esc(T("qr.recvHint")) + "</p>" +
       '<div class="qr-cam"><video playsinline muted autoplay></video><span class="qr-aim" aria-hidden="true"></span></div><div class="qr-grid" aria-hidden="true"></div><div class="qr-st small" aria-live="polite">' + esc(T("qr.camOpen")) + "</div>");
     var video = o.querySelector("video"), st = o.querySelector(".qr-st"), grid = o.querySelector(".qr-grid");
-    var got = {}, sid = "", tot = 0, done = false, det = null, cv = document.createElement("canvas"), ctx = cv.getContext("2d", { willReadFrequently: true });
+    var got = {}, sid = "", tot = 0, done = false, stopCam = function () {};
     function paintGrid() {
       var h = ""; for (var i = 1; i <= tot; i++) h += '<i class="' + (got[i] ? "on" : "") + '"></i>';
       grid.innerHTML = h; var c = Object.keys(got).length;
@@ -100,14 +100,17 @@
         setTimeout(function () { location.reload(); }, 1200);
       }).catch(function () { done = false; st.textContent = T("qr.bad"); });
     }
-    var stream = null, raf = 0, last = 0, busy = false;
-    function stopCam() { cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (tr) { tr.stop(); }); stream = null; }
-    stopFns.push(stopCam);
+    stopCam = camera(o, video, st, onText); stopFns.push(stopCam);
+  };
+  /* la fotocamera che legge i QR: BarcodeDetector dove c'è, altrimenti jsQR. Restituisce la funzione che la spegne. */
+  function camera(o, video, st, onText) {
+    var stream = null, raf = 0, last = 0, busy = false, det = null, stopped = false, cv = document.createElement("canvas"), ctx = cv.getContext("2d", { willReadFrequently: true });
+    function stopCam() { stopped = true; cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (tr) { tr.stop(); }); stream = null; }
     function scan(now) {
       raf = requestAnimationFrame(scan);
-      if (busy || done || now - last < 90 || video.readyState < 2) return;
+      if (busy || stopped || now - last < 90 || video.readyState < 2) return;
       last = now; busy = true;
-      if (det) { det.detect(video).then(function (r) { r.forEach(function (c) { onText(c.rawValue); }); }, function () {}).then(function () { busy = false; }); return; }
+      if (det) { det.detect(video).then(function (r) { r.forEach(function (c) { if (!stopped) onText(c.rawValue); }); }, function () {}).then(function () { busy = false; }); return; }
       var w = video.videoWidth, h = video.videoHeight, k = Math.min(1, 800 / Math.max(w, h)); cv.width = Math.round(w * k); cv.height = Math.round(h * k);
       ctx.drawImage(video, 0, 0, cv.width, cv.height);
       var img = ctx.getImageData(0, 0, cv.width, cv.height), r = window.jsQR ? window.jsQR(img.data, cv.width, cv.height, { inversionAttempts: "dontInvert" }) : null;
@@ -115,16 +118,24 @@
       busy = false;
     }
     var ready = ("BarcodeDetector" in window && BarcodeDetector.getSupportedFormats) ? BarcodeDetector.getSupportedFormats().then(function (f) { if (f.indexOf("qr_code") >= 0) det = new BarcodeDetector({ formats: ["qr_code"] }); }, function () {}) : Promise.resolve();
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { st.textContent = T("qr.noCam"); return; }
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { st.textContent = T("qr.noCam"); return stopCam; }
     ready.then(function () {
       return navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
     }).then(function (s) {
-      if (!box || box !== o) { s.getTracks().forEach(function (tr) { tr.stop(); }); return; }
+      if (stopped || !box || box !== o) { s.getTracks().forEach(function (tr) { tr.stop(); }); return; }
       stream = s; video.srcObject = s; var p = video.play(); if (p && p.catch) p.catch(function () {});
       st.textContent = T("qr.aim"); raf = requestAnimationFrame(scan);
     }, function (e) {
       st.textContent = (e && (e.name === "NotAllowedError" || e.name === "SecurityError")) ? T("qr.camBlocked") : T("qr.noCam");
     });
+    return stopCam;
+  }
+  /* leggere un QR qualsiasi (per esempio il codice di un sigillo): onText(testo) → true per chiudere */
+  CP.qrScan = function (title, hint, onText) {
+    if (CP.closeSheet) CP.closeSheet();
+    var o = overlay('<h3 style="margin:0">📷 ' + esc(title) + '</h3><p class="small muted" style="margin:0">' + esc(hint) + '</p><div class="qr-cam"><video playsinline muted autoplay></video><span class="qr-aim" aria-hidden="true"></span></div><div class="qr-st small" aria-live="polite">' + esc(T("qr.camOpen")) + "</div>");
+    var stop = camera(o, o.querySelector("video"), o.querySelector(".qr-st"), function (t) { if (onText(t)) close(); });
+    stopFns.push(stop);
   };
   CP.qrTransfer = { crc32: crc32, pack: pack, unpack: unpack, CHUNK: CHUNK };
 })();

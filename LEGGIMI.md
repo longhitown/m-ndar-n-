@@ -8,6 +8,7 @@ telefono (localStorage + copia in IndexedDB), si salvano su file e si sincronizz
 Su Android c'è anche l'APK, con scorciatoie, widget «Oggi», promemoria facoltativo e musica in secondo piano.
 
 Come i moduli si agganciano tra loro (l'oggetto `CP`, i registri, i richiami, il ponte Android): **[docs/ARCHITETTURA.md](docs/ARCHITETTURA.md)**.
+Dove vive ogni funzione e quando compare (schede, fogli, impostazioni, glossario): **[docs/ux-architettura.md](docs/ux-architettura.md)**.
 
 ## Com'è fatto il repository
 
@@ -15,6 +16,7 @@ Come i moduli si agganciano tra loro (l'oggetto `CP`, i registri, i richiami, il
 src/                       ← si lavora qui (si apre anche così com'è, da file://, senza build)
   index.html               struttura della pagina + l'elenco ordinato di stili e script (l'ordine è quello di esecuzione)
   boot.js                  primo script: copia pulita della pagina, registri SECTIONS e DIALOGS
+  config.js                MD_CONFIG: repository, e-mail, pagina di sostegno, store, interruttori FEATURE_* (unico punto)
   main.js                  ultimo script: avvio finale
   data/vocab/NNN-<id>.js   il vocabolario, una sezione per file, una parola per riga
   data/dialogs/<id>.js     un dialogo per file (+ _categorie.js)
@@ -91,6 +93,74 @@ I brani non stanno dentro `index.html`: nell'APK sono nel pacchetto; sul sito il
 `mandarino-music` al primo ascolto (o tutti insieme con «Scarica tutta la musica» nel pannello 🎵), che resta tra un
 aggiornamento e l'altro. Aperta da `file://` l'app funziona, ma il browser non le lascia leggere i brani e il pannello lo dice.
 
+## Benvenuto, test di livello, rivelazione progressiva
+
+**Benvenuto** (`src/ui/welcome.js` + `src/ui/onboarding.js`, uguale per i due corsi):
+
+1. Un'intro di circa 4 secondi (ferma con *riduci movimento*).
+2. Tre porte:
+   - **Parto da zero**: obiettivo, prova dei quattro toni (corso di italiano: l'accento di ciao / grazie / buongiorno), prima carta.
+   - **Conosco già le basi**: cinque domande su di sé, poi il test.
+   - **Ho già un backup o un altro dispositivo**: dritto a sincronizzazione, QR o backup, senza test.
+3. In piccolo, l'altro corso. Lo scopo (viaggio, lavoro…) è facoltativo: suggerisce l'obiettivo e mette una ⭐ ai temi
+   in Parole.
+
+**Test di livello** (`src/data/placement.js` è il motore, `src/ui/placement.js` le domande):
+
+- Al massimo 10 domande. Non dice se la risposta è giusta.
+- «Non lo so» conta come errore, senza colpa.
+- Le domande d'ascolto si saltano se manca una voce cinese.
+
+| | Corso di cinese | Corso di italiano |
+|---|---|---|
+| Livelli | capitoli HSK 1-5 (il 6 solo dopo risposte giuste al 5) | 0-30 lezioni |
+| Scelta della domanda | scala a gradini | la domanda che riduce di più l'incertezza |
+| Stima | massima verosimiglianza | mediana del posteriore |
+
+`node tools/unit.mjs` simula utenti di ogni livello. Il cinese resta entro ±1 livello nel 95-99% dei casi, l'italiano entro
+±3 lezioni nel 92-98%.
+
+Il livello proposto si corregge con − / + prima di confermare. Alla conferma:
+
+- **Corso di cinese**: le parole dei capitoli precedenti entrano nel ripasso come note. I record hanno `pl:1`, stabilità
+  da 30 a 7 giorni e scadenze sparse tra 2 e 4 settimane. Nessun XP, nessuna voce nel registro, la serie non cambia.
+- **Corso di italiano**: le lezioni note risultano superate e le parole dei livelli HSK corrispondenti entrano in
+  `cp-it-srs-v1`.
+- **Punti iniziali** con `CP.game.grant(n)`: stanno in `cp-game-v1.pl` / `cp-it-game-v1.pl`. L'unione tra dispositivi
+  prende il più alto (mai la somma) e un «annulla» vince sempre.
+
+⚙️ → Avanzate → «Livello e schede» ha tre comandi: «Rifai il test di livello», «Annulla il salto» (toglie le parole del
+test mai ripassate, i punti e gli sblocchi del test) e «Mostra tutto, subito» (con doppia conferma).
+
+**Rivelazione progressiva** (`src/ui/unlock.js`, soglie nella costante `UNLOCK`):
+
+| Corso | All'inizio | 200 XP e 2 giorni di studio | 300 XP e 3 giorni | Altro |
+|---|---|---|---|---|
+| Cinese | Percorso, Studia | Parole | Frasi | — |
+| Italiano | 课程, 复习 | 单词 | 句子 | 变位: dopo la lezione sul presente o con 300 XP e 3 giorni |
+
+Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; Modelli e Pensiero dopo 3 lezioni; Laboratorio, Slot e Lettore dopo 6
+lezioni o 1000 XP. Quando scatta c'è un messaggio caldo sopra la barra, una novità alla volta.
+
+Simulazione con le sole carte (`tools/unit.mjs`):
+
+| Obiettivo giornaliero | Parole si apre | Frasi si apre |
+|---|---|---|
+| 5 parole | al 4° giorno | al 6° giorno |
+| 10 parole | al 2° giorno | al 3° giorno |
+| 20 parole | al 2° giorno | al 3° giorno |
+
+Chi aveva già progressi o aveva già visto il benvenuto ha tutto aperto. Uno sblocco resta, e tra dispositivi vale «basta
+uno» (`cp-ux-v1.unl`). Una scheda chiusa non si apre mai per sbaglio:
+
+- `?go=` porta alla scheda aperta più vicina;
+- «Cerca ovunque» mostra «si apre…»;
+- lezioni e dialoghi della tappa si aprono in immersione;
+- widget e scorciatoie di Android portano solo a Studia, ripasso e musica.
+
+**Impostazioni** in quattro gruppi: Essenziali, Dati e privacy, Avanzate, Informazioni e supporto. Vedi
+`docs/ux-architettura.md`.
+
 ## La grammatica del laboratorio: come si migliora
 
 Il traduttore (cinese → italiano) è prudente: traduce solo quando conosce tutte le parole e la costruzione.
@@ -132,9 +202,8 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 **Aggiornare:** basta `node tools/build.mjs` e un push: `APP_VERSION` cambia da solo e i telefoni vedono
 «Nuova versione disponibile · Aggiorna». **Scaricare l'app come file:** `dist/index.html` funziona da solo, anche offline.
 
-**Nome del repository:** GitHub ha tolto gli accenti e il repository si chiama `m-ndar-n-`. Conviene rinominarlo
-`mandarino` (Settings → General → Repository name): i vecchi indirizzi, le release e le API vengono reindirizzati.
-Dopo, per ordine, aggiorna `REPO` in `src/pwa/pwa.js` (controllo aggiornamenti dell'APK) e il link qui sotto.
+**Nome del repository:** `longhitown/mandarino` (prima `m-ndar-n-`, perché GitHub aveva tolto gli accenti; i vecchi indirizzi,
+le release e le API vengono reindirizzati). Il nome è in un solo punto, `MD_CONFIG.REPO` in `src/config.js`.
 
 ## L'APK per Android (gratis, senza Play Store)
 
@@ -142,9 +211,9 @@ Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk
 costruisce l'APK, lo verifica con Android lint e `apksigner` e, sul ramo principale, lo pubblica come Release.
 Il link da mandare a chi vuole l'app non cambia mai:
 
-`https://github.com/longhitown/m-ndar-n-/releases/latest/download/mandarino.apk`
+`https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk`
 
-(se rinomini il repository, cambia la parte `longhitown/m-ndar-n-`). Chi lo apre sul telefono deve consentire
+(il vecchio indirizzo con `m-ndar-n-` continua a funzionare: GitHub lo reindirizza). Chi lo apre sul telefono deve consentire
 l'installazione «da questa fonte» la prima volta. Android 8.0 o più recente.
 
 **La chiave di firma (una volta sola, poi mai più):** perché ogni nuova versione si installi sopra la vecchia senza perdere
@@ -209,7 +278,7 @@ node tools/build.mjs        # costruisce dist/ e controlla dati, lezioni e frasi
 node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
 node tools/e2e.mjs          # 46 prove su dist/ (corso di italiano e correttore, immersione, sincronizzazione, QR, musica, testi cinesi senza italiano), ~2 minuti
-node tools/ux-audit.mjs     # 0 problemi attesi; --quick = solo 360×740 tema chiaro
+node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
 In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti verdi). `#dev` accende il modo sviluppatore
@@ -249,6 +318,18 @@ node tools/merge-contrib.mjs arrivati/*.json --apply    # scrive in src/data/ so
 
 ## Chiavi salvate (tutte `cp-*`, tutte con una regola nel ripristino «unisci»)
 
+Nuove in V6.9:
+
+- `cp-seal-v1`: i sigilli di gratitudine; i codici si uniscono tra dispositivi, le preferenze (titolo, nome, condivisione) vengono dal dispositivo più recente.
+- `cp-it-game-v1`: punti e serie del corso di italiano, stessa struttura e stessa unione di `cp-game-v1`.
+- `cp-game-v1.pl` / `cp-it-game-v1.pl`: punti del test di livello; nell'unione vale il più alto, −1 = annullato.
+- Nuove voci in `cp-ux-v1`:
+  - `unl` e `showAll`: sblocchi, uniti con «basta uno»;
+  - `unlv`: segna che il profilo è già passato alla rivelazione progressiva;
+  - `pl`: riepilogo del test di livello;
+  - `purpose`: lo scopo scelto nel benvenuto.
+- Record di ripasso con `pl:1`: segnati come noti dal test di livello.
+
 Nuove in V6.7: `cp-community-contribs` (unione per id, vince la voce più recente; contiene anche le traduzioni proposte, tipo `tr`),
 `cp-lessons-v1` e `cp-it-lessons-v1` (lezioni: per ognuna il punteggio migliore, la prima volta superata, l'ultima letta),
 `cp-it-srs-v1` (ripasso del corso di italiano: per ogni parola vince la scheda ripassata più di recente),
@@ -265,11 +346,61 @@ Dropbox, OneDrive…; l'app lo riscrive dopo ogni sessione e lo riunisce all'avv
 **Passaggio con i QR:** il telefono vecchio mostra una sequenza di QR, il nuovo la inquadra: nessuna rete, nessun account.
 I punti si sommano per dispositivo (`xpBy`), così le due copie non si contano due volte.
 
+## Sostegno volontario e sigilli di gratitudine
+
+⚙️ → Informazioni e supporto → **Sostieni il progetto** (`src/ui/seals.js`) contiene:
+
+- due righe sul perché;
+- un link a Ko-fi (`MD_CONFIG.SUPPORT_URL`), aperto solo da un tocco;
+- la riga sui sigilli;
+- la trasparenza: l'app non sa chi sei e non invia nulla.
+
+Non ci sono importi, contatori, pop-up o inviti che si ripetono. `.github/FUNDING.yml` mette il link anche su GitHub; il
+pulsante nel README è un SVG locale (`docs/img/sostieni.svg`), senza immagini né script di Ko-fi.
+
+**I sigilli** (支 Sostegno, 交 Cultura, 永 Custodire) sono disegnati in SVG e solo estetici:
+
+- arrivano come codice firmato dall'autore (`MDS1.…`, ECDSA P-256, verificato offline con WebCrypto in
+  `src/core/seal-code.js`);
+- si riscattano dal link `#seal=…`, incollando il codice o inquadrando il QR, sempre con una conferma;
+- nell'app si mostrano in grande; nelle immagini condivise solo se la persona lo sceglie; dietro il frutto all'avvio.
+
+L'emissione la fa l'autore sul suo computer con `tools/seal-keygen.mjs` e `tools/seal-issue.mjs`: simulazione per
+default, registro privato fuori dal repository, invio delle e-mail a mano. La procedura è in
+**[docs/sigilli.md](docs/sigilli.md)**.
+
+Con `MD_CONFIG.SEAL_PUBKEYS` vuoto (com'è ora) la parte «Riscatta» non compare. Con `FEATURE_DONATE` e `FEATURE_SEALS`
+spenti (versione per gli store) non compare nulla.
+
+La build si ferma se trova nel repository:
+
+- un file di chiave (`.pem`, `.key`, `.jks`);
+- una chiave privata;
+- un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
+
 ## Licenze
 
-Codice: MIT (`LICENSE`), © 2026 Claudio Longhitano. Brani del jukebox: CC BY 4.0 (`LICENZE/MUSICA.txt`, crediti in
-`src/audio/CREDITI-MUSICA.md`). Terze parti, con le loro licenze in `LICENZE/` e in ⚙️ → Crediti: Make Me a Hanzi (Arphic),
-jsQR (Apache 2.0), wikidict-it/Wikidata (CC0).
+| Parte | Licenza | Testo |
+|---|---|---|
+| Codice | MIT | `LICENSE` (solo il testo MIT, così GitHub lo riconosce) |
+| Contenuti didattici in `src/data/` | CC BY 4.0 | `LICENZE/CONTENUTI.txt` |
+| Musica | CC BY 4.0 | `LICENZE/MUSICA.txt` |
+
+Che cosa vale per che cosa è in `NOTICE.md`. Le parti di altri, con indirizzo, versione e file, sono in
+`THIRD-PARTY-NOTICES.md`:
+
+| Componente | Licenza |
+|---|---|
+| Make Me a Hanzi | Arphic |
+| complete-hsk-vocabulary | MIT |
+| py-fsrs | MIT |
+| jsQR | Apache 2.0 |
+| wikidict-it / Wikidata | CC0 |
+| Morph-it! | LGPL (da verificare) |
+| campioni della musica | CC0 |
+
+La build si ferma se in `src/vendor/` o tra i dati compare una parte di altri senza voce. I contributi entrano con la
+licenza dei contenuti: lo dicono il foglio dei contributi dell'app, `NOTICE.md` e `CONTRIBUTING.md`.
 
 ## Che cosa resta aperto
 

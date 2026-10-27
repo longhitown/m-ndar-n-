@@ -1,5 +1,6 @@
-/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso). Tema, caratteri, audio, voce, microfono, backup, e i riquadri
-   che altri moduli aggiungono in #set-extra (lingua, contributi). ===== */
+/* ===== V6.7: ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
+   audio, lingua), Dati e privacy, Avanzate, Informazioni e supporto. I moduli aggiungono le loro sezioni con
+   CP.settingsExtras: una funzione che rende HTML (va in «Avanzate») o { group, html }. ===== */
 (function () {
   var CP = window.CP, el = document.getElementById("settings"), btn = document.getElementById("settings-btn");
   if (!el || !btn) return;
@@ -16,8 +17,12 @@
     var v = document.getElementById("set-sfxvol"); if (v && CP.bus) v.value = CP.bus.sfxVol();
     var ts = document.getElementById("opt-toneshapes"); if (ts) ts.checked = document.body.classList.contains("tone-shapes");
     if (CP.audioMode) Array.prototype.forEach.call(el.querySelectorAll("[data-audio-set]"), function (b) { var on = b.getAttribute("data-audio-set") === CP.audioMode(); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
-    var ex = document.getElementById("set-extra");
-    if (ex && CP.settingsExtras) { var open = {}; Array.prototype.forEach.call(ex.querySelectorAll("details[id]"), function (d) { open[d.id] = d.open; }); ex.innerHTML = CP.settingsExtras.map(function (f) { return f(); }).join(""); Object.keys(open).forEach(function (id) { var d = document.getElementById(id); if (d) d.open = open[id]; }); }
+    /* le sezioni dei moduli, ognuna nel suo gruppo: una funzione (gruppo «Avanzate») oppure { group: "data"|"adv"|"info", html: funzione } */
+    var BOX = { data: "set-extra-data", adv: "set-extra", info: "set-extra-info" }, parts = { data: [], adv: [], info: [] }, open = {};
+    Array.prototype.forEach.call(el.querySelectorAll("#set-extra-data details[id], #set-extra details[id], #set-extra-info details[id]"), function (d) { open[d.id] = d.open; });
+    (CP.settingsExtras || []).forEach(function (f) { var g = typeof f === "function" ? "adv" : (BOX[f.group] ? f.group : "adv"); try { parts[g].push(typeof f === "function" ? f() : f.html()); } catch (e) {} });
+    Object.keys(BOX).forEach(function (g) { var b = document.getElementById(BOX[g]); if (b) b.innerHTML = parts[g].join(""); });
+    Object.keys(open).forEach(function (id) { var d = document.getElementById(id); if (d) d.open = open[id]; });
     paintMic();
   }
   function close() { CP.untrap(el); }
@@ -36,7 +41,7 @@
   CP.openSettings = function (sec) {
     paint(); CP.trap(el, close);
     var x = el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
-    if (sec) { var d = document.getElementById(sec); if (d) { if (d.tagName === "DETAILS") d.open = true; d.scrollIntoView({ block: "start" }); } }
+    if (sec) { var d = document.getElementById(sec); if (d) { for (var x = d; x && x !== el; x = x.parentElement) if (x.tagName === "DETAILS") x.open = true; d.scrollIntoView({ block: "start" }); } }
     CP.sfx("tap");
   };
   btn.addEventListener("click", function () { CP.openSettings(); });

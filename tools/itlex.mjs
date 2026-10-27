@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* màndarínō · lessico del corso di italiano per chi parla cinese, ricavato dal vocabolario cinese→italiano e controllato
-   con Morph-it! (Università di Bologna, LGPL: serve solo qui, in sviluppo; il file non entra nel repository).
+   con Morph-it! (Università di Bologna, doppia licenza CC BY-SA 2.0 / LGPL: il file non entra nel repository, ma genere,
+   plurale e forme degli aggettivi finiscono in lexicon.js, che quindi segue la LGPL: vedi THIRD-PARTY-NOTICES.md).
    Scrive src/data/it/lexicon.js. Si rilancia quando si aggiungono parole.
    Uso: node tools/itlex.mjs morph-it.txt
 
@@ -79,8 +80,8 @@ const rows = [...out.values()].map((e) => {
   const extra = e.k === "n" ? [e.g, e.p] : e.k === "j" ? [e.f] : [];
   return "  " + JSON.stringify([e.keys.join("|"), e.k, e.it, ...extra]);
 });
-const js = "/* Lessico del corso di italiano, generato da tools/itlex.mjs dal vocabolario e controllato con Morph-it! (LGPL, solo in\n" +
-  "   sviluppo). Non modificarlo a mano. Una voce per riga: [chiavi cinesi separate da |, tipo, italiano, …]\n" +
+const js = "/* Lessico del corso di italiano, generato da tools/itlex.mjs dal vocabolario e con genere, plurale e forme presi da Morph-it! (Università di Bologna, usato con la licenza LGPL: vedi\n" +
+  "   THIRD-PARTY-NOTICES.md e LICENZE/MORPH-IT.txt). Non modificarlo a mano. Una voce per riga: [chiavi cinesi separate da |, tipo, italiano, …]\n" +
   "   tipo n = nome [genere, plurale] · j = aggettivo [[m.s, f.s, m.p, f.p]] · v = verbo all'infinito · x = altro (avverbi, espressioni). */\n" +
   "var IT_LEXICON = [\n" + rows.join(",\n") + "\n];\n";
 fs.mkdirSync(path.join(SRC, "data/it"), { recursive: true });

@@ -19,6 +19,8 @@
     if (document.body.classList.contains("course-it")) return false;   /* le azioni sono del corso di cinese */
     if (CP.topSheet && CP.topSheet() && CP.closeSheet) CP.closeSheet();
     if (CP.immerse && CP.immerse.active()) CP.immerse.leave();
+    /* una scheda ancora chiusa (ui/unlock.js): la più vicina aperta, senza errori */
+    if (CP.unlock && (a === "words" || a === "frasi") && !CP.unlock.ok(a === "frasi" ? "build" : "words")) { CP.show(CP.unlock.nearest(a === "frasi" ? "build" : "words")); return true; }
     try { f(); } catch (e) {}
     return true;
   };

@@ -20,7 +20,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
----
-Questa licenza vale per il codice dell'app (src/, tools/, android/). Non vale per:
-- la musica in src/audio/music/: vedi LICENZE/MUSICA.txt (CC BY 4.0);
-- le parti di altri, ognuna con la sua licenza: vedi LICENZE/ e la schermata «Crediti e licenze» dell'app.
