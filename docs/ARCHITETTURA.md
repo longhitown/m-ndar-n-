@@ -101,6 +101,8 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | «Chi ha contribuito» | `ui/credits.js` | prima parte del foglio Crediti |
 | «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni e supporto |
 | `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
+| `CP.story` | `study/story.js` | `html(corso)` → Promise di HTML (riepilogo, numeri, barre di sei settimane), `weeks`, `hardTone`, `sureCount` |
+| `CP.game.rest()` / `rank().season` | `core/game.js` | giorni di riposo della serie attuale; stagione oltre l'ultimo grado; `CP.onRankUp(r)` se un modulo vuole festeggiare |
 | `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e privacy |
 | `credit: 1` nella patch | `contrib/contrib.js` | solo con un nickname e la casella spuntata (`cp-contrib-credit-v1`) |
 

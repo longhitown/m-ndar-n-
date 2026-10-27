@@ -117,3 +117,6 @@ Object.assign(I18N.zh, {"anki.title": "导出到 Anki", "anki.more": "其他导�
 Object.assign(I18N.zh, {"plc.store": "下载 Pleco", "plc.open": "在 Pleco 中打开", "plc.rowSub": "如果手机上装有 Pleco 词典", "plc.leaving": "正在打开 Pleco…"});
 Object.assign(I18N.zh, {"pv.backup": "在安卓应用中，如果手机备份已打开，安卓会把学习进度复制到你的 Google 账号备份中：这是系统服务，可以在手机设置中关闭。"});
 Object.assign(I18N.zh, {"apk.fDirect": "直接下载版（GitHub）", "apk.fStore": "应用商店版"});
+Object.assign(I18N.zh, {"rank.season": "第 {n} 季", "path.restDay": "休息日：连续天数不会中断", "path.restNote": "每周休息一天不会中断连续天数：休息也是学习的一部分。"});
+Object.assign(I18N.zh, {"st.more": "记忆和听力：详细数据", "st.fresh": "新的一周开始了：每天五分钟也很有用。", "st.week": "这周你学习了 {d} 天，答对复习 {g} 个词。", "st.tone": "最难的是第 {t} 声（{name}）：慢慢听，会掌握的。", "st.bars": "每周答对的复习", "st.sure": "已掌握的词", "st.goodWeek": "本周答对的复习", "st.days": "学习天数", "itst.fresh": "新的一周开始了：每天五分钟也很有用。", "itst.week": "这周：学习 {d} 天，{w} 个词，通过 {l} 课。", "itst.more": "比上周更多，真棒！", "itst.barsIt": "每周学习的单词", "itst.sure": "已掌握的词", "itst.lessons": "通过的课程"});
+Object.assign(I18N.zh, {"st.up": "比上周更多，真棒！", "itst.up": "比上周更多，真棒！"});

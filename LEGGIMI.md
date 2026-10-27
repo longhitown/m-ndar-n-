@@ -451,6 +451,26 @@ La build si ferma se trova nel repository:
 - una chiave privata;
 - un token, un webhook o un campo delle notifiche di Ko-fi in `src/` o nel file unico.
 
+## Ritorno quotidiano
+
+- **Giorno di riposo**: un giorno saltato a settimana (da lunedì a domenica) non spezza la serie, purché non siano due di
+  fila. È gratuito e automatico, e nella settimana del Percorso si vede con ☾ e una frase gentile. Si calcola solo dai
+  giorni attivi (`CP.game.rest()`, in `src/core/game.js`), quindi vale anche dopo l'unione tra dispositivi.
+- **Oltre i 10.000 punti**: altri quattro gradi e poi una stagione ogni 10.000 punti (`SEASON`), in tutti e due i corsi:
+
+  | Punti | Grado |
+  |---|---|
+  | 15.000 | Calligrafo d'Inchiostro 墨韵书家 |
+  | 22.000 | Viandante dei Classici 经典行者 |
+  | 30.000 | Saggio del Fiume Giallo 黄河贤者 |
+  | 40.000 | Maestro dei Quattro Mari 四海宗师 |
+  | 50.000 e oltre | «stagione 2», «stagione 3»… (第 2 季) |
+- **Progressi in evidenza** in Studia (`src/study/story.js`, `CP.story`): un riepilogo gentile della settimana, le parole
+  sicure, i ripassi riusciti delle ultime sei settimane e il tono che dà più filo da torcere (dalle parole mancate negli
+  ultimi 60 giorni). I numeri tecnici (memoria, matrice dei toni) restano sotto, in un riquadro chiuso. Lo stesso modulo fa
+  la pagina 我的进步 del corso di italiano.
+- **Prove su un telefono vero**: [docs/checklist-dispositivo.md](docs/checklist-dispositivo.md).
+
 ## Esporta per Anki
 
 Per chi ha studiato molto e vuole portare le parole anche in Anki, senza togliere niente a màndarínō. La voce compare

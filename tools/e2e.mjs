@@ -320,6 +320,29 @@ try {
     check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4e. ritorno quotidiano (Task 6): giorno di riposo, gradi oltre i 10.000 punti, racconto dei progressi */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    await p.goto(base); await p.waitForTimeout(500);
+    const r = await p.evaluate(() => {
+      const k = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+      const day = { w: ["x"], s: 0, e: 0 }, mk = (offs) => Object.fromEntries(offs.map((o) => [k(o), day]));
+      CP.game.load({ base: 0, xpBy: {}, goal: 10, days: mk([0, 2, 3, 4, 5]), best: 0 }); const a = CP.game.streak(), restA = Object.keys(CP.game.rest());
+      CP.game.load({ base: 0, xpBy: {}, goal: 10, days: mk([0, 3, 4, 5]), best: 0 }); const b = CP.game.streak();
+      CP.game.load({ base: 45000, xpBy: {}, goal: 10, days: {}, best: 0 }); const r1 = CP.game.rank();
+      CP.game.load({ base: 55000, xpBy: {}, goal: 10, days: {}, best: 0 }); const r2 = CP.game.rank();
+      CP.game.load({ base: 16000, xpBy: {}, goal: 10, days: {}, best: 0 }); const r3 = CP.game.rank();
+      return { a, restA, yest: k(1), b, r1: [r1.name, r1.next, r1.season], r2: [r2.name, r2.next, r2.pct], r3: [r3.name, r3.next] };
+    });
+    check("Giorno di riposo: un giorno saltato non spezza la serie (5 giorni), due di fila sì (1)", r.a === 5 && r.restA.join() === r.yest && r.b === 1, JSON.stringify(r));
+    check("Gradi oltre i 10.000 punti, poi stagioni ogni 10.000", r.r3[0] === "Calligrafo d'Inchiostro" && r.r3[1] === 22000 && r.r1[0] === "Maestro dei Quattro Mari" && r.r1[1] === 50000 && r.r2[0] === "Maestro dei Quattro Mari · stagione 2" && r.r2[1] === 60000 && r.r2[2] === 50, JSON.stringify(r));
+    await p.evaluate(() => { CP.game.load({ base: 0, xpBy: {}, goal: 10, days: {}, best: 0 }); CP.grade("你", 3, false, { ms: 900, type: "pi" }); CP.show("study", true, true); }); await p.waitForTimeout(700);
+    const st = await p.evaluate(() => { const s = document.getElementById("st-story"); return s && !s.closest("details") ? { sum: (s.querySelector(".st-sum") || {}).textContent, cols: s.querySelectorAll(".st-col").length } : null; });
+    check("Progressi in evidenza in Studia: riepilogo della settimana e sei settimane", st && st.cols === 6 && /settimana/.test(st.sum || ""), JSON.stringify(st));
+    check("Ritorno quotidiano: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
