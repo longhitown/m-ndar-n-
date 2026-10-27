@@ -9,7 +9,7 @@ PRIVACY.md; controlla che si apra prima di inviare).
 |---|---|---|
 | L'app raccoglie o condivide dati degli utenti? | **No** | tutto resta sul dispositivo; nessun server, nessun account, nessuna statistica |
 | I dati sono cifrati in transito? | non applicabile | l'app non trasmette dati personali |
-| Si può chiedere la cancellazione dei dati? | sì, sul dispositivo | ⚙️ → Dati e privacy, o disinstallando |
+| Si può chiedere la cancellazione dei dati? | sì, sul dispositivo | ⚙️ → Dati e sincronizzazione, o disinstallando |
 | Microfono | non raccolto | serve solo durante gli esercizi di pronuncia; nessuna registrazione salvata o inviata |
 | Fotocamera | non raccolta | solo per leggere un QR; nessuna immagine salvata |
 

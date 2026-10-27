@@ -88,7 +88,7 @@ esempio «nord / sud / Taiwan»), utile per gli accenti; è un dato personale e 
 
 ## Nell'app: il pacchetto voci
 
-- Come la musica (`audio/file-player.js`): un **pacchetto scaricabile a parte**, mai all'avvio. ⚙️ → Audio → «Voci di
+- Come la musica (`audio/file-player.js`): un **pacchetto scaricabile a parte**, mai all'avvio. ⚙️ → Suoni e musica → «Voci di
   madrelingua (N MB)» lo scarica nella cache del service worker, dopo che l'utente lo chiede.
 - Dove c'è una voce vera, 🔊 la usa al posto della sintesi vocale, con un piccolo segno «voce vera» e il nickname nei
   dettagli. Dove non c'è, resta la voce del telefono.

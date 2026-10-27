@@ -9,7 +9,7 @@
      Un .apkg con il calendario è fuori portata.
    - Corso di italiano: le parole di CP.itLexicon; per i verbi il presente prodotto dalle regole dell'app (CP.ita), non da
      Morph-it! (che a runtime non c'è). Genere e articolo vengono dal lessico (Morph-it!, LGPL): l'intestazione lo cita.
-   Chi lo vede: solo chi ha studiato molto (ANKI_MIN parole iniziate o ripassi), in ⚙️ → Dati e privacy → «Altre opzioni di
+   Chi lo vede: solo chi ha studiato molto (ANKI_MIN parole iniziate o ripassi), in ⚙️ → Dati e sincronizzazione → «Altre opzioni di
    esportazione», con due conferme. Il file si salva con Store.download, come il backup: nessuna rete. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc;
@@ -87,7 +87,7 @@
   }
   CP.anki = { build: build, guid: guid, save: save, allowed: allowed, studied: studied, MIN: ANKI_MIN };
 
-  /* ⚙️ → Dati e privacy, accanto alla sincronizzazione: un blocco chiuso, solo per chi ha studiato molto */
+  /* ⚙️ → Dati e sincronizzazione, accanto alla sincronizzazione: un blocco chiuso, solo per chi ha studiato molto */
   var pick = { which: "mine", sec: "" };
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () {
     if (!allowed()) return "";

@@ -1,5 +1,5 @@
 /* ===== màndarínō · sostegno volontario e sigilli di gratitudine (印章).
-   - ⚙️ → Informazioni e supporto → «Sostieni il progetto»: il perché, un link (aperto solo da un tocco) alla pagina di
+   - ⚙️ → Informazioni → «Sostieni il progetto»: il perché, un link (aperto solo da un tocco) alla pagina di
      sostegno (MD_CONFIG.SUPPORT_URL), la riga sui sigilli, la trasparenza. Nessun importo, nessun contatore, nessun
      invito che si ripete: l'app non sa chi ha donato né quanto, e non manda niente a nessuno.
    - I sigilli sono solo estetici: non aprono nulla. Tre livelli, disegnati qui in SVG («ispirati alla scrittura a sigillo»,
@@ -116,7 +116,7 @@
     save(o); CP.closeSheet(); if (CP.openSettings) CP.openSettings("set-support");
   }
 
-  /* ---- ⚙️ → Informazioni e supporto → Sostieni il progetto ---- */
+  /* ---- ⚙️ → Informazioni → Sostieni il progetto ---- */
   var CUP = '<svg class="cup" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 3.5c-.8 1 .8 2-.1 3M11.5 3.5c-.8 1 .8 2-.1 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   function lingua() { return T(IT ? "sup.lIt" : "sup.lZh"); }
   function sectionHTML() {

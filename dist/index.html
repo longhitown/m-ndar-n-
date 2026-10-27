@@ -1166,11 +1166,34 @@ body.in-session .actbar { flex: none; }
 /* fogli dal basso (⚙️, filtri, legenda) */
 .sheet { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, 0.42); }
 .sheet[hidden] { display: none; }
-.set-card { max-height: 88vh; display: grid; gap: var(--sp-3); align-content: start; }
-.set-sec { border-top: 1px solid var(--line); padding-top: var(--sp-3); display: grid; gap: var(--sp-2); }
-.set-sec h3 { margin: 0; font: 700 var(--fs-m) var(--f-body); }
-.set-sec > summary { min-height: 44px; font-weight: 700; }
-.set-sec .vbody { display: grid; gap: 10px; padding-bottom: var(--sp-2); }
+/* ===== Impostazioni: una pagina con cinque carte, ognuna apre una schermata propria (ui/settings.js) ===== */
+.set-card { --mand: 243, 121, 5; height: min(92vh, 780px); max-height: none; display: block; overflow-y: auto; padding-top: 0; background: var(--bg); border-radius: 22px 22px 0 0; border-bottom: 0; overscroll-behavior: contain; }
+@supports (height: 1dvh) { .set-card { height: min(92dvh, 780px); } }
+.set-head { position: sticky; top: 0; z-index: 3; min-height: 68px; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 12px max(16px, env(safe-area-inset-left, 0px)); gap: 8px; background: var(--bg); border-bottom: 1px solid var(--line); align-items: center; }
+.set-head h2 { flex: 1; min-width: 0; font: 800 21px/1.2 var(--f-display); color: var(--accent); overflow-wrap: anywhere; }
+.set-head .fam-x { align-self: center; margin-left: 0; }
+.set-back { flex: none; min-height: 44px; padding: 0 14px 0 10px; font-weight: 700; }
+.set-back[hidden] { display: none; }
+.set-search { position: relative; margin: 14px 0 12px; }
+.set-search .mag { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
+.set-search input { width: 100%; min-height: 48px; padding: 0 14px 0 42px; font: 400 16px var(--f-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 24px; }
+.set-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.set-tiles, .set-hits, .set-list { display: grid; gap: 10px; }
+.set-list { padding: 14px 0 6px; gap: 12px; }
+.set-tile, .set-hit { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; font-weight: 400; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow, none); cursor: pointer; }
+.set-tile { min-height: 76px; padding: 12px 14px; }
+.set-tile::after { content: "›"; margin-left: auto; font-size: 30px; line-height: 1; color: var(--muted); }
+.set-tile .ico { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; background: rgba(var(--mand), 0.14); border: 1px solid rgba(var(--mand), 0.4); }
+.set-tile .txt { display: grid; gap: 2px; min-width: 0; }
+.set-tile b { font-size: 17px; font-weight: 800; color: var(--accent); }
+.set-tile small, .set-hit small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.set-tile:hover, .set-hit:hover { border-color: var(--accent); }
+.set-hit { min-height: 56px; padding: 8px 16px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+.set-hit b { font-size: 16px; }
+.set-tiles[hidden], .set-hits[hidden], #set-home[hidden], .set-page[hidden] { display: none; }
+.set-card .set-sec { margin: 0; display: grid; gap: 10px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow, none); scroll-margin-top: 80px; }
+.set-card .set-sec > .set-h, .set-sec h3 { margin: 0; font: 800 17px/1.3 var(--f-body); color: var(--ink); }
+.set-sec .vbody { display: grid; gap: 10px; }
 .set-sec .seg { margin-top: 0; }
 .set-sec .seg button { min-height: 44px; }
 .set-sec select { width: 100%; }
@@ -1432,14 +1455,6 @@ body.in-onb .dock, body.in-onb .unl-note { display: none; }
 .pl-big [lang="it"] { font-size: 20px; }
 .pl-opts .ls-opt .han { font-size: 22px; }
 .pl-idk { align-self: center; }
-/* Impostazioni in quattro gruppi */
-.set-grp { display: grid; gap: var(--sp-2); border-top: 2px solid var(--line); padding-top: var(--sp-3); }
-.set-grp > .set-gh, .set-grp > summary.set-gh { margin: 0; min-height: 44px; display: flex; align-items: center; font: 800 var(--fs-m) var(--f-body); letter-spacing: 0.01em; cursor: pointer; }
-details.set-grp > summary.set-gh { list-style: none; }
-details.set-grp > summary.set-gh::-webkit-details-marker { display: none; }
-details.set-grp > summary.set-gh::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform 0.15s; }
-details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
-.set-grp > .set-sec:first-of-type { border-top: 0; }
 /* corso di italiano: il grado e la serie in cima alle lezioni */
 .it-rank { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
 .it-rank .seal { flex: none; }
@@ -1448,7 +1463,6 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 :root { --seal-red: #B8322A; --seal-paper: #F6EEDD; }
 .sup-go { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; text-decoration: none; }
 .cup { width: 20px; height: 20px; vertical-align: -4px; }
-#set-support summary .cup { margin-right: 2px; }
 .seal-main { display: flex; gap: 14px; align-items: center; }
 .seal-main .seal-svg { flex: none; }
 .seal-card { display: grid; gap: 3px; }
@@ -1695,6 +1709,11 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .itq-w { display: inline-block; font: inherit; line-height: 1.3; color: inherit; background: none; border: 0; border-radius: 6px; padding: 12px 2px; min-height: 44px; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 4px; }
 .itq-w:hover, .itq-w:focus-visible { background: var(--chip); }
 .ex-sent-opt { font-size: 1.15rem; line-height: 1.5; }
+
+@keyframes set-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@keyframes set-flash { 0%, 55% { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0.65); } 100% { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0); } }
+@media (prefers-reduced-motion: no-preference) { .set-page:not([hidden]) { animation: set-in 0.18s ease-out; } .set-flash { animation: set-flash 1.6s ease-out; } .set-tile { transition: border-color 0.15s ease, transform 0.1s ease; } .set-tile:active { transform: scale(0.985); } }
+@media (prefers-reduced-motion: reduce) { .set-flash { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0.65); } }
 </style>
 </head>
 <body>
@@ -1820,34 +1839,40 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 </div>
 <div id="settings" class="sheet" hidden role="dialog" aria-labelledby="set-title">
   <div class="fam-card set-card">
-    <div class="fam-head"><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
-    <!-- quattro gruppi (docs/ux-architettura.md): i moduli si aggiungono con CP.settingsExtras.push({ group, html }) -->
-    <div class="set-grp" id="grp-ess"><h3 class="set-gh" data-i18n="set.gEss">Essenziali</h3>
-    <section class="set-sec" aria-labelledby="set-h-look"><h3 id="set-h-look" data-i18n="set.look">Aspetto</h3>
+    <div class="fam-head set-head"><button type="button" class="set-back btn-s" data-set-back hidden aria-label="Torna alle impostazioni" data-i18n-aria="set.backAria"><span aria-hidden="true">‹</span> <span data-i18n="set.back">Indietro</span></button><h2 id="set-title" style="margin:0" data-i18n="set.title">Impostazioni</h2><button type="button" class="fam-x btn-s" data-set-close data-i18n="common.close">Chiudi</button></div>
+    <!-- una pagina con cinque carte; ogni carta apre una schermata propria (docs/ux-architettura.md). I moduli si aggiungono con
+         CP.settingsExtras.push({ group, html }) e finiscono nella pagina del loro id (PAGE_OF in ui/settings.js) o del loro gruppo -->
+    <div id="set-home">
+      <div class="set-search"><label class="sr" for="set-q" data-i18n="set.search">Cerca nelle impostazioni</label><span class="mag" aria-hidden="true">🔎</span><input type="search" id="set-q" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cerca nelle impostazioni" data-i18n-ph="set.search"></div>
+      <div class="set-tiles" id="set-tiles"><button type="button" class="set-tile" data-set-open="look"><span class="ico" aria-hidden="true">🎨</span><span class="txt"><b data-i18n="set.p.look">Aspetto</b><small data-i18n="set.p.lookD">Tema, grandezza dei caratteri, lingua dei menu</small></span></button><button type="button" class="set-tile" data-set-open="sound"><span class="ico" aria-hidden="true">🔊</span><span class="txt"><b data-i18n="set.p.sound">Suoni e musica</b><small data-i18n="set.p.soundD">Volume, musica, voce e microfono</small></span></button><button type="button" class="set-tile" data-set-open="study"><span class="ico" aria-hidden="true">📚</span><span class="txt"><b data-i18n="set.p.study">Studio</b><small data-i18n="set.p.studyD">Corso, stile di ripasso, livello, promemoria, sfide</small></span></button><button type="button" class="set-tile" data-set-open="data"><span class="ico" aria-hidden="true">💾</span><span class="txt"><b data-i18n="set.p.data">Dati e sincronizzazione</b><small data-i18n="set.p.dataD">Backup, sincronizzazione, esportazione, contributi</small></span></button><button type="button" class="set-tile" data-set-open="info"><span class="ico" aria-hidden="true">📖</span><span class="txt"><b data-i18n="set.p.info">Informazioni</b><small data-i18n="set.p.infoD">Come funziona, novità, privacy, sostieni il progetto</small></span></button></div>
+      <div class="set-hits" id="set-hits" aria-live="polite" hidden></div>
+    </div>
+    <div id="set-pages">
+    <div class="set-page" data-set-page="look" hidden><div class="set-list">
+    <section class="set-sec" id="set-look" aria-labelledby="set-h-look"><h3 class="set-h" id="set-h-look" data-i18n="set.look">Aspetto</h3>
       <div class="seg" id="set-theme" role="group" aria-label="Tema" data-i18n-aria="set.theme"><button type="button" data-theme-set="light" data-i18n="theme.light">☀️ Chiaro</button><button type="button" data-theme-set="sepia" data-i18n="theme.sepia">📜 Carta di riso</button><button type="button" data-theme-set="dark" data-i18n="theme.dark">🌙 Notte</button></div>
       <div class="hzrow"><span data-i18n="set.hz">Caratteri cinesi</span><button id="hz-minus" type="button" aria-label="Caratteri più piccoli" data-i18n-aria="set.hzMinus">A−</button><span id="hz-val" class="val" aria-live="polite"></span><button id="hz-plus" type="button" aria-label="Caratteri più grandi" data-i18n-aria="set.hzPlus">A+</button></div>
       <label class="chk"><input type="checkbox" id="opt-toneshapes"> <span data-i18n="set.toneshapes">Toni anche con un segno, non solo col colore</span></label>
     </section>
-    <section class="set-sec" aria-labelledby="set-h-audio"><h3 id="set-h-audio" data-i18n="set.audio">Audio</h3>
+    <section class="set-sec" id="set-lang" aria-labelledby="set-lang-h"><h3 class="set-h" id="set-lang-h" data-i18n="set.lang">Lingua dell'interfaccia</h3><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it" lang="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></section>
+    </div></div>
+    <div class="set-page" data-set-page="sound" hidden><div class="set-list">
+    <section class="set-sec" id="set-sound" aria-labelledby="set-h-audio"><h3 class="set-h" id="set-h-audio" data-i18n="set.audio">Audio</h3>
       <div class="seg" id="set-audio" role="group" aria-label="Audio" data-i18n-aria="set.audio"><button type="button" data-audio-set="all" data-i18n="audio.all">🔊 Voce ed effetti</button><button type="button" data-audio-set="fx" data-i18n="audio.fx">🔉 Solo effetti</button><button type="button" data-audio-set="mute" data-i18n="audio.mute">🔇 Muto</button></div>
       <label class="jk-vol small muted"><span data-i18n="set.sfxvol">🔔 Volume effetti</span> <input type="range" min="0" max="1" step="0.05" id="set-sfxvol"></label>
       <button type="button" class="btn-s" id="set-music" data-i18n="set.music">🎵 Musica per studiare…</button>
     </section>
-    <details class="set-sec" id="set-lang"><summary data-i18n="set.lang">Lingua dell'interfaccia</summary><div class="vbody"><div class="seg" role="group" aria-label="Lingua" data-i18n-aria="set.lang"><button type="button" data-lang-set="it" lang="it">🇮🇹 Italiano</button><button type="button" data-lang-set="zh" lang="zh-CN">🇨🇳 中文</button></div><p class="small muted" style="margin:0" data-i18n="set.langHint">Cambia solo i menu: le parole da studiare restano in cinese con la traduzione italiana.</p></div></details>
+    <section class="set-sec" id="vset" aria-labelledby="vset-h"><h3 class="set-h" id="vset-h" data-i18n="set.voice">Voce</h3><div class="vbody" id="vset-body"></div></section>
+    <section class="set-sec" id="set-mic-box" aria-labelledby="set-mic-box-h"><h3 class="set-h" id="set-mic-box-h" data-i18n="set.mic">Microfono</h3><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></section>
+    </div></div>
+    <div class="set-page" data-set-page="study" hidden><div class="set-list"></div></div>
+    <div class="set-page" data-set-page="data" hidden><div class="set-list">
+    <section class="set-sec" id="set-data" aria-labelledby="set-data-h"><h3 class="set-h" id="set-data-h" data-i18n="set.data">Backup e ripristino</h3><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></section>
+    </div></div>
+    <div class="set-page" data-set-page="info" hidden><div class="set-list">
+    <section class="set-sec" id="set-about" aria-labelledby="set-about-h"><h3 class="set-h" id="set-about-h" data-i18n="set.about">Come funziona</h3><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div><p class="small muted" style="margin:6px 0 0" data-i18n="card.privacy">Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta.</p><p class="small" id="about-support" hidden></p></section>
+    </div></div>
     </div>
-    <details class="set-grp" id="grp-data"><summary class="set-gh" data-i18n="set.gData">Dati e privacy</summary>
-    <details class="set-sec" id="set-data"><summary data-i18n="set.data">Backup e ripristino</summary><div class="vbody"><p class="small muted" style="margin:0" data-i18n="set.dataHint">Progressi, preferiti, gioco e registro dei ripassi in un file. Il ripristino unisce, tenendo per ogni parola il dato più recente.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-bk-down" data-i18n="set.bkDown">⬇ Scarica backup</button><button type="button" class="btn-s" id="set-bk-up" data-i18n="set.bkUp">⬆ Ripristina da file</button></div><input type="file" id="set-bk-file" accept="application/json,.json,.txt" hidden><p class="small muted" id="set-bk-msg" aria-live="polite" style="margin:0"></p></div></details>
-    <div id="set-extra-data"></div>
-    </details>
-    <details class="set-grp" id="grp-adv"><summary class="set-gh" data-i18n="set.gAdv">Avanzate</summary>
-    <details class="set-sec" id="vset"><summary data-i18n="set.voice">Voce</summary><div class="vbody" id="vset-body"></div></details>
-    <details class="set-sec" id="set-mic-box"><summary data-i18n="set.mic">Microfono</summary><div class="vbody"><p class="small muted" id="set-mic" style="margin:0"></p><button type="button" class="btn-s" id="set-mic-close" data-i18n="set.micClose">Chiudi il microfono adesso</button></div></details>
-    <div id="set-extra"></div>
-    </details>
-    <details class="set-grp" id="grp-info"><summary class="set-gh" data-i18n="set.gInfo">Informazioni e supporto</summary>
-    <details class="set-sec" id="set-about"><summary data-i18n="set.about">Come funziona</summary><div class="vbody"><p class="lede" style="margin:0" id="about-lede"><b><span id="count">6385</span> parole</b> per parlare, nell'ordine in cui servono. Il pinyin viene prima, il carattere sta accanto e l'italiano a fianco. Ogni giorno: 10 parole, lette ad alta voce.</p><div class="acts" style="margin:0"><button type="button" class="btn-s" id="set-welcome" data-i18n="set.welcome">Rivedi il benvenuto</button><button type="button" class="btn-s" id="set-selftest" data-i18n="set.selftest">Autodiagnosi</button><button type="button" class="btn-quiet small" data-credits data-i18n="set.credits">Crediti e licenze</button></div></div><p class="small muted" style="margin:6px 0 0" data-i18n="card.privacy">Le carte da condividere nascono sul tuo telefono; quello che ne fai è una tua scelta.</p><p class="small" id="about-support" hidden></p></details>
-    <div id="set-extra-info"></div>
-    </details>
   </div>
 </div>
 
@@ -15369,7 +15394,7 @@ Object.assign(I18N.it, { "vp.t1": "alto e piatto (1°)", "vp.t2": "che sale (2°
 /* Scheda della parola e pronuncia */
 Object.assign(I18N.it, { "fam.alsoRead": "Si legge anche {p}.", "fam.readIn": "La voce lo legge dentro {w}, con questa lettura.", "fam.listen": "Ascolta", "hsk.in": "Parola del livello HSK {n}", "hsk.out": "Fuori dalle liste HSK 1–6", "fam.part": "Da solo non è una parola del vocabolario: compare dentro altre parole.", "fam.fix": "Correggi o segnala", "fam.chars": "Caratteri", "fam.contain": "Parole che contengono {c}", "fam.noOther": "Nessun'altra parola del vocabolario contiene questo carattere.", "fam.more": "Altre {n} parole: cercale nella scheda Parole.", "ph.traps": "Trappole di pronuncia", "ph.more": "Tocca le sillabe del pinyin nella tabella per vedere le altre.", "ph.ini": "iniziale", "ph.fin": "finale", "ph.xray": "Radiologia fonetica", "ph.none": "Nessuna trappola particolare", "ph.noneSub": "Questa sillaba si pronuncia più o meno come si legge. Cura soprattutto il tono." });
 /* Contributi */
-Object.assign(I18N.it, { "ct.fIt": "italiano", "ct.fNote": "nota", "ct.fNoteU": "Nota", "ct.addTitle": "Proponi una parola nuova", "ct.trTitle": "La traduzione giusta", "ct.type": "Tipo", "ct.fix": "Correggi", "ct.flag": "Segnala", "ct.what": "Che cosa", "ct.now": "Adesso:", "ct.becomes": "Diventa", "ct.noHz": "I caratteri non si correggono da qui (sono la chiave dei tuoi progressi): se sono sbagliati usa «Segnala».", "ct.labSays": "Il laboratorio dice:", "ct.howIt": "Come si dice in italiano", "ct.trHint": "La tua traduzione vale subito nel tuo laboratorio. Se la mandi all'autore, viene riletta e poi diventa una frase verificata per tutti.", "ct.section": "Sezione", "ct.py": "Pinyin, con i toni (sillabe separate da un punto: ni.hao)", "ct.wrong": "Che cosa non va", "ct.why": "Perché (facoltativo)", "ct.nick": "Nickname (facoltativo)", "ct.privacy": "Cosa invii: solo questa correzione e, se lo scrivi, un nickname. A chi: all'autore dell'app, quando scegli tu un canale (messaggio, email, modulo, GitHub). Se viene accolta, sarà pubblicata nei contenuti dell'app con la loro licenza, CC BY 4.0: mandandola accetti che sia rilasciata così. Nessun altro dato.", "ct.saveTry": "Salva e prova nella mia copia", "ct.thanks": "Grazie!", "ct.seenFix": "La vedi già nella tua copia, con l'etichetta «✏️ tua correzione». La puoi annullare da ⚙️ → Contributi.", "ct.seenTr": "La vedi già nel laboratorio, con l'etichetta «✏️ tua traduzione». La puoi annullare da ⚙️ → Contributi.", "ct.saved": "È salvata in questo dispositivo (e nel backup).", "ct.send1": "Manda il contributo all'autore", "ct.sendN": "Manda i {n} contributi all'autore", "ct.share": "Condividi (WeChat, WhatsApp…)", "ct.form": "Modulo Google", "ct.file": "Scarica .json", "ct.tooLongMail": "Troppo lungo per un'email: scarico il file, allegalo tu.", "ct.tooLongGh": "Troppo lungo per GitHub: scarico il file.", "ct.title": "Contributi", "ct.lede": "Hai trovato un errore? Correggilo: lo vedi subito nella tua copia e lo puoi mandare all'autore, senza account.", "ct.newWord": "Parola nuova", "ct.sent": "inviato", "ct.redo": "Riapplica", "ct.undo": "Annulla", "ct.findHint": "Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.", "ct.none": "Niente trovato.", "ct.findTitle": "Che cosa vuoi correggere?", "ct.search": "Cerca", "ct.whichLine": "Quale battuta?" });
+Object.assign(I18N.it, { "ct.fIt": "italiano", "ct.fNote": "nota", "ct.fNoteU": "Nota", "ct.addTitle": "Proponi una parola nuova", "ct.trTitle": "La traduzione giusta", "ct.type": "Tipo", "ct.fix": "Correggi", "ct.flag": "Segnala", "ct.what": "Che cosa", "ct.now": "Adesso:", "ct.becomes": "Diventa", "ct.noHz": "I caratteri non si correggono da qui (sono la chiave dei tuoi progressi): se sono sbagliati usa «Segnala».", "ct.labSays": "Il laboratorio dice:", "ct.howIt": "Come si dice in italiano", "ct.trHint": "La tua traduzione vale subito nel tuo laboratorio. Se la mandi all'autore, viene riletta e poi diventa una frase verificata per tutti.", "ct.section": "Sezione", "ct.py": "Pinyin, con i toni (sillabe separate da un punto: ni.hao)", "ct.wrong": "Che cosa non va", "ct.why": "Perché (facoltativo)", "ct.nick": "Nickname (facoltativo)", "ct.privacy": "Cosa invii: solo questa correzione e, se lo scrivi, un nickname. A chi: all'autore dell'app, quando scegli tu un canale (messaggio, email, modulo, GitHub). Se viene accolta, sarà pubblicata nei contenuti dell'app con la loro licenza, CC BY 4.0: mandandola accetti che sia rilasciata così. Nessun altro dato.", "ct.saveTry": "Salva e prova nella mia copia", "ct.thanks": "Grazie!", "ct.seenFix": "La vedi già nella tua copia, con l'etichetta «✏️ tua correzione». La puoi annullare da ⚙️ → Dati e sincronizzazione → Contributi.", "ct.seenTr": "La vedi già nel laboratorio, con l'etichetta «✏️ tua traduzione». La puoi annullare da ⚙️ → Dati e sincronizzazione → Contributi.", "ct.saved": "È salvata in questo dispositivo (e nel backup).", "ct.send1": "Manda il contributo all'autore", "ct.sendN": "Manda i {n} contributi all'autore", "ct.share": "Condividi (WeChat, WhatsApp…)", "ct.form": "Modulo Google", "ct.file": "Scarica .json", "ct.tooLongMail": "Troppo lungo per un'email: scarico il file, allegalo tu.", "ct.tooLongGh": "Troppo lungo per GitHub: scarico il file.", "ct.title": "Contributi", "ct.lede": "Hai trovato un errore? Correggilo: lo vedi subito nella tua copia e lo puoi mandare all'autore, senza account.", "ct.newWord": "Parola nuova", "ct.sent": "inviato", "ct.redo": "Riapplica", "ct.undo": "Annulla", "ct.findHint": "Scrivi una parola in pinyin, 汉字 o italiano: cerco nel dizionario, nelle frasi e nei dialoghi.", "ct.none": "Niente trovato.", "ct.findTitle": "Che cosa vuoi correggere?", "ct.search": "Cerca", "ct.whichLine": "Quale battuta?" });
 /* Modalità guida */
 Object.assign(I18N.it, { "gd.title": "Modalità guida", "gd.lede": "Per quando cammini, guidi o hai le mani occupate. Ti dico la frase in italiano, hai qualche secondo per provare a dirla tu, poi la senti in cinese: prima piano, poi a velocità naturale. Va avanti da sola.", "gd.what": "Cosa ascoltare", "gd.phr": "Frasi di tutti i giorni", "gd.phrSub": "{n} frasi in {g} situazioni", "gd.words": "Le tue parole in corso", "gd.wordsSub": "quelle che stai ripassando", "gd.dlg": "Le battute dei dialoghi", "gd.dlgSub": "quello che ti serve in {n} situazioni", "gd.sit": "Situazione", "gd.shuffle": "Ordine casuale", "gd.awake": "Tieni lo schermo acceso", "gd.start": "Parti ({n} frasi)", "gd.voice": "Serve la voce del dispositivo. Se senti solo silenzio, prova «Usa la voce alternativa» in Voce e audio.", "gd.playing": "In ascolto", "gd.prev": "Frase precedente", "gd.next": "Frase successiva", "gd.pause": "Pausa", "gd.resume": "Riprendi", "gd.paused": "In pausa", "gd.listen": "Ascolta", "gd.you": "Tocca a te", "gd.natural": "Naturale", "gd.empty": "Niente da ascoltare con questa scelta." });
 /* Crediti */
@@ -15381,7 +15406,7 @@ Object.assign(I18N.it, { "mic.e.not-allowed": "Il microfono è bloccato in quest
 /* Sincronizzazione */
 Object.assign(I18N.it, { "sy.title": "Sincronizzazione", "sy.lede": "Studi su più dispositivi? Scegli un file nel tuo cloud (Google Drive, OneDrive, Dropbox, iCloud…): ogni dispositivo ci scrive i suoi progressi e li unisce a quelli degli altri. Nessun account, nessun server: il file è tuo.", "sy.manual": "Questo browser non può tenere collegato un file: salva il file di sincronizzazione e, sull'altro dispositivo, uniscilo. Le regole di unione sono le stesse: nessun progresso si perde.", "sy.saveFile": "Salva il file di sincronizzazione", "sy.mergeFile": "Unisci un file", "sy.new": "Crea il file nel cloud", "sy.open": "Usa un file esistente", "sy.hintA": "Nel selettore scegli Drive, OneDrive o Dropbox nel menu a sinistra. Sul secondo telefono usa «Usa un file esistente» e scegli lo stesso file.", "sy.hintF": "Salva il file in una cartella sincronizzata (OneDrive, Dropbox, Google Drive per computer). Sugli altri dispositivi scegli lo stesso file.", "sy.last": "Ultima sincronizzazione: {t}", "sy.never": "mai", "sy.now": "Sincronizza ora", "sy.unlink": "Scollega", "sy.unlinked": "File scollegato. I progressi restano su questo dispositivo.", "sy.running": "Sincronizzo…", "sy.updated": "Arrivati progressi da un altro dispositivo: aggiorno.", "sy.done": "Sincronizzato.", "sy.later": "Finisci la sessione, poi sincronizza.", "sy.perm": "Serve il permesso per il file: tocca «Sincronizza ora».", "sy.bad": "Il file scelto non è un file di màndarínō.", "sy.none": "Nessun file collegato.", "sy.err": "Non riesco a leggere o scrivere il file. Controlla la connessione e riprova." });
 /* Passaggio con i QR */
-Object.assign(I18N.it, { "qr.send": "Passa a un altro telefono", "qr.recv": "Ricevi con la fotocamera", "qr.sendHint": "Sull'altro telefono apri ⚙️ → Sincronizzazione → «Ricevi con la fotocamera» e inquadra questi codici: cambiano da soli, aspetta finché tutti i quadratini diventano verdi. Non serve internet.", "qr.cvAria": "Codice QR dei tuoi progressi, cambia da solo", "qr.preparing": "Preparo i dati…", "qr.frame": "Codice {n} di {tot} · {kb} KB", "qr.err": "Non riesco a preparare i dati.", "qr.recvHint": "Sull'altro telefono apri ⚙️ → Sincronizzazione → «Passa a un altro telefono» e inquadra i codici nel riquadro. I progressi si uniscono a quelli di questo telefono.", "qr.camOpen": "Apro la fotocamera…", "qr.aim": "Inquadra i codici dell'altro telefono.", "qr.progress": "Ricevuti {n} di {tot}: continua a inquadrare.", "qr.joining": "Unisco i progressi…", "qr.bad": "I dati non tornano: ricomincio a raccogliere i codici.", "qr.ok": "Progressi ricevuti. Riavvio l'app…", "qr.noCam": "Non trovo una fotocamera utilizzabile.", "qr.camBlocked": "La fotocamera è bloccata: consentila nelle impostazioni del browser o dell'app.", "cr.jsqr": "Lettura dei codici QR", "cr.jsqrT": "<b>jsQR</b> (github.com/cozmo/jsQR), licenza Apache 2.0: legge i QR dalla fotocamera quando il browser non sa farlo da solo, per passare i progressi a un altro telefono. I QR li scrive invece l'app stessa." });
+Object.assign(I18N.it, { "qr.send": "Passa a un altro telefono", "qr.recv": "Ricevi con la fotocamera", "qr.sendHint": "Sull'altro telefono apri ⚙️ → Dati e sincronizzazione → Sincronizzazione → «Ricevi con la fotocamera» e inquadra questi codici: cambiano da soli, aspetta finché tutti i quadratini diventano verdi. Non serve internet.", "qr.cvAria": "Codice QR dei tuoi progressi, cambia da solo", "qr.preparing": "Preparo i dati…", "qr.frame": "Codice {n} di {tot} · {kb} KB", "qr.err": "Non riesco a preparare i dati.", "qr.recvHint": "Sull'altro telefono apri ⚙️ → Dati e sincronizzazione → Sincronizzazione → «Passa a un altro telefono» e inquadra i codici nel riquadro. I progressi si uniscono a quelli di questo telefono.", "qr.camOpen": "Apro la fotocamera…", "qr.aim": "Inquadra i codici dell'altro telefono.", "qr.progress": "Ricevuti {n} di {tot}: continua a inquadrare.", "qr.joining": "Unisco i progressi…", "qr.bad": "I dati non tornano: ricomincio a raccogliere i codici.", "qr.ok": "Progressi ricevuti. Riavvio l'app…", "qr.noCam": "Non trovo una fotocamera utilizzabile.", "qr.camBlocked": "La fotocamera è bloccata: consentila nelle impostazioni del browser o dell'app.", "cr.jsqr": "Lettura dei codici QR", "cr.jsqrT": "<b>jsQR</b> (github.com/cozmo/jsQR), licenza Apache 2.0: legge i QR dalla fotocamera quando il browser non sa farlo da solo, per passare i progressi a un altro telefono. I QR li scrive invece l'app stessa." });
 /* Nomi e termini */
 Object.assign(I18N.it, { "rd.wikiGet": "Cerca anche nomi e termini (Wikipedia, 2,5 MB, si scarica una volta sola)", "rd.wikiErr": "Serve internet la prima volta.", "rd.wikiLoading": "Scarico…", "rd.wikiTitle": "Nomi e termini", "cr.wiki": "Nomi e termini del Lettore", "cr.wikiT": "<b>wikidict-it</b> (github.com/open-dict-data/wikidict-it): i titoli delle voci di Wikipedia in cinese collegati a quelli in italiano, dai dati di <b>Wikidata</b>, rilasciati in pubblico dominio (CC0). Non servono crediti, ma li diamo volentieri." });
 /* Promemoria */
@@ -15397,22 +15422,22 @@ Object.assign(I18N.it, { "amb.hint": "Più parole hanno questo significato: si c
 /* Aggiornamenti */
 Object.assign(I18N.it, { "upd.title": "Nuova versione disponibile.", "upd.keep": "I tuoi progressi restano dove sono.", "upd.go": "Aggiorna", "upd.going": "Aggiorno…", "upd.apk": "È uscita la versione {v} dell'app.", "upd.apkKeep": "Si installa sopra questa: i progressi restano.", "upd.dl": "Scarica", "upd.check": "Controlla se c'è una versione nuova (una richiesta a GitHub al giorno, solo con la rete)" });
 /* Voce online su richiesta */
-Object.assign(I18N.it, { "vo.mute": "La voce del telefono non risponde: installa la voce cinese, o accendi la voce online in ⚙️ → Voce." });
+Object.assign(I18N.it, { "vo.mute": "La voce del telefono non risponde: installa la voce cinese, o accendi la voce online in ⚙️ → Suoni e musica → Voce." });
 /* Rivelazione progressiva (ui/unlock.js) */
 Object.assign(I18N.it, {"unl.need": "Si apre a {xp} punti e {d} giorni di studio (ora: {have} punti).", "unl.needLs": "Si apre dopo {n} lezioni superate (ora: {have}) o a {xp} punti.", "unl.new": "Nuovo: {n}", "unl.go": "Vai", "unl.words": "Tutte le parole, con ricerca e filtri.", "unl.build": "Lezioni, esercizi e dialoghi per mettere insieme le frasi.", "unl.fr_pat": "I modelli: le strutture che tornano sempre.", "unl.fr_thought": "L'ordine del pensiero: come un cinese mette in fila le idee.", "unl.fr_lab": "Il laboratorio: costruisci frasi tue e vedi la traduzione.", "unl.fr_slot": "Lo slot: frasi nuove combinando pezzi che conosci.", "unl.fr_reader": "Il lettore: incolla un testo e leggilo parola per parola.", "unl.it_words": "Tutte le parole italiane del corso, con la ricerca.", "unl.it_conj": "Esercizi di coniugazione.", "unl.it_phrases": "Frasi, dialoghi e il correttore di frasi.", "unl.itWords": "Parole", "unl.itConj": "Coniugazioni", "unl.itPhrases": "Frasi", "unl.locked": "🔒 {w}"});
 /* Frasi: pagina d'ingresso */
-Object.assign(I18N.it, {"fr.choose": "Scegli da dove partire. Ogni carta ha i suoi strumenti.", "fr.d.learn": "Le regole, una alla volta, con esempi e un piccolo quiz.", "fr.d.build": "Metti in fila le parole e costruisci frasi tue.", "fr.d.talk": "Dialoghi da ascoltare e recitare, e l'ordine del pensiero.", "fr.d.read": "Un testo da leggere parola per parola.", "fr.back": "Torna alle carte di Frasi", "fr.lockedHint": "Intanto puoi usare gli altri strumenti di questa carta. In ⚙️ → Avanzate c'è «Mostra tutto»."});
+Object.assign(I18N.it, {"fr.choose": "Scegli da dove partire. Ogni carta ha i suoi strumenti.", "fr.d.learn": "Le regole, una alla volta, con esempi e un piccolo quiz.", "fr.d.build": "Metti in fila le parole e costruisci frasi tue.", "fr.d.talk": "Dialoghi da ascoltare e recitare, e l'ordine del pensiero.", "fr.d.read": "Un testo da leggere parola per parola.", "fr.back": "Torna alle carte di Frasi", "fr.lockedHint": "Intanto puoi usare gli altri strumenti di questa carta. In ⚙️ → Studio c'è «Mostra tutto»."});
 /* Benvenuto e test di livello (ui/welcome.js, ui/placement.js) */
-Object.assign(I18N.it, {"onb.aria": "Benvenuto in màndarínō", "onb.lZh": "il cinese", "onb.lIt": "l'italiano", "onb.tag": "Per imparare {l}, offline e senza account.", "onb.hello": "Ciao! Da dove partiamo?", "onb.helloSub": "Scegli la porta che ti somiglia di più. Potrai cambiare idea quando vuoi.", "onb.zero": "Parto da zero", "onb.zeroSub": "Ti accompagno passo passo, dalla prima parola.", "onb.basics": "Conosco già le basi", "onb.basicsSub": "Un breve test, al massimo 10 domande, per partire dal punto giusto.", "onb.have": "Ho già un backup o un altro dispositivo", "onb.haveSub": "Riprendi i tuoi progressi da dove li avevi lasciati.", "onb.later": "Più tardi", "onb.why": "Perché vuoi imparare {l}?", "onb.whySub": "Facoltativo. Serve a suggerirti un ritmo; resta sul tuo telefono.", "onb.p.travel": "✈️ Viaggio", "onb.p.work": "💼 Lavoro", "onb.p.exam": "🎓 Esame", "onb.p.family": "❤️ Famiglia e amici", "onb.p.curious": "✨ Curiosità", "onb.next": "Avanti", "onb.skip": "Salta", "onb.back": "Indietro", "onb.start": "Inizia", "onb.goal": "Quante parole nuove al giorno?", "onb.goalSub": "Meglio poche ogni giorno che tante una volta sola.", "onb.goalHint": "{n} parole nuove: circa {m} minuti al giorno, ripassi compresi.", "onb.tonesT": "I quattro toni", "onb.tonesSub": "In cinese la stessa sillaba cambia significato con il tono. Tocca ogni carta per sentirla.", "onb.t1": "1° tono: alto e piatto", "onb.t2": "2° tono: sale", "onb.t3": "3° tono: scende e risale", "onb.t4": "4° tono: cade deciso", "onb.toneQ": "Ascolta: quale hai sentito?", "onb.toneAgain": "Riascolta", "onb.toneOk": "Esatto! Hai appena distinto un tono cinese.", "onb.toneNo": "Era {c}. Normale all'inizio: l'orecchio si allena in pochi giorni.", "onb.stressT": "L'accento italiano", "onb.stressSub": "In italiano una sillaba si pronuncia più forte delle altre.", "onb.stressQ": "In «buongiorno», quale sillaba è più forte?", "onb.stressOk": "Esatto!", "onb.stressNo": "È «gior»: buon·GIOR·no.", "onb.firstCard": "La tua prima carta", "onb.declT": "Che cosa sai già?", "onb.declSub": "Rispondi a occhio: il test che segue controlla.", "onb.d0": "Leggere il pinyin e i toni", "onb.d1": "Riconoscere i caratteri", "onb.d2": "Vocabolario", "onb.d3": "Ordine delle frasi (grammatica)", "onb.d4": "Ascolto e pronuncia", "onb.d0it": "Leggere e pronunciare l'italiano", "onb.d1it": "Accenti e ortografia", "onb.d2it": "Vocabolario", "onb.d3it": "Grammatica e coniugazioni", "onb.d4it": "Ascolto e pronuncia", "onb.s0": "Mai", "onb.s1": "Un po'", "onb.s2": "Abbastanza", "onb.s3": "Bene", "onb.testGo": "Inizia il test", "onb.resT": "Ecco il tuo punto di partenza", "onb.resZh": "Conosci già bene l'HSK {k}. Partiamo dal capitolo {r}.", "onb.resZh1": "Partiamo dall'inizio, dal capitolo 1: andrà veloce.", "onb.resIt": "Sai già le lezioni da 1 a {l}. Partiamo dalla lezione {n}.", "onb.resIt0": "Partiamo dalla lezione 1.", "onb.resN": "{n} parole dei capitoli precedenti entrano nel ripasso come già note: torneranno tra 2 e 4 settimane, per conferma.", "onb.resNIt": "{n} parole entrano nel ripasso come già note: torneranno tra 2 e 4 settimane, per conferma.", "onb.cmpSame": "Il test conferma quello che avevi detto.", "onb.cmpMore": "Sai più di quanto pensavi!", "onb.cmpLess": "Partiamo un po' più indietro: meglio consolidare le basi.", "onb.adjust": "Cambia il punto di partenza", "onb.less": "Più indietro", "onb.more": "Più avanti", "onb.stepZh": "Capitolo {r}", "onb.stepIt": "Lezioni note: {r}", "onb.undoHint": "Puoi cambiarlo anche dopo, in ⚙️ → Avanzate.", "onb.confirm": "Conferma", "onb.redo": "Rifai il test", "onb.haveT": "Riprendi i tuoi progressi", "onb.haveSub2": "I dati passano da un tuo file o dalla fotocamera: nessun server.", "onb.hSync": "File di sincronizzazione", "onb.hSyncSub": "Nella tua cartella cloud (Drive, Dropbox, OneDrive…).", "onb.hQr": "Dall'altro telefono con i QR", "onb.hQrSub": "Inquadra i codici che mostra l'altro telefono.", "onb.hFile": "Da un file di backup", "onb.hFileSub": "Il file .json salvato in precedenza.", "pl.count": "Domanda {n} di {m}", "pl.stop": "Interrompi", "pl.idk": "Non lo so", "pl.listen": "Ascolta", "pl.qMean": "Che cosa vuol dire?", "pl.qPy": "Come si legge?", "pl.qTone": "Ascolta: quale hai sentito?", "pl.qSent": "Che cosa vuol dire questa frase?", "pl.qOrder": "Quale frase cinese dice così?", "pl.noVoice": "Sul telefono non c'è una voce cinese: le domande d'ascolto si saltano e non contano."});
+Object.assign(I18N.it, {"onb.aria": "Benvenuto in màndarínō", "onb.lZh": "il cinese", "onb.lIt": "l'italiano", "onb.tag": "Per imparare {l}, offline e senza account.", "onb.hello": "Ciao! Da dove partiamo?", "onb.helloSub": "Scegli la porta che ti somiglia di più. Potrai cambiare idea quando vuoi.", "onb.zero": "Parto da zero", "onb.zeroSub": "Ti accompagno passo passo, dalla prima parola.", "onb.basics": "Conosco già le basi", "onb.basicsSub": "Un breve test, al massimo 10 domande, per partire dal punto giusto.", "onb.have": "Ho già un backup o un altro dispositivo", "onb.haveSub": "Riprendi i tuoi progressi da dove li avevi lasciati.", "onb.later": "Più tardi", "onb.why": "Perché vuoi imparare {l}?", "onb.whySub": "Facoltativo. Serve a suggerirti un ritmo; resta sul tuo telefono.", "onb.p.travel": "✈️ Viaggio", "onb.p.work": "💼 Lavoro", "onb.p.exam": "🎓 Esame", "onb.p.family": "❤️ Famiglia e amici", "onb.p.curious": "✨ Curiosità", "onb.next": "Avanti", "onb.skip": "Salta", "onb.back": "Indietro", "onb.start": "Inizia", "onb.goal": "Quante parole nuove al giorno?", "onb.goalSub": "Meglio poche ogni giorno che tante una volta sola.", "onb.goalHint": "{n} parole nuove: circa {m} minuti al giorno, ripassi compresi.", "onb.tonesT": "I quattro toni", "onb.tonesSub": "In cinese la stessa sillaba cambia significato con il tono. Tocca ogni carta per sentirla.", "onb.t1": "1° tono: alto e piatto", "onb.t2": "2° tono: sale", "onb.t3": "3° tono: scende e risale", "onb.t4": "4° tono: cade deciso", "onb.toneQ": "Ascolta: quale hai sentito?", "onb.toneAgain": "Riascolta", "onb.toneOk": "Esatto! Hai appena distinto un tono cinese.", "onb.toneNo": "Era {c}. Normale all'inizio: l'orecchio si allena in pochi giorni.", "onb.stressT": "L'accento italiano", "onb.stressSub": "In italiano una sillaba si pronuncia più forte delle altre.", "onb.stressQ": "In «buongiorno», quale sillaba è più forte?", "onb.stressOk": "Esatto!", "onb.stressNo": "È «gior»: buon·GIOR·no.", "onb.firstCard": "La tua prima carta", "onb.declT": "Che cosa sai già?", "onb.declSub": "Rispondi a occhio: il test che segue controlla.", "onb.d0": "Leggere il pinyin e i toni", "onb.d1": "Riconoscere i caratteri", "onb.d2": "Vocabolario", "onb.d3": "Ordine delle frasi (grammatica)", "onb.d4": "Ascolto e pronuncia", "onb.d0it": "Leggere e pronunciare l'italiano", "onb.d1it": "Accenti e ortografia", "onb.d2it": "Vocabolario", "onb.d3it": "Grammatica e coniugazioni", "onb.d4it": "Ascolto e pronuncia", "onb.s0": "Mai", "onb.s1": "Un po'", "onb.s2": "Abbastanza", "onb.s3": "Bene", "onb.testGo": "Inizia il test", "onb.resT": "Ecco il tuo punto di partenza", "onb.resZh": "Conosci già bene l'HSK {k}. Partiamo dal capitolo {r}.", "onb.resZh1": "Partiamo dall'inizio, dal capitolo 1: andrà veloce.", "onb.resIt": "Sai già le lezioni da 1 a {l}. Partiamo dalla lezione {n}.", "onb.resIt0": "Partiamo dalla lezione 1.", "onb.resN": "{n} parole dei capitoli precedenti entrano nel ripasso come già note: torneranno tra 2 e 4 settimane, per conferma.", "onb.resNIt": "{n} parole entrano nel ripasso come già note: torneranno tra 2 e 4 settimane, per conferma.", "onb.cmpSame": "Il test conferma quello che avevi detto.", "onb.cmpMore": "Sai più di quanto pensavi!", "onb.cmpLess": "Partiamo un po' più indietro: meglio consolidare le basi.", "onb.adjust": "Cambia il punto di partenza", "onb.less": "Più indietro", "onb.more": "Più avanti", "onb.stepZh": "Capitolo {r}", "onb.stepIt": "Lezioni note: {r}", "onb.undoHint": "Puoi cambiarlo anche dopo, in ⚙️ → Studio.", "onb.confirm": "Conferma", "onb.redo": "Rifai il test", "onb.haveT": "Riprendi i tuoi progressi", "onb.haveSub2": "I dati passano da un tuo file o dalla fotocamera: nessun server.", "onb.hSync": "File di sincronizzazione", "onb.hSyncSub": "Nella tua cartella cloud (Drive, Dropbox, OneDrive…).", "onb.hQr": "Dall'altro telefono con i QR", "onb.hQrSub": "Inquadra i codici che mostra l'altro telefono.", "onb.hFile": "Da un file di backup", "onb.hFileSub": "Il file .json salvato in precedenza.", "pl.count": "Domanda {n} di {m}", "pl.stop": "Interrompi", "pl.idk": "Non lo so", "pl.listen": "Ascolta", "pl.qMean": "Che cosa vuol dire?", "pl.qPy": "Come si legge?", "pl.qTone": "Ascolta: quale hai sentito?", "pl.qSent": "Che cosa vuol dire questa frase?", "pl.qOrder": "Quale frase cinese dice così?", "pl.noVoice": "Sul telefono non c'è una voce cinese: le domande d'ascolto si saltano e non contano."});
 /* Impostazioni a gruppi; livello e schede */
-Object.assign(I18N.it, {"set.gEss": "Essenziali", "set.gData": "Dati e privacy", "set.gAdv": "Avanzate", "set.gInfo": "Informazioni e supporto", "unl.setT": "Livello e schede", "unl.setHint": "Le schede e gli strumenti compaiono man mano che studi. Qui puoi rifare il test di livello, annullare un salto o vedere subito tutto.", "unl.redo": "Rifai il test di livello", "unl.undo": "Annulla il salto", "unl.undoQ": "Tolgo le {n} parole segnate come note dal test che non hai ancora ripassato, e i punti che il test ti aveva dato. Le schede tornano com'erano prima del test. Quello che hai studiato davvero resta.", "unl.undone": "Fatto: tolte {n} parole segnate dal test.", "unl.showAll": "Mostra tutto, subito", "unl.all1": "Così compaiono subito tutte le schede e tutti gli strumenti, senza la guida passo passo. È pensato per chi conosce già l'app.", "unl.all2": "Ultima conferma: vuoi vedere tutto adesso? Puoi tornare indietro da qui quando vuoi.", "unl.allYes": "Sì, mostra tutto", "unl.allDone": "Tutto visibile."});
+Object.assign(I18N.it, {"unl.setT": "Livello e schede", "unl.setHint": "Le schede e gli strumenti compaiono man mano che studi. Qui puoi rifare il test di livello, annullare un salto o vedere subito tutto.", "unl.redo": "Rifai il test di livello", "unl.undo": "Annulla il salto", "unl.undoQ": "Tolgo le {n} parole segnate come note dal test che non hai ancora ripassato, e i punti che il test ti aveva dato. Le schede tornano com'erano prima del test. Quello che hai studiato davvero resta.", "unl.undone": "Fatto: tolte {n} parole segnate dal test.", "unl.showAll": "Mostra tutto, subito", "unl.all1": "Così compaiono subito tutte le schede e tutti gli strumenti, senza la guida passo passo. È pensato per chi conosce già l'app.", "unl.all2": "Ultima conferma: vuoi vedere tutto adesso? Puoi tornare indietro da qui quando vuoi.", "unl.allYes": "Sì, mostra tutto", "unl.allDone": "Tutto visibile."});
 /* Corso di italiano: grado e serie */
 Object.assign(I18N.it, {"itr.line": "{xp} punti · 🔥 {s} giorni di fila · prossimo grado a {n}", "itr.lineMax": "{xp} punti · 🔥 {s} giorni di fila"});
 /* Crediti: tre parti, contenuti, Morph-it */
 Object.assign(I18N.it, {"cr.whoT": "Chi ha fatto che cosa", "cr.thirdT": "Parti di altri", "cr.thirdSub": "Dati e programmi scritti da altri che l'app contiene, ognuno con la sua licenza.", "cr.devT": "Strumenti di sviluppo", "cr.content": "I contenuti didattici (vocabolario curato, frasi d'esempio, lezioni, dialoghi, corso di italiano) sono sotto licenza <b>CC BY 4.0</b>: si possono riusare citando «màndarínō, di Claudio Longhitano». I contributi della comunità entrano con la stessa licenza.", "cr.morph": "Genere e plurale delle parole italiane", "cr.morphT": "<b>Morph-it!</b> di Eros Zanchetta e Marco Baroni (Università di Bologna): genere, plurale e forme degli aggettivi delle parole del corso di italiano. Doppia licenza CC BY-SA 2.0 / LGPL; i dati sono usati con la LGPL."});
 /* Sostegno e sigilli di gratitudine (ui/seals.js) */
 Object.assign(I18N.it, {"sup.title": "Sostieni il progetto", "sup.lZh": "il cinese", "sup.lIt": "l'italiano", "sup.text": "màndarínō è un progetto gratuito, offline e indipendente, creato con cura per gli studenti e per chiunque voglia imparare {l}. Se ti sta aiutando nel tuo viaggio e vuoi sostenere i costi di sviluppo o offrirmi un caffè, puoi fare una donazione del tutto libera.", "sup.go": "☕ Sostieni il progetto", "sup.seals": "Per ringraziare chi sostiene il progetto c'è un sigillo da collezionare, assegnato a mano. Se lo desideri, scrivi SIGILLO nel messaggio della donazione e ti scriverò all'indirizzo del pagamento.", "sup.privacy": "L'app non sa chi sei e non invia nulla. La donazione passa da Ko-fi; io vedo solo i dati che Ko-fi mi mostra (nome, e-mail, importo) e li uso soltanto per inviarti il sigillo, se lo chiedi.", "sup.aboutLine": "màndarínō è gratuita e senza pubblicità. Se vuoi, puoi sostenerla:", "seal.title": "Sigillo di gratitudine", "seal.n1": "Sigillo del Sostegno", "seal.n2": "Sigillo della Cultura", "seal.n3": "Sigillo del Custodire", "seal.m1": "sostenere, reggere", "seal.m2": "scambiare, costruire ponti tra due lingue", "seal.m3": "per sempre; il carattere con cui si esercitano gli otto tratti fondamentali (永字八法)", "seal.s1": "Sostiene màndarínō.", "seal.s2": "Costruisce ponti tra due lingue con màndarínō.", "seal.s3": "Custodisce màndarínō: software indipendente, per sempre.", "seal.ed": "Edizione {y} · n. {n}", "seal.auth": "sigillo autentico", "seal.coll": "La tua raccolta", "seal.got": "Hai ricevuto il {n}: vuoi aggiungerlo?", "seal.add": "Aggiungi il sigillo", "seal.have": "Questo sigillo è già nella tua raccolta.", "seal.thanks": "Grazie di cuore. Il sigillo è tuo.", "seal.gramQ": "Come preferisci essere chiamato/a?", "seal.gramN": "Senza un titolo", "seal.gramM": "Al maschile ({t})", "seal.gramF": "Al femminile ({t})", "seal.name": "Il nome sul sigillo (facoltativo, resta sul telefono)", "seal.share": "Mostra il sigillo nelle immagini che condivido", "seal.shareHint": "Chi vede l'immagine capirà che hai sostenuto il progetto. Puoi cambiare idea quando vuoi.", "seal.save": "Fatto", "seal.prefs": "Titolo, nome e condivisione", "seal.redeem": "Riscatta un sigillo", "seal.paste": "Incolla il codice ricevuto", "seal.check": "Controlla il codice", "seal.scan": "Inquadra il QR del sigillo", "seal.scanHint": "Il QR che hai ricevuto per e-mail.", "seal.eFormat": "Il codice sembra incompleto: ricopialo per intero.", "seal.eSig": "Questo codice non ha una firma valida. Controlla di averlo copiato tutto; se il problema resta, scrivimi.", "seal.eKid": "Questo codice è firmato con una chiave che l'app non conosce ancora: aggiorna l'app e riprova.", "seal.eCrypto": "Questo browser non sa controllare la firma: prova dall'app o da un browser aggiornato."});
-Object.assign(I18N.it, {"news.title": "Novità", "news.lede": "Che cosa è cambiato nelle ultime versioni. Questa è la {v}.", "cr.peopleT": "Chi ha contribuito", "cr.peopleNone": "Ancora nessun nome qui: le prime correzioni sono in arrivo.", "cr.peopleHow": "Chi manda un contributo da ⚙️ → Dati e privacy → Contributi può chiedere di comparire qui con il suo nickname. Come aiutare senza programmare: <code>CONTRIBUTING.md</code> nel repository.", "ct.credit": "Voglio comparire nei Crediti con questo nickname"});
+Object.assign(I18N.it, {"news.title": "Novità", "news.lede": "Che cosa è cambiato nelle ultime versioni. Questa è la {v}.", "cr.peopleT": "Chi ha contribuito", "cr.peopleNone": "Ancora nessun nome qui: le prime correzioni sono in arrivo.", "cr.peopleHow": "Chi manda un contributo da ⚙️ → Dati e sincronizzazione → Contributi può chiedere di comparire qui con il suo nickname. Come aiutare senza programmare: <code>CONTRIBUTING.md</code> nel repository.", "ct.credit": "Voglio comparire nei Crediti con questo nickname"});
 Object.assign(I18N.it, {"pv.title": "Privacy", "pv.lede": "màndarínō non raccoglie dati: niente account, server, pubblicità, statistiche o tracciamento.", "pv.local": "Progressi, impostazioni e contributi restano su questo dispositivo. Nessuno li riceve.", "pv.net": "L'app funziona offline. La rete serve solo per il controllo degli aggiornamenti dell'app Android (una volta al giorno, si può spegnere in ⚙️), per scaricare dallo stesso sito musica, dizionario dei nomi e versioni nuove, e per i link che tocchi tu.", "pv.voice": "La voce online, spenta di base, manda il testo cinese da leggere a un servizio di Google.", "pv.mic": "Microfono e fotocamera si usano solo mentre fai un esercizio di pronuncia o leggi un QR; niente viene salvato. Nel browser Chrome il riconoscimento della voce passa dai server del browser.", "pv.sync": "Sincronizzazione e backup usano un file tuo, nel tuo cloud, o i QR tra due telefoni: noi non vediamo niente.", "pv.contrib": "Un contributo parte solo quando lo mandi tu, con il canale che scegli.", "pv.more": "Il testo completo, in italiano e in cinese, è in <code>PRIVACY.md</code> nel repository. Contatti: mandarinoapp@gmail.com."});
 Object.assign(I18N.it, {"plc.title": "Pleco", "plc.lede": "Se sul telefono hai il dizionario Pleco, puoi aprire lì un carattere o una parola. È un'app esterna: màndarínō non è collegata a Pleco e non le manda nulla da sola.", "plc.toggle": "Mostra il collegamento a Pleco", "plc.how": "Tieni premuto un carattere per 2 secondi: compare «Apri in Pleco». Nella carta di studio c'è anche nel menu «⋯».", "plc.q1": "Con questa opzione, tenendo premuto un carattere per 2 secondi compare un pulsante «Apri in Pleco». Toccandolo si apre Pleco, un'app esterna che deve essere già installata; la parola passa a Pleco sul telefono, non a internet. Sotto i 2 secondi non cambia niente.", "plc.yes1": "Continua", "plc.q2": "Confermi? Puoi spegnerla quando vuoi da qui.", "plc.yes2": "Sì, apri le parole in Pleco", "plc.done": "Fatto: tieni premuto un carattere per 2 secondi.", "plc.missing": "Pleco non è installato."});
 Object.assign(I18N.it, {"anki.title": "Esporta per Anki", "anki.more": "Altre opzioni di esportazione", "anki.diff": "Sincronizzare porta i tuoi progressi su un altro dispositivo con màndarínō. Esportare porta le parole in un'altra app, Anki: màndarínō resta com'è.", "anki.lede": "Quali parole: carattere, pinyin, italiano, frase d'esempio e traduzione, con i tag del livello HSK, della tappa e «sicura» / «in corso».", "anki.ledeIt": "Quali parole: parola italiana (per i verbi anche il presente), pinyin, cinese, frase d'esempio e traduzione, con il tipo di parola e «sicura» / «in corso» come tag.", "anki.mine": "Le parole che ho iniziato", "anki.sure": "Solo le parole sicure", "anki.all": "Tutto il vocabolario", "anki.sec": "Una sola tappa", "anki.does": "Prepara un file di testo con {n} parole da importare in Anki (File → Importa). Reimportandolo più avanti, Anki aggiorna le note invece di duplicarle.", "anki.not1": "Il file porta le carte, non il calendario dei ripassi: in Anki le parole ripartono dall'inizio. I tag aiutano a filtrarle.", "anki.not2": "Non toglie niente da màndarínō e non manda niente in rete: il file si salva su questo dispositivo.", "anki.not3": "I contenuti restano sotto licenza CC BY 4.0: se li condividi, cita màndarínō.", "anki.ok1": "Continua", "anki.q2": "Confermi l'esportazione?", "anki.ok2": "Sì, salva il file per Anki", "anki.done": "File per Anki salvato: {n} parole.", "anki.none": "Nessuna parola corrisponde alla scelta."});
@@ -15505,7 +15530,7 @@ Object.assign(I18N.zh, { "vp.t1": "高而平（第一声）", "vp.t2": "上升�
 /* Scheda della parola e pronuncia */
 Object.assign(I18N.zh, { "fam.alsoRead": "也读 {p}。", "fam.readIn": "语音在 {w} 里用这个读音读它。", "fam.listen": "听", "hsk.in": "HSK {n} 级词", "hsk.out": "不在 HSK 1–6 词表里", "fam.part": "单独不是词库里的词：出现在其他词语里。", "fam.fix": "更正或报告", "fam.chars": "汉字", "fam.contain": "含有 {c} 的词", "fam.noOther": "词库里没有其他词含有这个字。", "fam.more": "还有 {n} 个词：在「词语」里搜索。", "ph.traps": "发音陷阱", "ph.more": "点表格里的拼音音节查看其他的。", "ph.ini": "声母", "ph.fin": "韵母", "ph.xray": "发音透视", "ph.none": "没有特别的陷阱", "ph.noneSub": "这个音节基本按拼写读。主要注意声调。" });
 /* Contributi */
-Object.assign(I18N.zh, { "ct.fIt": "意大利语", "ct.fNote": "备注", "ct.fNoteU": "备注", "ct.addTitle": "提议一个新词", "ct.trTitle": "正确的翻译", "ct.type": "类型", "ct.fix": "更正", "ct.flag": "报告", "ct.what": "内容", "ct.now": "现在：", "ct.becomes": "改成", "ct.noHz": "汉字不能在这里改（它们是学习进度的关键）：如果写错了，请用「报告」。", "ct.labSays": "实验室的翻译：", "ct.howIt": "意大利语怎么说", "ct.trHint": "你的翻译马上在你的实验室里生效。发给作者后，经过审核，会成为大家都能用的已核对句子。", "ct.section": "分类", "ct.py": "拼音，带声调（音节之间用点隔开：ni.hao）", "ct.wrong": "哪里不对", "ct.why": "原因（可选）", "ct.nick": "昵称（可选）", "ct.privacy": "发送的内容：只有这条修改，以及你填写的昵称（如果有）。发给谁：应用的作者，通过你自己选择的方式（消息、邮件、表单、GitHub）。如果被采纳，它会以应用内容的许可协议 CC BY 4.0 发布：发送即表示你同意这样发布。不会发送其他任何数据。", "ct.saveTry": "保存并在我的副本里试用", "ct.thanks": "谢谢！", "ct.seenFix": "你的副本里已经能看到它，带有「✏️ 你的更正」标签。可以在 ⚙️ → 贡献 里撤销。", "ct.seenTr": "实验室里已经能看到它，带有「✏️ 你的翻译」标签。可以在 ⚙️ → 贡献 里撤销。", "ct.saved": "已保存在这台设备上（也在备份里）。", "ct.send1": "把这条贡献发给作者", "ct.sendN": "把 {n} 条贡献发给作者", "ct.share": "分享（微信、WhatsApp……）", "ct.form": "Google 表单", "ct.file": "下载 .json", "ct.tooLongMail": "内容太长，不适合邮件：下载文件，请你自己附上。", "ct.tooLongGh": "内容太长，不适合 GitHub：下载文件。", "ct.title": "贡献", "ct.lede": "发现错误了？改正它：你的副本里马上生效，也可以发给作者，不需要账号。", "ct.newWord": "新词", "ct.sent": "已发送", "ct.redo": "重新应用", "ct.undo": "撤销", "ct.findHint": "输入拼音、汉字或意大利语：在词典、句子和对话里搜索。", "ct.none": "没有找到。", "ct.findTitle": "你想更正什么？", "ct.search": "搜索", "ct.whichLine": "哪一句？" });
+Object.assign(I18N.zh, { "ct.fIt": "意大利语", "ct.fNote": "备注", "ct.fNoteU": "备注", "ct.addTitle": "提议一个新词", "ct.trTitle": "正确的翻译", "ct.type": "类型", "ct.fix": "更正", "ct.flag": "报告", "ct.what": "内容", "ct.now": "现在：", "ct.becomes": "改成", "ct.noHz": "汉字不能在这里改（它们是学习进度的关键）：如果写错了，请用「报告」。", "ct.labSays": "实验室的翻译：", "ct.howIt": "意大利语怎么说", "ct.trHint": "你的翻译马上在你的实验室里生效。发给作者后，经过审核，会成为大家都能用的已核对句子。", "ct.section": "分类", "ct.py": "拼音，带声调（音节之间用点隔开：ni.hao）", "ct.wrong": "哪里不对", "ct.why": "原因（可选）", "ct.nick": "昵称（可选）", "ct.privacy": "发送的内容：只有这条修改，以及你填写的昵称（如果有）。发给谁：应用的作者，通过你自己选择的方式（消息、邮件、表单、GitHub）。如果被采纳，它会以应用内容的许可协议 CC BY 4.0 发布：发送即表示你同意这样发布。不会发送其他任何数据。", "ct.saveTry": "保存并在我的副本里试用", "ct.thanks": "谢谢！", "ct.seenFix": "你的副本里已经能看到它，带有「✏️ 你的更正」标签。可以在 ⚙️ → 数据与同步 → 贡献 里撤销。", "ct.seenTr": "实验室里已经能看到它，带有「✏️ 你的翻译」标签。可以在 ⚙️ → 数据与同步 → 贡献 里撤销。", "ct.saved": "已保存在这台设备上（也在备份里）。", "ct.send1": "把这条贡献发给作者", "ct.sendN": "把 {n} 条贡献发给作者", "ct.share": "分享（微信、WhatsApp……）", "ct.form": "Google 表单", "ct.file": "下载 .json", "ct.tooLongMail": "内容太长，不适合邮件：下载文件，请你自己附上。", "ct.tooLongGh": "内容太长，不适合 GitHub：下载文件。", "ct.title": "贡献", "ct.lede": "发现错误了？改正它：你的副本里马上生效，也可以发给作者，不需要账号。", "ct.newWord": "新词", "ct.sent": "已发送", "ct.redo": "重新应用", "ct.undo": "撤销", "ct.findHint": "输入拼音、汉字或意大利语：在词典、句子和对话里搜索。", "ct.none": "没有找到。", "ct.findTitle": "你想更正什么？", "ct.search": "搜索", "ct.whichLine": "哪一句？" });
 /* Modalità guida */
 Object.assign(I18N.zh, { "gd.title": "导览模式", "gd.lede": "适合走路、开车或手上有事的时候。先用意大利语说一句，你有几秒钟自己试着说，然后听中文：先慢速，再正常语速。会自动继续。", "gd.what": "听什么", "gd.phr": "日常短句", "gd.phrSub": "{g} 个场景，{n} 句", "gd.words": "你正在学的词", "gd.wordsSub": "正在复习的词", "gd.dlg": "对话里的句子", "gd.dlgSub": "{n} 个场景里需要的话", "gd.sit": "场景", "gd.shuffle": "随机顺序", "gd.awake": "保持屏幕常亮", "gd.start": "开始（{n} 句）", "gd.voice": "需要设备的语音。如果没有声音，试试「语音与声音」里的「使用备用语音」。", "gd.playing": "播放中", "gd.prev": "上一句", "gd.next": "下一句", "gd.pause": "暂停", "gd.resume": "继续", "gd.paused": "已暂停", "gd.listen": "听", "gd.you": "轮到你了", "gd.natural": "正常", "gd.empty": "这个选择没有可以听的内容。" });
 /* Crediti */
@@ -15517,7 +15542,7 @@ Object.assign(I18N.zh, { "mic.e.not-allowed": "这个页面的麦克风被阻止
 /* Sincronizzazione */
 Object.assign(I18N.zh, { "sy.title": "同步", "sy.lede": "在多台设备上学习？在你的云盘里选一个文件（Google Drive、OneDrive、Dropbox、iCloud……）：每台设备都把进度写进去，并和其他设备的进度合并。不需要账号，没有服务器：文件是你自己的。", "sy.manual": "这个浏览器不能一直连接文件：保存同步文件，再在另一台设备上合并。合并规则相同：不会丢失任何进度。", "sy.saveFile": "保存同步文件", "sy.mergeFile": "合并文件", "sy.new": "在云盘里新建文件", "sy.open": "使用已有文件", "sy.hintA": "在选择器左侧菜单里选择 Drive、OneDrive 或 Dropbox。在第二部手机上用「使用已有文件」选择同一个文件。", "sy.hintF": "把文件保存在同步文件夹里（OneDrive、Dropbox、电脑版 Google Drive）。在其他设备上选择同一个文件。", "sy.last": "上次同步：{t}", "sy.never": "从未", "sy.now": "立即同步", "sy.unlink": "断开", "sy.unlinked": "已断开文件。学习进度保留在这台设备上。", "sy.running": "正在同步……", "sy.updated": "收到了其他设备的进度：正在更新。", "sy.done": "已同步。", "sy.later": "先完成这次学习，再同步。", "sy.perm": "需要文件权限：点「立即同步」。", "sy.bad": "选择的文件不是 màndarínō 的文件。", "sy.none": "没有连接文件。", "sy.err": "无法读写文件。请检查网络后重试。" });
 /* Passaggio con i QR */
-Object.assign(I18N.zh, { "qr.send": "传到另一部手机", "qr.recv": "用摄像头接收", "qr.sendHint": "在另一部手机上打开 ⚙️ → 同步 →「用摄像头接收」，对准这些二维码：它们会自动切换，等到所有小方块都变绿。不需要网络。", "qr.cvAria": "你的学习进度二维码，会自动切换", "qr.preparing": "正在准备数据……", "qr.frame": "第 {n} 个，共 {tot} 个 · {kb} KB", "qr.err": "无法准备数据。", "qr.recvHint": "在另一部手机上打开 ⚙️ → 同步 →「传到另一部手机」，把二维码对准框内。学习进度会和这部手机上的合并。", "qr.camOpen": "正在打开摄像头……", "qr.aim": "对准另一部手机上的二维码。", "qr.progress": "已收到 {n}/{tot}：继续对准。", "qr.joining": "正在合并学习进度……", "qr.bad": "数据校验失败：重新开始接收。", "qr.ok": "已收到学习进度。正在重启应用……", "qr.noCam": "找不到可用的摄像头。", "qr.camBlocked": "摄像头被阻止了：请在浏览器或应用的设置里允许。", "cr.jsqr": "二维码识别", "cr.jsqrT": "<b>jsQR</b>（github.com/cozmo/jsQR），Apache 2.0 许可：当浏览器自己不能识别时，用它读取摄像头里的二维码，把学习进度传到另一部手机。二维码由应用自己生成。" });
+Object.assign(I18N.zh, { "qr.send": "传到另一部手机", "qr.recv": "用摄像头接收", "qr.sendHint": "在另一部手机上打开 ⚙️ → 数据与同步 → 同步 →「用摄像头接收」，对准这些二维码：它们会自动切换，等到所有小方块都变绿。不需要网络。", "qr.cvAria": "你的学习进度二维码，会自动切换", "qr.preparing": "正在准备数据……", "qr.frame": "第 {n} 个，共 {tot} 个 · {kb} KB", "qr.err": "无法准备数据。", "qr.recvHint": "在另一部手机上打开 ⚙️ → 数据与同步 → 同步 →「传到另一部手机」，把二维码对准框内。学习进度会和这部手机上的合并。", "qr.camOpen": "正在打开摄像头……", "qr.aim": "对准另一部手机上的二维码。", "qr.progress": "已收到 {n}/{tot}：继续对准。", "qr.joining": "正在合并学习进度……", "qr.bad": "数据校验失败：重新开始接收。", "qr.ok": "已收到学习进度。正在重启应用……", "qr.noCam": "找不到可用的摄像头。", "qr.camBlocked": "摄像头被阻止了：请在浏览器或应用的设置里允许。", "cr.jsqr": "二维码识别", "cr.jsqrT": "<b>jsQR</b>（github.com/cozmo/jsQR），Apache 2.0 许可：当浏览器自己不能识别时，用它读取摄像头里的二维码，把学习进度传到另一部手机。二维码由应用自己生成。" });
 /* Nomi e termini */
 Object.assign(I18N.zh, { "rd.wikiGet": "同时查找人名、地名和术语（维基百科，2.5 MB，只下载一次）", "rd.wikiErr": "第一次需要联网。", "rd.wikiLoading": "正在下载……", "rd.wikiTitle": "人名、地名和术语", "cr.wiki": "阅读器里的人名、地名和术语", "cr.wikiT": "<b>wikidict-it</b>（github.com/open-dict-data/wikidict-it）：维基百科中文词条标题与意大利语标题的对应，来自 <b>Wikidata</b> 数据，以公有领域（CC0）发布。不要求署名，但我们乐意注明。" });
 /* Promemoria */
@@ -15533,7 +15558,7 @@ Object.assign(I18N.zh, { "amb.hint": "有几个词是这个意思，这里问的
 /* Aggiornamenti */
 Object.assign(I18N.zh, { "upd.title": "有新版本。", "upd.keep": "你的学习进度会保留。", "upd.go": "更新", "upd.going": "正在更新……", "upd.apk": "应用新版本 {v} 已发布。", "upd.apkKeep": "直接覆盖安装：学习进度会保留。", "upd.dl": "下载", "upd.check": "检查是否有新版本（每天向 GitHub 请求一次，仅在联网时）" });
 /* Voce online su richiesta */
-Object.assign(I18N.zh, { "vo.mute": "手机语音没有反应：请安装中文语音，或在 ⚙️ → 语音 里打开在线语音。" });
+Object.assign(I18N.zh, { "vo.mute": "手机语音没有反应：请安装中文语音，或在 ⚙️ → 声音和音乐 → 语音 里打开在线语音。" });
 /* Rivelazione progressiva (ui/unlock.js) */
 Object.assign(I18N.zh, {"unl.need": "{xp} 积分、学习 {d} 天后开放（现在：{have} 积分）。", "unl.needLs": "通过 {n} 课后开放（现在：{have} 课），或达到 {xp} 积分。", "unl.new": "新开放：{n}", "unl.go": "去看看", "unl.words": "全部词语，可以搜索和筛选。", "unl.build": "课程、练习和对话，学会把词连成句子。", "unl.fr_pat": "句型：常用的固定结构。", "unl.fr_thought": "思维顺序：中文怎么排列想法。", "unl.fr_lab": "实验室：自己造句，看看翻译。", "unl.fr_slot": "组句机：用学过的部分组合新句子。", "unl.fr_reader": "阅读器：粘贴一段文字，一个词一个词地读。", "unl.it_words": "全部意大利语单词，可以搜索。", "unl.it_conj": "动词变位练习。", "unl.it_phrases": "常用句子、对话和句子检查。", "unl.itWords": "单词", "unl.itConj": "变位", "unl.itPhrases": "句子", "unl.locked": "🔒 {w}"});
 /* Frasi: pagina d'ingresso */
@@ -15541,14 +15566,14 @@ Object.assign(I18N.zh, {"fr.choose": "选一个开始。每张卡片里有自己
 /* Benvenuto e test di livello (ui/welcome.js, ui/placement.js) */
 Object.assign(I18N.zh, {"onb.aria": "欢迎使用 màndarínō", "onb.lZh": "中文", "onb.lIt": "意大利语", "onb.tag": "学{l}，离线可用，不用注册。", "onb.hello": "你好！从哪里开始？", "onb.helloSub": "选一个最像你的选项。以后随时可以改。", "onb.zero": "从零开始", "onb.zeroSub": "一步一步带你学，从第一个词开始。", "onb.basics": "我已经会一点", "onb.basicsSub": "做一个小测试（最多 10 题），从合适的地方开始。", "onb.have": "我有备份或另一台设备", "onb.haveSub": "接着之前的进度继续学。", "onb.later": "以后再说", "onb.why": "你为什么想学{l}？", "onb.whySub": "可以跳过。只用来建议学习节奏，信息只保存在你的手机上。", "onb.p.travel": "✈️ 旅行", "onb.p.work": "💼 工作", "onb.p.exam": "🎓 考试", "onb.p.family": "❤️ 家人和朋友", "onb.p.curious": "✨ 好奇", "onb.next": "下一步", "onb.skip": "跳过", "onb.back": "返回", "onb.start": "开始", "onb.goal": "每天学几个新词？", "onb.goalSub": "每天学一点，比一次学很多更好。", "onb.goalHint": "每天 {n} 个新词：大约 {m} 分钟，包括复习。", "onb.tonesT": "四个声调", "onb.tonesSub": "中文里，同一个音节声调不同，意思就不同。点每张卡片听一听。", "onb.t1": "第一声：高而平", "onb.t2": "第二声：往上升", "onb.t3": "第三声：先降后升", "onb.t4": "第四声：快速下降", "onb.toneQ": "听一听：你听到的是哪一个？", "onb.toneAgain": "再听一遍", "onb.toneOk": "对了！你刚刚分辨出了一个声调。", "onb.toneNo": "是 {c}。刚开始很正常，耳朵几天就能练出来。", "onb.stressT": "意大利语的重音", "onb.stressSub": "意大利语的单词里，有一个音节读得比其他音节重。", "onb.stressQ": "「buongiorno」里哪个音节读得最重？", "onb.stressOk": "对了！", "onb.stressNo": "是「gior」：buon·GIOR·no。", "onb.firstCard": "开始第一张卡片", "onb.declT": "你已经会什么？", "onb.declSub": "凭感觉回答就好，后面的测试会帮你确认。", "onb.d0": "读拼音和声调", "onb.d1": "认汉字", "onb.d2": "词汇", "onb.d3": "句子顺序（语法）", "onb.d4": "听力和发音", "onb.d0it": "读意大利语和发音", "onb.d1it": "重音和拼写", "onb.d2it": "词汇", "onb.d3it": "语法和动词变位", "onb.d4it": "听力和发音", "onb.s0": "完全不会", "onb.s1": "会一点", "onb.s2": "还可以", "onb.s3": "很好", "onb.testGo": "开始测试", "onb.resT": "这是你的起点", "onb.resZh": "你已经掌握了 HSK {k}。从第 {r} 章开始。", "onb.resZh1": "从头开始，第 1 章：会很快的。", "onb.resIt": "你已经掌握了第 1 到第 {l} 课。从第 {n} 课开始。", "onb.resIt0": "从第 1 课开始。", "onb.resN": "前面章节的 {n} 个词会作为“已掌握”放进复习：2 到 4 周后再出现，确认一下。", "onb.resNIt": "{n} 个词会作为“已掌握”放进复习：2 到 4 周后再出现，确认一下。", "onb.cmpSame": "测试结果和你说的一样。", "onb.cmpMore": "你会的比你想的多！", "onb.cmpLess": "我们从稍早一点的地方开始，先把基础打牢。", "onb.adjust": "调整起点", "onb.less": "往前", "onb.more": "往后", "onb.stepZh": "第 {r} 章", "onb.stepIt": "已掌握的课：{r}", "onb.undoHint": "以后也可以在 设置 → 高级 里修改。", "onb.confirm": "确认", "onb.redo": "重新测试", "onb.haveT": "接着之前的进度", "onb.haveSub2": "数据通过你自己的文件或相机传输，不经过任何服务器。", "onb.hSync": "同步文件", "onb.hSyncSub": "放在你的云盘文件夹里（Drive、Dropbox、OneDrive……）。", "onb.hQr": "用二维码从另一台手机传", "onb.hQrSub": "扫描另一台手机上显示的二维码。", "onb.hFile": "从备份文件恢复", "onb.hFileSub": "以前保存的 .json 文件。", "pl.count": "第 {n} 题，共 {m} 题", "pl.stop": "停止", "pl.idk": "不知道", "pl.listen": "听", "pl.qMean": "这是什么意思？", "pl.qPy": "怎么读？", "pl.qTone": "听一听：你听到的是哪一个？", "pl.qSent": "这句话是什么意思？", "pl.qOrder": "哪个中文句子是这个意思？", "pl.noVoice": "手机上没有中文语音：听力题会跳过，不计分。"});
 /* Impostazioni a gruppi; livello e schede */
-Object.assign(I18N.zh, {"set.gEss": "基本", "set.gData": "数据和隐私", "set.gAdv": "高级", "set.gInfo": "说明和支持", "unl.setT": "水平和页面", "unl.setHint": "页面和工具会随着学习慢慢出现。在这里可以重新做水平测试、撤销跳级，或者马上显示全部。", "unl.redo": "重新做水平测试", "unl.undo": "撤销跳级", "unl.undoQ": "我会去掉测试标为“已掌握”、你还没有复习过的 {n} 个词，以及测试给的积分。页面恢复到测试之前的样子。你真正学过的内容都会保留。", "unl.undone": "完成：去掉了测试标记的 {n} 个词。", "unl.showAll": "马上显示全部", "unl.all1": "这样所有页面和工具都会马上出现，没有一步一步的引导。适合已经熟悉这个应用的人。", "unl.all2": "最后确认：现在就显示全部吗？以后可以在这里改回来。", "unl.allYes": "是的，显示全部", "unl.allDone": "已全部显示。"});
+Object.assign(I18N.zh, {"unl.setT": "水平和页面", "unl.setHint": "页面和工具会随着学习慢慢出现。在这里可以重新做水平测试、撤销跳级，或者马上显示全部。", "unl.redo": "重新做水平测试", "unl.undo": "撤销跳级", "unl.undoQ": "我会去掉测试标为“已掌握”、你还没有复习过的 {n} 个词，以及测试给的积分。页面恢复到测试之前的样子。你真正学过的内容都会保留。", "unl.undone": "完成：去掉了测试标记的 {n} 个词。", "unl.showAll": "马上显示全部", "unl.all1": "这样所有页面和工具都会马上出现，没有一步一步的引导。适合已经熟悉这个应用的人。", "unl.all2": "最后确认：现在就显示全部吗？以后可以在这里改回来。", "unl.allYes": "是的，显示全部", "unl.allDone": "已全部显示。"});
 /* Corso di italiano: grado e serie */
 Object.assign(I18N.zh, {"itr.line": "{xp} 积分 · 🔥 连续 {s} 天 · 下一级：{n} 积分", "itr.lineMax": "{xp} 积分 · 🔥 连续 {s} 天"});
 /* Crediti: tre parti, contenuti, Morph-it */
 Object.assign(I18N.zh, {"cr.whoT": "谁做了什么", "cr.thirdT": "其他人的作品", "cr.thirdSub": "应用里包含的、由其他人编写的数据和程序，各自有自己的许可协议。", "cr.devT": "开发工具", "cr.content": "教学内容（整理过的词汇、例句、课程、对话、意大利语课程）采用 <b>CC BY 4.0</b> 许可：注明“màndarínō，作者 Claudio Longhitano”即可重复使用。社区贡献的内容也采用同样的许可。", "cr.morph": "意大利语单词的性和复数", "cr.morphT": "<b>Morph-it!</b>，作者 Eros Zanchetta 和 Marco Baroni（博洛尼亚大学）：意大利语课程中名词的性、复数和形容词的各种形式。双重许可 CC BY-SA 2.0 / LGPL；本应用按 LGPL 使用这些数据。"});
 /* Sostegno e sigilli di gratitudine (ui/seals.js) */
 Object.assign(I18N.zh, {"sup.title": "支持项目", "sup.lZh": "中文", "sup.lIt": "意大利语", "sup.text": "màndarínō 是一个免费、可离线使用、独立开发的项目，用心为学习者和所有想学习{l}的人而做。如果它对你的学习有帮助，也想支持开发成本或请我喝杯咖啡，欢迎自愿捐助，金额随意。", "sup.go": "☕ 支持项目", "sup.seals": "为了感谢支持这个项目的人，有一枚可以收藏的印章，由我亲手发放。如果你愿意，请在捐助留言里写上「印章」，我会发邮件到你付款时用的地址。", "sup.privacy": "应用不知道你是谁，也不会发送任何数据。捐助通过 Ko-fi 进行；我只能看到 Ko-fi 显示给我的信息（姓名、邮箱、金额），只用来在你需要时给你发印章。", "sup.aboutLine": "màndarínō 免费、没有广告。如果你愿意，可以支持它：", "seal.title": "感谢印章", "seal.n1": "支持之印", "seal.n2": "交流之印", "seal.n3": "永恒之印", "seal.m1": "支持、支撑", "seal.m2": "交流、来往：在两种语言之间架起桥梁", "seal.m3": "永远；练习八种基本笔画的字（永字八法）", "seal.s1": "支持 màndarínō。", "seal.s2": "用 màndarínō 在两种语言之间架起桥梁。", "seal.s3": "守护 màndarínō：独立软件，永远。", "seal.ed": "{y} 年版 · 第 {n} 号", "seal.auth": "真实的印章", "seal.coll": "你的收藏", "seal.got": "你收到了「{n}」：要加入收藏吗？", "seal.add": "加入收藏", "seal.have": "这枚印章已经在你的收藏里了。", "seal.thanks": "衷心感谢。这枚印章是你的了。", "seal.gramQ": "你希望怎么称呼？", "seal.gramN": "不要称号", "seal.gramM": "男性称呼（{t}）", "seal.gramF": "女性称呼（{t}）", "seal.name": "印章上的名字（可选，只保存在手机上）", "seal.share": "在我分享的图片里显示印章", "seal.shareHint": "看到图片的人会知道你支持过这个项目。随时可以改。", "seal.save": "完成", "seal.prefs": "称号、名字和分享", "seal.redeem": "领取印章", "seal.paste": "粘贴收到的代码", "seal.check": "检查代码", "seal.scan": "扫描印章的二维码", "seal.scanHint": "就是你在邮件里收到的二维码。", "seal.eFormat": "代码好像不完整：请完整复制一遍。", "seal.eSig": "这个代码的签名无效。请检查是否完整复制；如果还是不行，请给我写信。", "seal.eKid": "这个代码用的密钥应用还不认识：请更新应用后再试。", "seal.eCrypto": "这个浏览器无法检查签名：请在应用里或用较新的浏览器试试。"});
-Object.assign(I18N.zh, {"news.title": "更新内容", "news.lede": "最近几个版本的变化。当前版本：{v}。", "cr.peopleT": "贡献者", "cr.peopleNone": "这里还没有名字：第一批更正正在路上。", "cr.peopleHow": "在 ⚙️ → 数据和隐私 → 贡献 中提交贡献时，可以选择用自己的昵称出现在这里。不会编程也能帮忙：见仓库里的 <code>CONTRIBUTING.md</code>。", "ct.credit": "我愿意用这个昵称出现在致谢中"});
+Object.assign(I18N.zh, {"news.title": "更新内容", "news.lede": "最近几个版本的变化。当前版本：{v}。", "cr.peopleT": "贡献者", "cr.peopleNone": "这里还没有名字：第一批更正正在路上。", "cr.peopleHow": "在 ⚙️ → 数据与同步 → 贡献 中提交贡献时，可以选择用自己的昵称出现在这里。不会编程也能帮忙：见仓库里的 <code>CONTRIBUTING.md</code>。", "ct.credit": "我愿意用这个昵称出现在致谢中"});
 Object.assign(I18N.zh, {"pv.title": "隐私", "pv.lede": "màndarínō 不收集任何数据：没有账号、服务器、广告、统计或跟踪。", "pv.local": "学习进度、设置和贡献只保存在这台设备上，没有人会收到。", "pv.net": "应用可以离线使用。只有以下情况会联网：安卓应用检查更新（每天一次，可在 ⚙️ 中关闭）、网页版从同一网站下载音乐、人名词典和新版本，以及你点击的链接。", "pv.voice": "在线语音默认关闭；打开后，要朗读的中文会发送到谷歌的服务。", "pv.mic": "麦克风和相机只在发音练习或扫描二维码时使用，不保存任何内容。在 Chrome 浏览器中，语音识别会经过浏览器的服务器。", "pv.sync": "同步和备份使用你自己的文件、你自己的云端，或两部手机之间的二维码：我们什么也看不到。", "pv.contrib": "贡献只有在你自己发送时才会发出，通过你选择的方式。", "pv.more": "完整的意大利语和中文说明见仓库里的 <code>PRIVACY.md</code>。联系方式：<code>mandarinoapp@gmail.com</code>。"});
 Object.assign(I18N.zh, {"plc.title": "Pleco", "plc.lede": "如果手机上装有 Pleco 词典，可以在其中打开汉字或词语。Pleco 是外部应用：màndarínō 与它没有关联，也不会自行向它发送任何内容。", "plc.toggle": "显示 Pleco 链接", "plc.how": "长按一个汉字 2 秒，会出现“在 Pleco 中打开”。学习卡片的“⋯”菜单里也有。", "plc.q1": "打开此选项后，长按汉字 2 秒会出现“在 Pleco 中打开”按钮。点击后会打开 Pleco，这是一个需要事先安装的外部应用；词语只会传给你手机上的 Pleco，不会发送到网络。不到 2 秒的操作不受影响。", "plc.yes1": "继续", "plc.q2": "确认吗？随时可以在这里关闭。", "plc.yes2": "是的，在 Pleco 中打开词语", "plc.done": "完成：长按一个汉字 2 秒。", "plc.missing": "没有安装 Pleco。"});
 Object.assign(I18N.zh, {"anki.title": "导出到 Anki", "anki.more": "其他导出选项", "anki.diff": "同步是把学习进度带到另一台装有 màndarínō 的设备上。导出是把单词带到另一个应用 Anki 中：màndarínō 本身不受影响。", "anki.lede": "导出哪些词：汉字、拼音、意大利语、例句及翻译，并带有 HSK 级别、站和“已掌握”/“学习中”标签。", "anki.ledeIt": "导出哪些词：意大利语单词（动词附现在时变位）、拼音、中文、例句及翻译，并带有词类和“已掌握”/“学习中”标签。", "anki.mine": "我已经开始学的词", "anki.sure": "只导出已掌握的词", "anki.all": "全部词汇", "anki.sec": "只导出一站", "anki.does": "将生成一个包含 {n} 个词的文本文件，可在 Anki 中导入（文件 → 导入）。以后再次导入时，Anki 会更新卡片而不会重复。", "anki.not1": "文件只包含卡片，不包含复习计划：在 Anki 中这些词会从头开始。可以用标签筛选。", "anki.not2": "不会从 màndarínō 中删除任何内容，也不会联网：文件保存在这台设备上。", "anki.not3": "内容仍采用 CC BY 4.0 许可：分享时请注明 màndarínō。", "anki.ok1": "继续", "anki.q2": "确认导出吗？", "anki.ok2": "是的，保存 Anki 文件", "anki.done": "Anki 文件已保存：{n} 个词。", "anki.none": "没有符合条件的词。"});
@@ -16796,7 +16821,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       return;
     }
     /* la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
-       accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
+       accesa in ⚙️ → Suoni e musica → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
       if (finished || token !== mine) return;
       clearTimeout(startTimer);
@@ -17590,7 +17615,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
 <!-- Schede e funzioni -->
 <script>
 /* ---- ui/ex-stub.js ---- */
-/* ===== màndarínō · stile di ripasso, la parte sempre presente: ⚙️ → Avanzate → «Stile di ripasso»
+/* ===== màndarínō · stile di ripasso, la parte sempre presente: ⚙️ → Studio → «Stile di ripasso»
    (Guidato, Misto, Classico) e CP.ex.carica(), che esegue al primo uso il gruppo ESERCIZI (tools/build.mjs, GROUPS: il
    motore degli esercizi, i distrattori, la digitazione, il percorso guidato, la lettura). Con lo stile Classico non si
    carica nulla e il ripasso è quello di sempre. Preferenza del dispositivo: cp-ex-style. ===== */
@@ -19854,7 +19879,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
    - Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; gli strumenti più avanzati dopo qualche lezione superata.
    Chi aveva già progressi (o aveva già visto il benvenuto) ha tutto sbloccato. Uno sblocco non si perde mai, nemmeno
    azzerando i progressi; tra dispositivi vale «basta uno» (cp-ux-v1.unl, regola d'unione in core/store.js).
-   ⚙️ → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
+   ⚙️ → Studio → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
    ovunque», ?go= e il corso di italiano prima di portare l'utente da qualche parte. ===== */
 (function () {
   var CP = window.CP, T = CP.t;
@@ -19968,7 +19993,7 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
     isShowAll: function () { return !!CP.ux.get("showAll"); },
     count: function () { return IT ? ALL_IT.filter(function (k) { return unl()[k]; }).length : ALL_ZH.filter(function (k) { return unl()[k]; }).length; }
   };
-  /* ---- ⚙️ → Avanzate → «Livello e schede»: rifare il test, annullare il salto, mostrare tutto (con doppia conferma) ---- */
+  /* ---- ⚙️ → Studio → «Livello e schede»: rifare il test, annullare il salto, mostrare tutto (con doppia conferma) ---- */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     var pl = CP.ux.get("pl"), canUndo = pl && !pl.undone && (pl.n > 0 || (CP.game && CP.game.granted && CP.game.granted() > 0));
     return '<details class="set-sec" id="set-level"><summary>📶 ' + CP.esc(T("unl.setT")) + '</summary><div class="vbody">' +
@@ -21831,11 +21856,11 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
 </script>
 <script type="text/plain" id="lazy-mod-voicedl">
 /* ---- i18n/voice.js ---- */
-/* ===== màndarínō · i testi di «Voci reali» (⚙️ → Voce), caricati con ui/voice-dl.js al primo uso di CP.voiceDl. ===== */
+/* ===== màndarínō · i testi di «Voci reali» (⚙️ → Suoni e musica → Voce), caricati con ui/voice-dl.js al primo uso di CP.voiceDl. ===== */
 Object.assign(I18N.it, { "vc.title": "Voci reali", "vc.desc": "Frasi lette da persone vere: italiano dalla voce NM1 di Tatoeba, cinese da Mozilla Common Voice. Si scaricano una volta sola e poi funzionano senza rete; senza di loro legge la voce del telefono.", "vc.dl": "Scarica le voci ({mb} MB)", "vc.dec": ",", "vc.dling": "Scarico le voci… {n} / {tot}", "vc.ok": "Le voci reali sono sul telefono.", "vc.del": "Togli le voci dal telefono", "vc.fail": "Alcune voci non sono arrivate ({n}): riprova quando c'è la rete.", "vc.apk": "✓ Le voci reali sono già dentro l'app." });
 Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读的句子：意大利语来自 Tatoeba 的 NM1 录音，中文来自 Mozilla Common Voice。只需下载一次，之后不联网也能用；没有下载时用手机自带的语音朗读。", "vc.dl": "下载真人录音（{mb} MB）", "vc.dec": ".", "vc.dling": "正在下载录音…… {n} / {tot}", "vc.ok": "真人录音已在手机上。", "vc.del": "从手机删除录音", "vc.fail": "有些录音没有下载成功（{n}）：请联网后再试。", "vc.apk": "✓ 真人录音已经包含在应用里。" });
 /* ---- ui/voice-dl.js ---- */
-/* ===== màndarínō · «Scarica le voci»: ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
+/* ===== màndarínō · «Scarica le voci»: ⚙️ → Suoni e musica → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
    volta, nella cache mandarino-voice (il service worker la tiene tra un aggiornamento e l'altro); poi cp-voice-dl = "1" e
    CP.speak le usa (core/voice-clip.js). Nell'APK sono già dentro. Si carica al primo uso di CP.voiceDl. ===== */
 (function () {
@@ -21859,7 +21884,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
     }).then(function () { if (!fail) lsSet(DLK, "1"); return { done: done, fail: fail, tot: list.length }; });
   }
   function remove() { lsSet(DLK, ""); return window.caches ? caches.delete(VCACHE) : Promise.resolve(); }
-  /* ⚙️ → Voce: «Voci reali», con il pulsante per scaricarle (sul sito) */
+  /* ⚙️ → Suoni e musica → Voce: «Voci reali», con il pulsante per scaricarle (sul sito) */
   function html() {
     var T = CP.t; if (!langs().length) return "";
     var h = '<div class="vab vc-box" id="vc-box"><div class="small" style="font-weight:700">' + T("vc.title") + '</div><p class="small muted" style="margin:2px 0 6px">' + T("vc.desc") + "</p>";
@@ -22009,7 +22034,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
     };
   }
   /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
-     con lo stesso avviso della PWA. Si spegne in ⚙️ → Voce e audio → App Android. */
+     con lo stesso avviso della PWA. Si spegne in ⚙️ → Suoni e musica → Voce (e Studio → Promemoria per l'app Android). */
   var REPO = MD_CONFIG.REPO;   /* src/config.js; se il repository cambia nome, GitHub reindirizza anche le API */
   /* nella versione per gli store (MD_CONFIG.APK_UPDATES false) niente controllo né interruttore: gli aggiornamenti li dà lo store */
   CP.apkUpdates = window.MD_CONFIG && MD_CONFIG.APK_UPDATES === false ? null : { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
@@ -22241,7 +22266,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
   document.addEventListener("visibilitychange", function () { if (document.hidden) writeOnly(); });
   window.addEventListener("pagehide", function () { writeOnly(); });
 
-  /* ---- ⚙️ → Sincronizzazione ---- */
+  /* ---- ⚙️ → Dati e sincronizzazione → Sincronizzazione ---- */
   function when(ts) { if (!ts) return T("sy.never"); var d = new Date(ts); return d.toLocaleDateString(LANG === "zh" ? "zh-CN" : "it-IT") + " " + d.toLocaleTimeString(LANG === "zh" ? "zh-CN" : "it-IT", { hour: "2-digit", minute: "2-digit" }); }
   function bodyHTML(note) {
     var c = cfg(), h = '<p class="small muted" style="margin:0">' + T("sy.lede") + "</p>";
@@ -22326,7 +22351,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
 </script>
 <script>
 /* ---- pwa/reminder.js ---- */
-/* ===== màndarínō · ⚙️ → Promemoria: un avviso al giorno all'ora scelta, spento finché non lo accendi.
+/* ===== màndarínō · ⚙️ → Studio → Promemoria: un avviso al giorno all'ora scelta, spento finché non lo accendi.
    Solo nell'app Android (Reminder.java): il permesso delle notifiche si chiede quando lo accendi, non all'avvio.
    L'avviso si calcola sul telefono dallo stato del widget e non arriva se oggi hai già studiato. ===== */
 (function () {
@@ -23309,7 +23334,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var TRACKS = CP.audioTracks.list, groove = CP.synth.groove;
   var MOODS = [["", CP.t("jk.mAll")], ["calm", CP.t("jk.mCalm")], ["focus", CP.t("jk.mFocus")], ["energy", CP.t("jk.mEnergy")]];
   var BYID = {};
-  /* ---------- i tuoi brani (⚙️ → Musica): l'elenco sta in localStorage (md-ubl, fuori dal backup), i file nella memoria
+  /* ---------- i tuoi brani (⚙️ → Suoni e musica → Voce → «I tuoi brani»): l'elenco sta in localStorage (md-ubl, fuori dal backup), i file nella memoria
      dell'app (IndexedDB) e li gestisce il gruppo MIEIBRANI (audio/user-tracks.js), caricato solo quando serve ---------- */
   var UBL = CP.ubLimits = { n: 40, mb: 80, min: 30, totalMb: 600 };
   var UB = { mode: lget("cp-ubmode") === "only" ? "only" : "mix", msg: "", busy: "" };
@@ -26129,7 +26154,7 @@ var RADICALS = [[1, "一", "", "uno", "一"],
    quando lo sappiamo: dal vocabolario dell'app o dai 214 radicali (data/radicals.js, scritti per il progetto).
    Solo struttura: per i caratteri fonetico-semantici si dice quale parte dà il suono e quale il significato; nessuna
    «storia» o etimologia popolare (i dati non hanno una fonte affidabile per raccontarle).
-   Interruttore: ⚙️ → Avanzate → «Anatomia dei caratteri» (cp-anatomy, acceso di base). I dati pesanti (ANATOMY, STROKES)
+   Interruttore: ⚙️ → Studio → «Anatomia dei caratteri» (cp-anatomy, acceso di base). I dati pesanti (ANATOMY, STROKES)
    si leggono solo al primo uso. Nella lavagna (voice/pad.js) evidenzia il componente del tratto da scrivere. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, K = "cp-anatomy";
@@ -26190,7 +26215,7 @@ var RADICALS = [[1, "一", "", "uno", "一"],
     var b = e.target.closest ? e.target.closest("[data-anat]") : null; if (!b) return;
     CP.sfx("tap"); CP.openFamily(b.getAttribute("data-anat"));
   });
-  /* ⚙️ → Avanzate */
+  /* ⚙️ → Studio */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     if (IT) return "";
     return '<details class="set-sec" id="set-anat"><summary>🧩 ' + T("anat.set") + '</summary><div class="vbody"><p class="small muted" style="margin:0">' + T("anat.setLede") + "</p>" +
@@ -26207,7 +26232,7 @@ Object.assign(I18N.it, { "cr.voiceIt": "Voci italiane reali", "cr.voiceItT": "Fr
 Object.assign(I18N.zh, { "cr.tatoeba": "练习中的例句", "cr.tatoebaT": "<b>Tatoeba</b>（tatoeba.org），由其贡献者提供，许可证 <b>CC BY 2.0 FR</b>：填空和排序练习中的句子及其翻译。作者名单见代码库中的 <b>materiali/crediti/autori-frasi.tsv</b>（github.com/longhitown/m-ndar-n-）。" });
 Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT": "意大利语课程中由真人朗读的句子：<b>录音：NM1，Tatoeba，CC BY 4.0</b>。", "cr.voiceZh": "中文真人录音", "cr.voiceZhT": "听力练习中由真人朗读的句子：<b>录音：Mozilla Common Voice，CC0</b>。不包含任何朗读者的个人信息。" });
 /* ---- ui/credits.js ---- */
-/* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Come funziona → Crediti e licenze).
+/* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Informazioni → Come funziona → Crediti e licenze).
    I testi delle licenze sono anche in LICENZE/ nel repository. */
 (function () {
   var CP = window.CP, esc = CP.esc;
@@ -26262,12 +26287,88 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
 </script>
 <script>
 /* ---- ui/settings.js ---- */
-/* ===== ⚙️ Impostazioni (foglio dal basso), in quattro gruppi (docs/ux-architettura.md): Essenziali (aspetto,
-   audio, lingua), Dati e privacy, Avanzate, Informazioni e supporto. I moduli aggiungono le loro sezioni con
-   CP.settingsExtras: una funzione che rende HTML (va in «Avanzate») o { group, html }. ===== */
+/* ===== ⚙️ Impostazioni, la parte che serve all'avvio: il pulsante, la lingua dei menu, i toni con la forma, i tocchi su «Crediti» e sulla
+   carta da condividere. Le pagine, la ricerca e le sezioni dei moduli stanno in ui/settings-pages.js, che si carica la prima volta che il
+   codice tocca CP.openSettings o CP.repaintSettings (tools/build.mjs, LAZYMOD). Da src/, senza build, è un normale script. ===== */
 (function () {
   var CP = window.CP, el = document.getElementById("settings"), btn = document.getElementById("settings-btn");
   if (!el || !btn) return;
+  /* lingua dei menu */
+  function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
+  CP.setLang = function (l) {
+    var nl = l === "zh" ? "zh" : "it"; if (nl === LANG) return;
+    LANG = nl; try { localStorage.setItem("cp-lang", LANG); } catch (e) {}
+    applyI18n(); paintLang(); CP.sfx("tap");
+    /* molte parti si disegnano una volta sola all'avvio (tabella delle parole, filtri, voce): si riparte da capo,
+       così ogni testo è nella lingua nuova. I progressi sono già salvati. */
+    setTimeout(function () { location.reload(); }, 150);
+  };
+  btn.addEventListener("click", function () { CP.openSettings(); });
+  /* «Crediti e licenze»: ui/credits.js si carica al primo uso di CP.credits */
+  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-credits]") : null; if (b && CP.credits) CP.credits(); });
+  /* la carta da condividere: ui/share-card.js si carica al primo uso di CP.shareCard */
+  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-card-open]") : null; if (b && CP.shareCard) { CP.sfx("tap"); CP.shareCard(); } });
+  /* U7: toni anche con la forma (per chi non distingue il rosso dal verde) */
+  try { if (localStorage.getItem("cp-toneshapes") === "1") document.body.classList.add("tone-shapes"); } catch (e) {}
+})();
+</script>
+<script type="text/plain" id="lazy-mod-opensettings">
+/* ---- i18n/settings.js ---- */
+/* ===== màndarínō · i testi delle Impostazioni a pagine (ui/settings-pages.js), nelle due lingue dell'interfaccia.
+   Nel file unico arrivano insieme al modulo, al suo primo uso (tools/build.mjs, LAZYMOD). ===== */
+Object.assign(I18N.it, {"set.p.look":"Aspetto","set.p.lookD":"Tema, grandezza dei caratteri, lingua dei menu","set.p.sound":"Suoni e musica","set.p.soundD":"Volume, musica, voce e microfono","set.p.study":"Studio","set.p.studyD":"Corso, stile di ripasso, livello, promemoria, sfide","set.p.data":"Dati e sincronizzazione","set.p.dataD":"Backup, sincronizzazione, esportazione, contributi","set.p.info":"Informazioni","set.p.infoD":"Come funziona, novità, privacy, sostieni il progetto","set.back":"Indietro","set.backAria":"Torna alle impostazioni","set.search":"Cerca nelle impostazioni","set.noRes":"Nessuna impostazione trovata. Prova con un'altra parola.","set.kwLook":"tema chiaro scuro notte sepia carta di riso colori grandezza dimensione testo font toni segno daltonismo","set.kwSound":"audio volume suono effetti muto silenzio musica brani colonna sonora"});
+Object.assign(I18N.zh, {"set.p.look":"外观","set.p.lookD":"主题、字号、界面语言","set.p.sound":"声音和音乐","set.p.soundD":"音量、音乐、语音和麦克风","set.p.study":"学习","set.p.studyD":"课程、复习方式、水平、提醒、挑战","set.p.data":"数据与同步","set.p.dataD":"备份、同步、导出、贡献","set.p.info":"关于","set.p.infoD":"使用说明、更新内容、隐私、支持项目","set.back":"返回","set.backAria":"返回设置","set.search":"搜索设置","set.noRes":"没有找到相关设置，换个词试试。","set.kwLook":"主题 浅色 深色 夜间 米色 纸张 颜色 字号 大小 文字 字体 声调 色盲","set.kwSound":"声音 音量 音效 静音 音乐 曲目 背景音乐"});
+/* ---- ui/settings-pages.js ---- */
+/* ===== ⚙️ Impostazioni: una schermata con cinque carte (Aspetto, Suoni e musica, Studio, Dati e sincronizzazione, Informazioni),
+   ognuna apre una pagina propria con «Indietro»: due livelli, mai sezioni annidate (docs/ux-architettura.md). In cima c'è la ricerca.
+   I moduli aggiungono le loro sezioni con CP.settingsExtras: una funzione che rende HTML (pagina «Studio») oppure
+   { group: "data"|"adv"|"info", html }. La sezione finisce nella pagina del suo id (PAGE_OF) o, se non lo conosce, in quella del gruppo.
+   CP.openSettings(id) accetta l'id di una sezione (set-sync, set-pleco…), di una pagina (look, sound, study, data, info)
+   o i vecchi nomi dei gruppi (grp-ess, grp-data, grp-adv, grp-info).
+   Si carica al primo uso di CP.openSettings o CP.repaintSettings, insieme a i18n/settings.js (tools/build.mjs, LAZYMOD);
+   il pulsante ⚙️ e la lingua dei menu stanno in ui/settings.js. ===== */
+(function () {
+  var CP = window.CP, el = document.getElementById("settings");
+  if (!el) return;
+  var PAGES = ["look", "sound", "study", "data", "info"];
+  /* la pagina di ogni sezione nota e l'ordine in cui compare: le sezioni dei moduli arrivano in ordine di caricamento, qui si mettono a posto */
+  var ORDER = {
+    look: ["set-look", "set-lang"],
+    sound: ["set-sound", "vset", "set-mic-box"],
+    study: ["set-course", "set-exstyle", "set-level", "set-anat", "set-pleco", "set-reminder", "set-together"],
+    data: ["set-sync", "set-data", "set-export", "set-contrib"],
+    info: ["set-about", "set-support", "set-news", "set-privacy"]
+  };
+  var PAGE_OF = {}; PAGES.forEach(function (p) { ORDER[p].forEach(function (id) { PAGE_OF[id] = p; }); });
+  var GROUP_PAGE = { data: "data", adv: "study", info: "info" };
+  /* i nomi vecchi dei gruppi e delle pagine continuano ad aprire la pagina giusta */
+  var ALIAS = { "grp-ess": "look", "grp-data": "data", "grp-adv": "study", "grp-info": "info" };
+  PAGES.forEach(function (p) { ALIAS[p] = p; ALIAS["page-" + p] = p; });
+  /* parole in più per la ricerca, per le sezioni fisse (il resto si cerca nel testo della sezione) */
+  var KW = { "set-look": "set.kwLook", "set-sound": "set.kwSound" };
+  var cur = "", lastTile = null, q = document.getElementById("set-q"), tiles = document.getElementById("set-tiles"), hits = document.getElementById("set-hits"),
+    back = el.querySelector("[data-set-back]"), head = document.getElementById("set-title"), card = el.querySelector(".set-card");
+  function pageEl(p) { return el.querySelector('[data-set-page="' + p + '"]'); }
+  function rank(p, n) { var i = ORDER[p].indexOf(n.id); return i < 0 ? 99 : i; }
+  /* una sezione dei moduli arriva come <details class="set-sec"><summary>: nelle pagine è una sezione sempre aperta, con il titolo */
+  function flatten(root) {
+    Array.prototype.slice.call(root.querySelectorAll("details.set-sec")).forEach(function (d) {
+      var s = document.createElement("section"), h = document.createElement("h3"), sum = null, i;
+      for (i = 0; i < d.children.length; i++) if (d.children[i].tagName === "SUMMARY") { sum = d.children[i]; break; }
+      s.className = d.className; if (d.id) s.id = d.id;
+      h.className = "set-h"; h.id = (d.id || "set-x") + "-h"; if (sum) { h.innerHTML = sum.innerHTML; if (sum.hasAttribute("data-noi18n")) h.setAttribute("data-noi18n", ""); }
+      s.setAttribute("aria-labelledby", h.id); s.appendChild(h);
+      Array.prototype.slice.call(d.childNodes).forEach(function (n) { if (n !== sum) s.appendChild(n); });
+      d.parentNode.replaceChild(s, d);
+    });
+  }
+  /* dopo un nuovo disegno il focus torna sull'elemento che l'aveva (per id, o per il primo attributo data-) */
+  function focusKey(a) {
+    if (!a || !el.contains(a) || a === document.body) return "";
+    if (a.id) return "#" + a.id;
+    for (var i = 0; i < a.attributes.length; i++) if (a.attributes[i].name.indexOf("data-") === 0) return "[" + a.attributes[i].name + '="' + a.attributes[i].value.replace(/"/g, "") + '"]';
+    return "";
+  }
   function paintMic() {
     var p = document.getElementById("set-mic"), b = document.getElementById("set-mic-close"); if (!p) return;
     var info = CP.micInfo ? CP.micInfo() : { live: false };
@@ -26281,42 +26382,87 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
     var v = document.getElementById("set-sfxvol"); if (v && CP.bus) v.value = CP.bus.sfxVol();
     var ts = document.getElementById("opt-toneshapes"); if (ts) ts.checked = document.body.classList.contains("tone-shapes");
     if (CP.audioMode) Array.prototype.forEach.call(el.querySelectorAll("[data-audio-set]"), function (b) { var on = b.getAttribute("data-audio-set") === CP.audioMode(); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
-    /* le sezioni dei moduli, ognuna nel suo gruppo: una funzione (gruppo «Avanzate») oppure { group: "data"|"adv"|"info", html: funzione } */
-    var BOX = { data: "set-extra-data", adv: "set-extra", info: "set-extra-info" }, parts = { data: [], adv: [], info: [] }, open = {};
-    Array.prototype.forEach.call(el.querySelectorAll("#set-extra-data details[id], #set-extra details[id], #set-extra-info details[id]"), function (d) { open[d.id] = d.open; });
-    (CP.settingsExtras || []).forEach(function (f) { var g = typeof f === "function" ? "adv" : (BOX[f.group] ? f.group : "adv"); try { parts[g].push(typeof f === "function" ? f() : f.html()); } catch (e) {} });
-    Object.keys(BOX).forEach(function (g) { var b = document.getElementById(BOX[g]); if (b) b.innerHTML = parts[g].join(""); });
-    Object.keys(open).forEach(function (id) { var d = document.getElementById(id); if (d) d.open = open[id]; });
+    /* le sezioni dei moduli si rifanno da capo a ogni disegno, ognuna al suo posto */
+    var fk = focusKey(document.activeElement);
+    Array.prototype.forEach.call(el.querySelectorAll("[data-extra]"), function (n) { n.parentNode.removeChild(n); });
+    (CP.settingsExtras || []).forEach(function (f) {
+      var g = typeof f === "function" ? "adv" : (GROUP_PAGE[f.group] ? f.group : "adv"), html = "", box = document.createElement("div");
+      try { html = typeof f === "function" ? f() : f.html(); } catch (e) {}
+      if (!html) return;
+      box.innerHTML = html; flatten(box);
+      Array.prototype.slice.call(box.children).forEach(function (n) {
+        var p = PAGE_OF[n.id] || GROUP_PAGE[g], l = pageEl(p).querySelector(".set-list"), r = rank(p, n), at = null, i;
+        n.setAttribute("data-extra", "");
+        for (i = 0; i < l.children.length; i++) if (rank(p, l.children[i]) > r) { at = l.children[i]; break; }
+        l.insertBefore(n, at);
+      });
+    });
+    if (fk && (!document.activeElement || document.activeElement === document.body)) { var nf = el.querySelector(fk); if (nf && nf.focus) nf.focus({ preventScroll: true }); }
     paintMic();
+    if (q && q.value) search();
+  }
+  /* ---- le pagine ---- */
+  function pageName(p) { return CP.t("set.p." + p); }
+  function go(page, target) {
+    cur = page || "";
+    document.getElementById("set-home").hidden = !!cur;
+    PAGES.forEach(function (p) { pageEl(p).hidden = p !== cur; });
+    back.hidden = !cur; head.textContent = cur ? pageName(cur) : CP.t("set.title");
+    card.scrollTop = 0;
+    if (target) {
+      target.scrollIntoView({ block: "start" });
+      target.classList.add("set-flash"); setTimeout(function () { target.classList.remove("set-flash"); }, 1700);
+    }
+  }
+  /* ---- ricerca: cerca nel titolo e nel testo di ogni sezione, senza badare agli accenti ---- */
+  function norm(s) { s = String(s || "").toLowerCase(); try { s = s.normalize("NFD").replace(/[̀-ͯ]/g, ""); } catch (e) {} return s; }
+  function search() {
+    var words = norm(q.value).split(/\s+/).filter(Boolean), out = [];
+    tiles.hidden = !!words.length; hits.hidden = !words.length;
+    if (!words.length) { hits.innerHTML = ""; return; }
+    PAGES.forEach(function (p) {
+      Array.prototype.forEach.call(pageEl(p).querySelectorAll(".set-sec"), function (s) {
+        var h = s.querySelector(".set-h"), txt = norm(s.textContent + " " + (KW[s.id] ? CP.t(KW[s.id]) : ""));
+        if (!s.id || !words.every(function (w) { return txt.indexOf(w) >= 0; })) return;
+        out.push('<button type="button" class="set-hit" data-set-goto="' + CP.attr(s.id) + '"><b>' + CP.esc(h ? h.textContent.trim() : s.id) + "</b><small>" + CP.esc(pageName(p)) + "</small></button>");
+      });
+    });
+    hits.innerHTML = out.length ? out.join("") : '<p class="small muted" style="margin:0">' + CP.esc(CP.t("set.noRes")) + "</p>";
+  }
+  function goHome(focusTile) {
+    go("");
+    if (focusTile && lastTile && lastTile.isConnected) lastTile.focus({ preventScroll: true });
   }
   function close() { CP.untrap(el); }
+  /* Esc e il tasto Indietro di Android: prima si torna indietro di un livello, poi si chiude */
+  function onEsc() {
+    if (cur) goHome(true);
+    else if (q && q.value) { q.value = ""; search(); q.focus({ preventScroll: true }); }
+    else close();
+  }
   CP.repaintSettings = paint;
-  /* lingua dei menu */
   function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
-  CP.setLang = function (l) {
-    var nl = l === "zh" ? "zh" : "it"; if (nl === LANG) return;
-    LANG = nl; try { localStorage.setItem("cp-lang", LANG); } catch (e) {}
-    applyI18n(); paintLang(); CP.sfx("tap");
-    /* molte parti si disegnano una volta sola all'avvio (tabella delle parole, filtri, voce): si riparte da capo,
-       così ogni testo è nella lingua nuova. I progressi sono già salvati. */
-    setTimeout(function () { location.reload(); }, 150);
-  };
-  paintLang();
   CP.openSettings = function (sec) {
-    paint(); CP.trap(el, close);
-    var x = el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
-    if (sec) { var d = document.getElementById(sec); if (d) { for (var x = d; x && x !== el; x = x.parentElement) if (x.tagName === "DETAILS") x.open = true; d.scrollIntoView({ block: "start" }); } }
+    paint(); paintLang(); CP.trap(el, onEsc);
+    var page = "", tgt = null, d = sec ? document.getElementById(sec) : null;
+    if (sec && ALIAS[sec]) page = ALIAS[sec];
+    else if (d && el.contains(d)) { var pg = d.closest("[data-set-page]"); if (pg) { page = pg.getAttribute("data-set-page"); tgt = d.closest(".set-sec") || d; } }
+    else if (sec && PAGE_OF[sec]) page = PAGE_OF[sec];   /* la sezione non c'è (per esempio l'esportazione, prima della soglia): si apre la sua pagina */
+    if (q) { q.value = ""; search(); }
+    go(page, tgt);
+    var x = page ? back : el.querySelector("[data-set-close]"); if (x) x.focus({ preventScroll: true });
     CP.sfx("tap");
   };
-  btn.addEventListener("click", function () { CP.openSettings(); });
-  /* «Crediti e licenze»: ui/credits.js si carica al primo uso di CP.credits */
-  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-credits]") : null; if (b && CP.credits) CP.credits(); });
-  /* la carta da condividere: ui/share-card.js si carica al primo uso di CP.shareCard */
-  document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-card-open]") : null; if (b && CP.shareCard) { CP.sfx("tap"); CP.shareCard(); } });
   el.addEventListener("click", function (e) {
     if (e.target === el) { close(); return; }
     var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
     if (b.hasAttribute("data-set-close")) close();
+    else if (b.hasAttribute("data-set-open")) { lastTile = b; CP.sfx("tap"); go(b.getAttribute("data-set-open")); back.focus({ preventScroll: true }); }
+    else if (b.hasAttribute("data-set-back")) { CP.sfx("tap"); goHome(true); }
+    else if (b.hasAttribute("data-set-goto")) {
+      var sx = document.getElementById(b.getAttribute("data-set-goto")), px = sx && sx.closest("[data-set-page]");
+      if (px) { lastTile = el.querySelector('[data-set-open="' + px.getAttribute("data-set-page") + '"]'); q.value = ""; search(); go(px.getAttribute("data-set-page"), sx); back.focus({ preventScroll: true }); CP.sfx("tap"); }
+    }
     else if (b.hasAttribute("data-audio-set")) { CP.setAudioMode(b.getAttribute("data-audio-set")); paint(); }
     else if (b.id === "set-music") { close(); if (CP.jukeboxOpen) CP.jukeboxOpen(); }
     else if (b.id === "set-mic-close") { if (CP.micClose) CP.micClose(); CP.toast(CP.t("mic.closedToast")); paintMic(); }
@@ -26326,16 +26472,21 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
     else if (b.id === "set-selftest") { close(); location.hash = "#selftest"; }
     else if (b.hasAttribute("data-lang-set")) CP.setLang(b.getAttribute("data-lang-set"));
   });
-  el.addEventListener("input", function (e) { if (e.target.id === "set-sfxvol" && CP.bus) CP.bus.setSfxVol(parseFloat(e.target.value)); });
+  el.addEventListener("input", function (e) { if (e.target.id === "set-q") search(); else if (e.target.id === "set-sfxvol" && CP.bus) CP.bus.setSfxVol(parseFloat(e.target.value)); });
   el.addEventListener("change", function (e) {
     var t = e.target;
     if (t.id === "set-sfxvol") CP.sfx("tap");
     else if (t.id === "set-bk-file" && t.files && t.files[0]) CP.restoreFile(t.files[0], document.getElementById("set-bk-msg"));
     else if (t.id === "opt-toneshapes") { document.body.classList.toggle("tone-shapes", t.checked); try { localStorage.setItem("cp-toneshapes", t.checked ? "1" : "0"); } catch (er) {} }
   });
-  /* U7: toni anche con la forma (per chi non distingue il rosso dal verde) */
-  try { if (localStorage.getItem("cp-toneshapes") === "1") document.body.classList.add("tone-shapes"); } catch (e) {}
+  /* i testi fissi della pagina: all'avvio i nuovi testi non c'erano ancora (questo file si carica al primo uso), in cinese si ritraducono adesso */
+  if (LANG !== "it") applyI18n(el);
 })();
+</script>
+<script>
+/* ---- i18n/settings.js + ui/settings-pages.js (al primo uso di CP.openSettings, CP.repaintSettings) ---- */
+(function () { var P = ["openSettings","repaintSettings"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-opensettings"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
+  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
 </script>
 <script>
 /* ---- ui/finder.js ---- */
@@ -26685,7 +26836,7 @@ Object.assign(I18N.zh, { "cr.voiceIt": "意大利语真人录音", "cr.voiceItT"
     } else if (how === "file") { Store.download("mandarino-contributi-" + Date.now() + ".json", pretty); done(); }
   }
 
-  /* ---- ⚙️ → Contributi ---- */
+  /* ---- ⚙️ → Dati e sincronizzazione → Contributi ---- */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () {
     var l = list().slice().reverse();
     return '<details class="set-sec" id="set-contrib"><summary>✏️ ' + T("ct.title") + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
@@ -27586,7 +27737,7 @@ var PLACEMENT = (function () {
 </script>
 <script>
 /* ---- it/switch.js ---- */
-/* ===== màndarínō · la scelta del corso, in tutti e due i corsi (⚙️ → Corso): cp-course = "zh" (cinese per italiani,
+/* ===== màndarínō · la scelta del corso, in tutti e due i corsi (⚙️ → Studio → Corso): cp-course = "zh" (cinese per italiani,
    predefinito) | "it" (italiano per cinesi). Il corso di italiano (it/today.js, it/course.js, i18n/it-course.js) nel file
    unico si esegue solo quando serve (tools/build.mjs, COURSE_IT): chi studia cinese non lo paga all'avvio. ===== */
 (function () {
@@ -27601,7 +27752,7 @@ var PLACEMENT = (function () {
     if (window.Store && Store.flush) Store.flush();
     location.reload();
   };
-  /* ⚙️ → Corso: in tutte e due le lingue, perché lo deve capire chi non legge l'altra */
+  /* ⚙️ → Studio → Corso: in tutte e due le lingue, perché lo deve capire chi non legge l'altra */
   (CP.settingsExtras = CP.settingsExtras || []).unshift(function () {
     return '<details class="set-sec" id="set-course"><summary data-noi18n>🎓 Corso · 课程</summary><div class="vbody">' +
       '<div class="seg" role="group" aria-label="Corso · 课程" data-noi18n><button type="button" data-course-set="zh"' + (course === "zh" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">🇮🇹 Impara il cinese · 学中文</button>" +
@@ -27763,7 +27914,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 <script>/* ---- it/today.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-it-today-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <script type="text/plain" id="course-it-it-course-js">
 /* ===== Corso di italiano per chi parla cinese (意大利语课程) — la direzione «al contrario» dell'app.
-   Si sceglie dal benvenuto o da ⚙️ → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
+   Si sceglie dal benvenuto o da ⚙️ → Studio → Corso (cp-course = "zh" cinese per italiani, predefinito | "it" italiano per cinesi).
    In modalità "it" l'interfaccia è in cinese e le quattro schede diventano: 课程 (lezioni), 单词 (parole), 复习 (ripasso),
    变位 (coniugazioni), 句子 (frasi e dialoghi). Le parole italiane non sono scritte a mano qui: nascono dalle schede
    grammaticali di data/grammar.js (genere, plurale, ausiliare) e dalla morfologia di phrases/italian.js, controllate con
@@ -27777,7 +27928,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   if (course !== "it") return;
 
   /* ================= da qui: modalità corso di italiano ================= */
-  /* ⚙️ → 语音: la voce italiana (velocità, scelta della voce, prova), poi musica e suono */
+  /* ⚙️ → 声音和音乐 → 语音: la voce italiana (velocità, scelta della voce, prova), poi musica e suono */
   var IVK = "cp-it-voice";
   function itVoices() { var s = window.speechSynthesis; return s && s.getVoices ? (s.getVoices() || []).filter(function (v) { return /^it/i.test(v.lang || ""); }) : []; }
   CP.itVoiceURI = function () { var u = lsGet(IVK) || "", vs = itVoices(); return vs.some(function (v) { return v.voiceURI === u; }) ? u : (vs[0] ? vs[0].voiceURI : ""); };
@@ -28866,7 +29017,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 <script>
 /* ---- ui/seals.js ---- */
 /* ===== màndarínō · sostegno volontario e sigilli di gratitudine (印章).
-   - ⚙️ → Informazioni e supporto → «Sostieni il progetto»: il perché, un link (aperto solo da un tocco) alla pagina di
+   - ⚙️ → Informazioni → «Sostieni il progetto»: il perché, un link (aperto solo da un tocco) alla pagina di
      sostegno (MD_CONFIG.SUPPORT_URL), la riga sui sigilli, la trasparenza. Nessun importo, nessun contatore, nessun
      invito che si ripete: l'app non sa chi ha donato né quanto, e non manda niente a nessuno.
    - I sigilli sono solo estetici: non aprono nulla. Tre livelli, disegnati qui in SVG («ispirati alla scrittura a sigillo»,
@@ -28983,7 +29134,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     save(o); CP.closeSheet(); if (CP.openSettings) CP.openSettings("set-support");
   }
 
-  /* ---- ⚙️ → Informazioni e supporto → Sostieni il progetto ---- */
+  /* ---- ⚙️ → Informazioni → Sostieni il progetto ---- */
   var CUP = '<svg class="cup" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 3.5c-.8 1 .8 2-.1 3M11.5 3.5c-.8 1 .8 2-.1 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   function lingua() { return T(IT ? "sup.lIt" : "sup.lZh"); }
   function sectionHTML() {
@@ -29045,7 +29196,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 </script>
 <script>
 /* ---- ui/news.js ---- */
-/* ===== màndarínō · «Novità» (⚙️ → Informazioni e supporto): l'elenco dei cambiamenti da data/changelog.js, nella lingua
+/* ===== màndarínō · «Novità» (⚙️ → Informazioni): l'elenco dei cambiamenti da data/changelog.js, nella lingua
    dell'interfaccia. La versione più recente è aperta, le altre chiuse. Nessun avviso che compare da solo. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc;
@@ -29064,7 +29215,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 </script>
 <script>
 /* ---- ui/privacy.js ---- */
-/* ===== màndarínō · «Privacy» (⚙️ → Informazioni e supporto): la stessa informativa di PRIVACY.md, in breve, nella lingua
+/* ===== màndarínō · «Privacy» (⚙️ → Informazioni): la stessa informativa di PRIVACY.md, in breve, nella lingua
    dell'interfaccia. Nessun link che parte da solo: il testo completo sta nel repository. ===== */
 (function () {
   var CP = window.CP, T = CP.t;
@@ -29079,7 +29230,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 <script>
 /* ---- ui/pleco.js ---- */
 /* ===== màndarínō · collegamento passivo a Pleco (dizionario esterno, se installato). Spento di base; si accende in
-   ⚙️ → Avanzate («Mostra il collegamento a Pleco») con una doppia conferma. Acceso:
+   ⚙️ → Studio («Mostra il collegamento a Pleco») con una doppia conferma. Acceso:
    - pressione di almeno 2 s (PLECO_HOLD_MS) su un carattere (righe di Parole, carta di studio, foglio del carattere):
      sotto i 2 s tutto resta com'era (a mezzo secondo si apre il foglio del carattere); a 2 s compare un piccolo pulsante
      «Apri in Pleco», con un'icona generica di dizionario (non il marchio di Pleco). Si esce verso Pleco solo toccandolo;
@@ -29169,7 +29320,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   /* la riga del menu «⋯» della carta di studio (study/study.js la chiede qui) */
   CP.plecoRow = function (hz) { return on() && valid(hz) ? '<button type="button" class="sheet-row" data-pleco="' + CP.attr(hz) + '"><span class="ico" aria-hidden="true">' + ICON + "</span><span><b>" + esc(T("plc.open")) + "</b><small>" + esc(T("plc.rowSub")) + "</small></span></button>" : ""; };
 
-  /* ⚙️ → Avanzate: acceso / spento, con doppia conferma per accendere; non c'è sul computer né nel corso di italiano */
+  /* ⚙️ → Studio: acceso / spento, con doppia conferma per accendere; non c'è sul computer né nel corso di italiano */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     if (!available()) return "";
     return '<details class="set-sec" id="set-pleco"><summary>' + ICON + " " + T("plc.title") + '</summary><div class="vbody">' +
@@ -29206,7 +29357,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
      Un .apkg con il calendario è fuori portata.
    - Corso di italiano: le parole di CP.itLexicon; per i verbi il presente prodotto dalle regole dell'app (CP.ita), non da
      Morph-it! (che a runtime non c'è). Genere e articolo vengono dal lessico (Morph-it!, LGPL): l'intestazione lo cita.
-   Chi lo vede: solo chi ha studiato molto (ANKI_MIN parole iniziate o ripassi), in ⚙️ → Dati e privacy → «Altre opzioni di
+   Chi lo vede: solo chi ha studiato molto (ANKI_MIN parole iniziate o ripassi), in ⚙️ → Dati e sincronizzazione → «Altre opzioni di
    esportazione», con due conferme. Il file si salva con Store.download, come il backup: nessuna rete. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc;
@@ -29284,7 +29435,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   }
   CP.anki = { build: build, guid: guid, save: save, allowed: allowed, studied: studied, MIN: ANKI_MIN };
 
-  /* ⚙️ → Dati e privacy, accanto alla sincronizzazione: un blocco chiuso, solo per chi ha studiato molto */
+  /* ⚙️ → Dati e sincronizzazione, accanto alla sincronizzazione: un blocco chiuso, solo per chi ha studiato molto */
   var pick = { which: "mine", sec: "" };
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () {
     if (!allowed()) return "";
@@ -29323,8 +29474,8 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 /* ---- i18n/together.js ---- */
 /* ===== màndarínō · i testi di sfide e classe (ui/challenge.js, ui/classroom.js), nelle due lingue dell'interfaccia.
    Nel file unico arrivano insieme ai due moduli, al loro primo uso (tools/build.mjs, LAZYMOD). ===== */
-Object.assign(I18N.it, {"tog.title": "🎯 Sfide e classe", "chal.title": "Sfida a un amico", "chal.intro": "Dieci parole che hai studiato diventano un codice: chi lo apre fa la stessa sfida, con le stesse domande. Tutto resta sui telefoni: nessun server, nessun nome.", "chal.new": "Crea una sfida", "chal.ready": "La tua sfida è pronta", "chal.howTo": "Manda il link o il codice, oppure fai inquadrare il QR dall'app di un amico (⚙️ → Sfide e classe → Inquadra il QR).", "chal.code": "Codice della sfida", "chal.share": "📤 Manda la sfida", "chal.copy": "Copia", "chal.copied": "Copiato", "chal.try": "Provala anche tu", "chal.paste": "Hai ricevuto un codice? Incollalo qui (va bene anche il messaggio intero)", "chal.go": "Apri", "chal.scan": "Inquadra il QR", "chal.scanHint": "Il QR di una sfida o di un pacchetto classe.", "chal.bad": "Non è un codice valido.", "chal.old": "Questa sfida contiene parole che questa versione dell'app non conosce: aggiorna l'app.", "chal.otherZh": "Questa sfida è per chi studia il cinese.", "chal.otherIt": "Questa sfida è per chi studia l'italiano.", "chal.switch": "Passa a quel corso", "chal.received": "Una sfida per te: {n} parole.", "chal.privacy": "Il codice contiene solo le parole e l'ordine delle domande.", "chal.start": "Comincia", "chal.q": "Che cosa vuol dire?", "chal.n": "{i} di {n}", "chal.right": "Giusto", "chal.wrong": "Era: {a}", "chal.result": "{ok} su {n} in {s} s", "chal.perfect": "Tutte giuste!", "chal.review": "Da ripassare", "chal.again": "📤 Rilancia la sfida", "chal.msg": "Ti sfido su {n} parole! Apri il link, oppure incolla il codice in màndarínō (⚙️ → Sfide e classe):", "chal.msgScore": "Io ho fatto {ok} su {n}.", "cls.title": "Classe", "cls.intro": "Per chi insegna: alcune tappe del Percorso, un obiettivo e una data diventano un pacchetto che gli studenti importano. Nessun registro, nessun server.", "cls.empty": "Nessun pacchetto. Se l'insegnante te ne ha dato uno, importalo qui o incolla il codice qui sopra.", "cls.import": "Importa un pacchetto (.json)", "cls.imported": "Pacchetto «{t}» importato", "cls.dup": "Questo pacchetto c'era già", "cls.bad": "Non è un pacchetto classe valido.", "cls.other": "Questo pacchetto è per l'altro corso.", "cls.rangeZh": "Tappe {a}–{b}", "cls.rangeIt": "Lezioni {a}–{b}", "cls.goal": "Obiettivo: {p}% entro il {d}", "cls.goalNo": "Obiettivo: {p}%", "cls.progZh": "{s} parole su {n} studiate ({p}%)", "cls.progIt": "{s} lezioni su {n} superate ({p}%)", "cls.met": "✓ Obiettivo raggiunto", "cls.left": "mancano {n} giorni", "cls.today": "scade oggi", "cls.past": "scaduto", "cls.go": "Studia", "cls.report": "Consegna il riepilogo", "cls.remove": "Togli", "cls.removed": "Pacchetto tolto", "cls.banner": "Classe: {t}", "cls.teach": "Prepara un pacchetto per la classe", "cls.name": "Titolo", "cls.namePh": "Classe 2B – unità 1", "cls.from": "Da", "cls.to": "A", "cls.goalL": "Obiettivo", "cls.due": "Entro il", "cls.dl": "Scarica il pacchetto (.json)", "cls.print": "Foglio da stampare", "cls.shareCode": "📤 Manda il codice", "cls.msg": "Pacchetto classe di màndarínō «{t}». Apri il link, oppure incolla il codice nell'app (⚙️ → Sfide e classe):", "cls.reports": "Leggi i riepiloghi ricevuti (.json)", "cls.repTitle": "Riepiloghi della classe", "cls.repNone": "Nessun riepilogo valido nei file scelti.", "cls.colName": "Nome", "cls.colDone": "Fatto", "cls.colDays": "Giorni di studio negli ultimi 30", "cls.colDate": "Data", "cls.anon": "(senza nome)", "cls.yes": "raggiunto", "cls.no": "non ancora", "cls.sh1": "1 · Scarica l'app", "cls.sh2": "2 · Nell'app: ⚙️ → Sfide e classe → Inquadra il QR", "cls.shFoot": "Gratuita, senza pubblicità, funziona anche senza rete. Chi insegna non vede i tuoi ripassi: solo il riepilogo che decidi tu di consegnare.", "cls.repHead": "Riepilogo per chi insegna", "cls.repWhat": "Contiene soltanto: il titolo del pacchetto, quante parole o lezioni del pacchetto hai fatto, se l'obiettivo è raggiunto, in quanti giorni hai studiato negli ultimi 30 e la data di oggi. Niente ripassi, niente errori, nient'altro.", "cls.repName": "Il tuo nome (facoltativo, va solo in questo riepilogo)", "cls.consent": "Ho letto che cosa contiene e voglio consegnarlo", "cls.repDl": "Scarica il riepilogo (.json)", "cls.repShare": "📤 Manda come testo", "cls.repText": "{t}: {done}; obiettivo {g}. Giorni di studio negli ultimi 30: {d}. ({date})"});
-Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑战朋友", "chal.intro": "把你学过的十个词变成一个代码：朋友打开后会做同样的挑战，遇到同样的题目。一切都只在手机上：不经过服务器，也不带名字。", "chal.new": "生成挑战", "chal.ready": "你的挑战准备好了", "chal.howTo": "把链接或代码发给朋友，或者让朋友在应用里扫这个二维码（⚙️ → 挑战与班级 → 扫二维码）。", "chal.code": "挑战代码", "chal.share": "📤 发送挑战", "chal.copy": "复制", "chal.copied": "已复制", "chal.try": "自己先试试", "chal.paste": "收到了代码？粘贴在这里（整条消息也可以）", "chal.go": "打开", "chal.scan": "扫二维码", "chal.scanHint": "挑战或班级学习包的二维码。", "chal.bad": "这不是有效的代码。", "chal.old": "这个挑战里有当前版本不认识的词，请更新应用。", "chal.otherZh": "这个挑战是给学中文的人准备的。", "chal.otherIt": "这个挑战是给学意大利语的人准备的。", "chal.switch": "切换到那个课程", "chal.received": "有人向你发起挑战：{n} 个词。", "chal.privacy": "代码里只有这些词和题目的顺序。", "chal.start": "开始", "chal.q": "这是什么意思？", "chal.n": "第 {i} 题，共 {n} 题", "chal.right": "答对了", "chal.wrong": "正确答案：{a}", "chal.result": "{n} 题答对 {ok} 题，用时 {s} 秒", "chal.perfect": "全部答对！", "chal.review": "需要复习", "chal.again": "📤 把挑战发回去", "chal.msg": "我向你发起 {n} 个词的挑战！打开链接，或者在 màndarínō 里粘贴代码（⚙️ → 挑战与班级）：", "chal.msgScore": "我答对了 {n} 题中的 {ok} 题。", "cls.title": "班级", "cls.intro": "给老师用：选几站学习路线，定一个目标和日期，做成学习包让学生导入。不做记录，也不经过服务器。", "cls.empty": "还没有学习包。如果老师给了你，请在这里导入，或者把代码粘贴到上面。", "cls.import": "导入学习包（.json）", "cls.imported": "已导入学习包“{t}”", "cls.dup": "这个学习包已经有了", "cls.bad": "这不是有效的班级学习包。", "cls.other": "这个学习包属于另一个课程。", "cls.rangeZh": "第 {a}–{b} 站", "cls.rangeIt": "第 {a}–{b} 课", "cls.goal": "目标：{d} 前完成 {p}%", "cls.goalNo": "目标：完成 {p}%", "cls.progZh": "{n} 个词里学了 {s} 个（{p}%）", "cls.progIt": "{n} 课里通过了 {s} 课（{p}%）", "cls.met": "✓ 目标已达成", "cls.left": "还剩 {n} 天", "cls.today": "今天截止", "cls.past": "已截止", "cls.go": "去学习", "cls.report": "提交学习小结", "cls.remove": "移除", "cls.removed": "学习包已移除", "cls.banner": "班级：{t}", "cls.teach": "为班级制作学习包", "cls.name": "标题", "cls.namePh": "二年级 B 班 第一单元", "cls.from": "从", "cls.to": "到", "cls.goalL": "目标", "cls.due": "截止日期", "cls.dl": "下载学习包（.json）", "cls.print": "打印用的单页", "cls.shareCode": "📤 发送代码", "cls.msg": "màndarínō 班级学习包“{t}”。打开链接，或者在应用里粘贴代码（⚙️ → 挑战与班级）：", "cls.reports": "查看收到的学习小结（.json）", "cls.repTitle": "班级学习小结", "cls.repNone": "所选文件里没有有效的学习小结。", "cls.colName": "姓名", "cls.colDone": "完成", "cls.colDays": "最近 30 天的学习天数", "cls.colDate": "日期", "cls.anon": "（未署名）", "cls.yes": "已达成", "cls.no": "尚未达成", "cls.sh1": "1 · 下载应用", "cls.sh2": "2 · 在应用里：⚙️ → 挑战与班级 → 扫二维码", "cls.shFoot": "免费、无广告，没有网络也能用。老师看不到你的复习记录，只能看到你自己决定提交的小结。", "cls.repHead": "给老师的学习小结", "cls.repWhat": "只包含：学习包标题、你完成了学习包里的多少词或课、是否达成目标、最近 30 天学习了几天，以及今天的日期。不包含复习记录、错误或其他任何内容。", "cls.repName": "你的名字（可不填，只写进这份小结）", "cls.consent": "我已了解内容，同意提交", "cls.repDl": "下载小结（.json）", "cls.repShare": "📤 以文字发送", "cls.repText": "{t}：{done}；目标{g}。最近 30 天学习 {d} 天。（{date}）"});
+Object.assign(I18N.it, {"tog.title": "🎯 Sfide e classe", "chal.title": "Sfida a un amico", "chal.intro": "Dieci parole che hai studiato diventano un codice: chi lo apre fa la stessa sfida, con le stesse domande. Tutto resta sui telefoni: nessun server, nessun nome.", "chal.new": "Crea una sfida", "chal.ready": "La tua sfida è pronta", "chal.howTo": "Manda il link o il codice, oppure fai inquadrare il QR dall'app di un amico (⚙️ → Studio → Sfide e classe → Inquadra il QR).", "chal.code": "Codice della sfida", "chal.share": "📤 Manda la sfida", "chal.copy": "Copia", "chal.copied": "Copiato", "chal.try": "Provala anche tu", "chal.paste": "Hai ricevuto un codice? Incollalo qui (va bene anche il messaggio intero)", "chal.go": "Apri", "chal.scan": "Inquadra il QR", "chal.scanHint": "Il QR di una sfida o di un pacchetto classe.", "chal.bad": "Non è un codice valido.", "chal.old": "Questa sfida contiene parole che questa versione dell'app non conosce: aggiorna l'app.", "chal.otherZh": "Questa sfida è per chi studia il cinese.", "chal.otherIt": "Questa sfida è per chi studia l'italiano.", "chal.switch": "Passa a quel corso", "chal.received": "Una sfida per te: {n} parole.", "chal.privacy": "Il codice contiene solo le parole e l'ordine delle domande.", "chal.start": "Comincia", "chal.q": "Che cosa vuol dire?", "chal.n": "{i} di {n}", "chal.right": "Giusto", "chal.wrong": "Era: {a}", "chal.result": "{ok} su {n} in {s} s", "chal.perfect": "Tutte giuste!", "chal.review": "Da ripassare", "chal.again": "📤 Rilancia la sfida", "chal.msg": "Ti sfido su {n} parole! Apri il link, oppure incolla il codice in màndarínō (⚙️ → Studio → Sfide e classe):", "chal.msgScore": "Io ho fatto {ok} su {n}.", "cls.title": "Classe", "cls.intro": "Per chi insegna: alcune tappe del Percorso, un obiettivo e una data diventano un pacchetto che gli studenti importano. Nessun registro, nessun server.", "cls.empty": "Nessun pacchetto. Se l'insegnante te ne ha dato uno, importalo qui o incolla il codice qui sopra.", "cls.import": "Importa un pacchetto (.json)", "cls.imported": "Pacchetto «{t}» importato", "cls.dup": "Questo pacchetto c'era già", "cls.bad": "Non è un pacchetto classe valido.", "cls.other": "Questo pacchetto è per l'altro corso.", "cls.rangeZh": "Tappe {a}–{b}", "cls.rangeIt": "Lezioni {a}–{b}", "cls.goal": "Obiettivo: {p}% entro il {d}", "cls.goalNo": "Obiettivo: {p}%", "cls.progZh": "{s} parole su {n} studiate ({p}%)", "cls.progIt": "{s} lezioni su {n} superate ({p}%)", "cls.met": "✓ Obiettivo raggiunto", "cls.left": "mancano {n} giorni", "cls.today": "scade oggi", "cls.past": "scaduto", "cls.go": "Studia", "cls.report": "Consegna il riepilogo", "cls.remove": "Togli", "cls.removed": "Pacchetto tolto", "cls.banner": "Classe: {t}", "cls.teach": "Prepara un pacchetto per la classe", "cls.name": "Titolo", "cls.namePh": "Classe 2B – unità 1", "cls.from": "Da", "cls.to": "A", "cls.goalL": "Obiettivo", "cls.due": "Entro il", "cls.dl": "Scarica il pacchetto (.json)", "cls.print": "Foglio da stampare", "cls.shareCode": "📤 Manda il codice", "cls.msg": "Pacchetto classe di màndarínō «{t}». Apri il link, oppure incolla il codice nell'app (⚙️ → Studio → Sfide e classe):", "cls.reports": "Leggi i riepiloghi ricevuti (.json)", "cls.repTitle": "Riepiloghi della classe", "cls.repNone": "Nessun riepilogo valido nei file scelti.", "cls.colName": "Nome", "cls.colDone": "Fatto", "cls.colDays": "Giorni di studio negli ultimi 30", "cls.colDate": "Data", "cls.anon": "(senza nome)", "cls.yes": "raggiunto", "cls.no": "non ancora", "cls.sh1": "1 · Scarica l'app", "cls.sh2": "2 · Nell'app: ⚙️ → Studio → Sfide e classe → Inquadra il QR", "cls.shFoot": "Gratuita, senza pubblicità, funziona anche senza rete. Chi insegna non vede i tuoi ripassi: solo il riepilogo che decidi tu di consegnare.", "cls.repHead": "Riepilogo per chi insegna", "cls.repWhat": "Contiene soltanto: il titolo del pacchetto, quante parole o lezioni del pacchetto hai fatto, se l'obiettivo è raggiunto, in quanti giorni hai studiato negli ultimi 30 e la data di oggi. Niente ripassi, niente errori, nient'altro.", "cls.repName": "Il tuo nome (facoltativo, va solo in questo riepilogo)", "cls.consent": "Ho letto che cosa contiene e voglio consegnarlo", "cls.repDl": "Scarica il riepilogo (.json)", "cls.repShare": "📤 Manda come testo", "cls.repText": "{t}: {done}; obiettivo {g}. Giorni di studio negli ultimi 30: {d}. ({date})"});
+Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑战朋友", "chal.intro": "把你学过的十个词变成一个代码：朋友打开后会做同样的挑战，遇到同样的题目。一切都只在手机上：不经过服务器，也不带名字。", "chal.new": "生成挑战", "chal.ready": "你的挑战准备好了", "chal.howTo": "把链接或代码发给朋友，或者让朋友在应用里扫这个二维码（⚙️ → 学习 → 挑战与班级 → 扫二维码）。", "chal.code": "挑战代码", "chal.share": "📤 发送挑战", "chal.copy": "复制", "chal.copied": "已复制", "chal.try": "自己先试试", "chal.paste": "收到了代码？粘贴在这里（整条消息也可以）", "chal.go": "打开", "chal.scan": "扫二维码", "chal.scanHint": "挑战或班级学习包的二维码。", "chal.bad": "这不是有效的代码。", "chal.old": "这个挑战里有当前版本不认识的词，请更新应用。", "chal.otherZh": "这个挑战是给学中文的人准备的。", "chal.otherIt": "这个挑战是给学意大利语的人准备的。", "chal.switch": "切换到那个课程", "chal.received": "有人向你发起挑战：{n} 个词。", "chal.privacy": "代码里只有这些词和题目的顺序。", "chal.start": "开始", "chal.q": "这是什么意思？", "chal.n": "第 {i} 题，共 {n} 题", "chal.right": "答对了", "chal.wrong": "正确答案：{a}", "chal.result": "{n} 题答对 {ok} 题，用时 {s} 秒", "chal.perfect": "全部答对！", "chal.review": "需要复习", "chal.again": "📤 把挑战发回去", "chal.msg": "我向你发起 {n} 个词的挑战！打开链接，或者在 màndarínō 里粘贴代码（⚙️ → 学习 → 挑战与班级）：", "chal.msgScore": "我答对了 {n} 题中的 {ok} 题。", "cls.title": "班级", "cls.intro": "给老师用：选几站学习路线，定一个目标和日期，做成学习包让学生导入。不做记录，也不经过服务器。", "cls.empty": "还没有学习包。如果老师给了你，请在这里导入，或者把代码粘贴到上面。", "cls.import": "导入学习包（.json）", "cls.imported": "已导入学习包“{t}”", "cls.dup": "这个学习包已经有了", "cls.bad": "这不是有效的班级学习包。", "cls.other": "这个学习包属于另一个课程。", "cls.rangeZh": "第 {a}–{b} 站", "cls.rangeIt": "第 {a}–{b} 课", "cls.goal": "目标：{d} 前完成 {p}%", "cls.goalNo": "目标：完成 {p}%", "cls.progZh": "{n} 个词里学了 {s} 个（{p}%）", "cls.progIt": "{n} 课里通过了 {s} 课（{p}%）", "cls.met": "✓ 目标已达成", "cls.left": "还剩 {n} 天", "cls.today": "今天截止", "cls.past": "已截止", "cls.go": "去学习", "cls.report": "提交学习小结", "cls.remove": "移除", "cls.removed": "学习包已移除", "cls.banner": "班级：{t}", "cls.teach": "为班级制作学习包", "cls.name": "标题", "cls.namePh": "二年级 B 班 第一单元", "cls.from": "从", "cls.to": "到", "cls.goalL": "目标", "cls.due": "截止日期", "cls.dl": "下载学习包（.json）", "cls.print": "打印用的单页", "cls.shareCode": "📤 发送代码", "cls.msg": "màndarínō 班级学习包“{t}”。打开链接，或者在应用里粘贴代码（⚙️ → 学习 → 挑战与班级）：", "cls.reports": "查看收到的学习小结（.json）", "cls.repTitle": "班级学习小结", "cls.repNone": "所选文件里没有有效的学习小结。", "cls.colName": "姓名", "cls.colDone": "完成", "cls.colDays": "最近 30 天的学习天数", "cls.colDate": "日期", "cls.anon": "（未署名）", "cls.yes": "已达成", "cls.no": "尚未达成", "cls.sh1": "1 · 下载应用", "cls.sh2": "2 · 在应用里：⚙️ → 学习 → 挑战与班级 → 扫二维码", "cls.shFoot": "免费、无广告，没有网络也能用。老师看不到你的复习记录，只能看到你自己决定提交的小结。", "cls.repHead": "给老师的学习小结", "cls.repWhat": "只包含：学习包标题、你完成了学习包里的多少词或课、是否达成目标、最近 30 天学习了几天，以及今天的日期。不包含复习记录、错误或其他任何内容。", "cls.repName": "你的名字（可不填，只写进这份小结）", "cls.consent": "我已了解内容，同意提交", "cls.repDl": "下载小结（.json）", "cls.repShare": "📤 以文字发送", "cls.repText": "{t}：{done}；目标{g}。最近 30 天学习 {d} 天。（{date}）"});
 /* ---- ui/challenge.js ---- */
 /* ===== màndarínō · sfida a un amico, senza server.
    Dieci parole e un seme diventano un codice (MDC1-…, base64url di «1|corso|seme|chiavi»): chi lo apre fa la stessa sfida,
@@ -29759,7 +29910,7 @@ Object.assign(I18N.zh, {"tog.title": "🎯 挑战与班级", "chal.title": "挑�
 </script>
 <script>
 /* ---- ui/together.js ---- */
-/* ===== màndarínō · sfide e classe, la parte sempre presente: la sezione in ⚙️ (Dati e privacy), i link
+/* ===== màndarínō · sfide e classe, la parte sempre presente: la sezione in ⚙️ (Studio), i link
    …#sfida=MDC1-… e …#classe=MDK1-… (il frammento non arriva a nessun server: si toglie subito dall'indirizzo), i pulsanti
    «🎯» e il riquadro del pacchetto classe in cima al Percorso. Il resto (ui/challenge.js, ui/classroom.js e i loro testi in
    i18n/together.js) si carica al primo uso di CP.challenge o CP.classroom (tools/build.mjs, LAZYMOD): all'avvio pesa poco. ===== */
