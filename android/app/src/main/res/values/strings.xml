@@ -18,5 +18,6 @@
     <string name="w_large_desc">Serie, ripassi in scadenza e parola del giorno</string>
     <string name="m_play">Riprendi</string>
     <string name="m_pause">Pausa</string>
+    <string name="m_prev">Precedente</string>
     <string name="m_next">Successivo</string>
 </resources>

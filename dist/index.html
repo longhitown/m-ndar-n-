@@ -23304,7 +23304,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     if (old) { try { old.tb.gain.cancelScheduledValues(now); old.tb.gain.setValueAtTime(old.tb.gain.value, now); old.tb.gain.linearRampToValueAtTime(0, now + FADE); } catch (e) {} setTimeout(function () { try { old.inst.stop(); old.tb.disconnect(); } catch (e) {} }, FADE * 1000 + 400); }
     CP.synth.reset();
     var tb = c.createGain(); tb.gain.setValueAtTime(0, now); tb.gain.linearRampToValueAtTime(1, now + FADE); tb.connect(ensureBus(c));
-    J.cur = { id: id, tb: tb, inst: BYID[id].make(c, tb) }; J.curId = id; J.slotAt = Date.now();
+    J.cur = { id: id, tb: tb, inst: BYID[id].make(c, tb) }; J.curId = J.lastId = id; J.slotAt = Date.now();
     session(true);
     if (J.played[J.played.length - 1] !== id) J.played.push(id);
     paint(); schedule();
@@ -23323,6 +23323,12 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   function next() {
     if (J.pos >= J.order.length - 1) { J.order = shuffleOrder(J.curId); J.pos = 0; } else J.pos++;
     play(J.order[J.pos]);
+  }
+  /* indietro: in casuale torna al brano di prima (se non c'è, riparte da capo questo); da solo, il precedente dell'elenco */
+  function prev() {
+    if (J.sel === "shuffle") { if (J.pos > 0) { J.pos--; play(J.order[J.pos]); } else play(J.curId); return; }
+    var ids = TRACKS.map(function (t) { return t.id; }), i = ids.indexOf(J.sel);
+    choose(ids[(i - 1 + ids.length) % ids.length]);
   }
   function start() {
     var c = CP.getCtx(); if (!c || J.run) return;
@@ -23345,16 +23351,17 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   /* comandi del sistema: Media Session (schermata di blocco, cuffie, Chrome) e, nell'app Android, la notifica del servizio
      di riproduzione (MusicService), che tiene viva la musica con lo schermo spento quando si sceglie il secondo piano */
   function session(on) {
-    var t = BYID[J.curId], ms = navigator.mediaSession, A = window.MandarinoAndroid;
+    var t = BYID[J.curId] || (!on && BYID[J.lastId]) || null, ms = navigator.mediaSession, A = window.MandarinoAndroid;
     try {
       if (ms) {
         if (on && t && window.MediaMetadata) ms.metadata = new MediaMetadata({ title: nm(t), artist: "màndarínō", album: CP.t("jk.title").replace(/^\S+\s/, ""), artwork: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }] });
         ms.playbackState = on ? "playing" : "paused";
       }
     } catch (e) {}
-    try { if (A && A.musicNotify) A.musicNotify(on && t ? t.ico + " " + nm(t) : "", !!on, !!J.bg); } catch (e) {}
+    try { if (A && A.musicNotify) A.musicNotify(t ? t.ico + " " + nm(t) : "", !!on, !!J.bg);   /* in pausa il titolo resta nella notifica */ } catch (e) {}
   }
   function remote(cmd) {
+    if (cmd === "prev") { if (J.run) prev(); return; }
     if (cmd === "next") { if (J.run) { if (J.sel === "shuffle") next(); else { var i = (TRACKS.map(function (t) { return t.id; }).indexOf(J.sel) + 1) % TRACKS.length; choose(TRACKS[i].id); } } return; }
     if (cmd === "pause" || (cmd === "toggle" && J.want)) { J.want = false; lset("cp-music", "0"); }
     else if (cmd === "play" || cmd === "toggle") { J.want = true; lset("cp-music", "1"); }
@@ -23365,6 +23372,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       navigator.mediaSession.setActionHandler("play", function () { remote("play"); });
       navigator.mediaSession.setActionHandler("pause", function () { remote("pause"); });
       navigator.mediaSession.setActionHandler("nexttrack", function () { remote("next"); });
+      navigator.mediaSession.setActionHandler("previoustrack", function () { remote("prev"); });
     }
   } catch (e) {}
   function modeNow() { return !CP.pref.sfx ? "mute" : "on"; }
