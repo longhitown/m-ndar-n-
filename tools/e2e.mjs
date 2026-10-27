@@ -560,6 +560,69 @@ try {
     check("Esercizi T2: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* 4k. percorso guidato (Task 12, T3): carta «Continua» con il passo successivo, impara + esercitati, verifica superata
+     (tappa verificata, +20 una volta sola) e fallita (le cinque parti, «Rinforza»), «I tuoi errori» e mini-verifica nelle lezioni */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-ex-style", "guided"); });
+    await p.goto(base); await p.waitForTimeout(700);
+    /* risponde all'esercizio aperto: giusto (ok) o sbagliato */
+    const answer = (ok) => p.evaluate((ok) => {
+      const cur = CP.exEngine.current(); if (!cur) return "nessuno"; const it = cur.item;
+      if (it.kind === "mc") document.querySelectorAll("[data-exa]")[ok ? it.right : (it.right + 1) % it.opts.length].click();
+      else if (it.kind === "type") { document.getElementById("ex-in").value = ok ? (it.mode === "pinyin" ? it.answer : it.accept[0]) : "xyz"; document.querySelector("[data-ex-submit]").click(); }
+      else if (it.kind === "order") { (ok ? it.tiles : it.tiles.slice().reverse()).forEach((t) => document.querySelector('[data-exo="' + t.id + '"]').click()); document.querySelector("[data-exo-check]").click(); }
+      else if (it.kind === "match") { it.words.forEach((w, i) => { document.querySelector('[data-exm="l:' + i + '"]').click(); document.querySelector('[data-exm="r:' + (ok ? i : (i + 1) % it.words.length) + '"]').click(); if (!ok) document.querySelector('[data-exm="r:' + i + '"]').click(); }); }
+      else if (it.kind === "trace") { return "trace"; }
+      const c = document.querySelector("[data-exc]"); if (c) c.click(); return it.kind;
+    }, ok);
+    await p.evaluate(() => CP.show("path", true)); await p.waitForTimeout(200);
+    const card = await p.evaluate(() => { const c = document.querySelector("#path-root .gd-card"); return c ? { go: c.querySelector("[data-gd-go]").textContent, dur: c.querySelectorAll("[data-gd-dur]").length, primaries: c.querySelectorAll(".btn-main").length } : null; });
+    check("Guidato: la carta «Continua» dice il passo successivo (impara 5 parole nuove), con la durata 5/10/15 e un solo pulsante primario", card && /Impara 5 parole nuove/.test(card.go) && card.dur === 3 && card.primaries === 1, JSON.stringify(card));
+    await p.click("#path-root [data-gd-go]"); await p.waitForTimeout(300);
+    let kinds = [];
+    for (let i = 0; i < 40; i++) {
+      const st = await p.evaluate(() => { if (document.querySelector("#study-root #next")) { document.querySelector("#study-root #next").click(); return "intro"; } if (document.querySelector("#study-root .done")) return "done"; return document.querySelector("#study-root .ex-card") ? "ex" : "?"; });
+      if (st === "done" || st === "?") { kinds.push(st); break; }
+      if (st === "ex") { const k = await answer(true); kinds.push(k); if (k === "trace") await p.evaluate(() => { CP.exEngine.after({ ok: true, g: 2 }); document.querySelector("[data-exc]").click(); }); } else kinds.push(st);
+      await p.waitForTimeout(30);
+    }
+    const u1 = await p.evaluate(() => JSON.parse(localStorage.getItem("cp-ex-v1") || "{}").units);
+    check("Guidato: impara (5 carte nuove) ed esercitati (esercizi sulle stesse parole) fino alla fine della sessione", kinds.filter((x) => x === "intro").length === 5 && kinds.filter((x) => !["intro", "done", "?"].includes(x)).length >= 8 && kinds[kinds.length - 1] === "done" && u1 && u1.persone && u1.persone.passo >= 1, kinds.join(","));
+    /* la tappa è quasi tutta avviata: il passo successivo è la verifica */
+    await p.evaluate(() => { const S = CP.S(); CP.ORDER.filter((k) => CP.WORDS[k].sec === "persone").forEach((k) => { if (!S[k] || !S[k].n) CP.grade(k, 2, false, { ms: 1, type: "pi" }); }); CP.studyHome(); CP.show("path", true); });
+    await p.waitForTimeout(200);
+    const vgo = await p.evaluate(() => (document.querySelector("#path-root [data-gd-go]") || {}).textContent);
+    check("Guidato: con l'80% delle parole avviate il passo successivo è «Verifica la tappa»", /Verifica la tappa/.test(vgo || ""), vgo);
+    const xp0 = await p.evaluate(() => CP.game.rank().xp);
+    await p.click("#path-root [data-gd-go]"); await p.waitForTimeout(200);
+    const vq = [];
+    for (let i = 0; i < 14; i++) { const k = await answer(true); if (k === "nessuno") break; if (k === "trace") await p.evaluate(() => { CP.exEngine.after({ ok: true, g: 2 }); document.querySelector("[data-exc]").click(); }); vq.push(k); }
+    const pass = await p.evaluate(() => ({ title: (document.querySelector(".gd-res h2") || {}).textContent, parts: document.querySelectorAll(".gd-part").length, u: JSON.parse(localStorage.getItem("cp-ex-v1")).units.persone, xp: CP.game.rank().xp, noHint: true }));
+    check("Guidato: verifica di 12 domande di tipi diversi, superata: «Tappa verificata», le parti del test di livello, +20 punti", vq.length === 12 && new Set(vq).size >= 3 && /Tappa verificata/.test(pass.title) && pass.parts >= 3 && pass.u.verifica.ok && pass.u.verifica.pct === 100 && pass.xp - xp0 === 20, JSON.stringify({ vq, pass, xp0 }));
+    /* fallita: nessun punto in più, «Rinforza» con le parole sbagliate */
+    await p.evaluate(() => CP.guided.verifica("persone")); await p.waitForTimeout(100);
+    for (let i = 0; i < 14; i++) { const k = await answer(false); if (k === "nessuno") break; if (k === "trace") await p.evaluate(() => { CP.exEngine.after({ ok: false, g: 0 }); document.querySelector("[data-exc]").click(); }); }
+    const fail = await p.evaluate(() => ({ title: (document.querySelector(".gd-res h2") || {}).textContent, weak: (document.querySelector(".gd-weak") || {}).textContent, rinf: !!document.querySelector("[data-gd-rinforza]"), xp: CP.game.rank().xp, ok: JSON.parse(localStorage.getItem("cp-ex-v1")).units.persone.verifica.ok }));
+    await p.click("[data-gd-rinforza]"); await p.waitForTimeout(200);
+    const rq = await p.evaluate(() => { const s = CP.studyKit.sess(); return s ? s.q.length : 0; });
+    check("Guidato: verifica non superata: frase gentile sul punto debole, «Rinforza» apre un ripasso delle parole sbagliate, nessun punto in più, la tappa resta verificata", /Ancora/.test(fail.title) && /rinforzare/.test(fail.weak || "") && fail.rinf && fail.xp === pass.xp && fail.ok === true && rq >= 4, JSON.stringify({ fail, rq }));
+    await p.evaluate(() => { CP.studyHome(); CP.show("path", true); }); await p.waitForTimeout(200);
+    const badge = await p.evaluate(() => { const el = document.getElementById("stop-persone"); return !!(el && /Tappa verificata/.test(el.textContent)); });
+    check("Guidato: nel Percorso la tappa ha il segno «Tappa verificata» (la regola dell'80% non cambia)", badge);
+    /* lezioni: «I tuoi errori» e la mini-verifica */
+    const ls = await p.evaluate(() => {
+      const L = CP.lessons.list()[0]; CP.show("build", true); CP.build.openLesson(L.id); document.querySelector("[data-ls-quiz]").click();
+      for (let i = 0; i < L.quiz.length; i++) { const o = document.querySelectorAll("[data-ls-opt]"); if (o.length) o[(L.quiz[i].a + 1) % o.length].click(); else { for (let j = 0; j < 20; j++) { const b = document.querySelector("[data-ls-pick]:not([disabled])"); if (!b) break; b.click(); } const ch = document.querySelector("[data-ls-check]"); if (ch) ch.click(); } document.querySelector("[data-ls-next]").click(); }
+      const best = CP.lessons.progress(L.id).best, errs = document.querySelector("[data-ls-errs]"), mini = document.querySelector("[data-ls-mini]");
+      mini.click(); const n = document.querySelectorAll("[data-ls-opt]").length;
+      document.querySelectorAll("[data-ls-opt]")[0].click(); document.querySelector("[data-ls-next]").click(); document.querySelectorAll("[data-ls-opt]")[0].click(); document.querySelector("[data-ls-next]").click();
+      return { errs: !!errs, n, best, best2: CP.lessons.progress(L.id).best, res: !!document.querySelector("[data-ls-back]") };
+    });
+    check("Lezioni: dopo il quiz «Rifai i tuoi errori» e la mini-verifica con 2 domande nuove a buco, che non cambiano il risultato della lezione", ls.errs && ls.n >= 2 && ls.best === ls.best2 && ls.res, JSON.stringify(ls));
+    check("Guidato: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));

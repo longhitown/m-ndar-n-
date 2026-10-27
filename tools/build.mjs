@@ -182,7 +182,7 @@ for (const [name, src] of LAZYCODE) {
 /* moduli dell'app che servono solo a qualcuno e solo in certi momenti (il test di livello, il correttore di frasi italiane):
    testo inerte nel file unico, eseguito la prima volta che il codice tocca una delle loro proprietà di CP. Il blocco va al
    posto dell'ultimo file del gruppo, quando CP esiste già. */
-const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }, { props: ["challenge", "classroom"], files: ["i18n/together.js", "ui/challenge.js", "ui/classroom.js"] }, { props: ["credits"], files: ["ui/credits.js"] }];
+const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }, { props: ["challenge", "classroom"], files: ["i18n/together.js", "ui/challenge.js", "ui/classroom.js"] }, { props: ["credits"], files: ["ui/credits.js"] }, { props: ["shareCard"], files: ["ui/share-card.js"] }];
 for (const m of LAZYMOD) {
   const group = m.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("LAZYMOD: manca uno di " + m.files.join(", ") + " in src/index.html");
   const code = group.map((x) => "/* ---- " + x.src + " ---- */\n" + fs.readFileSync(path.join(SRC, x.src), "utf8").trimEnd()).join("\n").replace(/<\/script/gi, "<\\/script");
@@ -207,7 +207,7 @@ for (const f of COURSE_IT) {
 /* GROUPS (Task 12): gruppi di moduli caricati al primo uso, generalizzando COURSE_IT. Nel file unico i file restano testo
    (type="text/plain") e non si compilano all'avvio; window.__mdLoad[NOME]() li esegue tutti, in ordine, una volta sola
    (CP.ex.carica in ui/ex-stub.js). Da src/, senza build, sono script normali e __mdLoad non c'è. */
-const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js", "study/ex-frasi.js", "study/ex-varie.js"] }];
+const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js", "study/ex-frasi.js", "study/ex-varie.js", "study/guided.js"] }];
 for (const g of GROUPS) {
   const group = g.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("GROUPS " + g.name + ": manca uno di " + g.files.join(", ") + " in src/index.html");
   const ids = [];

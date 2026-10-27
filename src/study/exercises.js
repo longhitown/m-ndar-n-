@@ -113,11 +113,13 @@
     if (cur.def.risposta) cur.def.risposta(cur.item, res, w);
     if (CP.pref.sfx) CP.sfx(res.ok ? "ok" : "ko"); CP.haptic(res.ok ? 8 : [20, 40, 20]);
     var fb = kit.root.querySelector(".ex-fb");
-    if (fb) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.msg || T(res.ok ? "exm.right" : "exm.wrong")) + "</p>" +
+    /* nella verifica del percorso guidato (kit.noReveal) solo l'esito: niente parola completa, esempio né ascolto */
+    if (fb && kit.noReveal) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.ok ? T("exm.right") : res.msg || T("exm.wrongShort")) + "</p>";
+    else if (fb) fb.innerHTML = '<p class="ex-verdict ' + (res.ok ? "ok" : "ko") + '"><span aria-hidden="true">' + (res.ok ? "✓ " : "✗ ") + "</span>" + esc(res.msg || T(res.ok ? "exm.right" : "exm.wrong")) + "</p>" +
       '<div class="ex-rev">' + kit.parts(w, { py: 1, hz: 1, it: 1 }) + (ex ? '<div class="cd-ex"><div class="lp">' + CP.pinyinHTML(ex[0]) + '</div><div class="lh" lang="zh-CN">' + CP.hanziHTML(ex[1], ex[0]) + '</div><div class="cd-note" lang="it">' + esc(ex[2]) + "</div></div>" : "") + kit.tools(w) + "</div>";
-    bar('<button type="button" class="btn-main" data-exc>' + esc(T("exm.cont")) + "</button>" + (res.ok && res.g === 2 && cur.item.kind === "mc" ? '<button type="button" class="btn-quiet ex-unsure" data-exu>' + esc(T("exm.unsure")) + "</button>" : "") + '<p class="kbd-hint">' + esc(T("exm.kbdNext")) + "</p>");
+    bar('<button type="button" class="btn-main" data-exc>' + esc(T("exm.cont")) + "</button>" + (res.ok && res.g === 2 && cur.item.kind === "mc" && !kit.noReveal ? '<button type="button" class="btn-quiet ex-unsure" data-exu>' + esc(T("exm.unsure")) + "</button>" : "") + '<p class="kbd-hint">' + esc(T("exm.kbdNext")) + "</p>");
     var c = kit.root.querySelector("[data-exc]"); if (c) c.focus({ preventScroll: true });
-    if (CP.pref.auto) CP.say(CP.sayHz(w), kit.root.querySelector(".ex-rev .say"));
+    if (CP.pref.auto && !kit.noReveal) CP.say(CP.sayHz(w), kit.root.querySelector(".ex-rev .say"));
   }
   function next(g) {
     if (!cur || !cur.done) return;
