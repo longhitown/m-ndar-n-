@@ -1104,7 +1104,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown nm mozilla common voice ogg opus".split(" "));
+      const OK = new Set("pdf jspdf parallax eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown nm mozilla common voice ogg opus".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {
@@ -1153,6 +1153,81 @@ try {
     const leafZh = await p.evaluate(() => { const el = document.querySelector('.brand [data-tone="3"]'); if (!el) return ""; el.dispatchEvent(new MouseEvent("click", { bubbles: true })); return (document.getElementById("toast") || {}).textContent || ""; });
     check("Logo, interfaccia in cinese: toccando una foglia l'avviso dice «第三声»", /第三声/.test(leafZh), leafZh);
     await ctx.close();
+  }
+  /* Foglio di lavoro in PDF: da Studia (cinese) e da «我的进步» (italiano). Si prova con un profilo con errori, con un profilo nuovo
+     (foglio di benvenuto) e con il corso di italiano: anteprima, PDF di 2 pagine sotto 1 MB, struttura del PDF (immagini, quadrati
+     con griglia tratteggiata, QR in vettoriale), QR riletto con jsQR, nessuna richiesta di rete, collegamento profondo #dettato=. */
+  {
+    const pdfStats = (b64) => {
+      const s = Buffer.from(b64, "base64").toString("latin1");
+      return { pages: (s.match(/\/Type\s*\/Page(?![s\w])/g) || []).length, images: (s.match(/\/Subtype\s*\/Image/g) || []).length, filled: (s.match(/\bre\nf\b/g) || []).length, stroked: (s.match(/\bre\nS\b/g) || []).length,
+        dashed: (s.match(/\[[\d. ]+\] [\d.]+ d\b/g) || []).length, head: s.slice(0, 5) };
+    };
+    const profile = {
+      errors: () => {
+        const S = CP.S(), ks = CP.ORDER.slice(0, 120);
+        ks.forEach((k, i) => { S[k] = { n: 3 + i % 4, rp: 3, lp: i % 7 === 0 ? 3 : i % 5 === 0 ? 1 : 0, sd: 2, st: 5 }; });
+        localStorage.setItem("cp-srs-v1", JSON.stringify(S));
+        const ex = { ex: {} }; ks.slice(10, 30).forEach((k, i) => { ex.ex[k] = { mc: { n: 5, ok: 5 - (1 + i % 3), ultimo: Date.now() } }; });
+        localStorage.setItem("cp-ex-v1", JSON.stringify(ex));
+        localStorage.setItem("cp-ear-v1", JSON.stringify({ m: [[4, 2, 0, 0], [3, 2, 5, 0], [0, 4, 3, 5], [0, 0, 4, 6]], n: 38 }));
+        const days = {}, d = new Date(); ks.slice(60, 75).forEach((k, i) => { const dd = new Date(d - (i % 5) * 864e5), key = dd.getFullYear() + "-" + (dd.getMonth() + 1) + "-" + dd.getDate(); (days[key] = days[key] || { w: [] }).w.push(k); });
+        localStorage.setItem("cp-game-v1", JSON.stringify({ xp: 500, base: 0, xpBy: {}, goal: 10, days, best: 0, pl: {} }));
+      },
+      fresh: () => {},
+      it: () => {
+        localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh");
+      }
+    };
+    for (const kind of ["errors", "fresh", "it"]) {
+      const ctx = await browser.newContext({ viewport: { width: 420, height: 900 } });
+      const p = await ctx.newPage(), errs = [], ext = [];
+      p.on("pageerror", (e) => errs.push(e.message)); p.on("request", (r) => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob):/.test(u)) ext.push(u); });
+      await p.goto(base); await p.evaluate(() => localStorage.setItem("cp-ux-v1", '{"onboarded":1,"unlocked":1}')); await p.evaluate(profile[kind]); await p.reload();
+      await p.waitForFunction(() => window.CP && CP.build);
+      if (kind === "it") {
+        await p.waitForFunction(() => window.CP && CP.itApi); await p.waitForTimeout(500);
+        await p.evaluate(() => {
+          const lex = CP.itApi.lex(), S = {}, ex = { ex: {} };
+          lex.slice(0, 60).forEach((e) => { S[e.id] = { c: { state: 3, step: 0, st: 3, df: 8, due: Date.now(), last: Date.now() }, n: 3, lr: Date.now() }; });
+          lex.slice(0, 40).forEach((e, i) => { if (i % 3 === 0) ex.ex[e.id] = { mc: { n: 4, ok: 2, ultimo: Date.now() } }; });
+          localStorage.setItem("cp-it-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ex-v1", JSON.stringify(ex));
+        });
+        await p.reload(); await p.waitForFunction(() => window.CP && CP.itApi); await p.waitForTimeout(500);
+        await p.click("text=我的进步"); await p.waitForTimeout(300);
+      } else { await p.evaluate(() => document.getElementById("tab-study").click()); await p.waitForTimeout(300); }
+      const btn = await p.$("[data-ws-open]"), primary = await p.evaluate(() => { const sh = document.querySelector(".fam-head"), root = sh ? sh.parentElement : document; return Array.from(root.querySelectorAll(".btn-main")).filter((b) => b.offsetParent).length; });
+      check("Foglio di lavoro (" + kind + "): il pulsante «Crea il foglio di lavoro» c'è ed è secondario (un solo pulsante pieno per schermata)", !!btn && primary <= 1, "pieni visibili: " + primary);
+      const bootHasLib = await p.evaluate(() => !!window.jspdf);
+      check("Foglio di lavoro (" + kind + "): la libreria PDF non è caricata all'avvio", !bootHasLib);
+      await btn.click(); await p.waitForSelector("[data-ws-page]", { timeout: 30000 });
+      const prev = await p.evaluate(() => ({ n: document.querySelectorAll("[data-ws-page]").length, info: (document.getElementById("ws-info") || {}).textContent || "", save: !!document.querySelector("[data-ws-save]"), lib: !!window.jspdf }));
+      check("Foglio di lavoro (" + kind + "): l'anteprima mostra le pagine, la dimensione e «Salva il PDF»; la libreria si è caricata al primo uso", prev.n >= 1 && prev.n <= 2 && /KB/.test(prev.info) && prev.save && prev.lib, JSON.stringify(prev));
+      const r = await p.evaluate(async () => {
+        const o = await CP.worksheetUI.build({ compress: false }), c = await CP.worksheetUI.build({ ppm: 12 });
+        let s = ""; for (let i = 0; i < o.bytes.length; i += 32768) s += String.fromCharCode.apply(null, o.bytes.subarray(i, i + 32768));
+        let z = ""; const real = await CP.worksheetUI.build(); for (let i = 0; i < real.bytes.length; i += 32768) z += String.fromCharCode.apply(null, real.bytes.subarray(i, i + 32768));
+        const cv = c.pages[0], im = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), q = window.jsQR(im.data, cv.width, cv.height, { inversionAttempts: "dontInvert" });
+        return { raw: btoa(s), size: real.bytes.length, pages: real.pages.length, cells: real.cells, boxes: real.boxes, items: real.items.map((x) => x.id), fresh: real.meta.fresh, text: real.meta.qrText, read: q ? q.data : null, dec: q ? CP.worksheetUI.decode(q.data) : null, course: real.meta.course, hard: real.items.filter((x) => (CP.S()[x.id] || {}).lp === 3).length };
+      });
+      const st = pdfStats(r.raw);
+      check("Foglio di lavoro (" + kind + "): PDF di " + r.pages + " pagine sotto 1 MB", st.head === "%PDF-" && st.pages === r.pages && r.pages >= (kind === "fresh" ? 1 : 2) && r.size < 1024 * 1024, st.pages + " pagine, " + Math.round(r.size / 1024) + " KB");
+      check("Foglio di lavoro (" + kind + "): nel PDF ci sono le immagini dei testi, i quadrati" + (kind === "it" ? " dei quadretti" : " con griglia tratteggiata") + " e il QR in vettoriale",
+        st.images > 5 && st.stroked >= (kind === "it" ? r.boxes : r.cells) && st.filled >= 40 && (kind === "it" || (r.cells >= 100 && st.dashed >= r.cells)), JSON.stringify(st) + " celle " + r.cells + " quadretti " + r.boxes);
+      check("Foglio di lavoro (" + kind + "): il QR, riletto con jsQR, è il collegamento #dettato= con le parole del foglio", r.read === r.text && /#dettato=MDD1-/.test(r.read) && r.dec && r.dec.c === (kind === "it" ? "it" : "zh") && r.dec.ids.length === r.items.length && r.dec.ids.every((x, i) => x === r.items[i]), String(r.read).slice(0, 80));
+      if (kind === "errors") check("Foglio di lavoro (errori): ci sono le parole con più lapsus e quelle delle ultime lezioni", r.fresh === false && r.hard >= 3, r.items.slice(0, 6).join(","));
+      if (kind === "fresh") check("Foglio di lavoro (profilo nuovo): foglio di benvenuto con i primi caratteri", r.fresh === true && r.items.length >= 6, r.items.slice(0, 8).join(","));
+      /* collegamento profondo: il frammento si toglie dall'indirizzo e si apre il dettato */
+      const code = r.text.split("#dettato=")[1];
+      await p.goto(base + "#dettato=" + code); await p.reload(); await p.waitForSelector("[data-ws-d=start]", { timeout: 15000 });
+      const dd = await p.evaluate(() => ({ hash: location.hash, title: (document.querySelector(".fam-head b") || {}).textContent || "" }));
+      check("Foglio di lavoro (" + kind + "): il link #dettato= apre il dettato e toglie il frammento dall'indirizzo", dd.hash === "" && /听写|Dettato/.test(dd.title), JSON.stringify(dd));
+      await p.click("[data-ws-d=start]"); await p.waitForTimeout(200);
+      const dn = await p.evaluate(() => ({ n: (document.querySelector(".chal-n") || {}).textContent || "", play: !!document.querySelector("[data-ws-d=play]"), show: !!document.querySelector("[data-ws-d=show]") }));
+      check("Foglio di lavoro (" + kind + "): il dettato parte dalla prima parola, con «Ascolta» e «Mostra»", /1/.test(dn.n) && dn.play && dn.show, JSON.stringify(dn));
+      check("Foglio di lavoro (" + kind + "): nessuna richiesta di rete e nessun errore JavaScript", !ext.length && !errs.length, ext.concat(errs)[0]);
+      await ctx.close();
+    }
   }
   /* microfono: un errore passeggero del riconoscitore (servizio occupato) si ritenta una volta, in silenzio, e non spegne il riconoscimento */
   {

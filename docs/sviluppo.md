@@ -45,7 +45,9 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
                            widget.js (stato del widget Android), reminder.js (promemoria)
   ui/launch.js             ?go=<azione>: apre l'app su un'azione (scorciatoie, widget)
   data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
-  vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
+  ui/worksheet-stub.js     «Crea il foglio di lavoro» (Studia → Progressi) e il link …/#dettato=<codice> (sempre presente)
+  ui/worksheet.js          gruppo FOGLIO, al primo uso: foglio PDF A4 (tianzige, quadretti per l'italiano), anteprima, QR, dettato
+  vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR; jsPDF (MIT), nel gruppo FOGLIO
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
 fastlane/                  testi e immagini per gli store (fonte unica; docs/store/ per firma, moduli, tester)
 docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
@@ -842,6 +844,7 @@ Che cosa vale per che cosa è in `NOTICE.md`. Le parti di altri, con indirizzo, 
 | complete-hsk-vocabulary | MIT |
 | py-fsrs | MIT |
 | jsQR | Apache 2.0 |
+| jsPDF | MIT |
 | wikidict-it / Wikidata | CC0 |
 | Morph-it! | LGPL (da verificare) |
 | campioni della musica | CC0 |
