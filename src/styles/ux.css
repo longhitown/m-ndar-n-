@@ -404,3 +404,17 @@ details.set-grp[open] > summary.set-gh::after { transform: rotate(90deg); }
 .pl-skel-logo { width: 96px; height: 96px; }
 .pl-skel-wm { font-size: 1.8rem; font-weight: 700; letter-spacing: .5px; }
 @media (prefers-reduced-motion: no-preference) { .pl-chip { animation: plIn .18s ease-out; } @keyframes plIn { from { opacity: 0; transform: translate(-50%, 8px); } } }
+/* Task 6.1: giorno di riposo nella settimana (segno ☾, non solo colore) */
+.week .rest i { border-style: dashed; border-color: var(--accent); color: var(--accent); font-style: normal; font-size: 13px; line-height: 18px; }
+/* Task 6.3: il racconto dei progressi */
+.st-sum { margin: 0 0 10px; }
+.st-bars { margin: 10px 0 0; }
+.st-cols { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; align-items: end; margin-top: 6px; }
+.st-col { display: grid; justify-items: center; gap: 2px; font-size: 13px; }
+.st-col b { font-size: 13px; }
+.st-bar { display: flex; align-items: flex-end; width: 100%; max-width: 34px; height: 64px; background: var(--line); border-radius: 6px; overflow: hidden; }
+.st-bar i { display: block; width: 100%; background: var(--accent); opacity: .55; border-radius: 6px 6px 0 0; }
+.st-col.now .st-bar i { opacity: 1; }
+.st-col small { color: var(--muted); font-size: 13px; }
+.st-more { margin-top: 10px; }
+.st-more > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
