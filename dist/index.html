@@ -978,6 +978,10 @@ body:not(.course-it) .dock-it { display: none; }
 body.course-it #set-contrib { display: none !important; }
 body.course-it #find-btn { display: none !important; }   /* la ricerca universale per ora copre il corso di cinese */
 .itc-bad { background: color-mix(in srgb, var(--t1) 22%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; text-decoration: underline wavy var(--t1); text-underline-offset: 3px; }
+.ub-list{display:grid;gap:6px;margin:0 0 8px}
+.ub-it{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-height:44px}
+.ub-it b{display:block;font-size:.92rem;overflow-wrap:anywhere}
+.ub-it i{display:block;font-style:normal;font-size:13px;color:var(--muted)}
 
 /* ---- styles/categories.css ---- */
 /* ===== categorie (pills), Pensiero esteso, Puzzle ===== */
@@ -15428,6 +15432,7 @@ Object.assign(I18N.it, {"ls.holeQ": "Che cosa va nel buco?", "ls.typePy": "Scriv
 Object.assign(I18N.it, {"gd.impara": "Impara {n} parole nuove", "gd.ripassa": "Ripassa", "gd.verifica": "Verifica la tappa", "gd.leggi": "Leggi e ascolta il dialogo", "gd.pR": "{n} ripassi", "gd.pN": "{n} parole nuove", "gd.pV": "12 domande, senza aiuti", "gd.pT": "1 dialogo", "gd.dur": "{n} min", "gd.durAria": "Quanto tempo hai", "gd.free": "Studia libero", "gd.verified": "Tappa verificata", "gd.noNew": "le parole nuove di oggi sono finite", "ls.myErrors": "Rifai i tuoi errori ({n})", "ls.mini": "Mini-verifica: 2 domande nuove"});
 Object.assign(I18N.it, {"sub.testi": "Testi"});
 Object.assign(I18N.it, {"logo.t1": "1° tono: alto e piatto, «gāo»", "logo.t2": "2° tono: sale, «lái»", "logo.t3": "3° tono: scende e risale, «hǎo»", "logo.t4": "4° tono: cade secco, «dà»"});
+Object.assign(I18N.it, {"ub.title": "I tuoi brani", "ub.hint": "Aggiungi file audio dal telefono (mp3, m4a, ogg, wav, flac, se il telefono li legge). Restano solo su questo dispositivo: non vanno in rete e non entrano nel backup, perché sono file tuoi. Massimo {n} brani, ciascuno al massimo {mb} MB e {min} minuti.", "ub.add": "➕ Aggiungi i tuoi brani", "ub.rm": "Rimuovi", "ub.rmAria": "Rimuovi {t}", "ub.mix": "Insieme ai brani dell'app", "ub.only": "Solo i miei brani", "ub.none": "Nessun brano tuo per ora.", "ub.mine": "Un tuo brano", "ub.busy": "Copio il brano {n} di {tot}…", "ub.done": "Aggiunti: {n}.", "ub.removed": "Brano rimosso.", "ub.bad": "{f}: formato che questo telefono non legge.", "ub.big": "{f}: troppo grande (massimo {mb} MB).", "ub.long": "{f}: troppo lungo (massimo {min} minuti).", "ub.max": "{f}: raggiunto il massimo di {n} brani.", "ub.dup": "{f}: già aggiunto.", "ub.space": "{f}: spazio insufficiente (restano circa {mb} MB per i tuoi brani).", "ub.err": "Brano non più nella memoria dell'app: rimuovilo e aggiungilo di nuovo.", "ub.fail": "Non riesco a salvare i brani su questo dispositivo."});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15563,6 +15568,7 @@ Object.assign(I18N.zh, {"ls.holeQ": "空里填什么？", "ls.typePy": "写出�
 Object.assign(I18N.zh, {"gd.impara": "学习 {n} 个新词", "gd.ripassa": "复习", "gd.verifica": "检测这一站", "gd.leggi": "读一读、听一听对话", "gd.pR": "{n} 个复习", "gd.pN": "{n} 个新词", "gd.pV": "12 道题，没有提示", "gd.pT": "1 段对话", "gd.dur": "{n} 分钟", "gd.durAria": "你有多少时间", "gd.free": "自由学习", "gd.verified": "这一站已通过检测", "gd.noNew": "今天的新词学完了", "ls.myErrors": "重做错题（{n}）", "ls.mini": "小测验：2 道新题"});
 Object.assign(I18N.zh, {"sub.testi": "课文"});
 Object.assign(I18N.zh, {"logo.t1": "第一声：高而平，「高」gāo", "logo.t2": "第二声：上扬，「来」lái", "logo.t3": "第三声：先降后升，「好」hǎo", "logo.t4": "第四声：急降，「大」dà"});
+Object.assign(I18N.zh, {"ub.title": "我的曲目", "ub.hint": "可以从手机里添加音频文件（常见格式如 MP3、M4A，其他格式取决于手机能否播放）。文件只保存在这台设备上，不会联网，也不会进入备份，因为它们是你自己的文件。最多 {n} 首，每首最大 {mb} MB、最长 {min} 分钟。", "ub.add": "➕ 添加我的曲目", "ub.rm": "移除", "ub.rmAria": "移除 {t}", "ub.mix": "和应用的曲目一起播放", "ub.only": "只播放我的曲目", "ub.none": "暂时还没有你的曲目。", "ub.mine": "我的曲目", "ub.busy": "正在复制第 {n} 首，共 {tot} 首…", "ub.done": "已添加 {n} 首。", "ub.removed": "已移除。", "ub.bad": "{f}：这台手机无法播放此格式。", "ub.big": "{f}：文件太大（最大 {mb} MB）。", "ub.long": "{f}：时间太长（最长 {min} 分钟）。", "ub.max": "{f}：已达到 {n} 首的上限。", "ub.dup": "{f}：已经添加过了。", "ub.space": "{f}：空间不足（我的曲目还剩约 {mb} MB）。", "ub.err": "这首曲目已不在应用的存储里：请移除后重新添加。", "ub.fail": "无法在这台设备上保存曲目。"});
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -23041,6 +23047,7 @@ Object.assign(I18N.zh, { "vc.title": "真人录音", "vc.desc": "由真人朗读
   var fileProto = location.protocol === "file:";
   /* il file intero come Blob (dalla cache del service worker quando c'è): sorgente locale, si può riavvolgere senza rete */
   function blob(id) {
+    if (id.slice(0, 2) === "u-") return CP.userBlob(id);   /* un brano dell'utente: sta nella memoria dell'app, vale anche da file:// */
     if (fileProto) return Promise.reject(new Error("file"));
     return fetch(url(id)).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); });
   }
@@ -23274,7 +23281,21 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     mood: lget("cp-jkmood") || "", auto: lget("cp-jkauto") !== "0", bg: lget("cp-jkbg") === "1" };
   var TRACKS = CP.audioTracks.list, groove = CP.synth.groove;
   var MOODS = [["", CP.t("jk.mAll")], ["calm", CP.t("jk.mCalm")], ["focus", CP.t("jk.mFocus")], ["energy", CP.t("jk.mEnergy")]];
-  var BYID = {}; TRACKS.forEach(function (t) { BYID[t.id] = t; });
+  var BYID = {};
+  /* ---------- i tuoi brani (⚙️ → Musica): l'elenco sta in localStorage (md-ubl, fuori dal backup), i file nella memoria
+     dell'app (IndexedDB) e li gestisce il gruppo MIEIBRANI (audio/user-tracks.js), caricato solo quando serve ---------- */
+  var UBL = CP.ubLimits = { n: 40, mb: 80, min: 30, totalMb: 600 };
+  var UB = { mode: lget("cp-ubmode") === "only" ? "only" : "mix", msg: "", busy: "" };
+  function ubMetas() { try { var a = JSON.parse(lget("md-ubl") || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function ubTrack(m) {
+    var d = CP.t("ub.mine");
+    return { id: m.id, ico: "🎧", name: m.name, desc: d, zh: [m.name, d], mood: "", user: true, file: true, sec: m.sec, make: function (c, bus) { return CP.audioFile.player(c, bus, m.id); } };
+  }
+  function ubLoad(cb) { if (!CP.ub && window.__mdLoad && window.__mdLoad.MIEIBRANI) window.__mdLoad.MIEIBRANI(); cb(CP.ub || null); }
+  CP.userBlob = function (id) { return new Promise(function (res, rej) { ubLoad(function (u) { if (u) u.blob(id).then(res, rej); else rej(new Error("ub")); }); }); };
+  function ubIndex() { BYID = {}; TRACKS.forEach(function (t) { BYID[t.id] = t; }); }
+  ubMetas().forEach(function (m) { TRACKS.push(ubTrack(m)); });
+  ubIndex();
   /* una traccia scelta che non c'è più (le vecchie tracce generate) torna a «tutte, in ordine casuale» */
   if (J.sel !== "shuffle" && !BYID[J.sel]) { J.sel = "shuffle"; lset("cp-track", "shuffle"); }
   var ZH = typeof LANG !== "undefined" && LANG === "zh";
@@ -23285,7 +23306,12 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var G0 = 0.6, DL = null;
 
   /* ---------- motore ---------- */
-  function pool() { var a = TRACKS.filter(function (t) { return !J.mood || t.mood === J.mood; }); return a.length ? a : TRACKS; }
+  function pool() {
+    var u = TRACKS.filter(function (t) { return t.user; });
+    if (UB.mode === "only" && u.length) return u;
+    var a = TRACKS.filter(function (t) { return !J.mood || t.mood === J.mood || t.user; });   /* i brani tuoi valgono per ogni umore */
+    return a.length ? a : TRACKS;
+  }
   function shuffleOrder(avoid) {
     var a = pool().map(function (t) { return t.id; }), i, j, t;
     for (i = a.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = a[i]; a[i] = a[j]; a[j] = t; }
@@ -23395,7 +23421,56 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     var c = TRACKS.filter(function (t) { return t.mood === m && t.id !== J.curId; }); if (!c.length) return;
     play(c[Math.floor(Math.random() * c.length)].id);
   };
-  CP.jukebox = { remote: function (c) { remote(c); }, tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
+  /* l'elenco dei brani dell'utente è cambiato (aggiunti, tolti): si aggiornano catalogo, ordine e brano in corso */
+  function userSet(ms) {
+    var i, same = ms.length === TRACKS.filter(function (t) { return t.user; }).length && ms.every(function (m) { return BYID[m.id] && BYID[m.id].user; });
+    lset("md-ubl", JSON.stringify(ms));
+    if (same) return;
+    for (i = TRACKS.length - 1; i >= 0; i--) if (TRACKS[i].user) TRACKS.splice(i, 1);
+    ms.forEach(function (m) { TRACKS.push(ubTrack(m)); });
+    ubIndex();
+    if (J.sel !== "shuffle" && !BYID[J.sel]) { J.sel = "shuffle"; lset("cp-track", "shuffle"); }
+    J.order = shuffleOrder(J.curId); J.pos = 0;
+    if (J.run && J.curId && !BYID[J.curId]) { if (J.sel === "shuffle") play(J.order[0]); else play(J.sel); }
+    ubPaint(); paint();
+  }
+  function ubSetMode(m) {
+    UB.mode = m === "only" ? "only" : "mix"; lset("cp-ubmode", UB.mode);
+    if (J.sel === "shuffle") { J.order = shuffleOrder(J.curId); J.pos = 0; if (J.run && J.curId && pool().every(function (t) { return t.id !== J.curId; })) play(J.order[0]); }
+    ubPaint(); paint();
+  }
+  function fmt(s) { var m = Math.floor(s / 60), r = Math.round(s % 60); return m + ":" + (r < 10 ? "0" : "") + r; }
+  function ubHTML() {
+    var ms = ubMetas(), h = '<div class="vab" id="ub-box"><div class="small" style="font-weight:700">' + CP.t("ub.title") + '</div><p class="small muted" style="margin:2px 0 6px">' + CP.t("ub.hint", { n: UBL.n, mb: UBL.mb, min: UBL.min }) + "</p>";
+    if (ms.length) {
+      h += '<div class="ub-list">' + ms.map(function (m) {
+        return '<div class="ub-it"><span><b>🎧 ' + esc(m.name) + "</b><i>" + fmt(m.sec) + " · " + Math.max(1, Math.round(m.size / 1048576)) + ' MB</i></span><button type="button" class="btn-s" data-ub-rm="' + esc(m.id) + '" aria-label="' + CP.attr(CP.t("ub.rmAria", { t: m.name })) + '">' + CP.t("ub.rm") + "</button></div>";
+      }).join("") + "</div>";
+      h += '<div class="cpills" role="group" aria-label="' + CP.attr(CP.t("ub.title")) + '">' + [["mix", "ub.mix"], ["only", "ub.only"]].map(function (x) {
+        return '<button type="button" data-ub-mode="' + x[0] + '"' + (UB.mode === x[0] ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + ">" + CP.t(x[1]) + "</button>";
+      }).join("") + "</div>";
+    } else h += '<p class="small muted" style="margin:0 0 6px">' + CP.t("ub.none") + "</p>";
+    return h + '<div class="acts"><button type="button" class="btn-s" data-ub-add' + (UB.busy ? " disabled" : "") + ">" + CP.t("ub.add") + '</button></div><p class="small muted" id="ub-msg" role="status" aria-live="polite">' + (UB.busy ? esc(UB.busy) : UB.msg) + "</p></div>";
+  }
+  function ubPaint() { var b = document.getElementById("ub-box"); if (b) b.outerHTML = ubHTML(); }
+  function ubPick() {
+    var i = document.createElement("input"); i.type = "file"; i.multiple = true; i.accept = "audio/*,.mp3,.m4a,.ogg,.oga,.opus,.wav,.flac,.aac";
+    i.addEventListener("change", function () { if (i.files && i.files.length) ubAdd(Array.prototype.slice.call(i.files)); });
+    i.click();
+  }
+  function ubDone(msg) { UB.busy = ""; UB.msg = msg; ubPaint(); var a = document.querySelector("[data-ub-add]"); if (a) a.focus(); }
+  function ubAdd(files) {
+    UB.busy = CP.t("ub.busy", { n: 1, tot: files.length }); UB.msg = ""; ubPaint();
+    ubLoad(function (u) {
+      if (!u) return ubDone(esc(CP.t("ub.fail")));
+      u.add(files, function (n) { UB.busy = CP.t("ub.busy", { n: n, tot: files.length }); var m = document.getElementById("ub-msg"); if (m) m.textContent = UB.busy; }).then(function (r) {
+        var l = r.bad.map(esc); if (r.added) l.unshift(esc(CP.t("ub.done", { n: r.added })));
+        ubDone(l.join("<br>"));
+      }, function () { ubDone(esc(CP.t("ub.fail"))); });
+    });
+  }
+  function ubRemove(id) { ubLoad(function (u) { if (u) u.remove(id).then(function () { ubDone(esc(CP.t("ub.removed"))); }, function () { ubDone(esc(CP.t("ub.fail"))); }); }); }
+  CP.jukebox = { userSet: userSet, remote: function (c) { remote(c); }, tracks: TRACKS, groove: groove, play: function (id) { J.want = true; lset("cp-music", "1"); J.sel = id; lset("cp-track", id); if (J.run) play(id === "shuffle" ? (J.order[J.pos] || TRACKS[0].id) : id); else CP.musicApply(); }, next: next };
 
   /* ---------- interfaccia: popup sul 🎵 + selettore in "Voce e audio" ---------- */
   var pop = document.createElement("div"); pop.id = "jk-pop"; pop.hidden = true; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-modal", "true"); pop.setAttribute("aria-label", "Jukebox"); document.body.appendChild(pop);
@@ -23420,7 +23495,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
     if (!t) return CP.t("jk.nowWait");
     var st = CP.audioFile && t.file ? CP.audioFile.state(t.id) : "";
     if (st === "file") return CP.t("jk.errFile");
-    if (st === "err") return CP.t("jk.err");
+    if (st === "err") return CP.t(t.user ? "ub.err" : "jk.err");
     if (st === "loading") return CP.t("jk.loading", { t: t.ico + " " + esc(nm(t)) });
     return CP.t("jk.now", { t: t.ico + " " + esc(nm(t)) }) + (J.sel === "shuffle" && J.run ? ' <span class="muted">· ' + CP.t("jk.left", { t: left() }) + "</span>" : "");
   }
@@ -23435,7 +23510,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       offLine() + moodPills() + list() + "</div>";
   }
   /* offline: sul sito i brani si salvano sul telefono al primo ascolto, oppure tutti insieme; nell'APK sono già dentro */
-  function fileIds() { return TRACKS.filter(function (t) { return t.file; }).map(function (t) { return t.id; }); }
+  function fileIds() { return TRACKS.filter(function (t) { return t.file && !t.user; }).map(function (t) { return t.id; }); }
   function offLine() {
     if (!CP.audioFile || CP.audioFile.fileProto || window.MandarinoAndroid || !("serviceWorker" in navigator)) return "";
     return '<div class="jk-off small muted" id="jk-off">' + (DL ? esc(CP.t("jk.dling", { n: DL.n, tot: DL.tot })) : "") + "</div>";
@@ -23480,6 +23555,9 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   }
   function onClick(e) {
     var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+    if (b.hasAttribute("data-ub-add")) { ubPick(); return; }
+    if (b.hasAttribute("data-ub-rm")) { ubRemove(b.getAttribute("data-ub-rm")); return; }
+    if (b.hasAttribute("data-ub-mode")) { ubSetMode(b.getAttribute("data-ub-mode")); return; }
     if (b.hasAttribute("data-jk-mood")) {
       J.mood = b.getAttribute("data-jk-mood"); lset("cp-jkmood", J.mood); CP.sfx("tap");
       if (J.sel === "shuffle") { J.order = shuffleOrder(J.curId); J.pos = 0; if (J.run && BYID[J.curId] && J.mood && BYID[J.curId].mood !== J.mood) play(J.order[0]); }
@@ -23510,7 +23588,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   });
   CP.jukeboxOpen = openPop;
   CP.jukeboxUI = function () {
-    return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">' + CP.t("jk.title") + '</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">' + CP.t("jk.hint") + '</p><details class="jk-det"><summary>' + CP.t("jk.choose") + '</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? CP.t("jk.stop") : CP.t("jk.start")) + "</button></div></div>";
+    return '<div class="vab" id="jk-box"><div class="small" style="font-weight:700">' + CP.t("jk.title") + '</div><p class="small muted" style="margin:2px 0 6px" id="jk-now2">' + CP.t("jk.hint") + '</p><details class="jk-det"><summary>' + CP.t("jk.choose") + '</summary><div id="jk-sel">' + list("compact") + '</div></details><div class="acts"><button type="button" class="btn-s" data-jk-toggle>' + (J.want ? CP.t("jk.stop") : CP.t("jk.start")) + "</button></div></div>" + ubHTML();
   };
   document.addEventListener("visibilitychange", CP.musicApply);
   if (J.want) document.addEventListener("pointerdown", function () { setTimeout(CP.musicApply, 50); }, { once: true, capture: true, passive: true });
@@ -23524,6 +23602,99 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   CP.musicApply();
 })();
 </script>
+<script type="text/plain" id="group-mieibrani-0">
+/* ---- audio/user-tracks.js ---- */
+/* ===== màndarínō · i brani dell'utente: copia dei file scelti nella memoria privata dell'app (IndexedDB), nessuna rete.
+   Gruppo MIEIBRANI (tools/build.mjs, GROUPS): si esegue al primo uso, cioè quando si aggiunge o si toglie un brano o
+   quando ne suona uno. L'elenco (nome, durata, peso) sta anche in localStorage (md-ubl, fuori dal backup) ed è gestito
+   da CP.jukebox.userSet in player.js; qui stanno solo i file. Interfaccia: CP.ub = { add, remove, blob, sync }. ===== */
+(function () {
+  var CP = window.CP, DB = "mandarino-user-music", ST = "tracks", MB = 1048576;
+  var LIM = CP.ubLimits || { n: 40, mb: 80, min: 30, totalMb: 600 };
+  var db = null;
+  function open() {
+    if (db) return db;
+    return (db = new Promise(function (res, rej) {
+      if (!window.indexedDB) return rej(new Error("idb"));
+      var rq = indexedDB.open(DB, 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore(ST, { keyPath: "id" }); };
+      rq.onsuccess = function () { res(rq.result); };
+      rq.onerror = function () { db = null; rej(rq.error || new Error("idb")); };
+    }));
+  }
+  function tx(mode, fn) {
+    return open().then(function (d) {
+      return new Promise(function (res, rej) {
+        var t = d.transaction(ST, mode), rq = fn(t.objectStore(ST));
+        t.oncomplete = function () { res(rq && rq.result); };
+        t.onerror = t.onabort = function () { rej(t.error || new Error("idb")); };
+      });
+    });
+  }
+  function metas() {
+    return tx("readonly", function (s) { return s.getAll(); }).then(function (a) {
+      return (a || []).sort(function (x, y) { return x.at - y.at; }).map(function (r) { return { id: r.id, name: r.name, sec: r.sec, size: r.size }; });
+    });
+  }
+  function publish(ms) { CP.jukebox.userSet(ms); return ms; }
+  /* la durata dice anche se la WebView sa leggere il formato (flac, ogg, m4a… dipendono dal telefono) */
+  function probe(file) {
+    return new Promise(function (res) {
+      var a = new Audio(), u = URL.createObjectURL(file), done = false, tm;
+      function end(v) { if (done) return; done = true; clearTimeout(tm); try { a.removeAttribute("src"); a.load(); } catch (e) {} URL.revokeObjectURL(u); res(v); }
+      a.preload = "metadata";
+      a.onloadedmetadata = function () { end(isFinite(a.duration) && a.duration >= 3 ? a.duration : 0); };
+      a.onerror = function () { end(0); };
+      tm = setTimeout(function () { end(0); }, 15000);
+      a.src = u;
+    });
+  }
+  function title(f) { return f.name.replace(/\.[A-Za-z0-9]{2,5}$/, "").replace(/_+/g, " ").replace(/\s+/g, " ").trim().slice(0, 60) || CP.t("ub.mine"); }
+  function free() {
+    try { if (navigator.storage && navigator.storage.estimate) return navigator.storage.estimate().then(function (e) { return e && e.quota ? Math.max(0, e.quota - (e.usage || 0)) : Infinity; }, function () { return Infinity; }); } catch (e) {}
+    return Promise.resolve(Infinity);
+  }
+  function add(files, progress) {
+    var r = { added: 0, bad: [] }, have, left, used, k = 0;
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+    return Promise.all([metas(), free()]).then(function (a) {
+      have = a[0]; left = a[1]; used = have.reduce(function (s, m) { return s + m.size; }, 0);
+      return files.reduce(function (p, f) {
+        return p.then(function () {
+          if (progress) progress(++k);
+          var n = f.name, room = Math.min(LIM.totalMb * MB - used, left);
+          if (have.length >= LIM.n) { r.bad.push(CP.t("ub.max", { f: n, n: LIM.n })); return; }
+          if (have.some(function (m) { return m.size === f.size && m.name === title(f); })) { r.bad.push(CP.t("ub.dup", { f: n })); return; }
+          if (f.size > LIM.mb * MB) { r.bad.push(CP.t("ub.big", { f: n, mb: LIM.mb })); return; }
+          if (f.size > room) { r.bad.push(CP.t("ub.space", { f: n, mb: Math.max(0, Math.floor(room / MB)) })); return; }
+          return probe(f).then(function (sec) {
+            if (!sec) { r.bad.push(CP.t("ub.bad", { f: n })); return; }
+            if (sec > LIM.min * 60) { r.bad.push(CP.t("ub.long", { f: n, min: LIM.min })); return; }
+            var m = { id: "u-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: title(f), sec: Math.round(sec), size: f.size };
+            return tx("readwrite", function (s) { return s.put({ id: m.id, name: m.name, sec: m.sec, size: m.size, type: f.type, at: Date.now() + k, blob: f }); }).then(function () {
+              have.push(m); used += f.size; left -= f.size; r.added++;
+            }, function () { r.bad.push(CP.t("ub.space", { f: n, mb: Math.max(0, Math.floor(room / MB)) })); });
+          });
+        });
+      }, Promise.resolve());
+    }).then(function () { return metas(); }).then(publish).then(function () { return r; });
+  }
+  function remove(id) {
+    return tx("readwrite", function (s) { return s.delete(id); }).then(metas).then(publish);
+  }
+  function blob(id) {
+    return tx("readonly", function (s) { return s.get(id); }).then(function (r) {
+      if (!r || !r.blob) { sync(); throw new Error("manca"); }
+      return r.blob;
+    });
+  }
+  /* allinea l'elenco in localStorage a quello che c'è davvero nella memoria dell'app */
+  function sync() { return metas().then(publish, function () {}); }
+  CP.ub = { add: add, remove: remove, blob: blob, sync: sync };
+  sync();
+})();
+</script>
+<script>/* ---- gruppo MIEIBRANI (audio/user-tracks.js): al primo uso ---- */(function () { var done = false, ids = ["group-mieibrani-0"]; (window.__mdLoad = window.__mdLoad || {})["MIEIBRANI"] = function () { if (done) return; done = true; ids.forEach(function (id) { var el = document.getElementById(id), s = document.createElement("script"); s.textContent = el ? el.textContent : ""; document.head.appendChild(s); if (el) el.parentNode.removeChild(el); }); }; })();</script>
 <script>
 /* ---- voice/pad.js ---- */
 /* ===== V6: lavagna "prima il dito". Quadrato con 米字格, un carattere gigante alla volta, tratto morbido a velocità,

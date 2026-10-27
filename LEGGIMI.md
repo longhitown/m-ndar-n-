@@ -68,6 +68,8 @@ Le schede sono 课程 (30 lezioni con quiz), 复习 (ripasso), 单词 (4780 paro
 - **Voci reali:** per l'italiano e il cinese ci sono clip registrate da persone (Tatoeba e Mozilla Common Voice). Nell'app Android ci sono già; nella versione web si scaricano da
   ⚙️ → Voce → «Scarica le voci» (circa 7 MB). Finché non lo fai, l'app non fa nessuna richiesta di rete e usa la voce del telefono.
 - **Musica:** 22 brani originali, nel jukebox 🎵. Nell'app Android continua anche in secondo piano.
+- **Comandi fuori dall'app (Android):** con «Continua con lo schermo spento» acceso, la notifica ha indietro, pausa e avanti, con il titolo del brano; gli stessi comandi arrivano dalla schermata di blocco e dai tasti di cuffie e Bluetooth.
+- **I tuoi brani:** ⚙️ → Musica → «Aggiungi i tuoi brani». Scegli uno o più file audio dal telefono (mp3, m4a, ogg, wav, flac: dipende da che cosa legge il telefono). Vengono copiati nella memoria privata dell'app, funzionano offline e in secondo piano, e puoi mescolarli ai brani dell'app o ascoltare solo i tuoi. Limiti: 40 brani, 80 MB e 30 minuti ciascuno, 600 MB in tutto (meno, se il telefono ha poco spazio libero); l'app avvisa quando un file non entra. «Rimuovi» cancella la copia. Non c'è nessun invio in rete, e i brani **non entrano nel backup** né nella sincronizzazione: sono file tuoi, restano su questo dispositivo (su un altro telefono vanno aggiunti di nuovo). Il titolo è il nome del file.
 
 ## I tuoi dati
 

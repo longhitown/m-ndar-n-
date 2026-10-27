@@ -105,3 +105,7 @@ body:not(.course-it) .dock-it { display: none; }
 body.course-it #set-contrib { display: none !important; }
 body.course-it #find-btn { display: none !important; }   /* la ricerca universale per ora copre il corso di cinese */
 .itc-bad { background: color-mix(in srgb, var(--t1) 22%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; text-decoration: underline wavy var(--t1); text-underline-offset: 3px; }
+.ub-list{display:grid;gap:6px;margin:0 0 8px}
+.ub-it{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-height:44px}
+.ub-it b{display:block;font-size:.92rem;overflow-wrap:anywhere}
+.ub-it i{display:block;font-style:normal;font-size:13px;color:var(--muted)}
