@@ -108,9 +108,10 @@
 
   /* ---- sessione ---- */
   function start() {
-    var q = [];
+    var q = [], EX = !!(CP.ex && CP.ex.stile() !== "classic" && CP.ex.carica());   /* Task 12: stili Misto e Guidato */
     dueKeys().forEach(function (k) { q.push({ k: k, kind: "test", type: pickType(k), retry: false }); });
     newKeys().forEach(function (k) { q.push({ k: k, kind: "intro", retry: false }); });
+    if (EX) q.forEach(function (e) { e.ex = 1; });
     if (!q.length) { home(); return; }
     sess = { q: q, words: q.length, finished: 0, revealed: false, miss: {}, first: 0, good: 0, seen: {}, hint: CP.ux.bump("swipeHints") <= 3 };
     if (CP.musicMood) CP.musicMood("focus");
@@ -260,7 +261,10 @@
   }
   function render() {
     if (!sess.q.length) return done();
-    var e = sess.q[0], w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
+    var e = sess.q[0];
+    /* Task 12: negli stili Misto e Guidato la carta di prova la disegna il motore degli esercizi (study/exercises.js) */
+    if (e.kind === "test" && e.ex && CP.exEngine && CP.exEngine.render(e, KIT)) return;
+    var w = CP.WORDS[e.k], h = head(), T = CP.t, hint = sess.hint ? '<p class="swipe-hint small muted">' + T("sess.swipe") + "</p>" : "";
     var open = '<div class="panel fc enter' + (e.kind === "intro" ? " is-new" : "") + '" data-k="' + CP.attr(w.key) + '">' + star(w);
     if (e.kind === "intro") {
       var ex = example(w.key);
@@ -281,15 +285,21 @@
     if (fcEl && e.kind === "test") CP.bindCardSwipe(fcEl, function () { var rv = document.getElementById("reveal"); if (rv) rv.click(); }, function (g) { answer(g); }, function () { return !!sess.revealed; });
     if (CP.pref.auto && (e.kind === "intro" || sess.revealed)) CP.say(CP.sayHz(w), root.querySelector(".say"));
   }
-  function answer(g) {
-    if (CP.pref.sfx) CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko"); else CP.haptic(8);
+  /* m (Task 12, solo dal motore degli esercizi): { ms, type } della risposta */
+  function answer(g, m) {
+    if (!(m && m.quiet)) { if (CP.pref.sfx) CP.sfx(g >= 2 ? "ok" : g === 1 ? "tap" : "ko"); else CP.haptic(8); }
     var e = sess.q.shift();
-    CP.grade(e.k, g, e.retry, { ms: Math.min(60000, Date.now() - (sess.t0 || Date.now())), type: e.type });
+    /* la copia di rinforzo dopo un errore (+8 posizioni): è esercizio, non cambia i conteggi della sessione */
+    if (e.bonus) { CP.grade(e.k, g, true, m); sess.revealed = false; render(); return; }
+    CP.grade(e.k, g, e.retry, m || { ms: Math.min(60000, Date.now() - (sess.t0 || Date.now())), type: e.type });
     if (g >= 2) sess.good++;
     if (g < 2) {
       sess.miss[e.k] = 1;
+      if (e.ex && CP.exEngine) CP.exEngine.requeue(e, sess.q, g);
+      else {
       e.retry = true; e.type = pickType(e.k, e.type);
       sess.q.splice(Math.min(sess.q.length, g === 0 ? 3 : 5), 0, e);
+      }
     } else {
       sess.finished++;
       if (!e.retry) sess.first++;
@@ -359,6 +369,7 @@
     var inCard = !!(a && a.closest && a.closest("#study-root")), isTab = !!(a && a.classList && a.classList.contains("dtab"));
     if (tag === "BUTTON" && !inCard && !isTab) return;
     var e = sess.q[0], w = CP.WORDS[e.k], isSpace = ev.key === " " || ev.code === "Space", act = null;
+    if (e.kind === "test" && e.ex && root.querySelector(".ex-card")) return;   /* i tasti degli esercizi li gestisce study/exercises.js */
     if (isSpace) act = (e.kind === "test" && !sess.revealed) ? "reveal" : "say";
     else if (ev.key === "Enter" && e.kind === "intro") act = "next";
     else if (e.kind === "test" && sess.revealed && /^[1-4]$/.test(ev.key)) act = "grade";
@@ -383,6 +394,10 @@
   };
   CP.studyCfg = function (o) { if (o) { if (o.n) cfg.n = o.n; if (o.sec !== undefined) cfg.sec = o.sec; saveCfg(); if (!sess) home(); } return { n: cfg.n, sec: cfg.sec }; };
   CP.studyRoot = root;
+  /* per il motore degli esercizi (Task 12): le parti della carta e la risposta, senza duplicare la sessione */
+  var KIT = { root: root, head: function () { return head(); }, parts: parts, tools: function (w) { return cardTools(w, true); }, example: example, kbd: kbd,
+    answer: function (g, m) { answer(g, m); }, sess: function () { return sess; } };
+  CP.studyKit = KIT;
   home();
 })();
 

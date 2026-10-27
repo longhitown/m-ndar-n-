@@ -38,6 +38,9 @@ await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const base = "http://127.0.0.1:" + server.address().port + "/";
 
 const browser = await chromium.launch({ args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required"] });
+/* Task 12: le prove scritte prima del motore degli esercizi descrivono il ripasso «Classico»: ogni contesto parte da lì,
+   a meno che la prova scelga un altro stile (il suo addInitScript viene dopo e lo sovrascrive) */
+{ const nc = browser.newContext.bind(browser); browser.newContext = async (o) => { const c = await nc(o); await c.addInitScript(() => { try { if (!localStorage.getItem("cp-ex-style")) localStorage.setItem("cp-ex-style", "classic"); } catch (e) {} }); return c; }; }
 async function selftest(url) {
   const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
   await p.goto(url + "#selftest"); await p.waitForFunction(() => window.__SELFTEST, null, { timeout: 30000 });
@@ -444,6 +447,51 @@ try {
     const tags = await (async () => { const all = now.seq.join(""); return ["Che cosa significa?", "Come si dice?", "Leggi il carattere", 'class="grades"'].map((x) => all.includes(x)); })();
     check("Golden «Classico»: nella sessione ci sono le tre carte (pi, ip, hp) e i quattro voti", tags.every(Boolean), JSON.stringify(tags));
     check("Golden «Classico»: nessun errore JavaScript", !now.errs.length && !old.errs.length, now.errs[0] || old.errs[0]);
+  }
+  /* 4i. motore degli esercizi (Task 12, T1): stile Misto, ogni tipo di scelta multipla e il tono, tasti 1-4, «Non ero
+     sicuro», errore che torna a +3 e +8 con un altro tipo, statistiche in cp-ex-v1, intervalli FSRS identici al Classico */
+  {
+    const prof = (style) => { const now = Date.now(), S = {}; ["妈", "马", "你好", "谢谢", "再见", "早上好", "晚上好", "晚安", "对不起", "没关系"].forEach((k, i) => { S[k] = { n: 3, d: now - 86400000 * (1 + i), b: i % 4 }; }); localStorage.setItem("cp-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-study-cfg", '{"n":0,"sec":""}'); localStorage.setItem("cp-ex-style", style); };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(prof, "mixed"); await p.goto(base); await p.waitForTimeout(700);
+    check("Esercizi: con lo stile Classico o prima di una sessione il motore non si carica", await p.evaluate(() => !CP.exEngine));
+    const seen = {};
+    for (const t of ["mc-significato", "mc-parola", "mc-pinyin", "mc-ascolto", "tono"]) {
+      const r = await p.evaluate((t) => { CP.ex.carica(); CP.exEngine.hasVoice = () => true; CP.exEngine.force(t); CP.show("study", true); CP.studyStart(); const c = document.querySelector("#study-root .ex-card"); return c ? { t: c.dataset.ex, k: c.dataset.k, n: document.querySelectorAll("[data-exa]").length } : null; }, t);
+      if (r && r.t !== t) { /* il tono vale solo per le parole di una sillaba: si va avanti finché non tocca a 妈 o 马 */
+        for (let i = 0; i < 12; i++) { await p.evaluate(() => { document.querySelector("[data-exa]").click(); document.querySelector("[data-exc]").click(); }); const c = await p.evaluate(() => (document.querySelector("#study-root .ex-card") || {}).dataset); if (c && c.ex === t) { r.t = t; break; } }
+      }
+      const right = await p.evaluate(() => { const cur = CP.exEngine.current(); return cur ? cur.item.right : -1; });
+      await p.keyboard.press(String(right + 1)); await p.waitForTimeout(80);
+      const fb = await p.evaluate(() => ({ ok: !!document.querySelector(".ex-opt.ok .ex-mark"), verdict: (document.querySelector(".ex-verdict") || {}).textContent || "", cont: !!document.querySelector(".actbar [data-exc].btn-main"), primaries: document.querySelectorAll("#study-root .btn-main").length, unsure: !!document.querySelector("[data-exu]") }));
+      seen[t] = r && r.t === t && r.n === 4 && fb.ok && /✓/.test(fb.verdict) && fb.cont && fb.primaries === 1 && fb.unsure;
+      await p.keyboard.press("Enter"); await p.waitForTimeout(60);
+      await p.evaluate(() => { CP.exEngine.force(null); CP.studyHome(); });
+    }
+    check("Esercizi: significato, parola, pinyin, ascolto e tono con quattro risposte, tasti 1-4, segno ✓ oltre al colore, un solo «Continua»", Object.values(seen).every(Boolean) && Object.keys(seen).length === 5, JSON.stringify(seen));
+    /* «Non ero sicuro» = Difficile; un errore torna a +3 con un altro tipo e una copia a +8 */
+    const flow = await p.evaluate(async () => {
+      CP.exEngine.force("mc-significato"); CP.studyStart();
+      const k0 = document.querySelector(".ex-card").dataset.k, cur = CP.exEngine.current(), wrong = (cur.item.right + 1) % 4;
+      document.querySelectorAll("[data-exa]")[wrong].click(); document.querySelector("[data-exc]").click();
+      CP.exEngine.force(null);
+      const q = CP.studyKit.sess().q.map((e) => e.k + (e.bonus ? "+" : "") + ":" + (e.lastType || ""));
+      const st = JSON.parse(localStorage.getItem("cp-ex-v1")).ex[k0]["mc-significato"];
+      /* «Non ero sicuro» sulla carta che segue */
+      const c2 = CP.exEngine.current(), k2 = document.querySelector(".ex-card").dataset.k;
+      document.querySelectorAll("[data-exa]")[c2.item.right].click(); document.querySelector("[data-exu]").click();
+      await new Promise((r) => setTimeout(r, 400));
+      const log = (await Store.exportObj(true)).log; const last = log[log.length - 1], prev = log[log.length - 2];
+      return { k0, q: q.slice(0, 9), st, last: [last[1], last[2], last[4]], prev: [prev[1], prev[2], prev[4]], k2 };
+    });
+    const i3 = flow.q.findIndex((x) => x.startsWith(flow.k0 + ":")), i8 = flow.q.findIndex((x) => x.startsWith(flow.k0 + "+:"));
+    check("Esercizi: dopo un errore la parola torna a +3 (con un altro tipo) e una copia di rinforzo a +8", i3 === 3 && i8 === 8 && /:mc-significato$/.test(flow.q[i3]), JSON.stringify(flow.q));
+    check("Esercizi: nel registro dei ripassi il tipo di esercizio; sbagliata = Di nuovo, «Non ero sicuro» = Difficile; statistiche in cp-ex-v1", flow.prev[0] === flow.k0 && flow.prev[1] === 1 && flow.prev[2] === "mc-significato" && flow.last[0] === flow.k2 && flow.last[1] === 2 && flow.st.n === 1 && flow.st.ok === 0, JSON.stringify(flow));
+    /* intervalli FSRS: la stessa risposta «Bene» dà la stessa scheda nei due stili */
+    const fsrs = await p.evaluate(() => { const S = CP.S(), k = "晚安", before = JSON.stringify(S[k]); CP.grade(k, 2, false, { ms: 1000, type: "mc-pinyin" }); const a = S[k]; const r = { st: a.st, df: a.df, iv: a.d - a.lr }; S[k] = JSON.parse(before); CP.grade(k, 2, false, { ms: 1000, type: "pi" }); const b = S[k]; return [r, { st: b.st, df: b.df, iv: b.d - b.lr }]; });
+    check("Esercizi: gli intervalli FSRS di un voto sono identici a prima (il tipo finisce solo nel registro)", JSON.stringify(fsrs[0]) === JSON.stringify(fsrs[1]), JSON.stringify(fsrs));
+    check("Esercizi: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
   }
   /* 5. corso di italiano per chi parla cinese */
   {

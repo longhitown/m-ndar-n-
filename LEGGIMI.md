@@ -394,6 +394,8 @@ numero di righe.
 
 Nuove in V6.9:
 
+- `cp-ex-v1` (Task 12): `{ units: {id: {passo, verifica}}, ex: {parola: {tipo: {n, ok, ultimo}}}, read: {id: data} }`; nell'unione il passo più avanzato, la verifica più recente, per ogni tipo la voce con `n` più alto (mai la somma), i testi letti uniti.
+- `cp-ex-style`: lo stile di ripasso (`guided`, `mixed`, `classic`); preferenza del dispositivo.
 - `cp-class-v1`: i pacchetti classe importati `{ p: { id: pacchetto }, x: { id: quando è stato tolto } }`; nell'unione si sommano (per ognuno la data d'importazione più vecchia) e chi è stato tolto resta tolto.
 - `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
 - `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
@@ -591,6 +593,58 @@ In ⚙️ → Dati e privacy → «🎯 Sfide e classe», e con il pulsante «�
 
 **Peso.** I due moduli e i loro testi (`src/i18n/together.js`) si caricano al primo uso (`LAZYMOD` in `tools/build.mjs`).
 All'avvio c'è solo `src/ui/together.js`: la sezione in ⚙️, i link e il riquadro.
+
+## Esercizi vari e stile di ripasso (Task 12)
+
+⚙️ → Avanzate → «Stile di ripasso»:
+- **Guidato** (consigliato a chi comincia): il ciclo «impara, esercitati, verifica», una tappa alla volta (tappa T3; fino ad
+  allora si comporta come Misto);
+- **Misto**: esercizi vari al posto dell'autovalutazione;
+- **Classico**: le carte di prima, con «La so / Non la so», identiche riga per riga (prova golden).
+
+`EX_DEFAULT_STYLE` (`src/ui/ex-stub.js`) sceglie Guidato per chi non ha progressi e Misto per chi ne ha, la prima volta che
+serve. La scelta resta in `cp-ex-style` (preferenza del dispositivo).
+
+**Come funziona.**
+- **Nessun motore parallelo.** La coda, i tempi, «Esci», la barra e il voto restano quelli di `src/study/study.js`.
+  Negli stili Misto e Guidato le carte di prova portano `e.ex`, e la carta la disegna `src/study/exercises.js`
+  (`CP.exEngine`). Il voto passa sempre da `CP.grade`, con il tipo di esercizio in `meta.type`; FSRS non cambia.
+- **Tipi di T1:**
+  - riconoscimento: `mc-significato`, `mc-parola`, `mc-pinyin`;
+  - misto: `mc-ascolto` (solo se c'è una voce cinese) e `tono` (parole di una sillaba; gli errori vanno al Dottore dei Toni).
+- **Scelta del tipo** dalla stabilità FSRS: sotto 3 giorni riconoscimento, 3-21 misto, oltre produzione. Il gradino scende
+  sotto il 60% di risposte giuste nelle ultime 10 e sale sopra il 90%. Mai lo stesso tipo più di due volte di fila.
+  Dopo un errore la parola torna dopo 3 carte con un altro tipo, e una copia di rinforzo dopo 8.
+- **Voti.** Scelta multipla giusta = Bene, mai Facile; «Non ero sicuro» = Difficile; sbagliata = Di nuovo. Tasti 1-4 per
+  rispondere, Invio per continuare, spazio per ascoltare.
+- **Distrattori** (`src/study/distractors.js`, funzioni pure con seme):
+  - livello ±1, e per il 40% la stessa tappa;
+  - niente glosse con parole in comune con la giusta;
+  - pinyin con al massimo due toni diversi e una confusione tipica;
+  - nell'ascolto, niente omofoni né parole con più letture;
+  - con meno di 3 candidati la domanda non si fa.
+- **Digitazione** (`src/core/typing.js`): adattata da `materiali/riferimenti/digitazione.mjs`, con le sue prove in
+  `tools/unit.mjs`.
+
+**Peso.**
+- Tutto il codice nuovo è nel gruppo **ESERCIZI**, testo eseguito al primo uso: `GROUPS` in `tools/build.mjs`, che
+  generalizza `COURSE_IT`; lo esegue `CP.ex.carica()`. All'avvio resta solo `ui/ex-stub.js`.
+- Per fare spazio, `ui/credits.js` ora si carica al primo uso di `CP.credits`. Avvio: 1480 KB su 1500.
+
+**Materiali** (`materiali/`, dalla cartella «Materiali mandarino» dell'autore; fonti e licenze in
+`materiali/FONTI-E-LICENZE.md`).
+- `tools/materiali.mjs` scrive `src/data/ex/` (letti al primo uso), controllando le frasi con il taglio dell'app:
+  - frasi Tatoeba: 2484 cinese → italiano e 3048 italiano → cinese;
+  - indici delle voci: 720 clip cinesi Common Voice (CC0) e 434 italiane NM1 (CC BY 4.0), 7,0 MB;
+  - insiemi confondibili.
+- Tutte le frasi passano il taglio; per 135 frasi il livello è salito a quello calcolato (per le frasi fatte fuori
+  dall'HSK conta il capitolo della tappa).
+- La build ricontrolla tutto e fallisce se:
+  - una parola è fuori dal vocabolario;
+  - un livello è sotto quello calcolato;
+  - manca una clip;
+  - un file supera i 60 KB, o le voci insieme superano i 10 MB.
+- `materiali/escludi-frasi.txt` (una frase per riga) toglie frasi senza toccare i file.
 
 ## Esporta per Anki
 

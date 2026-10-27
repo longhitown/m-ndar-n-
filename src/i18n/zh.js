@@ -125,3 +125,4 @@ Object.assign(I18N.zh, {"anat.title": "汉字的组成", "anat.svgAria": "按部
 Object.assign(I18N.zh, {"cr.mmhd": "汉字的组成", "cr.mmhdT": "<b>Make Me a Hanzi</b>（Shaunak Kishore）的 <code>dictionary.txt</code> 文件（来自 Unihan 和 CJKlib）：字形分解、部首、造字类型和表音部分。<code>data/anatomy.js</code> 只保留这些字段（不含释义和拼音），仍采用 LGPL 许可。214 个部首的名称和意思由我们自己编写。"});
 Object.assign(I18N.zh, {"tog.chal": "🎯 挑战朋友"});
 Object.assign(I18N.zh, {"pv.class": "<b>挑战与班级</b>：挑战代码里只有十个词和题目顺序。给老师的学习小结只有经过你同意才会生成，只有数字统计，不含复习记录。由你自己发送。"});
+Object.assign(I18N.zh, {"exs.title": "复习方式", "exs.guided": "引导", "exs.guidedD": "推荐：学习、练习、检测，一站一站来", "exs.mixed": "混合", "exs.mixedD": "多种练习，不按路线", "exs.classic": "经典", "exs.classicD": "以前的卡片：“记得 / 忘了”"});

@@ -173,5 +173,6 @@ grande, in chiaro, carta di riso e scuro, a 360 e 390 px.
 | ☑ | bersagli da 44 px, testi da 13 px, contrasto | gli stessi controlli di `tools/ux-audit.mjs` | fatto |
 | ☑ | `prefers-reduced-motion` | «+N 分», «通过» e l'anello hanno la versione ferma | fatto |
 | ☑ | icone SVG nella barra | le stesse icone SVG, più una per 变位 | fatto |
+| ☑ | ripasso a scelta multipla (stile Misto, Task 12 T1): risposta prima del risultato, segno ✓/✗, un solo «Continua» | arriva con T5 (stesso motore, voto da `CP.itApi.grade`) | cinese fatto, italiano in T5 |
 | ☐ | testi riletti da un madrelingua | i testi cinesi del corso, della carta e della pagina zh/ | da far rileggere |
 | ☐ | vuoti curati | «ancora nessuna lezione»: oggi la carta mostra sempre la prossima lezione | da controllare |

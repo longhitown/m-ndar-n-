@@ -248,6 +248,70 @@ function sandbox() {
     /<html lang="zh-CN">/.test(h) && h.length < 12000 && !ext.length && scripts.length === 1 && !/src=/.test(scripts[0][1]) && /MicroMessenger/.test(scripts[0][2]) && !/官方/.test(h) && /无需注册/.test(h), ext.join(", "));
 }
 
+/* ---- Task 12: digitazione (src/core/typing.js) con le prove del riferimento (materiali/riferimenti/digitazione.test.mjs) ---- */
+{
+  const tc = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "core/typing.js"), "utf8"), tc);
+  const raw = vm.runInContext("MDTyping", tc);   /* gli array del contesto vm diventano array di questo, per deepEqual */
+  globalThis.__MDT = Object.fromEntries(Object.entries(raw).map(([k, f]) => [k, (...a) => { const r = f(...a); return Array.isArray(r) ? [...r] : r; }]));
+  const ref = fs.readFileSync(path.join(ROOT, "materiali/riferimenti/digitazione.test.mjs"), "utf8")
+    .replace(/import\s*\{([^}]*)\}\s*from\s*"\.\/digitazione\.mjs";/, "const {$1} = globalThis.__MDT;").replace(/console\.log\(/g, "(() => {})(");
+  let err = "";
+  try { await import("data:text/javascript;base64," + Buffer.from(ref).toString("base64")); } catch (e) { err = e.message; }
+  check("digitazione: src/core/typing.js passa le prove del riferimento (pinyin con numeri, accenti, senza toni; italiano con accenti e refusi)", !err, err);
+}
+
+/* ---- Task 12: distrattori, regole del voto, unione di cp-ex-v1 ---- */
+{
+  const { tools } = await import("./materiali.mjs");
+  const TL = tools(SRC), POOL = Object.values(TL.W);
+  const dc = vm.createContext({}); dc.window = dc;
+  vm.runInContext(fs.readFileSync(path.join(SRC, "core/typing.js"), "utf8"), dc); vm.runInContext(fs.readFileSync(path.join(SRC, "study/distractors.js"), "utf8"), dc);
+  const DS = vm.runInContext("MDDistract", dc), CTX = { levelOf: (w) => TL.levelOf(w), poly: (hz) => hz === "行" || hz === "长", pool: () => POOL };
+  const plain = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const sample = POOL.filter((w, i) => i % 29 === 0).slice(0, 200);
+  let bad = [], made = 0, same = 0;
+  for (const w of sample) {
+    const r1 = DS.rng(DS.seed(w.key + "|2026-10-27|mc-significato")), r2 = DS.rng(DS.seed(w.key + "|2026-10-27|mc-significato"));
+    const a = DS.meaning(w, POOL, CTX, r1), b = DS.meaning(w, POOL, CTX, r2);
+    if (!a) continue; made++;
+    if (JSON.stringify(a.map((x) => x.key)) === JSON.stringify(b.map((x) => x.key))) same++;
+    const gl = [DS.gloss(w.it)].concat(a.map((x) => DS.gloss(x.it)));
+    if (new Set(gl.map(plain)).size !== 4) bad.push(w.hz + ": doppione");
+    a.forEach((x) => { if (DS.sharesWord(w.it, x.it)) bad.push(w.hz + "/" + x.hz + ": parola in comune"); if (Math.abs(TL.levelOf(x) - TL.levelOf(w)) > 1) bad.push(w.hz + "/" + x.hz + ": livello lontano"); });
+  }
+  check("distrattori del significato: niente doppioni né parole in comune con la giusta, livello ±1, ripetibili con lo stesso seme (" + made + " parole)", made > 150 && same === made && !bad.length, bad.slice(0, 4).join("; "));
+  bad = []; made = 0;
+  for (const w of sample) {
+    const p = DS.pinyin(w, POOL, CTX, DS.rng(DS.seed(w.key + "py"))); if (!p) continue; made++;
+    const right = w.py.split(/[.\s']+/).filter(Boolean).join(" "), sylPlain = (s) => s.split(" ").map(plain).join(" ");
+    if (p.includes(right) || new Set(p).size !== 3) bad.push(w.hz + ": doppione o giusta tra le sbagliate");
+    if (p.filter((x) => sylPlain(x) === sylPlain(right)).length > 2) bad.push(w.hz + ": più di due con altri toni");
+  }
+  check("distrattori del pinyin: tre diversi dalla giusta, al massimo due con la stessa sillaba e altri toni (" + made + ")", made > 150 && !bad.length, bad.slice(0, 4).join("; "));
+  const ta = POOL.find((w) => w.hz === "他"), L = DS.listen(ta, POOL, CTX, DS.rng(7));
+  const sameSound = (L || []).filter((x) => plain(x.py) === "ta");
+  check("distrattori dell'ascolto: per 他 niente 她/它 (stessa pronuncia) né parole con più letture", L && !sameSound.length && !L.some((x) => CTX.poly(x.hz)), (L || []).map((x) => x.hz).join(","));
+  const o = DS.options("x", ["a", "b", "c"], DS.rng(3));
+  check("distrattori: la giusta sta tra le quattro, in un posto deciso dal seme", o.opts.length === 4 && o.opts[o.right] === "x");
+  /* regole del motore, caricate senza pagina */
+  const ec = vm.createContext({ localStorage: { getItem: () => null, setItem() {} }, document: { addEventListener() {}, getElementById: () => null } });
+  ec.window = ec; ec.CP = { t: (k) => k, esc: (s) => s, distract: DS, typing: {} }; ec.MDDistract = DS;
+  vm.runInContext(fs.readFileSync(path.join(SRC, "study/exercises.js"), "utf8"), ec);
+  const E = ec.CP.exEngine;
+  const v = [E.voto({ kind: "mc", ok: true }), E.voto({ kind: "mc", ok: true, unsure: true }), E.voto({ kind: "mc", ok: false }), E.voto({ kind: "type", ok: true, esito: "esatto", ms: 3000, st: 40 }), E.voto({ kind: "type", ok: true, esito: "esatto", ms: 3000, st: 5 }), E.voto({ kind: "type", ok: true, esito: "esatto", ms: 9000, st: 40 }), E.voto({ kind: "type", ok: false, esito: "senza-toni" }), E.voto({ kind: "type", ok: false, esito: "accento" }), E.voto({ kind: "type", ok: false, esito: "toni-sbagliati" })];
+  check("voti: scelta multipla giusta = Bene (mai Facile), «Non ero sicuro» = Difficile, sbagliata = Di nuovo; digitazione veloce e parola stabile = Facile; senza toni o accento = Difficile", v.join() === "2,1,0,3,2,2,1,1,0", v.join());
+  const f = [E.famiglia(null), E.famiglia({ n: 2, st: 1 }), E.famiglia({ n: 4, st: 3 }), E.famiglia({ n: 9, st: 21 }), E.famiglia({ n: 9, st: 22 })], gr = [E.gradino([1, 1, 1]), E.gradino([0, 0, 1, 0, 1]), E.gradino(Array(10).fill(1)), E.gradino([1, 1, 1, 1, 0, 1, 1, 1, 0, 1])];
+  check("scelta del tipo: nuova o sotto 3 giorni riconoscimento, 3-21 misto, oltre produzione; sotto il 60% si scende, sopra il 90% si sale", f.join() === "0,0,1,1,2" && gr.join() === "0,-1,1,0", f.join() + " / " + gr.join());
+  /* unione di cp-ex-v1 */
+  const { Store: S3, LS: L3 } = sandbox();
+  L3.setItem("cp-ex-v1", JSON.stringify({ units: { a: { passo: 2, verifica: { data: 5, pct: 70 } } }, ex: { "你": { "mc-pinyin": { n: 4, ok: 3, ultimo: 9 } } }, read: { t1: 5 } }));
+  const inc = JSON.stringify({ units: { a: { passo: 1, verifica: { data: 8, pct: 90 } }, b: { passo: 3 } }, ex: { "你": { "mc-pinyin": { n: 4, ok: 3, ultimo: 9 }, tono: { n: 1, ok: 0, ultimo: 3 } } }, read: { t2: 7 } });
+  await S3.importObj({ app: "mandarino", v: 5, kv: { "cp-ex-v1": inc }, log: [] }, "merge");
+  await S3.importObj({ app: "mandarino", v: 5, kv: { "cp-ex-v1": inc }, log: [] }, "merge");
+  const xm = JSON.parse(L3.getItem("cp-ex-v1"));
+  check("cp-ex-v1: passo più avanzato, verifica più recente, per ogni tipo la voce con n più alto (mai la somma, anche ripristinando due volte), testi letti uniti", xm.units.a.passo === 2 && xm.units.a.verifica.pct === 90 && xm.units.b.passo === 3 && xm.ex["你"]["mc-pinyin"].n === 4 && xm.ex["你"].tono.n === 1 && xm.read.t1 === 5 && xm.read.t2 === 7, JSON.stringify(xm));
+}
+
 /* ---- 3. peso dell'avvio ---- */
 {
   const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");
@@ -257,6 +321,9 @@ function sandbox() {
   console.log("  (avvio: " + KB(js) + " KB di JavaScript da compilare, " + KB(lazy) + " KB di dati e librerie letti solo quando servono)");
   check("avvio: JavaScript da compilare all'apertura sotto i 1500 KB", js < 1500 * 1024, KB(js) + " KB");
   check("avvio: i dati pesanti (esempi, tratti, lessico, jsQR) restano fuori dalla compilazione iniziale", lazy > 700 * 1024, KB(lazy) + " KB");
+  /* Task 12: il gruppo ESERCIZI (motore, distrattori, digitazione…) e i dati dei materiali sono testo letto al primo uso */
+  const grp = [...html.matchAll(/<script type="text\/plain" id="group-esercizi-\d+">/g)].length, exData = ["frasi_zh", "frasi_it", "voce_zh", "voce_it", "insiemi"].every((n) => html.includes('<script type="application/json" id="lazy-' + n + '">'));
+  check("avvio: il gruppo ESERCIZI e i dati dei materiali non si compilano all'apertura (limite di 1500 KB invariato)", grp >= 4 && exData && /__mdLoad = window.__mdLoad/.test(html), "gruppo " + grp + ", dati " + exData);
 }
 
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");

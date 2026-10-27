@@ -108,6 +108,32 @@ for (const s of scripts) {
   }
 }
 
+/* Task 12: i dati dei materiali (src/data/ex/, scritti da tools/materiali.mjs) si ricontrollano con il taglio dell'app:
+   frasi cinesi solo di parole del vocabolario e con il livello non sotto quello calcolato; ogni clip dell'indice esiste,
+   sotto i 60 KB; le voci insieme sotto i 10 MB; niente frasi del serbatoio (con il campo «flag»). */
+const VOICE_CLIPS = [];
+{
+  const MATD = path.join(SRC, "..", "materiali"), exd = path.join(SRC, "data/ex");
+  if (fs.existsSync(exd)) {
+    const { tools, CLIP_MAX, AUDIO_MAX } = await import("./materiali.mjs");
+    const TL = tools(SRC), ctx = {};
+    for (const f of fs.readdirSync(exd).filter((x) => x.endsWith(".js"))) vm.runInNewContext(fs.readFileSync(path.join(exd, f), "utf8"), ctx);
+    for (const r of (ctx.FRASI_ZH || {}).righe || []) { const c = TL.check(r[0]); if (!c.ok) fail("src/data/ex/frasi-zh.js: «" + r[0] + "» ha parole fuori dal vocabolario: " + c.unknown.join("")); if (c.lv > r[2]) fail("src/data/ex/frasi-zh.js: «" + r[0] + "» è di livello " + c.lv + ", non " + r[2]); }
+    let tot = 0;
+    for (const [lang, name] of [["zh", "VOCE_ZH"], ["it", "VOCE_IT"]]) for (const r of (ctx[name] || {}).righe || []) {
+      const f = path.join(MATD, "audio", lang, r[0] + ".ogg");
+      if (!fs.existsSync(f)) fail("materiali/audio/" + lang + "/" + r[0] + ".ogg manca (è nell'indice)");
+      const b = fs.statSync(f).size; if (b > CLIP_MAX) fail("materiali/audio/" + lang + "/" + r[0] + ".ogg supera i 60 KB");
+      if (lang === "zh") { const c = TL.check(r[2]); if (!c.ok) fail("src/data/ex/voce-zh.js: «" + r[2] + "» ha parole fuori dal vocabolario"); }
+      tot += b; VOICE_CLIPS.push([lang, r[0], f]);
+    }
+    if (tot > AUDIO_MAX) fail("le voci superano i 10 MB: " + (tot / 1048576).toFixed(2) + " MB");
+    /* le righe segnate «sensibile» non sono nei file «scelta» da cui nasce runtime/ (materiali/LEGGIMI-materiali.md): un
+       campo «flag» nei dati vorrebbe dire che qualcuno ha copiato il serbatoio */
+    for (const n of ["FRASI_ZH", "FRASI_IT"]) if (((ctx[n] || {}).campi || []).includes("flag")) fail("src/data/ex: " + n + " ha il campo «flag»: si usano solo le frasi scelte");
+  }
+}
+
 /* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
    nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in tools/seal-issue.mjs
    e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
@@ -129,7 +155,7 @@ out = out.replace(/<!-- Stili: [^\n]*-->\n/, "");
 /* dati pesanti che servono solo più tardi (frasi d'esempio, tratti della lavagna): nel file unico non sono JavaScript da
    compilare all'avvio ma JSON dentro <script type="application/json">, letto la prima volta che il codice tocca EXAMPLES,
    STROKES o IT_LEXICON (il lessico del corso di italiano). Su un telefono lento l'avvio risparmia così il parsing di ~700 KB. (Da src/, senza build, restano script normali.) */
-const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"]];
+const LAZY = [["EXAMPLES", (s) => s.startsWith("data/examples/")], ["STROKES", (s) => s === "data/strokes.js"], ["IT_LEXICON", (s) => s === "data/it/lexicon.js"], ["ANATOMY", (s) => s === "data/anatomy.js"], ["FRASI_ZH", (s) => s === "data/ex/frasi-zh.js"], ["FRASI_IT", (s) => s === "data/ex/frasi-it.js"], ["VOCE_ZH", (s) => s === "data/ex/voce-zh.js"], ["VOCE_IT", (s) => s === "data/ex/voce-it.js"], ["INSIEMI", (s) => s === "data/ex/insiemi.js"]];
 for (const [name, test] of LAZY) {
   const group = scripts.filter((s) => test(s.src)); if (!group.length) continue;
   const lctx = vm.createContext({});
@@ -156,7 +182,7 @@ for (const [name, src] of LAZYCODE) {
 /* moduli dell'app che servono solo a qualcuno e solo in certi momenti (il test di livello, il correttore di frasi italiane):
    testo inerte nel file unico, eseguito la prima volta che il codice tocca una delle loro proprietà di CP. Il blocco va al
    posto dell'ultimo file del gruppo, quando CP esiste già. */
-const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }, { props: ["challenge", "classroom"], files: ["i18n/together.js", "ui/challenge.js", "ui/classroom.js"] }];
+const LAZYMOD = [{ props: ["placement", "onboarding"], files: ["data/placement.js", "ui/placement.js", "ui/onboarding.js"] }, { props: ["itCheck", "itCheckHTML"], files: ["it/checker.js"] }, { props: ["challenge", "classroom"], files: ["i18n/together.js", "ui/challenge.js", "ui/classroom.js"] }, { props: ["credits"], files: ["ui/credits.js"] }];
 for (const m of LAZYMOD) {
   const group = m.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("LAZYMOD: manca uno di " + m.files.join(", ") + " in src/index.html");
   const code = group.map((x) => "/* ---- " + x.src + " ---- */\n" + fs.readFileSync(path.join(SRC, x.src), "utf8").trimEnd()).join("\n").replace(/<\/script/gi, "<\\/script");
@@ -177,6 +203,21 @@ for (const f of COURSE_IT) {
   out = out.replace(sc.tag, () => '<script type="text/plain" id="' + id + '">\n' + code + "\n</script>\n<script>/* ---- " + f + " (solo nel corso di italiano) ---- */" +
     "(function () { var c = null; try { c = localStorage.getItem(\"cp-course\"); } catch (e) {} var el = document.getElementById(" + JSON.stringify(id) + "); if (c === \"it\" && el) { var s = document.createElement(\"script\"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>");
   scripts.splice(scripts.indexOf(sc), 1);
+}
+/* GROUPS (Task 12): gruppi di moduli caricati al primo uso, generalizzando COURSE_IT. Nel file unico i file restano testo
+   (type="text/plain") e non si compilano all'avvio; window.__mdLoad[NOME]() li esegue tutti, in ordine, una volta sola
+   (CP.ex.carica in ui/ex-stub.js). Da src/, senza build, sono script normali e __mdLoad non c'è. */
+const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js", "study/distractors.js", "study/exercises.js"] }];
+for (const g of GROUPS) {
+  const group = g.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("GROUPS " + g.name + ": manca uno di " + g.files.join(", ") + " in src/index.html");
+  const ids = [];
+  group.forEach((sc, i) => {
+    const code = fs.readFileSync(path.join(SRC, sc.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script"), id = "group-" + g.name.toLowerCase() + "-" + i;
+    ids.push(id);
+    const loader = i === group.length - 1 ? "\n<script>/* ---- gruppo " + g.name + " (" + g.files.join(", ") + "): al primo uso ---- */(function () { var done = false, ids = " + JSON.stringify(ids) + "; (window.__mdLoad = window.__mdLoad || {})[" + JSON.stringify(g.name) + "] = function () { if (done) return; done = true; ids.forEach(function (id) { var el = document.getElementById(id), s = document.createElement(\"script\"); s.textContent = el ? el.textContent : \"\"; document.head.appendChild(s); if (el) el.parentNode.removeChild(el); }); }; })();</script>" : "";
+    out = out.replace(sc.tag, () => '<script type="text/plain" id="' + id + '">\n/* ---- ' + sc.src + " ---- */\n" + code + "\n</script>" + loader);
+  });
+  group.forEach((x) => scripts.splice(scripts.indexOf(x), 1));
 }
 for (const s of scripts) {
   const code = fs.readFileSync(path.join(SRC, s.src), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script");
