@@ -340,6 +340,7 @@ node tools/grammar.mjs      # solo le frasi verificate della grammatica
 node tools/unit.mjs         # prove unitarie: taglio in parole, unione dei backup e della sincronizzazione, peso dell'avvio
 node tools/e2e.mjs          # 81 prove su dist/ (benvenuto e test di livello, corso di italiano e correttore, immersione, sincronizzazione, QR, sigilli, musica e loop, testi cinesi senza italiano), ~7 minuti
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
+node tools/lang-audit.mjs   # rapporto sui testi italiano/cinese: chiavi, segnaposto, punteggiatura, refusi tipici
 ```
 Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
 **Golden del ripasso.** `tools/fixtures/study-classic-v1.js` è una copia fissa di `src/study/study.js` di prima
