@@ -151,9 +151,17 @@
   var view = document.createElement("div"); view.id = "view-it"; view.setAttribute("lang", "zh-CN"); main.appendChild(view);
   if (CP.immerse) CP.immerse.watch(view);
   /* l'ordine è quello in cui le schede si aprono (ui/unlock.js, docs/ux-architettura.md) */
-  var TABS = [["lessons", "📘", Z.lessons], ["review", "🎴", Z.review], ["words", "📖", Z.words], ["conj", "🔁", Z.conj], ["phrases", "💬", Z.phrases]];
+  /* le icone sono le stesse SVG della barra del corso di cinese (src/index.html), più una per le coniugazioni */
+  var ICO = {
+    lessons: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',
+    review: '<rect x="3.5" y="8" width="13" height="12" rx="2"/><path d="M7.5 4.5H19a1.5 1.5 0 0 1 1.5 1.5v10"/>',
+    words: '<path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 1h13v-3"/><path d="M9 8h6"/>',
+    conj: '<path d="M4 9a7 7 0 0 1 12.5-4.3L19 7"/><path d="M19 3v4h-4"/><path d="M20 15a7 7 0 0 1-12.5 4.3L5 17"/><path d="M5 21v-4h4"/>',
+    phrases: '<path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M8 9.5h8"/>'
+  };
+  var TABS = [["lessons", ICO.lessons, Z.lessons], ["review", ICO.review, Z.review], ["words", ICO.words, Z.words], ["conj", ICO.conj, Z.conj], ["phrases", ICO.phrases, Z.phrases]];
   var dock = document.createElement("nav"); dock.className = "dock dock-it"; dock.setAttribute("role", "tablist"); dock.setAttribute("aria-label", tt("itc.131"));
-  dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><span aria-hidden="true" class="it-ico">' + t[1] + "</span><span>" + t[2] + "</span></button>"; }).join("");
+  dock.innerHTML = TABS.map(function (t) { return '<button class="dtab" role="tab" type="button" data-it-tab="' + t[0] + '" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true">' + t[1] + "</svg><span>" + t[2] + "</span></button>"; }).join("");
   document.body.appendChild(dock);
   var tab = lsGet("cp-it-tab") || "lessons";
   if (!TABS.some(function (t) { return t[0] === tab; })) tab = "lessons";
