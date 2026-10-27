@@ -19,4 +19,33 @@
     <string name="m_play">继续</string>
     <string name="m_pause">暂停</string>
     <string name="m_next">下一首</string>
+    <string name="w_study">现在学习</string>
+    <string name="w_tap_meaning">点一下看意思</string>
+    <string name="w_open_app">打开应用开始学习</string>
+    <string name="w_msg_done">连续 %1$s · 今天完成 ✓</string>
+    <string name="w_msg_evening">连续 %1$s：今晚学 3 分钟就不会中断</string>
+    <string name="w_msg_keep">连续 %1$s：今天继续</string>
+    <string name="w_msg_restart">今天学一张卡片，连续天数重新开始</string>
+    <string name="w_short_restart">重新开始连续</string>
+    <string name="w_short_done">%1$s ✓</string>
+    <string name="w_all_ok">暂时都复习完了</string>
+    <string name="w_minutes">约 %1$d 分钟</string>
+    <string name="w_label_ok">已完成</string>
+    <string name="w_sample_streak">连续 12 天 · 今天完成 ✓</string>
+    <string name="w_sample_streak_short">12 天</string>
+    <string name="w_sample_hz">你好</string>
+    <string name="w_sample_py">nǐ hǎo</string>
+    <string name="w_sample_it">ciao</string>
+    <string name="w_sample_n">7</string>
+    <string name="w_sample_label">个复习</string>
+    <string name="w_sample_detail">约 3 分钟</string>
+    <plurals name="w_days">
+        <item quantity="other">%d 天</item>
+    </plurals>
+    <plurals name="w_reviews">
+        <item quantity="other">个复习</item>
+    </plurals>
+    <plurals name="w_fresh">
+        <item quantity="other">%d 个新词等你学</item>
+    </plurals>
 </resources>
