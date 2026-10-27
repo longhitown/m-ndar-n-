@@ -23334,7 +23334,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   var TRACKS = CP.audioTracks.list, groove = CP.synth.groove;
   var MOODS = [["", CP.t("jk.mAll")], ["calm", CP.t("jk.mCalm")], ["focus", CP.t("jk.mFocus")], ["energy", CP.t("jk.mEnergy")]];
   var BYID = {};
-  /* ---------- i tuoi brani (⚙️ → Musica): l'elenco sta in localStorage (md-ubl, fuori dal backup), i file nella memoria
+  /* ---------- i tuoi brani (⚙️ → Suoni e musica → Voce → «I tuoi brani»): l'elenco sta in localStorage (md-ubl, fuori dal backup), i file nella memoria
      dell'app (IndexedDB) e li gestisce il gruppo MIEIBRANI (audio/user-tracks.js), caricato solo quando serve ---------- */
   var UBL = CP.ubLimits = { n: 40, mb: 80, min: 30, totalMb: 600 };
   var UB = { mode: lget("cp-ubmode") === "only" ? "only" : "mix", msg: "", busy: "" };
