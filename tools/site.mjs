@@ -94,7 +94,7 @@ function copyDir(a, b, skip = new Set()) {
 function assemble(out) {
   if (!fs.existsSync(path.join(ROOT, "dist/index.html"))) throw new Error("Manca dist/: lancia prima node tools/build.mjs");
   fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
-  for (const f of ["index.html", "icon.svg"]) fs.copyFileSync(path.join(ROOT, "docs", f), path.join(out, f));
+  for (const f of ["index.html", "icon.svg", "tester.html"]) fs.copyFileSync(path.join(ROOT, "docs", f), path.join(out, f));
   copyDir(path.join(ROOT, "docs/img"), path.join(out, "img"));
   fs.writeFileSync(path.join(out, "privacy.html"), privacyPage());
   copyDir(path.join(ROOT, "dist"), path.join(out, "app"), new Set(["_headers"]));

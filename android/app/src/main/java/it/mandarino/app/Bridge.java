@@ -503,6 +503,10 @@ public class Bridge {
     @JavascriptInterface
     public String version() { return BuildConfig.VERSION_NAME; }
 
+    /** "direct" (GitHub Releases) o "store" (Google Play, F-Droid): la sceglie la build (productFlavors) */
+    @JavascriptInterface
+    public String flavor() { return BuildConfig.FLAVOR; }
+
     void shutdown() {
         try { if (tts != null) { tts.stop(); tts.shutdown(); } } catch (RuntimeException ignored) { }
         stopRecognizer();

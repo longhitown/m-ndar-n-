@@ -44,6 +44,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   data/wiki/zh-it.txt      «nomi e termini» del Lettore (wikidict-it da Wikidata, CC0), letto al primo uso
   vendor/                  jsQR (Apache 2.0), eseguito solo quando serve leggere un QR
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
+fastlane/                  testi e immagini per gli store (fonte unica; docs/store/ per firma, moduli, tester)
 docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
 dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
@@ -53,7 +54,7 @@ dist/                      ← generato da tools/build.mjs: è questo che si pub
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
-tools/                     build.mjs, grammar.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+tools/                     build.mjs, grammar.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs (campione di frasi da far rileggere a un madrelingua),
@@ -238,6 +239,28 @@ Su https il microfono chiede il permesso una volta sola; dopo il primo caricamen
 **Nome del repository:** `longhitown/mandarino` (prima `m-ndar-n-`, perché GitHub aveva tolto gli accenti; i vecchi indirizzi,
 le release e le API vengono reindirizzati). Il nome è in un solo punto, `MD_CONFIG.REPO` in `src/config.js`.
 
+## Versione per gli store (Google Play, F-Droid)
+
+Tutto quello che si può preparare prima di pubblicare sta in [docs/store/](docs/store/README.md): firma, moduli,
+F-Droid, tester. Niente viene pubblicato automaticamente.
+
+- **Due versioni** (`productFlavors` in `android/app/build.gradle`), con lo stesso pacchetto e la stessa chiave:
+  - `direct`: GitHub Releases, come prima;
+  - `store`: senza controllo degli aggiornamenti dell'APK, senza sostegno né sigilli.
+
+  Il codice web è identico: `src/config.js` legge la versione da `MandarinoAndroid.flavor()`. Nella schermata
+  «App Android» si vede quale versione è installata.
+- **API 36** (compileSdk e targetSdk, Android Gradle Plugin 8.11.1):
+  - l'app va da bordo a bordo, e la WebView riceve come margine barre, ritaglio e tastiera;
+  - il tasto Indietro usa `OnBackInvokedCallback` da Android 13 (con l'indietro predittivo di Android 16 `onBackPressed`
+    non arriva più).
+
+  Il CI prova l'APK in emulatori Android 14 e 16.
+- **`.aab`**: la corsa «APK Android» allega `mandarino-store.aab` (circa 84 MB, sotto il limite di 200 MB del modulo
+  base), l'APK store e le note di versione di quel `versionCode`. Sono solo artefatti, mai pubblicati.
+- **Testi e immagini**: `fastlane/metadata/android/{it-IT,zh-CN}/` è la fonte unica. `node tools/store-assets.mjs`
+  rigenera icona, immagine di presentazione 1024×500, quattro schermate per lingua e le schede `docs/store/*.md`.
+
 ## L'APK per Android (gratis, senza Play Store)
 
 Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk.yml`): controlla `dist/` e la grammatica,
@@ -260,7 +283,7 @@ viene pubblicato. **Conserva una copia della chiave fuori da GitHub**: se si per
 più sopra le vecchie (bisognerebbe disinstallare, dopo aver fatto il backup dei progressi).
 Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype PKCS12 -alias mandarino -keyalg RSA -keysize 4096 -validity 18250`.
 
-**In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleRelease lintRelease`.
+**In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleDirectRelease lintDirectRelease` (versione per gli store: `bundleStoreRelease`).
 
 **Cosa c'è in più nell'APK** (tutto calcolato sul telefono, nessun server):
 - **scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Jukebox; aprono `?go=study|ear|music`;
@@ -321,7 +344,7 @@ In più, dentro l'app: aggiungi `#selftest` all'indirizzo (25 controlli, tutti v
 `tools/android-smoke.mjs` controlla dentro la WebView dell'APK: caricamento all'origine dell'app, `#selftest`, backup in
 Download con UTF-8 intatto, permesso del microfono, dati che restano dopo la chiusura forzata, tasto Indietro, scorciatoie,
 apertura su un'azione, stato del widget, promemoria, nessun crash.
-In locale, con un telefono collegato in debug USB: `node tools/android-smoke.mjs android/app/build/outputs/apk/debug/app-debug.apk`.
+In locale, con un telefono collegato in debug USB: `node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk`.
 Per il controllo «nessun attributo senza CP.attr», in revisione: `grep -rnP "[a-z-]+=\"' \+ (?!CP\.attr)" src`
 deve mostrare solo numeri, id interni e classi.
 

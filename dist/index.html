@@ -1647,7 +1647,8 @@ var SECTIONS = [], DIALOGS = [], LESSONS = [], ITLESSONS = [];
 /* ===== màndarínō · configurazione: l'identità del progetto in un solo punto.
    Il primo script dopo boot.js: tutti gli altri moduli leggono da qui (window.MD_CONFIG), nessuno scrive indirizzi a mano.
    Se il repository cambia nome, se cambia la pagina di sostegno o l'indirizzo di contatto, si cambia solo questo file.
-   Gli interruttori FEATURE_* li può sovrascrivere la build (versione «store», vedi tools/build.mjs --flavor store). ===== */
+   Versione «store» (Task 7D): nell'APK la sceglie la build Android (productFlavors, MandarinoAndroid.flavor()); qui sotto
+   si spengono il controllo degli aggiornamenti dell'APK, il sostegno e i sigilli. Il codice web resta identico. ===== */
 var MD_CONFIG = {
   REPO: "longhitown/mandarino",                       /* GitHub: issue dei contributi, controllo delle release dell'APK */
   CONTACT_EMAIL: "mandarinoapp@gmail.com",            /* canale secondario dei contributi */
@@ -1655,10 +1656,16 @@ var MD_CONFIG = {
   STORE_URLS: { play: "", fdroid: "" },               /* indirizzi degli store, quando ci saranno */
   SITE_URL: "",                                       /* sito pubblico (GitHub Pages), quando ci sarà */
   FLAVOR: "direct",                                   /* "direct" (sito, APK da GitHub) | "store" */
+  APK_UPDATES: true,                                  /* controllo delle release su GitHub (solo APK diretto) */
   FEATURE_DONATE: true,
   FEATURE_SEALS: true,
   SEAL_PUBKEYS: []                                    /* chiavi pubbliche dei sigilli: [{ kid, jwk }]; vuoto = niente «riscatta» */
 };
+(function () {
+  var A = typeof window !== "undefined" && window.MandarinoAndroid, f = "";
+  try { f = A && A.flavor ? String(A.flavor()) : ""; } catch (e) {}
+  if (f === "store") { MD_CONFIG.FLAVOR = "store"; MD_CONFIG.APK_UPDATES = false; MD_CONFIG.FEATURE_DONATE = false; MD_CONFIG.FEATURE_SEALS = false; }
+})();
 /* solo per le prove automatiche (tools/e2e.mjs, tools/unit.mjs): chiavi usa-e-getta e interruttori della versione store */
 if (typeof window !== "undefined" && window.__mdConfigTest) Object.assign(MD_CONFIG, window.__mdConfigTest);
 </script>
@@ -15191,6 +15198,7 @@ Object.assign(I18N.it, {"plc.title": "Pleco", "plc.lede": "Se sul telefono hai i
 Object.assign(I18N.it, {"anki.title": "Esporta per Anki", "anki.more": "Altre opzioni di esportazione", "anki.diff": "Sincronizzare porta i tuoi progressi su un altro dispositivo con màndarínō. Esportare porta le parole in un'altra app, Anki: màndarínō resta com'è.", "anki.lede": "Quali parole: carattere, pinyin, italiano, frase d'esempio e traduzione, con i tag del livello HSK, della tappa e «sicura» / «in corso».", "anki.ledeIt": "Quali parole: parola italiana (per i verbi anche il presente), pinyin, cinese, frase d'esempio e traduzione, con il tipo di parola e «sicura» / «in corso» come tag.", "anki.mine": "Le parole che ho iniziato", "anki.sure": "Solo le parole sicure", "anki.all": "Tutto il vocabolario", "anki.sec": "Una sola tappa", "anki.does": "Prepara un file di testo con {n} parole da importare in Anki (File → Importa). Reimportandolo più avanti, Anki aggiorna le note invece di duplicarle.", "anki.not1": "Il file porta le carte, non il calendario dei ripassi: in Anki le parole ripartono dall'inizio. I tag aiutano a filtrarle.", "anki.not2": "Non toglie niente da màndarínō e non manda niente in rete: il file si salva su questo dispositivo.", "anki.not3": "I contenuti restano sotto licenza CC BY 4.0: se li condividi, cita màndarínō.", "anki.ok1": "Continua", "anki.q2": "Confermi l'esportazione?", "anki.ok2": "Sì, salva il file per Anki", "anki.done": "File per Anki salvato: {n} parole.", "anki.none": "Nessuna parola corrisponde alla scelta."});
 Object.assign(I18N.it, {"plc.store": "Scarica Pleco", "plc.open": "Apri in Pleco", "plc.rowSub": "Il dizionario Pleco, se lo hai sul telefono", "plc.leaving": "Apro Pleco…"});
 Object.assign(I18N.it, {"pv.backup": "Nell'app Android, se il backup del telefono è acceso, Android copia i progressi nel backup del tuo account Google: è un servizio del sistema, si spegne nelle impostazioni del telefono."});
+Object.assign(I18N.it, {"apk.fDirect": "versione diretta (GitHub)", "apk.fStore": "versione per gli store"});
 </script>
 <script>
 /* ---- i18n/zh.js ---- */
@@ -15312,6 +15320,7 @@ Object.assign(I18N.zh, {"plc.title": "Pleco", "plc.lede": "如果手机上装有
 Object.assign(I18N.zh, {"anki.title": "导出到 Anki", "anki.more": "其他导出选项", "anki.diff": "同步是把学习进度带到另一台装有 màndarínō 的设备上。导出是把单词带到另一个应用 Anki 中：màndarínō 本身不受影响。", "anki.lede": "导出哪些词：汉字、拼音、意大利语、例句及翻译，并带有 HSK 级别、站和“已掌握”/“学习中”标签。", "anki.ledeIt": "导出哪些词：意大利语单词（动词附现在时变位）、拼音、中文、例句及翻译，并带有词类和“已掌握”/“学习中”标签。", "anki.mine": "我已经开始学的词", "anki.sure": "只导出已掌握的词", "anki.all": "全部词汇", "anki.sec": "只导出一站", "anki.does": "将生成一个包含 {n} 个词的文本文件，可在 Anki 中导入（文件 → 导入）。以后再次导入时，Anki 会更新卡片而不会重复。", "anki.not1": "文件只包含卡片，不包含复习计划：在 Anki 中这些词会从头开始。可以用标签筛选。", "anki.not2": "不会从 màndarínō 中删除任何内容，也不会联网：文件保存在这台设备上。", "anki.not3": "内容仍采用 CC BY 4.0 许可：分享时请注明 màndarínō。", "anki.ok1": "继续", "anki.q2": "确认导出吗？", "anki.ok2": "是的，保存 Anki 文件", "anki.done": "Anki 文件已保存：{n} 个词。", "anki.none": "没有符合条件的词。"});
 Object.assign(I18N.zh, {"plc.store": "下载 Pleco", "plc.open": "在 Pleco 中打开", "plc.rowSub": "如果手机上装有 Pleco 词典", "plc.leaving": "正在打开 Pleco…"});
 Object.assign(I18N.zh, {"pv.backup": "在安卓应用中，如果手机备份已打开，安卓会把学习进度复制到你的 Google 账号备份中：这是系统服务，可以在手机设置中关闭。"});
+Object.assign(I18N.zh, {"apk.fDirect": "直接下载版（GitHub）", "apk.fStore": "应用商店版"});
 </script>
 <script>
 /* ---- i18n/titles.js ---- */
@@ -20363,7 +20372,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     } else if (!itc) h += '<p class="small muted" style="margin:10px 0 0">' + CP.t("vo.one") + "</p>";
     h += "</div>";
     var ps = CP.pwaState ? CP.pwaState() : null;
-    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + "</p>" + (CP.apkUpdates ? '<label class="chk small"><input type="checkbox" id="opt-apkcheck"' + (CP.apkUpdates.on() ? " checked" : "") + "> " + CP.t("upd.check") + "</label>" : "") + "</div>"; return h; }
+    if (ps && ps.apk) { h += '<div class="vab" id="apk-box"><div class="small" style="font-weight:700">' + CP.t("apk.title") + '</div><p class="small muted" style="margin:2px 0 0">' + CP.t("apk.ver", { v: esc(String(ps.apk)) }) + " · " + CP.t(window.MD_CONFIG && MD_CONFIG.FLAVOR === "store" ? "apk.fStore" : "apk.fDirect") + "</p>" + (CP.apkUpdates ? '<label class="chk small"><input type="checkbox" id="opt-apkcheck"' + (CP.apkUpdates.on() ? " checked" : "") + "> " + CP.t("upd.check") + "</label>" : "") + "</div>"; return h; }
     if (itc) return h;   /* corso di italiano: il pacchetto per pubblicare l'app non serve a chi studia */
     h += '<div class="vab" id="pwa-box"><div class="small" style="font-weight:700">' + CP.t("pwa.title") + "</div>" +
       '<p class="small muted" style="margin:2px 0 6px">' + CP.t(ps && ps.standalone ? "pwa.installed" : ps && ps.http ? "pwa.https" : "pwa.need") + "</p>" +
@@ -20519,11 +20528,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
      con lo stesso avviso della PWA. Si spegne in ⚙️ → Voce e audio → App Android. */
   var REPO = MD_CONFIG.REPO;   /* src/config.js; se il repository cambia nome, GitHub reindirizza anche le API */
-  CP.apkUpdates = { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
+  /* nella versione per gli store (MD_CONFIG.APK_UPDATES false) niente controllo né interruttore: gli aggiornamenti li dà lo store */
+  CP.apkUpdates = window.MD_CONFIG && MD_CONFIG.APK_UPDATES === false ? null : { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
   function vnum(v) { return String(v || "").replace(/^v/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
   function newer(a, b) { a = vnum(a); b = vnum(b); for (var i = 0; i < Math.max(a.length, b.length); i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); } return false; }
   function apkCheck() {
-    var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
+    var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
     var last = 0; try { last = +localStorage.getItem("md-apkcheck-t") || 0; } catch (e) {}
     if (Date.now() - last < 86400000) return;
     try { localStorage.setItem("md-apkcheck-t", String(Date.now())); } catch (e) {}
