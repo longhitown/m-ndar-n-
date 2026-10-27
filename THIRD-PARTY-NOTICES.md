@@ -15,7 +15,7 @@ compare un file, o in `src/data/` un dato esterno, che non è nominato qui. Il s
 | py-fsrs (Open Spaced Repetition), porting in JavaScript | MIT (`LICENZE/MIT-py-fsrs.txt`) | https://github.com/open-spaced-repetition/py-fsrs | FSRS-6, 21 parametri, dal ramo principale (2026) | `src/core/fsrs.js` |
 | jsQR (Cosmo Wolfe) | Apache 2.0 (`LICENZE/APACHE-2.0-jsQR.txt`) | https://github.com/cozmo/jsQR | 1.4.0, copia minificata non modificata | `src/vendor/jsqr.min.js` |
 | wikidict-it, dati di Wikidata | CC0 1.0 | https://github.com/open-dict-data/wikidict-it | `zh-it_wiki.txt`, ottobre 2026 | `src/data/wiki/zh-it.txt` |
-| Morph-it! (Eros Zanchetta, Marco Baroni, Università di Bologna): genere, plurale e forme degli aggettivi | doppia licenza CC BY-SA 2.0 / LGPL, usata con la LGPL (`LICENZE/MORPH-IT.txt`) | https://docs.sslmit.unibo.it/doku.php?id=resources:morph-it | 0.48 (`morph-it_048.txt`) | `src/data/it/lexicon.js` |
+| Morph-it! (Marco Baroni, Eros Zanchetta, Università di Bologna), © 2004-2009: genere, plurale e forme degli aggettivi | doppia licenza CC BY-SA 2.0 / LGPL, usata con la LGPL (`LICENZE/MORPH-IT.txt`, `LICENZE/LGPL-2.1.txt`) | https://docs.sslmit.unibo.it/doku.php?id=resources:morph-it | 0.4.8, 23 febbraio 2009 (`morph-it_048.txt`) | `src/data/it/lexicon.js` |
 | Campioni della musica: VSCO 2 CE, VCSL, Osiris Piano, Karoryfer Samples, sfzinstruments, BigSoundBank | CC0 | vedi `src/audio/CREDITI-MUSICA.md` | — | dentro i brani di `src/audio/music/` |
 | jSteelDrum | pubblico dominio (Unlicense) | vedi `src/audio/CREDITI-MUSICA.md` | — | dentro i brani di `src/audio/music/` |
 
@@ -42,8 +42,6 @@ Gli estratti di musica del sito (`docs/audio/`) vengono dai brani dell'app e han
 
 ## Note sulle licenze
 
-- **Morph-it!**: la doppia licenza CC BY-SA 2.0 / LGPL risulta da due pacchetti npm che la dichiarano e da un elenco di risorse dell'Università di Torino (PARLI), che indica «Creative Commons» e
-  «CC-GNU LGPL». La pagina ufficiale dell'Università di Bologna non era raggiungibile al momento del controllo: la conferma sul sito ufficiale, con la versione della LGPL, e il testo completo in `LICENZE/`
-  restano da fare (vedi [docs/roadmap.md](docs/roadmap.md)).
+- **Morph-it!**: la doppia licenza (CC BY-SA 2.0 o LGPL) è quella dichiarata nel file `readme-morph-it.txt` della versione 0.4.8, ufficiale, che si trova in `LICENZE/MORPH-IT.txt` insieme ai ringraziamenti; il testo della LGPL 2.1 distribuito con Morph-it! è in `LICENZE/LGPL-2.1.txt`. `src/data/it/lexicon.js` è un estratto modificato (solo le parole del corso) e porta nell'intestazione l'avviso di modifica.
 - **Versioni**: per Make Me a Hanzi e complete-hsk-vocabulary il commit esatto non è stato annotato al momento dell'import. `tools/strokes.mjs` e `tools/levels.mjs` scrivono la data; al prossimo aggiornamento
   conviene annotare anche il commit.

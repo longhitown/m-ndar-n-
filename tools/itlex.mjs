@@ -80,8 +80,8 @@ const rows = [...out.values()].map((e) => {
   const extra = e.k === "n" ? [e.g, e.p] : e.k === "j" ? [e.f] : [];
   return "  " + JSON.stringify([e.keys.join("|"), e.k, e.it, ...extra]);
 });
-const js = "/* Lessico del corso di italiano, generato da tools/itlex.mjs dal vocabolario e con genere, plurale e forme presi da Morph-it! (Università di Bologna, usato con la licenza LGPL: vedi\n" +
-  "   THIRD-PARTY-NOTICES.md e LICENZE/MORPH-IT.txt). Non modificarlo a mano. Una voce per riga: [chiavi cinesi separate da |, tipo, italiano, …]\n" +
+const js = "/* Lessico del corso di italiano, generato da tools/itlex.mjs dal vocabolario e con genere, plurale e forme presi da Morph-it! (Marco Baroni ed Eros Zanchetta, Università di Bologna, versione 0.4.8; estratto e modificato a ottobre 2026; usato con la licenza LGPL: vedi\n" +
+  "   THIRD-PARTY-NOTICES.md, LICENZE/MORPH-IT.txt e LICENZE/LGPL-2.1.txt). Non modificarlo a mano. Una voce per riga: [chiavi cinesi separate da |, tipo, italiano, …]\n" +
   "   tipo n = nome [genere, plurale] · j = aggettivo [[m.s, f.s, m.p, f.p]] · v = verbo all'infinito · x = altro (avverbi, espressioni). */\n" +
   "var IT_LEXICON = [\n" + rows.join(",\n") + "\n];\n";
 fs.mkdirSync(path.join(SRC, "data/it"), { recursive: true });

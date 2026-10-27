@@ -869,7 +869,7 @@ try {
     });
     check("Lezione corrente avviata dalla carta e superata: sigillo «通过», «+30 分», serie aggiornata, «分享» a fine lezione", opened && passed.stamp && passed.share && /\+30/.test(passed.gain) && passed.streak >= 1, JSON.stringify(passed));
     await p.waitForTimeout(150);
-    const leafIt = await p.evaluate(async () => { const els = document.querySelectorAll('.brand [data-tone="3"]'); if (!els.length) return { n: 0, toast: "" }; els[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); await new Promise((r) => setTimeout(r, 150)); return { n: els.length, toast: (document.getElementById("toast") || {}).textContent || "" }; });
+    const leafIt = await p.evaluate(() => { const els = document.querySelectorAll('.brand [data-tone="3"]'); if (!els.length) return { n: 0, toast: "" }; els[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); return { n: els.length, toast: (document.getElementById("toast") || {}).textContent || "" }; });
     check("Logo: le due foglie suonano il terzo tono (avviso «3° tono» o «第三声», secondo la lingua)", leafIt.n === 2 && /3° tono|第三声/.test(leafIt.toast), JSON.stringify(leafIt));
     const mile = await p.evaluate(() => { const sheets = document.querySelectorAll("[role=dialog]:not([hidden]), .sheet:not([hidden])").length; CP.onRankUp({ name: "声调学徒" }); const b = document.querySelector("#toast .toast-act"); const m = JSON.parse(localStorage.getItem("cp-it-cards-v1") || "{}").m || {}; return { act: b ? b.textContent : "", toast: document.getElementById("toast").textContent, sheets: document.querySelectorAll("[role=dialog]:not([hidden]), .sheet:not([hidden])").length - sheets, rec: !!m["rank:声调学徒"] && !!m.first }; });
     check("Traguardo: «分享纪念卡» dentro il messaggio di congratulazioni, nessuna finestra in più, ricordato in cp-it-cards-v1", mile.act === "分享纪念卡" && /恭喜/.test(mile.toast) && mile.sheets === 0 && mile.rec, JSON.stringify(mile));
@@ -1121,7 +1121,8 @@ try {
     }
     check("Interfaccia in cinese: nessun testo rimasto in italiano in " + areas.length + " schermate", !bad.length, bad.slice(0, 4).join(" ‖ "));
     check("Interfaccia in cinese: nessun errore JavaScript", !errs.length, errs[0]);
-    const leafZh = await p.evaluate(async () => { const el = document.querySelector('.brand [data-tone="3"]'); if (!el) return ""; el.dispatchEvent(new MouseEvent("click", { bubbles: true })); await new Promise((r) => setTimeout(r, 150)); return (document.getElementById("toast") || {}).textContent || ""; });
+    /* si legge l'avviso subito dopo il tocco: senza una voce cinese (come in CI) l'app, una volta sola, lo sostituisce con «la voce non risponde» */
+    const leafZh = await p.evaluate(() => { const el = document.querySelector('.brand [data-tone="3"]'); if (!el) return ""; el.dispatchEvent(new MouseEvent("click", { bubbles: true })); return (document.getElementById("toast") || {}).textContent || ""; });
     check("Logo, interfaccia in cinese: toccando una foglia l'avviso dice «第三声»", /第三声/.test(leafZh), leafZh);
     await ctx.close();
   }
