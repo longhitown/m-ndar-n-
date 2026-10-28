@@ -332,6 +332,16 @@ dimenticati (citta → città). Spiega l'errore in cinese e propone la frase cor
 delle parole, e lo dice. La regola d'oro è non dare falsi allarmi: `tools/e2e.mjs` gli passa tutte le 6427 frasi italiane
 dell'app (giuste) e la prova fallisce se ne segnala anche una sola.
 
+**Le lezioni di grammatica, in sviluppo** (`node tools/lezioni-check.mjs cartella --out rapporto.md`; la cartella contiene CC-CEDICT e le frasi di
+[Tatoeba](https://tatoeba.org) in cinese e in italiano con i loro legami, scaricabili gratis: gli indirizzi sono in cima allo strumento). Per
+ogni frase di esempio, errore tipico, risposta dei quiz e battuta dei mini-dialoghi controlla che ogni parola sia in CC-CEDICT o nel nostro
+vocabolario; che la frase compaia identica in Tatoeba (e mette accanto la traduzione di Tatoeba, per confrontarla con la nostra); che un
+errore tipico non sia invece una frase che Tatoeba usa davvero; e un elenco corto di costruzioni che nessun manuale accetta. Non corregge
+niente e non sostituisce un madrelingua: dà qualcosa da guardare. Nessuno dei due archivi entra nel repository (licenze CC BY-SA e CC BY).
+Una lezione può avere un **mini-dialogo** (`"dlg": [["A", "cinese", "italiano"], …]`, da 3 a 8 battute; nel corso di italiano
+`["A", "italiano", "cinese"]`) e ogni cinque lezioni c'è un **ripasso** (`rip-1`, `rip-2`…), fatto a sorte con le domande dei quiz delle cinque
+lezioni: non ha contenuti suoi da verificare.
+
 **L'italiano è controllato due volte, in sviluppo** (i file esterni non entrano nel repository):
 ```
 node tools/morphit-check.mjs morph-it_048.txt --dump da-controllare.txt   # Morph-it: genere, numero, persona di ogni forma

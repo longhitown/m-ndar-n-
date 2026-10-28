@@ -25,6 +25,12 @@ ITLESSONS.push({
     ["Il pesce è buono.", "鱼很好吃。"],
     ["La città è bella.", "这座城市很漂亮。"]
   ],
+  "dlg": [
+    ["A", "Buongiorno! Un gelato, per favore.", "早上好！请给我一个冰淇淋。"],
+    ["B", "Ecco il gelato.", "冰淇淋给您。"],
+    ["A", "Grazie! È buono.", "谢谢！很好吃。"],
+    ["B", "Prego.", "不客气。"]
+  ],
   "traps": [
     ["chiao", "ciao", "ch 读 [k]，chiao 会读成\"kiao\"。要读 [tʃ] 就写 ci。"],
     ["citta", "città", "重音落在最后一个元音上，必须写重音符号，不写就是错字。"],

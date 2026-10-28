@@ -942,6 +942,7 @@ input[type="range"]{accent-color:var(--accent)}
 .ls-pat{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:10px 0}
 .ls-plus{color:var(--muted);font-weight:700}
 .ls-ex{padding:10px 0;border-top:1px solid var(--line);display:grid;gap:2px}
+.ls-dl.b{margin-left:18px}.ls-rev{border-style:dashed}
 .ls-zh .lp{font-size:17px;font-weight:600}
 .ls-zh .lh{font-family:var(--f-han);font-size:calc(var(--hz) * 0.9)}
 .ls-trap{padding:10px 12px;margin:8px 0;border:1px solid var(--line);border-radius:12px;display:grid;gap:4px}
@@ -13178,6 +13179,12 @@ LESSONS.push({
     ["我不是老师。", "Non sono insegnante."],
     ["这是我的书。", "Questo è il mio libro."]
   ],
+  "dlg": [
+    ["A", "你好，我是马可。我是学生。", "Ciao, sono Marco. Sono studente."],
+    ["B", "你好，马可。我是小王。我是老师。", "Ciao, Marco. Sono Xiao Wang. Sono insegnante."],
+    ["A", "你是中国人，我是意大利人。", "Tu sei cinese, io sono italiano."],
+    ["B", "对。我们是朋友。", "Esatto. Siamo amici."]
+  ],
   "traps": [
     ["我是累。", "我很累。", "Con un aggettivo non si usa 是: ci vuole 很."],
     ["我是意大利。", "我是意大利人。", "意大利 è il paese, l'Italia. «Italiano» è 意大利人: la persona dell'Italia."],
@@ -13216,6 +13223,12 @@ LESSONS.push({
     ["我的朋友是中国人。", "Il mio amico è cinese."],
     ["老师的书很贵。", "Il libro dell'insegnante è caro."],
     ["这是我爸爸的书。", "Questo è il libro del mio papà."]
+  ],
+  "dlg": [
+    ["A", "这是我的书，那是你的书。", "Questo è il mio libro, quello è il tuo."],
+    ["B", "对。这是我朋友的手机。", "Esatto. Questo è il cellulare del mio amico."],
+    ["A", "你朋友是中国人。", "Il tuo amico è cinese."],
+    ["B", "对，他是中国人。", "Sì, è cinese."]
   ],
   "traps": [
     ["书的我", "我的书", "Prima chi possiede, poi la cosa: «io 的 libro»."],
@@ -13256,6 +13269,12 @@ LESSONS.push({
     ["今天有点冷。", "Oggi fa un po' freddo."],
     ["我不饿。", "Non ho fame."]
   ],
+  "dlg": [
+    ["A", "你的手机很好。", "Il tuo cellulare è bello."],
+    ["B", "谢谢，我的手机不贵。", "Grazie, il mio cellulare non è caro."],
+    ["A", "我的书太贵了！", "Il mio libro è troppo caro!"],
+    ["B", "今天有点冷，我们喝茶。", "Oggi fa un po' freddo, beviamo del tè."]
+  ],
   "traps": [
     ["我是累。", "我很累。", "Con l'aggettivo niente 是."],
     ["茶热很。", "茶很热。", "很 va prima dell'aggettivo."]
@@ -13294,6 +13313,12 @@ LESSONS.push({
     ["我没有钱。", "Non ho soldi."],
     ["我不知道。", "Non lo so."]
   ],
+  "dlg": [
+    ["A", "马可，你今天不忙。", "Marco, oggi non sei impegnato."],
+    ["B", "对，我不忙。我没吃饭，我很饿。", "Già, non sono impegnato. Non ho mangiato, ho molta fame."],
+    ["A", "我们去吃饭。", "Andiamo a mangiare."],
+    ["B", "好，我没有钱。", "Va bene, ma non ho soldi."]
+  ],
   "traps": [
     ["我不有钱。", "我没有钱。", "有 si nega solo con 没: 没有."],
     ["我昨天不去。", "我昨天没去。", "Per dire che una cosa non è successa si usa 没."]
@@ -13330,6 +13355,12 @@ LESSONS.push({
     ["你有时间吗？", "Hai tempo?"],
     ["他是不是中国人？", "Lui è cinese?"],
     ["你明天来吗？", "Domani vieni?"]
+  ],
+  "dlg": [
+    ["A", "你好！你是中国人吗？", "Ciao! Sei cinese?"],
+    ["B", "不是，我是意大利人。你是老师吗？", "No, sono italiano. Tu sei insegnante?"],
+    ["A", "是，我是老师。你会说中文吗？", "Sì, sono insegnante. Sai parlare cinese?"],
+    ["B", "会，我会说中文。", "Sì, so parlare cinese."]
   ],
   "traps": [
     ["你吗是中国人？", "你是中国人吗？", "吗 va sempre in fondo."],
@@ -14280,8 +14311,7 @@ LESSONS.push({
 /* ---- IT_LEXICON (lazy, da data/it/lexicon.js) ---- */
 (function () { var v; Object.defineProperty(window, "IT_LEXICON", { configurable: true, get: function () { if (v === undefined) { var el = document.getElementById("lazy-it_lexicon"); v = el ? JSON.parse(el.textContent) : {}; if (el) el.parentNode.removeChild(el); } return v; } }); })();
 </script>
-<script>
-/* ---- data/it/lessons/01-pronuncia.js ---- */
+<script type="text/plain" id="course-it-data-it-lessons-01-pronuncia-js">
 /* Corso di italiano per chi parla cinese · lezione 1 · 发音：怎么写就怎么读.
    Formato: come src/data/lessons (vedi 01-essere.js), ma al contrario: spiegazioni in cinese, ex = [italiano, cinese],
    traps = [italiano sbagliato, italiano giusto, perché (in cinese)], quiz order = { it: frase da ricomporre, zh: il senso }.
@@ -14309,6 +14339,12 @@ ITLESSONS.push({
     ["Il pesce è buono.", "鱼很好吃。"],
     ["La città è bella.", "这座城市很漂亮。"]
   ],
+  "dlg": [
+    ["A", "Buongiorno! Un gelato, per favore.", "早上好！请给我一个冰淇淋。"],
+    ["B", "Ecco il gelato.", "冰淇淋给您。"],
+    ["A", "Grazie! È buono.", "谢谢！很好吃。"],
+    ["B", "Prego.", "不客气。"]
+  ],
   "traps": [
     ["chiao", "ciao", "ch 读 [k]，chiao 会读成\"kiao\"。要读 [tʃ] 就写 ci。"],
     ["citta", "città", "重音落在最后一个元音上，必须写重音符号，不写就是错字。"],
@@ -14324,8 +14360,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/02-genere.js ---- */
+<script>/* ---- data/it/lessons/01-pronuncia.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-01-pronuncia-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-02-genere-js">
 /* Corso di italiano per chi parla cinese · lezione 2 · 名词：阴性、阳性和复数.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14348,6 +14384,13 @@ ITLESSONS.push({
     ["un caffè, due caffè", "一杯咖啡，两杯咖啡"],
     ["un uovo, due uova", "一个鸡蛋，两个鸡蛋"]
   ],
+  "dlg": [
+    ["A", "Buongiorno! Due caffè, per favore.", "早上好！请来两杯咖啡。"],
+    ["B", "Ecco due caffè. Altro?", "两杯咖啡给您。还要别的吗？"],
+    ["A", "Sì, due uova.", "要，两个鸡蛋。"],
+    ["B", "Due caffè e due uova. Ecco.", "两杯咖啡和两个鸡蛋。给您。"],
+    ["A", "Grazie.", "谢谢。"]
+  ],
   "traps": [
     ["due libro", "due libri", "数量多于一，名词就要变复数。"],
     ["due caffès", "due caffè", "以重音结尾的词复数不变，也不加 -s。"],
@@ -14363,8 +14406,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/03-articoli.js ---- */
+<script>/* ---- data/it/lessons/02-genere.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-02-genere-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-03-articoli-js">
 /* Corso di italiano per chi parla cinese · lezione 3 · 冠词：il、lo、la…….
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14388,6 +14431,14 @@ ITLESSONS.push({
     ["l'acqua", "水"],
     ["un amico, un'amica", "一个（男性）朋友，一个（女性）朋友"]
   ],
+  "dlg": [
+    ["A", "Che cos'è questo?", "这是什么？"],
+    ["B", "È un libro.", "是一本书。"],
+    ["A", "E questo?", "那这个呢？"],
+    ["B", "È una chiave.", "是一把钥匙。"],
+    ["A", "E l'acqua?", "那水呢？"],
+    ["B", "L'acqua è qui.", "水在这里。"]
+  ],
   "traps": [
     ["il studente", "lo studente", "s + 辅音开头的阳性词用 lo。"],
     ["la acqua", "l'acqua", "元音前 la 变成 l'。"],
@@ -14404,8 +14455,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/04-essere-avere.js ---- */
+<script>/* ---- data/it/lessons/03-articoli.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-03-articoli-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-04-essere-avere-js">
 /* Corso di italiano per chi parla cinese · lezione 4 · essere（是）和 avere（有）.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14428,6 +14479,13 @@ ITLESSONS.push({
     ["Ho fame.", "我饿了。"],
     ["Lei ha vent'anni.", "她二十岁。"]
   ],
+  "dlg": [
+    ["A", "Ciao! Sono Luca. Sono italiano.", "你好！我是卢卡。我是意大利人。"],
+    ["B", "Ciao, Luca! Sono Li. Sono cinese.", "你好，卢卡！我是李。我是中国人。"],
+    ["A", "Hai fame?", "你饿吗？"],
+    ["B", "Sì, ho fame.", "是的，我饿了。"],
+    ["A", "Anch'io. Andiamo!", "我也是。走吧！"]
+  ],
   "traps": [
     ["Sono fame.", "Ho fame.", "饿、渴、冷、热和年龄都用 avere。"],
     ["Io sono Cinese.", "Sono cinese.", "国籍要小写；主语 io 一般省略。"],
@@ -14443,8 +14501,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/05-accordo.js ---- */
+<script>/* ---- data/it/lessons/04-essere-avere.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-04-essere-avere-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-05-accordo-js">
 /* Corso di italiano per chi parla cinese · lezione 5 · 形容词要和名词一致.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14468,6 +14526,14 @@ ITLESSONS.push({
     ["I ravioli sono buoni.", "饺子很好吃。"],
     ["Il tè è caldo.", "茶很热。"]
   ],
+  "dlg": [
+    ["A", "Com'è la zuppa?", "汤怎么样？"],
+    ["B", "La zuppa è calda e buona.", "汤很热，很好吃。"],
+    ["A", "E i ravioli?", "那饺子呢？"],
+    ["B", "I ravioli sono buoni.", "饺子很好吃。"],
+    ["A", "Il tè è caldo?", "茶是热的吗？"],
+    ["B", "Sì, il tè è caldo.", "是的，茶是热的。"]
+  ],
   "traps": [
     ["una casa nuovo", "una casa nuova", "casa 是阴性，形容词也用阴性 -a。"],
     ["due libri nuovo", "due libri nuovi", "复数名词配复数形容词。"]
@@ -14481,8 +14547,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/06-presente.js ---- */
+<script>/* ---- data/it/lessons/05-accordo.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-05-accordo-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-06-presente-js">
 /* Corso di italiano per chi parla cinese · lezione 6 · 现在时：-are、-ere、-ire.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14519,8 +14585,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/07-domande.js ---- */
+<script>/* ---- data/it/lessons/06-presente.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-06-presente-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-07-domande-js">
 /* Corso di italiano per chi parla cinese · lezione 7 · 否定和提问.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14557,8 +14623,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/08-preposizioni.js ---- */
+<script>/* ---- data/it/lessons/07-domande.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-07-domande-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-08-preposizioni-js">
 /* Corso di italiano per chi parla cinese · lezione 8 · 介词：a、in、di、da.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14596,8 +14662,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/09-passato.js ---- */
+<script>/* ---- data/it/lessons/08-preposizioni.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-08-preposizioni-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-09-passato-js">
 /* Corso di italiano per chi parla cinese · lezione 9 · 说过去的事：近过去时.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14635,8 +14701,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/10-piacere.js ---- */
+<script>/* ---- data/it/lessons/09-passato.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-09-passato-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-10-piacere-js">
 /* Corso di italiano per chi parla cinese · lezione 10 · 我喜欢：mi piace.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14674,8 +14740,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/11-futuro.js ---- */
+<script>/* ---- data/it/lessons/10-piacere.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-10-piacere-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-11-futuro-js">
 /* Corso di italiano per chi parla cinese · lezione 11 · 说将来的事：将来时.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14713,8 +14779,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/12-imperfetto.js ---- */
+<script>/* ---- data/it/lessons/11-futuro.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-11-futuro-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-12-imperfetto-js">
 /* Corso di italiano per chi parla cinese · lezione 12 · 过去的习惯和背景：未完成过去时.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14751,8 +14817,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/13-pronomi-diretti.js ---- */
+<script>/* ---- data/it/lessons/12-imperfetto.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-12-imperfetto-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-13-pronomi-diretti-js">
 /* Corso di italiano per chi parla cinese · lezione 13 · 代替东西和人：直接宾语代词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14789,8 +14855,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/14-pronomi-indiretti.js ---- */
+<script>/* ---- data/it/lessons/13-pronomi-diretti.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-13-pronomi-diretti-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-14-pronomi-indiretti-js">
 /* Corso di italiano per chi parla cinese · lezione 14 · 给谁、对谁：间接宾语代词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14827,8 +14893,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/15-riflessivi.js ---- */
+<script>/* ---- data/it/lessons/14-pronomi-indiretti.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-14-pronomi-indiretti-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-15-riflessivi-js">
 /* Corso di italiano per chi parla cinese · lezione 15 · 自己对自己做的事：反身动词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14865,8 +14931,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/16-gerundio.js ---- */
+<script>/* ---- data/it/lessons/15-riflessivi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-15-riflessivi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-16-gerundio-js">
 /* Corso di italiano per chi parla cinese · lezione 16 · 正在做：stare + 副动词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14903,8 +14969,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/17-possessivi.js ---- */
+<script>/* ---- data/it/lessons/16-gerundio.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-16-gerundio-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-17-possessivi-js">
 /* Corso di italiano per chi parla cinese · lezione 17 · 我的、你的：物主形容词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14941,8 +15007,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/18-dimostrativi.js ---- */
+<script>/* ---- data/it/lessons/17-possessivi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-17-possessivi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-18-dimostrativi-js">
 /* Corso di italiano per chi parla cinese · lezione 18 · 这个、那个：指示词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -14979,8 +15045,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/19-comparativi.js ---- */
+<script>/* ---- data/it/lessons/18-dimostrativi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-18-dimostrativi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-19-comparativi-js">
 /* Corso di italiano per chi parla cinese · lezione 19 · 比较：比……更.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15017,8 +15083,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/20-imperativo.js ---- */
+<script>/* ---- data/it/lessons/19-comparativi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-19-comparativi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-20-imperativo-js">
 /* Corso di italiano per chi parla cinese · lezione 20 · 请你……：命令式.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15055,8 +15121,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/21-condizionale.js ---- */
+<script>/* ---- data/it/lessons/20-imperativo.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-20-imperativo-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-21-condizionale-js">
 /* Corso di italiano per chi parla cinese · lezione 21 · 客气地说：条件式.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15093,8 +15159,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/22-preposizioni-articolate.js ---- */
+<script>/* ---- data/it/lessons/21-condizionale.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-21-condizionale-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-22-preposizioni-articolate-js">
 /* Corso di italiano per chi parla cinese · lezione 22 · 介词和冠词合在一起.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15131,8 +15197,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/23-ci-ne.js ---- */
+<script>/* ---- data/it/lessons/22-preposizioni-articolate.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-22-preposizioni-articolate-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-23-ci-ne-js">
 /* Corso di italiano per chi parla cinese · lezione 23 · 小词 ci 和 ne.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15169,8 +15235,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/24-relativi.js ---- */
+<script>/* ---- data/it/lessons/23-ci-ne.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-23-ci-ne-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-24-relativi-js">
 /* Corso di italiano per chi parla cinese · lezione 24 · ……的人、……的东西：关系代词 che 和 cui.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15207,8 +15273,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/25-numeri-ore.js ---- */
+<script>/* ---- data/it/lessons/24-relativi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-24-relativi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-25-numeri-ore-js">
 /* Corso di italiano per chi parla cinese · lezione 25 · 数字、钟点和日期.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15245,8 +15311,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/26-modali.js ---- */
+<script>/* ---- data/it/lessons/25-numeri-ore.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-25-numeri-ore-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-26-modali-js">
 /* Corso di italiano per chi parla cinese · lezione 26 · 能、要、应该：情态动词.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15283,8 +15349,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/27-congiuntivo.js ---- */
+<script>/* ---- data/it/lessons/26-modali.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-26-modali-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-27-congiuntivo-js">
 /* Corso di italiano per chi parla cinese · lezione 27 · 我觉得……：虚拟式（入门）.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15321,8 +15387,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/28-connettivi.js ---- */
+<script>/* ---- data/it/lessons/27-congiuntivo.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-27-congiuntivo-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-28-connettivi-js">
 /* Corso di italiano per chi parla cinese · lezione 28 · 连接句子：因为、所以、如果、虽然.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15359,8 +15425,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/29-si-impersonale.js ---- */
+<script>/* ---- data/it/lessons/28-connettivi.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-28-connettivi-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-29-si-impersonale-js">
 /* Corso di italiano per chi parla cinese · lezione 29 · 人们怎么说：无人称的 si.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15397,8 +15463,8 @@ ITLESSONS.push({
   ]
 });
 </script>
-<script>
-/* ---- data/it/lessons/30-lei-cortesia.js ---- */
+<script>/* ---- data/it/lessons/29-si-impersonale.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-29-si-impersonale-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
+<script type="text/plain" id="course-it-data-it-lessons-30-lei-cortesia-js">
 /* Corso di italiano per chi parla cinese · lezione 30 · 礼貌地说话：尊称 Lei.
    Formato: vedi 01-pronuncia.js. */
 ITLESSONS.push({
@@ -15435,6 +15501,7 @@ ITLESSONS.push({
   ]
 });
 </script>
+<script>/* ---- data/it/lessons/30-lei-cortesia.js (solo nel corso di italiano) ---- */(function () { var c = null; try { c = localStorage.getItem("cp-course"); } catch (e) {} var el = document.getElementById("course-it-data-it-lessons-30-lei-cortesia-js"); if (c === "it" && el) { var s = document.createElement("script"); s.textContent = el.textContent; document.head.appendChild(s); } if (el) el.parentNode.removeChild(el); })();</script>
 <!-- Interfaccia in più lingue -->
 <script>
 /* ---- i18n/i18n.js ---- */
@@ -15516,6 +15583,7 @@ Object.assign(I18N.it, { "tone.1": "alto e piatto", "tone.2": "sale", "tone.3": 
 Object.assign(I18N.it, { "slot.next": "Tocca per il prossimo", "slot.spin1": "Sorteggia {c}", "slot.blocks": "Blocco per blocco:", "slot.sandhi": "Due 3° toni vicini: il primo sale, come un 2° tono.", "slot.sitAsk": "Vuoi una prova? Ti do una situazione e {n} secondi per comporre la frase giusta.", "slot.sitGo": "Genera situazione casuale", "slot.sitAgain": "Un'altra situazione", "slot.sitHead": "SITUAZIONE · {n} SECONDI", "slot.give": "Mi arrendo", "slot.matrices": "Matrici", "slot.howto": "Tocca un blocco per cambiarlo, 🎲 per sorteggiarlo. La frase si ricompone da sola.", "slot.spinAll": "Gira tutto", "slot.timeUp": "Tempo scaduto.", "slot.needed": "Ti serviva: {s}.", "slot.win": "Giusto, in {s} secondi. +15 XP." });
 /* Lezioni */
 Object.assign(I18N.it, { "ls.read": "letta", "ls.lede": "Studia la grammatica una regola alla volta: leggi la spiegazione, ascolta gli esempi, guarda gli errori tipici e mettiti alla prova. Una lezione è superata con almeno {p}% di risposte giuste.", "ls.passed": "{n} lezioni superate su {tot}.", "ls.n": "Lezione {n}", "ls.best": "migliore: {p}%", "ls.pattern": "Schema", "ls.examples": "Esempi", "ls.traps": "Errori tipici", "ls.quiz": "Esercitati ({n} domande)", "ls.qn": "Domanda {n} di {tot} · giuste: {ok}", "ls.order": "Metti in ordine:", "ls.slotEmpty": "Tocca le tessere nell'ordine giusto", "ls.right": "Giusto!", "ls.wrongOrder": "Non ancora. La frase giusta è:", "ls.result": "Risultato", "ls.answers": "Risposte", "ls.notThis": "Non è questa.", "ls.passedOne": "Lezione superata!", "ls.almost": "Quasi!", "ls.score": "{n} risposte giuste su {tot} ({p}%).", "ls.needP": "Per superare la lezione ne servono almeno {p}%: rileggi la spiegazione e riprova.", "ls.redo": "Rifai gli esercizi", "ls.reread": "Rileggi la lezione", "ls.all": "Tutte le lezioni", "ls.nextL": "Lezione dopo" });
+Object.assign(I18N.it, { "ls.rev": "Ripasso", "ls.revTitle": "Ripasso: lezioni {a}–{b}", "ls.revGoal": "Domande prese dalle cinque lezioni appena fatte.", "ls.revBody": "Due domande per ognuna delle cinque lezioni, scelte a sorte: se ne sbagli una, rileggi quella lezione. Ogni volta le domande cambiano.", "ls.dlg": "Mini-dialogo" });
 /* Dialoghi */
 Object.assign(I18N.it, { "dlg.a": "A · l'altra persona", "dlg.b": "B · tu", "dlg.cats": "Categorie di dialoghi", "dlg.lede": "{n} situazioni in cui devi cavartela, dall'aeroporto alla farmacia. Ascoltale come un audio, poi recita la parte di B.", "dlg.lines": "{n} battute", "dlg.play": "Ascolta tutto il dialogo", "dlg.stop": "Ferma l'ascolto", "dlg.role": "Fai tu la parte di B", "dlg.hint": "Tocca una parola per vederla da vicino. Il numero di battute e le frasi sono scritti per essere detti ad alta voce.", "dlg.flag": "Segnala un errore in questo dialogo", "dlg.say": "Dillo tu, a voce", "dlg.pick": "Tocca ciò che diresti tu ({n}/{tot})", "dlg.show": "Non lo so: mostrami", "dlg.done": "Dialogo finito: {n} su {tot} battute di B al primo colpo.", "dlg.perfect": "Nessuna esitazione. Ora prova ad ascoltarlo senza leggere.", "dlg.again": "Riascolta le battute che hai mancato e rifai il dialogo: la seconda volta va meglio.", "dlg.redo": "Rifai", "dlg.others": "Altri dialoghi", "dlg.listen": "Ti ascolto… di' la tua battuta.", "dlg.noSpeech": "Non ho sentito niente. Riprova.", "dlg.heard": "Ho sentito «{t}». Riprova, o scegli tra le due frasi." });
 /* Pensiero */
@@ -15654,6 +15722,7 @@ Object.assign(I18N.zh, { "tone.1": "高而平", "tone.2": "上升", "tone.3": "�
 Object.assign(I18N.zh, { "slot.next": "点一下换下一个", "slot.spin1": "随机抽一个：{c}", "slot.blocks": "逐块翻译：", "slot.sandhi": "两个第三声相连：第一个读成上升的第二声。", "slot.sitAsk": "想试试吗？给你一个情景，{n} 秒内组成正确的句子。", "slot.sitGo": "随机生成情景", "slot.sitAgain": "换一个情景", "slot.sitHead": "情景 · {n} 秒", "slot.give": "我放弃", "slot.matrices": "句型组", "slot.howto": "点一个词块来更换，点 🎲 随机抽取。句子会自动重新组合。", "slot.spinAll": "全部转动", "slot.timeUp": "时间到了。", "slot.needed": "需要的是：{s}。", "slot.win": "答对了，用时 {s} 秒。+15 XP。" });
 /* Lezioni */
 Object.assign(I18N.zh, { "ls.read": "已读", "ls.lede": "一次学一条语法：读讲解、听例句、看常见错误，再做练习。答对至少 {p}% 就算通过。", "ls.passed": "已通过 {n} 课，共 {tot} 课。", "ls.n": "第 {n} 课", "ls.best": "最好成绩：{p}%", "ls.pattern": "句型", "ls.examples": "例句", "ls.traps": "常见错误", "ls.quiz": "练习（{n} 题）", "ls.qn": "第 {n} 题，共 {tot} 题 · 答对：{ok}", "ls.order": "排列顺序：", "ls.slotEmpty": "按正确的顺序点词卡", "ls.right": "正确！", "ls.wrongOrder": "还不对。正确的句子是：", "ls.result": "结果", "ls.answers": "答案", "ls.notThis": "不是这个。", "ls.passedOne": "这一课通过了！", "ls.almost": "差一点！", "ls.score": "{tot} 题答对 {n} 题（{p}%）。", "ls.needP": "通过这一课至少需要 {p}%：再读一遍讲解，然后重试。", "ls.redo": "重做练习", "ls.reread": "重读这一课", "ls.all": "全部课程", "ls.nextL": "下一课" });
+Object.assign(I18N.zh, { "ls.rev": "复习", "ls.revTitle": "复习：第 {a}–{b} 课", "ls.revGoal": "从刚学的五课里抽题。", "ls.revBody": "每课随机抽两道题；答错了就回去重读那一课。每次的题目都不一样。", "ls.dlg": "小对话" });
 /* Dialoghi */
 Object.assign(I18N.zh, { "dlg.a": "A · 对方", "dlg.b": "B · 你", "dlg.cats": "对话分类", "dlg.lede": "{n} 个需要应对的场景，从机场到药店。先像听音频一样听，再扮演 B。", "dlg.lines": "{n} 句", "dlg.play": "听整段对话", "dlg.stop": "停止播放", "dlg.role": "你来扮演 B", "dlg.hint": "点一个词可以查看详情。这些句子都是为了大声说出来而写的。", "dlg.flag": "报告这段对话里的错误", "dlg.say": "你来说", "dlg.pick": "点你会说的那句（{n}/{tot}）", "dlg.show": "不知道：告诉我", "dlg.done": "对话结束：B 的 {tot} 句里一次答对 {n} 句。", "dlg.perfect": "毫不犹豫。现在试着不看文字听一遍。", "dlg.again": "再听一遍答错的句子，然后重做对话：第二次会更好。", "dlg.redo": "重做", "dlg.others": "其他对话", "dlg.listen": "在听……说出你的那句。", "dlg.noSpeech": "什么也没听到。再试一次。", "dlg.heard": "听到的是「{t}」。再试一次，或者在两句里选一句。" });
 /* Pensiero */
@@ -25662,8 +25731,19 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
   function prog(id) { return load()[id] || {}; }
   function mark(id, patch) { var o = load(), p = o[id] || {}; Object.keys(patch).forEach(function (k) { p[k] = patch[k]; }); o[id] = p; save(o); }
-  function byId(id) { return LESSONS.filter(function (l) { return l.id === id; })[0] || null; }
   function sorted() { return LESSONS.slice().sort(function (a, b) { return (a.n || 0) - (b.n || 0); }); }
+  /* un ripasso ogni cinque lezioni: due domande a sorte da ciascuna delle cinque, prese dai loro esercizi (nessun contenuto nuovo) */
+  var REV = 5;
+  function revDefs() { var out = [], tot = sorted().length; for (var k = 1; k * REV <= tot; k++) out.push({ id: "rip-" + k, k: k, from: (k - 1) * REV + 1, to: k * REV }); return out; }
+  function makeReview(r) {
+    var q = [];
+    sorted().slice(r.from - 1, r.to).forEach(function (l) { q = q.concat(shuffle((l.quiz || []).slice()).slice(0, 2)); });
+    return { id: r.id, review: true, to: r.to, n: r.to + 0.5, title: T("ls.revTitle", { a: r.from, b: r.to }), goal: T("ls.revGoal"), body: [T("ls.revBody")], ex: [], traps: [], quiz: shuffle(q) };
+  }
+  function byId(id) {
+    var r = revDefs().filter(function (d) { return d.id === id; })[0]; if (r) return makeReview(r);
+    return LESSONS.filter(function (l) { return l.id === id; })[0] || null;
+  }
 
   /* una frase cinese con pinyin e toni a colori, presa dal vocabolario */
   var PUNCT = { "。": ".", "？": "?", "！": "!", "，": ",", "、": "," };
@@ -25681,12 +25761,16 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   /* ---- elenco ---- */
   function listHTML() {
     var P = load(), done = 0;
+    var revAfter = {}; revDefs().forEach(function (d) { revAfter[d.to] = d; });
     var cards = sorted().map(function (l) {
       var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
+      var rv = revAfter[l.n], rp = rv ? P[rv.id] || {} : null, rok = rv && (rp.best || 0) >= PASS;
       return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-ls-open="' + CP.attr(l.id) + '">' +
         '<span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + "</span>" +
         '<span class="ls-t" lang="it"><b>' + rich(l.title) + "</b><span class=\"small muted\">" + esc(l.goal) + "</span></span>" +
-        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? T("ls.read") : "") + "</span></button>";
+        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? T("ls.read") : "") + "</span></button>" +
+        (rv ? '<button type="button" class="ls-card ls-rev' + (rok ? " done" : "") + '" data-ls-open="' + rv.id + '"><span class="ls-n" aria-hidden="true">' + (rok ? "✓" : "🔁") + '</span><span class="ls-t" lang="it"><b>' +
+          esc(T("ls.revTitle", { a: rv.from, b: rv.to })) + '</b><span class="small muted">' + esc(T("ls.revGoal")) + '</span></span><span class="ls-st small">' + (rp.best != null ? rp.best + "%" : "") + "</span></button>" : "");
     }).join("");
     return '<p class="lede" style="margin:14px 0 4px">' + T("ls.lede", { p: PASS }) + "</p>" +
       '<p class="small muted" style="margin:0 0 10px">' + T("ls.passed", { n: done, tot: LESSONS.length }) + "</p>" +
@@ -25697,14 +25781,17 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   function lessonHTML(l) {
     var p = prog(l.id), qn = (l.quiz || []).length;
     return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-back>← ' + T("sub.lessons") + "</button></div>" +
-      '<article class="panel ls-lesson"><span class="tag muted small">' + T("ls.n", { n: l.n }) + (p.best != null ? " · " + T("ls.best", { p: p.best }) : "") + "</span>" +
+      '<article class="panel ls-lesson"><span class="tag muted small">' + (l.review ? T("ls.rev") : T("ls.n", { n: l.n })) + (p.best != null ? " · " + T("ls.best", { p: p.best }) : "") + "</span>" +
       '<h3 lang="it">' + rich(l.title) + "</h3>" +
       '<p class="ls-goal" lang="it">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return '<p lang="it">' + rich(b) + "</p>"; }).join("") +
       (l.pattern ? '<div class="ls-pat" lang="it" aria-label="' + CP.attr(T("ls.pattern")) + '">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
-      "<h4>" + T("ls.examples") + "</h4>" + (l.ex || []).map(function (e) {
+      ((l.ex || []).length ? "<h4>" + T("ls.examples") + "</h4>" : "") + (l.ex || []).map(function (e) {
         return '<div class="ls-ex">' + zhHTML(e[0]) + '<div class="small muted" lang="it">' + esc(e[1]) + "</div>" + CP.audioBtns(e[0].replace(/[。？！，]/g, "")) + "</div>";
       }).join("") +
+      ((l.dlg || []).length ? "<h4>" + T("ls.dlg") + "</h4>" + l.dlg.map(function (d) {
+        return '<div class="ls-ex ls-dl ' + (d[0] === "B" ? "b" : "a") + '"><span class="tag muted small" aria-hidden="true">' + esc(d[0]) + "</span>" + zhHTML(d[1]) + '<div class="small muted" lang="it">' + esc(d[2]) + "</div>" + CP.audioBtns(d[1].replace(/[。？！，]/g, "")) + "</div>";
+      }).join("") : "") +
       ((l.traps || []).length ? "<h4>" + T("ls.traps") + "</h4>" + l.traps.map(function (t) {
         return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han" lang="zh-CN">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han" lang="zh-CN">' + esc(t[1]) + '</span></div><div class="small" lang="it">' + rich(t[2]) + "</div></div>";
       }).join("") : "") +
@@ -25774,7 +25861,7 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
       (!quiz.extra && (l.ex || []).length && CP.ex && CP.ex.stile() !== "classic" ? '<button type="button" class="btn-s" data-ls-mini>' + T("ls.mini") + "</button>" : "") +
       '<button type="button" class="btn-s" data-ls-back>' + T("ls.all") + "</button>" + (ok && nextOf(l) ? '<button type="button" class="btn-s" data-ls-open="' + CP.attr(nextOf(l).id) + '">' + T("ls.nextL") + " →</button>" : "") + "</div></div>";
   }
-  function nextOf(l) { var s = sorted(), i = s.indexOf(l); return s[i + 1] || null; }
+  function nextOf(l) { var s = sorted(); if (l.review) return s[l.to] || null; var i = s.indexOf(l); return s[i + 1] || null; }
   function finish() {
     if (quiz.extra) { view = "result"; CP.sfx("tap"); return; }
     var l = quiz.l, pct = Math.round(quiz.score * 100 / l.quiz.length), p = prog(l.id), patch = { best: Math.max(p.best || 0, pct) };
@@ -25800,7 +25887,8 @@ CP.audioTracks.add({ id: "biblioteca", ico: "📚", name: "Biblioteca di Hangzho
   CP.subs = CP.subs || {};
   CP.subs.lessons = { render: function () { return '<div id="ls-root">' + html() + "</div>"; }, after: function () {} };
   CP.lessons = {
-    list: sorted,
+    list: sorted,            /* solo le lezioni vere: i ripassi (rip-N) non contano nei «superate» */
+    reviews: function () { return revDefs(); },
     open: open,
     forPath: function (secId) { return sorted().filter(function (l) { return l.path === secId; }); },
     progress: function (id) { return prog(id); }
@@ -25953,6 +26041,7 @@ var CONTRIBUTORS = [];
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
+      "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e i primi mini-dialoghi con l'audio (lezioni 1–5, nei due corsi).",
       "Ripasso con esercizi vari (⚙️ → Avanzate → Stile di ripasso): Guidato «impara · esercitati · verifica», Misto, o Classico come prima.",
       "Frasi a buco, rimetti in ordine, scrivi il pinyin e il significato, abbina, traccia; la verifica di tappa con 12 domande.",
       "Lettura graduata: testi brevi per livello con domande (Frasi → Leggi → Testi).",
@@ -25975,6 +26064,7 @@ var CHANGELOG = [
       "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
     ],
     zh: [
+      "课程：每学五课有一次复习，题目取自刚学的几课；前五课（两门课程）还加入了带发音的小对话。",
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
       "新练习：填空、排序、听写、动词形式、听句子。",
       "短文阅读：按级别的意大利语短文，附中文问题（在「句子」里）。",
@@ -30590,7 +30680,9 @@ var PLACEMENT = (function () {
 Object.assign(I18N.zh, {"itc.005": "<div class=\"seg\" role=\"group\" aria-label=\"语速\"><button type=\"button\" data-rate=\"0.8\"", "itc.006": ">🐢 慢</button><button type=\"button\" data-rate=\"1\"", "itc.007": ">🐇 正常</button></div>", "itc.008": "<label class=\"small muted\" for=\"it-voice-sel\" style=\"display:grid;gap:4px;font-weight:600\">意大利语语音<select id=\"it-voice-sel\">", "itc.009": "意大利语语音：", "itc.010": "设备没有列出意大利语语音：会尝试用默认语音朗读（it-IT）。如果听不到，请在手机设置的「文字转语音」里安装意大利语。", "itc.011": "> 点击音效</label>", "itc.012": "> 振动</label>", "itc.013": "<button type=\"button\" class=\"btn-main\" id=\"it-voice-test\" style=\"margin-top:4px\">试听：Ciao! Come stai?</button>", "itc.014": "🐢 慢", "itc.015": "🐇 正常", "itc.016": "给说中文的人学意大利语：", "itc.017": " 课语法</b>、常用词、动词变位和中意对照的句子。每个意大利语词都可以听发音，复习间隔由 FSRS 算法安排。所有内容都可以离线使用。", "itc.018": "课程", "itc.019": "单词", "itc.020": "复习", "itc.021": "变位", "itc.022": "句子", "itc.023": "听", "itc.024": "← 返回", "itc.025": "开始", "itc.026": "下一题", "itc.027": "看结果", "itc.028": "答对了！", "itc.029": "不对。", "itc.030": "正确答案：", "itc.031": "把词语排成正确的句子：", "itc.032": "检查", "itc.033": "删除", "itc.034": "显示答案", "itc.035": "忘了", "itc.036": "困难", "itc.037": "记得", "itc.038": "简单", "itc.039": "人", "itc.040": "家庭", "itc.041": "问候", "itc.042": "回答和连接", "itc.043": "常用动词（一）", "itc.044": "常用动词（二）", "itc.045": "提问", "itc.046": "数字和量词", "itc.047": "时间", "itc.048": "方位", "itc.049": "饮食", "itc.050": "形容词", "itc.051": "心情和状态", "itc.052": "地点和国家", "itc.053": "旅行和交通", "itc.054": "家里的东西", "itc.055": "衣服和颜色", "itc.056": "身体和健康", "itc.057": "自然和动物", "itc.058": "工作和学习", "itc.059": "厨房", "itc.060": "城市", "itc.061": "口语", "itc.062": "购物", "itc.063": "自我介绍、打开话题", "itc.064": "听懂、说清楚、求助", "itc.065": "在咖啡馆吃早饭", "itc.066": "在饭店点菜", "itc.067": "购物、价格和付款", "itc.068": "问路和找方向", "itc.069": "出租车、火车和机场", "itc.070": "在酒店，房间出了问题", "itc.071": "时间、约会和朋友", "itc.072": "工作、学习和日常生活", "itc.073": "健康、身体和紧急情况", "itc.074": "谈西西里、意大利和天气", "itc.075": "坐出租车", "itc.076": "过海关", "itc.077": "行李没有到", "itc.078": "买电话卡", "itc.079": "换钱", "itc.080": "办理入住", "itc.081": "无线网连不上", "itc.082": "房间太热", "itc.083": "退房", "itc.084": "请酒店帮忙", "itc.085": "在饭店", "itc.086": "中式早餐", "itc.087": "过敏和忌口", "itc.088": "在咖啡馆", "itc.089": "路边小吃", "itc.090": "在火车上", "itc.091": "坐地铁", "itc.092": "买火车票", "itc.093": "坐公交车", "itc.094": "火车晚点了", "itc.095": "在市场", "itc.096": "扫码付款", "itc.097": "试衣服", "itc.098": "在水果摊", "itc.099": "换货或退货", "itc.100": "在药店", "itc.101": "和朋友喝咖啡", "itc.102": "聊聊西西里", "itc.103": "看医生", "itc.104": "钱包丢了", "itc.105": "商务晚宴", "itc.106": "去朋友家做客", "itc.107": "（只用复数）", "itc.108": "（女）", "itc.109": "名词", "itc.110": "地名", "itc.111": "国籍", "itc.112": "动词", "itc.113": "时间词", "itc.114": "词语", "itc.115": "名词 · 阴性", "itc.116": "名词 · 阳性/阴性", "itc.117": "名词 · 阳性", "itc.118": "<div class=\"it-ex\"><span class=\"tag muted small\">例句</span><div lang=\"it\" class=\"it-ex-it\">", "itc.119": "<table class=\"it-conj\"><thead><tr><th></th><th>现在时</th><th>近过去时</th></tr></thead><tbody>", "itc.120": "<p class=\"small muted\" style=\"margin:4px 0 0\">用 essere：分词要和主语一致（andato / andata / andati / andate）。</p>", "itc.121": "听：", "itc.122": "</div></div><button type=\"button\" class=\"fam-x btn-s\" data-famclose>关闭</button></div>", "itc.123": " <span class=\"small muted\">也说：<span lang=\"zh-CN\">", "itc.124": "</p><p class=\"small muted\">单数 · 复数（带定冠词）。冠词说明见第 3 课。</p>", "itc.125": "</p><p class=\"small muted\">阳性单数 · 阴性单数 · 阳性复数 · 阴性复数（见第 5 课）。</p>", "itc.126": "</p><p class=\"small muted\">国籍是形容词：要配合性别和单复数，而且小写。</p>", "itc.127": "</p><p class=\"small muted\">去 / 在：", "itc.128": "</p><p class=\"small muted\">现在时（见第 6 课）。</p>", "itc.129": "给中国人的意大利语", "itc.130": "màndarínō，给中国人的意大利语课程", "itc.131": "意大利语课程", "itc.132": "已读", "itc.133": "<h2 style=\"margin-top:20px\">意大利语课程</h2><p class=\"lede\" style=\"margin:4px 0\">一课一个语法点：先读讲解，听例句，看常见错误，再做练习。答对 ", "itc.134": "% 以上就算通过。</p>", "itc.135": "<p class=\"small muted\" style=\"margin:0 0 10px\">已通过 ", "itc.136": " 课。</p><div class=\"ls-list\">", "itc.137": "</button></div><article class=\"panel ls-lesson\"><span class=\"tag muted small\">第 ", "itc.138": " 课", "itc.139": " · 最好成绩 ", "itc.140": "<h4>例句</h4>", "itc.141": "<h4>常见错误</h4>", "itc.142": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">✏️ 做练习（", "itc.143": " 题）</button></div></article>", "itc.144": "%\"></i></div><span class=\"tag muted small\">第 ", "itc.145": " 题 · 答对 ", "itc.146": "<div class=\"slot\" data-empty=\"点下面的词\">", "itc.147": "🎉 这一课通过了！", "itc.148": "差一点！", "itc.149": "</h3><p>答对 ", "itc.150": "需要 ", "itc.151": "% 才算通过：再读一遍讲解，然后再试一次。", "itc.152": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">🔁 再做一次</button><button type=\"button\" class=\"btn-s\" data-itl-open=\"", "itc.153": "\">📘 再读一遍</button><button type=\"button\" class=\"btn-s\" data-itl-back>所有课程</button></div></div>", "itc.154": " 词汇", "itc.155": "专业词汇", "itc.156": "<h2 style=\"margin-top:20px\">意大利语单词</h2><p class=\"small muted\" style=\"margin:0 0 8px\">共 ", "itc.157": " 个词。名词带定冠词，点一个词可以看全部形式和动词变位。</p>", "itc.158": "<label for=\"it-q\" class=\"sr\">搜索</label><input id=\"it-q\" type=\"search\" placeholder=\"搜索：意大利语、汉字或拼音\" value=\"", "itc.159": "<p class=\"muted\">没有找到。</p>", "itc.160": "<div class=\"acts\"><button type=\"button\" class=\"btn-s\" data-it-more>显示更多（还有 ", "itc.161": " 个）</button></div>", "itc.162": "<h2 style=\"margin-top:20px\">复习单词</h2><p class=\"small muted\" style=\"margin:0 0 10px\">今天要复习 ", "itc.163": " 个 · 新词还剩 ", "itc.164": " 个 · 已经学过 ", "itc.165": " 个。复习间隔由 FSRS 算法安排。</p>", "itc.166": "<div class=\"panel\"><p>🎉 今天的复习都做完了！明天再来，或者去「课程」和「变位」练习。</p></div>", "itc.167": "新词", "itc.168": "<p class=\"small muted\">先想一想它的中文意思，再看答案。</p><button type=\"button\" class=\"btn-main\" data-itr-show>", "itc.169": "<div class=\"it-grades\" role=\"group\" aria-label=\"记得怎么样\">", "itc.170": "<h2 style=\"margin-top:20px\">动词变位练习</h2><div class=\"seg\" role=\"group\" aria-label=\"时态\"><button type=\"button\" data-itc-tense=\"pres\"", "itc.171": ">现在时</button><button type=\"button\" data-itc-tense=\"past\"", "itc.172": ">近过去时</button></div>", "itc.173": "<div class=\"panel ls-quiz\"><span class=\"tag muted small\">答对 ", "itc.174": "现在时", "itc.175": "近过去时（lei 指女性）", "itc.176": "<div class=\"panel ls-quiz\" id=\"it-px\" style=\"margin-top:20px\"><span class=\"tag muted small\">句子练习 · 把意大利语排好</span><p class=\"ask\" lang=\"zh-CN\">", "itc.177": "</button><button type=\"button\" class=\"btn-s\" data-itx-next>换一句</button></div>", "itc.178": "<h2 style=\"margin-top:20px\">常用句子</h2><p class=\"small muted\" style=\"margin:0 0 10px\">意大利语在上，中文在下。点 🔊 听意大利语。</p>", "itc.179": "<h3 style=\"margin-top:20px\">对话（中意对照）</h3><div class=\"ls-list\">", "itc.180": "第一人称单数（io）", "itc.181": "第二人称单数（tu）", "itc.182": "第三人称单数（lui / lei）", "itc.183": "第一人称复数（noi）", "itc.184": "第二人称复数（voi）", "itc.185": "第三人称复数（loro）", "itc.186": "阳性单数", "itc.187": "阴性单数", "itc.188": "阳性复数", "itc.189": "阴性复数", "itc.190": " 是", "itc.191": "，形容词要变成「", "itc.192": "」是不是「", "itc.193": "」：意大利语里国籍和语言要小写：「", "itc.194": " 是复数，不定冠词 un / una 只能用在单数前面。可以用定冠词「", "itc.195": "这个词前面要用「", "itc.196": "」（看后面一个词的开头字母）。", "itc.197": "冠词要用「", "itc.198": "」：介词 ", "itc.199": " 和冠词要合成一个词「", "itc.200": "」：两个以上要用复数「", "itc.201": "」：单数的家人（madre、padre、fratello…）前面，物主形容词不加冠词。", "itc.202": "，要说「", "itc.203": "，冠词要用「", "itc.204": "」：物主形容词前面一般要加冠词：「", "itc.205": "」：动词要变位，不能用原形。主语是", "itc.206": "」：意大利语说「", "itc.207": " piace / piacciono …」，喜欢的东西才是主语。", "itc.208": "」：主语是", "itc.209": "，动词 ", "itc.210": " 应该是「", "itc.211": "复数", "itc.212": "单数", "itc.213": "（女性用「", "itc.214": "」：用 essere 的时候，过去分词要和主语一致：「", "itc.215": " 的近过去时用 essere：「", "itc.216": "」（分词和主语一致）。", "itc.217": " 的近过去时用 avere：「", "itc.218": "」：意大利语说「avere ", "itc.219": "」：喜欢的东西是", "itc.220": "，要用「", "itc.221": "<p class=\"small muted\">这些词我都还不认识，没法检查。</p>", "itc.222": "<p style=\"margin:8px 0 0\">建议：<b lang=\"it\">", "itc.223": "\" aria-label=\"朗读\">🔊</button></p>", "itc.224": "<p class=\"verdict ok\">✓ 没有发现配合错误。</p>", "itc.225": "<p class=\"small muted\">没检查的词（词库里没有）：<span lang=\"it\">", "itc.226": "<div class=\"panel\" id=\"itc\" style=\"margin-top:20px\"><span class=\"tag muted small\">✍️ 句子检查</span>", "itc.227": "<p class=\"small muted\" style=\"margin:4px 0 8px\">写一句意大利语，我来检查冠词、名词、形容词和动词是否配合，还有一些拼写。我不检查意思和语序。</p>", "itc.228": "<form data-itc-form style=\"display:flex;gap:8px;flex-wrap:wrap\"><input id=\"itc-in\" type=\"text\" lang=\"it\" autocomplete=\"off\" autocapitalize=\"sentences\" spellcheck=\"false\" aria-label=\"意大利语句子\" placeholder=\"La ragazza è alta.\" value=\"", "itc.229": "<button type=\"submit\" class=\"btn-s\" style=\"margin:0\">检查</button></form><div id=\"itc-out\" aria-live=\"polite\">"});
 Object.assign(I18N.it, {"itc.005": "<div class=\"seg\" role=\"group\" aria-label=\"Velocità\"><button type=\"button\" data-rate=\"0.8\"", "itc.006": ">🐢 Lento</button><button type=\"button\" data-rate=\"1\"", "itc.007": ">🐇 Normale</button></div>", "itc.008": "<label class=\"small muted\" for=\"it-voice-sel\" style=\"display:grid;gap:4px;font-weight:600\">Voce italiana<select id=\"it-voice-sel\">", "itc.009": "Voce italiana: ", "itc.010": "Il dispositivo non elenca voci italiane: provo con la voce predefinita (it-IT). Se non senti nulla, installa l'italiano in «Sintesi vocale» nelle impostazioni del telefono.", "itc.011": "> Suoni dei tocchi</label>", "itc.012": "> Vibrazione</label>", "itc.013": "<button type=\"button\" class=\"btn-main\" id=\"it-voice-test\" style=\"margin-top:4px\">Prova: Ciao! Come stai?</button>", "itc.014": "🐢 Lento", "itc.015": "🐇 Normale", "itc.016": "L'italiano per chi parla cinese: ", "itc.017": " lezioni di grammatica</b>, parole comuni, coniugazioni e frasi a fronte italiano-cinese. Ogni parola italiana si può ascoltare; gli intervalli di ripasso li decide l'algoritmo FSRS. Tutto funziona anche offline.", "itc.018": "Lezioni", "itc.019": "Parole", "itc.020": "Ripasso", "itc.021": "Coniugazioni", "itc.022": "Frasi", "itc.023": "Ascolta", "itc.024": "← Indietro", "itc.025": "Inizia", "itc.026": "Avanti", "itc.027": "Vedi il risultato", "itc.028": "Giusto!", "itc.029": "Non è giusto.", "itc.030": "Risposta giusta: ", "itc.031": "Metti le parole in ordine per formare la frase:", "itc.032": "Controlla", "itc.033": "Cancella", "itc.034": "Mostra la risposta", "itc.035": "Non la so", "itc.036": "Difficile", "itc.037": "La so", "itc.038": "Facile", "itc.039": "Persone", "itc.040": "Famiglia", "itc.041": "Saluti", "itc.042": "Risposte e connettivi", "itc.043": "Verbi comuni (1)", "itc.044": "Verbi comuni (2)", "itc.045": "Domande", "itc.046": "Numeri e classificatori", "itc.047": "Tempo", "itc.048": "Luoghi e direzioni", "itc.049": "Cibo e bevande", "itc.050": "Aggettivi", "itc.051": "Stati d'animo", "itc.052": "Luoghi e paesi", "itc.053": "Viaggi e trasporti", "itc.054": "In casa", "itc.055": "Vestiti e colori", "itc.056": "Corpo e salute", "itc.057": "Natura e animali", "itc.058": "Lavoro e studio", "itc.059": "Cucina", "itc.060": "Città", "itc.061": "Lingua parlata", "itc.062": "Acquisti", "itc.063": "Presentarsi e rompere il ghiaccio", "itc.064": "Capire, farsi capire, chiedere aiuto", "itc.065": "Colazione al bar", "itc.066": "Ordinare al ristorante", "itc.067": "Acquisti, prezzi e pagamento", "itc.068": "Chiedere la strada", "itc.069": "Taxi, treno e aeroporto", "itc.070": "In albergo, un problema in camera", "itc.071": "Orari, appuntamenti e amici", "itc.072": "Lavoro, studio e vita quotidiana", "itc.073": "Salute, corpo ed emergenze", "itc.074": "Parlare della Sicilia, dell'Italia e del tempo", "itc.075": "In taxi", "itc.076": "Alla dogana", "itc.077": "Il bagaglio non è arrivato", "itc.078": "Comprare una SIM", "itc.079": "Cambiare i soldi", "itc.080": "Il check-in", "itc.081": "Il wifi non funziona", "itc.082": "La camera è troppo calda", "itc.083": "Il check-out", "itc.084": "Chiedere aiuto all'albergo", "itc.085": "Al ristorante", "itc.086": "Colazione cinese", "itc.087": "Allergie e cibi da evitare", "itc.088": "Al bar", "itc.089": "Cibo di strada", "itc.090": "In treno", "itc.091": "In metropolitana", "itc.092": "Comprare un biglietto del treno", "itc.093": "In autobus", "itc.094": "Il treno è in ritardo", "itc.095": "Al mercato", "itc.096": "Pagare con il QR", "itc.097": "Provare i vestiti", "itc.098": "Dal fruttivendolo", "itc.099": "Cambiare o rendere un acquisto", "itc.100": "In farmacia", "itc.101": "Un caffè con gli amici", "itc.102": "Parlare della Sicilia", "itc.103": "Dal medico", "itc.104": "Ho perso il portafoglio", "itc.105": "Una cena di lavoro", "itc.106": "Ospiti a casa di amici", "itc.107": " (solo plurale)", "itc.108": " (femminile)", "itc.109": "nome", "itc.110": "luogo", "itc.111": "nazionalità", "itc.112": "verbo", "itc.113": "parola di tempo", "itc.114": "espressione", "itc.115": "nome · femminile", "itc.116": "nome · maschile/femminile", "itc.117": "nome · maschile", "itc.118": "<div class=\"it-ex\"><span class=\"tag muted small\">Esempio</span><div lang=\"it\" class=\"it-ex-it\">", "itc.119": "<table class=\"it-conj\"><thead><tr><th></th><th>Presente</th><th>Passato prossimo</th></tr></thead><tbody>", "itc.120": "<p class=\"small muted\" style=\"margin:4px 0 0\">Con essere il participio si accorda con il soggetto (andato / andata / andati / andate).</p>", "itc.121": "Ascolta: ", "itc.122": "</div></div><button type=\"button\" class=\"fam-x btn-s\" data-famclose>Chiudi</button></div>", "itc.123": " <span class=\"small muted\">si dice anche: <span lang=\"zh-CN\">", "itc.124": "</p><p class=\"small muted\">Singolare · plurale (con l'articolo determinativo). Gli articoli sono nella lezione 3.</p>", "itc.125": "</p><p class=\"small muted\">Maschile singolare · femminile singolare · maschile plurale · femminile plurale (lezione 5).</p>", "itc.126": "</p><p class=\"small muted\">Le nazionalità sono aggettivi: si accordano con genere e numero, e si scrivono minuscole.</p>", "itc.127": "</p><p class=\"small muted\">Andare a / essere a: ", "itc.128": "</p><p class=\"small muted\">Presente (lezione 6).</p>", "itc.129": "L'italiano per i cinesi", "itc.130": "màndarínō, il corso di italiano per i cinesi", "itc.131": "Corso di italiano", "itc.132": "Letta", "itc.133": "<h2 style=\"margin-top:20px\">Corso di italiano</h2><p class=\"lede\" style=\"margin:4px 0\">Una lezione, un punto di grammatica: leggi la spiegazione, ascolta gli esempi, guarda gli errori tipici e fai gli esercizi. Con almeno il ", "itc.134": "% di risposte giuste la lezione è superata.</p>", "itc.135": "<p class=\"small muted\" style=\"margin:0 0 10px\">Lezioni superate: ", "itc.136": ".</p><div class=\"ls-list\">", "itc.137": "</button></div><article class=\"panel ls-lesson\"><span class=\"tag muted small\">Lezione ", "itc.138": "", "itc.139": " · miglior risultato ", "itc.140": "<h4>Esempi</h4>", "itc.141": "<h4>Errori tipici</h4>", "itc.142": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">✏️ Fai gli esercizi (", "itc.143": " domande)</button></div></article>", "itc.144": "%\"></i></div><span class=\"tag muted small\">Domanda ", "itc.145": " · giuste ", "itc.146": "<div class=\"slot\" data-empty=\"Tocca le parole qui sotto\">", "itc.147": "🎉 Lezione superata!", "itc.148": "Ci sei quasi!", "itc.149": "</h3><p>Risposte giuste: ", "itc.150": "Serve il ", "itc.151": "% per superarla: rileggi la spiegazione e riprova.", "itc.152": "<div class=\"acts\"><button type=\"button\" class=\"btn-main\" data-itl-quiz style=\"margin:0\">🔁 Rifalla</button><button type=\"button\" class=\"btn-s\" data-itl-open=\"", "itc.153": "\">📘 Rileggi</button><button type=\"button\" class=\"btn-s\" data-itl-back>Tutte le lezioni</button></div></div>", "itc.154": " · vocabolario", "itc.155": "Parole specialistiche", "itc.156": "<h2 style=\"margin-top:20px\">Parole italiane</h2><p class=\"small muted\" style=\"margin:0 0 8px\">", "itc.157": " parole in tutto. I nomi hanno l'articolo; tocca una parola per vedere tutte le forme e la coniugazione.</p>", "itc.158": "<label for=\"it-q\" class=\"sr\">Cerca</label><input id=\"it-q\" type=\"search\" placeholder=\"Cerca: italiano, caratteri o pinyin\" value=\"", "itc.159": "<p class=\"muted\">Niente trovato.</p>", "itc.160": "<div class=\"acts\"><button type=\"button\" class=\"btn-s\" data-it-more>Mostra altre (ancora ", "itc.161": ")</button></div>", "itc.162": "<h2 style=\"margin-top:20px\">Ripasso delle parole</h2><p class=\"small muted\" style=\"margin:0 0 10px\">Da ripassare oggi: ", "itc.163": " · parole nuove rimaste: ", "itc.164": " · già studiate: ", "itc.165": ". Gli intervalli li decide l'algoritmo FSRS.</p>", "itc.166": "<div class=\"panel\"><p>🎉 Ripasso di oggi finito! Torna domani, oppure esercitati con «Lezioni» e «Coniugazioni».</p></div>", "itc.167": "Parola nuova", "itc.168": "<p class=\"small muted\">Prima pensa al significato in cinese, poi guarda la risposta.</p><button type=\"button\" class=\"btn-main\" data-itr-show>", "itc.169": "<div class=\"it-grades\" role=\"group\" aria-label=\"Quanto la ricordi\">", "itc.170": "<h2 style=\"margin-top:20px\">Esercizi di coniugazione</h2><div class=\"seg\" role=\"group\" aria-label=\"Tempo verbale\"><button type=\"button\" data-itc-tense=\"pres\"", "itc.171": ">Presente</button><button type=\"button\" data-itc-tense=\"past\"", "itc.172": ">Passato prossimo</button></div>", "itc.173": "<div class=\"panel ls-quiz\"><span class=\"tag muted small\">Giuste ", "itc.174": "Presente", "itc.175": "Passato prossimo (lei = femminile)", "itc.176": "<div class=\"panel ls-quiz\" id=\"it-px\" style=\"margin-top:20px\"><span class=\"tag muted small\">Frasi · metti in ordine l'italiano</span><p class=\"ask\" lang=\"zh-CN\">", "itc.177": "</button><button type=\"button\" class=\"btn-s\" data-itx-next>Un'altra frase</button></div>", "itc.178": "<h2 style=\"margin-top:20px\">Frasi utili</h2><p class=\"small muted\" style=\"margin:0 0 10px\">Sopra l'italiano, sotto il cinese. Tocca 🔊 per ascoltare l'italiano.</p>", "itc.179": "<h3 style=\"margin-top:20px\">Dialoghi (italiano e cinese)</h3><div class=\"ls-list\">", "itc.180": "prima persona singolare (io)", "itc.181": "seconda persona singolare (tu)", "itc.182": "terza persona singolare (lui / lei)", "itc.183": "prima persona plurale (noi)", "itc.184": "seconda persona plurale (voi)", "itc.185": "terza persona plurale (loro)", "itc.186": "maschile singolare", "itc.187": "femminile singolare", "itc.188": "maschile plurale", "itc.189": "femminile plurale", "itc.190": " è ", "itc.191": ", l'aggettivo diventa «", "itc.192": "» è «", "itc.193": "»: in italiano nazionalità e lingue si scrivono minuscole: «", "itc.194": " è plurale: l'articolo indeterminativo un / una va solo davanti al singolare. Puoi usare l'articolo determinativo «", "itc.195": "Davanti a questa parola serve «", "itc.196": "» (dipende dalla lettera iniziale della parola dopo).", "itc.197": "L'articolo giusto è «", "itc.198": "»: la preposizione ", "itc.199": " e l'articolo si uniscono in una parola: «", "itc.200": "»: da due in su serve il plurale «", "itc.201": "»: davanti ai familiari al singolare (madre, padre, fratello…) l'aggettivo possessivo non vuole l'articolo.", "itc.202": ", si dice «", "itc.203": ", l'articolo è «", "itc.204": "»: davanti all'aggettivo possessivo di solito serve l'articolo: «", "itc.205": "»: il verbo va coniugato, non si usa l'infinito. Il soggetto è ", "itc.206": "»: in italiano si dice «", "itc.207": " piace / piacciono …», e il soggetto è la cosa che piace.", "itc.208": "»: il soggetto è ", "itc.209": ", il verbo ", "itc.210": " diventa «", "itc.211": "plurale", "itc.212": "singolare", "itc.213": " (al femminile «", "itc.214": "»: con essere il participio passato si accorda con il soggetto: «", "itc.215": " al passato prossimo vuole essere: «", "itc.216": "» (participio accordato con il soggetto).", "itc.217": " al passato prossimo vuole avere: «", "itc.218": "»: in italiano si dice «avere ", "itc.219": "»: la cosa che piace è ", "itc.220": ", serve «", "itc.221": "<p class=\"small muted\">Non conosco ancora nessuna di queste parole: non posso controllare.</p>", "itc.222": "<p style=\"margin:8px 0 0\">Suggerimento: <b lang=\"it\">", "itc.223": "\" aria-label=\"Leggi ad alta voce\">🔊</button></p>", "itc.224": "<p class=\"verdict ok\">✓ Nessun errore di accordo.</p>", "itc.225": "<p class=\"small muted\">Parole non controllate (non sono nel lessico): <span lang=\"it\">", "itc.226": "<div class=\"panel\" id=\"itc\" style=\"margin-top:20px\"><span class=\"tag muted small\">✍️ Controllo della frase</span>", "itc.227": "<p class=\"small muted\" style=\"margin:4px 0 8px\">Scrivi una frase in italiano: controllo che articoli, nomi, aggettivi e verbi siano accordati, e un po' di ortografia. Non controllo il senso né l'ordine delle parole.</p>", "itc.228": "<form data-itc-form style=\"display:flex;gap:8px;flex-wrap:wrap\"><input id=\"itc-in\" type=\"text\" lang=\"it\" autocomplete=\"off\" autocapitalize=\"sentences\" spellcheck=\"false\" aria-label=\"Frase italiana\" placeholder=\"La ragazza è alta.\" value=\"", "itc.229": "<button type=\"submit\" class=\"btn-s\" style=\"margin:0\">Controlla</button></form><div id=\"itc-out\" aria-live=\"polite\">"});
 Object.assign(I18N.zh, {"itd.passed": "通过", "itd.lessonN": "第 {n} 课", "itd.best": "最好成绩 {p}%", "itd.pathT": "课程之路", "itd.pathSub": "已通过 {d} / {n} 课 · 答对 {p}% 以上就算通过", "itd.share": "分享", "itd.morning": "早上好", "itd.noon": "中午好", "itd.afternoon": "下午好", "itd.evening": "晚上好", "itd.continue": "继续：第 {n} 课 · {t}", "itd.min": "约 {m} 分钟", "itd.reviewN": "复习 {n} 张", "itd.allDone": "30 课都通过了！去复习单词", "itd.toNext": "距离下一级还有 {n} 分", "itd.points": "{x} 分 · 下一级 {n}", "itd.goal": "今天的目标", "itd.streak": "连续 {n} 天", "itd.phraseT": "今日意大利语", "itd.listen": "听", "itd.progress": "我的进步", "itd.gain": "+{n} 分", "itd.shareCard": "分享纪念卡", "itd.cards": "纪念卡", "itd.shareWeek": "分享本周卡片", "itd.ciaoZh": "你好！", "itm.first": "迈出第一步：通过第一课", "itm.s7": "连续学习 7 天", "itm.s30": "连续学习 30 天", "itm.s100": "连续学习 100 天", "itm.w100": "学会 100 个词", "itm.w500": "学会 500 个词", "itm.w1000": "学会 1000 个词", "itm.all": "30 课全部通过", "itm.rank": "新等级：{r}", "itm.congrats": "恭喜！{m}", "itcard.sub": "给中国人的意大利语", "itcard.weekT": "我的这一周", "itcard.rank": "我的等级", "itcard.points": "{n} 分", "itcard.wDays": "学习天数", "itcard.wWords": "新学的词", "itcard.wLessons": "通过的课", "itcard.streak": "连续天数", "itcard.words": "学会的词", "itcard.lessons": "通过的课", "itcard.phrase": "今日意大利语", "itcard.foot": "免费 · 离线 · 无广告 · 无需注册", "itcard.scan": "扫码了解 màndarínō", "itcard.alt": "分享卡片：今日意大利语「{p}」，等级 {r}", "itcard.title": "分享卡片", "itcard.privacy": "图片在你的手机上生成；要不要分享由你决定。", "itcard.format": "比例", "itcard.theme": "颜色", "itcard.th.light": "浅色", "itcard.th.sepia": "米纸", "itcard.th.dark": "深色", "itcard.sign": "在卡片上署名", "itcard.namePh": "你的名字（只保存在这台手机上）", "itcard.share": "分享"});
+Object.assign(I18N.zh, {"itd.rev": "复习", "itd.revTitle": "复习：第 {a}–{b} 课", "itd.revBody": "每课随机抽两道题；答错了就回去重读那一课。每次的题目都不一样。", "itd.revGo": "开始复习（{n} 题）", "itd.dlg": "小对话"});
 Object.assign(I18N.it, {"itd.passed": "Superata", "itd.lessonN": "Lezione {n}", "itd.best": "miglior risultato {p}%", "itd.pathT": "Il percorso delle lezioni", "itd.pathSub": "Superate {d} / {n} · servono almeno il {p}% di risposte giuste", "itd.share": "Condividi", "itd.morning": "Buongiorno", "itd.noon": "Buongiorno", "itd.afternoon": "Buon pomeriggio", "itd.evening": "Buonasera", "itd.continue": "Continua: lezione {n} · {t}", "itd.min": "circa {m} min", "itd.reviewN": "Ripassa {n} carte", "itd.allDone": "Tutte le 30 lezioni superate! Ripassa le parole", "itd.toNext": "Mancano {n} punti al prossimo grado", "itd.points": "{x} punti · prossimo grado a {n}", "itd.goal": "obiettivo di oggi", "itd.streak": "{n} giorni di fila", "itd.phraseT": "L'italiano di oggi", "itd.listen": "Ascolta", "itd.progress": "I miei progressi", "itd.gain": "+{n} punti", "itd.shareCard": "Condividi la carta ricordo", "itd.cards": "Carte ricordo", "itd.shareWeek": "Condividi la carta della settimana", "itd.ciaoZh": "你好！", "itm.first": "Primo gradino: la prima lezione superata", "itm.s7": "7 giorni di fila", "itm.s30": "30 giorni di fila", "itm.s100": "100 giorni di fila", "itm.w100": "100 parole imparate", "itm.w500": "500 parole imparate", "itm.w1000": "1000 parole imparate", "itm.all": "Tutte le 30 lezioni superate", "itm.rank": "Nuovo grado: {r}", "itm.congrats": "Complimenti! {m}", "itcard.sub": "L'italiano per chi parla cinese", "itcard.weekT": "La mia settimana", "itcard.rank": "Il mio grado", "itcard.points": "{n} punti", "itcard.wDays": "giorni di studio", "itcard.wWords": "parole nuove", "itcard.wLessons": "lezioni superate", "itcard.streak": "giorni di fila", "itcard.words": "parole imparate", "itcard.lessons": "lezioni superate", "itcard.phrase": "L'italiano di oggi", "itcard.foot": "gratis · offline · senza pubblicità · senza registrazione", "itcard.scan": "Inquadra per conoscere màndarínō", "itcard.alt": "Carta da condividere: l'italiano di oggi «{p}», grado {r}", "itcard.title": "Carta da condividere", "itcard.privacy": "L'immagine nasce sul tuo telefono; quello che ne fai è una tua scelta.", "itcard.format": "Formato", "itcard.theme": "Colore", "itcard.th.light": "Chiaro", "itcard.th.sepia": "Carta di riso", "itcard.th.dark": "Scuro", "itcard.sign": "Firma la carta", "itcard.namePh": "Il tuo nome (resta solo su questo telefono)", "itcard.share": "Condividi"});
+Object.assign(I18N.it, {"itd.rev": "Ripasso", "itd.revTitle": "Ripasso: lezioni {a}–{b}", "itd.revBody": "Due domande per ognuna delle cinque lezioni, scelte a sorte: se ne sbagli una, rileggi quella lezione. Ogni volta le domande cambiano.", "itd.revGo": "Comincia il ripasso ({n} domande)", "itd.dlg": "Mini-dialogo"});
 Object.assign(I18N.zh, {"itm.holeQ": "空里填什么？"});
 Object.assign(I18N.it, {"itm.holeQ": "Che cosa va nel buco?"});
 Object.assign(I18N.zh, {"itx.q.sig": "这个意大利语词是什么意思？", "itx.q.par": "用意大利语怎么说？", "itx.q.asc": "听一听：是哪个词？", "itx.q.ascF": "听一听：这句话是什么意思？", "itx.q.buco": "空里填哪个词？", "itx.q.gram": "空里填哪个？（语法）", "itx.q.ord": "把意大利语句子排好", "itx.q.scrivi": "用意大利语写出来", "itx.q.dett": "听写：听录音，写出这句话", "itx.q.verbo": "选出动词的正确形式", "itx.listen": "听", "itx.real": "真人录音", "itx.intro": "新词", "itx.learn": "记住了，练一练", "itx.done": "这次练习完成了！", "itx.doneSub": "做了 {n} 个练习。明天再来，记得更牢。", "itx.back": "回到课程", "itx.more": "再练一会儿", "itx.stepPractice": "练习：{n} 个词 · 约 {m} 分钟", "itx.stepLesson": "第 {n} 课：学习 + 小测验", "itx.stepRead": "读一篇短文：{t}", "itq.title": "短文阅读", "itq.lede": "用学过的词读意大利语短文。点一个词看意思，读完回答几个问题。", "itq.read": "已读", "itq.fit": "适合你", "itq.all": "所有短文", "itq.show": "显示", "itq.tr": "中文翻译", "itq.tap": "点一个词查看意思；点 🔊 听整句。", "itq.questions": "回答 {n} 个问题", "itq.score": "答对 {ok} / {n}", "itq.xp": "+{n} 分", "itq.new": "新词 {n} 个：点一下加入复习", "itq.added": "已加入复习"});
@@ -30918,7 +31010,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   CP.itApi = {
     lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
-    open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
+    open: function (id) { ls.cur = itById(id); if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
     show: show, rerender: function () { render(); },
     /* gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
     grade: function (v, g, meta) { var e = typeof v === "string" ? BYID[v] : v; if (e) gradeOf(e, g + 1, !!(meta && meta.retry)); },
@@ -30934,6 +31026,21 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 
   /* ---------------- 课程: lezioni ---------------- */
   var ls = { view: "list", cur: null, quiz: null };
+  /* un ripasso ogni cinque lezioni: due domande a sorte da ciascuna delle cinque, prese dai loro esercizi (nessun contenuto nuovo) */
+  var REV = 5;
+  function itSorted() { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); }
+  function itRevDefs() { var out = [], tot = ITLESSONS.length; for (var k = 1; k * REV <= tot; k++) out.push({ id: "rip-" + k, from: (k - 1) * REV + 1, to: k * REV }); return out; }
+  function itById(id) {
+    var r = itRevDefs().filter(function (d) { return d.id === id; })[0];
+    if (!r) return ITLESSONS.filter(function (l) { return l.id === id; })[0] || null;
+    var q = []; itSorted().slice(r.from - 1, r.to).forEach(function (l) { q = q.concat(shuffle((l.quiz || []).slice()).slice(0, 2)); });
+    return { id: r.id, review: true, n: r.to + 0.5, title: tt("itd.revTitle", { a: r.from, b: r.to }), body: [tt("itd.revBody")], pattern: [], ex: [], traps: [], quiz: shuffle(q) };
+  }
+  function reviewHTML(l) {
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + '</button></div><article class="panel ls-lesson"><span class="tag muted small">' + esc(tt("itd.rev")) + "</span><h3>" + esc(l.title) + "</h3>" +
+      l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
+      '<div class="acts"><button type="button" class="btn-main" data-itl-quiz style="margin:0">✏️ ' + esc(tt("itd.revGo", { n: l.quiz.length })) + "</button></div></article>";
+  }
   function lprog() { try { var o = JSON.parse(lsGet(LKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
   function lmark(id, p) { var o = lprog(), x = o[id] || {}; Object.keys(p).forEach(function (k) { x[k] = p[k]; }); o[id] = x; lsSet(LKEY, JSON.stringify(o)); }
   function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, '<b lang="it">$1</b>'); }
@@ -30944,11 +31051,17 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     /* in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
        in evidenza, quelle superate con il sigillo «通过» */
     var P = lprog(), L = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }), curId = currentLesson(), done = 0;
+    var revAfter = {}; itRevDefs().forEach(function (d) { revAfter[d.to] = d; });
     var nodes = L.map(function (l) {
       var p = P[l.id] || {}, ok = !!p.done || (p.best || 0) >= PASS, now = l.id === curId; if (ok) done++;
       return '<li class="itp-node' + (ok ? " done" : "") + (now ? " now" : "") + '"><button type="button" data-itl-open="' + CP.attr(l.id) + '"' + (now ? ' aria-current="step"' : "") + ">" +
         '<span class="itp-dot" aria-hidden="true">' + (ok ? '<span class="itp-seal">' + esc(tt("itd.passed")) + "</span>" : l.n) + "</span>" +
-        '<span class="itp-t"><small>' + esc(tt("itd.lessonN", { n: l.n })) + "</small><b>" + esc(l.title) + "</b>" + (p.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: p.best })) + "</small>" : "") + "</span></button></li>";
+        '<span class="itp-t"><small>' + esc(tt("itd.lessonN", { n: l.n })) + "</small><b>" + esc(l.title) + "</b>" + (p.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: p.best })) + "</small>" : "") + "</span></button></li>" + (function () {
+        var rv = revAfter[l.n]; if (!rv) return "";
+        var rp = P[rv.id] || {}, rok = !!rp.done || (rp.best || 0) >= PASS;
+        return '<li class="itp-node rev' + (rok ? " done" : "") + '"><button type="button" data-itl-open="' + rv.id + '"><span class="itp-dot" aria-hidden="true">' + (rok ? '<span class="itp-seal">' + esc(tt("itd.passed")) + "</span>" : "🔁") + '</span><span class="itp-t"><small>' + esc(tt("itd.rev")) + "</small><b>" +
+          esc(tt("itd.revTitle", { a: rv.from, b: rv.to })) + "</b>" + (rp.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: rp.best })) + "</small>" : "") + "</span></button></li>";
+      })();
     }).join("");
     return (CP.classBanner ? CP.classBanner() : "") + (CP.itToday ? CP.itToday.html() : "") +
       '<h2 class="itp-h">' + esc(tt("itd.pathT")) + '</h2><p class="small muted" style="margin:0 0 10px">' + esc(tt("itd.pathSub", { d: done, n: L.length, p: PASS })) + "</p>" +
@@ -30961,11 +31074,13 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     return null;
   }
   function lessonHTML(l) {
+    if (l.review) return reviewHTML(l);
     var p = lprog()[l.id] || {};
     return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + tt("itc.137") + l.n + tt("itc.138") + (p.best != null ? tt("itc.139") + p.best + "%" : "") + "</span><h3>" + esc(l.title) + '</h3><p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
       '<div class="ls-pat">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx" lang="it">' + esc(f) + "</span>"; }).join("") + "</div>" +
       tt("itc.140") + l.ex.map(function (e) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(e[0]) + '</div><div class="small muted">' + esc(e[1]) + "</div><div>" + sayBtn(e[0], true) + "</div></div>"; }).join("") +
+      ((l.dlg || []).length ? "<h4>" + esc(tt("itd.dlg")) + "</h4>" + l.dlg.map(function (d) { return '<div class="ls-ex ls-dl ' + (d[0] === "B" ? "b" : "a") + '"><span class="tag muted small" aria-hidden="true">' + esc(d[0]) + '</span><div class="it-big" lang="it">' + esc(d[1]) + '</div><div class="small muted">' + esc(d[2]) + "</div><div>" + sayBtn(d[1], true) + "</div></div>"; }).join("") : "") +
       tt("itc.141") + l.traps.map(function (t) { return '<div class="ls-trap"><div class="ls-bad">❌ <span lang="it">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span lang="it">' + esc(t[1]) + '</span></div><div class="small">' + esc(t[2]) + "</div></div>"; }).join("") +
       tt("itc.142") + l.quiz.length + tt("itc.143");
   }
@@ -31168,7 +31283,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.hasAttribute("data-it-say")) return;
     var a = function (n) { return b.getAttribute(n); };
     /* lezioni */
-    if (a("data-itl-open") !== null) { ls.cur = ITLESSONS.filter(function (l) { return l.id === a("data-itl-open"); })[0]; ls.view = "lesson"; ls.quiz = null; lmark(ls.cur.id, { seen: Date.now() }); CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
+    if (a("data-itl-open") !== null) { ls.cur = itById(a("data-itl-open")); if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(ls.cur.id, { seen: Date.now() }); CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
     if (b.hasAttribute("data-itl-back")) { ls.view = "list"; ls.cur = null; ls.quiz = null; render(); window.scrollTo(0, 0); return; }
     if (b.hasAttribute("data-itl-quiz")) { ls.quiz = { l: ls.cur || ls.quiz.l, i: 0, score: 0 }; ls.cur = ls.quiz.l; prepare(); ls.view = "quiz"; render(); window.scrollTo(0, 0); return; }
     if (ls.quiz) {

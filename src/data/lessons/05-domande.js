@@ -19,6 +19,12 @@ LESSONS.push({
     ["他是不是中国人？", "Lui è cinese?"],
     ["你明天来吗？", "Domani vieni?"]
   ],
+  "dlg": [
+    ["A", "你好！你是中国人吗？", "Ciao! Sei cinese?"],
+    ["B", "不是，我是意大利人。你是老师吗？", "No, sono italiano. Tu sei insegnante?"],
+    ["A", "是，我是老师。你会说中文吗？", "Sì, sono insegnante. Sai parlare cinese?"],
+    ["B", "会，我会说中文。", "Sì, so parlare cinese."]
+  ],
   "traps": [
     ["你吗是中国人？", "你是中国人吗？", "吗 va sempre in fondo."],
     ["你是不是中国人吗？", "你是不是中国人？", "Con 是不是 la domanda c'è già: niente 吗."]
