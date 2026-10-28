@@ -25,7 +25,7 @@ ITLESSONS.push({
   ],
   "dlg": [
     ["A", "Che tempo farà domani?", "明天天气会怎么样？"],
-    ["B", "Sarà freddo.", "会很冷。"],
+    ["B", "Farà freddo.", "会很冷。"],
     ["A", "Allora resteremo a casa.", "那我们就待在家里。"],
     ["B", "Va bene. Ti telefonerò stasera.", "好的。我今天晚上给你打电话。"]
   ],

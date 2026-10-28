@@ -30,7 +30,7 @@ ITLESSONS.push({
   ],
   "traps": [
     ["Sono l'una.", "È l'una.", "一点用单数 è。"],
-    ["Il due di giugno. (日期)", "Il 2 giugno.", "日期不用 di，直接说 il 2 giugno。"],
+    ["Il secondo giugno.", "Il 2 giugno.", "除了每月一号用序数词 primo，其他日期都用基数词：il 2 giugno。"],
     ["Ventiotto.", "Ventotto.", "venti + otto 省略 i：ventotto。"]
   ],
   "quiz": [

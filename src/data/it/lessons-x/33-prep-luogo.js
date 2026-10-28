@@ -27,12 +27,12 @@ ITLESSONS.push({
     ["B", "È vicino alla farmacia, accanto al bar.", "在药店附近，咖啡馆旁边。"]
   ],
   "traps": [
-    ["Il bar è vicino casa.", "Il bar è vicino a casa.", "vicino 后面要加 a。"],
+    ["Il bar è vicino la stazione.", "Il bar è vicino alla stazione.", "vicino 后面要加介词 a（a + la = alla）。"],
     ["Abito lontano casa.", "Abito lontano da casa.", "lontano 后面要加 da。"],
     ["Il libro è sopra del tavolo.", "Il libro è sopra il tavolo.", "sopra 后面直接加名词，不加 di。"]
   ],
   "quiz": [
-    {"k": "pick", "q": "咖啡馆在我家附近", "opts": ["Il bar è vicino casa.", "Il bar è vicino a casa.", "Il bar è vicino di casa."], "a": 1},
+    {"k": "pick", "q": "咖啡馆在我家附近", "opts": ["Il bar è vicino da casa.", "Il bar è vicino a casa.", "Il bar è vicino di casa."], "a": 1},
     {"k": "pick", "q": "猫在椅子下面", "opts": ["Il gatto è sotto la sedia.", "Il gatto è sopra la sedia.", "Il gatto è dietro di la sedia."], "a": 0},
     {"k": "buco", "it": "Abito ___ da Roma.", "opts": ["lontano", "lontana a", "vicino"], "a": 0},
     {"k": "pick", "q": "药店在银行和咖啡馆中间", "opts": ["La farmacia è tra la banca e il bar.", "La farmacia è su la banca e il bar.", "La farmacia è in la banca e il bar."], "a": 0},

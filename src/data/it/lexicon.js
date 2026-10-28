@@ -3694,7 +3694,7 @@ var IT_LEXICON = [
   ["恐慌","j","panico",["panico","panica","panici","paniche"]],
   ["自卑","x","complesso di inferiorità"],
   ["自负","n","presunzione","f","presunzioni"],
-  ["双向情感障碍","x","disturbo bipolare"],
+  ["双相情感障碍","x","disturbo bipolare"],
   ["疗法","n","terapia","f","terapie"],
   ["社交恐惧","x","fobia sociale"],
   ["放松训练","x","training di rilassamento"],
