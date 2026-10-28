@@ -243,17 +243,17 @@ try {
     await p.evaluate(() => { window.__sent = null; Store.download = (n, t) => { window.__sent = t; }; }); await p.click('[data-ct-send="file"]').catch(() => {}); await p.waitForTimeout(150);
     const sent = await p.evaluate(() => { try { return JSON.parse(window.__sent); } catch (e) { return null; } });
     check("Contributi: la casella «compari nei Crediti» è spenta di base; spuntata, la patch porta nickname e credit: 1", off && sent && sent.author === "Prova_e2e" && sent.credit === 1, JSON.stringify(sent || {}).slice(0, 160));
-    await p.evaluate(() => { CP.closeSheet(); CP.openSettings("grp-info"); }); await p.waitForTimeout(200);
+    await p.evaluate(() => { CP.closeSheet(); CP.openSettings("info"); }); await p.waitForTimeout(200);
     const news = await p.evaluate(() => { const d = document.getElementById("set-news"); if (!d) return null; d.open = true; const v = d.querySelector(".news-v[open] b"); return { v: v && v.textContent, top: CHANGELOG[0].v, n: d.querySelectorAll(".news-v[open] li").length, lang: d.querySelector(".news-list").getAttribute("lang") }; });
-    check("Novità: in ⚙️ → Informazioni e supporto, l'ultima versione aperta", news && news.v === news.top && news.n > 2 && news.lang === "it", JSON.stringify(news));
-    await p.click("#grp-info [data-credits]").catch(() => p.evaluate(() => CP.credits())); await p.waitForTimeout(150);
+    check("Novità: in ⚙️ → Informazioni, l'ultima versione aperta", news && news.v === news.top && news.n > 2 && news.lang === "it", JSON.stringify(news));
+    await p.click("#set-about [data-credits]").catch(() => p.evaluate(() => CP.credits())); await p.waitForTimeout(150);
     check("Crediti: la parte «Chi ha contribuito» c'è anche quando l'elenco è vuoto", await p.evaluate(() => /Chi ha contribuito/.test(document.getElementById("fam").textContent)));
     await p.evaluate(() => { localStorage.setItem("cp-lang", "zh"); }); await p.reload(); await p.waitForTimeout(500);
-    await p.evaluate(() => CP.openSettings("grp-info")); await p.waitForTimeout(200);
-    const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector("summary").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
+    await p.evaluate(() => CP.openSettings("info")); await p.waitForTimeout(200);
+    const zh = await p.evaluate(() => { const d = document.getElementById("set-news"); return d && d.querySelector(".set-h").textContent + "|" + d.querySelector(".news-list").getAttribute("lang"); });
     check("Novità in cinese: titolo e righe in cinese", /更新内容/.test(zh || "") && /zh-CN$/.test(zh || ""), zh);
-    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("#grp-info") && d.querySelector("summary").textContent + "|" + d.querySelectorAll("li").length : ""; });
-    check("Privacy: voce in ⚙️ → Informazioni e supporto, in cinese, otto punti (anche il backup di Android e le sfide)", /隐私\|8$/.test(pv || ""), pv);
+    const pv = await p.evaluate(() => { const d = document.getElementById("set-privacy"); return d ? d.closest("[data-set-page=info]") && d.querySelector(".set-h").textContent + "|" + d.querySelectorAll("li").length : ""; });
+    check("Privacy: voce in ⚙️ → Informazioni, in cinese, otto punti (anche il backup di Android e le sfide)", /隐私\|8$/.test(pv || ""), pv);
     check("Contributi e Novità: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -319,7 +319,7 @@ try {
     await p.click("[data-anki-go]"); await p.waitForSelector("[data-anki-ok1]"); const before = await p.evaluate(() => window.__dl);
     await p.click("[data-anki-ok1]"); await p.waitForSelector("[data-anki-ok2]"); await p.click("[data-anki-ok2]"); await p.waitForTimeout(200);
     const dl = await p.evaluate(() => window.__dl);
-    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e privacy → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
+    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e sincronizzazione → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
     check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -740,9 +740,9 @@ try {
     const r0 = await p.evaluate(() => { CP.ex.carica(); const E = CP.exEngine, any = CP.ORDER.some((k) => E.REG["ascolto-frase"].richiede(CP.WORDS[k], E.ctx)); CP.say("还有很多时间"); return { any, url: CP.voiceClip.url("还有很多时间", "zh") }; });
     await p.waitForTimeout(150);
     check("Voci reali: prima di scaricarle nessuna clip, nessuna richiesta, «ascolta la frase» non si propone", !r0.any && !r0.url && !voce.length, JSON.stringify({ r0, voce: voce.length }));
-    /* ⚙️ → Voce → «Voci reali» → «Scarica le voci» */
+    /* ⚙️ → Suoni e musica → Voce → «Voci reali» → «Scarica le voci» */
     const label = await p.evaluate(() => { CP.show("settings"); const d = document.getElementById("set-voice") || document.querySelector("#vset-body"); const b = document.querySelector("[data-vc-dl]"); return b ? b.textContent : (document.getElementById("vc-box") || {}).textContent || null; });
-    check("Voci reali: in ⚙️ → Voce il pulsante «Scarica le voci» con i MB", /Scarica le voci \(\d+,\d MB\)/.test(label || ""), label);
+    check("Voci reali: in ⚙️ → Suoni e musica → Voce il pulsante «Scarica le voci» con i MB", /Scarica le voci \(\d+,\d MB\)/.test(label || ""), label);
     await p.evaluate(() => document.querySelector("[data-vc-dl]").click());
     await p.waitForFunction(() => localStorage.getItem("cp-voice-dl") === "1", null, { timeout: 120000 }).catch(() => {});
     const r1 = await p.evaluate(async () => { const c = await caches.open("mandarino-voice"), ks = await c.keys(), F = VOICE_FILES; return { dl: localStorage.getItem("cp-voice-dl"), n: ks.length, want: Object.keys(F.zh).length + Object.keys(F.it).length, box: (document.getElementById("vc-box") || {}).textContent }; });
@@ -979,13 +979,13 @@ try {
     check("Musica: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 5e. musica: i brani dell'utente (⚙️ → Musica). Un WAV vero, un file rotto con estensione .mp3 e uno troppo grande;
+  /* 5e. musica: i brani dell'utente (⚙️ → Suoni e musica → Voce → «I tuoi brani»). Un WAV vero, un file rotto con estensione .mp3 e uno troppo grande;
      copia nella memoria dell'app (IndexedDB), elenco, riascolto dopo il ricaricamento, «Solo i miei brani», «Rimuovi». */
   {
     const wav = (sec) => { const rate = 8000, n = rate * sec, b = Buffer.alloc(44 + n * 2); b.write("RIFF", 0); b.writeUInt32LE(36 + n * 2, 4); b.write("WAVEfmt ", 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(rate, 24); b.writeUInt32LE(rate * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write("data", 36); b.writeUInt32LE(n * 2, 40); for (let i = 0; i < n; i++) b.writeInt16LE(Math.round(Math.sin(i / 8 * Math.PI) * 6000), 44 + i * 2); return b; };
     const ctx = await browser.newContext(); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload();
-    await p.evaluate(() => { document.getElementById("settings-btn").click(); document.getElementById("grp-adv").open = true; document.getElementById("vset").open = true; }); await p.waitForSelector("#ub-box");
+    await p.evaluate(() => { CP.openSettings("vset"); }); await p.waitForSelector("#ub-box");
     check("Brani tuoi: il pannello dice che restano sul dispositivo e non entrano nel backup", await p.evaluate(() => /backup/.test(document.getElementById("ub-box").textContent) && !!document.querySelector("[data-ub-add]")));
     const pick = p.waitForEvent("filechooser"); await p.click("[data-ub-add]");
     const fc = await pick;
@@ -997,7 +997,7 @@ try {
     const id = await p.evaluate(() => JSON.parse(localStorage.getItem("md-ubl"))[0].id);
     await p.evaluate((id) => CP.jukebox.play(id), id); await p.waitForFunction((id) => CP.audioFile.state(id) === "ok" && CP.musicState().track === id, id, { timeout: 15000 });
     check("Brani tuoi: il brano suona dalla memoria dell'app, senza rete", true);
-    await p.reload(); await p.evaluate(() => { document.getElementById("settings-btn").click(); document.getElementById("grp-adv").open = true; document.getElementById("vset").open = true; }); await p.waitForSelector("#ub-box .ub-list");
+    await p.reload(); await p.evaluate(() => { CP.openSettings("vset"); }); await p.waitForSelector("#ub-box .ub-list");
     check("Brani tuoi: dopo il ricaricamento l'elenco c'è ancora", await p.evaluate(() => /Il mio brano/.test(document.querySelector(".ub-list").textContent) && CP.audioTracks.list.some((t) => t.user)));
     await p.click("[data-ub-mode=only]");
     check("Brani tuoi: «Solo i miei brani» lascia nel mescolamento solo i tuoi", await p.evaluate(() => CP.audioTracks.list.filter((t) => t.user).length === 1 && localStorage.getItem("cp-ubmode") === "only"));
@@ -1104,7 +1104,7 @@ try {
     await p.waitForFunction(() => window.CP && CP.build);
     await p.evaluate(() => {
       const SYL = new Set(); CP.ORDER.forEach((k) => CP.syllables(CP.WORDS[k].py).forEach((x) => SYL.add(x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-zü]/g, ""))));
-      const OK = new Set("eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown nm mozilla common voice ogg opus".split(" "));
+      const OK = new Set("pdf jspdf parallax eros zanchetta marco baroni notice third party notices playwright lgpl sa by md strumstick unlicense màndarínō mandarino licenze license claudio longhitano claude code anthropic iphone wikidict wikidata wikipedia dict data drive onedrive dropbox icloud jsqr cozmo apache pages public complete vocabulary javascript hsk xp fsrs pwa github chrome google pleco anki wechat whatsapp email json cloudflare google pinyin android https http apk wifi sim qr ok mb kb app arphic mit makemeahanzi kishore shaunak zafirópulos yanis drkameleon py open spaced repetition cc cedict mdbg morph bologna hunspell libreoffice license kaitim ukai gb pl skishore com org unihan cjklib tatoeba fr materiali crediti autori frasi tsv m ndar n longhitown nm mozilla common voice ogg opus".split(" "));
       const isPy = (w) => { w = w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/ü/g, "u").replace(/'/g, ""); if (SYL.has(w)) return true;
         const ok = [true]; for (let i = 1; i <= w.length; i++) { ok[i] = false; for (let j = Math.max(0, i - 6); j < i; j++) if (ok[j] && SYL.has(w.slice(j, i))) { ok[i] = true; break; } } return ok[w.length]; };
       window.__leaks = function () {
@@ -1203,6 +1203,81 @@ try {
     check(L + "Taccuino: nessuna richiesta di rete e nessun errore JavaScript", !errs.length && !ext.length && ext.length === reqBefore, (errs[0] || "") + ext.slice(0, 2).join(" "));
     await ctx.close();
   }
+  /* Foglio di lavoro in PDF: da Studia (cinese) e da «我的进步» (italiano). Si prova con un profilo con errori, con un profilo nuovo
+     (foglio di benvenuto) e con il corso di italiano: anteprima, PDF di 2 pagine sotto 1 MB, struttura del PDF (immagini, quadrati
+     con griglia tratteggiata, QR in vettoriale), QR riletto con jsQR, nessuna richiesta di rete, collegamento profondo #dettato=. */
+  {
+    const pdfStats = (b64) => {
+      const s = Buffer.from(b64, "base64").toString("latin1");
+      return { pages: (s.match(/\/Type\s*\/Page(?![s\w])/g) || []).length, images: (s.match(/\/Subtype\s*\/Image/g) || []).length, filled: (s.match(/\bre\nf\b/g) || []).length, stroked: (s.match(/\bre\nS\b/g) || []).length,
+        dashed: (s.match(/\[[\d. ]+\] [\d.]+ d\b/g) || []).length, head: s.slice(0, 5) };
+    };
+    const profile = {
+      errors: () => {
+        const S = CP.S(), ks = CP.ORDER.slice(0, 120);
+        ks.forEach((k, i) => { S[k] = { n: 3 + i % 4, rp: 3, lp: i % 7 === 0 ? 3 : i % 5 === 0 ? 1 : 0, sd: 2, st: 5 }; });
+        localStorage.setItem("cp-srs-v1", JSON.stringify(S));
+        const ex = { ex: {} }; ks.slice(10, 30).forEach((k, i) => { ex.ex[k] = { mc: { n: 5, ok: 5 - (1 + i % 3), ultimo: Date.now() } }; });
+        localStorage.setItem("cp-ex-v1", JSON.stringify(ex));
+        localStorage.setItem("cp-ear-v1", JSON.stringify({ m: [[4, 2, 0, 0], [3, 2, 5, 0], [0, 4, 3, 5], [0, 0, 4, 6]], n: 38 }));
+        const days = {}, d = new Date(); ks.slice(60, 75).forEach((k, i) => { const dd = new Date(d - (i % 5) * 864e5), key = dd.getFullYear() + "-" + (dd.getMonth() + 1) + "-" + dd.getDate(); (days[key] = days[key] || { w: [] }).w.push(k); });
+        localStorage.setItem("cp-game-v1", JSON.stringify({ xp: 500, base: 0, xpBy: {}, goal: 10, days, best: 0, pl: {} }));
+      },
+      fresh: () => {},
+      it: () => {
+        localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh");
+      }
+    };
+    for (const kind of ["errors", "fresh", "it"]) {
+      const ctx = await browser.newContext({ viewport: { width: 420, height: 900 } });
+      const p = await ctx.newPage(), errs = [], ext = [];
+      p.on("pageerror", (e) => errs.push(e.message)); p.on("request", (r) => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob):/.test(u)) ext.push(u); });
+      await p.goto(base); await p.evaluate(() => localStorage.setItem("cp-ux-v1", '{"onboarded":1,"unlocked":1}')); await p.evaluate(profile[kind]); await p.reload();
+      await p.waitForFunction(() => window.CP && CP.build);
+      if (kind === "it") {
+        await p.waitForFunction(() => window.CP && CP.itApi); await p.waitForTimeout(500);
+        await p.evaluate(() => {
+          const lex = CP.itApi.lex(), S = {}, ex = { ex: {} };
+          lex.slice(0, 60).forEach((e) => { S[e.id] = { c: { state: 3, step: 0, st: 3, df: 8, due: Date.now(), last: Date.now() }, n: 3, lr: Date.now() }; });
+          lex.slice(0, 40).forEach((e, i) => { if (i % 3 === 0) ex.ex[e.id] = { mc: { n: 4, ok: 2, ultimo: Date.now() } }; });
+          localStorage.setItem("cp-it-srs-v1", JSON.stringify(S)); localStorage.setItem("cp-ex-v1", JSON.stringify(ex));
+        });
+        await p.reload(); await p.waitForFunction(() => window.CP && CP.itApi); await p.waitForTimeout(500);
+        await p.click("text=我的进步"); await p.waitForTimeout(300);
+      } else { await p.evaluate(() => document.getElementById("tab-study").click()); await p.waitForTimeout(300); }
+      const btn = await p.$("[data-ws-open]"), primary = await p.evaluate(() => { const sh = document.querySelector(".fam-head"), root = sh ? sh.parentElement : document; return Array.from(root.querySelectorAll(".btn-main")).filter((b) => b.offsetParent).length; });
+      check("Foglio di lavoro (" + kind + "): il pulsante «Crea il foglio di lavoro» c'è ed è secondario (un solo pulsante pieno per schermata)", !!btn && primary <= 1, "pieni visibili: " + primary);
+      const bootHasLib = await p.evaluate(() => !!window.jspdf);
+      check("Foglio di lavoro (" + kind + "): la libreria PDF non è caricata all'avvio", !bootHasLib);
+      await btn.click(); await p.waitForSelector("[data-ws-page]", { timeout: 30000 });
+      const prev = await p.evaluate(() => ({ n: document.querySelectorAll("[data-ws-page]").length, info: (document.getElementById("ws-info") || {}).textContent || "", save: !!document.querySelector("[data-ws-save]"), lib: !!window.jspdf }));
+      check("Foglio di lavoro (" + kind + "): l'anteprima mostra le pagine, la dimensione e «Salva il PDF»; la libreria si è caricata al primo uso", prev.n >= 1 && prev.n <= 2 && /KB/.test(prev.info) && prev.save && prev.lib, JSON.stringify(prev));
+      const r = await p.evaluate(async () => {
+        const o = await CP.worksheetUI.build({ compress: false }), c = await CP.worksheetUI.build({ ppm: 12 });
+        let s = ""; for (let i = 0; i < o.bytes.length; i += 32768) s += String.fromCharCode.apply(null, o.bytes.subarray(i, i + 32768));
+        let z = ""; const real = await CP.worksheetUI.build(); for (let i = 0; i < real.bytes.length; i += 32768) z += String.fromCharCode.apply(null, real.bytes.subarray(i, i + 32768));
+        const cv = c.pages[0], im = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height), q = window.jsQR(im.data, cv.width, cv.height, { inversionAttempts: "dontInvert" });
+        return { raw: btoa(s), size: real.bytes.length, pages: real.pages.length, cells: real.cells, boxes: real.boxes, items: real.items.map((x) => x.id), fresh: real.meta.fresh, text: real.meta.qrText, read: q ? q.data : null, dec: q ? CP.worksheetUI.decode(q.data) : null, course: real.meta.course, hard: real.items.filter((x) => (CP.S()[x.id] || {}).lp === 3).length };
+      });
+      const st = pdfStats(r.raw);
+      check("Foglio di lavoro (" + kind + "): PDF di " + r.pages + " pagine sotto 1 MB", st.head === "%PDF-" && st.pages === r.pages && r.pages >= (kind === "fresh" ? 1 : 2) && r.size < 1024 * 1024, st.pages + " pagine, " + Math.round(r.size / 1024) + " KB");
+      check("Foglio di lavoro (" + kind + "): nel PDF ci sono le immagini dei testi, i quadrati" + (kind === "it" ? " dei quadretti" : " con griglia tratteggiata") + " e il QR in vettoriale",
+        st.images > 5 && st.stroked >= (kind === "it" ? r.boxes : r.cells) && st.filled >= 40 && (kind === "it" || (r.cells >= 100 && st.dashed >= r.cells)), JSON.stringify(st) + " celle " + r.cells + " quadretti " + r.boxes);
+      check("Foglio di lavoro (" + kind + "): il QR, riletto con jsQR, è il collegamento #dettato= con le parole del foglio", r.read === r.text && /#dettato=MDD1-/.test(r.read) && r.dec && r.dec.c === (kind === "it" ? "it" : "zh") && r.dec.ids.length === r.items.length && r.dec.ids.every((x, i) => x === r.items[i]), String(r.read).slice(0, 80));
+      if (kind === "errors") check("Foglio di lavoro (errori): ci sono le parole con più lapsus e quelle delle ultime lezioni", r.fresh === false && r.hard >= 3, r.items.slice(0, 6).join(","));
+      if (kind === "fresh") check("Foglio di lavoro (profilo nuovo): foglio di benvenuto con i primi caratteri", r.fresh === true && r.items.length >= 6, r.items.slice(0, 8).join(","));
+      /* collegamento profondo: il frammento si toglie dall'indirizzo e si apre il dettato */
+      const code = r.text.split("#dettato=")[1];
+      await p.goto(base + "#dettato=" + code); await p.reload(); await p.waitForSelector("[data-ws-d=start]", { timeout: 15000 });
+      const dd = await p.evaluate(() => ({ hash: location.hash, title: (document.querySelector(".fam-head b") || {}).textContent || "" }));
+      check("Foglio di lavoro (" + kind + "): il link #dettato= apre il dettato e toglie il frammento dall'indirizzo", dd.hash === "" && /听写|Dettato/.test(dd.title), JSON.stringify(dd));
+      await p.click("[data-ws-d=start]"); await p.waitForTimeout(200);
+      const dn = await p.evaluate(() => ({ n: (document.querySelector(".chal-n") || {}).textContent || "", play: !!document.querySelector("[data-ws-d=play]"), show: !!document.querySelector("[data-ws-d=show]") }));
+      check("Foglio di lavoro (" + kind + "): il dettato parte dalla prima parola, con «Ascolta» e «Mostra»", /1/.test(dn.n) && dn.play && dn.show, JSON.stringify(dn));
+      check("Foglio di lavoro (" + kind + "): nessuna richiesta di rete e nessun errore JavaScript", !ext.length && !errs.length, ext.concat(errs)[0]);
+      await ctx.close();
+    }
+  }
   /* microfono: un errore passeggero del riconoscitore (servizio occupato) si ritenta una volta, in silenzio, e non spegne il riconoscimento */
   {
     const ctx = await browser.newContext({ viewport: { width: 360, height: 740 }, permissions: ["microphone"] });
@@ -1225,6 +1300,64 @@ try {
     check("Microfono: un errore passeggero del riconoscitore si ritenta e il risultato arriva", r.o.ok === true && r.starts === 2 && !r.down, JSON.stringify(r));
     check("Microfono: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
+  }
+  /* 8. Impostazioni a pagine: cinque carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */
+  {
+    /* l'elenco di prima (quattro gruppi con sezioni annidate), voce per voce: id della sezione, pagina in cui sta ora, un comando che deve esserci */
+    const VOCI = [
+      ["set-look", "look", "[data-theme-set=sepia]"], ["set-look", "look", "#hz-plus"], ["set-look", "look", "#opt-toneshapes"], ["set-lang", "look", "[data-lang-set=zh]"],
+      ["set-sound", "sound", "[data-audio-set=fx]"], ["set-sound", "sound", "#set-sfxvol"], ["set-sound", "sound", "#set-music"], ["vset", "sound", "#vset-body"], ["set-mic-box", "sound", "#set-mic-close"],
+      ["set-course", "study", "[data-course-set=it]"], ["set-exstyle", "study", "[data-exs=guided]"], ["set-level", "study", "[data-unl-redo]"], ["set-level", "study", "#opt-showall"], ["set-reminder", "study", "#rm-body"], ["set-together", "study", "[data-chal-open]"],
+      ["set-data", "data", "#set-bk-down"], ["set-data", "data", "#set-bk-up"], ["set-sync", "data", "#sy-body"], ["set-contrib", "data", "[data-ct-find]"],
+      ["set-about", "info", "#set-welcome"], ["set-about", "info", "#set-selftest"], ["set-about", "info", "[data-credits]"], ["set-news", "info", ".news-list"], ["set-privacy", "info", ".pv-list"], ["set-support", "info", "#set-support .vbody"]
+    ];
+    for (const [course, lang] of [["zh", "it"], ["zh", "zh"], ["it", "it"], ["it", "zh"]]) {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+      await ctx.addInitScript(([c, l]) => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-course", c); localStorage.setItem("cp-lang", l); }, [course, lang]);
+      await p.goto(base); await p.waitForTimeout(700);
+      const tag = " (" + course + "/" + lang + ")";
+      await p.evaluate(() => CP.openSettings()); await p.waitForTimeout(150);
+      const home = await p.evaluate(() => ({ tiles: document.querySelectorAll("#set-tiles .set-tile").length, pagesShown: [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).length, details: document.querySelectorAll("#settings details.set-sec, #settings details.set-grp").length, raw: /set\.p\./.test(document.getElementById("settings").innerText), title: document.getElementById("set-title").textContent, back: document.querySelector("[data-set-back]").hidden }));
+      check("Impostazioni: la pagina iniziale ha cinque carte e la ricerca, nessuna pagina aperta, nessuna sezione a cascata, testi nella lingua scelta" + tag, home.tiles === 5 && !home.pagesShown && !home.details && !home.raw && home.back && (lang === "zh" ? /设置/.test(home.title) : /Impostazioni/.test(home.title)), JSON.stringify(home));
+      const missing = [];
+      for (const [id, page, sel] of VOCI) {
+        if (course === "it" && (id === "set-contrib")) continue;   /* nel corso di italiano i contributi non ci sono (come prima) */
+        const r = await p.evaluate(([i, pg, s]) => {
+          CP.openSettings(i); const sec = document.getElementById(i); if (!sec) return "manca la sezione";
+          const hostPage = sec.closest("[data-set-page]"); if (!hostPage || hostPage.getAttribute("data-set-page") !== pg) return "pagina " + (hostPage && hostPage.getAttribute("data-set-page"));
+          if (hostPage.hidden) return "pagina nascosta"; if (!document.getElementById("set-home").hidden) return "la pagina iniziale resta visibile";
+          const c = sec.querySelector(s) || (sec.matches(s) ? sec : null); if (!c) return "manca il comando " + s;
+          if (c.closest("details:not([open])")) return "dentro un riquadro chiuso"; return "";
+        }, [id, page, sel]);
+        if (r) missing.push(id + " " + sel + ": " + r);
+      }
+      check("Impostazioni: ogni voce di prima è raggiungibile con un solo passo dalla pagina iniziale (" + VOCI.length + " voci controllate)" + tag, !missing.length, missing.slice(0, 4).join(" | "));
+      /* vecchi nomi dei gruppi e sezioni assenti: aprono la pagina giusta */
+      const al = await p.evaluate(() => ["grp-ess", "grp-data", "grp-adv", "grp-info", "set-export", "page-sound"].map((g) => { CP.openSettings(g); const v = [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).map((x) => x.getAttribute("data-set-page")); return g + ":" + v.join(","); }).join(" "));
+      check("Impostazioni: i vecchi collegamenti (grp-ess, grp-data, grp-adv, grp-info, set-export) aprono la pagina giusta" + tag, al === "grp-ess:look grp-data:data grp-adv:study grp-info:info set-export:data page-sound:sound", al);
+      /* un solo pulsante primario in ogni pagina */
+      const prim = await p.evaluate(() => ["look", "sound", "study", "data", "info"].map((g) => { CP.openSettings(g); return g + ":" + [...document.querySelectorAll("#settings .btn-main")].filter((b) => b.offsetParent && b.getBoundingClientRect().height > 0).length; }).join(" "));
+      check("Impostazioni: al massimo un pulsante primario per pagina" + tag, prim.split(" ").every((x) => +x.split(":")[1] <= 1), prim);
+      /* ricerca */
+      await p.evaluate(() => CP.openSettings()); await p.fill("#set-q", lang === "zh" ? "备份" : "Backup"); await p.waitForTimeout(100);
+      const hit = await p.evaluate(() => ({ tilesHidden: document.getElementById("set-tiles").hidden, ids: [...document.querySelectorAll("#set-hits [data-set-goto]")].map((b) => b.getAttribute("data-set-goto")) }));
+      await p.click('#set-hits [data-set-goto="set-data"]'); await p.waitForTimeout(150);
+      const after = await p.evaluate(() => ({ page: [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).map((x) => x.getAttribute("data-set-page")).join(), q: document.getElementById("set-q").value, focus: document.activeElement && document.activeElement.hasAttribute("data-set-back") }));
+      check("Impostazioni: la ricerca trova «Backup» (anche in cinese), il risultato apre la pagina giusta" + tag, hit.tilesHidden && hit.ids.includes("set-data") && after.page === "data" && after.q === "" && after.focus, JSON.stringify({ hit, after }));
+      const none = await p.evaluate(() => { CP.openSettings(); const q = document.getElementById("set-q"); q.value = "zzzqqq"; q.dispatchEvent(new Event("input", { bubbles: true })); return document.getElementById("set-hits").textContent.trim().length > 5 && !document.querySelector("#set-hits [data-set-goto]"); });
+      check("Impostazioni: una ricerca senza risultati lo dice" + tag, none);
+      /* Esc e Indietro di Android: pagina → pagina iniziale → chiusa */
+      await p.evaluate(() => CP.openSettings("data")); await p.keyboard.press("Escape"); await p.waitForTimeout(80);
+      const e1 = await p.evaluate(() => ({ open: !document.getElementById("settings").hidden, home: !document.getElementById("set-home").hidden }));
+      await p.keyboard.press("Escape"); await p.waitForTimeout(80);
+      const e2 = await p.evaluate(() => !document.getElementById("settings").hidden);
+      await p.evaluate(() => CP.openSettings("sound")); const b1 = await p.evaluate(() => { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return !document.getElementById("settings").hidden && !document.getElementById("set-home").hidden; });
+      const b2 = await p.evaluate(() => { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return !document.getElementById("settings").hidden; });
+      await p.evaluate(() => { CP.openSettings("sound"); document.querySelector("[data-set-back]").click(); }); const bk = await p.evaluate(() => !document.getElementById("set-home").hidden && document.getElementById("set-title").textContent);
+      check("Impostazioni: Esc e il tasto Indietro di Android (che per l'app è lo stesso Esc, android.js) tornano dalla pagina alla pagina iniziale e poi chiudono; «Indietro» a schermo torna alla pagina iniziale" + tag, e1.open && e1.home && !e2 && b1 && !b2 && bk, JSON.stringify({ e1, e2, b1, b2, bk }));
+      check("Impostazioni: nessun errore JavaScript" + tag, !errs.length, errs[0]);
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close(); server.close();

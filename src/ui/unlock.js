@@ -5,7 +5,7 @@
    - Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; gli strumenti più avanzati dopo qualche lezione superata.
    Chi aveva già progressi (o aveva già visto il benvenuto) ha tutto sbloccato. Uno sblocco non si perde mai, nemmeno
    azzerando i progressi; tra dispositivi vale «basta uno» (cp-ux-v1.unl, regola d'unione in core/store.js).
-   ⚙️ → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
+   ⚙️ → Studio → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
    ovunque», ?go= e il corso di italiano prima di portare l'utente da qualche parte. ===== */
 (function () {
   var CP = window.CP, T = CP.t;
@@ -119,7 +119,7 @@
     isShowAll: function () { return !!CP.ux.get("showAll"); },
     count: function () { return IT ? ALL_IT.filter(function (k) { return unl()[k]; }).length : ALL_ZH.filter(function (k) { return unl()[k]; }).length; }
   };
-  /* ---- ⚙️ → Avanzate → «Livello e schede»: rifare il test, annullare il salto, mostrare tutto (con doppia conferma) ---- */
+  /* ---- ⚙️ → Studio → «Livello e schede»: rifare il test, annullare il salto, mostrare tutto (con doppia conferma) ---- */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     var pl = CP.ux.get("pl"), canUndo = pl && !pl.undone && (pl.n > 0 || (CP.game && CP.game.granted && CP.game.granted() > 0));
     return '<details class="set-sec" id="set-level"><summary>📶 ' + CP.esc(T("unl.setT")) + '</summary><div class="vbody">' +

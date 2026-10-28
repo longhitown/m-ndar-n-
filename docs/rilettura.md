@@ -53,6 +53,6 @@ riletta. Dopo una correzione:
 
 - **Testi cinesi del corso di italiano.** Le spiegazioni delle lezioni e i testi dell'interfaccia del corso stanno in
   `src/data/it/lessons/` e `src/i18n/it-course.js`, e il modulo non li campiona. Per ora si rileggono aprendo il corso in
-  cinese (⚙️ → Corso → 学意大利语) e segnalando dall'app (⚙️ → Dati e privacy → Contributi) o per e-mail.
+  cinese (⚙️ → Studio → Corso → 学意大利语) e segnalando dall'app (⚙️ → Dati e sincronizzazione → Contributi) o per e-mail.
 - **Nome di chi rilegge.** Compare nei Crediti solo se lo chiede. Licenza delle correzioni: CC BY 4.0, come i contenuti
   (CONTRIBUTING.md).

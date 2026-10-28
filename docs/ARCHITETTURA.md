@@ -51,7 +51,7 @@ chiude l'immersione), `pwa/widget.js` (`CP.mark` e i metodi di `CP.game`: dopo o
 
 | Registro | Chi lo legge | Chi ci scrive |
 |---|---|---|
-| `CP.settingsExtras`: una funzione → HTML (gruppo «Avanzate») oppure `{ group: "data" \| "adv" \| "info", html }` | `ui/settings.js`, nei quattro gruppi di ⚙️ | `pwa/sync.js`, `contrib/contrib.js` e `core/export-anki.js` (Dati e privacy); `it/course.js`, `pwa/reminder.js`, `ui/unlock.js`, `ui/pleco.js` (Avanzate); `ui/seals.js`, `ui/news.js`, `ui/privacy.js` (Informazioni e supporto) |
+| `CP.settingsExtras`: una funzione → HTML (pagina «Studio») oppure `{ group: "data" \| "adv" \| "info", html }` | `ui/settings-pages.js`, nelle cinque pagine di ⚙️ (l'ordine e la pagina di ogni sezione sono `ORDER` e `PAGE_OF`) | `pwa/sync.js`, `contrib/contrib.js` e `core/export-anki.js` (Dati e sincronizzazione); `ui/together.js`, `it/switch.js`, `ui/ex-stub.js`, `pwa/reminder.js`, `ui/unlock.js`, `ui/pleco.js`, `words/anatomy.js` (Studio); `ui/seals.js`, `ui/news.js`, `ui/privacy.js` (Informazioni) |
 | `CP.subs[id] = { render, after }` | `phrases/frasi.js`, i sottomenu di Frasi | `dialogs.js`, `lessons.js`, `reader.js`, `slot.js`, `thought.js` |
 | `CP.audioTracks.add({ id, … make })` | `audio/player.js` (jukebox) | ogni `audio/tracks/<id>.js`; l'ordine è `audio/tracks/index.js` |
 | `SECTIONS`, `DIALOGS` (globali di `boot.js`) | vocabolario, dialoghi | `data/vocab/*.js`, `data/dialogs/*.js` |
@@ -78,10 +78,11 @@ l'immersione.
 - `data/placement.js`, `ui/placement.js` e `ui/onboarding.js`, al primo accesso a `CP.placement` o `CP.onboarding`;
 - `it/checker.js`, al primo accesso a `CP.itCheck` o `CP.itCheckHTML`;
 - `i18n/together.js`, `ui/challenge.js` e `ui/classroom.js`, al primo accesso a `CP.challenge` o `CP.classroom`;
+- `i18n/settings.js` e `ui/settings-pages.js` (le pagine di ⚙️, la ricerca), al primo accesso a `CP.openSettings` o `CP.repaintSettings`;
 - `ui/credits.js`, al primo accesso a `CP.credits`;
 - `ui/share-card.js`, al primo accesso a `CP.shareCard` (il tocco su `[data-card-open]` lo ascolta `ui/settings.js`);
 - `i18n/diary.js`, `data/diary.js` e `ui/diary.js`, al primo accesso a `CP.diary` (il Taccuino del viaggiatore: la carta in «I miei progressi» lo tocca, quindi si carica quando si apre Studia);
-- `i18n/voice.js` e `ui/voice-dl.js`, al primo accesso a `CP.voiceDl` (⚙️ → Voce → «Voci reali»);
+- `i18n/voice.js` e `ui/voice-dl.js`, al primo accesso a `CP.voiceDl` (⚙️ → Suoni e musica → Voce → «Voci reali»);
 - i Crediti caricano anche `i18n/credits-t12.js` (frasi Tatoeba, voci reali).
 
 **Gruppi caricati al primo uso** (`GROUPS` in `tools/build.mjs`): i file restano testo e `window.__mdLoad[NOME]()`
@@ -109,7 +110,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CONTRIBUTORS` | `data/contributors.js` | nickname di chi ha chiesto di comparire; lo scrive `tools/merge-contrib.mjs --apply`, uguale a `CONTRIBUTORS.md` (controllo nella build) |
 | `CHANGELOG` | `data/changelog.js` | `[{ v, d, it, zh }]`, dal più recente; la build vuole lo stesso numero di righe nelle due lingue |
 | «Chi ha contribuito» | `ui/credits.js` | prima parte del foglio Crediti |
-| «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni e supporto |
+| «Novità» | `ui/news.js` | voce di ⚙️ → Informazioni |
 | `CP.pleco` / `CP.plecoRow(hz)` | `ui/pleco.js` | `on`, `available` (telefono, corso di cinese), `valid`, `open`, `url`; la pressione di 2 s usa `CP.charTarget`; il menu «⋯» della carta (`study/study.js`) chiede la riga a `CP.plecoRow` |
 | `CP.anatomy` / `CP.anatomyHTML(ch)` | `words/anatomy.js` | `get`, `html`, `svg`, `radical`, `groups` (componente di ogni tratto, per la lavagna), `on`/`set`; il foglio del carattere (`core/core.js`) chiede l'HTML |
 | `CP.challenge` | `ui/challenge.js` (al primo uso) | `create()`, `open(testo)`, `encode`/`decode` del codice `MDC1-…`, `build(sfida)` (domande dal seme), `link`, `base`; la sfida a un amico |
@@ -131,7 +132,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `CP.itApi` / `CP.itToday` / `CP.itCardData` / `CP.itProgress` | `it/course.js` / `it/today.js` | i dati del corso di italiano per la carta «今天», il percorso, i traguardi, «我的进步»; anche `grade(voce, g, meta)`, `entry`, `lex`, `rec`, `example`, `detail`, `nextCard` |
 | `CP.toast(msg, { label, run })` | `core/game.js` | un'azione dentro lo stesso messaggio; senza, il messaggio di sempre |
 | `CP.onAward(n)` | `core/game.js` | chiamato a ogni punto guadagnato (corso di italiano: «+N 分») |
-| `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e privacy |
+| `CP.anki` | `core/export-anki.js` | `build({ which: mine \| sure \| all \| sec, sec }, corso)` → `{ text, n }`, `guid(corso, chiave)`, `save`, `allowed()` (soglia `ANKI_MIN`); voce in ⚙️ → Dati e sincronizzazione |
 | `credit: 1` nella patch | `contrib/contrib.js` | solo con un nickname e la casella spuntata (`cp-contrib-credit-v1`) |
 
 ## 4. Punti d'ingresso dall'esterno

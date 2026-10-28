@@ -127,7 +127,7 @@
     } else if (how === "file") { Store.download("mandarino-contributi-" + Date.now() + ".json", pretty); done(); }
   }
 
-  /* ---- ⚙️ → Contributi ---- */
+  /* ---- ⚙️ → Dati e sincronizzazione → Contributi ---- */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "data", html: function () {
     var l = list().slice().reverse();
     return '<details class="set-sec" id="set-contrib"><summary>✏️ ' + T("ct.title") + (l.length ? " (" + l.length + ")" : "") + '</summary><div class="vbody">' +
