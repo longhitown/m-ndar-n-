@@ -4,6 +4,7 @@
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
+      "Apertura più bella: ogni volta che apri l\'app il frutto rimbalza, il nome si compone e i quattro toni si disegnano (un secondo e mezzo circa). Con il movimento ridotto è più breve.",
       "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e i primi mini-dialoghi con l'audio (lezioni 1–5, nei due corsi).",
       "Ripasso con esercizi vari (⚙️ → Avanzate → Stile di ripasso): Guidato «impara · esercitati · verifica», Misto, o Classico come prima.",
       "Frasi a buco, rimetti in ordine, scrivi il pinyin e il significato, abbina, traccia; la verifica di tappa con 12 domande.",
@@ -27,6 +28,7 @@ var CHANGELOG = [
       "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
     ],
     zh: [
+      "更漂亮的启动画面：每次打开应用，橘子弹出、名字逐字出现、四个声调依次画出（约一秒半）。开启“减少动态效果”时会更短。",
       "课程：每学五课有一次复习，题目取自刚学的几课；前五课（两门课程）还加入了带发音的小对话。",
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
       "新练习：填空、排序、听写、动词形式、听句子。",
