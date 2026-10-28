@@ -29,7 +29,7 @@
   /* parenti al singolare: «mia madre», senza articolo */
   var FAM = { madre: 1, padre: 1, fratello: 1, sorella: 1, marito: 1, moglie: 1, figlio: 1, figlia: 1, zio: 1, zia: 1, nonno: 1, nonna: 1, cugino: 1, cugina: 1, nipote: 1, suocero: 1, suocera: 1, cognato: 1, cognata: 1 };
   /* avere + nome: «ho fame», non «sono fame» */
-  var HAVE = { fame: 1, sete: 1, sonno: 1, paura: 1, ragione: 1, torto: 1, fretta: 1, bisogno: 1 };
+  var HAVE = { fame: 1, sete: 1, sonno: 1, paura: 1, ragione: 1, torto: 1, fretta: 1, bisogno: 1, voglia: 1 };
   var CL = { io: "mi", tu: "ti", lui: "gli", lei: "le", noi: "ci", voi: "vi", loro: "gli" };
   /* parole grammaticali e frequenti che non stanno nel lessico: note, ma senza controlli */
   var FUNC = {}; ("e ed o oppure ma però che chi cosa come dove quando perché se di da in con su per tra fra a al allo alla ai agli alle del dello della dei degli delle dal dalla nel nella nei nelle sul sulla " +

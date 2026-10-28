@@ -17,7 +17,7 @@ ITLESSONS.push({
     ["Questo regalo è per te.", "这个礼物是给你的。"],
     ["Vado da lui.", "我去他那儿。"],
     ["Parlo di te.", "我在说你。"],
-    ["Senza di me non vai.", "没有我你不去。"],
+    ["Senza di te non vado.", "没有你我不去。"],
     ["A me piace il tè.", "我喜欢茶。"]
   ],
   "dlg": [
