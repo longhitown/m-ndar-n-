@@ -295,8 +295,12 @@ Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype P
 
 **Cosa c'è in più nell'APK** (tutto calcolato sul telefono, nessun server):
 - **scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Jukebox; aprono `?go=study|ear|music`;
-- **widget «Oggi»** 2×1 e 4×2: serie di giorni, ripassi in scadenza (dall'istogramma delle prossime 168 ore che l'app
-  passa con `setWidgetState`), parola del giorno (tocca per il significato), un messaggio gentile la sera se oggi manca lo studio;
+- **widget «Oggi»** 2×1 e 4×2, stile «Giada» (`TodayWidget.java`, `WidgetState.java`): sfondo verde con vetro smerigliato (senza sfocatura: i `RemoteViews` non la permettono) e quattro atmosfere
+  scelte dall'ora, con gli stessi testi in italiano e in cinese (`w_g_*` in `values` e `values-zh`): **mattina 6–11** (riflesso d'alba da destra, sole al tratto, «Inizia la giornata»),
+  **pomeriggio 12–16** (verde pieno, sigillo del grado), **sera 17–21** (riflesso arancione da sinistra, fiamma e pulsante più scuri, al posto della parola un proverbio),
+  **notte 22–5** (quasi nero, luna, nessun pulsante: «Ottimo lavoro oggi. Riposa la mente.» o «A domani!»). In alto una striscia di dieci segmenti con l'obiettivo del giorno
+  (`wt` = parole di oggi, `rank` = carattere del grado, mandati da `pwa/widget.js`); ripassi in scadenza dall'istogramma delle prossime 168 ore; la parola del giorno si scopre
+  con un tocco. Un allarme inesatto (`setAndAllowWhileIdle`) ridisegna i widget ai confini di fascia (6, 12, 17, 22); nessun messaggio di perdita o di fretta;
 - **widget «Pausa»** 4×1 (`PauseWidget.java`): giri di studio da 25 minuti e pausa caffè da 5. Un widget non si anima né si aggiorna ogni
   secondo, quindi il conto alla rovescia è un `Chronometer` in sola discesa (`setChronometerCountDown`) che Android fa scorrere da solo;
   un allarme (`AlarmManager`, preciso solo se il telefono lo consente senza permessi speciali) ai cambi di fase aggiorna il widget e

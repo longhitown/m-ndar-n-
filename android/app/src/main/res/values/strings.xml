@@ -74,4 +74,42 @@
     <string name="p_n_end_title">Pausa finita</string>
     <string name="p_n_end_text">Pronto per un altro giro?</string>
     <string name="p_n_channel">Timer di studio</string>
+    <!-- stile «Giada»: messaggi delle quattro fasce del giorno (mattina, pomeriggio, sera, notte) -->
+    <string name="w_sample_msg">Buongiorno! Pronto per la prima parola?</string>
+    <string name="w_g_start">Inizia la giornata</string>
+    <string name="w_g_night_done">Ottimo lavoro oggi. Riposa la mente.</string>
+    <string name="w_g_night_none">A domani!</string>
+    <plurals name="w_g_pause_n">
+        <item quantity="one">Pausa studio? Basta %d minuto.</item>
+        <item quantity="other">Pausa studio? Bastano %d minuti.</item>
+    </plurals>
+    <plurals name="w_g_reviews_min">
+        <item quantity="one">%1$d ripasso · ~%2$d min</item>
+        <item quantity="other">%1$d ripassi · ~%2$d min</item>
+    </plurals>
+    <plurals name="w_g_missing">
+        <item quantity="one">Manca %d parola per completare l\'obiettivo</item>
+        <item quantity="other">Mancano %d parole per completare l\'obiettivo</item>
+    </plurals>
+    <string-array name="w_g_morning">
+        <item>Buongiorno! Pronto per la prima parola?</item>
+        <item>Ti va di ripassare?</item>
+        <item>Un piccolo passo per cominciare bene</item>
+        <item>Che la giornata cominci con una parola</item>
+    </string-array>
+    <string-array name="w_g_evening">
+        <item>Chiudi la giornata in bellezza</item>
+        <item>Ancora qualche minuto e la giornata è completa</item>
+        <item>Una carta ancora, poi riposa</item>
+    </string-array>
+    <string-array name="w_g_proverbs">
+        <item>千里之行，始于足下|Qiān lǐ zhī xíng, shǐ yú zú xià: un viaggio di mille miglia comincia con un passo</item>
+        <item>学而不厌|Xué ér bù yàn: imparare senza mai stancarsi</item>
+        <item>温故而知新|Wēn gù ér zhī xīn: ripassando il vecchio si scopre il nuovo</item>
+        <item>不积跬步，无以至千里|Bù jī kuǐ bù, wú yǐ zhì qiān lǐ: senza piccoli passi non si arriva lontano</item>
+        <item>慢慢来，比较快|Màn man lái, bǐjiào kuài: con calma si arriva prima</item>
+        <item>熟能生巧|Shú néng shēng qiǎo: la pratica rende abili</item>
+        <item>活到老，学到老|Huó dào lǎo, xué dào lǎo: si impara finché si vive</item>
+        <item>好的开始是成功的一半|Hǎo de kāishǐ shì chénggōng de yībàn: un buon inizio è metà dell\'opera</item>
+    </string-array>
 </resources>

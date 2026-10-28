@@ -11,6 +11,7 @@ telefono vero. Dieci minuti, prima di ogni release importante. Segna data, telef
 | **Musica in secondo piano**: 🎵 → «in secondo piano», poi blocca lo schermo | la musica continua, la notifica ha pausa, avanti, stop; stop la chiude davvero |
 | **Modalità aereo**: attivala e apri l'app | tutto funziona: studio, parole, frasi, lezioni, musica già scaricata; nessun errore |
 | **Widget «Oggi»** (piccolo e grande): aggiungili alla schermata Home | serie, ripassi e parola del giorno giusti; un tocco apre l'app nel punto giusto |
+| **Widget «Oggi» e «Pausa»**: guardali al mattino, al pomeriggio, la sera e dopo le 22 (o cambia l'ora del telefono) | sfondo e testi cambiano alle 6, 12, 17 e 22 (entro qualche minuto); mattina riflesso caldo a destra, sera arancione a sinistra, notte quasi nero con luna e senza pulsanti; la striscia di dieci segmenti segue le parole di oggi; la sera compare un proverbio; in cinese gli stessi quattro momenti |
 | **Widget «Pausa»** (4×1): «Studia 25′», attendi la fine; poi «☕ 5′» | il conto alla rovescia scorre da solo (anche a schermo bloccato); a 0 passa alla pausa e arriva un avviso; «Ferma» riporta a riposo; di notte (22–6) mostra «Riposo» |
 | **Scorciatoie** (pressione lunga sull'icona) | «Studia ora», «Orecchio», «Musica» aprono la cosa giusta |
 | **Promemoria**: accendilo per tra due minuti | arriva la notifica (e chiede il permesso la prima volta, Android 13+) |
