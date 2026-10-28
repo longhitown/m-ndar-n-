@@ -17070,6 +17070,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       u.onerror = function (ev) {
         var err = ev && ev.error;
         if (err === "canceled" || err === "interrupted") { finish(); return; }
+        /* nell'APK il motore vocale può essere stato spento dal sistema: il ponte lo riavvia, e una seconda richiesta, poco dopo, di solito riesce */
+        if (window.__MD_APK && !o.noRetry && /^synthesis/.test(err || "") && !finished && token === mine) {
+          finished = true; clearTimeout(failTimer); clearTimeout(startTimer); if (CP.bus) CP.bus.duck(false); curStop = null;
+          var o3 = {}; Object.keys(o).forEach(function (k) { o3[k] = o[k]; }); o3.noRetry = true; setTimeout(function () { CP.speak(text, o3); }, 700); return;
+        }
         if (zh && !started) cloud(); else finish();
       };
       /* se la voce del dispositivo non parte, si passa a quella online. La prima lettura aspetta di più: su Android il motore
