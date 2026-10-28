@@ -49,4 +49,25 @@
     <plurals name="w_fresh">
         <item quantity="other">%d 个新词等你学</item>
     </plurals>
+    <string name="p_name">休息</string>
+    <string name="p_desc">25 分钟学习一轮，再来一段西安咖啡时间</string>
+    <string name="p_title_rest">休息</string>
+    <string name="p_sub_rest">晚安，明天见</string>
+    <string name="p_title_coffee">西安咖啡时间</string>
+    <string name="p_sub_coffee">给自己五分钟</string>
+    <string name="p_title_idle">学一轮</string>
+    <string name="p_sub_idle">25 分钟，然后休息 5 分钟</string>
+    <string name="p_title_focus">专注中</string>
+    <string name="p_sub_focus">然后是西安咖啡时间</string>
+    <string name="p_title_break">西安咖啡时间</string>
+    <string name="p_sub_break">深呼吸，马上继续</string>
+    <string name="p_b_focus">学 25′</string>
+    <string name="p_b_break">☕ 5′</string>
+    <string name="p_b_stop">停止</string>
+    <string name="p_b_skip">跳过</string>
+    <string name="p_n_break_title">西安咖啡时间</string>
+    <string name="p_n_break_text">学了 25 分钟，休息 5 分钟吧。</string>
+    <string name="p_n_end_title">休息结束</string>
+    <string name="p_n_end_text">再来一轮？</string>
+    <string name="p_n_channel">学习计时器</string>
 </resources>
