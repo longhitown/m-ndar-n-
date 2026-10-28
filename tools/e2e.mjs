@@ -1565,7 +1565,7 @@ try {
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); if (!sessionStorage.getItem("seen")) { sessionStorage.setItem("seen", "1"); sessionStorage.setItem("cp-fast", JSON.stringify({ set: "look" })); } });
     const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await p.goto(base); await p.waitForTimeout(900);
-    const fast = await p.evaluate(() => ({ spFast: window.__spFast === 1, splash: !!document.getElementById("splash"), settings: !document.getElementById("settings").hidden, page: CP.settingsPage && CP.settingsPage(), flag: sessionStorage.getItem("cp-fast") }));
+    const fast = await p.evaluate(() => ({ spFast: window.__spFast === 1, splash: (() => { const e = document.getElementById("splash"); return !!e && getComputedStyle(e).display !== "none" && !e.hidden; })(), settings: !document.getElementById("settings").hidden, page: CP.settingsPage && CP.settingsPage(), flag: sessionStorage.getItem("cp-fast") }));   /* «splash» = l'animazione si vede: l'elemento può restare nascosto fino a che la pagina lo toglie (più tardi nella CI lenta) */
     check("Cambio lingua dei menu: al ricaricamento niente animazione d'avvio e si riaprono le impostazioni nella stessa pagina", fast.spFast && !fast.splash && fast.settings && fast.page === "look" && !fast.flag, JSON.stringify(fast));
     check("Cambio lingua: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
