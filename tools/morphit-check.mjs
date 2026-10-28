@@ -74,8 +74,8 @@ for (const inf of verbs) {
 const NAMES = new Set(["Pechino", "Shanghai", "Roma", "Cina", "Italia", "Sicilia", "Europa", "Giappone", "Francia", "Germania", "Spagna", "Regno", "Unito", "Stati", "Uniti", "Lei", "Suo", "Sua", "Le", "La", "noodles", "WeChat", "tofu", "taxi", "hotel", "computer", "film", "bar", "pub", "menù", "tè", "Marco", "Giulia", "Anna", "Luca", "Wang", "Li", "Lin", "Zhang", "OK", "ok", "yuan"]);
 const sentences = [];
 (L.D.VERIFIED || []).forEach((v) => sentences.push(["verificate", v[1]]));
-(L.D.LESSONS || []).forEach((l) => (l.ex || []).forEach((e) => sentences.push(["lezione " + l.id, e[1]])));
-(L.D.ITLESSONS || []).forEach((l) => { (l.ex || []).forEach((e) => sentences.push(["corso it " + l.id, e[0]])); (l.quiz || []).forEach((q) => { if (q.it) sentences.push(["corso it " + l.id, q.it]); const right = q.opts && q.opts[q.a]; if (right && !/[㐀-鿿]/.test(right)) sentences.push(["corso it " + l.id + " (risposta giusta)", right]); (l.traps || []).forEach((t) => sentences.push(["corso it " + l.id + " (forma giusta)", t[1]])); }); });
+(L.D.LESSONS || []).forEach((l) => { (l.ex || []).forEach((e) => sentences.push(["lezione " + l.id, e[1]])); (l.dlg || []).forEach((d) => sentences.push(["lezione " + l.id + " (dialogo)", d[2]])); });
+(L.D.ITLESSONS || []).forEach((l) => { (l.ex || []).forEach((e) => sentences.push(["corso it " + l.id, e[0]])); (l.dlg || []).forEach((d) => sentences.push(["corso it " + l.id + " (dialogo)", d[1]])); (l.quiz || []).forEach((q) => { if (q.it) sentences.push(["corso it " + l.id, q.it]); const right = q.opts && q.opts[q.a]; if (right && !/[㐀-鿿]/.test(right)) sentences.push(["corso it " + l.id + " (risposta giusta)", right]); (l.traps || []).forEach((t) => sentences.push(["corso it " + l.id + " (forma giusta)", t[1]])); }); });
 const unknown = new Map();
 for (const [where, s] of sentences) {
   for (let w of String(s).replace(/[.,!?;:«»"()…–—]/g, " ").split(/\s+/)) {

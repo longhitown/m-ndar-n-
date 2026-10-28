@@ -21,6 +21,14 @@ ITLESSONS.push({
     ["l'acqua", "水"],
     ["un amico, un'amica", "一个（男性）朋友，一个（女性）朋友"]
   ],
+  "dlg": [
+    ["A", "Che cos'è questo?", "这是什么？"],
+    ["B", "È un libro.", "是一本书。"],
+    ["A", "E questo?", "那这个呢？"],
+    ["B", "È una chiave.", "是一把钥匙。"],
+    ["A", "E l'acqua?", "那水呢？"],
+    ["B", "L'acqua è qui.", "水在这里。"]
+  ],
   "traps": [
     ["il studente", "lo studente", "s + 辅音开头的阳性词用 lo。"],
     ["la acqua", "l'acqua", "元音前 la 变成 l'。"],

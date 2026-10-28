@@ -20,6 +20,12 @@ LESSONS.push({
     ["我没有钱。", "Non ho soldi."],
     ["我不知道。", "Non lo so."]
   ],
+  "dlg": [
+    ["A", "马可，你今天不忙。", "Marco, oggi non sei impegnato."],
+    ["B", "对，我不忙。我没吃饭，我很饿。", "Già, non sono impegnato. Non ho mangiato, ho molta fame."],
+    ["A", "我们去吃饭。", "Andiamo a mangiare."],
+    ["B", "好，我没有钱。", "Va bene, ma non ho soldi."]
+  ],
   "traps": [
     ["我不有钱。", "我没有钱。", "有 si nega solo con 没: 没有."],
     ["我昨天不去。", "我昨天没去。", "Per dire che una cosa non è successa si usa 没."]
