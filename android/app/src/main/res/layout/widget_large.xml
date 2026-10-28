@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- widget «Oggi» 4×2 (largo): a sinistra la serie e la parola del giorno, a destra i ripassi e «Studia ora» -->
+<!-- widget «Oggi» 4×2, stile «Giada»: in alto una striscia di dieci segmenti (obiettivo del giorno), a sinistra il grado con il messaggio dell'ora e la parola
+     (o, la sera, il proverbio) in un riquadro di vetro, a destra i ripassi e il pulsante. Lo sfondo, l'arancione e i testi cambiano nelle quattro fasce orarie
+     (TodayWidget.java); di notte spariscono pulsante e numeri. RemoteViews non permette sfocature né View vuote: i segmenti sono ImageView. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false"
-    android:padding="12dp" android:background="@drawable/widget_bg">
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+    android:orientation="vertical" android:padding="11dp" android:background="@drawable/w_giada_afternoon">
+    <LinearLayout android:id="@+id/w_segs" android:layout_width="match_parent" android:layout_height="5dp" android:layout_marginBottom="6dp" android:orientation="horizontal">
+        <ImageView android:id="@+id/w_s0" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s1" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s2" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s3" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s4" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s5" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s6" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s7" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s8" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="3dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" /><ImageView android:id="@+id/w_s9" android:layout_width="0dp" android:layout_height="5dp" android:layout_weight="1" android:layout_marginEnd="0dp" android:src="@drawable/w_seg_off" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:baselineAligned="false">
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center_vertical">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-            <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_w_flame" android:importantForAccessibility="no" />
-            <TextView android:id="@+id/w_streak" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                android:layout_marginStart="6dp" android:maxLines="2" android:ellipsize="end"
-                android:text="@string/w_sample_streak" android:textColor="@color/w_ink" android:textSize="13sp" android:textStyle="bold" />
-        </LinearLayout>
-        <LinearLayout android:id="@+id/w_word" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="52dp"
-            android:layout_marginTop="6dp" android:orientation="horizontal" android:gravity="center_vertical"
-            android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="4dp" android:paddingBottom="4dp" android:background="@drawable/widget_card">
-            <TextView android:id="@+id/w_hz" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1"
-                android:text="@string/w_sample_hz" android:textColor="@color/w_ink" android:textSize="32sp" />
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical">
-                <TextView android:id="@+id/w_py" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
-                    android:text="@string/w_sample_py" android:textColor="@color/w_accent" android:textSize="15sp" android:textStyle="bold" />
-                <TextView android:id="@+id/w_it" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
-                    android:text="@string/w_sample_it" android:textColor="@color/w_muted" android:textSize="13sp" />
+            <FrameLayout android:layout_width="34dp" android:layout_height="34dp">
+                <TextView android:id="@+id/w_seal" android:layout_width="34dp" android:layout_height="34dp" android:gravity="center" android:background="@drawable/w_seal" android:text="调" android:textColor="#FFF6EA" android:textSize="22sp" android:importantForAccessibility="no" />
+                <ImageView android:id="@+id/w_icon" android:layout_width="34dp" android:layout_height="34dp" android:src="@drawable/ic_g_sun" android:visibility="gone" android:importantForAccessibility="no" />
+            </FrameLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:orientation="vertical">
+                <TextView android:id="@+id/w_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="2" android:ellipsize="end"
+                    android:text="@string/w_sample_msg" android:textColor="@color/w_g_text" android:textSize="13sp" android:textStyle="bold" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                    <ImageView android:id="@+id/w_flame" android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_g_flame" android:importantForAccessibility="no" />
+                    <TextView android:id="@+id/w_streak" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="3dp" android:maxLines="1" android:ellipsize="end"
+                        android:text="@string/w_sample_streak" android:textColor="@color/w_g_mute" android:textSize="11sp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-    <LinearLayout android:layout_width="116dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:orientation="vertical" android:gravity="center_horizontal">
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="bottom">
-            <TextView android:id="@+id/w_due_n" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/w_sample_n" android:textColor="@color/w_accent" android:textSize="28sp" android:textStyle="bold" />
-            <TextView android:id="@+id/w_due_l" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:paddingBottom="4dp"
-                android:text="@string/w_sample_label" android:textColor="@color/w_ink" android:textSize="13sp" />
+        <LinearLayout android:id="@+id/w_word" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="44dp"
+            android:layout_marginTop="5dp" android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="3dp" android:paddingBottom="3dp" android:background="@drawable/w_glass">
+            <TextView android:id="@+id/w_hz" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1"
+                android:text="@string/w_sample_hz" android:textColor="@color/w_g_text" android:textSize="28sp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="9dp" android:orientation="vertical">
+                <TextView android:id="@+id/w_py" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
+                    android:text="@string/w_sample_py" android:textColor="@color/w_g_mint" android:textSize="14sp" android:textStyle="bold" />
+                <TextView android:id="@+id/w_it" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="2" android:ellipsize="end"
+                    android:text="@string/w_sample_it" android:textColor="@color/w_g_mute" android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
+        </LinearLayout>
+    <LinearLayout android:id="@+id/w_right" android:layout_width="112dp" android:layout_height="match_parent" android:layout_marginStart="10dp" android:orientation="vertical" android:gravity="center_horizontal">
+        <TextView android:id="@+id/w_due_n" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/w_sample_n" android:textColor="@color/w_g_mint" android:textSize="30sp" android:textStyle="bold" />
+        <TextView android:id="@+id/w_due_l" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:ellipsize="end"
+            android:text="@string/w_sample_label" android:textColor="@color/w_g_text" android:textSize="13sp" android:textStyle="bold" />
         <TextView android:id="@+id/w_due_d" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:ellipsize="end"
-            android:text="@string/w_sample_detail" android:textColor="@color/w_muted" android:textSize="13sp" />
-        <TextView android:id="@+id/w_study" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="4dp"
-            android:gravity="center" android:background="@drawable/widget_btn" android:text="@string/w_study"
-            android:textColor="@color/w_on_orange" android:textSize="15sp" android:textStyle="bold" />
+            android:text="@string/w_sample_detail" android:textColor="@color/w_g_mute" android:textSize="12sp" />
+        <TextView android:id="@+id/w_study" android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginTop="4dp"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="6dp" android:paddingEnd="6dp" android:background="@drawable/w_btn_giada" android:text="@string/w_study"
+            android:textColor="@color/w_g_on_orange" android:textSize="13sp" android:textStyle="bold" />
+    </LinearLayout>
     </LinearLayout>
 </LinearLayout>
