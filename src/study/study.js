@@ -92,6 +92,7 @@
       '<button type="button" class="btn-main" id="go"' + (n ? "" : " disabled") + ">" + (n ? T("study.start", { min: minutes(n) }) : T("study.nothing")) + "</button>" +
       '<details class="today-cfg"><summary>' + T("study.customize") + '</summary><div class="row2" style="margin-top:0"><label for="cfg-n">' + T("study.newPerDay") + '<select id="cfg-n">' + ns + "</select></label>" +
       '<label for="cfg-sec">' + T("study.topic") + '<select id="cfg-sec">' + opts + "</select></label></div>" +
+      (CP.ex && CP.ex.stile && CP.ex.stile() === "guided" ? '<label for="cfg-dur">' + T("study.dur") + '<select id="cfg-dur">' + [5, 10, 15].map(function (m) { return '<option value="' + m + '"' + (m === CP.ex.dur() ? " selected" : "") + ">" + T("gd.dur", { n: m }) + "</option>"; }).join("") + "</select></label>" : "") +
       '<label class="chk"><input type="checkbox" id="cfg-auto"' + (CP.pref.auto ? " checked" : "") + "> " + T("study.auto") + "</label>" +
       (!nw && seen >= cfg.n ? '<button type="button" class="btn-s" id="more5">' + T("study.more5today") + "</button>" : "") + "</details></div>" +
       '<div class="modes"><button type="button" id="ear-open">' + T("study.ear") + "<small>" + T("study.earSub") + '</small></button><button type="button" id="sprint-open">' + T("study.sprint") + "<small>" + ((CP.game && CP.game.best()) ? T("study.record", { n: CP.game.best() }) : T("study.sprintSub")) + "</small></button></div>" +
@@ -359,6 +360,7 @@
     else if (act === "contrib" && CP.contribOpen) CP.contribOpen({ op: "fix", target: w.key, field: "it" });
   });
   root.addEventListener("change", function (ev) {
+    if (ev.target.id === "cfg-dur") { try { localStorage.setItem("cp-ex-dur", ev.target.value); } catch (e) {} if (CP.onPath) CP.onPath(); return; }
     if (ev.target.id === "cfg-n") { cfg.n = parseInt(ev.target.value, 10); saveCfg(); home(); var d = root.querySelector(".today-cfg"); if (d) d.open = true; }
     if (ev.target.id === "cfg-sec") { cfg.sec = ev.target.value; saveCfg(); home(); var d2 = root.querySelector(".today-cfg"); if (d2) d2.open = true; }
     if (ev.target.id === "cfg-auto") CP.setPref("auto", ev.target.checked);

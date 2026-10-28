@@ -47,3 +47,15 @@ Gli estratti di musica del sito (`docs/audio/`) vengono dai brani dell'app e han
 - **Morph-it!**: la doppia licenza (CC BY-SA 2.0 o LGPL) è quella dichiarata nel file `readme-morph-it.txt` della versione 0.4.8, ufficiale, che si trova in `LICENZE/MORPH-IT.txt` insieme ai ringraziamenti; il testo della LGPL 2.1 distribuito con Morph-it! è in `LICENZE/LGPL-2.1.txt`. `src/data/it/lexicon.js` è un estratto modificato (solo le parole del corso) e porta nell'intestazione l'avviso di modifica.
 - **Versioni**: per Make Me a Hanzi e complete-hsk-vocabulary il commit esatto non è stato annotato al momento dell'import. `tools/strokes.mjs` e `tools/levels.mjs` scrivono la data; al prossimo aggiornamento
   conviene annotare anche il commit.
+
+## Librerie valutate e non adottate (ottobre 2026)
+
+Per non aggiungere codice che non serve, queste sono state lette e **non** sono nell'app; qui sta il perché, per non rifare la stessa valutazione.
+
+- **Pitchy** (MIT, McLeod Pitch Method): l'app ha già il suo NSDF in `src/voice/pitch.js`; la chiarezza del segnale si ricava già dal massimo della NSDF.
+- **RecordRTC / Extendable-Media-Recorder** (MIT): ne abbiamo preso solo l'idea di un unico gestore del flusso di microfono (`src/voice/mic.js`), senza il codice.
+- **Perfect Freehand** (MIT): la lavagna (`src/voice/pad.js`) disegna già un tratto morbido a spessore variabile con curve quadratiche.
+- **html-to-image** (MIT): le carte da condividere hanno già un motore a canvas unico (`src/ui/share-card.js`); non serve un secondo generatore.
+- **Vosk, Sherpa-ONNX** (Apache-2.0): riconoscimento vocale offline, valutato come lavoro futuro per l'APK (modelli da decine di MB); non necessario oggi.
+- **RosaeNLG, regole italiane di LanguageTool** (MIT / LGPL): utili come riferimento in sviluppo per estendere il correttore di frasi italiane; non entrano nell'app.
+- **pinyin-pro, nodejieba** (MIT): possibili controlli in `tools/` sul pinyin e sul taglio delle frasi; non entrano nell'app.

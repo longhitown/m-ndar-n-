@@ -349,6 +349,16 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    /** stampa la pagina (o la salva in PDF) con il servizio di stampa di Android: window.print() nella WebView non fa niente */
+    void printPage() {
+        runOnUiThread(() -> {
+            try {
+                android.print.PrintManager pm = (android.print.PrintManager) getSystemService(PRINT_SERVICE);
+                if (pm != null && web != null) pm.print("màndarínō", web.createPrintDocumentAdapter("mandarino"), new android.print.PrintAttributes.Builder().build());
+            } catch (RuntimeException ignored) { }
+        });
+    }
+
     /** esegue JavaScript nella pagina dal thread dell'interfaccia */
     void js(final String code) {
         runOnUiThread(() -> { if (web != null) web.evaluateJavascript(code, null); });

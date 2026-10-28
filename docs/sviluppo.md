@@ -515,9 +515,9 @@ La build si ferma se trova nel repository:
     finestra in più;
   - chi li aveva già raggiunti prima di questa versione li ritrova segnati, senza una pioggia di messaggi.
 - **«我的进步»**: il racconto della settimana (`CP.story`), la raccolta «纪念卡» se c'è almeno un traguardo, «分享».
-- **Carte da condividere** (`src/ui/share-card.js`, `CP.shareCard.templates`). Lo stesso motore fa la carta del cinese
-  (identica a prima: `tools/e2e.mjs` la confronta con `tools/fixtures/share-card-v1.js`) e tre carte del corso di
-  italiano: del giorno, del traguardo, della settimana.
+- **Carte da condividere** (`src/ui/share-card.js`, `CP.shareCard.templates`). Lo stesso motore fa la carta del giorno del cinese
+  (`zh-day`: grado, tre numeri, parola del giorno, testo in italiano; con gli stessi selettori di formato, colore e firma di quelle di
+  italiano) e tre carte del corso di italiano: del giorno, del traguardo, della settimana.
   - Formati 3:4 (1080×1440, predefinito), 4:5 e 9:16; tre colori, i temi dell'app.
   - Contenuto: logo e nome, sigillo e grado, tre numeri, «今日意大利语», data in cinese, «署名» facoltativo (spento di
     base, solo sul telefono: `cp-card-v1`), «màndarínō · 免费 · 离线 · 无广告 · 无需注册» e il QR.
@@ -928,3 +928,25 @@ L'elenco di ciò che resta da fare è in [roadmap.md](roadmap.md); per pubblicar
   (泳 in 游泳) mostra la lettura e dove compare.
 - Voce: si usa la voce del telefono. La voce online (che manda il testo a un servizio esterno) parte solo se l'hai
   permessa in ⚙️; altrimenti, se manca una voce cinese, un avviso spiega come installarla. Legge i testi lunghi a pezzi sotto i 180 caratteri.
+
+## Difetti trovati sul telefono (ottobre 2026) e come sono risolti
+
+Una prova su un telefono Android vero ha trovato questi difetti, che i test senza telefono non potevano vedere. Ognuno ha ora una prova in `tools/e2e.mjs`
+(tranne quelli che dipendono dal sistema Android, elencati in `docs/checklist-dispositivo.md`).
+
+| Difetto | Causa | Soluzione |
+|---|---|---|
+| «Non riesco a usare il microfono (NotReadableError)» aprendo l'oscilloscopio dei toni dopo un riconoscimento vocale | Android non permette due flussi di microfono insieme: il riconoscimento era ancora aperto | `CP.listenRelease()` chiude il riconoscimento prima; `CP.micStream()` aspetta e riprova fino a 4 volte; il messaggio all'utente non mostra più il nome tecnico |
+| «Parola per parola» sembrava non cambiare niente | la scomposizione era solo una riga di glosse | ora mostra «Alla lettera: 我 io → 是 essere → …» e toglie la traduzione fluida e il segno «frase verificata» |
+| Tocco lungo sui componenti: menu «Copia / Cerca» di Android | niente `user-select: none` né blocco di `contextmenu` | regola globale in `base.css` e un solo gestore in `core.js`; restano selezionabili i campi di testo e `.selectable`; il tocco lungo di 2 s per Pleco e il foglio del carattere non cambiano |
+| Il risultato di «Valuta tratto» finiva sotto lo schermo | veniva aggiunto sotto il pulsante | `scrollIntoView` dopo la valutazione (`voice/pad.js`) |
+| «(lei 指女性)» su tutte le domande del passato prossimo | etichetta fissa del tempo | si mostra solo se il soggetto è «lei» (`it/course.js`) |
+| Barra «00:00 – 00:00» nella notifica della musica | metadati senza durata ben definita | `METADATA_KEY_DURATION = -1` e nessuna azione di spostamento (`MusicService.java`) |
+| Sfida di 60 secondi con le stesse parole | pool piccolo e scelta casuale | pool completato fino a 30 parole e finestra di 8 domande senza ripetizioni (`study/ear-sprint.js`) |
+| «Stampa» nelle Parole non faceva niente | `window.print()` non esiste nella WebView | il ponte `Bridge.print()` apre il servizio di stampa di Android (anche «Salva come PDF») |
+| Cambiando la lingua dei menu ripartiva l'animazione d'avvio | `location.reload()` | `sessionStorage` `cp-fast`: niente animazione e si riapre la stessa pagina delle impostazioni |
+
+Rifiniture dello stesso giro: istogramma delle settimane con il fondo a filo (un valore 0 non sembra una barra piena); la carta «Continua» del Percorso senza il selettore di
+durata (sta in Studia → Personalizza); niente più la riga «Sostieni il progetto» ripetuta in «Come funziona»; la tastiera si abbassa scorrendo «Vai a…» e «Cerca ovunque»;
+la carta del giorno del cinese con formato, colore e firma; margine destro del widget «Pausa»; mappa del Taccuino alta al massimo il 46% dello schermo; «Novità» riscritte in sette
+righe per versione. Le note sulle librerie valutate e non usate sono in `THIRD-PARTY-NOTICES.md`.

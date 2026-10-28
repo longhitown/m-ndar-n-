@@ -40,12 +40,17 @@
   /* l'apertura è sempre presente (non solo la prima volta) e dura almeno 3,2 s, così l'animazione si vede per intero; chi arriva da un
      collegamento (widget, scorciatoia) o ha il movimento ridotto aspetta meno, e i test automatici (navigator.webdriver) niente */
   var reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-  var min = typeof window.__MD_SPLASH_MIN === "number" ? window.__MD_SPLASH_MIN : navigator.webdriver ? 0 : window.__mdGoing ? 700 : reduce ? 500 : 3200;
+  var min = typeof window.__MD_SPLASH_MIN === "number" ? window.__MD_SPLASH_MIN : navigator.webdriver ? 0 : window.__spFast ? 0 : window.__mdGoing ? 700 : reduce ? 500 : 3200;
   var wait = Math.max(0, min - (window.performance && performance.now ? performance.now() : 0));
   setTimeout(function () {
     requestAnimationFrame(function () {
       s.classList.add("gone"); document.body.classList.add("app-reveal");
       setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); document.body.classList.remove("app-reveal"); }, 900);
+      /* dopo il cambio di lingua: stessa pagina delle impostazioni, senza animazione */
+      if (window.__spFast) {
+        var fast = null; try { fast = JSON.parse(sessionStorage.getItem("cp-fast") || "null"); sessionStorage.removeItem("cp-fast"); } catch (e) {}
+        if (fast && fast.set && CP.openSettings) setTimeout(function () { CP.openSettings(); if (CP.settingsGo) CP.settingsGo(fast.set); }, 60);
+      }
     });
   }, wait);
 })();

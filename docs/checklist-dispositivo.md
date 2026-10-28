@@ -23,5 +23,11 @@ telefono vero. Dieci minuti, prima di ogni release importante. Segna data, telef
 | **Sfida a un amico**: Percorso → 🎯, poi inquadra il QR con un secondo telefono (⚙️ → Studio → Sfide e classe → Inquadra il QR) | sul secondo telefono le stesse domande; il link (se c'è il sito) si apre anche dalla fotocamera di sistema |
 | **Foglio della classe**: ⚙️ → Studio → Sfide e classe → Prepara un pacchetto → Foglio da stampare, stampato su A4 | i due QR si leggono dalla carta; il pacchetto si importa |
 | **Aggiornamento sopra la versione precedente** | i progressi restano |
+| **Microfono dopo il riconoscimento**: in una carta tocca 🎤, parla, poi ••• → 〰️ Tono | l'oscilloscopio si apre senza errori (al massimo un attimo di attesa) |
+| **Stampa** (Parole → Stampa) | si apre il servizio di stampa di Android; «Salva come PDF» produce la tabella |
+| **Tocco lungo** su un componente in «Di che cosa è fatto» | non compare il menu «Copia / Cerca sul web»; con Pleco acceso, dopo 2 s compare «Apri in Pleco» |
+| **Notifica musicale** | nessuna barra «00:00 – 00:00» (su HyperOS e sugli altri sistemi) |
+| **Apertura**: le quattro note nel momento in cui i toni si disegnano | si sentono (se gli effetti sono accesi e l'audio è sbloccato), una per tono, senza scatti |
+| **Cambio lingua dei menu** | niente animazione e si resta nella stessa pagina delle impostazioni |
 
 Se qualcosa non va: una issue con telefono, versione di Android e che cosa hai visto.

@@ -75,7 +75,7 @@ A ogni avvio, non solo al primo, si vede `#splash` (`index.html`, `styles/splash
 3. i toni **volano**: il 4° sulla *à*, il 2° sulla *í*, il 1° sulla *ō* (la lettera prende il suo accento quando il tono arriva), il 3° si divide e si posa sulle due foglie, che brillano un istante;
 4. i toni si dissolvono, resta il logo un istante e l'app entra, con un'entrata morbida del contenuto.
 
-Dura circa **3,2 s**; **0,5 s** con «movimento ridotto» del sistema; **0,7 s** se si arriva da un collegamento (widget, scorciatoia); **zero** nei test automatici. Se il telefono è lento resta finché l'app non è pronta e, dopo
+Mentre i toni si disegnano si sentono **quattro note**, una per tono (piatta, che sale, che scende e risale, che cade), solo se gli effetti sono accesi e l'audio è già sbloccato. Dura circa **3,2 s**; **0,5 s** con «movimento ridotto» del sistema; **0,7 s** se si arriva da un collegamento (widget, scorciatoia); **zero** nei test automatici. Se il telefono è lento resta finché l'app non è pronta e, dopo
 circa 2,4 s, mostra righe «scheletro» e un suggerimento (un tono, o una parola italiana). Se la persona ha un sigillo, il suo carattere si apre dietro il frutto. Toccando il frutto, rimbalza.
 *(Il volo dei toni è nella pull request #26 al momento di scrivere.)*
 
@@ -111,7 +111,7 @@ Altri modi di muoversi: **Cerca ovunque** (🔍 o il tasto `/`: strumenti, lezio
 
 ### Percorso (la home)
 
-Una carta «Continua» con **un solo pulsante** che dice che cosa succede («Impara 5 parole nuove · 10 ripassi»), poi le tappe per capitolo (una per sezione di vocabolario). La durata si sceglie tra **5, 10 e 15 minuti**.
+Una carta «Continua» con **un solo pulsante** che dice che cosa succede («Impara 5 parole nuove · 10 ripassi»), poi le tappe per capitolo (una per sezione di vocabolario). La durata della sessione guidata (**5, 10 o 15 minuti**) si sceglie in Studia → Personalizza; nella carta compare solo come «10 min».
 Ogni tappa può avere le sue lezioni e il suo dialogo; il Taccuino del viaggiatore (sezione 11) cresce con le tappe finite.
 
 ### Studia
@@ -223,13 +223,13 @@ Il **logo è interattivo**: toccando le lettere con l'accento si sente il loro t
 
 ### Pronuncia
 
-Il microfono usa il riconoscimento del sistema (`SpeechRecognition`; nell'APK il riconoscitore di Android, che può funzionare offline). Un errore passeggero (servizio occupato) si ritenta una volta in silenzio; il microfono si libera quando l'app va in secondo piano (corretto nella #22).
+Il microfono usa il riconoscimento del sistema (`SpeechRecognition`; nell'APK il riconoscitore di Android, che può funzionare offline). Un errore passeggero (servizio occupato) si ritenta una volta in silenzio; il microfono si libera quando l'app va in secondo piano. Riconoscimento e oscilloscopio dei toni non usano mai il microfono insieme: chi apre il secondo chiude prima il primo e, se Android risponde «occupato», riprova fino a 4 volte; l'utente non vede mai il nome tecnico dell'errore.
 
 ---
 
 ## 10. Con altre persone (sempre senza server)
 
-- **Carte da condividere**: un'immagine creata sul telefono (canvas) con grado, numeri e frase del giorno, e un QR verso l'app; la firma è facoltativa e spenta di base. Modelli: carta del giorno (cinese e italiano), carta del Taccuino, carta del Laboratorio dei radicali; formato e tema scelti.
+- **Carte da condividere**: un'immagine creata sul telefono (canvas) con grado, numeri e frase o parola del giorno, e un QR verso l'app; la firma è facoltativa e spenta di base. Modelli: carta del giorno (cinese e italiano, con gli stessi selettori di proporzione 3:4 / 4:5 / 9:16, colore e firma), carta del traguardo e della settimana (italiano), carta del Taccuino, carta del Laboratorio dei radicali.
 - **Sfida a un amico**: dieci parole + un seme diventano un codice (`MDC1-…`, link, testo o QR); chi lo apre fa le stesse domande nello stesso ordine. Non tocca ripassi né punti.
 - **Pacchetto classe** (per chi insegna): un tratto del corso, un obiettivo e una data diventano un codice (`MDK1-…`); chi studia lo importa e vede l'avanzamento; il riepilogo per l'insegnante si crea solo se lo si chiede e contiene solo conteggi.
 - **Sigilli di gratitudine** (印章): codici firmati (ECDSA P-256, `MDS1.<contenuto>.<firma>`) che si riscattano nell'app; 支 Sostegno, 交 Cultura, 永 Custodire; solo estetici. L'app non sa chi ha donato. Le chiavi pubbliche stanno in `src/config.js` (**oggi la lista è vuota**: il riscatto non è ancora attivo finché non si genera una chiave con `lo strumento che genera la chiave`).
@@ -276,6 +276,7 @@ Due versioni con lo stesso `applicationId` e la stessa chiave: **direct** (GitHu
 - **Widget «Oggi»** (4×2 e 2×1): serie di giorni con un messaggio gentile, ripassi in scadenza (calcolati sul telefono dall'istogramma delle prossime 168 ore), parola del giorno (un tocco mostra il significato), «Studia ora».
 - **Widget «Oggi» e «Pausa» in stile «Giada»**: sfondo verde, riquadro di vetro per la parola del giorno, striscia di dieci segmenti con l'obiettivo di oggi. Cambiano faccia in quattro momenti, uguali nei due corsi: **mattina** (6–11, riflesso d'alba, «Inizia la giornata»), **pomeriggio** (12–16, «Pausa studio? Bastano N minuti.»), **sera** (17–21, accenti arancioni, fiamma più scura, quanti mancano all'obiettivo e un proverbio al posto della parola), **notte** (22–5, quasi nero, luna, nessun pulsante, «A domani!»). Niente mascotte e niente toni di paura: solo inviti. Sfocatura e animazioni non esistono nei widget Android, quindi il vetro è una trasparenza.
 - **Widget «Pausa»** (4×1): giri di studio da **25 minuti** e **pausa caffè** da 5; il conto alla rovescia è un cronometro in discesa che Android fa scorrere da solo (un widget non può animarsi); un allarme ai cambi di fase aggiorna il widget e manda un avviso; da fermo mostra «Riposo» di notte (22–6) e «Pausa caffè a Xi'an» dalle 14 alle 18.
+- **Stampa** (Parole → Stampa): passa dal servizio di stampa di Android (anche «Salva come PDF»).
 - **Scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Musica.
 - **Promemoria** facoltativo (⚙️ → Studio): un avviso al giorno all'ora scelta, calcolato sul telefono, solo se oggi non si è studiato e c'è qualcosa da fare.
 - **Musica in secondo piano** con comandi fuori dall'app.
