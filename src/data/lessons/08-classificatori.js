@@ -18,7 +18,16 @@ LESSONS.push({
     ["我要两杯茶。", "Voglio due tazze di tè."],
     ["他有一只狗。", "Lui ha un cane."],
     ["这本书很贵。", "Questo libro è caro."],
-    ["那个人是谁？", "Chi è quella persona?"]
+    ["那个人是谁？", "Chi è quella persona?"],
+    ["我要三杯咖啡。", "Voglio tre caffè."],
+    ["她有两个孩子。", "Lei ha due figli."]
+  ],
+  "dlg": [
+    ["A", "你好，我要一本书。", "Buongiorno, vorrei un libro."],
+    ["B", "这本书很贵。", "Questo libro è caro."],
+    ["A", "那本书贵吗？", "Quel libro è caro?"],
+    ["B", "那本书不贵。", "Quel libro non è caro."],
+    ["A", "好，我要那本书。", "Bene, prendo quel libro."]
   ],
   "traps": [
     ["我有三朋友。", "我有三个朋友。", "Tra numero e nome manca il classificatore 个."],

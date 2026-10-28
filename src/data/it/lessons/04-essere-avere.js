@@ -18,7 +18,9 @@ ITLESSONS.push({
     ["Siamo studenti.", "我们是学生。"],
     ["Ho un fratello.", "我有一个兄弟（意大利语不分哥哥弟弟）。"],
     ["Ho fame.", "我饿了。"],
-    ["Lei ha vent'anni.", "她二十岁。"]
+    ["Lei ha vent'anni.", "她二十岁。"],
+    ["Siete cinesi.", "你们是中国人。"],
+    ["Hai sete?", "你渴吗？"]
   ],
   "dlg": [
     ["A", "Ciao! Sono Luca. Sono italiano.", "你好！我是卢卡。我是意大利人。"],

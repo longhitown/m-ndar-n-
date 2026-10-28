@@ -19,7 +19,17 @@ LESSONS.push({
     ["他是谁？", "Chi è lui?"],
     ["你有几个孩子？", "Quanti figli hai?"],
     ["你为什么学中文？", "Perché studi cinese?"],
-    ["你什么时候去中国？", "Quando vai in Cina?"]
+    ["你什么时候去中国？", "Quando vai in Cina?"],
+    ["这是什么？", "Che cos'è questo?"],
+    ["你叫什么名字？", "Come ti chiami?"]
+  ],
+  "dlg": [
+    ["A", "你叫什么名字？", "Come ti chiami?"],
+    ["B", "我叫马可。我是学生。", "Mi chiamo Marco. Sono studente."],
+    ["A", "你为什么学中文？", "Perché studi cinese?"],
+    ["B", "我的朋友是中国人。", "Il mio amico è cinese."],
+    ["A", "你什么时候去中国？", "Quando vai in Cina?"],
+    ["B", "我明天去。", "Vado domani."]
   ],
   "traps": [
     ["你去哪里吗？", "你去哪里？", "Con una parola interrogativa niente 吗."],

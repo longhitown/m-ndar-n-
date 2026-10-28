@@ -19,7 +19,17 @@ ITLESSONS.push({
     ["Sei cinese?", "你是中国人吗？"],
     ["Dove vai?", "你去哪里？"],
     ["Che cosa mangi?", "你吃什么？"],
-    ["Chi è lui?", "他是谁？"]
+    ["Chi è lui?", "他是谁？"],
+    ["Non capisco.", "我不懂。"],
+    ["Quando vieni?", "你什么时候来？"]
+  ],
+  "dlg": [
+    ["A", "Che cosa mangi?", "你吃什么？"],
+    ["B", "Non mangio carne.", "我不吃肉。"],
+    ["A", "Bevi caffè?", "你喝咖啡吗？"],
+    ["B", "No, non bevo mai caffè.", "不，我从来不喝咖啡。"],
+    ["A", "Perché?", "为什么？"],
+    ["B", "Non lo so.", "我不知道。"]
   ],
   "traps": [
     ["Vai dove?", "Dove vai?", "疑问词放在句子开头。"],
