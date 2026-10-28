@@ -20,6 +20,13 @@ ITLESSONS.push({
     ["un caffè, due caffè", "一杯咖啡，两杯咖啡"],
     ["un uovo, due uova", "一个鸡蛋，两个鸡蛋"]
   ],
+  "dlg": [
+    ["A", "Buongiorno! Due caffè, per favore.", "早上好！请来两杯咖啡。"],
+    ["B", "Ecco due caffè. Altro?", "两杯咖啡给您。还要别的吗？"],
+    ["A", "Sì, due uova.", "要，两个鸡蛋。"],
+    ["B", "Due caffè e due uova. Ecco.", "两杯咖啡和两个鸡蛋。给您。"],
+    ["A", "Grazie.", "谢谢。"]
+  ],
   "traps": [
     ["due libro", "due libri", "数量多于一，名词就要变复数。"],
     ["due caffès", "due caffè", "以重音结尾的词复数不变，也不加 -s。"],

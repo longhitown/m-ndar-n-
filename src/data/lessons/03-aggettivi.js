@@ -21,6 +21,12 @@ LESSONS.push({
     ["今天有点冷。", "Oggi fa un po' freddo."],
     ["我不饿。", "Non ho fame."]
   ],
+  "dlg": [
+    ["A", "你的手机很好。", "Il tuo cellulare è bello."],
+    ["B", "谢谢，我的手机不贵。", "Grazie, il mio cellulare non è caro."],
+    ["A", "我的书太贵了！", "Il mio libro è troppo caro!"],
+    ["B", "今天有点冷，我们喝茶。", "Oggi fa un po' freddo, beviamo del tè."]
+  ],
   "traps": [
     ["我是累。", "我很累。", "Con l'aggettivo niente 是."],
     ["茶热很。", "茶很热。", "很 va prima dell'aggettivo."]

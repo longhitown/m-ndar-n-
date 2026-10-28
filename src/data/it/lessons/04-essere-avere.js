@@ -20,6 +20,13 @@ ITLESSONS.push({
     ["Ho fame.", "我饿了。"],
     ["Lei ha vent'anni.", "她二十岁。"]
   ],
+  "dlg": [
+    ["A", "Ciao! Sono Luca. Sono italiano.", "你好！我是卢卡。我是意大利人。"],
+    ["B", "Ciao, Luca! Sono Li. Sono cinese.", "你好，卢卡！我是李。我是中国人。"],
+    ["A", "Hai fame?", "你饿吗？"],
+    ["B", "Sì, ho fame.", "是的，我饿了。"],
+    ["A", "Anch'io. Andiamo!", "我也是。走吧！"]
+  ],
   "traps": [
     ["Sono fame.", "Ho fame.", "饿、渴、冷、热和年龄都用 avere。"],
     ["Io sono Cinese.", "Sono cinese.", "国籍要小写；主语 io 一般省略。"],

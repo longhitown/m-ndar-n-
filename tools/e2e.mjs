@@ -153,11 +153,13 @@ try {
       await p.evaluate(() => { if (document.getElementById("quit")) document.getElementById("quit").click(); });
       check("Da zero: nella barra solo Percorso e Studia", (await tabs(p)) === "path,study", await tabs(p));
       await p.evaluate(() => CP.go("frasi")); await p.waitForTimeout(150);
-      check("?go=frasi con Frasi ancora chiusa porta alla scheda aperta più vicina, senza errori", await p.evaluate(() => !document.getElementById("view-path").hidden && document.getElementById("view-build").hidden));
+      const g1 = await p.evaluate(() => ({ path: !document.getElementById("view-path").hidden, build: !document.getElementById("view-build").hidden, cls: document.body.className, errs: 0 }));
+      check("?go=frasi con Frasi ancora chiusa porta alla scheda aperta più vicina, senza errori", g1.path && !g1.build, JSON.stringify(g1));
       await p.evaluate(() => CP.unlock.peek("build", () => CP.build.openLesson(CP.lessons.list()[0].id), "Frasi")); await p.waitForTimeout(250);
       check("Lezione dal Percorso con Frasi chiusa: si apre in immersione, senza la scheda Frasi", await p.evaluate(() => document.body.classList.contains("in-focus") && getComputedStyle(document.querySelector("nav.dock")).display === "none" && document.getElementById("tab-build").hidden));
       await p.keyboard.press("Escape"); await p.waitForTimeout(250);
-      check("…e all'uscita si torna al Percorso", await p.evaluate(() => !document.body.classList.contains("in-focus") && !document.getElementById("view-path").hidden));
+      const g2 = await p.evaluate(() => ({ focus: document.body.classList.contains("in-focus"), path: !document.getElementById("view-path").hidden, cls: document.body.className }));
+      check("…e all'uscita si torna al Percorso", !g2.focus && g2.path, JSON.stringify(g2));
       await p.evaluate(() => CP.finder()); await p.fill("#fd-q", "laboratorio"); await p.waitForTimeout(150);
       check("Cerca ovunque: uno strumento ancora chiuso compare con «si apre…» e non porta a una scheda nascosta", /🔒/.test(await p.textContent("#fd-res")));
       await p.keyboard.press("Escape");
@@ -557,6 +559,18 @@ try {
       return { hole, ok1, ok2: !!document.querySelector(".verdict.ok") };
     });
     check("Lezioni: i quiz accettano «buco» e «scrivi» (pinyin con i numeri dei toni)", lq.hole && lq.ok1 && lq.ok2, JSON.stringify(lq));
+    /* un ripasso ogni cinque lezioni (domande prese dalle lezioni) e il mini-dialogo con l'audio */
+    const rz = await p.evaluate(() => {
+      CP.studyHome(); CP.show("build", true); CP.build.openLesson(CP.lessons.list()[0].id);
+      const dl = document.querySelectorAll(".ls-dl").length, au = document.querySelectorAll(".ls-dl button").length;
+      const nRev = CP.lessons.reviews().length, nList = CP.lessons.list().length;
+      CP.build.openLesson("rip-1");
+      const page = !!document.querySelector("[data-ls-quiz]") && /1–5/.test((document.querySelector(".ls-lesson h3") || {}).textContent || "") && !document.querySelector(".ls-ex");
+      document.querySelector("[data-ls-quiz]").click();
+      const play = !!document.querySelector(".ls-quiz .ls-prog") && !!document.querySelector(".ls-quiz .ask");
+      return { dl, au, nRev, nList, page, play };
+    });
+    check("Lezioni: mini-dialogo con audio, un ripasso ogni cinque lezioni (6), i ripassi non contano tra le lezioni, il ripasso si fa come un quiz", rz.dl >= 3 && rz.au >= rz.dl && rz.nRev === 6 && rz.nList === 30 && rz.page && rz.play, JSON.stringify(rz));
     check("Esercizi con le frasi: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -797,6 +811,17 @@ try {
     check("Pleco: nel corso di italiano l'opzione non c'è", await p.evaluate(() => !CP.pleco.available()));
     check("Anki, corso di italiano: tutto il lessico, guid unici, 7 colonne, presente dei verbi dalle regole, Morph-it! citato", ak.n > 4000 && ak.uniq === ak.n && ak.cols && ak.deck && ak.morph && ak.conj && !ak.dots, JSON.stringify(ak));
     check("Corso di italiano: interfaccia cinese e schede proprie", await p.evaluate(() => CP.course() === "it" && LANG === "zh" && document.body.classList.contains("course-it") && document.querySelectorAll(".dock-it [data-it-tab]").length === 5));
+    const ri = await p.evaluate(() => {
+      CP.itShow("lessons"); if (document.querySelector("[data-itl-back]")) document.querySelector("[data-itl-back]").click();
+      const nodes = document.querySelectorAll(".itp-node.rev").length, real = document.querySelectorAll(".itp-node:not(.rev)").length;
+      document.querySelector('[data-itl-open="rip-1"]').click();
+      const page = !!document.querySelector("[data-itl-quiz]") && /1–5/.test((document.querySelector(".ls-lesson h3") || {}).textContent || "");
+      document.querySelector("[data-itl-quiz]").click();
+      const play = !!document.querySelector(".ls-quiz .ls-prog");
+      CP.itApi.open("pronuncia");
+      return { nodes, real, page, play, dl: document.querySelectorAll(".ls-dl").length, say: document.querySelectorAll(".ls-dl [data-it-say]").length };
+    });
+    check("Corso di italiano: mini-dialogo con audio e un ripasso ogni cinque lezioni (6, oltre alle 30 lezioni)", ri.nodes === 6 && ri.real === 30 && ri.page && ri.play && ri.dl >= 3 && ri.say >= ri.dl, JSON.stringify(ri));
     const res = await p.evaluate(() => {
       const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
       try { document.getElementById("fam").hidden = true; } catch (e) {}
@@ -850,7 +875,7 @@ try {
     await p.goto(base); await p.waitForTimeout(900);
     const xp1 = await p.evaluate(() => CP.game.rank().xp); await p.reload(); await p.waitForTimeout(700); const xp2 = await p.evaluate(() => CP.game.rank().xp);
     check("Corso di italiano: chi aveva già studiato parte dai punti che vale (2 lezioni e 5 parole = 110), senza contarli due volte", xp1 === 110 && xp2 === 110, xp1 + " " + xp2);
-    const today = await p.evaluate(() => { const c = document.querySelector("#view-it .it-today"); return c ? { primary: document.querySelectorAll("#view-it .btn-main").length, go: (c.querySelector("[data-itd-go]") || {}).textContent, nodes: document.querySelectorAll(".itp-node").length, done: document.querySelectorAll(".itp-node.done").length, now: (document.querySelector(".itp-node.now [data-itl-open]") || {}).getAttribute && document.querySelector(".itp-node.now [data-itl-open]").getAttribute("data-itl-open"), phrase: !!c.querySelector(".itd-phrase .itd-it"), ring: !!c.querySelector(".ring") } : null; });
+    const today = await p.evaluate(() => { const c = document.querySelector("#view-it .it-today"); return c ? { primary: document.querySelectorAll("#view-it .btn-main").length, go: (c.querySelector("[data-itd-go]") || {}).textContent, nodes: document.querySelectorAll(".itp-node:not(.rev)").length, done: document.querySelectorAll(".itp-node.done:not(.rev)").length, now: (document.querySelector(".itp-node.now [data-itl-open]") || {}).getAttribute && document.querySelector(".itp-node.now [data-itl-open]").getAttribute("data-itl-open"), phrase: !!c.querySelector(".itd-phrase .itd-it"), ring: !!c.querySelector(".ring") } : null; });
     check("Carta «今天»: un solo pulsante primario «继续：第 3 课», anello, frase del giorno; sotto il percorso di 30 lezioni con 2 superate e la terza evidenziata", today && today.primary === 1 && /第 3 课/.test(today.go) && today.nodes === 30 && today.done === 2 && today.now === "articoli" && today.phrase && today.ring, JSON.stringify(today));
     const ph = await p.evaluate(() => { const d = new Date(2026, 9, 27), a = CP.itToday.phraseOfDay(d), b = CP.itToday.phraseOfDay(new Date(2026, 9, 27)), pool = CP.itToday.pool(); return { same: a.it === b.it, inPool: pool.some((x) => x.it === a.it), fromPassed: pool.every((x) => x.n <= 2) }; });
     check("Frase del giorno: scelta in modo deterministico tra gli esempi delle lezioni superate", ph.same && ph.inPool && ph.fromPassed, JSON.stringify(ph));

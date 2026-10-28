@@ -205,7 +205,8 @@ for (const m of LAZYMOD) {
 /* COURSE_IT: il corso di italiano per chi parla cinese (testi, carta «今天», corso) serve solo a chi lo ha scelto. Nel file
    unico questi file restano testo (type="text/plain") e si eseguono al loro posto, in ordine, solo se cp-course è "it":
    chi studia cinese non li compila all'avvio. Il comportamento è identico a quello degli script normali. */
-const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js", "it/esercizi.js", "it/lettura.js"];
+const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js", "it/esercizi.js", "it/lettura.js"]
+  .concat(scripts.filter((x) => /^data\/it\/lessons\//.test(x.src)).map((x) => x.src));   /* anche le lezioni di italiano (dati): solo per chi studia italiano */
 for (const f of COURSE_IT) {
   const sc = scripts.find((x) => x.src === f); if (!sc) fail("COURSE_IT: manca " + f + " in src/index.html");
   const code = fs.readFileSync(path.join(SRC, f), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script"), id = "course-it-" + f.replace(/[^a-z0-9]+/gi, "-");

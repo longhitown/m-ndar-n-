@@ -20,6 +20,12 @@ LESSONS.push({
     ["老师的书很贵。", "Il libro dell'insegnante è caro."],
     ["这是我爸爸的书。", "Questo è il libro del mio papà."]
   ],
+  "dlg": [
+    ["A", "这是我的书，那是你的书。", "Questo è il mio libro, quello è il tuo."],
+    ["B", "对。这是我朋友的手机。", "Esatto. Questo è il cellulare del mio amico."],
+    ["A", "你朋友是中国人。", "Il tuo amico è cinese."],
+    ["B", "对，他是中国人。", "Sì, è cinese."]
+  ],
   "traps": [
     ["书的我", "我的书", "Prima chi possiede, poi la cosa: «io 的 libro»."],
     ["这是我书。", "这是我的书。", "Senza 的 vanno solo parenti e amici (我妈妈, 我朋友); con le cose serve 的."]
