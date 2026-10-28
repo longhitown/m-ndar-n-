@@ -825,7 +825,7 @@ try {
     const res = await p.evaluate(() => {
       const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
       try { document.getElementById("fam").hidden = true; } catch (e) {}
-      for (const l of ITLESSONS) {
+      for (const l of ITLESSONS.filter((x) => x.n <= 30)) {
         CP.itShow("lessons"); if (document.querySelector("[data-itl-back]")) click("[data-itl-back]");
         click('[data-itl-open="' + l.id + '"]'); click("[data-itl-quiz]");
         for (const q of l.quiz) {
@@ -842,7 +842,25 @@ try {
     await p.evaluate(() => CP.itShow("review")); await p.click("[data-itr-show]"); await p.click('[data-itr-grade="3"]');
     check("Corso di italiano: ripasso FSRS in cp-it-srs-v1", await p.evaluate(() => { const s = JSON.parse(localStorage.getItem("cp-it-srs-v1") || "{}"); return Object.keys(s).filter((k) => k !== "__meta").length === 1; }));
     /* superate le 30 lezioni: 变位 si apre (lezione sul presente); 句子 aspetta anche i giorni di studio */
-    check("Corso di italiano: dopo le lezioni si apre 变位, 句子 aspetta i giorni di studio", await p.evaluate(() => { CP.unlock.check(true); return CP.unlock.ok("conj") && !CP.unlock.ok("phrases"); }));
+    const unl = await p.evaluate(() => { CP.unlock.check(true); return { conj: CP.unlock.ok("conj"), phrases: CP.unlock.ok("phrases"), xp: CP.game && CP.game.xp ? (CP.game.state ? CP.game.state().xp : null) : null, ls: JSON.parse(localStorage.getItem("cp-it-lessons-v1") || "{}").presente || null }; });
+    check("Corso di italiano: dopo le lezioni si apre 变位, 句子 aspetta i giorni di studio", unl.conj && !unl.phrases, JSON.stringify(unl));
+    const resX = await p.evaluate(() => {
+      const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
+      try { document.getElementById("fam").hidden = true; } catch (e) {}
+      for (const l of ITLESSONS.filter((x) => x.n > 30)) {
+        CP.itShow("lessons"); if (document.querySelector("[data-itl-back]")) click("[data-itl-back]");
+        click('[data-itl-open="' + l.id + '"]'); click("[data-itl-quiz]");
+        for (const q of l.quiz) {
+          if (q.k === "order") { for (const w of q.it.replace(/[.,!?]/g, "").split(/\s+/)) { const t = [...document.querySelectorAll("[data-itl-pick]:not([disabled])")].find((x) => x.textContent === w); if (!t) return ["tessera " + w]; t.click(); } click("[data-itl-check]"); }
+          else click('[data-itl-opt="' + q.a + '"]');
+          if (!document.querySelector(".verdict.ok")) return [l.id + ": risposta giusta segnata sbagliata"];
+          click("[data-itl-next]");
+        }
+        out.push(l.id);
+      }
+      return out;
+    }).catch((e) => ["ERR " + e.message]);
+    check("Corso di italiano: le " + resX.length + " lezioni aggiuntive si superano con le risposte giuste", resX.length >= 10 && resX.every((x) => !/ /.test(x)), resX.join(" "));
     /* correttore di frasi (it/checker.js): nessuna segnalazione sulle frasi giuste dell'app, gli errori tipici trovati */
     const itc = await p.evaluate(() => {
       CP.unlock.unlockAll();
