@@ -26,4 +26,5 @@ registro.json
 cambi.json
 __pycache__/
 _site/
+_carousel/
 build-demo-*/

@@ -52,6 +52,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
 fastlane/                  testi e immagini per gli store (fonte unica; docs/store/ per firma, moduli, tester)
 docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
+docs/marketing.md          piano di immagini e caroselli per i social (bozza); tools/carousel.mjs li disegna dai dati dell'app, in _carousel/ (ignorata da git)
 dist/                      ← generato da tools/build.mjs (non è nel repository, è in .gitignore): è questo che si pubblica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
