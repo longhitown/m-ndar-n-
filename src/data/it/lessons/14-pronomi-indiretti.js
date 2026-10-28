@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Le ho regalato un libro.", "我送了她一本书。"],
     ["Mi dici la verità?", "你跟我说实话吗？"],
     ["Ci scrivi una cartolina?", "你给我们写张明信片吗？"],
-    ["Le posso chiedere una cosa?", "我可以问您一件事吗？"]
+    ["Le posso chiedere una cosa?", "我可以问您一件事吗？"],
+    ["Gli scrivo.", "我给他写信。"],
+    ["Ti telefono domani.", "我明天给你打电话。"]
+  ],
+  "dlg": [
+    ["A", "Hai telefonato a Marco?", "你给马可打电话了吗？"],
+    ["B", "Sì, gli ho telefonato.", "打了，我给他打了电话。"],
+    ["A", "E ad Anna?", "那安娜呢？"],
+    ["B", "Le telefono stasera.", "我今天晚上给她打。"]
   ],
   "traps": [
     ["Lo telefono.", "Gli telefono.", "telefonare a qualcuno：给谁打电话，用 gli。"],

@@ -25,7 +25,9 @@ LESSONS.push({
     ["我们是学生。", "Siamo studenti."],
     ["他是我朋友。", "Lui è un mio amico."],
     ["我不是老师。", "Non sono insegnante."],
-    ["这是我的书。", "Questo è il mio libro."]
+    ["这是我的书。", "Questo è il mio libro."],
+    ["他是老师。", "Lui è insegnante."],
+    ["你们是学生。", "Voi siete studenti."]
   ],
   "dlg": [
     ["A", "你好，我是马可。我是学生。", "Ciao, sono Marco. Sono studente."],

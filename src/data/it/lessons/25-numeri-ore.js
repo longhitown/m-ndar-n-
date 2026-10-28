@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Ci vediamo alle sette.", "我们七点见。"],
     ["Oggi è il dieci ottobre.", "今天是十月十号。"],
     ["Costa ventitré euro.", "二十三欧元。"],
-    ["Sono nato nel duemila.", "我是两千年出生的。"]
+    ["Sono nato nel duemila.", "我是两千年出生的。"],
+    ["Sono le dieci.", "十点了。"],
+    ["Il treno parte alle sei e un quarto.", "火车六点一刻开。"]
+  ],
+  "dlg": [
+    ["A", "Che ore sono?", "几点了？"],
+    ["B", "Sono le otto e mezza.", "八点半。"],
+    ["A", "Ci vediamo alle nove?", "我们九点见？"],
+    ["B", "Va bene. Oggi è il dieci ottobre, giusto?", "好。今天是十月十号，对吧？"]
   ],
   "traps": [
     ["Sono l'una.", "È l'una.", "一点用单数 è。"],

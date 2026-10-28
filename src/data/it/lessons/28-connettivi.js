@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Piove, quindi resto a casa.", "下雨了，所以我待在家里。"],
     ["Se hai tempo, vieni a trovarmi.", "如果你有时间，就来看我。"],
     ["È caro, ma è molto buono.", "贵，但是很好吃。"],
-    ["Anche se è tardi, esco.", "虽然晚了，我还是要出去。"]
+    ["Anche se è tardi, esco.", "虽然晚了，我还是要出去。"],
+    ["Resto perché piove.", "我留下来，因为下雨。"],
+    ["Sono stanco, quindi dormo.", "我累了，所以我睡觉。"]
+  ],
+  "dlg": [
+    ["A", "Perché non vieni?", "你为什么不来？"],
+    ["B", "Non vengo perché sono stanco.", "我不来了，因为我累了。"],
+    ["A", "Se hai tempo, vieni a trovarmi.", "如果你有时间，来看看我。"],
+    ["B", "Anche se è tardi, vengo.", "虽然晚了，我还是来。"]
   ],
   "traps": [
     ["Perché piove, quindi resto a casa.", "Siccome piove, resto a casa.", "\"因为……所以\"只用一个连接词；句首说\"因为\"用 siccome。"],

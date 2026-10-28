@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Aspettami!", "等等我！"],
     ["Non preoccuparti!", "别担心！"],
     ["Andiamo!", "我们走吧！"],
-    ["Prego, si accomodi.", "请坐。（对您）"]
+    ["Prego, si accomodi.", "请坐。（对您）"],
+    ["Aspetta!", "等一下！"],
+    ["Non parlare!", "别说话！"]
+  ],
+  "dlg": [
+    ["A", "Vieni qui!", "过来！"],
+    ["B", "Aspetta! Arrivo.", "等一下！我来了。"],
+    ["A", "Non correre!", "别跑！"],
+    ["B", "Non preoccuparti!", "别担心！"]
   ],
   "traps": [
     ["Non parla!", "Non parlare!", "对\"你\"的否定命令用 non + 不定式。"],

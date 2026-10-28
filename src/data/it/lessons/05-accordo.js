@@ -19,7 +19,9 @@ ITLESSONS.push({
     ["due libri nuovi", "两本新书"],
     ["La zuppa è calda.", "汤很热。"],
     ["I ravioli sono buoni.", "饺子很好吃。"],
-    ["Il tè è caldo.", "茶很热。"]
+    ["Il tè è caldo.", "茶很热。"],
+    ["una mela rossa", "一个红苹果"],
+    ["due amici simpatici", "两个友好的朋友"]
   ],
   "dlg": [
     ["A", "Com'è la zuppa?", "汤怎么样？"],

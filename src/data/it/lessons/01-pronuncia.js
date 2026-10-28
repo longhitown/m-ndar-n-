@@ -23,7 +23,9 @@ ITLESSONS.push({
     ["Che cos'è questo?", "这是什么？"],
     ["Mio figlio si chiama Luca.", "我儿子叫卢卡。"],
     ["Il pesce è buono.", "鱼很好吃。"],
-    ["La città è bella.", "这座城市很漂亮。"]
+    ["La città è bella.", "这座城市很漂亮。"],
+    ["Buonasera.", "晚上好。"],
+    ["Grazie!", "谢谢！"]
   ],
   "dlg": [
     ["A", "Buongiorno! Un gelato, per favore.", "早上好！请给我一个冰淇淋。"],

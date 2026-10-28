@@ -18,7 +18,15 @@ LESSONS.push({
     ["他周末去公园。", "Nel fine settimana lui va al parco."],
     ["我们晚上看电视。", "La sera guardiamo la televisione."],
     ["星期六我们去北京。", "Sabato andiamo a Pechino."],
-    ["她每天早上跑。", "Ogni mattina lei corre."]
+    ["她每天早上跑。", "Ogni mattina lei corre."],
+    ["我们昨天去北京。", "Ieri siamo andati a Pechino."],
+    ["他每天喝茶。", "Lui beve tè ogni giorno."]
+  ],
+  "dlg": [
+    ["A", "你明天去北京吗？", "Domani vai a Pechino?"],
+    ["B", "不，我明天不去北京。我周末去。", "No, domani non vado a Pechino. Ci vado nel fine settimana."],
+    ["A", "你每天学中文吗？", "Studi cinese ogni giorno?"],
+    ["B", "对，我每天早上学中文。", "Sì, studio cinese ogni mattina."]
   ],
   "traps": [
     ["我去北京明天。", "我明天去北京。", "Il tempo va prima del verbo, non in fondo."],

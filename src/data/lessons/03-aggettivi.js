@@ -19,7 +19,9 @@ LESSONS.push({
     ["这本书很贵。", "Questo libro è caro."],
     ["这件衣服太贵了！", "Questo vestito è troppo caro!"],
     ["今天有点冷。", "Oggi fa un po' freddo."],
-    ["我不饿。", "Non ho fame."]
+    ["我不饿。", "Non ho fame."],
+    ["咖啡很好喝。", "Il caffè è buono."],
+    ["今天很热。", "Oggi fa caldo."]
   ],
   "dlg": [
     ["A", "你的手机很好。", "Il tuo cellulare è bello."],

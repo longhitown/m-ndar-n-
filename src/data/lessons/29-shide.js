@@ -19,7 +19,16 @@ LESSONS.push({
     ["我是坐飞机来的。", "Sono venuto in aereo."],
     ["你是在哪儿学的中文？", "Dove hai studiato il cinese?"],
     ["我不是一个人来的。", "Non sono venuto da solo."],
-    ["他是跟朋友一起去的。", "Ci è andato con un amico."]
+    ["他是跟朋友一起去的。", "Ci è andato con un amico."],
+    ["我是在北京学的中文。", "Ho studiato cinese a Pechino."],
+    ["他不是昨天来的。", "Non è arrivato ieri."]
+  ],
+  "dlg": [
+    ["A", "你是什么时候来的？", "Quando sei arrivato?"],
+    ["B", "我是昨天来的。", "Sono arrivato ieri."],
+    ["A", "你是怎么来的？", "Come sei venuto?"],
+    ["B", "我是坐飞机来的。你是一个人来的吗？", "Sono venuto in aereo. Tu sei venuto da solo?"],
+    ["A", "不是，我是跟朋友一起来的。", "No, sono venuto con un amico."]
   ],
   "traps": [
     ["我是昨天来了。", "我是昨天来的。", "Con 是 per il dettaglio, alla fine va 的, non 了."],

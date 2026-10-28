@@ -19,7 +19,16 @@ ITLESSONS.push({
     ["Non mi piacciono i gatti.", "我不喜欢猫。"],
     ["Mi piace cucinare.", "我喜欢做饭。"],
     ["Ti piace l'Italia?", "你喜欢意大利吗？"],
-    ["Anche a me piace il tè.", "我也喜欢茶。"]
+    ["Anche a me piace il tè.", "我也喜欢茶。"],
+    ["Ti piace la pizza?", "你喜欢比萨吗？"],
+    ["Mi piacciono i ravioli.", "我喜欢饺子。"]
+  ],
+  "dlg": [
+    ["A", "Ti piace il tè?", "你喜欢茶吗？"],
+    ["B", "Sì, mi piace il tè. E mi piacciono i ravioli.", "喜欢，我喜欢茶，也喜欢饺子。"],
+    ["A", "Anche a me piacciono i ravioli!", "我也喜欢饺子！"],
+    ["B", "Ti piace cucinare?", "你喜欢做饭吗？"],
+    ["A", "Sì, mi piace cucinare.", "是的，我喜欢做饭。"]
   ],
   "traps": [
     ["Io piace il tè.", "Mi piace il tè.", "喜欢的人用 mi，不用 io。"],

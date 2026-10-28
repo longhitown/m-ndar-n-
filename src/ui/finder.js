@@ -40,6 +40,7 @@
     if (IDX) return IDX;
     IDX = [];
     TOOLS.forEach(function (t) { var n = T(t[1]); IDX.push({ g: 0, ico: t[0], t: n, sub: "", id: t[1], k: norm(n + " " + I18N.it[t[1]] + " " + t[2]), run: t[3] }); });
+    if (CP.lessonsMore) CP.lessonsMore();
     (typeof LESSONS !== "undefined" ? LESSONS : []).forEach(function (l) {
       IDX.push({ g: 1, ico: "📘", t: l.title, sub: l.goal || "", k: norm(l.title + " " + (l.goal || "") + " " + (l.id || "")), run: function () { go("build", function () { CP.build.openLesson(l.id); }); } });
     });

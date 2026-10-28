@@ -18,7 +18,15 @@ LESSONS.push({
     ["下雨的话，我们就在家。", "Se piove, restiamo a casa."],
     ["只要你努力，就能学好。", "Basta che ti impegni e lo imparerai bene."],
     ["只有多练习，才能说得好。", "Solo esercitandoti tanto parlerai bene."],
-    ["如果你有时间，就来我家吧。", "Se hai tempo, vieni a casa mia."]
+    ["如果你有时间，就来我家吧。", "Se hai tempo, vieni a casa mia."],
+    ["如果你来，我就很高兴。", "Se vieni, sarò molto contento."],
+    ["只要你来，我就高兴。", "Basta che tu venga e sono contento."]
+  ],
+  "dlg": [
+    ["A", "如果明天下雨，你就不去吗？", "Se domani piove, non vai?"],
+    ["B", "对，如果下雨，我就在家。", "Esatto, se piove resto a casa."],
+    ["A", "如果你有时间，就来我家吧。", "Se hai tempo, vieni a casa mia."],
+    ["B", "好，只要不下雨，我就来。", "Va bene, basta che non piova e vengo."]
   ],
   "traps": [
     ["如果明天下雨，就我不去了。", "如果明天下雨，我就不去了。", "就 va dopo il soggetto (我就)."],

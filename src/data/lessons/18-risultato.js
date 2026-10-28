@@ -19,7 +19,15 @@ LESSONS.push({
     ["你看见我的手机了吗？", "Hai visto il mio telefono?"],
     ["我找到我的钥匙了。", "Ho trovato le mie chiavi."],
     ["我写错了一个字。", "Ho sbagliato un carattere."],
-    ["我买到票了。", "Sono riuscito a comprare il biglietto."]
+    ["我买到票了。", "Sono riuscito a comprare il biglietto."],
+    ["我看完了。", "Ho finito di leggere."],
+    ["我没找到。", "Non l'ho trovato."]
+  ],
+  "dlg": [
+    ["A", "你看见我的手机了吗？", "Hai visto il mio cellulare?"],
+    ["B", "没看见。你找到你的钥匙了吗？", "No. Tu hai trovato le tue chiavi?"],
+    ["A", "找到了。", "Sì, le ho trovate."],
+    ["B", "我写完作业了，我们去吃饭吧。", "Ho finito i compiti, andiamo a mangiare."]
   ],
   "traps": [
     ["我没听懂了。", "我没听懂。", "Con 没 non si mette 了."],
