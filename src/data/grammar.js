@@ -123,7 +123,7 @@ var GRAM = {
     "笑": ["ridere", "a", "n"], "哭": ["piangere", "a", "n"], "做": ["fare", "a", "so"], "工作": ["lavorare", "a", "n"], "学": ["studiare", "a", "l"],
     "学习": ["studiare", "a", "l"], "教": ["insegnare", "a", "l"], "买": ["comprare", "a", "o"], "卖": ["vendere", "a", "o"], "付钱": ["pagare", "a", "n"],
     "找": ["cercare", "a", "o"], "找到": ["trovare", "a", "o"], "用": ["usare", "a", "o"], "帮": ["aiutare", "a", ""], "帮助": ["aiutare", "a", ""],
-    "等": ["aspettare", "a", ""], "认识": ["conoscere", "a", "o"], "知道": ["sapere", "a", "L"], "懂": ["capire", "a", "l"], "明白": ["capire", "a", ""],
+    "等": ["aspettare", "a", ""], "认识": ["conoscere", "a", "o"], "知道": ["sapere", "a", "L"], "懂": ["capire", "a", ""], "明白": ["capire", "a", ""],
     "爱": ["amare", "a", "o"], "担心": ["preoccuparsi", "e", "n"], "希望": ["sperare", "a", "n"], "记得": ["ricordare", "a", "o"], "忘记": ["dimenticare", "a", "o"],
     "开始": ["iniziare", "a", ""], "准备": ["preparare", "a", "o"], "选择": ["scegliere", "a", "o"], "休息": ["riposare", "a", "n"],
     "送": ["regalare", "a", "o"], "告诉": ["dire", "a", "o"], "迟到": ["arrivare in ritardo", "e", "n"], "参加": ["partecipare", "a", "o", "a"], "邀请": ["invitare", "a", "o"],
@@ -186,7 +186,7 @@ var GRAM = {
   nums: { "零": 0, "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10, "百": 100 },
   /* classificatori: "" = non si traduce (一本书 = un libro); [contenitore, genere, plurale] = si traduce (一杯茶 = una tazza di tè) */
   clf: {
-    "个": "", "本": "", "张": "", "件": "", "条": "", "位": "", "只": "", "辆": "", "双": ["paio", "m", "paia"],
+    "个": "", "本": "", "张": "", "件": "", "条": "", "位": "", "只": "", "辆": "", "部": "", "双": ["paio", "m", "paia"],
     "杯": ["tazza", "f", "tazze"], "瓶": ["bottiglia", "f", "bottiglie"], "碗": ["ciotola", "f", "ciotole"], "盘": ["piatto", "m", "piatti"]
   },
   /* 一杯 + bevanda: la forma che si usa davvero al bar */
