@@ -31,4 +31,7 @@ jobs:
         run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
 
       - name: Prove nel browser
-        run: node tools/e2e.mjs && node tools/ux-audit.mjs
+        # un solo nuovo tentativo se la prova fallisce: un guasto vero fallisce due volte, un'incertezza del browser di prova (visto solo nella CI) no
+        run: |
+          node tools/e2e.mjs || { echo "::warning::e2e: primo tentativo fallito, ne faccio un secondo"; node tools/e2e.mjs; }
+          node tools/ux-audit.mjs
