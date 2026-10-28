@@ -5,6 +5,7 @@ var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
       "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e in tutte le 30 lezioni dei due corsi un mini-dialogo con l'audio e due esempi in più.",
+      "15 lezioni nuove per il cinese (anche, ancora, durata, volte, da…a…, 给/跟/对, 让/请, 要…了…) e 8 per l'italiano (avverbi, preposizioni, quantità, domande).",
       "Ripasso con esercizi vari (⚙️ → Avanzate → Stile di ripasso): Guidato «impara · esercitati · verifica», Misto, o Classico come prima.",
       "Frasi a buco, rimetti in ordine, scrivi il pinyin e il significato, abbina, traccia; la verifica di tappa con 12 domande.",
       "Lettura graduata: testi brevi per livello con domande (Frasi → Leggi → Testi).",
@@ -28,6 +29,7 @@ var CHANGELOG = [
     ],
     zh: [
       "课程：每学五课有一次复习，题目取自刚学的几课；两门课程的 30 课都加入了带发音的小对话，并多了两个例句。",
+      "新增课程：中文 15 课（也/都、还/再/又、时量、次数、从…到、给/跟/对、请/让、要…了 等），意大利语 8 课（副词、介词、数量、疑问句）。",
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
       "新练习：填空、排序、听写、动词形式、听句子。",
       "短文阅读：按级别的意大利语短文，附中文问题（在「句子」里）。",
