@@ -213,3 +213,8 @@ body.hide-hz .m-hz:not(.shown) {
 @media (prefers-reduced-motion: no-preference) {
   .m { transition: filter 0.15s ease, opacity 0.15s ease; }
 }
+
+/* l'app non è una pagina da selezionare: un tocco lungo sopra un carattere o un pulsante (anche su «Di che cosa è fatto») non deve aprire
+   la selezione di Android con Copia / Cerca sul web; il tocco lungo di 2 s per Pleco e il foglio del carattere restano. Si seleziona solo nei campi di testo. */
+body { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+input, textarea, [contenteditable="true"], .selectable, .selectable * { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }

@@ -541,8 +541,8 @@
   var TRANSIENT_ERR = /^(service-not-allowed|audio-capture|aborted|busy|start)$/;
   CP.listen = function (targetHz, onResult) {
     if (!SR) return null;
-    var cur = null, done = false, tries = 0, stopped = false;
-    var finish = function (o) { if (done) return; done = true; onResult(o); };
+    var cur = null, done = false, tries = 0, stopped = false, handle = null;
+    var finish = function (o) { if (done) return; done = true; if (CP._activeListen === handle) CP._activeListen = null; onResult(o); };
     /* in Chrome il riconoscimento manda l'audio ai server: senza rete non ci si prova nemmeno (nell'app Android sì: il
        riconoscitore di sistema può avere la lingua scaricata sul telefono) */
     if (navigator.onLine === false && !window.MandarinoAndroid) { finish({ ok: false, heard: "", error: "offline" }); return null; }
@@ -581,10 +581,18 @@
     /* il microfono appena chiuso ha bisogno di un attimo per tornare libero */
     if (closed) setTimeout(run, 220); else run();
     /* chi chiama può fermare o annullare l'ascolto: vale per il tentativo in corso, qualunque sia */
-    return {
+    handle = {
       stop: function () { stopped = true; if (cur) try { cur.stop(); } catch (e) {} },
-      abort: function () { stopped = true; done = true; if (cur) try { cur.abort(); } catch (e) {} }
+      abort: function () { stopped = true; done = true; if (CP._activeListen === handle) CP._activeListen = null; if (cur) try { cur.abort(); } catch (e) {} }
     };
+    CP._activeListen = handle;
+    return handle;
+  };
+  /* un solo flusso di microfono alla volta: chi sta per aprirne un altro (l'oscilloscopio dei toni) libera prima il riconoscimento.
+     Risponde true se ce n'era uno da chiudere (serve un attimo perché il telefono liberi il microfono). */
+  CP.listenRelease = function () {
+    var h = CP._activeListen; if (!h) return false;
+    CP._activeListen = null; try { h.abort(); } catch (e) {} return true;
   };
   /* ripiego universale: senza riconoscimento vocale (Firefox, iOS installata, offline) si registra e si confronta */
   CP.canRecord = function () { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); };
@@ -857,6 +865,16 @@
     pressHandled = true; lpCancel();
     if (lastPT === "touch" || lastPT === "pen") suppress = Date.now();
     CP.openFamily(ch);
+  });
+  /* scorrendo un elenco con la ricerca (Vai a…, Cerca ovunque) la tastiera si abbassa da sola e restituisce lo schermo */
+  document.addEventListener("touchmove", function (e) {
+    var t = e.target; if (!t || !t.closest || !t.closest(".goto-list, #fd-res")) return;
+    var a = document.activeElement; if (a && a.tagName === "INPUT") a.blur();
+  }, { passive: true, capture: true });
+  /* nessun menu «Copia / Seleziona tutto / Cerca» di sistema sopra l'app (solo nei campi di testo) */
+  document.addEventListener("contextmenu", function (e) {
+    var t = e.target; if (t && t.closest && t.closest("input, textarea, [contenteditable='true'], .selectable")) return;
+    e.preventDefault();
   });
   document.addEventListener("click", function (e) {
     var t = e.target; if (!t || !t.closest) return;

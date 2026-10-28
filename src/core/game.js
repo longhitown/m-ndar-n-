@@ -228,6 +228,9 @@
 
   /* ---- stampa ---- */
   document.getElementById("print-btn").addEventListener("click", function () {
+    /* nell'app Android window.print() non fa niente: si passa dal servizio di stampa del sistema (anche «Salva come PDF»), dopo aver disegnato tutte le righe */
+    var A = window.MandarinoAndroid;
+    if (A && A.print) { try { CP.matAll(); setTimeout(function () { A.print(); }, 350); } catch (e) { CP.toast("La stampa non è disponibile qui."); } return; }
     try { window.print(); } catch (e) { CP.toast("La stampa non è disponibile qui: scarica la pagina e aprila a sé."); }
   });
 
