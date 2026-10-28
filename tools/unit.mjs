@@ -455,5 +455,28 @@ function sandbox() {
   check("widget Pausa: dichiarato nel manifesto, con la sua scheda e senza permessi in più", /\.PauseWidget/.test(man) && fs.existsSync(path.join(RES, "xml/widget_pause_info.xml")) && !/SCHEDULE_EXACT_ALARM|USE_EXACT_ALARM/.test(man));
 }
 
+/* widget «Oggi» stile Giada: le quattro fasce del giorno. Anche qui si controlla che le parti combacino */
+{
+  const RES = path.join(ROOT, "android/app/src/main/res"), JAVA = path.join(ROOT, "android/app/src/main/java/it/mandarino/app");
+  const rd = (f) => fs.readFileSync(path.join(RES, f), "utf8");
+  const keys = (f) => [...rd(f).matchAll(/<(?:string|plurals|string-array) name="(w_g_[a-z_]+|w_sample_msg)"/g)].map((m) => m[1]).sort();
+  const gi = keys("values/strings.xml"), gz = keys("values-zh/strings.xml");
+  check("widget Giada: ogni testo delle fasce c'è in italiano e in cinese", gi.length >= 9 && gi.join() === gz.join(), gi.filter((n) => !gz.includes(n)).concat(gz.filter((n) => !gi.includes(n))).join(", "));
+  const arrLen = (f, n) => (rd(f).match(new RegExp('<string-array name="' + n + '">([\\s\\S]*?)</string-array>')) || ["", ""])[1].split("<item>").length - 1;
+  check("widget Giada: messaggi e proverbi in numero sufficiente, ogni proverbio con le due parti", ["values/strings.xml", "values-zh/strings.xml"].every((f) => arrLen(f, "w_g_morning") >= 3 && arrLen(f, "w_g_evening") >= 3 && arrLen(f, "w_g_proverbs") >= 6 && [...rd(f).match(/<string-array name="w_g_proverbs">([\s\S]*?)<\/string-array>/)[1].matchAll(/<item>([^<]*)<\/item>/g)].every((m) => /^[^|]+\|[^|]+$/.test(m[1]))));
+  const t = fs.readFileSync(path.join(JAVA, "TodayWidget.java"), "utf8"), w = fs.readFileSync(path.join(JAVA, "WidgetState.java"), "utf8");
+  const lay = ["widget_large.xml", "widget_large_narrow.xml", "widget_small.xml"].map((f) => rd("layout/" + f));
+  const ids = [...new Set([...t.matchAll(/R\.id\.([a-z_0-9]+)/g)].map((m) => m[1]))].filter((i) => !/^t_/.test(i));
+  const seg = Array.from({ length: 10 }, (_, i) => "w_s" + i);
+  const miss = [];
+  [lay[0], lay[1]].forEach((l, k) => ids.filter((i) => !["w_flame_x"].includes(i) && !(i === "w_s0" || /^w_s\d$/.test(i))).forEach((i) => { if (!new RegExp('@\\+id/' + i + '"').test(l) && !(k === 1 && i === "w_segs" && false)) miss.push(["large", "narrow"][k] + ":" + i); }));
+  seg.forEach((i) => { lay.slice(0, 2).forEach((l) => { if (!l.includes('@+id/' + i + '"')) miss.push(i); }); });
+  const used = new Set([...t.matchAll(/R\.(?:drawable|color)\.([a-z_0-9]+)/g), ...w.matchAll(/R\.(?:drawable|color)\.([a-z_0-9]+)/g)].map((m) => m[1]));
+  const have = new Set(fs.readdirSync(path.join(RES, "drawable")).map((f) => f.replace(/\.xml$/, "")).concat([...rd("values/colors_giada.xml").matchAll(/name="([a-z_0-9]+)"/g)].map((m) => m[1])).concat([...rd("values/colors.xml").matchAll(/name="([a-z_0-9]+)"/g)].map((m) => m[1])));
+  const lackRes = [...used].filter((n) => !have.has(n));
+  check("widget Giada: ogni id usato dal codice sta nei disegni grande e stretto (con i dieci segmenti) e ogni risorsa esiste", ids.length >= 15 && !miss.length && !lackRes.length, miss.concat(lackRes).join(", "));
+  check("widget Giada: le fasce coprono le 24 ore (6/12/17/22) e un allarme inesatto le ridisegna", /hour >= 22 \|\| hour < 6 \? NIGHT : hour < 12 \? MORNING : hour < 17 \? AFTERNOON : EVENING/.test(w) && /int\[\] edges = \{6, 12, 17, 22\}/.test(w) && /setAndAllowWhileIdle/.test(t) && !/setExact/.test(t));
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);

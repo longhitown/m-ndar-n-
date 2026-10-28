@@ -13,7 +13,7 @@ var CHANGELOG = [
       "La card di oggi del cinese ha formato, colore e firma, come quella di italiano.",
       "Cambiare la lingua dei menu non ripete l'animazione e riapre la stessa pagina delle impostazioni.",
       "Più ordine: niente menu «Copia» di Android sul tocco lungo, Stampa funzionante nell'app, mappa del Taccuino visibile intera.",
-      "Su Android: widget «Oggi» e «Pausa» (25 minuti di studio e pausa caffè)."
+      "Su Android: widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora (mattina, pomeriggio, sera, notte)."
     ],
     zh: [
       "意大利语课程也有旅行手账了：从桂林到罗马，每通过一课，就离下一座城市更近。",
@@ -23,7 +23,7 @@ var CHANGELOG = [
       "中文课程的今日卡片也能选择比例、颜色和署名，与意大利语课程一致。",
       "切换菜单语言不再重复动画，并回到刚才的设置页面。",
       "更整洁：长按不再弹出安卓的“复制”菜单，应用内可以打印，旅行手账的地图完整可见。",
-      "安卓桌面小组件：“今天”和“休息”（学习 25 分钟加咖啡休息）。"
+      "安卓桌面小组件：“今天”和“休息”换成翡翠风格，随时间（早晨、下午、傍晚、夜晚）变化。"
     ] },
   { v: "6.0–6.6", d: "2026-10",
     it: [
