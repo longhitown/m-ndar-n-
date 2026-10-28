@@ -19,7 +19,15 @@ ITLESSONS.push({
     ["Lui è andato a Shanghai.", "他去了上海。"],
     ["Lei è arrivata.", "她到了。"],
     ["Abbiamo mangiato i ravioli.", "我们吃了饺子。"],
-    ["Sei mai stato/a in Cina?", "你去过中国吗？（问男性说 stato，问女性说 stata）"]
+    ["Sei mai stato/a in Cina?", "你去过中国吗？（问男性说 stato，问女性说 stata）"],
+    ["Ho studiato italiano.", "我学了意大利语。"],
+    ["Siamo arrivati.", "我们到了。"]
+  ],
+  "dlg": [
+    ["A", "Dove sei andato?", "你去哪儿了？"],
+    ["B", "Sono andato al ristorante.", "我去了饭店。"],
+    ["A", "Che cosa hai mangiato?", "你吃了什么？"],
+    ["B", "Ho mangiato i ravioli.", "我吃了饺子。"]
   ],
   "traps": [
     ["Sono mangiato.", "Ho mangiato.", "mangiare 用 avere。"],

@@ -16,7 +16,15 @@ LESSONS.push({
     ["我去过意大利。", "Sono stato/a in Italia."],
     ["你去过中国吗？", "Sei mai stato/a in Cina?"],
     ["我没去过中国。", "Non sono mai stato/a in Cina."],
-    ["你吃过饺子吗？", "Hai mai mangiato i ravioli?"]
+    ["你吃过饺子吗？", "Hai mai mangiato i ravioli?"],
+    ["他去过北京。", "Lui è stato a Pechino."],
+    ["我没吃过。", "Non l'ho mai mangiato."]
+  ],
+  "dlg": [
+    ["A", "你去过中国吗？", "Sei mai stato in Cina?"],
+    ["B", "没有，我没去过中国。你去过意大利吗？", "No, non sono mai stato in Cina. Tu sei mai stato in Italia?"],
+    ["A", "去过。意大利很好。", "Sì. L'Italia è bellissima."],
+    ["B", "我想去意大利。", "Vorrei andare in Italia."]
   ],
   "traps": [
     ["我不去过中国。", "我没去过中国。", "Con 过 il negativo è 没."],

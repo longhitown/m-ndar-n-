@@ -18,7 +18,15 @@ LESSONS.push({
     ["我想起来了！", "Mi sono ricordato!"],
     ["他看起来很累。", "Sembra molto stanco."],
     ["你说下去。", "Continua (a parlare)."],
-    ["天气热起来了。", "Comincia a fare caldo."]
+    ["天气热起来了。", "Comincia a fare caldo."],
+    ["请坐下。", "Siediti, per favore."],
+    ["天气冷起来了。", "Comincia a fare freddo."]
+  ],
+  "dlg": [
+    ["A", "你看起来很累。", "Sembri molto stanco."],
+    ["B", "对，我今天很累。", "Sì, oggi sono molto stanco."],
+    ["A", "你把书拿出来吧，我们学中文。", "Tira fuori il libro, studiamo cinese."],
+    ["B", "好。我想起来了，我没有书。", "Va bene. Mi sono ricordato: non ho il libro."]
   ],
   "traps": [
     ["他看来起很累。", "他看起来很累。", "看起来 è un blocco unico: 看 + 起来."],

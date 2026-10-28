@@ -120,6 +120,7 @@ function itLesson(L) {
   for (const s of sents) {
     flags.tot++;
     const key = normI(s.it);
+    if (s.zh) { const u = unknown(s.zh); if (u.length) say("medio", tag, s.kind, s.zh, "la traduzione cinese ha pezzi non in CC-CEDICT né nel vocabolario: " + u.join(" ")); }
     if (s.good && s.kind.startsWith("esempio")) { if (seen.has(key)) say("lieve", tag, s.kind, s.it, "frase doppia nella lezione"); seen.add(key); }
     const id = ITN.get(key);
     if (!id) continue;

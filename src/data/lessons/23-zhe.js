@@ -19,7 +19,15 @@ LESSONS.push({
     ["桌子上放着一本书。", "Sul tavolo c'è un libro."],
     ["他笑着说：「没关系。」", "Dice sorridendo: «Non fa niente.»"],
     ["我们走着去吧。", "Andiamo a piedi."],
-    ["门没开着。", "La porta non è aperta."]
+    ["门没开着。", "La porta non è aperta."],
+    ["窗户开着。", "La finestra è aperta."],
+    ["他坐着看书。", "Legge seduto."]
+  ],
+  "dlg": [
+    ["A", "门开着，你进来吧。", "La porta è aperta, entra pure."],
+    ["B", "谢谢。老师在那边坐着。", "Grazie. L'insegnante è seduto là."],
+    ["A", "桌子上放着一本书。", "Sul tavolo c'è un libro."],
+    ["B", "那是老师的书。", "È il libro dell'insegnante."]
   ],
   "traps": [
     ["门开了着。", "门开着。", "着 e 了 non vanno insieme sullo stesso verbo."],

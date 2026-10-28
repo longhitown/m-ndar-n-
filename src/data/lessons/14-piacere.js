@@ -19,7 +19,15 @@ LESSONS.push({
     ["我不喜欢猫。", "Non mi piacciono i gatti."],
     ["我喜欢做饭。", "Mi piace cucinare."],
     ["我很喜欢意大利。", "Mi piace molto l'Italia."],
-    ["你喜欢什么？", "Che cosa ti piace?"]
+    ["你喜欢什么？", "Che cosa ti piace?"],
+    ["我喜欢中国菜。", "Mi piace la cucina cinese."],
+    ["她不喜欢茶。", "A lei non piace il tè."]
+  ],
+  "dlg": [
+    ["A", "你喜欢什么？", "Che cosa ti piace?"],
+    ["B", "我喜欢茶，我不喜欢咖啡。", "Mi piace il tè, non mi piace il caffè."],
+    ["A", "你喜欢狗吗？", "Ti piacciono i cani?"],
+    ["B", "我很喜欢狗。我不喜欢猫。", "Mi piacciono molto i cani. Non mi piacciono i gatti."]
   ],
   "traps": [
     ["我喜欢很意大利。", "我很喜欢意大利。", "很 va prima di 喜欢."],

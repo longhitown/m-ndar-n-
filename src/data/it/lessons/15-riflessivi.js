@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["A che ora ti svegli?", "你几点醒？"],
     ["Mi alzo alle sette.", "我七点起床。"],
     ["Ci vediamo domani.", "我们明天见。"],
-    ["Stamattina mi sono svegliata tardi.", "今天早上我醒得很晚。（女）"]
+    ["Stamattina mi sono svegliata tardi.", "今天早上我醒得很晚。（女）"],
+    ["Mi lavo.", "我洗漱。"],
+    ["Si chiama Luca.", "他叫卢卡。"]
+  ],
+  "dlg": [
+    ["A", "A che ora ti alzi?", "你几点起床？"],
+    ["B", "Mi alzo alle sette.", "我七点起床。"],
+    ["A", "Ci vediamo domani?", "我们明天见面吗？"],
+    ["B", "Sì, ci vediamo domani.", "好，明天见。"]
   ],
   "traps": [
     ["Io chiamo Marco.", "Mi chiamo Marco.", "\"叫……名字\"是反身动词 chiamarsi。"],

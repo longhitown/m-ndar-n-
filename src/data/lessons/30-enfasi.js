@@ -18,7 +18,15 @@ LESSONS.push({
     ["这个问题连孩子都知道。", "Questa cosa la sa perfino un bambino."],
     ["除了他以外，我们都去了。", "Tranne lui, ci siamo andati tutti."],
     ["除了中文以外，我还学英语。", "Oltre al cinese, studio anche l'inglese."],
-    ["我忙得连饭都没吃。", "Ero così occupato che non ho nemmeno mangiato."]
+    ["我忙得连饭都没吃。", "Ero così occupato che non ho nemmeno mangiato."],
+    ["他连我的名字都不知道。", "Non sa nemmeno il mio nome."],
+    ["除了茶以外，我还喝咖啡。", "Oltre al tè, bevo anche il caffè."]
+  ],
+  "dlg": [
+    ["A", "你吃饭了吗？", "Hai mangiato?"],
+    ["B", "没有，我忙得连饭都没吃。", "No, ero così occupato che non ho nemmeno mangiato."],
+    ["A", "除了你以外，我们都吃了。", "Tranne te, abbiamo mangiato tutti."],
+    ["B", "那我现在去吃。", "Allora vado a mangiare adesso."]
   ],
   "traps": [
     ["他连一个汉字不认识。", "他连一个汉字都不认识。", "连 vuole 都 (o 也) prima del verbo."],

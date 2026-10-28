@@ -18,7 +18,9 @@ ITLESSONS.push({
     ["una casa, due case", "一栋房子，两栋房子"],
     ["una chiave, tre chiavi", "一把钥匙，三把钥匙"],
     ["un caffè, due caffè", "一杯咖啡，两杯咖啡"],
-    ["un uovo, due uova", "一个鸡蛋，两个鸡蛋"]
+    ["un uovo, due uova", "一个鸡蛋，两个鸡蛋"],
+    ["un amico, due amici", "一个朋友，两个朋友"],
+    ["una mela, due mele", "一个苹果，两个苹果"]
   ],
   "dlg": [
     ["A", "Buongiorno! Due caffè, per favore.", "早上好！请来两杯咖啡。"],

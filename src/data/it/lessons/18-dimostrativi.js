@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Quella ragazza è mia sorella.", "那个女孩是我姐姐（妹妹）。"],
     ["Quanto costano queste scarpe?", "这双鞋多少钱？"],
     ["Quel ristorante è buono.", "那家饭店不错。"],
-    ["Quest'anno vado in Cina.", "今年我去中国。"]
+    ["Quest'anno vado in Cina.", "今年我去中国。"],
+    ["Questa casa è bella.", "这房子很漂亮。"],
+    ["Quelle chiavi sono mie.", "那些钥匙是我的。"]
+  ],
+  "dlg": [
+    ["A", "Quanto costa questo libro?", "这本书多少钱？"],
+    ["B", "Costa dieci euro.", "十欧元。"],
+    ["A", "E quel libro?", "那本书呢？"],
+    ["B", "Quel libro costa venti euro.", "那本书二十欧元。"]
   ],
   "traps": [
     ["Quello libro.", "Quel libro.", "quello 在普通辅音前变成 quel（像 il）。"],

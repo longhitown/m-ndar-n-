@@ -19,7 +19,15 @@ ITLESSONS.push({
     ["Sarà difficile.", "会很难的。"],
     ["L'anno prossimo studieremo il cinese.", "明年我们要学中文。"],
     ["Che tempo farà domani?", "明天天气会怎么样？"],
-    ["Sarà a casa.", "他大概在家吧。（猜测）"]
+    ["Sarà a casa.", "他大概在家吧。（猜测）"],
+    ["Domani sarò a casa.", "明天我会在家。"],
+    ["Studierò il cinese.", "我会学中文。"]
+  ],
+  "dlg": [
+    ["A", "Che tempo farà domani?", "明天天气会怎么样？"],
+    ["B", "Sarà freddo.", "会很冷。"],
+    ["A", "Allora resteremo a casa.", "那我们就待在家里。"],
+    ["B", "Va bene. Ti telefonerò stasera.", "好的。我今天晚上给你打电话。"]
   ],
   "traps": [
     ["Domani andarò a Roma.", "Domani andrò a Roma.", "andare 的将来时不规则：andrò。"],

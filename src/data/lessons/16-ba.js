@@ -19,7 +19,15 @@ LESSONS.push({
     ["他把咖啡喝完了。", "Ha finito il caffè."],
     ["你把手机给我。", "Dammi il telefono."],
     ["我没把作业做完。", "Non ho finito i compiti."],
-    ["请把窗户打开。", "Per favore, apri la finestra."]
+    ["请把窗户打开。", "Per favore, apri la finestra."],
+    ["请把书给我。", "Per favore, dammi il libro."],
+    ["他把手机放在家里了。", "Ha lasciato il cellulare a casa."]
+  ],
+  "dlg": [
+    ["A", "你的手机在哪里？", "Dov'è il tuo cellulare?"],
+    ["B", "我把手机放在桌子上了。", "Ho messo il cellulare sul tavolo."],
+    ["A", "请把手机给我。", "Per favore, dammi il cellulare."],
+    ["B", "好，给你。", "Va bene, tieni."]
   ],
   "traps": [
     ["我把书看。", "我把书看完了。", "Con 把 il verbo da solo non basta: serve un risultato (看完)."],
