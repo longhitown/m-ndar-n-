@@ -17,7 +17,15 @@ LESSONS.push({
     ["今天比昨天热。", "Oggi fa più caldo di ieri."],
     ["北京比上海大。", "Pechino è più grande di Shanghai."],
     ["这个比那个贵。", "Questo è più caro di quello."],
-    ["面包比米饭贵。", "Il pane è più caro del riso."]
+    ["面包比米饭贵。", "Il pane è più caro del riso."],
+    ["这个比那个大。", "Questo è più grande di quello."],
+    ["今天比昨天冷。", "Oggi fa più freddo di ieri."]
+  ],
+  "dlg": [
+    ["A", "今天比昨天热。", "Oggi fa più caldo di ieri."],
+    ["B", "对，今天很热。", "Sì, oggi fa molto caldo."],
+    ["A", "你哥哥比你高吗？", "Tuo fratello maggiore è più alto di te?"],
+    ["B", "对，我哥哥比我高。", "Sì, mio fratello maggiore è più alto di me."]
   ],
   "traps": [
     ["他比我很高。", "他比我高。", "Nel paragone niente 很 (al massimo 更)."],

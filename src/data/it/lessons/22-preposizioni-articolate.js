@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Le chiavi sono nella borsa.", "钥匙在包里。"],
     ["Vado al supermercato.", "我去超市。"],
     ["Torno dall'ufficio alle sei.", "我六点从办公室回来。"],
-    ["Il numero della camera è 12.", "房间号是十二。"]
+    ["Il numero della camera è 12.", "房间号是十二。"],
+    ["Torno dal lavoro.", "我下班回来。"],
+    ["I libri sono sullo scaffale.", "书在书架上。"]
+  ],
+  "dlg": [
+    ["A", "Dove sono le chiavi?", "钥匙在哪儿？"],
+    ["B", "Sono nella borsa.", "在包里。"],
+    ["A", "E il telefono?", "那手机呢？"],
+    ["B", "È sul tavolo.", "在桌子上。"]
   ],
   "traps": [
     ["Il libro è su il tavolo.", "Il libro è sul tavolo.", "su + il 要合成 sul。"],

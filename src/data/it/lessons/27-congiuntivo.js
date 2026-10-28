@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Spero che tu stia bene.", "希望你一切都好。"],
     ["Credo che abbia ragione.", "我觉得他说得对。"],
     ["È importante che tu venga.", "你来很重要。"],
-    ["So che è vero.", "我知道是真的。（事实，用直陈式）"]
+    ["So che è vero.", "我知道是真的。（事实，用直陈式）"],
+    ["Penso che sia tardi.", "我觉得晚了。"],
+    ["Spero che piova.", "我希望下雨。"]
+  ],
+  "dlg": [
+    ["A", "Penso che sia una buona idea.", "我觉得这是个好主意。"],
+    ["B", "Credo che tu abbia ragione.", "我觉得你说得对。"],
+    ["A", "Spero che venga anche Marco.", "希望马可也来。"],
+    ["B", "Sì, so che viene domani.", "是的，我知道他明天来。"]
   ],
   "traps": [
     ["Penso che è vero.", "Penso che sia vero.", "penso che 后面用虚拟式。"],

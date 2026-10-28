@@ -18,7 +18,16 @@ LESSONS.push({
     ["我在家吃饭。", "Mangio a casa."],
     ["她在医院工作。", "Lei lavora in ospedale."],
     ["你在哪里工作？", "Dove lavori?"],
-    ["我在学中文。", "Sto studiando cinese."]
+    ["我在学中文。", "Sto studiando cinese."],
+    ["他在北京。", "Lui è a Pechino."],
+    ["我们在北京学中文。", "Studiamo cinese a Pechino."]
+  ],
+  "dlg": [
+    ["A", "你在哪里？", "Dove sei?"],
+    ["B", "我在医院。我妈妈在家。", "Sono in ospedale. La mia mamma è a casa."],
+    ["A", "你在医院工作吗？", "Lavori in ospedale?"],
+    ["B", "对，我在医院工作。你在学中文吗？", "Sì, lavoro in ospedale. Stai studiando cinese?"],
+    ["A", "对，我在学中文。", "Sì, sto studiando cinese."]
   ],
   "traps": [
     ["我吃饭在家。", "我在家吃饭。", "Il luogo (在 + luogo) va prima del verbo."]

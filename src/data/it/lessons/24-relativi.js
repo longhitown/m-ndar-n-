@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["La ragazza che parla è mia sorella.", "说话的那个女孩是我妹妹。"],
     ["Questa è la città in cui abito.", "这是我住的城市。"],
     ["È la persona di cui ti ho parlato.", "就是我跟你说过的那个人。"],
-    ["Il film che abbiamo visto era lungo.", "我们看的电影很长。"]
+    ["Il film che abbiamo visto era lungo.", "我们看的电影很长。"],
+    ["Il ragazzo che parla è Marco.", "说话的男孩是马可。"],
+    ["Ecco la casa in cui abito.", "这就是我住的房子。"]
+  ],
+  "dlg": [
+    ["A", "Chi è la ragazza che parla?", "说话的那个女孩是谁？"],
+    ["B", "È mia sorella.", "是我妹妹。"],
+    ["A", "È il libro di cui ti ho parlato.", "这就是我跟你说过的那本书。"],
+    ["B", "Ah, il libro che hai comprato ieri!", "啊，你昨天买的那本书！"]
   ],
   "traps": [
     ["Ho comprato ieri il libro è bello.", "Il libro che ho comprato ieri è bello.", "要用 che 连接，名词放前面。"],

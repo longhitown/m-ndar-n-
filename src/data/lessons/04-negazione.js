@@ -18,7 +18,9 @@ LESSONS.push({
     ["我没吃饭。", "Non ho mangiato."],
     ["他今天没来。", "Oggi lui non è venuto."],
     ["我没有钱。", "Non ho soldi."],
-    ["我不知道。", "Non lo so."]
+    ["我不知道。", "Non lo so."],
+    ["我不是老师。", "Non sono insegnante."],
+    ["他没有手机。", "Lui non ha il cellulare."]
   ],
   "dlg": [
     ["A", "马可，你今天不忙。", "Marco, oggi non sei impegnato."],

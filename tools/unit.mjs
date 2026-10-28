@@ -435,6 +435,8 @@ function sandbox() {
   const grp = [...html.matchAll(/<script type="text\/plain" id="group-esercizi-\d+">/g)].length, exData = ["frasi_zh", "frasi_it", "voce_zh", "voce_it", "insiemi"].every((n) => html.includes('<script type="application/json" id="lazy-' + n + '">'));
   const lab = [...html.matchAll(/<script type="text\/plain" id="group-labrad-\d+">/g)].length;
   check("avvio: il gruppo LABRAD (ricette, letture, laboratorio) è testo letto al primo uso, non JavaScript compilato all'apertura", lab === 4 && /\["LABRAD"\] = function/.test(html), "gruppo " + lab);
+  const lx = [...html.matchAll(/<script type="text\/plain" id="group-lezionix-\d+">/g)].length;
+  check("avvio: le lezioni aggiuntive del corso di cinese sono un gruppo caricato al primo uso (LEZIONIX), non JavaScript compilato all'apertura", lx >= 15 && /\["LEZIONIX"\] = function/.test(html), "file " + lx);
   check("avvio: il gruppo ESERCIZI e i dati dei materiali non si compilano all'apertura (limite di 1500 KB invariato)", grp >= 4 && exData && /__mdLoad = window.__mdLoad/.test(html), "gruppo " + grp + ", dati " + exData);
 }
 

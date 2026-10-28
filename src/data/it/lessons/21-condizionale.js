@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Potrebbe ripetere, per favore?", "请您再说一遍好吗？"],
     ["Mi piacerebbe andare in Italia.", "我很想去意大利。"],
     ["Dovresti riposare.", "你应该休息一下。"],
-    ["Sarebbe bello!", "那该多好啊！"]
+    ["Sarebbe bello!", "那该多好啊！"],
+    ["Potresti aiutarmi?", "你能帮帮我吗？"],
+    ["Vorrei una pizza.", "我想要一个披萨。"]
+  ],
+  "dlg": [
+    ["A", "Vorrei un caffè, per favore.", "请给我一杯咖啡。"],
+    ["B", "Certo. Vorresti anche un dolce?", "好的。你也想要甜点吗？"],
+    ["A", "Sarebbe bello, ma no, grazie.", "那太好了，不过不用了，谢谢。"],
+    ["B", "Va bene. Ecco il caffè.", "好的。咖啡给你。"]
   ],
   "traps": [
     ["Voglio un caffè. (al bar)", "Vorrei un caffè.", "点东西用 vorrei 更礼貌。"],

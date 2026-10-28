@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Sto studiando il cinese.", "我正在学中文。"],
     ["Il bambino sta dormendo.", "孩子正在睡觉。"],
     ["Stiamo arrivando!", "我们快到了！（正在来的路上）"],
-    ["Stavo leggendo quando hai chiamato.", "你打电话的时候我正在看书。"]
+    ["Stavo leggendo quando hai chiamato.", "你打电话的时候我正在看书。"],
+    ["Sto mangiando.", "我正在吃饭。"],
+    ["Che cosa stai leggendo?", "你在看什么？"]
+  ],
+  "dlg": [
+    ["A", "Che cosa stai facendo?", "你在做什么？"],
+    ["B", "Sto studiando il cinese.", "我在学中文。"],
+    ["A", "E il bambino?", "那孩子呢？"],
+    ["B", "Sta dormendo.", "他在睡觉。"]
   ],
   "traps": [
     ["Sono mangiando.", "Sto mangiando.", "\"正在\"用 stare，不用 essere。"],
