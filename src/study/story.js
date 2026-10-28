@@ -61,7 +61,9 @@
         ? [[sure, T("itst.sure")], [lessonsDone() + "/30", T("itst.lessons")], [CP.game ? CP.game.activeDays() : 0, T("st.days")]]
         : [[sure, T("st.sure")], [W[W.length - 1].good, T("st.goodWeek")], [CP.game ? CP.game.activeDays() : 0, T("st.days")]];
       return '<p class="st-sum">' + summary(course, W, tone) + "</p>" +
-        '<div class="stats">' + nums.map(function (x) { return '<div class="stat"><b>' + x[0] + "</b><span>" + esc(x[1]) + "</span></div>"; }).join("") + "</div>" + bars(W, course);
+        '<div class="stats">' + nums.map(function (x) { return '<div class="stat"><b>' + x[0] + "</b><span>" + esc(x[1]) + "</span></div>"; }).join("") + "</div>" + bars(W, course) +
+        /* il foglio di lavoro in PDF (ui/worksheet-stub.js): pulsante secondario, il pulsante pieno di Studia resta «Inizia» */
+        '<div class="ws-cta"><button type="button" class="btn-s" data-ws-open>📝 ' + esc(T("ws.btn")) + '</button><p class="small muted">' + esc(T("ws.btnSub")) + "</p></div>";
     });
   }
   CP.story = { weeks: weeks, html: html, hardTone: hardTone, sureCount: sureCount };
