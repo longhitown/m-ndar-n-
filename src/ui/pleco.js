@@ -1,5 +1,5 @@
 /* ===== màndarínō · collegamento passivo a Pleco (dizionario esterno, se installato). Spento di base; si accende in
-   ⚙️ → Avanzate («Mostra il collegamento a Pleco») con una doppia conferma. Acceso:
+   ⚙️ → Studio («Mostra il collegamento a Pleco») con una doppia conferma. Acceso:
    - pressione di almeno 2 s (PLECO_HOLD_MS) su un carattere (righe di Parole, carta di studio, foglio del carattere):
      sotto i 2 s tutto resta com'era (a mezzo secondo si apre il foglio del carattere); a 2 s compare un piccolo pulsante
      «Apri in Pleco», con un'icona generica di dizionario (non il marchio di Pleco). Si esce verso Pleco solo toccandolo;
@@ -89,7 +89,7 @@
   /* la riga del menu «⋯» della carta di studio (study/study.js la chiede qui) */
   CP.plecoRow = function (hz) { return on() && valid(hz) ? '<button type="button" class="sheet-row" data-pleco="' + CP.attr(hz) + '"><span class="ico" aria-hidden="true">' + ICON + "</span><span><b>" + esc(T("plc.open")) + "</b><small>" + esc(T("plc.rowSub")) + "</small></span></button>" : ""; };
 
-  /* ⚙️ → Avanzate: acceso / spento, con doppia conferma per accendere; non c'è sul computer né nel corso di italiano */
+  /* ⚙️ → Studio: acceso / spento, con doppia conferma per accendere; non c'è sul computer né nel corso di italiano */
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     if (!available()) return "";
     return '<details class="set-sec" id="set-pleco"><summary>' + ICON + " " + T("plc.title") + '</summary><div class="vbody">' +

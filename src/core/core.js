@@ -299,7 +299,7 @@
       return;
     }
     /* la voce online (un servizio esterno, non ufficiale: riceve il testo da leggere) si usa solo se la si è
-       accesa in ⚙️ → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
+       accesa in ⚙️ → Suoni e musica → Voce. Altrimenti, se la voce del telefono tace, lo si dice una volta e si spiega come fare. */
     var cloud = function () {
       if (finished || token !== mine) return;
       clearTimeout(startTimer);

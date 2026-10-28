@@ -11,9 +11,9 @@ programmare.**
 
 | Che cosa | Come |
 |---|---|
-| **Segnalare un pinyin o un tono sbagliato** | Nell'app: tocca la parola e poi «✏️ Correggi o segnala», oppure ⚙️ → Dati e privacy → Contributi. Oppure una issue «Correzione». |
+| **Segnalare un pinyin o un tono sbagliato** | Nell'app: tocca la parola e poi «✏️ Correggi o segnala», oppure ⚙️ → Dati e sincronizzazione → Contributi. Oppure una issue «Correzione». |
 | **Rileggere le frasi d'esempio** | Se una frase suona innaturale o la traduzione italiana è sbagliata: «✏️ Correggi o segnala», oppure una issue «Correzione». |
-| **Proporre una parola nuova** | ⚙️ → Dati e privacy → Contributi → ➕ Parola nuova, oppure una issue «Parola nuova». |
+| **Proporre una parola nuova** | ⚙️ → Dati e sincronizzazione → Contributi → ➕ Parola nuova, oppure una issue «Parola nuova». |
 | **Rileggere il cinese del corso di italiano** | Per madrelingua cinesi: le spiegazioni e le traduzioni del corso 意大利语. Una issue «Traduzione». |
 | **Proporre una traduzione nel Laboratorio** | Quando il laboratorio dice «non so ancora»: il pulsante 🈯 accanto alla frase. |
 | **Dirmi che cosa è difficile** | Una issue normale, o una e-mail: anche «non ho capito come si fa X» è un contributo. |
@@ -28,7 +28,7 @@ averlo scrivimi a `mandarinoapp@gmail.com`.
 
 ### Come mandarmi un contributo
 
-- **Dall'app, senza account:** ⚙️ → Dati e privacy → Contributi → condividi (WeChat, e-mail, ecc.), e-mail, file `.json`
+- **Dall'app, senza account:** ⚙️ → Dati e sincronizzazione → Contributi → condividi (WeChat, e-mail, ecc.), e-mail, file `.json`
   o GitHub. L'app prepara un piccolo file `mandarino-contrib/1` con le tue proposte e nient'altro.
 - **GitHub Issues:** scegli un modello (Correzione, Parola nuova, Traduzione). Se dentro la issue c'è il file dell'app,
   `.github/workflows/contrib.yml` lo controlla da solo e risponde con un riepilogo.
@@ -77,9 +77,9 @@ màndarínō 为学习者而做，而学习者最容易发现错误。**不需�
 
 | 做什么 | 怎么做 |
 |---|---|
-| **报告拼音或声调错误** | 在应用里点开词语，再点“✏️ 更正或报告”，或打开 ⚙️ → 数据和隐私 → 贡献。也可以在 GitHub 上开一个“更正”issue。 |
+| **报告拼音或声调错误** | 在应用里点开词语，再点“✏️ 更正或报告”，或打开 ⚙️ → 数据与同步 → 贡献。也可以在 GitHub 上开一个“更正”issue。 |
 | **校对例句** | 句子不自然或意大利语翻译有误：“✏️ 更正或报告”，或“更正”issue。 |
-| **提议新词** | ⚙️ → 数据和隐私 → 贡献 → ➕ 新词，或“新词”issue。 |
+| **提议新词** | ⚙️ → 数据与同步 → 贡献 → ➕ 新词，或“新词”issue。 |
 | **校对意大利语课程里的中文** | 欢迎母语为中文的朋友校对意大利语课程的讲解和翻译。请开一个“翻译”issue。 |
 | **告诉我哪里难用** | 普通 issue 或电子邮件都可以：“我不知道怎么做 X”也是贡献。 |
 
@@ -91,7 +91,7 @@ màndarínō 为学习者而做，而学习者最容易发现错误。**不需�
 
 ### 渠道
 
-- **在应用里，无需账号：** ⚙️ → 数据和隐私 → 贡献 → 分享（微信、电子邮件等）、电子邮件、`.json` 文件或 GitHub。
+- **在应用里，无需账号：** ⚙️ → 数据与同步 → 贡献 → 分享（微信、电子邮件等）、电子邮件、`.json` 文件或 GitHub。
 - **GitHub Issues：** 选择模板（更正、新词、翻译）。
 - **电子邮件：** `mandarinoapp@gmail.com`。
 
