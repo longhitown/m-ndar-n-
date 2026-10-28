@@ -70,6 +70,7 @@ button[disabled] { opacity: .45; cursor: default; } button.sec { background: tra
 <label>Regione di provenienza (facoltativa) · <span lang="zh-CN">出生地区（可不填）</span><input id="f-region" type="text" maxlength="40" autocomplete="off" placeholder="es. Sicilia · 例如：四川"></label>
 <label class="row"><input id="f-ok" type="checkbox"><span>Ho letto e capito · <span lang="zh-CN">我已阅读并理解</span></span></label>
 <label class="row"><input id="f-age" type="checkbox"><span>Ho almeno 18 anni · <span lang="zh-CN">我已年满 18 岁</span></span></label>
+<label class="row"><input id="f-pub" type="checkbox"><span>Autorizzo la pubblicazione delle mie registrazioni con licenza CC BY 4.0 se le invio · <span lang="zh-CN">如果我发送录音，我授权以 CC BY 4.0 许可发布</span></span></label>
 <div class="acts"><button id="f-mail" type="button" disabled>Prepara l'e-mail · 准备邮件</button><button id="f-print" type="button" class="sec">Stampa o salva in PDF · 打印或存为 PDF</button></div>
 <p class="mute" id="f-note"></p>
 </form>
@@ -79,14 +80,15 @@ button[disabled] { opacity: .45; cursor: default; } button.sec { background: tra
 (function () {
   var q = new URLSearchParams(location.search);
   if (q.get("da") !== "app") document.documentElement.classList.add("nogate"), document.body.classList.add("nogate");
-  var ok = document.getElementById("f-ok"), age = document.getElementById("f-age"), mail = document.getElementById("f-mail");
-  function upd() { mail.disabled = !(ok.checked && age.checked); }
-  ok.addEventListener("change", upd); age.addEventListener("change", upd);
+  var ok = document.getElementById("f-ok"), age = document.getElementById("f-age"), pub = document.getElementById("f-pub"), mail = document.getElementById("f-mail");
+  function upd() { mail.disabled = !(ok.checked && age.checked && pub.checked); }
+  ok.addEventListener("change", upd); age.addEventListener("change", upd); pub.addEventListener("change", upd);
   mail.addEventListener("click", function () {
     var v = function (id) { return document.getElementById(id).value.trim(); };
     var body = ["Scambio linguistico · consenso / 语言交换 · 同意书", "",
       "Ho letto e capito il foglio del consenso (licenza CC BY 4.0) / 我已阅读并理解同意书（CC BY 4.0 许可）: sì / 是",
       "Ho almeno 18 anni / 我已年满 18 岁: sì / 是",
+      "Autorizzo la pubblicazione con licenza CC BY 4.0 / 授权以 CC BY 4.0 许可发布: sì / 是",
       "Lingua madre / 母语: " + document.getElementById("f-lang").value,
       "Nome o nickname / 姓名或昵称: " + (v("f-nick") || "-"),
       "Può comparire nei Crediti / 可出现在致谢: " + (document.getElementById("f-show").checked ? "sì / 是" : "no / 否"),
