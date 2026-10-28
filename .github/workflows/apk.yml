@@ -1,5 +1,5 @@
 # màndarínō · APK Android, costruito gratis da GitHub a ogni modifica dell'app.
-# - Controlla che dist/ sia aggiornato (node tools/build.mjs --check) e che le prove della grammatica passino.
+# - Costruisce dist/ (non sta nel repository) e controlla che le prove della grammatica passino.
 # - Costruisce l'APK (android/), lo controlla con Android lint e lo allega alla corsa («Artifacts»).
 # - Sul ramo principale, se ci sono i segreti della chiave di firma, pubblica una Release: il link
 #   https://github.com/<utente>/<repository>/releases/latest/download/mandarino.apk scarica sempre l'ultima versione.
@@ -9,7 +9,7 @@ name: APK Android
 
 on:
   push:
-    paths: ["dist/**", "android/**", "src/**", "tools/**", ".github/workflows/apk.yml"]
+    paths: ["android/**", "src/**", "tools/**", ".github/workflows/apk.yml"]
   workflow_dispatch:
 
 permissions:
@@ -33,11 +33,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: dist/ aggiornato e frasi verificate
-        run: node tools/build.mjs --check && node tools/grammar.mjs && node tools/unit.mjs
-
-      - name: File pesanti di dist/ (brani, nomi e termini), che non stanno nel repository
-        run: node tools/build.mjs
+      - name: Build di dist/ (app, brani, nomi e termini) e frasi verificate
+        run: node tools/build.mjs && node tools/grammar.mjs && node tools/unit.mjs
 
       - uses: actions/setup-java@v4
         with:
