@@ -23,19 +23,19 @@ ITLESSONS.push({
     ["Questo è il più caro.", "这个最贵。"]
   ],
   "dlg": [
-    ["A", "Questo telefono è più caro di quel telefono.", "这部手机比那部贵。"],
+    ["A", "Questo telefono è più caro di quello.", "这部手机比那部贵。"],
     ["B", "Ma è anche migliore.", "但也更好。"],
     ["A", "Allora compri questo?", "那你买这部吗？"],
     ["B", "No, compro quello. È meno caro.", "不，我买那部。它便宜一些。"]
   ],
   "traps": [
     ["Marco è alto più di me.", "Marco è più alto di me.", "più 放在形容词前面。"],
-    ["È più buono.", "È migliore.", "buono 的比较级常用 migliore。"],
+    ["È più migliore.", "È migliore.", "migliore 已经是\"更好\"，前面绝不能再加 più。"],
     ["Più alto che me.", "Più alto di me.", "和人或代词比较用 di。"]
   ],
   "quiz": [
     {"k": "pick", "q": "他比我高", "opts": ["Lui è più alto di me.", "Lui è alto più di me.", "Lui più alto è me."], "a": 0},
-    {"k": "pick", "q": "最好的饭店", "opts": ["il ristorante più buono", "il ristorante migliore", "il ristorante meglio"], "a": 1},
+    {"k": "pick", "q": "最好的饭店", "opts": ["il ristorante più migliore", "il ristorante migliore", "il ristorante meglio"], "a": 1},
     {"k": "pick", "q": "我好些了", "opts": ["Sto migliore.", "Sto meglio.", "Sono meglio."], "a": 1, "why": "副词\"好\"是 bene，比较级是 meglio。"},
     {"k": "pick", "q": "bellissimo 是什么意思？", "opts": ["非常美", "比较美", "不美"], "a": 0},
     {"k": "order", "it": "oggi fa più caldo di ieri", "zh": "今天比昨天热。"}

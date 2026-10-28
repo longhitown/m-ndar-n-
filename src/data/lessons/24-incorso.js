@@ -21,7 +21,7 @@ LESSONS.push({
     ["我没在看电视。", "Non sto guardando la TV."],
     ["妈妈在做饭呢。", "La mamma sta cucinando."],
     ["我在看电视呢。", "Sto guardando la TV."],
-    ["他不在做饭。", "Lui non sta cucinando."]
+    ["他没在做饭。", "Lui non sta cucinando."]
   ],
   "dlg": [
     ["A", "你在做什么呢？", "Che cosa stai facendo?"],
