@@ -20,9 +20,9 @@ final class WidgetState {
     static final String PREFS = "mandarino";
     private static final long H = 3600000L;
 
-    int due, fresh, streak, goal;
+    int due, fresh, streak, goal, wt;
     boolean activeToday, empty = true;
-    String lang = "it", hz = "", py = "", it = "";
+    String lang = "it", hz = "", py = "", it = "", rank = "";
     /** i testi stanno in res/values (it) e res/values-zh: nella lingua del corso scelta nell'app, non in quella del telefono */
     Resources r;
 
@@ -47,6 +47,8 @@ final class WidgetState {
             int gap = daysBetween(t, now);
             boolean was = o.optBoolean("today");
             int s = o.optInt("streak");
+            w.rank = o.optString("rank", "");
+            w.wt = gap <= 0 ? o.optInt("wt") : 0;
             if (gap <= 0) { w.streak = s; w.activeToday = was; }
             else if (gap == 1 && was) { w.streak = s; w.activeToday = false; }
             else { w.streak = 0; w.activeToday = false; }
@@ -111,4 +113,62 @@ final class WidgetState {
 
     String study() { return r.getString(R.string.w_study); }
     String tapMeaning() { return r.getString(R.string.w_tap_meaning); }
+
+    /* ===== le quattro «atmosfere» del giorno: mattina 6–11, pomeriggio 12–16, sera 17–21, notte 22–5 ===== */
+    static final int MORNING = 0, AFTERNOON = 1, EVENING = 2, NIGHT = 3;
+
+    static int band(int hour) { return hour >= 22 || hour < 6 ? NIGHT : hour < 12 ? MORNING : hour < 17 ? AFTERNOON : EVENING; }
+    static int band() { return band(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)); }
+
+    static int background(int band) {
+        return band == MORNING ? R.drawable.w_giada_morning : band == EVENING ? R.drawable.w_giada_evening : band == NIGHT ? R.drawable.w_giada_night : R.drawable.w_giada_afternoon;
+    }
+
+    /** il prossimo cambio di fascia (millisecondi), per far ridisegnare i widget senza che l'app sia aperta */
+    static long nextBandChange() {
+        Calendar c = Calendar.getInstance();
+        int h = c.get(Calendar.HOUR_OF_DAY);
+        int[] edges = {6, 12, 17, 22};
+        int next = -1;
+        for (int e : edges) if (e > h) { next = e; break; }
+        c.set(Calendar.MINUTE, 0); c.set(Calendar.SECOND, 5); c.set(Calendar.MILLISECOND, 0);
+        if (next < 0) { c.add(Calendar.DAY_OF_YEAR, 1); next = 6; }
+        c.set(Calendar.HOUR_OF_DAY, next);
+        return c.getTimeInMillis();
+    }
+
+    private int minutes() { return Math.max(1, Math.round(due * 20f / 60f)); }
+
+    private String pick(int array, int salt) {
+        String[] a = r.getStringArray(array);
+        int d = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        return a[Math.abs(d * 7 + salt) % a.length];
+    }
+
+    /** il messaggio breve in alto: cambia con la fascia e ruota di giorno in giorno; niente toni ansiosi */
+    String microCopy(int band) {
+        if (empty) return r.getString(R.string.w_open_app);
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        switch (band) {
+            case MORNING: return pick(R.array.w_g_morning, 0);
+            case AFTERNOON:
+                if (due <= 0) return r.getString(R.string.w_all_ok);
+                return hour % 2 == 0 ? r.getQuantityString(R.plurals.w_g_pause_n, minutes(), minutes()) : r.getQuantityString(R.plurals.w_g_reviews_min, due, due, minutes());
+            case EVENING:
+                if (goal - wt > 0 && hour % 2 == 1) return r.getQuantityString(R.plurals.w_g_missing, goal - wt, goal - wt);
+                return pick(R.array.w_g_evening, 0);
+            default: return activeToday || wt > 0 ? r.getString(R.string.w_g_night_done) : r.getString(R.string.w_g_night_none);
+        }
+    }
+
+    /** il proverbio della sera: {testo, seconda riga} */
+    String[] proverb() {
+        String[] x = pick(R.array.w_g_proverbs, 3).split("\\|", 2);
+        return new String[]{x[0], x.length > 1 ? x[1] : ""};
+    }
+
+    /** quanti dei dieci segmenti dell'obiettivo sono pieni */
+    int segments() { return goal <= 0 ? 0 : Math.min(10, Math.round(wt * 10f / goal)); }
+
+    String startLabel(int band) { return band == MORNING ? r.getString(R.string.w_g_start) : study(); }
 }

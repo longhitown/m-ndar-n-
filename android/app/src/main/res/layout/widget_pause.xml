@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- widget «Pausa» 4×1: a sinistra la tazzina o la luna con il titolo, al centro il conto alla rovescia quando c'è un giro in corso, a destra i tasti -->
+<!-- widget «Pausa» 4×1, stile «Giada»: tazzina, fiamma o luna con il titolo; conto alla rovescia a spaziatura fissa quando c'è un giro in corso; a destra i tasti -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false"
-    android:paddingStart="10dp" android:paddingEnd="18dp" android:paddingTop="10dp" android:paddingBottom="10dp" android:background="@drawable/widget_bg">
-    <ImageView android:id="@+id/t_icon" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_w_cup" android:importantForAccessibility="no" />
+    android:paddingStart="10dp" android:paddingEnd="18dp" android:paddingTop="10dp" android:paddingBottom="10dp" android:background="@drawable/w_giada_afternoon">
+    <ImageView android:id="@+id/t_icon" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_g_cup" android:importantForAccessibility="no" />
     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical">
         <TextView android:id="@+id/t_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
-            android:text="@string/p_title_coffee" android:textColor="@color/w_ink" android:textSize="15sp" android:textStyle="bold" />
+            android:text="@string/p_title_coffee" android:textColor="@color/w_g_text" android:textSize="15sp" android:textStyle="bold" />
         <TextView android:id="@+id/t_sub" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end"
-            android:text="@string/p_sub_coffee" android:textColor="@color/w_muted" android:textSize="13sp" />
+            android:text="@string/p_sub_coffee" android:textColor="@color/w_g_mute" android:textSize="13sp" />
     </LinearLayout>
     <Chronometer android:id="@+id/t_chrono" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:visibility="gone"
-        android:textColor="@color/w_accent" android:textSize="26sp" android:textStyle="bold" />
+        android:fontFamily="monospace" android:textColor="@color/w_g_mint" android:textSize="24sp" android:textStyle="bold" />
     <TextView android:id="@+id/t_b1" android:layout_width="wrap_content" android:layout_height="44dp" android:minWidth="64dp" android:layout_marginStart="8dp"
-        android:gravity="center" android:paddingStart="12dp" android:paddingEnd="12dp" android:background="@drawable/widget_btn"
-        android:text="@string/p_b_focus" android:textColor="@color/w_on_orange" android:textSize="14sp" android:textStyle="bold" />
+        android:gravity="center" android:paddingStart="12dp" android:paddingEnd="12dp" android:background="@drawable/w_btn_giada"
+        android:text="@string/p_b_focus" android:textColor="@color/w_g_on_orange" android:textSize="14sp" android:textStyle="bold" />
     <TextView android:id="@+id/t_b2" android:layout_width="wrap_content" android:layout_height="44dp" android:minWidth="52dp" android:layout_marginStart="6dp"
-        android:gravity="center" android:paddingStart="10dp" android:paddingEnd="10dp" android:background="@drawable/widget_card"
-        android:text="@string/p_b_break" android:textColor="@color/w_ink" android:textSize="14sp" android:textStyle="bold" />
+        android:gravity="center" android:paddingStart="10dp" android:paddingEnd="10dp" android:background="@drawable/w_btn_glass"
+        android:text="@string/p_b_break" android:textColor="@color/w_g_text" android:textSize="14sp" android:textStyle="bold" />
 </LinearLayout>
