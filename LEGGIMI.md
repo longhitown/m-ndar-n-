@@ -3,14 +3,14 @@
 màndarínō è un'app per studiare il cinese partendo dall'italiano e l'italiano partendo dal cinese. È gratuita, senza pubblicità e senza
 account, e funziona anche senza connessione: i tuoi progressi restano sul tuo telefono.
 
-Questa guida racconta come si usa. Chi vuole capire com'è fatta o contribuire al codice trova tutto in
+Questa guida racconta come si usa. Come funziona ogni parte, con i numeri contati, è in [docs/FUNZIONAMENTO.md](docs/FUNZIONAMENTO.md); chi vuole contribuire al codice trova tutto in
 [docs/sviluppo.md](docs/sviluppo.md) e [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
 
 ## Due corsi in un'app
 
-- **Il cinese per italiani** (il corso di base): 6385 parole con pinyin, toni e una frase d'esempio per ciascuna, 30 lezioni di grammatica,
+- **Il cinese per italiani** (il corso di base): 6385 parole con pinyin, toni e una frase d'esempio per ciascuna, 55 lezioni di grammatica (con mini-dialogo e ripasso ogni cinque lezioni),
   dialoghi, un laboratorio di frasi, lettura di testi graduati, pronuncia con il microfono e ordine dei tratti.
-- **意大利语课程, l'italiano per chi parla cinese**: 30 lezioni in cinese, 4780 parole, coniugazione dei verbi, frasi, dialoghi e un
+- **意大利语课程, l'italiano per chi parla cinese**: 51 lezioni in cinese (con mini-dialogo e ripasso ogni cinque lezioni), 4780 parole, coniugazione dei verbi, frasi, dialoghi e un
   controllo degli accordi nelle frasi che scrivi.
 
 Si sceglie dal benvenuto o da ⚙️ → Studio → Corso. I due corsi hanno progressi separati.
@@ -56,7 +56,7 @@ Una scelta multipla giusta non vale mai «Facile». Si può sempre «Studiare li
 
 ## Il corso di italiano per chi parla cinese
 
-Le schede sono 课程 (30 lezioni con quiz), 复习 (ripasso), 单词 (4780 parole), 变位 (coniugazioni) e 句子 (frasi, dialoghi, lettura, 句子练习 e **句子检查**).
+Le schede sono 课程 (51 lezioni con quiz), 复习 (ripasso), 单词 (4780 parole), 变位 (coniugazioni) e 句子 (frasi, dialoghi, lettura, 句子练习 e **句子检查**).
 
 - La carta **今天** in cima ha un solo pulsante con il passo successivo: esercizi se hai almeno 10 ripassi, altrimenti un testo da leggere o la lezione corrente.
 - Gli esercizi sono dieci tipi (significato, parola, ascolto, dettato con voce reale, frase a buco, ordina, scrivi, forma del verbo…), con gli stessi tre stili di ripasso del cinese.
