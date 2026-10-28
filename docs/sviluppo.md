@@ -297,6 +297,10 @@ Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype P
 - **scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Jukebox; aprono `?go=study|ear|music`;
 - **widget «Oggi»** 2×1 e 4×2: serie di giorni, ripassi in scadenza (dall'istogramma delle prossime 168 ore che l'app
   passa con `setWidgetState`), parola del giorno (tocca per il significato), un messaggio gentile la sera se oggi manca lo studio;
+- **widget «Pausa»** 4×1 (`PauseWidget.java`): giri di studio da 25 minuti e pausa caffè da 5. Un widget non si anima né si aggiorna ogni
+  secondo, quindi il conto alla rovescia è un `Chronometer` in sola discesa (`setChronometerCountDown`) che Android fa scorrere da solo;
+  un allarme (`AlarmManager`, preciso solo se il telefono lo consente senza permessi speciali) ai cambi di fase aggiorna il widget e
+  manda un avviso. Fermo, mostra uno stato scelto dall'ora: «Riposo» di notte (22–6), «Pausa caffè a Xi'an» dalle 14 alle 18;
 - **promemoria** facoltativo, spento finché non lo accendi da ⚙️ → Studio → 🔔 (il permesso delle notifiche si chiede solo allora;
   `AlarmManager`, nessuna libreria); si riprogramma dopo un riavvio;
 - **musica in secondo piano** con notifica (pausa, avanti, stop) se la scegli nel pannello 🎵;
