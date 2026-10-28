@@ -110,7 +110,6 @@
     /* archiviazione */
     var st = window.Store ? Store.status() : { ls: false, idb: false };
     add("Memoria del browser (localStorage)", !!st.ls, st.ls ? "ok" : "bloccata: i progressi non si salvano");
-    add("Copia di sicurezza interna (IndexedDB)", !!st.idb, st.idb ? "ok" : "non disponibile (resta il solo localStorage)");
     /* rete */
     var ext = [];
     /* i file dell'app sullo stesso dominio (manifest.json, sw.js, icone) non contano come rete esterna */
@@ -123,7 +122,8 @@
     info.push(["Riconoscimento vocale", CP.canListen(), CP.canListen() ? "presente" : "assente su questo browser"]);
     info.push(["Microfono (oscilloscopio)", CP.canScope(), CP.canScope() ? "presente" : "assente"]);
     info.push(["Dentro un riquadro?", !CP.inFrame, CP.inFrame ? "sì: microfono e audio possono essere bloccati" : "no"]);
-    return Store.exportObj(true).then(function (o) { add("Backup: il file si genera e si rilegge", !!o && o.app === "mandarino" && o.v === 5 && typeof o.kv === "object" && Array.isArray(o.log), "versione " + (o && o.v) + ", " + Object.keys(o.kv || {}).length + " chiavi"); }, function (e) { add("Backup", false, String(e)); })
+    /* l'apertura di IndexedDB è asincrona: su un telefono o un emulatore lento non è ancora finita quando parte l'autodiagnosi, quindi si aspetta (exportObj la attende) prima di giudicarla */
+    return Store.exportObj(true).then(function (o) { var s2 = Store.status(); add("Copia di sicurezza interna (IndexedDB)", !!s2.idb, s2.idb ? "ok" : "non disponibile (resta il solo localStorage)"); return o; }).then(function (o) { add("Backup: il file si genera e si rilegge", !!o && o.app === "mandarino" && o.v === 5 && typeof o.kv === "object" && Array.isArray(o.log), "versione " + (o && o.v) + ", " + Object.keys(o.kv || {}).length + " chiavi"); }, function (e) { add("Backup", false, String(e)); })
       .then(function () { return CP.micState(); }).then(function (m) { info.push(["Permesso microfono", m !== "denied", m]); return info; });
   }
   function close() { CP.untrap(box); if (location.hash === "#selftest") history.replaceState(null, "", location.pathname + location.search); }
