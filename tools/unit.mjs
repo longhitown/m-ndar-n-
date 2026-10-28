@@ -478,5 +478,22 @@ function sandbox() {
   check("widget Giada: le fasce coprono le 24 ore (6/12/17/22) e un allarme inesatto le ridisegna", /hour >= 22 \|\| hour < 6 \? NIGHT : hour < 12 \? MORNING : hour < 17 \? AFTERNOON : EVENING/.test(w) && /int\[\] edges = \{6, 12, 17, 22\}/.test(w) && /setAndAllowWhileIdle/.test(t) && !/setExact/.test(t));
 }
 
+/* Scambio linguistico: testi nelle due lingue, chiavi usate, pagina del consenso sul sito (nascosta) */
+{
+  const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc);
+  for (const f of ["i18n/scambio.js", "i18n/settings.js"]) vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), tc);
+  const TI = vm.runInContext("I18N", tc), keys = (o) => Object.keys(o).filter((k) => /^sc\./.test(k)).sort();
+  const code = fs.readFileSync(path.join(SRC, "ui/scambio.js"), "utf8") + fs.readFileSync(path.join(SRC, "ui/scambio-stub.js"), "utf8");
+  const used = new Set([...code.matchAll(/T\(\s*"(sc\.[\w.]*\w)"/g)].map((m) => m[1]));
+  for (let i = 1; i <= 8; i++) used.add("sc.c." + i);
+  const lack = [...used].filter((k) => !TI.it[k] || !TI.zh[k]);
+  check("Scambio linguistico: stessi testi in italiano e in cinese e nessun testo usato che manchi (" + keys(TI.it).length + ")", keys(TI.it).join() === keys(TI.zh).join() && !lack.length, lack.join(", "));
+  const terms = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => TI.it["sc.c." + i] + TI.zh["sc.c." + i]).join(" ");
+  check("Scambio linguistico: il consenso dice licenza CC BY 4.0, maggiorenni, chi ascolta, il ritiro e la lingua non madre", /CC BY 4\.0/.test(terms) && /18/.test(terms) && /Claudio Longhitano/.test(terms) && /mandarinoapp@gmail\.com/.test(terms) && /non madrelingua/.test(terms) && /非母语/.test(terms));
+  const pg = fs.readFileSync(path.join(ROOT, "docs/partecipa-voci.html"), "utf8"), st = fs.readFileSync(path.join(ROOT, "tools/site.mjs"), "utf8");
+  check("Scambio linguistico: la pagina del consenso sul sito è nascosta (noindex, fuori dalla sitemap e dentro robots.txt, aperta solo con ?da=app) e senza rete", /noindex/.test(pg) && /da.*app/.test(pg) && /Disallow: \/partecipa-voci\.html/.test(st) && !/"\/partecipa-voci/.test(st) && !/<script[^>]+src=/.test(pg) && !/fetch\(|XMLHttpRequest/.test(pg) && /f-ok/.test(pg) && /f-age/.test(pg), "");
+  check("Scambio linguistico: il modulo non fa richieste di rete e tiene il consenso fuori dalle chiavi cp-", !/fetch\(|XMLHttpRequest|sendBeacon/.test(code) && /md-voice-consent/.test(code) && !/"cp-voice/.test(code));
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);
