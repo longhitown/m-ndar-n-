@@ -52,13 +52,13 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
 docs/ARCHITETTURA.md       dove e come i moduli si agganciano a CP
 fastlane/                  testi e immagini per gli store (fonte unica; docs/store/ per firma, moduli, tester)
 docs/index.html, docs/img/ la pagina di presentazione (GitHub Pages, con privacy.html e l'app in app/: tools/site.mjs)
-dist/                      ← generato da tools/build.mjs: è questo che si pubblica e si scarica
+dist/                      ← generato da tools/build.mjs (non è nel repository, è in .gitignore): è questo che si pubblica
   index.html               un file unico (stili, script e dati dentro): funziona offline da file://, su https e nell'APK
   sw.js                    APP_VERSION = impronta di index.html: ogni build che cambia l'app fa comparire «Aggiorna»
   phrases/translate.js     il traduttore del laboratorio (regole); phrases/italian.js = coniugazioni e articoli
   it/course.js             il corso di italiano per chi parla cinese; data/it/lessons/ = le sue lezioni (in cinese)
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
-.github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
+.github/workflows/web.yml  a ogni push: build, grammatica, prove unitarie, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
 tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), radicali.mjs (rigenera lab-recipes.js, le ricette del Laboratorio dei radicali), android-smoke.mjs,
@@ -68,10 +68,10 @@ tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
 
-**Dopo ogni modifica in `src/`:** `node tools/build.mjs`, poi committa anche `dist/index.html` (i file pesanti di `dist/` li rigenera la build e non
-stanno nel repository). Prima di un push: `npm test` (serve una volta `npm install`, che porta solo Playwright).
+**Dopo ogni modifica in `src/`:** `node tools/build.mjs` per provarla in locale. `dist/` **non si committa**: è generato (sta in `.gitignore`) e lo
+costruiscono la CI e il sito; così due pull request non litigano più su `dist/sw.js`, che cambia a ogni build. Prima di un push: `npm test` (serve una volta `npm install`, che porta solo Playwright).
 La build si ferma se i dati non sono validi (chiavi doppie, sillabe ≠ caratteri, HTML) o se un file di
-vocabolario, dialogo o traccia non è elencato in `src/index.html`. `node tools/build.mjs --check` dice se `dist/` è aggiornato.
+vocabolario, dialogo o traccia non è elencato in `src/index.html`. `node tools/build.mjs --check` costruisce in memoria e basta (utile per provare senza scrivere).
 
 **Aggiungere parole:** apri il file della sezione in `src/data/vocab/` e aggiungi una riga `["pin.yin","汉字","italiano"]`.
 Una sezione nuova: un file nuovo `NNN-<id>.js` (copia la forma di uno esistente) e una riga `<script src="data/vocab/…">` in `src/index.html`.
@@ -236,13 +236,13 @@ a ogni push sul ramo `main` che tocca l'app, la pagina o PRIVACY.md, a ogni nuov
 1. Cloudflare → Workers & Pages → Create → Pages → Connect to Git → questo repository.
 2. Build command: `node tools/build.mjs` (solo Node, nessuna dipendenza). Output directory: `dist`.
    I file pesanti (i brani, con l'impronta nel nome, e i «nomi e termini» del Lettore) non stanno nel repository dentro
-   `dist/`: li genera la build dagli originali in `src/`. `dist/index.html` invece resta nel repository (si scarica e
-   funziona da solo).
+   `dist/`: li genera la build dagli originali in `src/`. Anche `dist/index.html` è generato e non sta nel repository: la versione pubblicata
+   (un file unico che funziona da solo) è su https://mandarinoapp.org/app/.
 3. Dal telefono apri `https://….pages.dev` → menu del browser → «Aggiungi a schermata Home».
 
 Su https il microfono chiede il permesso una volta sola; dopo il primo caricamento l'app funziona senza rete.
 **Aggiornare:** basta `node tools/build.mjs` e un push: `APP_VERSION` cambia da solo e i telefoni vedono
-«Nuova versione disponibile · Aggiorna». **Scaricare l'app come file:** `dist/index.html` funziona da solo, anche offline.
+«Nuova versione disponibile · Aggiorna». **Scaricare l'app come file:** `dist/index.html` (dopo `node tools/build.mjs`, o da https://mandarinoapp.org/app/) funziona da solo, anche offline.
 
 **Nome del repository:** `longhitown/mandarino` (prima `m-ndar-n-`, perché GitHub aveva tolto gli accenti; i vecchi indirizzi,
 le release e le API vengono reindirizzati). Il nome è in un solo punto, `MD_CONFIG.REPO` in `src/config.js`.
@@ -271,7 +271,7 @@ F-Droid, tester. Niente viene pubblicato automaticamente.
 
 ## L'APK per Android (gratis, senza Play Store)
 
-Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk.yml`): controlla `dist/` e la grammatica,
+Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk.yml`): costruisce `dist/`, controlla la grammatica,
 costruisce l'APK, lo verifica con Android lint e `apksigner` e, sul ramo principale, lo pubblica come Release.
 Il link da mandare a chi vuole l'app non cambia mai:
 

@@ -18,7 +18,7 @@ npm install
 npm test                 # prove unitarie, build, e2e (con #selftest), ux-audit
 ```
 
-- Tutto verde. Se cambia `src/`, `dist/` va rigenerato (`node tools/build.mjs`) e messo nel commit: la CI controlla
+- Tutto verde. `dist/` non sta nel repository (è generato: lo costruiscono la CI e chi lavora con `node tools/build.mjs`); la CI controlla
   che sia aggiornato.
 - Se sono cambiati testi o immagini dello store: `node tools/store-assets.mjs`; per le note di versione
   `node tools/store-assets.mjs --notes <versionCode>`.
@@ -27,7 +27,7 @@ npm test                 # prove unitarie, build, e2e (con #selftest), ux-audit
 
 Dopo il push, su GitHub → Actions, le corse devono essere verdi:
 
-- **web**: prove, `dist/` aggiornato, e2e, ux-audit;
+- **web**: build, prove, e2e, ux-audit;
 - **APK Android**: lint, APK `direct`, `.apk` e `.aab` `store`, e il lavoro **dispositivo** (emulatori Android 14 e 16).
 
 Se una prova è rossa non si pubblica: si apre una issue o si corregge.
