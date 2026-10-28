@@ -564,6 +564,7 @@ La build si ferma se trova nel repository:
   fisso: nessuna libreria (rough.js non serve). Una pagina diventa un'immagine con il modello `zh-diary` di
   `ui/share-card.js` (3 formati, 3 colori, QR), solo dal tocco su «Condividi questa pagina». Niente esce dal telefono.
 - **Taccuino del viaggiatore, corso di italiano**: `CP.diary.card("it")` / `open("it")`, stesso modulo; le città sono quelle di `DIARY.stops` in ordine inverso con le soglie `DIARY.itTh` (lezioni superate, ≥ 80 % o `done`, da `cp-it-lessons-v1`) e le righe a mano `DIARY.itLines`; le frasi della pagina sono i primi tre `ex` della lezione che ha aperto la città. Niente `cp-ex-v1.conf` e niente condivisione.
+- **Scambio linguistico** (`src/ui/scambio.js` + `src/i18n/scambio.js`, caricati al primo uso di `CP.scambio`; `src/ui/scambio-stub.js` è la sezione sempre presente in ⚙️ → Suoni e musica): consenso in `md-voice-consent` (senza `cp-`, fuori dai backup), registrazioni in IndexedDB `mandarino-voices-v1` (store `rec`, chiave `ref|lingua|n/x`), `MediaRecorder` su `CP.micStream()` con rilascio garantito, invio con `CP._zip`. Frasi da `PHRASES`, `DIALOGS`, `EXAMPLES` (riferimenti di `tools/review-sample.mjs`). Pagina del sito `docs/partecipa-voci.html` (copiata da `tools/site.mjs`, esclusa da `robots.txt` e dalla sitemap). Specifica e decisioni: `docs/scambio-linguistico.md`.
 - **Prove su un telefono vero**: [docs/checklist-dispositivo.md](checklist-dispositivo.md).
 
 ## Laboratorio dei radicali (solo corso di cinese)

@@ -13,13 +13,13 @@
   /* la pagina di ogni sezione nota e l'ordine in cui compare: le sezioni dei moduli arrivano in ordine di caricamento, qui si mettono a posto */
   var ORDER = {
     look: ["set-look", "set-lang"],
-    sound: ["set-sound", "vset", "set-mic-box"],
+    sound: ["set-sound", "vset", "set-mic-box", "set-scambio"],
     study: ["set-course", "set-exstyle", "set-level", "set-anat", "set-pleco", "set-reminder", "set-together"],
     data: ["set-sync", "set-data", "set-export", "set-contrib"],
     info: ["set-about", "set-support", "set-news", "set-privacy"]
   };
   var PAGE_OF = {}; PAGES.forEach(function (p) { ORDER[p].forEach(function (id) { PAGE_OF[id] = p; }); });
-  var GROUP_PAGE = { data: "data", adv: "study", info: "info" };
+  var GROUP_PAGE = { data: "data", adv: "study", info: "info", sound: "sound" };
   /* i nomi vecchi dei gruppi e delle pagine continuano ad aprire la pagina giusta */
   var ALIAS = { "grp-ess": "look", "grp-data": "data", "grp-adv": "study", "grp-info": "info" };
   PAGES.forEach(function (p) { ALIAS[p] = p; ALIAS["page-" + p] = p; });

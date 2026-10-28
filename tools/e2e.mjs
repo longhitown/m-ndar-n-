@@ -1262,6 +1262,52 @@ try {
     await ctx.close();
   }
   /* Su file:// Chromium non conserva sempre il localStorage dopo un ricaricamento (visto solo nella CI): le prove che ricaricano la pagina usano il server locale, come l'app vera. */
+  /* Scambio linguistico: foglio del consenso (due caselle), registrazione di una frase nella propria lingua, elenco, invio in .zip, ritiro del consenso */
+  for (const [lang, course] of [["it", "zh"], ["zh", "it"]]) {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript((a) => {
+      try { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-lang", a[0]); localStorage.setItem("cp-course", a[1]); if (a[1] === "it") localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-music", "0"); } catch (e) {}
+      const md = navigator.mediaDevices || (navigator.mediaDevices = {});
+      md.getUserMedia = () => { const c = new AudioContext(), d = c.createMediaStreamDestination(); return Promise.resolve(d.stream); };
+      window.MediaRecorder = class { constructor() { this.state = "inactive"; this.mimeType = "audio/webm;codecs=opus"; } static isTypeSupported() { return true; } start() { this.state = "recording"; } stop() { this.state = "inactive"; setTimeout(() => { this.ondataavailable && this.ondataavailable({ data: new Blob([new Uint8Array(800)], { type: "audio/webm" }) }); this.onstop && this.onstop(); }, 20); } };
+    }, [lang, course]);
+    const p = await ctx.newPage(); const errs = [], ext = []; p.on("pageerror", (e) => errs.push(e.message));
+    p.on("request", (r) => { const u = r.url(); if (!/^(http:\/\/127\.0\.0\.1|data:|blob:|file:)/.test(u)) ext.push(u); });
+    await p.goto(base); await p.waitForFunction(() => window.CP && CP.course, null, { timeout: 15000 }); await p.waitForTimeout(500);
+    const L = lang.toUpperCase() + "/" + course + " · ";
+    await p.evaluate(() => CP.scambio.open()); await p.waitForSelector("#sc-go", { timeout: 4000 });
+    const c0 = await p.evaluate(() => ({ terms: document.querySelectorAll(".sc-terms li").length, dis: document.getElementById("sc-go").disabled, t: document.querySelector(".sc-terms").innerText, reg: document.querySelectorAll("#sc-region option").length }));
+    check(L + "Scambio: il foglio del consenso ha 8 punti (CC BY 4.0, 18 anni, solo il responsabile ascolta), la regione e il pulsante spento", c0.terms === 8 && c0.dis && /CC BY 4\.0/.test(c0.t) && /Claudio Longhitano/.test(c0.t) && /18/.test(c0.t) && c0.reg >= 5, JSON.stringify(c0));
+    await p.click("#sc-ok"); const half = await p.evaluate(() => document.getElementById("sc-go").disabled); await p.click("#sc-age"); const full = await p.evaluate(() => document.getElementById("sc-go").disabled);
+    check(L + "Scambio: servono tutte e due le caselle («ho capito» e «18 anni») per continuare", half === true && full === false);
+    await p.fill("#sc-nick", "Mario"); await p.check("#sc-show"); await p.selectOption("#sc-region", "2"); await p.click("#sc-go"); await p.waitForSelector("[data-sc-rec]");
+    const cs = await p.evaluate(() => Object.assign({}, CP.scambio.consent(), { bk: Object.keys(localStorage).some((k) => /^cp-voice/.test(k)) }));
+    check(L + "Scambio: il consenso resta sul telefono, fuori dalle chiavi dei backup (md-voice-consent), con nickname e regione", cs && cs.age && cs.nick === "Mario" && cs.show && cs.region === "2" && !cs.bk, JSON.stringify(cs));
+    await p.click('[data-sc-rec="own"]'); await p.waitForSelector(".sc-big");
+    const big = await p.evaluate(() => ({ lang: document.querySelector(".sc-big").lang, text: document.querySelector(".sc-big").textContent }));
+    const wantL = course === "it" ? "zh-CN" : "it-IT";
+    check(L + "Scambio: la frase da leggere è nella propria lingua (" + wantL + ") e viene dall'app", big.lang === wantL && big.text.length > 1, JSON.stringify(big));
+    for (let i = 0; i < 2; i++) {
+      await p.click("[data-sc-start]"); await p.waitForSelector("[data-sc-stop]"); await p.click("[data-sc-stop]"); await p.waitForSelector("[data-sc-keep]", { timeout: 3000 }); await p.click("[data-sc-keep]"); await p.waitForSelector("[data-sc-start]", { timeout: 3000 });
+    }
+    const recs = await p.evaluate(async () => (await CP.scambio.all()).map((r) => ({ ref: r.ref, lang: r.lang, native: r.native, size: r.blob.size, text: r.text, sent: r.sent })));
+    check(L + "Scambio: due frasi registrate e salvate (riferimento phr:/dlg:/ex:, lingua giusta, madrelingua, audio non vuoto), il microfono viene rilasciato", recs.length === 2 && recs.every((r) => /^(phr|dlg|ex):/.test(r.ref) && r.lang === wantL && r.native && r.size > 0 && !r.sent) && await p.evaluate(() => CP.micInfo().users === 0), JSON.stringify(recs));
+    const zip = await p.evaluate(async () => { const rs = await CP.scambio.all(), z = await CP.scambio.buildZip(rs), t = new TextDecoder().decode(new Uint8Array(await z.blob.arrayBuffer())); return { n: z.n, size: z.blob.size, schema: /mandarino-voice\/1/.test(t), lic: /CC-BY-4\.0/.test(t), spk: /"speaker": "Mario"/.test(t), adult: /"adult": true/.test(t), files: (t.match(/\.webm/g) || []).length }; });
+    check(L + "Scambio: lo .zip contiene manifest.json (schema, licenza CC-BY-4.0, nickname, maggiorenne) e i due audio", zip.n === 2 && zip.schema && zip.lic && zip.spk && zip.adult && zip.files >= 2, JSON.stringify(zip));
+    await p.click("[data-sc-back]"); await p.waitForSelector("[data-sc-other]"); await p.check("[data-sc-other]");
+    const oth = await p.evaluate(() => CP.scambio.consent().other);
+    check(L + "Scambio: la lingua che si studia si registra solo se la persona lo attiva", oth === true, String(oth));
+    await p.evaluate(() => CP.scambio.open()); await p.waitForSelector('[data-sc-rec="other"]'); await p.click('[data-sc-rec="other"]'); await p.waitForSelector(".sc-big");
+    const ol = await p.evaluate(() => document.querySelector(".sc-big").lang);
+    await p.click("[data-sc-start]"); await p.waitForSelector("[data-sc-stop]"); await p.click("[data-sc-stop]"); await p.waitForSelector("[data-sc-keep]", { timeout: 3000 }); await p.click("[data-sc-keep]"); await p.waitForTimeout(200);
+    const nn = await p.evaluate(async () => (await CP.scambio.all()).filter((r) => !r.native).map((r) => r.lang));
+    check(L + "Scambio: la registrazione nella lingua che si studia è segnata non madrelingua e nell'altra lingua", ol === (wantL === "zh-CN" ? "it-IT" : "zh-CN") && nn.length === 1 && nn[0] === ol, JSON.stringify({ ol, nn }));
+    await p.click("[data-sc-back]"); await p.waitForSelector("[data-sc-revoke]"); await p.click("[data-sc-revoke]"); await p.waitForTimeout(400);
+    const rv = await p.evaluate(async () => ({ n: (await CP.scambio.all()).length, c: CP.scambio.consent() }));
+    check(L + "Scambio: «ritira il consenso» cancella tutte le registrazioni e il consenso", rv.n === 0 && rv.c === null, JSON.stringify(rv));
+    check(L + "Scambio: nessuna richiesta di rete e nessun errore JavaScript", !errs.length && !ext.length, (errs[0] || "") + ext.slice(0, 2).join(" "));
+    await ctx.close();
+  }
   /* Laboratorio dei radicali (Frasi → Impara → Radicali): apertura, una reazione riuscita, una a vuoto, il trascinamento, il
      movimento ridotto e la carta da condividere; nessuna richiesta di rete */
   {
