@@ -108,8 +108,11 @@
       if (S.stopped) return; cleanup();
       var fin = function (blob) { release(); o.onEnd({ pts: pts, blob: blob || null, error: err || null }); };
       if (rec && rec.state !== "inactive") {
-        rec.onstop = function () { fin(chunks.length ? new Blob(chunks, { type: (chunks[0] && chunks[0].type) || rec.mimeType || "audio/webm" }) : null); };
-        try { rec.stop(); } catch (e) { fin(null); }
+        /* su alcuni Android «onstop» non arriva mai: senza il ripiego il microfono restava «in uso» per sempre e l'app andava riavviata */
+        var fired = false, once = function (b) { if (fired) return; fired = true; fin(b); };
+        rec.onstop = function () { once(chunks.length ? new Blob(chunks, { type: (chunks[0] && chunks[0].type) || rec.mimeType || "audio/webm" }) : null); };
+        setTimeout(function () { once(null); }, 700);
+        try { rec.stop(); } catch (e) { once(null); }
       } else fin(null);
     }
     function step() {
