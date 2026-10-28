@@ -14,7 +14,7 @@ LESSONS.push({
   "pattern": ["chi", "越来越", "aggettivo", "了"],
   "ex": [
     ["天气越来越热了。", "Fa sempre più caldo."],
-    ["你的中文越来越好了。", "Il tuo cinese è sempre più bravo."],
+    ["你的中文越来越好了。", "Il tuo cinese migliora sempre di più."],
     ["越快越好。", "Prima è, meglio è."],
     ["人越来越多了。", "C'è sempre più gente."],
     ["他越说越高兴。", "Più parlava, più era contento."],
@@ -24,7 +24,7 @@ LESSONS.push({
   "dlg": [
     ["A", "天气越来越热了。", "Fa sempre più caldo."],
     ["B", "对，人也越来越多了。", "Già, e c'è sempre più gente."],
-    ["A", "你的中文越来越好了。", "Il tuo cinese è sempre più bravo."],
+    ["A", "你的中文越来越好了。", "Il tuo cinese migliora sempre di più."],
     ["B", "谢谢，我越学越高兴。", "Grazie, più studio e più sono contento."]
   ],
   "traps": [
