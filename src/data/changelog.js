@@ -6,7 +6,7 @@
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
-      "Scambio linguistico (facoltativo): registra con la tua voce frasi nella tua lingua madre, per aiutare chi studia. Tutto resta sul telefono finché non decidi tu di mandarlo; prima c'è un foglio del consenso e serve avere 18 anni.",
+      "Scambio linguistico (facoltativo): registra con la tua voce frasi nella tua lingua madre, per aiutare chi studia. Frasi e parole a caso, tutto sul telefono finché non decidi tu: un solo tasto prepara il file e apre l'e-mail. Prima c'è un foglio del consenso e serve avere 18 anni.",
       "Corso di italiano: anche il tuo Taccuino del viaggiatore, da Guilin a Roma. Ogni lezione superata ti porta più vicino alla prossima città.",
       "Grammatica più ricca: 55 lezioni per il cinese e 51 per l'italiano, con mini-dialoghi, esempi con audio e un ripasso ogni cinque lezioni.",
       "Apertura animata: i quattro toni volano sulle lettere e sulle foglie del logo.",
@@ -17,7 +17,7 @@ var CHANGELOG = [
       "Su Android: widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora (mattina, pomeriggio, sera, notte)."
     ],
     zh: [
-      "语言交换（可选）：用你的母语录下句子，帮助学习的人。在你决定发送之前，一切都只保存在手机上；录音前有同意书，需年满 18 岁。",
+      "语言交换（可选）：用你的母语录下句子，帮助学习的人。随机句子和词语，在你决定之前一切都只保存在手机上：一个按钮就会准备好文件并打开电子邮件。录音前有同意书，需年满 18 岁。",
       "意大利语课程也有旅行手账了：从桂林到罗马，每通过一课，就离下一座城市更近。",
       "语法更丰富：中文 55 课、意大利语 51 课，带小对话、有声例句，每五课一次复习。",
       "启动动画：四个声调飞到标志的字母和两片叶子上。",

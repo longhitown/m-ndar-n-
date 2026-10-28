@@ -1278,23 +1278,31 @@ try {
     await p.evaluate(() => CP.scambio.open()); await p.waitForSelector("#sc-go", { timeout: 4000 });
     const c0 = await p.evaluate(() => ({ terms: document.querySelectorAll(".sc-terms li").length, dis: document.getElementById("sc-go").disabled, t: document.querySelector(".sc-terms").innerText, reg: document.querySelectorAll("#sc-region option").length }));
     check(L + "Scambio: il foglio del consenso ha 8 punti (CC BY 4.0, 18 anni, solo il responsabile ascolta), la regione e il pulsante spento", c0.terms === 8 && c0.dis && /CC BY 4\.0/.test(c0.t) && /Claudio Longhitano/.test(c0.t) && /18/.test(c0.t) && c0.reg >= 5, JSON.stringify(c0));
-    await p.click("#sc-ok"); const half = await p.evaluate(() => document.getElementById("sc-go").disabled); await p.click("#sc-age"); const full = await p.evaluate(() => document.getElementById("sc-go").disabled);
-    check(L + "Scambio: servono tutte e due le caselle («ho capito» e «18 anni») per continuare", half === true && full === false);
+    await p.click("#sc-ok"); await p.click("#sc-age"); const half = await p.evaluate(() => document.getElementById("sc-go").disabled); await p.click("#sc-pub"); const full = await p.evaluate(() => document.getElementById("sc-go").disabled);
+    check(L + "Scambio: servono tutte e tre le autorizzazioni («ho capito», «18 anni», pubblicazione CC BY 4.0) per continuare", half === true && full === false);
     await p.fill("#sc-nick", "Mario"); await p.check("#sc-show"); await p.selectOption("#sc-region", "2"); await p.click("#sc-go"); await p.waitForSelector("[data-sc-rec]");
     const cs = await p.evaluate(() => Object.assign({}, CP.scambio.consent(), { bk: Object.keys(localStorage).some((k) => /^cp-voice/.test(k)) }));
-    check(L + "Scambio: il consenso resta sul telefono, fuori dalle chiavi dei backup (md-voice-consent), con nickname e regione", cs && cs.age && cs.nick === "Mario" && cs.show && cs.region === "2" && !cs.bk, JSON.stringify(cs));
+    check(L + "Scambio: il consenso resta sul telefono, fuori dalle chiavi dei backup (md-voice-consent), con nickname e regione", cs && cs.age && cs.pub && cs.nick === "Mario" && cs.show && cs.region === "2" && !cs.bk, JSON.stringify(cs));
     await p.click('[data-sc-rec="own"]'); await p.waitForSelector(".sc-big");
     const big = await p.evaluate(() => ({ lang: document.querySelector(".sc-big").lang, text: document.querySelector(".sc-big").textContent }));
     const wantL = course === "it" ? "zh-CN" : "it-IT";
     check(L + "Scambio: la frase da leggere è nella propria lingua (" + wantL + ") e viene dall'app", big.lang === wantL && big.text.length > 1, JSON.stringify(big));
+    const ser = await p.evaluate(() => { const q = CP.scambio.makeQueue([]); return { n: q.length, w: q.filter((x) => x.word).length, refs: new Set(q.map((x) => x.ref)).size, kinds: [...new Set(q.map((x) => x.ref.split(":")[0]))].sort().join() }; });
+    check(L + "Scambio: la serie è casuale, di 10 elementi senza doppioni, con frasi e parole dell'app", ser.n === 10 && ser.w === 3 && ser.refs === 10 && /w/.test(ser.kinds), JSON.stringify(ser));
     for (let i = 0; i < 2; i++) {
       await p.click("[data-sc-start]"); await p.waitForSelector("[data-sc-stop]"); await p.click("[data-sc-stop]"); await p.waitForSelector("[data-sc-keep]", { timeout: 3000 }); await p.click("[data-sc-keep]"); await p.waitForSelector("[data-sc-start]", { timeout: 3000 });
     }
     const recs = await p.evaluate(async () => (await CP.scambio.all()).map((r) => ({ ref: r.ref, lang: r.lang, native: r.native, size: r.blob.size, text: r.text, sent: r.sent })));
-    check(L + "Scambio: due frasi registrate e salvate (riferimento phr:/dlg:/ex:, lingua giusta, madrelingua, audio non vuoto), il microfono viene rilasciato", recs.length === 2 && recs.every((r) => /^(phr|dlg|ex):/.test(r.ref) && r.lang === wantL && r.native && r.size > 0 && !r.sent) && await p.evaluate(() => CP.micInfo().users === 0), JSON.stringify(recs));
+    check(L + "Scambio: due frasi registrate e salvate (riferimento phr:/dlg:/ex:/w:, lingua giusta, madrelingua, audio non vuoto), il microfono viene rilasciato", recs.length === 2 && recs.every((r) => /^(phr|dlg|ex|w):/.test(r.ref) && r.lang === wantL && r.native && r.size > 0 && !r.sent) && await p.evaluate(() => CP.micInfo().users === 0), JSON.stringify(recs));
     const zip = await p.evaluate(async () => { const rs = await CP.scambio.all(), z = await CP.scambio.buildZip(rs), t = new TextDecoder().decode(new Uint8Array(await z.blob.arrayBuffer())); return { n: z.n, size: z.blob.size, schema: /mandarino-voice\/1/.test(t), lic: /CC-BY-4\.0/.test(t), spk: /"speaker": "Mario"/.test(t), adult: /"adult": true/.test(t), files: (t.match(/\.webm/g) || []).length }; });
     check(L + "Scambio: lo .zip contiene manifest.json (schema, licenza CC-BY-4.0, nickname, maggiorenne) e i due audio", zip.n === 2 && zip.schema && zip.lic && zip.spk && zip.adult && zip.files >= 2, JSON.stringify(zip));
-    await p.click("[data-sc-back]"); await p.waitForSelector("[data-sc-other]"); await p.check("[data-sc-other]");
+    await p.click("[data-sc-back]"); await p.waitForSelector("[data-sc-send=mail]");
+    const mailBtn = await p.evaluate(() => ({ n: document.querySelectorAll("[data-sc-send=mail]").length, txt: document.querySelector("[data-sc-send=mail]").textContent, main: document.querySelectorAll("[data-sc-send=mail].btn-main").length }));
+    await p.evaluate(() => { window.__shared = null; navigator.canShare = () => true; navigator.share = (d) => { window.__shared = { files: d.files.map((f) => f.name + ":" + f.size), title: d.title, text: d.text }; return Promise.resolve(); }; });
+    await p.waitForTimeout(400); await p.click("[data-sc-send=mail]"); await p.waitForTimeout(500);
+    const shared = await p.evaluate(async () => ({ s: window.__shared, sent: (await CP.scambio.all()).filter((r) => r.sent).length }));
+    check(L + "Scambio: un solo tasto «Invia per e-mail» (principale): l'app prepara il .zip, lo condivide con titolo e testo del consenso e segna le registrazioni inviate", mailBtn.n === 1 && mailBtn.main === 1 && shared.s && /\.zip:\d+/.test(shared.s.files[0]) && /CC BY 4\.0|18/.test(shared.s.text) && shared.sent === 2, JSON.stringify({ mailBtn, shared }));
+    await p.waitForSelector("[data-sc-other]"); await p.check("[data-sc-other]");
     const oth = await p.evaluate(() => CP.scambio.consent().other);
     check(L + "Scambio: la lingua che si studia si registra solo se la persona lo attiva", oth === true, String(oth));
     await p.evaluate(() => CP.scambio.open()); await p.waitForSelector('[data-sc-rec="other"]'); await p.click('[data-sc-rec="other"]'); await p.waitForSelector(".sc-big");

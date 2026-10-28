@@ -127,7 +127,11 @@ function manifestoPage() {
 <meta name="description" content="Gratuita, offline, privata e senza stronzate. 免费、离线、保护隐私，不整虚的。">
 <meta property="og:title" content="Il Manifesto di màndarínō · màndarínō 宣言">
 <meta property="og:description" content="Gratuita, offline, privata e senza stronzate. 免费、离线、保护隐私，不整虚的。">
-<meta property="og:image" content="${SITE}/img/manifesto-it.png">
+<meta property="og:image" content="${SITE}/img/manifesto-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <!-- generata da tools/site.mjs a partire da MANIFESTO.md: non modificarla a mano -->
 <style>
@@ -189,19 +193,33 @@ function assemble(out) {
   console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, 404.html, zh/, privacy.html, manifesto.html, tester.html, partecipa-voci.html, img/, assets/, audio/, licenze/, robots.txt, sitemap.xml, app/");
 }
 
+/* Anteprime del link (Open Graph) 1200×630. WhatsApp, WeChat, Telegram e i social le ritagliano in modi diversi (la striscia 1,91:1
+   intera, oppure un quadrato al centro): per questo tutto ciò che conta sta nel quadrato centrale di 630 px (x da 285 a 915) e ai lati
+   c'è solo decorazione. Nessun testo lungo: la descrizione la dà og:description. */
+async function previews(b) {
+  const img = path.join(ROOT, "docs/img"), icon = fs.readFileSync(path.join(ROOT, "docs/icon.svg"), "utf8");
+  const base = `margin:0;width:1200px;height:630px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 12% 20%,#E4EFE9 0,transparent 38%),radial-gradient(circle at 90% 85%,#FBE7D2 0,transparent 36%),#F5F7F5;color:#16201B;font-family:system-ui,'Noto Sans CJK SC','PingFang SC',sans-serif;text-align:center`;
+  const p = await b.newPage({ viewport: { width: 1200, height: 630 } });
+  await p.setContent(`<!doctype html><meta charset="utf-8"><body style="${base}"><div style="width:600px">
+    <div style="width:230px;height:230px;margin:0 auto">${icon.replace("<svg", '<svg width="230" height="230"')}</div>
+    <div style="font-size:92px;font-weight:800;letter-spacing:1px;line-height:1.1;margin-top:8px">màndarínō</div>
+    <div style="font-size:42px;margin-top:10px;font-weight:600">Cinese ⇄ Italiano</div>
+    <div style="font-size:30px;margin-top:10px;color:#14594A;font-weight:700">gratis · offline · 免费 · 离线</div></div></body>`);
+  await p.screenshot({ path: path.join(img, "anteprima.png") });
+  await p.setContent(`<!doctype html><meta charset="utf-8"><body style="${base}"><div style="width:600px">
+    <div style="font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#14594A;font-weight:800">Il Manifesto · 宣言</div>
+    <div style="font-size:46px;font-weight:800;line-height:1.2;margin-top:18px">Gratuita, offline, privata.</div>
+    <div style="font-size:46px;font-weight:800;line-height:1.2">E senza stronzate.</div>
+    <div style="font-size:38px;line-height:1.35;margin-top:20px;color:#14594A;font-weight:700">免费、离线、保护隐私，<br>不整虚的。</div>
+    <div style="font-size:30px;margin-top:22px;font-weight:700">màndarínō</div></div></body>`);
+  await p.screenshot({ path: path.join(img, "manifesto-og.png") });
+  await p.close();
+}
+
 async function assets() {
   const { chromium } = createRequire(import.meta.url)("playwright");
   const b = await chromium.launch(), img = path.join(ROOT, "docs/img");
-  /* anteprima 1200×630: icona, nome e le due frasi, con i colori dell'app */
-  const icon = fs.readFileSync(path.join(ROOT, "docs/icon.svg"), "utf8");
-  const p = await b.newPage({ viewport: { width: 1200, height: 630 } });
-  await p.setContent(`<!doctype html><meta charset="utf-8"><body style="margin:0;width:1200px;height:630px;display:flex;align-items:center;gap:56px;padding:0 80px;box-sizing:border-box;background:#F5F7F5;color:#16201B;font-family:system-ui,'Noto Sans CJK SC',sans-serif">
-    <div style="width:300px;height:300px;flex:none">${icon.replace("<svg", '<svg width="300" height="300"')}</div>
-    <div><div style="font-size:96px;font-weight:800;letter-spacing:1px">màndarínō</div>
-    <div style="font-size:36px;margin-top:12px">Il cinese per italiani, l'italiano per chi parla cinese.</div>
-    <div style="font-size:36px;margin-top:6px">为中文使用者学意大利语，为意大利人学中文。</div>
-    <div style="font-size:26px;margin-top:22px;color:#14594A;font-weight:700">Gratis · offline · senza pubblicità · 免费 · 离线 · 无广告</div></div></body>`);
-  await p.screenshot({ path: path.join(img, "anteprima.png") }); await p.close();
+  await previews(b);
   /* demo: pochi secondi dell'app in un telefono (registrazione di Playwright, webm) */
   const tmp = fs.mkdtempSync(path.join(ROOT, "build-demo-"));
   const ctx = await b.newContext({ viewport: { width: 360, height: 740 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true, recordVideo: { dir: tmp, size: { width: 360, height: 740 } } });
@@ -225,10 +243,11 @@ async function assets() {
   await pp.goto(pathToFileURL(path.join(ROOT, "dist/index.html")).href); await pp.waitForTimeout(2600);
   await pp.screenshot({ path: path.join(img, "demo.png") });
   await b.close();
-  for (const f of ["anteprima.png", "demo.webm", "demo.png"]) console.log("✓ docs/img/" + f + " · " + Math.round(fs.statSync(path.join(img, f)).size / 1024) + " KB");
+  for (const f of ["anteprima.png", "manifesto-og.png", "demo.webm", "demo.png"]) console.log("✓ docs/img/" + f + " · " + Math.round(fs.statSync(path.join(img, f)).size / 1024) + " KB");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  if (args.includes("--assets")) await assets();
+  if (args.includes("--anteprime")) { const { chromium } = createRequire(import.meta.url)("playwright"), b = await chromium.launch(); await previews(b); await b.close(); console.log("✓ docs/img/anteprima.png e manifesto-og.png"); }
+  else if (args.includes("--assets")) await assets();
   else assemble(path.resolve(ROOT, opt("--out", "_site")));
 }
