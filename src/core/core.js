@@ -548,7 +548,7 @@
     if (navigator.onLine === false && !window.MandarinoAndroid) { finish({ ok: false, heard: "", error: "offline" }); return null; }
     /* su molti Android, se il flusso dell'oscilloscopio è ancora aperto, il riconoscimento fallisce (audio-capture / no-speech) */
     var closed = false;
-    if (CP.micInfo && CP.micInfo().live && !CP.micInfo().users && CP.micClose) { CP.micClose(); closed = true; }
+    if (CP.micInfo && CP.micInfo().live && CP.micClose) { CP.micClose(); closed = true; }   /* anche se un'altra sessione non ha rilasciato: i due non possono usare il microfono insieme */
     var run = function () {
       var rec, got = false, retrying = false;
       try {

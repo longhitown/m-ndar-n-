@@ -1486,6 +1486,13 @@ try {
     await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); }); await p.reload(); await p.waitForFunction(() => window.CP && CP.micStream, null, { timeout: 15000 }); await p.waitForTimeout(500);
     const mic = await p.evaluate(async () => { CP._activeListen = { abort() { window.__aborted++; } }; const t0 = performance.now(); const s = await CP.micStream(); return { ok: !!s, tries: window.__tries, aborted: window.__aborted, ms: Math.round(performance.now() - t0) }; });
     check("Microfono: se il riconoscimento è ancora aperto lo libera, e se il telefono risponde «occupato» riprova da solo (3 tentativi) senza errori", mic.ok && mic.tries === 3 && mic.aborted === 1, JSON.stringify(mic));
+    /* un registratore che non manda mai «onstop» (visto su Android) non deve lasciare il microfono «in uso» per sempre */
+    const stuck = await p.evaluate(async () => {
+      CP.micClose(); window.MediaRecorder = class { constructor() { this.state = "inactive"; this.mimeType = "audio/webm"; } start() { this.state = "recording"; } stop() { /* nessun onstop */ } };
+      const r = await new Promise((ok) => { const S = CP.pitchSession({ maxSec: 1, waitSec: 2, onFrame() {}, onEnd(o) { ok({ ended: true, err: o.error }); } }); setTimeout(() => S.stop(), 500); setTimeout(() => ok({ ended: false }), 3000); });
+      await new Promise((x) => setTimeout(x, 200)); return Object.assign(r, { users: CP.micInfo().users });
+    });
+    check("Oscilloscopio: se il registratore non risponde alla fine la sessione si chiude comunque e il microfono viene rilasciato", stuck.ended && stuck.users === 0, JSON.stringify(stuck));
     const lab = await p.evaluate(async () => {
       CP.show("build", true); const t = ["我", "是", "西西里", "人"].map((h) => CP.ORDER.find((k) => CP.WORDS[k].hz === h)).filter(Boolean); CP.build.labLoad(t, "."); await new Promise((r) => setTimeout(r, 200));
       const a = document.getElementById("lab-out").innerText; document.querySelector('[data-labview="word"]').click(); await new Promise((r) => setTimeout(r, 150));
