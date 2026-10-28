@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """màndarínō · controllo dei file per Anki con la libreria vera di Anki (strumento di sviluppo, non gira nell'app né in CI).
 
-Legge uno o più file esportati dall'app (⚙️ → Dati e privacy → Altre opzioni di esportazione), chiede ad Anki come
+Legge uno o più file esportati dall'app (⚙️ → Dati e sincronizzazione → Altre opzioni di esportazione), chiede ad Anki come
 interpreta le intestazioni (separatore, HTML, colonna del guid e dei tag, nomi delle colonne, mazzo), li importa in una
 raccolta temporanea con un tipo di nota a 5 campi e li reimporta: la seconda volta non deve nascere nessuna nota nuova.
 

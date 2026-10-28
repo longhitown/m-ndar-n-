@@ -1,4 +1,4 @@
-/* ===== màndarínō · ⚙️ → Promemoria: un avviso al giorno all'ora scelta, spento finché non lo accendi.
+/* ===== màndarínō · ⚙️ → Studio → Promemoria: un avviso al giorno all'ora scelta, spento finché non lo accendi.
    Solo nell'app Android (Reminder.java): il permesso delle notifiche si chiede quando lo accendi, non all'avvio.
    L'avviso si calcola sul telefono dallo stato del widget e non arriva se oggi hai già studiato. ===== */
 (function () {

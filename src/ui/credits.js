@@ -1,4 +1,4 @@
-/* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Come funziona → Crediti e licenze).
+/* màndarínō · crediti e licenze delle parti di altri che l'app contiene (⚙️ → Informazioni → Come funziona → Crediti e licenze).
    I testi delle licenze sono anche in LICENZE/ nel repository. */
 (function () {
   var CP = window.CP, esc = CP.esc;
@@ -21,11 +21,13 @@
       '<section class="cred"><h4>🎵 ' + CP.t("cr.music") + '</h4><p class="small">' + CP.t("cr.musicT") + '</p><ul class="small cred-libs">' +
       MUSIC_LIBS.map(function (m) { return "<li><b data-noi18n>" + esc(m[0]) + "</b> · " + esc(CP.t(m[1])) + "</li>"; }).join("") + '</ul><p class="small muted">' + CP.t("cr.musicSynth") + "</p></section>";
   }
+  var MIT_JSPDF = "MIT License\n\nCopyright\n(c) 2010-2025 James Hall, https://github.com/MrRio/jsPDF\n(c) 2015-2025 yWorks GmbH, https://www.yworks.com/\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n\"Software\"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be\nincluded in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\nNONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\nLIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\nOF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\nWITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.";
   var ITEMS = [
     ["cr.mmh", "cr.mmhT", APL],
     ["cr.hsk", "cr.hskT", MIT_HSK],
     ["cr.fsrs", "cr.fsrsT", MIT_FSRS],
     ["cr.jsqr", "cr.jsqrT", APACHE],
+    ["cr.jspdf", "cr.jspdfT", MIT_JSPDF],
     ["cr.wiki", "cr.wikiT", "CC0 1.0 Universal · https://creativecommons.org/publicdomain/zero/1.0/\n\nWikidata: «All structured data from the main and property namespace is available under the Creative Commons CC0 License»."],
     ["cr.mmhd", "cr.mmhdT", "GNU Lesser General Public License, versione 3 o successiva.\nhttps://www.gnu.org/licenses/lgpl-3.0.html\n\nIl testo completo è in LICENZE/LGPL-3.0.txt (con LICENZE/GPL-3.0.txt) nel repository."],
     ["cr.tatoeba", "cr.tatoebaT", "Creative Commons Attribution 2.0 France (CC BY 2.0 FR) · https://creativecommons.org/licenses/by/2.0/fr/\n\nFrasi d'esempio: Tatoeba (tatoeba.org), dei suoi contributori. L'elenco degli autori delle frasi usate è in materiali/crediti/autori-frasi.tsv nel repository:\nhttps://github.com/longhitown/m-ndar-n-/blob/mandarino/materiali/crediti/autori-frasi.tsv\nOgni frase conserva il suo numero Tatoeba (src/data/ex/)."],

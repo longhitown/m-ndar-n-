@@ -184,7 +184,7 @@ async function main() {
   if (!site && log.issue.length) console.log("\n(MD_CONFIG.SITE_URL è vuoto e manca --site: le e-mail avranno il codice e il QR ma non il link.)");
   for (const x of log.issue) {
     const code = sign(x.seal, key, kid), link = site ? appURL(site) + "#seal=" + code : "", dir = path.join(outDir, x.seal.year + "-" + x.seal.lvl + "-" + x.seal.num);
-    const v = { SIGILLO: NAMES[x.seal.lvl][0], SIGILLO_ZH: NAMES[x.seal.lvl][1], EDIZIONE: x.seal.year, NUMERO: x.seal.num, CODICE: code, LINK: link || "(apri l'app → ⚙️ → Sostieni il progetto → Riscatta un sigillo)" };
+    const v = { SIGILLO: NAMES[x.seal.lvl][0], SIGILLO_ZH: NAMES[x.seal.lvl][1], EDIZIONE: x.seal.year, NUMERO: x.seal.num, CODICE: code, LINK: link || "(apri l'app → ⚙️ → Informazioni → Sostieni il progetto → Riscatta un sigillo)" };
     const mail = tpl("email-it.txt", v) + "\n\n———\n\n" + tpl("email-zh.txt", v);
     fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     fs.writeFileSync(path.join(dir, "codice.txt"), code + "\n"); if (link) fs.writeFileSync(path.join(dir, "link.txt"), link + "\n");
