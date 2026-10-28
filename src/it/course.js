@@ -390,7 +390,7 @@
     if (!cj.q) newQ();
     var q = cj.q, h = tt("itc.170") + (cj.tense === "pres" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + tt("itc.171") + (cj.tense === "past" ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + tt("itc.172") +
       tt("itc.173") + cj.score + " / " + cj.n + '</span><p class="ask"><b lang="it">' + esc(q.p[0]) + "</b> + <b lang=\"it\">" + esc(q.e.it) + "</b>（" + zhHTML(q.e.zh, q.e.py) + "）</p>" +
-      '<p class="small muted">' + (cj.tense === "pres" ? tt("itc.174") : tt("itc.175")) + "</p>" +
+      '<p class="small muted">' + (cj.tense === "pres" ? tt("itc.174") : /^lei$/i.test(q.p[0]) ? tt("itc.175") : tt("itd.pastPlain")) + "</p>" +
       '<div class="ls-opts">' + q.opts.map(function (o, j) { var cls = cj.state === "play" ? "" : o === q.right ? " right" : j === cj.choice ? " wrong" : " off"; return '<button type="button" class="ls-opt' + cls + '" data-itc-opt="' + j + '" lang="it"' + (cj.state !== "play" ? " disabled" : "") + ">" + esc(o) + "</button>"; }).join("") + "</div>";
     if (cj.state !== "play") h += '<p class="verdict ' + (cj.state === "ok" ? "ok" : "ko") + '">' + (cj.state === "ok" ? Z.right : Z.wrong + " " + Z.answerIs + '<span lang="it">' + esc(q.right) + "</span>") + "</p>" + conjTable(q.e.it, q.e.aux) + '<div class="acts"><button type="button" class="btn-main" data-itc-next style="margin:0">' + Z.next + "</button></div>";
     return h + "</div>";

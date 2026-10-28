@@ -30,7 +30,18 @@
     if (M.pending) { M.users++; return M.pending; }
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return Promise.reject({ name: "NotSupportedError" });
     M.users++;
-    M.pending = navigator.mediaDevices.getUserMedia({ audio: AUDIO }).then(function (s) {
+    /* su Android il riconoscimento vocale e l'oscilloscopio non possono usare il microfono insieme: si chiude prima il primo,
+       poi si prova ad aprire il flusso; se il telefono non l'ha ancora liberato (NotReadableError) si riprova, fino a 4 volte */
+    var freed = CP.listenRelease ? CP.listenRelease() : false;
+    function wait(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+    function open(n) {
+      return navigator.mediaDevices.getUserMedia({ audio: AUDIO }).catch(function (e) {
+        var busy = e && (e.name === "NotReadableError" || e.name === "AbortError" || e.name === "TrackStartError");
+        if (busy && n < 4) return wait(260).then(function () { return open(n + 1); });
+        throw e;
+      });
+    }
+    M.pending = (freed ? wait(220) : Promise.resolve()).then(function () { return open(0); }).then(function (s) {
       M.pending = null; M.stream = s; M.opened++; CP._micStream = s;
       s.getTracks().forEach(function (t) { t.addEventListener("ended", function () { if (M.stream === s) { M.stream = null; CP._micStream = null; paintLive(); } }); });
       paintLive();

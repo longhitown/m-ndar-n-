@@ -18,44 +18,42 @@
     var src = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="300 10 200 210" width="400" height="420">' + defs.outerHTML + sym.outerHTML.replace(/class="[^"]*"/g, "") + "</svg>";
     return new Promise(function (res) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src); });
   }
-  /* il modello del corso di cinese: lo stesso disegno di prima ora, riga per riga (tools/e2e.mjs lo confronta con
-     la copia fissa in tools/fixtures/share-card-v1.js) */
-  function drawZh(cv) {
-    var x = cv.getContext("2d"), W = 1080, H = 1350, r = CP.game.rank(), s = CP.game.streak(), c = CP.counts(), w = CP.wordOfDay();
-    cv.width = W; cv.height = H;
-    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#FBF6EC"); g.addColorStop(1, "#EFE4D0"); x.fillStyle = g; x.fillRect(0, 0, W, H);
-    var SANS = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif", HAN = "'Noto Serif SC', 'Songti SC', 'SimSun', serif";
+  /* carta del giorno del corso di cinese (testo in italiano): come quelle di italiano, con formato, colore, nome facoltativo, QR e sigillo.
+     Dati: { rank, streak, started, known, w (parola del giorno), date, name? } */
+  function drawZhDay(cv, data, opt) {
+    var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
+    cv.width = W; cv.height = H; cv.__cut = cut;
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.bg[0]); g.addColorStop(1, C.bg[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var k = H / 1440, M = 84, gap = function (n) { return Math.round(n * k); };
     return logoImg().then(function (logo) {
-      if (logo) x.drawImage(logo, W / 2 - 110, 70, 220, 231);
-      x.textAlign = "center"; x.fillStyle = "#1E2420"; x.font = "700 64px " + SANS; x.fillText("màndarínō", W / 2, 360);
-      x.fillStyle = "#5E6A64"; x.font = "600 26px " + SANS; x.fillText(T("card.sub"), W / 2, 404);
-      /* sigillo del grado */
-      x.save(); x.translate(W / 2 - 300, 470); x.fillStyle = "#C8312B"; x.beginPath(); x.roundRect ? x.roundRect(0, 0, 150, 150, 22) : x.rect(0, 0, 150, 150); x.fill();
-      x.fillStyle = "#FFF6EA"; x.font = "700 104px " + HAN; x.textBaseline = "middle"; x.fillText(r.ch, 75, 80); x.restore();
+      var y = gap(64);
+      if (logo) { x.drawImage(logo, W / 2 - 80, y, 160, 168); } y += 176;
+      x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = C.ink; x.font = "700 60px " + SANS; x.fillText("màndarínō", W / 2, y + 44); y += 70;
+      x.fillStyle = C.mute; x.font = "600 30px " + SANS; x.fillText(T("card.sub"), W / 2, y + 22); fit(x, T("card.sub"), W - 2 * M, cut); y += gap(66);
+      var r = data.rank, sx = W / 2 - 300;
+      x.save(); x.translate(sx, y); x.fillStyle = C.seal; roundRect(x, 0, 0, 140, 140, 22); x.fill();
+      x.fillStyle = "#FFF6EA"; x.font = "700 96px " + SERIF; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(r.ch, 70, 76); x.restore();
       x.textAlign = "left"; x.textBaseline = "alphabetic";
-      x.fillStyle = "#5E6A64"; x.font = "600 26px " + SANS; x.fillText(T("path.rank").toUpperCase(), W / 2 - 120, 510);
-      x.fillStyle = "#1E2420"; x.font = "700 44px " + SANS; x.fillText(r.name, W / 2 - 120, 565);
-      x.fillStyle = "#14594A"; x.font = "600 30px " + SANS; x.fillText(r.xp + " XP", W / 2 - 120, 610);
-      /* tre numeri */
-      var stats = [["🔥 " + s, T(s === 1 ? "done.streak1" : "done.streakN")], [String(c[1] + c[2]), T("card.words")], [String(c[2]), T("study.known")]];
-      stats.forEach(function (st, i) {
-        var cx = 200 + i * 340; x.textAlign = "center";
-        x.fillStyle = "#1E2420"; x.font = "800 72px " + SANS; x.fillText(st[0], cx, 770);
-        x.fillStyle = "#5E6A64"; x.font = "600 26px " + SANS; x.fillText(st[1], cx, 812);
+      x.fillStyle = C.mute; x.font = "600 28px " + SANS; x.fillText(T("path.rank").toUpperCase(), sx + 170, y + 38);
+      x.fillStyle = C.ink; x.font = "700 46px " + SANS; x.fillText(r.name, sx + 170, y + 92); fit(x, r.name, W - sx - 170 - M, cut);
+      x.fillStyle = C.accent; x.font = "600 30px " + SANS; x.fillText(r.xp + " XP", sx + 170, y + 132);
+      y += 140 + gap(56);
+      [["🔥 " + data.streak, T(data.streak === 1 ? "done.streak1" : "done.streakN")], [String(data.started), T("card.words")], [String(data.known), T("study.known")]].forEach(function (st, i) {
+        var cx = W / 6 + i * W / 3; x.textAlign = "center";
+        x.fillStyle = C.ink; x.font = "800 70px " + SANS; x.fillText(st[0], cx, y + 60); fit(x, st[0], W / 3 - 20, cut);
+        x.fillStyle = C.mute; x.font = "600 28px " + SANS; x.fillText(st[1], cx, y + 104); fit(x, st[1], W / 3 - 20, cut);
       });
-      /* parola del giorno */
-      x.fillStyle = "rgba(20,89,74,.08)"; x.beginPath(); x.roundRect ? x.roundRect(90, 870, W - 180, 360, 36) : x.rect(90, 870, W - 180, 360); x.fill();
-      x.textAlign = "center"; x.fillStyle = "#14594A"; x.font = "700 26px " + SANS; x.fillText(T("card.wotd").toUpperCase(), W / 2, 920);
+      y += 104 + gap(54);
+      var bottom = H - gap(330), boxH = Math.max(260, bottom - y - gap(30)), w = data.w;
+      x.fillStyle = C.box; roundRect(x, M - 20, y, W - 2 * M + 40, boxH, 36); x.fill();
+      x.textAlign = "center"; x.fillStyle = C.accent; x.font = "700 30px " + SANS; x.fillText(T("card.wotd").toUpperCase(), W / 2, y + 54);
       if (w) {
-        x.fillStyle = "#1E2420"; x.font = "500 136px " + HAN; x.fillText(w.hz, W / 2, 1058);
-        x.fillStyle = "#14594A"; x.font = "600 44px " + SANS; x.fillText(w.py.replace(/\./g, ""), W / 2, 1140);
-        x.fillStyle = "#5E6A64"; x.font = "500 34px " + SANS; x.fillText(CP.gloss(w).slice(0, 40), W / 2, 1192);
+        var cy = y + 70 + Math.max(0, (boxH - 70 - 250) / 2);
+        x.fillStyle = C.ink; x.font = "500 136px " + SERIF; x.fillText(w.hz, W / 2, cy + 130); fit(x, w.hz, W - 2 * M, cut);
+        x.fillStyle = C.accent; x.font = "600 44px " + SANS; x.fillText(w.py.replace(/\./g, ""), W / 2, cy + 190); fit(x, w.py.replace(/\./g, ""), W - 2 * M, cut);
+        x.fillStyle = C.mute; x.font = "500 34px " + SANS; x.fillText(CP.gloss(w).slice(0, 40), W / 2, cy + 240); fit(x, CP.gloss(w).slice(0, 40), W - 2 * M, cut);
       }
-      x.fillStyle = "#8A948F"; x.font = "500 24px " + SANS; x.fillText(T("card.foot"), W / 2, 1300);
-      /* il sigillo di gratitudine, solo se la persona ha scelto di mostrarlo (ui/seals.js): rivela che ha sostenuto il
-         progetto. Nessun «verificato»: da un'immagine nessuno può controllarlo */
-      var sl = CP.seals && CP.seals.forShare && CP.seals.forShare();
-      if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = "#8A948F"; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
+      footer(x, cv, W, H, M, C, opt, data, cut, T("card.foot"), T("zcard.scan"));
       return cv;
     });
   }
@@ -99,7 +97,7 @@
     var fy = H - gap(300), qs = Math.round(W * 0.22);
     var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
     var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
-    x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
+    x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(LANG === "zh" ? zhDate(data.date || new Date()) : (data.date || new Date()).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }), tx, fy + 52);
     if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
     x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
     x.font = "500 24px " + SANS; x.fillText(foot, tx, fy + 196); fit(x, foot, W - tx - (opt.seal ? 190 : 30), cut);
@@ -262,7 +260,7 @@
   }
   var TEMPLATES = {
     "zh-rad": { course: "zh", draw: function (cv, d, o) { return drawRad(cv, d, o); } },
-    "zh-day": { course: "zh", draw: function (cv) { return drawZh(cv); } },
+    "zh-day": { course: "zh", ns: "zcard", draw: function (cv, data, opt) { return drawZhDay(cv, data, opt || {}); } },
     "it-day": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-day", d, o); } },
     "it-milestone": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-milestone", d, o); } },
     "it-week": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-week", d, o); } },
@@ -287,7 +285,7 @@
   function paintSheet() {
     var cv = document.querySelector(".card-cv"); if (!cv || !cur) return;
     var p = prefs(), d = Object.assign({}, cur.data, { name: p.sign && p.name ? p.name : "" });
-    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", cur.ns === "dcard" ? T("dcard.alt", { n: (d.stop || {}).n, c: (d.stop || {}).city, p: d.text || "" }) : cur.tpl === "zh-rad" ? T("lr.card.alt", { c: d.ch, p: d.py, a: d.a, b: d.b }) : T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
+    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", cur.ns === "zcard" ? T("zcard.alt", { w: (d.w || {}).hz || "", r: (d.rank || {}).name || "" }) : cur.ns === "dcard" ? T("dcard.alt", { n: (d.stop || {}).n, c: (d.stop || {}).city, p: d.text || "" }) : cur.tpl === "zh-rad" ? T("lr.card.alt", { c: d.ch, p: d.py, a: d.a, b: d.b }) : T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
   }
   function itSheet(tpl, data, ns) {
     ns = ns || (tpl === "zh-rad" ? "lr.card" : "itcard"); cur = { tpl: tpl, data: data, ns: ns }; var p = prefs();
@@ -301,18 +299,14 @@
       '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T(ns + ".share")) + "</button></div>");
     paintSheet();
   }
-  function zhSheet() {
-    cur = null;
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("card.title")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + '</button></div>' +
-      '<canvas class="card-cv" aria-label="' + CP.attr(T("card.title")) + '"></canvas><div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">📤 ' + esc(T("card.share")) + "</button></div>");
-    var cv = document.querySelector(".card-cv"); drawZh(cv);
-  }
   /* CP.shareCard(): la carta del giorno del corso aperto; CP.shareCard.open(modello, dati) per le altre */
-  CP.shareCard = function () { if (CP.course && CP.course() === "it" && CP.itCardData) itSheet("it-day", CP.itCardData()); else zhSheet(); };
+  function zhCardData() { var c = CP.counts(); return { rank: CP.game.rank(), streak: CP.game.streak(), started: c[1] + c[2], known: c[2], w: CP.wordOfDay(), date: new Date() }; }
+  CP.shareCard = function () { if (CP.course && CP.course() === "it" && CP.itCardData) itSheet("it-day", CP.itCardData()); else itSheet("zh-day", zhCardData(), "zcard"); };
   CP.shareCard.open = function (tpl, data) {
     if (tpl === "zh-rad") itSheet(tpl, data);
+    else if (tpl === "zh-day") itSheet(tpl, data || zhCardData(), "zcard");
     else if (TEMPLATES[tpl] && TEMPLATES[tpl].ns) itSheet(tpl, data, TEMPLATES[tpl].ns);
-    else if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet();
+    else if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else itSheet("zh-day", zhCardData(), "zcard");
   };
   CP.shareCard.templates = TEMPLATES;
   CP.shareCard.render = render;

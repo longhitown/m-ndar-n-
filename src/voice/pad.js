@@ -329,7 +329,7 @@
         var sc = strokeCheck(S.cur === "all" ? strokes.map(function (s) { return s.map(function (p) { return { x: p.x - L * ci / n, y: p.y }; }); }) : strokes, ch);
         parts.push({ ch: ch, cmp: cmp, an: an, U: U, T: T, sc: sc }); total += cmp.score; cnt++;
       });
-      if (!cnt) { res.hidden = false; res.className = "pad-res"; res.innerHTML = "<p>Scrivi qualcosa prima: poi ti dico come è andata.</p>"; return; }
+      if (!cnt) { res.hidden = false; res.className = "pad-res"; res.innerHTML = "<p>Scrivi qualcosa prima: poi ti dico come è andata.</p>"; requestAnimationFrame(function () { try { res.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {} }); return; }
       var avg = Math.round(total / cnt), lab = avg >= 85 ? "Ottimo tratto!" : avg >= 70 ? "Buono, ci sei quasi." : avg >= 50 ? "Si riconosce, ma si può migliorare." : "Ancora lontano: riprova con la guida attiva.";
       html += '<div class="pad-score ' + (avg >= 70 ? "ok" : "ko") + '"><b>Precisione: ' + avg + "%</b> — " + lab + "</div>";
       parts.forEach(function (p) {
@@ -360,6 +360,8 @@
         if (!S.awarded[key]) { S.awarded[key] = 1; if (CP.game && CP.game.xp) { CP.game.xp(5); html += '<p class="small" style="color:var(--accent)">+5 XP</p>'; } CP.sfx("ok"); }
       } else CP.sfx("tap");
       res.className = "pad-res"; res.innerHTML = html; res.hidden = false;
+      /* la valutazione compare sotto il pulsante, spesso fuori dallo schermo: si porta in vista */
+      requestAnimationFrame(function () { try { res.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) { res.scrollIntoView(); } });
       if (res.scrollIntoView) res.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
 
