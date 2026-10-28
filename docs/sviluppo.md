@@ -367,7 +367,7 @@ node tools/misura-avvio.mjs # apertura a freddo con CPU 4× e costo dei gruppi a
 node tools/ux-audit.mjs     # 0 problemi attesi (anche: un solo pulsante primario per schermata, menu ≤ 7 voci); --quick = 360×740 chiaro
 node tools/lang-audit.mjs   # rapporto sui testi italiano/cinese: chiavi, segnaposto, punteggiatura, refusi tipici
 ```
-Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`).
+Tutte insieme: `npm test`. Le stesse girano in GitHub Actions a ogni push (`web.yml`). Se l'e2e (o la prova nell'emulatore) fallisce, la CI la ripete una volta sola e segnala un avviso: un guasto vero fallisce due volte, un'incertezza del browser di prova no. Le prove che ricaricano la pagina usano il server locale, non `file://` (lì Chromium non conserva sempre il localStorage).
 **Golden del ripasso.** `tools/fixtures/study-classic-v1.js` è una copia fissa di `src/study/study.js` di prima
 dell'introduzione degli esercizi vari: `tools/e2e.mjs` fa la stessa sessione (profilo e seme fissi) con l'app in stile «Classico» e con la copia, e
 controlla che le 40 schermate (coda, carte pi / ip / hp, voti) siano identiche. Non va nell'app.

@@ -1261,6 +1261,7 @@ try {
     check("意大利语课程 · 手账：没有网络请求，也没有 JavaScript 错误", !errs.length && !ext.length, (errs[0] || "") + ext.slice(0, 2).join(" "));
     await ctx.close();
   }
+  /* Su file:// Chromium non conserva sempre il localStorage dopo un ricaricamento (visto solo nella CI): le prove che ricaricano la pagina usano il server locale, come l'app vera. */
   /* Laboratorio dei radicali (Frasi → Impara → Radicali): apertura, una reazione riuscita, una a vuoto, il trascinamento, il
      movimento ridotto e la carta da condividere; nessuna richiesta di rete */
   {
@@ -1268,8 +1269,8 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-music", "0"); });
     const p = await ctx.newPage(); const errs = [], net = []; p.on("pageerror", (e) => errs.push(e.message));
-    p.on("request", (r) => { if (/^https?:/.test(r.url())) net.push(r.url()); });
-    await p.goto(pathToFileURL(file).href); await p.waitForTimeout(600);
+    p.on("request", (r) => { if (/^https?:/.test(r.url()) && !r.url().startsWith(base)) net.push(r.url()); });
+    await p.goto(base); await p.waitForTimeout(600);
     const before = await p.evaluate(() => !!(window.CP && CP.labRad));
     await open(p);
     const o = await p.evaluate(() => ({ el: document.querySelectorAll(".lr-el").length, slots: document.querySelectorAll(".lr-slot").length, cnt: CP.labRad.count(), tot: CP.labRad.total(), main: Array.from(document.querySelectorAll(".btn-main")).filter((e) => e.offsetParent).length }));
@@ -1309,7 +1310,7 @@ try {
     /* movimento ridotto: la reazione compare subito, senza classi d'animazione, e i tratti sono già disegnati */
     const rc = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
     await rc.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-music", "0"); });
-    const q = await rc.newPage(); await q.goto(pathToFileURL(file).href); await q.waitForTimeout(500); await open(q);
+    const q = await rc.newPage(); await q.goto(base); await q.waitForTimeout(500); await open(q);
     await q.click('[data-lr-el="人"]'); await q.click('[data-lr-el="木"]'); await q.waitForSelector("#lr-out.ok", { timeout: 2000 });
     const rm = await q.evaluate(() => ({ fresh: !!document.querySelector("#lr-out.fresh"), go: !!document.querySelector("#lr-out .lr-svg.go"), merge: !!document.querySelector(".lr-bench.merge"), off: getComputedStyle(document.querySelector("#lr-out .lr-svg path")).strokeDashoffset, t: document.getElementById("lr-outwrap").innerText }));
     check("Laboratorio dei radicali: con il movimento ridotto 人 + 木 = 休 compare subito, senza animazioni, con i tratti già disegnati", /休/.test(rm.t) && !rm.fresh && !rm.go && !rm.merge && parseFloat(rm.off) === 0, JSON.stringify(rm).slice(0, 240));
@@ -1317,7 +1318,7 @@ try {
     /* interfaccia in cinese: stesse chiavi, nessuna chiave nuda */
     const zc = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await zc.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-music", "0"); localStorage.setItem("cp-lang", "zh"); });
-    const z = await zc.newPage(); await z.goto(pathToFileURL(file).href); await z.waitForTimeout(500); await open(z);
+    const z = await zc.newPage(); await z.goto(base); await z.waitForTimeout(500); await open(z);
     await z.click('[data-lr-el="女"]'); await z.click('[data-lr-el="子"]'); await z.waitForSelector("#lr-out.ok", { timeout: 4000 }); await z.waitForTimeout(600);
     const zt = await z.evaluate(() => document.getElementById("lr-root").innerText);
     check("Laboratorio dei radicali: in cinese compaiono titolo, lettura e dicitura «不是字源», nessuna chiave senza traduzione", /部件实验室/.test(zt) && /不是字源/.test(zt) && /好/.test(zt) && !/\blr\.[a-z]/i.test(zt), zt.slice(0, 160).replace(/\n/g, " "));
