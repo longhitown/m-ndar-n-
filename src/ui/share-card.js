@@ -150,7 +150,60 @@
       return cv;
     });
   }
+  /* «zh-rad»: la carta di una scoperta del Laboratorio dei radicali (phrases/radicali.js, testi in i18n/lab-rad.js).
+     dati: { ch, py, a, b, meaning, joke, date, name? }. Stessi formati, colori, QR, firma facoltativa e sigillo di gratitudine delle carte del corso di italiano. */
+  function drawRad(cv, data, opt) {
+    var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
+    cv.width = W; cv.height = H; cv.__cut = cut;
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.bg[0]); g.addColorStop(1, C.bg[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var k = H / 1440, M = 84, gap = function (n) { return Math.round(n * k); };
+    return logoImg().then(function (logo) {
+      var y = gap(56);
+      if (logo) { x.drawImage(logo, W / 2 - 70, y, 140, 147); } y += 152;
+      x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = C.ink; x.font = "700 54px " + SANS; x.fillText("màndarínō", W / 2, y + 40); y += 62;
+      x.fillStyle = C.mute; x.font = "600 30px " + SANS; x.fillText(T("lr.card.sub"), W / 2, y + 22); fit(x, T("lr.card.sub"), W - 2 * M, cut); y += gap(60);
+      /* la formula: A + B = carattere */
+      var s1 = 176, s2 = 250, opw = 64, total = s1 * 2 + s2 + opw * 2, sx = (W - total) / 2, cy = y + s2 / 2;
+      function box(X, S, ch, col) {
+        x.fillStyle = C.box; roundRect(x, X, cy - S / 2, S, S, 30); x.fill();
+        x.lineWidth = 6; x.strokeStyle = col; roundRect(x, X, cy - S / 2, S, S, 30); x.stroke();
+        x.fillStyle = C.ink; x.font = "700 " + Math.round(S * 0.58) + "px " + SERIF; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(ch, X + S / 2, cy + S * 0.04);
+      }
+      box(sx, s1, data.a, C.accent);
+      box(sx + s1 + opw, s1, data.b, C.seal);
+      x.fillStyle = C.mute; x.font = "700 56px " + SANS; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("+", sx + s1 + opw / 2, cy);
+      x.fillText("=", sx + s1 * 2 + opw * 1.5, cy);
+      box(sx + s1 * 2 + opw * 2, s2, data.ch, C.seal);
+      x.textBaseline = "alphabetic"; y += s2 + gap(52);
+      /* pinyin e significato */
+      x.fillStyle = C.ink; x.font = "700 70px " + SANS; x.fillText(data.py, W / 2, y + 56); y += 84;
+      x.fillStyle = C.mute; x.font = "600 38px " + SANS;
+      wrap(x, data.meaning || "", W - 2 * M, cut).slice(0, 2).forEach(function (l) { x.fillText(l, W / 2, y + 40); y += 52; }); y += gap(26);
+      /* la lettura simpatica, sempre dichiarata come tale */
+      var bottom = H - gap(318), boxH = Math.max(220, bottom - y - gap(10)), joke = data.joke || T("lr.card.noJoke"), cjk = /[㐀-鿿]/.test(joke);
+      x.fillStyle = C.box; roundRect(x, M - 20, y, W - 2 * M + 40, boxH, 36); x.fill();
+      x.fillStyle = C.accent; x.font = "700 28px " + SANS; x.fillText(T("lr.card.foot"), W / 2, y + 50); fit(x, T("lr.card.foot"), W - 2 * M, cut);
+      var size = 54, lines;
+      for (; size >= 34; size -= 4) { x.font = "600 " + size + "px " + (cjk ? SANS : IT_SERIF); var c2 = []; lines = wrap(x, joke, W - 2 * M - 30, c2); if (lines.length <= 4 && !c2.length && lines.length * size * 1.3 + 90 < boxH) break; }
+      x.font = "600 " + size + "px " + (cjk ? SANS : IT_SERIF); lines = wrap(x, joke, W - 2 * M - 30, cut).slice(0, 4);
+      var ty = y + 58 + Math.max(0, (boxH - 58 - lines.length * size * 1.3) / 2);
+      x.fillStyle = C.ink; lines.forEach(function (l) { ty += size * 1.3; x.fillText(l, W / 2, ty - size * 0.3); });
+      /* fondo: QR, data, nome facoltativo, sigillo di gratitudine */
+      var fy = H - gap(290), qs = Math.round(W * 0.21);
+      var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
+      var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
+      x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
+      if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
+      x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
+      if (qr) { x.font = "500 22px " + SANS; x.fillText(T("lr.card.scan"), tx, fy + 200); }
+      var sl = opt.seal && CP.seals && CP.seals.forShare && CP.seals.forShare();
+      if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
+      cv.__qr = !!qr;
+      return cv;
+    });
+  }
   var TEMPLATES = {
+    "zh-rad": { course: "zh", draw: function (cv, d, o) { return drawRad(cv, d, o); } },
     "zh-day": { course: "zh", draw: function (cv) { return drawZh(cv); } },
     "it-day": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-day", d, o); } },
     "it-milestone": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-milestone", d, o); } },
@@ -175,18 +228,23 @@
   function paintSheet() {
     var cv = document.querySelector(".card-cv"); if (!cv || !cur) return;
     var p = prefs(), d = Object.assign({}, cur.data, { name: p.sign && p.name ? p.name : "" });
-    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
+    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", cur.tpl === "zh-rad" ? T("lr.card.alt", { c: d.ch, p: d.py, a: d.a, b: d.b }) : T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
+  }
+  /* le etichette del foglio: quelle del corso di italiano (itcard.*) o, per la carta del Laboratorio dei radicali, lr.card.* */
+  function labels(tpl) {
+    var P = tpl === "zh-rad" ? "lr.card." : "itcard.";
+    return { title: P + "title", priv: P + "privacy", format: P + "format", theme: P + "theme", th: P + "th.", sign: P + "sign", ph: P + "namePh", share: P + "share" };
   }
   function itSheet(tpl, data) {
-    cur = { tpl: tpl, data: data }; var p = prefs();
+    cur = { tpl: tpl, data: data }; var p = prefs(), L = labels(tpl);
     var chip = function (attr, val, label, on) { return '<button type="button" data-' + attr + '="' + val + '" aria-pressed="' + (on ? "true" : "false") + '"' + (on ? ' class="on"' : "") + ">" + label + "</button>"; };
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("itcard.title")) + '</b><div class="small muted">' + esc(T("itcard.privacy")) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
-      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T("itcard.title")) + '"></canvas>' +
-      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T("itcard.format")) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
-      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T("itcard.theme")) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T("itcard.th." + t), t === p.theme); }).join("") + "</div>" +
-      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T("itcard.sign")) + "</label>" +
-      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T("itcard.namePh")) + '" aria-label="' + CP.attr(T("itcard.sign")) + '"' + (p.sign ? "" : " hidden") + ">" +
-      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T("itcard.share")) + "</button></div>");
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T(L.title)) + '</b><div class="small muted">' + esc(T(L.priv)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T(L.title)) + '"></canvas>' +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(L.format)) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(L.theme)) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T(L.th + t), t === p.theme); }).join("") + "</div>" +
+      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T(L.sign)) + "</label>" +
+      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T(L.ph)) + '" aria-label="' + CP.attr(T(L.sign)) + '"' + (p.sign ? "" : " hidden") + ">" +
+      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T(L.share)) + "</button></div>");
     paintSheet();
   }
   function zhSheet() {
@@ -197,7 +255,7 @@
   }
   /* CP.shareCard(): la carta del giorno del corso aperto; CP.shareCard.open(modello, dati) per le altre */
   CP.shareCard = function () { if (CP.course && CP.course() === "it" && CP.itCardData) itSheet("it-day", CP.itCardData()); else zhSheet(); };
-  CP.shareCard.open = function (tpl, data) { if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
+  CP.shareCard.open = function (tpl, data) { if (tpl === "zh-rad") itSheet(tpl, data); else if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
   CP.shareCard.templates = TEMPLATES;
   CP.shareCard.render = render;
   CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL; CP.shareCard.sharePNG = share;

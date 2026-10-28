@@ -23,6 +23,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 |---|---|---|
 | Impara | Lezioni (30) | R |
 | Impara | Modelli | A |
+| Impara | Radicali (il Laboratorio dei radicali: un gioco con i componenti dei caratteri) | A |
 | Costruisci | Esercizi (puzzle) | R |
 | Costruisci | Laboratorio | A |
 | Costruisci | Slot | A |
@@ -123,7 +124,7 @@ gli strumenti compaiono per gradi (le soglie sono in `src/ui/unlock.js`):
 |---|---|
 | subito | Lezioni, Esercizi, Dialoghi |
 | dopo 3 lezioni superate | Modelli, Ordine del Pensiero |
-| dopo 6 lezioni superate o 1000 XP | Laboratorio, Slot, Lettore |
+| dopo 6 lezioni superate o 1000 XP | Laboratorio, Slot, Lettore, Radicali |
 
 Prima di quel momento lo strumento si vede nella sua carta con «si apre dopo…». Non sparisce mai, e
 ⚙️ → Studio → «Livello e schede» → «Mostra tutto» lo apre subito.
