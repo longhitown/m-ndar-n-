@@ -16976,9 +16976,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
   CP.ttsChunks = ttsChunks;
   function fallbackAudioTTS(text, rate, onEnd) {
     stopAudio();
-    var parts = ttsChunks(text), i = 0, done = false, chain = {};
+    var parts = ttsChunks(text), i = 0, done = false, chain = {}, played = false;
     curChain = chain;
-    var fin = function () { if (done) return; done = true; if (curChain === chain) curChain = null; onEnd(); };
+    var fin = function () { if (done) return; done = true; if (curChain === chain) curChain = null; onEnd(played); };
     (function next() {
       if (done || curChain !== chain) return;
       if (i >= parts.length) { fin(); return; }
@@ -16986,13 +16986,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       try { a = new Audio("https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&ttsspeed=" + (rate < 1 ? "0.24" : "1") + "&q=" + encodeURIComponent(parts[i++])); }
       catch (e) { fin(); return; }
       curAudio = a;
-      var step = function (ok) { a.onended = a.onerror = null; if (curAudio === a) curAudio = null; if (ok) next(); else fin(); };
+      var step = function (ok) { a.onended = a.onerror = null; if (curAudio === a) curAudio = null; if (ok) { played = true; next(); } else fin(); };
       a.onended = function () { step(true); }; a.onerror = function () { step(false); };
       try { var p = a.play(); if (p && p.catch) p.catch(function () { step(false); }); } catch (e) { step(false); }
     })();
   }
   CP.fallbackAudioTTS = fallbackAudioTTS;
-  var muteHinted = false;
+  var muteHinted = false, cloudDownUntil = 0;   /* il servizio online non ufficiale può rifiutare le richieste: per qualche minuto si usa la voce del telefono */
   CP.canSay = function () { return true; };
   CP.stopSpeak = function () {
     token++; stopAudio(); clearLive();
@@ -17045,10 +17045,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
       if (finished || token !== mine) return;
       clearTimeout(startTimer);
       try { if (synth) synth.cancel(); } catch (e) {}
-      if (!pref.alt) { if (!muteHinted && CP.toast) { muteHinted = true; CP.toast(t("vo.mute")); } finish(); return; }
-      fallbackAudioTTS(text, rate, finish);
+      if (!pref.alt || o.noCloud) { if (!muteHinted && CP.toast) { muteHinted = true; CP.toast(t("vo.mute")); } finish(); return; }
+      fallbackAudioTTS(text, rate, function (ok) {
+        if (ok || !synth || finished || token !== mine) { finish(); return; }
+        /* la voce online non ha detto nulla (limite di richieste, rete assente): la si lascia stare per 5 minuti e si legge con la voce del telefono */
+        cloudDownUntil = Date.now() + 300000;
+        finished = true; clearTimeout(failTimer); clearTimeout(startTimer); if (CP.bus) CP.bus.duck(false); curStop = null;
+        var o2 = {}; Object.keys(o).forEach(function (k) { o2[k] = o[k]; }); CP.speak(text, o2);
+      });
     };
-    if (zh && (!synth || pref.alt)) { cloud(); return; }
+    if (zh && (!synth || (pref.alt && Date.now() >= cloudDownUntil))) { cloud(); return; }
     if (!synth) { finish(); return; }
     try {
       var busy = synth.speaking || synth.pending, started = false;
@@ -17167,9 +17173,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = MDSegment;
     return actx;
   }
   /* i browser sbloccano l'audio solo dopo un gesto: il primo tocco in assoluto lo sveglia */
-  document.addEventListener("pointerdown", function () {
-    var c = getCtx(); if (c && c.state === "suspended" && c.resume) { try { c.resume(); } catch (e) {} }
-  }, { once: true, passive: true, capture: true });
+  /* … e ogni tocco lo risveglia di nuovo se il sistema lo ha sospeso (telefono bloccato, un'altra app che usa l'audio) */
+  var wakeCtx = function () { var c = actx; if (c && c.state !== "running" && c.state !== "closed" && c.resume) { try { c.resume().catch(function () {}); } catch (e) {} } };
+  document.addEventListener("pointerdown", function () { getCtx(); wakeCtx(); }, { passive: true, capture: true });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) wakeCtx(); });
   CP.getCtx = getCtx;
   CP.audioState = function () { return actx ? actx.state : "none"; };
   CP.audioUnlock = function () {
