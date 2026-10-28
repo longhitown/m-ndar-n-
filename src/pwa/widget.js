@@ -29,7 +29,8 @@
     return { v: 1, t: now, t0: t0, over: over, hist: hist, nw: c.nw || 0,
       day: d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(),
       streak: CP.game ? CP.game.streak() : 0, today: CP.game && CP.game.activeToday ? CP.game.activeToday() : false,
-      goal: CP.game ? CP.game.goal() : 10, lang: LANG, words: words() };
+      goal: CP.game ? CP.game.goal() : 10, wt: CP.game && CP.game.wordsToday ? CP.game.wordsToday() : 0,
+      rank: CP.game && CP.game.rank ? CP.game.rank().ch : "", lang: LANG, words: words() };
   }
   function push() { clearTimeout(timer); timer = 0; try { A.setWidgetState(JSON.stringify(state())); } catch (e) {} }
   function soon() { if (!timer) timer = setTimeout(push, 1500); }

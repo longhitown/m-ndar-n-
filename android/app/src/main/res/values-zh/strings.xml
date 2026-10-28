@@ -70,4 +70,39 @@
     <string name="p_n_end_title">休息结束</string>
     <string name="p_n_end_text">再来一轮？</string>
     <string name="p_n_channel">学习计时器</string>
+    <!-- 「翡翠」样式：一天四个时段（早晨、下午、傍晚、夜晚）的提示语 -->
+    <string name="w_sample_msg">早上好！准备好学第一个词了吗？</string>
+    <string name="w_g_start">开始新的一天</string>
+    <string name="w_g_night_done">今天做得很棒，让大脑休息吧。</string>
+    <string name="w_g_night_none">明天见！</string>
+    <plurals name="w_g_pause_n">
+        <item quantity="other">学习小憩？只需 %d 分钟。</item>
+    </plurals>
+    <plurals name="w_g_reviews_min">
+        <item quantity="other">%1$d 个复习 · 约 %2$d 分钟</item>
+    </plurals>
+    <plurals name="w_g_missing">
+        <item quantity="other">还差 %d 个词就完成目标了</item>
+    </plurals>
+    <string-array name="w_g_morning">
+        <item>早上好！准备好学第一个词了吗？</item>
+        <item>要不要复习一下？</item>
+        <item>小小一步，开个好头</item>
+        <item>让这一天从一个词开始</item>
+    </string-array>
+    <string-array name="w_g_evening">
+        <item>圆满结束这一天</item>
+        <item>再学几分钟，今天就完整了</item>
+        <item>再学一张，然后好好休息</item>
+    </string-array>
+    <string-array name="w_g_proverbs">
+        <item>Chi va piano va sano e va lontano|慢行稳走，才能走得远</item>
+        <item>Roma non è stata costruita in un giorno|罗马不是一天建成的</item>
+        <item>Il mattino ha l\'oro in bocca|一日之计在于晨</item>
+        <item>Sbagliando s\'impara|从错误中学习</item>
+        <item>Chi ben comincia è a metà dell\'opera|好的开始是成功的一半</item>
+        <item>La pratica val più della grammatica|实践胜过语法</item>
+        <item>Dopo la pioggia, il sereno|雨过天晴</item>
+        <item>Impara l\'arte e mettila da parte|学到的本领，总会派上用场</item>
+    </string-array>
 </resources>

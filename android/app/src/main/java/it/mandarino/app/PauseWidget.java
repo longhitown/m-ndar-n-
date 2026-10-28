@@ -110,11 +110,14 @@ public class PauseWidget extends AppWidgetProvider {
         String ph = p.getString("phase", IDLE);
         long end = p.getLong("end", 0);
         RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.widget_pause);
+        int band = WidgetState.band();
+        v.setInt(R.id.w_root, "setBackgroundResource", WidgetState.background(band));
+        v.setInt(R.id.t_b1, "setBackgroundResource", band == WidgetState.EVENING ? R.drawable.w_btn_giada_deep : R.drawable.w_btn_giada);
         v.setOnClickPendingIntent(R.id.w_root, TodayWidget.open(c, "study"));
         boolean running = !IDLE.equals(ph) && end > System.currentTimeMillis();
         if (running) {
             boolean focus = FOCUS.equals(ph);
-            v.setImageViewResource(R.id.t_icon, focus ? R.drawable.ic_w_flame : R.drawable.ic_w_cup);
+            v.setImageViewResource(R.id.t_icon, focus ? R.drawable.ic_g_flame : R.drawable.ic_g_cup);
             v.setTextViewText(R.id.t_title, r.getString(focus ? R.string.p_title_focus : R.string.p_title_break));
             v.setTextViewText(R.id.t_sub, r.getString(focus ? R.string.p_sub_focus : R.string.p_sub_break));
             v.setViewVisibility(R.id.t_chrono, View.VISIBLE);
@@ -128,7 +131,7 @@ public class PauseWidget extends AppWidgetProvider {
         v.setViewVisibility(R.id.t_chrono, View.GONE);
         int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (h >= 22 || h < 6) {   /* riposo: niente da avviare */
-            v.setImageViewResource(R.id.t_icon, R.drawable.ic_w_moon);
+            v.setImageViewResource(R.id.t_icon, R.drawable.ic_g_moon);
             v.setTextViewText(R.id.t_title, r.getString(R.string.p_title_rest));
             v.setTextViewText(R.id.t_sub, r.getString(R.string.p_sub_rest));
             v.setViewVisibility(R.id.t_b1, View.GONE);
@@ -136,7 +139,7 @@ public class PauseWidget extends AppWidgetProvider {
             return v;
         }
         boolean coffee = h >= 14 && h < 18;   /* il primo pomeriggio: la pausa caffè */
-        v.setImageViewResource(R.id.t_icon, coffee ? R.drawable.ic_w_cup : R.drawable.ic_w_flame);
+        v.setImageViewResource(R.id.t_icon, coffee ? R.drawable.ic_g_cup : R.drawable.ic_g_flame);
         v.setTextViewText(R.id.t_title, r.getString(coffee ? R.string.p_title_coffee : R.string.p_title_idle));
         v.setTextViewText(R.id.t_sub, r.getString(coffee ? R.string.p_sub_coffee : R.string.p_sub_idle));
         v.setViewVisibility(R.id.t_b1, View.VISIBLE);
