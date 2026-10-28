@@ -19,7 +19,16 @@ LESSONS.push({
     ["我会说中文。", "So parlare cinese."],
     ["我不会开车。", "Non so guidare."],
     ["我可以坐这里吗？", "Posso sedermi qui?"],
-    ["明天会下雨。", "Domani pioverà."]
+    ["明天会下雨。", "Domani pioverà."],
+    ["我不想喝咖啡。", "Non voglio bere il caffè."],
+    ["你会开车吗？", "Sai guidare?"]
+  ],
+  "dlg": [
+    ["A", "我可以坐这里吗？", "Posso sedermi qui?"],
+    ["B", "可以，请坐。", "Certo, siediti pure."],
+    ["A", "谢谢。你想喝什么？", "Grazie. Che cosa vorresti bere?"],
+    ["B", "我想喝咖啡。你要什么？", "Vorrei un caffè. Tu che cosa prendi?"],
+    ["A", "我要一杯茶。", "Io prendo un tè."]
   ],
   "traps": [
     ["我喝想茶。", "我想喝茶。", "Il verbo «volere / potere» va prima dell'altro verbo."]

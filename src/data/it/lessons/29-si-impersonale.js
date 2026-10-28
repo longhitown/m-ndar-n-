@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Qui non si fuma.", "这儿不能抽烟。"],
     ["Si può pagare con la carta?", "可以刷卡吗？"],
     ["In Italia si cena tardi.", "在意大利晚饭吃得很晚。"],
-    ["Come si arriva alla stazione?", "怎么去火车站？"]
+    ["Come si arriva alla stazione?", "怎么去火车站？"],
+    ["Qui si mangia bene.", "这里吃得很好。"],
+    ["Come si scrive?", "怎么写？"]
+  ],
+  "dlg": [
+    ["A", "Come si dice \"谢谢\" in italiano?", "\"谢谢\"用意大利语怎么说？"],
+    ["B", "Si dice \"grazie\".", "说\"grazie\"。"],
+    ["A", "Si può pagare con la carta?", "可以刷卡吗？"],
+    ["B", "Sì, si può.", "可以。"]
   ],
   "traps": [
     ["Come dice in italiano?", "Come si dice in italiano?", "\"怎么说\"要加 si。"],

@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Vuoi venire con noi?", "你想跟我们一起来吗？"],
     ["Devo lavorare domani.", "我明天得上班。"],
     ["So parlare un po' di italiano.", "我会说一点意大利语。"],
-    ["Non posso, mi dispiace.", "我不能，很抱歉。"]
+    ["Non posso, mi dispiace.", "我不能，很抱歉。"],
+    ["Devi studiare.", "你得学习。"],
+    ["Posso aiutarti?", "我可以帮你吗？"]
+  ],
+  "dlg": [
+    ["A", "Vuoi venire con noi?", "你想跟我们一起来吗？"],
+    ["B", "Mi dispiace, non posso. Devo lavorare.", "对不起，我不能去。我得工作。"],
+    ["A", "Peccato! Domani puoi?", "真可惜！那明天你可以吗？"],
+    ["B", "Sì, domani posso.", "可以，明天可以。"]
   ],
   "traps": [
     ["Posso nuotare. (capacità)", "So nuotare.", "\"会游泳\"是学会的能力，用 sapere。"],

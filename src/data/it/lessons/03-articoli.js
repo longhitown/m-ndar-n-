@@ -19,7 +19,9 @@ ITLESSONS.push({
     ["l'amico, gli amici", "这个朋友，这些朋友"],
     ["la casa, le case", "这栋房子，这些房子"],
     ["l'acqua", "水"],
-    ["un amico, un'amica", "一个（男性）朋友，一个（女性）朋友"]
+    ["un amico, un'amica", "一个（男性）朋友，一个（女性）朋友"],
+    ["lo zaino, gli zaini", "这个背包，这些背包"],
+    ["la chiave, le chiavi", "这把钥匙，这些钥匙"]
   ],
   "dlg": [
     ["A", "Che cos'è questo?", "这是什么？"],

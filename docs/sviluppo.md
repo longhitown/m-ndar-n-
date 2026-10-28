@@ -338,6 +338,9 @@ ogni frase di esempio, errore tipico, risposta dei quiz e battuta dei mini-dialo
 vocabolario; che la frase compaia identica in Tatoeba (e mette accanto la traduzione di Tatoeba, per confrontarla con la nostra); che un
 errore tipico non sia invece una frase che Tatoeba usa davvero; e un elenco corto di costruzioni che nessun manuale accetta. Non corregge
 niente e non sostituisce un madrelingua: dà qualcosa da guardare. Nessuno dei due archivi entra nel repository (licenze CC BY-SA e CC BY).
+Le lezioni oltre la trentesima stanno in `src/data/lessons-x/` (cinese) e `src/data/it/lessons-x/` (italiano): quelle del cinese sono un gruppo (`LEZIONIX` in
+`tools/build.mjs`) che si carica la prima volta che si apre l'elenco o si cerca (`CP.lessonsMore()`), quelle di italiano seguono il corso di italiano; così
+l'avvio non cresce con le lezioni. L'ortografia dell'italiano si controlla con Hunspell (`tools/hunspell-check.py`) e Morph-it!.
 Una lezione può avere un **mini-dialogo** (`"dlg": [["A", "cinese", "italiano"], …]`, da 3 a 8 battute; nel corso di italiano
 `["A", "italiano", "cinese"]`) e ogni cinque lezioni c'è un **ripasso** (`rip-1`, `rip-2`…), fatto a sorte con le domande dei quiz delle cinque
 lezioni: non ha contenuti suoi da verificare.

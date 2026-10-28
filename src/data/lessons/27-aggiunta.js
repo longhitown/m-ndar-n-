@@ -17,7 +17,15 @@ LESSONS.push({
     ["我们一边吃饭一边聊天。", "Mangiamo e intanto chiacchieriamo."],
     ["这个苹果又大又甜。", "Questa mela è grande e dolce."],
     ["她一边听音乐一边做作业。", "Fa i compiti ascoltando la musica."],
-    ["这家饭馆又便宜又好吃。", "Questo ristorante è economico e buono."]
+    ["这家饭馆又便宜又好吃。", "Questo ristorante è economico e buono."],
+    ["这个苹果又大又好吃。", "Questa mela è grande e buona."],
+    ["他一边吃一边说。", "Parla mentre mangia."]
+  ],
+  "dlg": [
+    ["A", "这家饭馆又便宜又好吃。", "Questo ristorante è economico e buono."],
+    ["B", "对，我们一边吃饭一边聊天吧。", "Già, mangiamo e intanto chiacchieriamo."],
+    ["A", "我朋友不但会说中文，而且会写汉字。", "Il mio amico non solo parla cinese, ma sa anche scrivere i caratteri."],
+    ["B", "太好了！", "Che bravo!"]
   ],
   "traps": [
     ["这个苹果很大和很甜。", "这个苹果又大又甜。", "和 non collega gli aggettivi: si usa 又…又."],

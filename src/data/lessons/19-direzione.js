@@ -19,7 +19,15 @@ LESSONS.push({
     ["他回家去了。", "È tornato a casa."],
     ["你什么时候回来？", "Quando torni?"],
     ["你上来吧！", "Sali (qui da me)!"],
-    ["老师进教室来了。", "L'insegnante è entrato in aula."]
+    ["老师进教室来了。", "L'insegnante è entrato in aula."],
+    ["他回来了。", "È tornato."],
+    ["请出去。", "Esci, per favore."]
+  ],
+  "dlg": [
+    ["A", "请进来！", "Entra, prego!"],
+    ["B", "谢谢。老师在吗？", "Grazie. C'è l'insegnante?"],
+    ["A", "老师回家去了。你明天来吧。", "L'insegnante è tornato a casa. Vieni domani."],
+    ["B", "好，我明天回来。", "Va bene, domani torno."]
   ],
   "traps": [
     ["他回去家了。", "他回家去了。", "Il luogo va tra il verbo e 去."],

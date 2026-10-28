@@ -61,7 +61,7 @@ if (gv.bad.length) fail("frasi verificate che le regole non traducono più così
 /* 2. ogni file è elencato */
 const { html, scripts, styles } = assets(SRC);
 const listed = new Set(scripts.map((s) => s.src));
-for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "data/examples", "data/it/lessons", "audio/tracks"]) {
+for (const dir of ["data/vocab", "data/dialogs", "data/lessons", "data/lessons-x", "data/examples", "data/it/lessons", "data/it/lessons-x", "audio/tracks"]) {
   for (const f of fs.readdirSync(path.join(SRC, dir)).filter((x) => x.endsWith(".js"))) {
     if (!listed.has(dir + "/" + f)) fail(`src/${dir}/${f} non è elencato in src/index.html (aggiungi <script src="${dir}/${f}"></script>)`);
   }
@@ -206,7 +206,7 @@ for (const m of LAZYMOD) {
    unico questi file restano testo (type="text/plain") e si eseguono al loro posto, in ordine, solo se cp-course è "it":
    chi studia cinese non li compila all'avvio. Il comportamento è identico a quello degli script normali. */
 const COURSE_IT = ["i18n/it-course.js", "it/today.js", "it/course.js", "it/esercizi.js", "it/lettura.js"]
-  .concat(scripts.filter((x) => /^data\/it\/lessons\//.test(x.src)).map((x) => x.src));   /* anche le lezioni di italiano (dati): solo per chi studia italiano */
+  .concat(scripts.filter((x) => /^data\/it\/lessons(-x)?\//.test(x.src)).map((x) => x.src));   /* anche le lezioni di italiano (dati): solo per chi studia italiano */
 for (const f of COURSE_IT) {
   const sc = scripts.find((x) => x.src === f); if (!sc) fail("COURSE_IT: manca " + f + " in src/index.html");
   const code = fs.readFileSync(path.join(SRC, f), "utf8").trimEnd().replace(/<\/script/gi, "<\\/script"), id = "course-it-" + f.replace(/[^a-z0-9]+/gi, "-");
@@ -221,6 +221,8 @@ const GROUPS = [{ name: "ESERCIZI", files: ["i18n/exercises.js", "core/typing.js
   { name: "MIEIBRANI", files: ["audio/user-tracks.js"] },
   { name: "LABRAD", files: ["i18n/lab-rad.js", "data/lab-recipes.js", "data/lab-readings.js", "phrases/radicali.js"] },
   { name: "FOGLIO", files: ["vendor/jspdf.umd.min.js", "i18n/worksheet.js", "ui/worksheet.js"] }];
+/* le lezioni aggiuntive del corso di cinese (data/lessons-x) si caricano la prima volta che si apre l'elenco delle lezioni o si cerca: CP.lessonsMore() in phrases/lessons.js */
+GROUPS.push({ name: "LEZIONIX", files: scripts.filter((x) => /^data\/lessons-x\//.test(x.src)).map((x) => x.src) });
 for (const g of GROUPS) {
   const group = g.files.map((f) => scripts.find((x) => x.src === f)); if (group.some((x) => !x)) fail("GROUPS " + g.name + ": manca uno di " + g.files.join(", ") + " in src/index.html");
   const ids = [];
