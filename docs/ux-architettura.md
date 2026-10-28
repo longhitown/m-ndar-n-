@@ -21,7 +21,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 
 | Gruppo | Strumento | Classe |
 |---|---|---|
-| Impara | Lezioni (30) | R |
+| Impara | Lezioni (55) | R |
 | Impara | Modelli | A |
 | Impara | Radicali (il Laboratorio dei radicali: un gioco con i componenti dei caratteri) | A |
 | Costruisci | Esercizi (puzzle) | R |
@@ -35,7 +35,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 
 | Scheda | Contenuto | Classe |
 |---|---|---|
-| 课程 | 30 lezioni con quiz | E |
+| 课程 | 51 lezioni con quiz | E |
 | 复习 | ripasso FSRS | E |
 | 单词 | 4780 parole | R |
 | 变位 | coniugazioni | R, dopo la lezione 6 sul presente |
