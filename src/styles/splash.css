@@ -1,6 +1,6 @@
 /* ===== schermata d'avvio: copre la pagina mentre il telefono legge l'app (su un telefono lento anche 2-3 secondi).
    Ogni volta che si apre l'app (non solo la prima): il frutto compare con un piccolo rimbalzo, le lettere del nome salgono una dopo l'altra,
-   i quattro toni si disegnano sotto, poi tutto sfuma e l'app entra. Dura almeno 1,7 secondi (main.js); se il telefono è lento resta finché
+   i quattro toni si disegnano sotto e volano ognuno sulla sua lettera (à, í, ō) e sulle due foglie, poi resta il logo un istante e l'app entra. Dura almeno 3,2 secondi (main.js); se il telefono è lento resta finché
    l'app non è pronta e, dopo un po', compaiono le righe «scheletro» e un suggerimento. La toglie main.js. ===== */
 #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
   background: radial-gradient(120% 90% at 50% 38%, var(--bg) 55%, var(--chip, var(--bg)) 100%); color: var(--ink); transition: opacity .7s ease, visibility .7s, transform .7s cubic-bezier(.4,0,.2,1), filter .7s; padding: 24px; }
@@ -11,7 +11,7 @@
 #splash .sp-logo:active { animation: sp-squash .35s ease; }
 #splash .sp-word { font-family: var(--f-display); font-size: 40px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; display: flex; }
 #splash .sp-word > span { display: inline-block; opacity: 0; transform: translateY(.5em); animation: sp-rise .55s cubic-bezier(.2,.9,.3,1.2) calc(.35s + var(--i) * .06s) both; }
-#splash .sp-tones { width: 150px; height: 34px; margin-top: -6px; overflow: visible; }
+#splash .sp-tones { width: 150px; height: 34px; margin-top: -6px; overflow: visible; position: relative; z-index: 2; }
 #splash .sp-tones path { fill: none; stroke: currentColor; stroke-width: 4.5; stroke-linecap: round; stroke-dasharray: 70; stroke-dashoffset: 70; animation: sp-draw .6s ease-out both; }
 #splash .sp-tones .t1 { stroke: var(--t1); animation-delay: .9s; } #splash .sp-tones .t2 { stroke: var(--t2); animation-delay: 1.05s; }
 #splash .sp-tones .t3 { stroke: var(--t3); animation-delay: 1.2s; } #splash .sp-tones .t4 { stroke: var(--t4); animation-delay: 1.35s; }
@@ -29,6 +29,9 @@
 /* l'app che entra quando il velo si alza (main.js aggiunge .app-reveal per un istante) */
 @keyframes app-in { from { opacity: 0; transform: translateY(10px) scale(.992); } to { opacity: 1; transform: none; } }
 body.app-reveal > main, body.app-reveal > nav.dock { animation: app-in .7s cubic-bezier(.2,.9,.3,1) both; }
+#splash .sp-word > span.pop { opacity: 1; transform: none; animation: sp-letterpop .5s cubic-bezier(.2,1.4,.4,1); }
+#splash .sp-logo.leaf-glow { filter: drop-shadow(0 0 10px #3AD8A3) brightness(1.06); transition: filter .5s; }
+@keyframes sp-letterpop { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
 @keyframes sp-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-3deg); } }
 @keyframes sp-squash { 0% { transform: scale(1, 1); } 40% { transform: scale(1.12, .86); } 100% { transform: scale(1, 1); } }
 @keyframes sp-sh { from { background-position: 200% 0; } to { background-position: -200% 0; } }
