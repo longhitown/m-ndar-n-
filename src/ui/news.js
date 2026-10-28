@@ -1,4 +1,4 @@
-/* ===== màndarínō · «Novità» (⚙️ → Informazioni e supporto): l'elenco dei cambiamenti da data/changelog.js, nella lingua
+/* ===== màndarínō · «Novità» (⚙️ → Informazioni): l'elenco dei cambiamenti da data/changelog.js, nella lingua
    dell'interfaccia. La versione più recente è aperta, le altre chiuse. Nessun avviso che compare da solo. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc;

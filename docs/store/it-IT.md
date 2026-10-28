@@ -29,7 +29,7 @@ Il codice è libero (MIT), i contenuti sono CC BY 4.0. Puoi proporre correzioni 
 **Note di versione** (ultima):
 
 • Benvenuto nuovo: scegli lo scopo e il ritmo, prova i toni, e un test di livello di pochi minuti ti fa partire dal punto giusto.
-• L'interfaccia si apre un po' alla volta: le schede Parole e Frasi arrivano quando servono. In ⚙️ → Avanzate puoi mostrare tutto subito.
+• L'interfaccia si apre un po' alla volta: le schede Parole e Frasi arrivano quando servono. In ⚙️ → Studio puoi mostrare tutto subito.
 • Sostieni il progetto: una voce in ⚙️ e i sigilli di gratitudine, solo estetici.
 • Licenze e crediti riordinati; i contenuti didattici sono sotto CC BY 4.0.
 

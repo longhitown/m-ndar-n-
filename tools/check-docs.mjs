@@ -76,7 +76,7 @@ const zh = (text.get("PRIVACY.md") || "").split(/^## 中文\s*$/m)[1] || "";
 if (text.has("PRIVACY.md") && !/^\|.*\|\s*$/m.test(zh)) err("PRIVACY.md", "la parte cinese deve contenere una tabella");
 need("CONTRIBUTORS.md", /<!-- elenco -->[\s\S]*<!-- \/elenco -->/, "il blocco tra <!-- elenco --> e <!-- /elenco -->");
 const THIRD = ["src/data/strokes.js", "src/data/anatomy.js", "src/data/levels.js", "src/data/freq.js",
-  "src/data/wiki/zh-it.txt", "src/data/it/lexicon.js", "src/vendor/jsqr.min.js",
+  "src/data/wiki/zh-it.txt", "src/data/it/lexicon.js", "src/vendor/jsqr.min.js", "src/vendor/jspdf.umd.min.js",
   /* librerie e dati del sito (docs/): se ci sono, devono avere la loro voce */
   "docs/assets/vendor/hanzi-writer.min.js", "docs/assets/vendor/confetti.browser.js", "docs/assets/dati/hanzi.json"];
 if (text.has("THIRD-PARTY-NOTICES.md"))
