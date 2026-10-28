@@ -438,5 +438,19 @@ function sandbox() {
   check("avvio: il gruppo ESERCIZI e i dati dei materiali non si compilano all'apertura (limite di 1500 KB invariato)", grp >= 4 && exData && /__mdLoad = window.__mdLoad/.test(html), "gruppo " + grp + ", dati " + exData);
 }
 
+/* widget «Pausa» (Android): non si può compilare qui, quindi si controlla almeno che le parti combacino */
+{
+  const RES = path.join(ROOT, "android/app/src/main/res"), MAIN = path.join(ROOT, "android/app/src/main");
+  const names = (f) => [...fs.readFileSync(path.join(RES, f), "utf8").matchAll(/<string name="(p_[a-z_]+)"/g)].map((m) => m[1]).sort();
+  const it = names("values/strings.xml"), zh = names("values-zh/strings.xml");
+  check("widget Pausa: ogni testo c'è in italiano e in cinese", it.length >= 15 && it.join() === zh.join(), it.filter((n) => !zh.includes(n)).concat(zh.filter((n) => !it.includes(n))).join(", "));
+  const java = fs.readFileSync(path.join(MAIN, "java/it/mandarino/app/PauseWidget.java"), "utf8"), layout = fs.readFileSync(path.join(RES, "layout/widget_pause.xml"), "utf8");
+  const ids = [...new Set([...java.matchAll(/R\.id\.([a-z_0-9]+)/g)].map((m) => m[1]))], strs = [...new Set([...java.matchAll(/R\.string\.([a-z_0-9]+)/g)].map((m) => m[1]))];
+  const lack = ids.filter((i) => !new RegExp('@\\+id/' + i + '"').test(layout)).concat(strs.filter((x) => !it.includes(x)));
+  check("widget Pausa: ogni id e ogni testo usato dal codice esiste nel disegno e nelle risorse", ids.length >= 7 && !lack.length, lack.join(", "));
+  const man = fs.readFileSync(path.join(MAIN, "AndroidManifest.xml"), "utf8");
+  check("widget Pausa: dichiarato nel manifesto, con la sua scheda e senza permessi in più", /\.PauseWidget/.test(man) && fs.existsSync(path.join(RES, "xml/widget_pause_info.xml")) && !/SCHEDULE_EXACT_ALARM|USE_EXACT_ALARM/.test(man));
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);

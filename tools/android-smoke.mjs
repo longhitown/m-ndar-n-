@@ -100,7 +100,7 @@ try {
   let wp = ""; try { wp = adb("shell", "run-as", PKG, "cat", "shared_prefs/mandarino.xml"); } catch (e) {}
   check("Stato del widget salvato dal ponte (scadenze in 168 ore, parola del giorno)", /&quot;hist&quot;|"hist"/.test(wp) && /words/.test(wp), wp.length + " byte");
   let wd = ""; try { wd = adb("shell", "dumpsys", "appwidget"); } catch (e) {}
-  check("Widget «Oggi» (4×2 e 2×1) disponibili", /it\.mandarino\.app\/\.TodayWidget\b|TodayWidget}/.test(wd) && /TodayWidgetSmall/.test(wd), "");
+  check("Widget «Oggi» (4×2 e 2×1) e «Pausa» (4×1) disponibili", /it\.mandarino\.app\/\.TodayWidget\b|TodayWidget}/.test(wd) && /TodayWidgetSmall/.test(wd) && /PauseWidget/.test(wd), "");
   await p.ev("() => MandarinoAndroid.setReminder(true, 20, 30)");
   await sleep(1000);
   let al = ""; try { al = adb("shell", "dumpsys", "alarm"); } catch (e) {}
