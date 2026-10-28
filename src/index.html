@@ -29,8 +29,29 @@
 <link rel="stylesheet" href="styles/lab-rad.css">
 </head>
 <body>
-<div id="splash" aria-hidden="true" lang="it"><svg class="sp-logo" viewBox="300 10 200 210"><use href="#mandarin-symbol"/></svg><div class="sp-word"><span style="--i:0">m</span><span class="t4" style="--i:1">à</span><span style="--i:2">n</span><span style="--i:3">d</span><span style="--i:4">a</span><span style="--i:5">r</span><span class="t2" style="--i:6">í</span><span style="--i:7">n</span><span class="t1" style="--i:8">ō</span></div><svg class="sp-tones" viewBox="0 0 160 36" aria-hidden="true"><path class="t1" d="M4 10 H36"/><path class="t2" d="M46 28 L76 8"/><path class="t3" d="M86 12 Q100 38 116 12"/><path class="t4" d="M126 6 L156 30"/></svg><div class="sp-sk"><i></i><i></i><i></i></div><p class="sp-tip" id="sp-tip"></p></div>
+<div id="splash" aria-hidden="true" lang="it"><svg class="sp-logo" viewBox="300 10 200 210"><use href="#mandarin-symbol"/></svg><div class="sp-word"><span style="--i:0">m</span><span class="t4" style="--i:1" data-f="à">a</span><span style="--i:2">n</span><span style="--i:3">d</span><span style="--i:4">a</span><span style="--i:5">r</span><span class="t2" style="--i:6" data-f="í">ı</span><span style="--i:7">n</span><span class="t1" style="--i:8" data-f="ō">o</span></div><svg class="sp-tones" viewBox="0 0 160 36" aria-hidden="true"><path class="t1" d="M4 10 H36"/><path class="t2" d="M46 28 L76 8"/><path class="t3" d="M86 12 Q100 38 116 12"/><path class="t4" d="M126 6 L156 30"/></svg><div class="sp-sk"><i></i><i></i><i></i></div><p class="sp-tip" id="sp-tip"></p></div>
 <script id="splash-boot">(function(){var T={it:[["妈","mā · 1° tono: alto e piatto, mamma"],["麻","má · 2° tono: sale, canapa"],["马","mǎ · 3° tono: scende e risale, cavallo"],["骂","mà · 4° tono: cade secco, sgridare"],["你好","nǐ hǎo · due terzi toni: il primo diventa 2°"]],zh:[["ciao","意大利语里最常用的问候"],["grazie","谢谢：重音在 gra 上"],["buongiorno","早上好：bu-on-giór-no"],["prego","不客气 / 请"]]},L="it";try{if(localStorage.getItem("cp-lang")==="zh"||localStorage.getItem("cp-course")==="it")L="zh"}catch(e){}var a=T[L],i=Math.floor(Math.random()*a.length),el=document.getElementById("sp-tip");function show(){var x=a[i++%a.length];el.innerHTML="<b>"+x[0]+"</b> "+x[1];el.classList.add("on")}window.__spT=setTimeout(function(){show();window.__spI=setInterval(function(){el.classList.remove("on");setTimeout(show,400)},2600)},1200);window.__spX=setTimeout(function(){var s=document.getElementById("splash");if(s)s.classList.add("gone")},15000)})();</script>
+<script id="splash-fly">(function(){var sp=document.getElementById("splash");if(!sp)return;
+var reduce=false;try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+function finalLetters(){[].forEach.call(sp.querySelectorAll(".sp-word [data-f]"),function(l){l.textContent=l.getAttribute("data-f")})}
+if(reduce){finalLetters();return}
+/* i toni dopo 1,6 s: ognuno vola dove serve e prende la forma che ha sulla lettera (o sulla foglia), poi si dissolve */
+window.__spFly=setTimeout(function(){try{
+var svg=sp.querySelector(".sp-tones"),logo=sp.querySelector(".sp-logo"),word=sp.querySelector(".sp-word");if(!svg||!logo||!word||!svg.animate)return finalLetters();
+var k=svg.getBoundingClientRect().width/160,L=logo.getBoundingClientRect(),W=word.children;
+var p1=svg.querySelector(".t1"),p2=svg.querySelector(".t2"),p3=svg.querySelector(".t3"),p4=svg.querySelector(".t4"),p3b=p3.cloneNode(true);p3.parentNode.appendChild(p3b);
+var plan=[[p4,W[1],0.5,0,0],[p2,W[6],0.5,0,0],[p1,W[8],0.5,0,0],
+ [p3,{cx:L.left+L.width*0.34,cy:L.top+L.height*0.12,w:L.width*0.30},0,20,1],[p3b,{cx:L.left+L.width*0.66,cy:L.top+L.height*0.10,w:L.width*0.30},0,-20,1]];
+plan.forEach(function(x,i){var p=x[0],r0=p.getBoundingClientRect(),t=x[1],c,w;
+ if(t.getBoundingClientRect){var r=t.getBoundingClientRect();c={cx:r.left+r.width/2,cy:r.top+r.height*0.17};w=r.width*0.62}else{c=t;w=t.w}
+ var dx=(c.cx-(r0.left+r0.width/2))/k,dy=(c.cy-(r0.top+r0.height/2))/k,sc=w/r0.width;
+ p.setAttribute("vector-effect","non-scaling-stroke");p.style.strokeWidth="3px";p.style.transformBox="fill-box";p.style.transformOrigin="center";
+ var a=p.animate([{transform:"translate(0,0) scale(1) rotate(0deg)",opacity:1},{transform:"translate("+dx+"px,"+dy+"px) scale("+sc+") rotate("+x[3]+"deg)",opacity:1,offset:.8},{transform:"translate("+dx+"px,"+dy+"px) scale("+sc+") rotate("+x[3]+"deg)",opacity:0}],{duration:1100,delay:i*110,easing:"cubic-bezier(.5,0,.2,1)",fill:"forwards"});
+ if(!x[4])setTimeout(function(){var l=t;if(l&&l.getAttribute&&l.getAttribute("data-f")){l.textContent=l.getAttribute("data-f");l.classList.add("pop")}},i*110+880);
+});
+setTimeout(function(){logo.classList.add("leaf-glow")},1000);setTimeout(function(){logo.classList.remove("leaf-glow")},1900);
+}catch(e){finalLetters()}},1700);
+window.__spFin=setTimeout(finalLetters,4200);})();</script>
 
 
 <main>
