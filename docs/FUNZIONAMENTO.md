@@ -388,7 +388,7 @@ Ogni lezione ha anche un mini-dialogo e, se non è tra le prime 30, sta nel grup
 | 42 | Prima, poi, dopo: 先, 然后, 以前, 以后 | Raccontare una sequenza e collocare un fatto «prima» o «dopo» un altro. | 6 | 5 |
 | 43 | Sta per succedere: 要…了 | Dire che qualcosa sta per succedere e che qualcosa è cambiato. | 6 | 5 |
 | 44 | Uguale e non così: 跟…一样, 没有 | Dire che due cose sono uguali, quasi uguali o che una non arriva all'altra. | 6 | 5 |
-| 45 | Un po' e per provare: 看看, 一点儿 | Usare i verbi raddoppiati per «provare un po'» e distinguere 一点, 有点 e 一下. | 6 | 5 |
+| 45 | Un po' e per provare: 看看, 一点 | Usare i verbi raddoppiati per «provare un po'» e distinguere 一点, 有点 e 一下. | 6 | 5 |
 | 46 | Scegliere: 去不去 e 还是 | Fare domande «x o non x?» e «A oppure B?». | 6 | 5 |
 | 47 | Non fare, non c'è bisogno: 别, 不要, 不用 | Dire «non farlo!», «non c'è bisogno» e rispondere ai ringraziamenti. | 6 | 5 |
 | 48 | Appena e già: 刚, 刚才, 已经 | Dire «sono appena arrivato», «poco fa», «ormai è già…» con la parola giusta. | 6 | 5 |
