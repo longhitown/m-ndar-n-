@@ -21,6 +21,14 @@ ITLESSONS.push({
     ["I ravioli sono buoni.", "饺子很好吃。"],
     ["Il tè è caldo.", "茶很热。"]
   ],
+  "dlg": [
+    ["A", "Com'è la zuppa?", "汤怎么样？"],
+    ["B", "La zuppa è calda e buona.", "汤很热，很好吃。"],
+    ["A", "E i ravioli?", "那饺子呢？"],
+    ["B", "I ravioli sono buoni.", "饺子很好吃。"],
+    ["A", "Il tè è caldo?", "茶是热的吗？"],
+    ["B", "Sì, il tè è caldo.", "是的，茶是热的。"]
+  ],
   "traps": [
     ["una casa nuovo", "una casa nuova", "casa 是阴性，形容词也用阴性 -a。"],
     ["due libri nuovo", "due libri nuovi", "复数名词配复数形容词。"]

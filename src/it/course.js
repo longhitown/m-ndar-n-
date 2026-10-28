@@ -185,7 +185,7 @@
   CP.itApi = {
     lessons: function () { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); },
     progress: lprog, PASS: PASS, current: currentLesson, queue: function () { return queue(); }, lexSize: function () { return LEX.length; },
-    open: function (id) { ls.cur = ITLESSONS.filter(function (l) { return l.id === id; })[0]; if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
+    open: function (id) { ls.cur = itById(id); if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(id, { seen: Date.now() }); show("lessons"); },
     show: show, rerender: function () { render(); },
     /* gli esercizi, la lettura e la carta «今天» usano gli stessi dati, senza copiarli */
     grade: function (v, g, meta) { var e = typeof v === "string" ? BYID[v] : v; if (e) gradeOf(e, g + 1, !!(meta && meta.retry)); },
@@ -201,6 +201,21 @@
 
   /* ---------------- 课程: lezioni ---------------- */
   var ls = { view: "list", cur: null, quiz: null };
+  /* un ripasso ogni cinque lezioni: due domande a sorte da ciascuna delle cinque, prese dai loro esercizi (nessun contenuto nuovo) */
+  var REV = 5;
+  function itSorted() { return ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); }
+  function itRevDefs() { var out = [], tot = ITLESSONS.length; for (var k = 1; k * REV <= tot; k++) out.push({ id: "rip-" + k, from: (k - 1) * REV + 1, to: k * REV }); return out; }
+  function itById(id) {
+    var r = itRevDefs().filter(function (d) { return d.id === id; })[0];
+    if (!r) return ITLESSONS.filter(function (l) { return l.id === id; })[0] || null;
+    var q = []; itSorted().slice(r.from - 1, r.to).forEach(function (l) { q = q.concat(shuffle((l.quiz || []).slice()).slice(0, 2)); });
+    return { id: r.id, review: true, n: r.to + 0.5, title: tt("itd.revTitle", { a: r.from, b: r.to }), body: [tt("itd.revBody")], pattern: [], ex: [], traps: [], quiz: shuffle(q) };
+  }
+  function reviewHTML(l) {
+    return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + '</button></div><article class="panel ls-lesson"><span class="tag muted small">' + esc(tt("itd.rev")) + "</span><h3>" + esc(l.title) + "</h3>" +
+      l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
+      '<div class="acts"><button type="button" class="btn-main" data-itl-quiz style="margin:0">✏️ ' + esc(tt("itd.revGo", { n: l.quiz.length })) + "</button></div></article>";
+  }
   function lprog() { try { var o = JSON.parse(lsGet(LKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } }
   function lmark(id, p) { var o = lprog(), x = o[id] || {}; Object.keys(p).forEach(function (k) { x[k] = p[k]; }); o[id] = x; lsSet(LKEY, JSON.stringify(o)); }
   function rich(t) { return esc(t).replace(/\*\*(.+?)\*\*/g, '<b lang="it">$1</b>'); }
@@ -211,11 +226,17 @@
     /* in cima la carta «今天» (it/today.js), sotto le lezioni come percorso: nodi collegati, la lezione corrente
        in evidenza, quelle superate con il sigillo «通过» */
     var P = lprog(), L = ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }), curId = currentLesson(), done = 0;
+    var revAfter = {}; itRevDefs().forEach(function (d) { revAfter[d.to] = d; });
     var nodes = L.map(function (l) {
       var p = P[l.id] || {}, ok = !!p.done || (p.best || 0) >= PASS, now = l.id === curId; if (ok) done++;
       return '<li class="itp-node' + (ok ? " done" : "") + (now ? " now" : "") + '"><button type="button" data-itl-open="' + CP.attr(l.id) + '"' + (now ? ' aria-current="step"' : "") + ">" +
         '<span class="itp-dot" aria-hidden="true">' + (ok ? '<span class="itp-seal">' + esc(tt("itd.passed")) + "</span>" : l.n) + "</span>" +
-        '<span class="itp-t"><small>' + esc(tt("itd.lessonN", { n: l.n })) + "</small><b>" + esc(l.title) + "</b>" + (p.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: p.best })) + "</small>" : "") + "</span></button></li>";
+        '<span class="itp-t"><small>' + esc(tt("itd.lessonN", { n: l.n })) + "</small><b>" + esc(l.title) + "</b>" + (p.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: p.best })) + "</small>" : "") + "</span></button></li>" + (function () {
+        var rv = revAfter[l.n]; if (!rv) return "";
+        var rp = P[rv.id] || {}, rok = !!rp.done || (rp.best || 0) >= PASS;
+        return '<li class="itp-node rev' + (rok ? " done" : "") + '"><button type="button" data-itl-open="' + rv.id + '"><span class="itp-dot" aria-hidden="true">' + (rok ? '<span class="itp-seal">' + esc(tt("itd.passed")) + "</span>" : "🔁") + '</span><span class="itp-t"><small>' + esc(tt("itd.rev")) + "</small><b>" +
+          esc(tt("itd.revTitle", { a: rv.from, b: rv.to })) + "</b>" + (rp.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: rp.best })) + "</small>" : "") + "</span></button></li>";
+      })();
     }).join("");
     return (CP.classBanner ? CP.classBanner() : "") + (CP.itToday ? CP.itToday.html() : "") +
       '<h2 class="itp-h">' + esc(tt("itd.pathT")) + '</h2><p class="small muted" style="margin:0 0 10px">' + esc(tt("itd.pathSub", { d: done, n: L.length, p: PASS })) + "</p>" +
@@ -228,11 +249,13 @@
     return null;
   }
   function lessonHTML(l) {
+    if (l.review) return reviewHTML(l);
     var p = lprog()[l.id] || {};
     return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-itl-back>' + Z.back + tt("itc.137") + l.n + tt("itc.138") + (p.best != null ? tt("itc.139") + p.best + "%" : "") + "</span><h3>" + esc(l.title) + '</h3><p class="ls-goal">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return "<p>" + rich(b) + "</p>"; }).join("") +
       '<div class="ls-pat">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx" lang="it">' + esc(f) + "</span>"; }).join("") + "</div>" +
       tt("itc.140") + l.ex.map(function (e) { return '<div class="ls-ex"><div class="it-big" lang="it">' + esc(e[0]) + '</div><div class="small muted">' + esc(e[1]) + "</div><div>" + sayBtn(e[0], true) + "</div></div>"; }).join("") +
+      ((l.dlg || []).length ? "<h4>" + esc(tt("itd.dlg")) + "</h4>" + l.dlg.map(function (d) { return '<div class="ls-ex ls-dl ' + (d[0] === "B" ? "b" : "a") + '"><span class="tag muted small" aria-hidden="true">' + esc(d[0]) + '</span><div class="it-big" lang="it">' + esc(d[1]) + '</div><div class="small muted">' + esc(d[2]) + "</div><div>" + sayBtn(d[1], true) + "</div></div>"; }).join("") : "") +
       tt("itc.141") + l.traps.map(function (t) { return '<div class="ls-trap"><div class="ls-bad">❌ <span lang="it">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span lang="it">' + esc(t[1]) + '</span></div><div class="small">' + esc(t[2]) + "</div></div>"; }).join("") +
       tt("itc.142") + l.quiz.length + tt("itc.143");
   }
@@ -435,7 +458,7 @@
     var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.hasAttribute("data-it-say")) return;
     var a = function (n) { return b.getAttribute(n); };
     /* lezioni */
-    if (a("data-itl-open") !== null) { ls.cur = ITLESSONS.filter(function (l) { return l.id === a("data-itl-open"); })[0]; ls.view = "lesson"; ls.quiz = null; lmark(ls.cur.id, { seen: Date.now() }); CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
+    if (a("data-itl-open") !== null) { ls.cur = itById(a("data-itl-open")); if (!ls.cur) return; ls.view = "lesson"; ls.quiz = null; lmark(ls.cur.id, { seen: Date.now() }); CP.sfx("tap"); render(); window.scrollTo(0, 0); return; }
     if (b.hasAttribute("data-itl-back")) { ls.view = "list"; ls.cur = null; ls.quiz = null; render(); window.scrollTo(0, 0); return; }
     if (b.hasAttribute("data-itl-quiz")) { ls.quiz = { l: ls.cur || ls.quiz.l, i: 0, score: 0 }; ls.cur = ls.quiz.l; prepare(); ls.view = "quiz"; render(); window.scrollTo(0, 0); return; }
     if (ls.quiz) {
