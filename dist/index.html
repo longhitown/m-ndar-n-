@@ -235,24 +235,45 @@ body.hide-hz .m-hz:not(.shown) {
 
 /* ---- styles/splash.css ---- */
 /* ===== schermata d'avvio: copre la pagina mentre il telefono legge l'app (su un telefono lento anche 2-3 secondi).
-   Logo e wordmark animati, righe «scheletro» che scorrono e, se l'attesa si allunga, un suggerimento. La toglie main.js. ===== */
+   Ogni volta che si apre l'app (non solo la prima): il frutto compare con un piccolo rimbalzo, le lettere del nome salgono una dopo l'altra,
+   i quattro toni si disegnano sotto, poi tutto sfuma e l'app entra. Dura almeno 1,7 secondi (main.js); se il telefono è lento resta finché
+   l'app non è pronta e, dopo un po', compaiono le righe «scheletro» e un suggerimento. La toglie main.js. ===== */
 #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-  background: var(--bg); color: var(--ink); transition: opacity .35s ease, visibility .35s; padding: 24px; }
-#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; }
-#splash .sp-logo { width: 132px; height: 120px; cursor: pointer; animation: sp-bob 1.8s ease-in-out infinite; transform-origin: 50% 90%; -webkit-tap-highlight-color: transparent; }
+  background: radial-gradient(120% 90% at 50% 38%, var(--bg) 55%, var(--chip, var(--bg)) 100%); color: var(--ink); transition: opacity .7s ease, visibility .7s, transform .7s cubic-bezier(.4,0,.2,1), filter .7s; padding: 24px; }
+#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(1.04); filter: blur(3px); }
+#splash.gone .sp-logo { transform: translateY(-14px) scale(1.18); transition: transform .7s cubic-bezier(.4,0,.2,1); animation: none; }
+#splash .sp-logo { width: 132px; height: 120px; cursor: pointer; transform-origin: 50% 90%; -webkit-tap-highlight-color: transparent;
+  animation: sp-pop .7s cubic-bezier(.2,1.4,.4,1) both, sp-bob 1.8s ease-in-out .9s infinite; }
 #splash .sp-logo:active { animation: sp-squash .35s ease; }
-#splash .sp-word { font-family: var(--f-display); font-size: 40px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+#splash .sp-word { font-family: var(--f-display); font-size: 40px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; display: flex; }
+#splash .sp-word > span { display: inline-block; opacity: 0; transform: translateY(.5em); animation: sp-rise .55s cubic-bezier(.2,.9,.3,1.2) calc(.35s + var(--i) * .06s) both; }
+#splash .sp-tones { width: 150px; height: 34px; margin-top: -6px; overflow: visible; }
+#splash .sp-tones path { fill: none; stroke: currentColor; stroke-width: 4.5; stroke-linecap: round; stroke-dasharray: 70; stroke-dashoffset: 70; animation: sp-draw .6s ease-out both; }
+#splash .sp-tones .t1 { stroke: var(--t1); animation-delay: .9s; } #splash .sp-tones .t2 { stroke: var(--t2); animation-delay: 1.05s; }
+#splash .sp-tones .t3 { stroke: var(--t3); animation-delay: 1.2s; } #splash .sp-tones .t4 { stroke: var(--t4); animation-delay: 1.35s; }
 #splash .sp-word .t4 { color: var(--t4); } #splash .sp-word .t2 { color: var(--t2); } #splash .sp-word .t1 { color: var(--t1); }
-#splash .sp-sk { width: min(280px, 72vw); display: grid; gap: 10px; margin-top: 6px; }
+#splash .sp-sk { width: min(280px, 72vw); display: grid; gap: 10px; margin-top: 6px; opacity: 0; animation: sp-in .5s ease 2.4s forwards; }
 #splash .sp-sk i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--chip) 0%, var(--line, rgba(0,0,0,.08)) 50%, var(--chip) 100%); background-size: 200% 100%; animation: sp-sh 1.3s linear infinite; }
 #splash .sp-sk i:nth-child(2) { width: 82%; } #splash .sp-sk i:nth-child(3) { width: 64%; }
 #splash .sp-tip { min-height: 2.6em; max-width: 300px; text-align: center; font-size: 15px; color: var(--muted); opacity: 0; transition: opacity .4s; }
 #splash .sp-tip.on { opacity: 1; }
 #splash .sp-tip b { color: var(--ink); font-family: var(--f-han); font-size: 20px; font-weight: 600; margin-right: 4px; }
+@keyframes sp-pop { from { opacity: 0; transform: scale(.55) translateY(14px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes sp-rise { from { opacity: 0; transform: translateY(.5em); } to { opacity: 1; transform: translateY(0); } }
+@keyframes sp-draw { to { stroke-dashoffset: 0; } }
+@keyframes sp-in { to { opacity: 1; } }
+/* l'app che entra quando il velo si alza (main.js aggiunge .app-reveal per un istante) */
+@keyframes app-in { from { opacity: 0; transform: translateY(10px) scale(.992); } to { opacity: 1; transform: none; } }
+body.app-reveal > main, body.app-reveal > nav.dock { animation: app-in .7s cubic-bezier(.2,.9,.3,1) both; }
 @keyframes sp-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-3deg); } }
 @keyframes sp-squash { 0% { transform: scale(1, 1); } 40% { transform: scale(1.12, .86); } 100% { transform: scale(1, 1); } }
 @keyframes sp-sh { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) { #splash .sp-logo, #splash .sp-sk i { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  #splash .sp-logo, #splash .sp-sk i, #splash .sp-word > span { animation: none; opacity: 1; transform: none; }
+  #splash .sp-tones path { animation: none; stroke-dashoffset: 0; }
+  #splash, #splash.gone { transition: opacity .3s; transform: none; filter: none; }
+  body.app-reveal > main, body.app-reveal > nav.dock { animation: none; }
+}
 
 /* ---- styles/search-review.css ---- */
 /* ---- v2: schede, ricerca, ripasso, laboratorio ---- */
@@ -1855,7 +1876,7 @@ body.lr-dragging .lr-el { cursor: grabbing; }
 </style>
 </head>
 <body>
-<div id="splash" aria-hidden="true" lang="it"><svg class="sp-logo" viewBox="300 10 200 210"><use href="#mandarin-symbol"/></svg><div class="sp-word">m<span class="t4">à</span>ndar<span class="t2">í</span>n<span class="t1">ō</span></div><div class="sp-sk"><i></i><i></i><i></i></div><p class="sp-tip" id="sp-tip"></p></div>
+<div id="splash" aria-hidden="true" lang="it"><svg class="sp-logo" viewBox="300 10 200 210"><use href="#mandarin-symbol"/></svg><div class="sp-word"><span style="--i:0">m</span><span class="t4" style="--i:1">à</span><span style="--i:2">n</span><span style="--i:3">d</span><span style="--i:4">a</span><span style="--i:5">r</span><span class="t2" style="--i:6">í</span><span style="--i:7">n</span><span class="t1" style="--i:8">ō</span></div><svg class="sp-tones" viewBox="0 0 160 36" aria-hidden="true"><path class="t1" d="M4 10 H36"/><path class="t2" d="M46 28 L76 8"/><path class="t3" d="M86 12 Q100 38 116 12"/><path class="t4" d="M126 6 L156 30"/></svg><div class="sp-sk"><i></i><i></i><i></i></div><p class="sp-tip" id="sp-tip"></p></div>
 <script id="splash-boot">(function(){var T={it:[["妈","mā · 1° tono: alto e piatto, mamma"],["麻","má · 2° tono: sale, canapa"],["马","mǎ · 3° tono: scende e risale, cavallo"],["骂","mà · 4° tono: cade secco, sgridare"],["你好","nǐ hǎo · due terzi toni: il primo diventa 2°"]],zh:[["ciao","意大利语里最常用的问候"],["grazie","谢谢：重音在 gra 上"],["buongiorno","早上好：bu-on-giór-no"],["prego","不客气 / 请"]]},L="it";try{if(localStorage.getItem("cp-lang")==="zh"||localStorage.getItem("cp-course")==="it")L="zh"}catch(e){}var a=T[L],i=Math.floor(Math.random()*a.length),el=document.getElementById("sp-tip");function show(){var x=a[i++%a.length];el.innerHTML="<b>"+x[0]+"</b> "+x[1];el.classList.add("on")}window.__spT=setTimeout(function(){show();window.__spI=setInterval(function(){el.classList.remove("on");setTimeout(show,400)},2600)},1200);window.__spX=setTimeout(function(){var s=document.getElementById("splash");if(s)s.classList.add("gone")},15000)})();</script>
 
 
@@ -26041,6 +26062,7 @@ var CONTRIBUTORS = [];
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
+      "Apertura più bella: ogni volta che apri l\'app il frutto rimbalza, il nome si compone e i quattro toni si disegnano (un secondo e mezzo circa). Con il movimento ridotto è più breve.",
       "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e i primi mini-dialoghi con l'audio (lezioni 1–5, nei due corsi).",
       "Ripasso con esercizi vari (⚙️ → Avanzate → Stile di ripasso): Guidato «impara · esercitati · verifica», Misto, o Classico come prima.",
       "Frasi a buco, rimetti in ordine, scrivi il pinyin e il significato, abbina, traccia; la verifica di tappa con 12 domande.",
@@ -26064,6 +26086,7 @@ var CHANGELOG = [
       "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
     ],
     zh: [
+      "更漂亮的启动画面：每次打开应用，橘子弹出、名字逐字出现、四个声调依次画出（约一秒半）。开启“减少动态效果”时会更短。",
       "课程：每学五课有一次复习，题目取自刚学的几课；前五课（两门课程）还加入了带发音的小对话。",
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
       "新练习：填空、排序、听写、动词形式、听句子。",
@@ -33941,7 +33964,17 @@ Object.assign(I18N.zh, {"ws.title": "练习纸", "ws.preparing": "正在生成�
 (function () {
   var s = document.getElementById("splash"); if (!s) return;
   clearTimeout(window.__spT); clearInterval(window.__spI); clearTimeout(window.__spX);
-  requestAnimationFrame(function () { s.classList.add("gone"); setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 500); });
+  /* l'apertura è sempre presente (non solo la prima volta) e dura almeno 1,7 s, così l'animazione si vede per intero; chi arriva da un
+     collegamento (widget, scorciatoia) o ha il movimento ridotto aspetta meno, e i test automatici (navigator.webdriver) niente */
+  var reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var min = typeof window.__MD_SPLASH_MIN === "number" ? window.__MD_SPLASH_MIN : navigator.webdriver ? 0 : window.__mdGoing ? 700 : reduce ? 500 : 1700;
+  var wait = Math.max(0, min - (window.performance && performance.now ? performance.now() : 0));
+  setTimeout(function () {
+    requestAnimationFrame(function () {
+      s.classList.add("gone"); document.body.classList.add("app-reveal");
+      setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); document.body.classList.remove("app-reveal"); }, 900);
+    });
+  }, wait);
 })();
 </script>
 </body>
