@@ -23,7 +23,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   main.js                  ultimo script: avvio finale
   data/vocab/NNN-<id>.js   il vocabolario, una sezione per file, una parola per riga
   data/dialogs/<id>.js     un dialogo per file (+ _categorie.js)
-  data/lessons/NN-<id>.js  le 30 lezioni di grammatica, una per file (spiegazione, esempi, errori tipici, esercizi)
+  data/lessons/NN-<id>.js  le lezioni di grammatica, una per file (le prime 30 qui, le altre in data/lessons-x/) (spiegazione, esempi, errori tipici, esercizi)
   data/examples/*.js       una frase d'esempio per parola: chiave → [cinese, italiano] (il pinyin si ricava dal vocabolario)
   data/freq.js             ordine di frequenza delle parole (lo usa il taglio in parole); data/path-hsk.js = tappe HSK
   data/strokes.js          l'ordine dei tratti (Make Me a Hanzi, licenza Arphic: vedi LICENZE/ e ⚙️ → Informazioni → Come funziona → Crediti)
@@ -317,7 +317,7 @@ Indietro. Il resto dell'app non sa di essere dentro un APK.
 ## Il corso di italiano per chi parla cinese
 
 Si sceglie dal benvenuto («我是中国人，我想学意大利语») o da ⚙️ → Studio → Corso · 课程; per tornare indietro, stesso posto.
-I due corsi hanno progressi separati. Le schede: 课程 (30 lezioni in cinese, `src/data/it/lessons/`), 单词 (4780 parole: quelle delle schede di
+I due corsi hanno progressi separati. Le schede: 课程 (51 lezioni in cinese, `src/data/it/lessons/` e `lessons-x/`), 单词 (4780 parole: quelle delle schede di
 `src/data/grammar.js`, con coniugazioni complete, più `src/data/it/lexicon.js` generato da `node tools/itlex.mjs morph-it.txt`:
 nomi con genere e plurale, aggettivi, verbi, espressioni; ogni parola con una frase d'esempio italiano → cinese), 复习
 (ripasso FSRS), 变位 (coniugazioni), 句子 (frasi, dialoghi bilingui, esercizio 句子练习 sulle frasi d'esempio e **句子检查**,
