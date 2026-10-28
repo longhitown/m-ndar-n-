@@ -22,7 +22,8 @@ var CHANGELOG = [
       "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️.",
       "Di che cosa è fatto un carattere: le sue parti, quale dà il significato e quale il suono. Sfida un amico su dieci parole con un link o un QR; pacchetti classe per chi insegna.",
       "Ripasso più vario: rispondi scegliendo tra quattro risposte, ascolta, riconosci il tono. Se preferisci le carte di prima, ⚙️ → Avanzate → Stile di ripasso → Classico.",
-      "Le due foglie del mandarino nel logo fanno sentire il terzo tono, come le lettere con l'accento fanno sentire gli altri."
+      "Le due foglie del mandarino nel logo fanno sentire il terzo tono, come le lettere con l'accento fanno sentire gli altri.",
+      "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
     ],
     zh: [
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
@@ -43,7 +44,8 @@ var CHANGELOG = [
       "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。",
       "汉字的组成：由哪些部分构成，哪部分表意、哪部分表音。用链接或二维码和朋友比一比十个词；给老师用的班级学习包。",
       "复习更多样：从四个答案中选择、听音、辨认声调。喜欢以前的卡片的话：⚙️ → 高级 → 复习方式 → 经典。",
-      "标志里的两片橘叶会读出第三声，就像带声调的字母会读出其他声调。"
+      "标志里的两片橘叶会读出第三声，就像带声调的字母会读出其他声调。",
+      "旅行手账（学习 → 我的进步）：一张从罗马到桂林的古地图，每学完一站就到一座城市。把两个相似的词弄混时，出错会变成手写的旅途趣事；你可以选择把某一页做成图片分享。"
     ] },
   { v: "6.6", d: "2026-10",
     it: ["La versione di partenza: un solo file index.html con vocabolario, ripasso a intervalli e frasi."],
