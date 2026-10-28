@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Mia madre è insegnante.", "我妈妈是老师。"],
     ["Dove sono le mie chiavi?", "我的钥匙在哪儿？"],
     ["La sua casa è grande.", "他（她）的家很大。"],
-    ["I nostri amici arrivano domani.", "我们的朋友明天到。"]
+    ["I nostri amici arrivano domani.", "我们的朋友明天到。"],
+    ["Il tuo telefono è nuovo.", "你的手机是新的。"],
+    ["I miei amici sono qui.", "我的朋友们在这里。"]
+  ],
+  "dlg": [
+    ["A", "Questo è il tuo libro?", "这是你的书吗？"],
+    ["B", "No, il mio libro è qui. Questo è il libro di Marco.", "不是，我的书在这儿。这是马可的书。"],
+    ["A", "E le tue chiavi?", "那你的钥匙呢？"],
+    ["B", "Le mie chiavi sono a casa.", "我的钥匙在家。"]
   ],
   "traps": [
     ["Mio libro.", "Il mio libro.", "物主形容词前面一般要加定冠词。"],

@@ -18,7 +18,15 @@ LESSONS.push({
     ["太多了，我吃不完。", "È troppo, non riesco a finirlo."],
     ["你看得见吗？", "Riesci a vedere?"],
     ["我找不到我的手机。", "Non riesco a trovare il mio telefono."],
-    ["票买不到了。", "I biglietti non si trovano più."]
+    ["票买不到了。", "I biglietti non si trovano più."],
+    ["我看不见。", "Non riesco a vedere."],
+    ["我吃不完。", "Non riesco a finirlo."]
+  ],
+  "dlg": [
+    ["A", "你听得懂吗？", "Riesci a capire?"],
+    ["B", "我听不懂，你说得太快了。", "Non capisco, parli troppo veloce."],
+    ["A", "对不起。我说慢一点，你现在听得懂吗？", "Scusa. Parlo più piano: adesso capisci?"],
+    ["B", "听得懂了，谢谢。", "Ora capisco, grazie."]
   ],
   "traps": [
     ["我不听懂。", "我听不懂。", "Per «non riesco a capire» 不 va in mezzo: 听不懂."],

@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Ci vado domani.", "我明天去那儿。"],
     ["Quanti anni hai? Ne ho venti.", "你多大了？二十岁。"],
     ["Vuoi del pane? Sì, ne prendo un po'.", "要面包吗？要，我拿一点。"],
-    ["Che ne pensi?", "你觉得怎么样？"]
+    ["Che ne pensi?", "你觉得怎么样？"],
+    ["Ne voglio due.", "我要两个。"],
+    ["Ci sono molti studenti.", "有很多学生。"]
+  ],
+  "dlg": [
+    ["A", "C'è un bar qui vicino?", "这儿附近有咖啡馆吗？"],
+    ["B", "Sì, ci vado ogni giorno.", "有，我每天都去。"],
+    ["A", "Quanti caffè bevi?", "你喝几杯咖啡？"],
+    ["B", "Ne bevo due al giorno.", "我每天喝两杯。"]
   ],
   "traps": [
     ["Voglio due. (mele)", "Ne voglio due.", "说数量时要用 ne 代替东西。"],

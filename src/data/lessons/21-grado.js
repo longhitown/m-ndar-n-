@@ -18,7 +18,15 @@ LESSONS.push({
     ["我昨天睡得不好。", "Ieri ho dormito male."],
     ["他中文说得很好。", "Parla bene il cinese."],
     ["她唱歌唱得非常好。", "Canta benissimo."],
-    ["你来得太晚了。", "Sei arrivato troppo tardi."]
+    ["你来得太晚了。", "Sei arrivato troppo tardi."],
+    ["她唱歌唱得很好。", "Canta molto bene."],
+    ["他跑得很快。", "Corre molto veloce."]
+  ],
+  "dlg": [
+    ["A", "你中文说得很好！", "Parli molto bene il cinese!"],
+    ["B", "谢谢，我说得不太好。", "Grazie, ma non lo parlo tanto bene."],
+    ["A", "你昨天睡得好吗？", "Ieri hai dormito bene?"],
+    ["B", "我昨天睡得不好，今天很累。", "Ieri ho dormito male, oggi sono stanco."]
   ],
   "traps": [
     ["他说中文得很好。", "他说中文说得很好。", "Con l'oggetto il verbo si ripete prima di 得."],

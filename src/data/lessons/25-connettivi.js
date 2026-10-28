@@ -17,7 +17,15 @@ LESSONS.push({
     ["虽然很贵，但是很好吃。", "È caro, però è buonissimo."],
     ["因为我很累，所以想休息。", "Siccome sono stanco, voglio riposare."],
     ["虽然他很忙，但是每天学中文。", "Anche se è molto impegnato, studia cinese ogni giorno."],
-    ["我今天不去，因为我有事。", "Oggi non vado, perché ho un impegno."]
+    ["我今天不去，因为我有事。", "Oggi non vado, perché ho un impegno."],
+    ["因为很贵，所以我不买。", "Siccome è caro, non lo compro."],
+    ["虽然很累，但是我很高兴。", "Anche se sono stanco, sono contento."]
+  ],
+  "dlg": [
+    ["A", "虽然下雨，但是我想去公园。", "Anche se piove, voglio andare al parco."],
+    ["B", "因为我很累，所以不想去。", "Siccome sono stanco, non ho voglia di andare."],
+    ["A", "那我们明天去吧。", "Allora andiamoci domani."],
+    ["B", "好，明天我不累。", "Va bene, domani non sono stanco."]
   ],
   "traps": [
     ["虽然很贵，所以很好吃。", "虽然很贵，但是很好吃。", "虽然 va con 但是 (o 可是), non con 所以."],

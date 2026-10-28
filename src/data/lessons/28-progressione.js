@@ -17,7 +17,15 @@ LESSONS.push({
     ["你的中文越来越好了。", "Il tuo cinese è sempre più bravo."],
     ["越快越好。", "Prima è, meglio è."],
     ["人越来越多了。", "C'è sempre più gente."],
-    ["他越说越高兴。", "Più parlava, più era contento."]
+    ["他越说越高兴。", "Più parlava, più era contento."],
+    ["天气越来越冷了。", "Fa sempre più freddo."],
+    ["我越学越喜欢。", "Più studio, più mi piace."]
+  ],
+  "dlg": [
+    ["A", "天气越来越热了。", "Fa sempre più caldo."],
+    ["B", "对，人也越来越多了。", "Già, e c'è sempre più gente."],
+    ["A", "你的中文越来越好了。", "Il tuo cinese è sempre più bravo."],
+    ["B", "谢谢，我越学越高兴。", "Grazie, più studio e più sono contento."]
   ],
   "traps": [
     ["天气越来越很热。", "天气越来越热。", "Niente 很 dopo 越来越."],

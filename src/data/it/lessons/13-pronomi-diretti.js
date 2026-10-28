@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Dov'è la chiave? Non la trovo.", "钥匙在哪儿？我找不到。"],
     ["Ti amo.", "我爱你。"],
     ["Il libro? L'ho comprato ieri.", "那本书？我昨天买的。"],
-    ["Non lo so.", "我不知道。"]
+    ["Non lo so.", "我不知道。"],
+    ["Li conosco.", "我认识他们。"],
+    ["Lo vedo.", "我看见他了。"]
+  ],
+  "dlg": [
+    ["A", "Conosci Marco?", "你认识马可吗？"],
+    ["B", "Sì, lo conosco.", "认识，我认识他。"],
+    ["A", "Hai comprato il libro?", "你买书了吗？"],
+    ["B", "Sì, l'ho comprato ieri.", "买了，我昨天买的。"]
   ],
   "traps": [
     ["Vedo lo.", "Lo vedo.", "代词放在变位动词前面。"],
