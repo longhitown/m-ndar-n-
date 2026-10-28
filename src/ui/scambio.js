@@ -7,10 +7,10 @@
    come vuole (Condividi o e-mail). Nessuna rete. Si carica al primo uso di CP.scambio. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, LIM = 8000, MAXSEND = 200, SITE = "https://mandarinoapp.org/partecipa-voci.html?da=app", MAIL = "mandarinoapp@gmail.com";
-  var DB = null, S = { cur: null, skip: {}, rec: null, blob: null, ms: 0, busy: false, mime: "", err: "", sentFile: null };
+  var DB = null, PRE = null, S = { queue: null, qi: 0, cur: null, skip: {}, rec: null, blob: null, ms: 0, busy: false, mime: "", err: "", sentFile: null };
 
   /* ---- consenso (localStorage, chiave senza «cp-»: non entra nei backup) ---- */
-  function consent() { try { var o = JSON.parse(localStorage.getItem("md-voice-consent") || "null"); return o && o.age && o.ok ? o : null; } catch (e) { return null; } }
+  function consent() { try { var o = JSON.parse(localStorage.getItem("md-voice-consent") || "null"); return o && o.age && o.ok && o.pub ? o : null; } catch (e) { return null; } }
   function setConsent(o) { try { if (o) localStorage.setItem("md-voice-consent", JSON.stringify(o)); else localStorage.removeItem("md-voice-consent"); } catch (e) {} }
   function opt(k, v) { var o = consent() || {}; o[k] = v; setConsent(o); }
 
@@ -61,12 +61,28 @@
   }
   function textOf(p, lang) { return lang === "zh-CN" ? p.zh : p.it; }
   function recId(ref, lang, nat) { return ref + "|" + lang + "|" + (nat ? "n" : "x"); }
-  function nextSentence(recs) {
+  /* le parole: il carattere e il suo significato breve (riferimento w:<parola>) */
+  var WPOOL = null;
+  function words() {
+    if (WPOOL) return WPOOL;
+    WPOOL = [];
+    (CP.ORDER || []).forEach(function (k) {
+      var w = CP.WORDS[k]; if (!w) return;
+      var g = String(CP.gloss ? CP.gloss(w) : ""), hz = w.hz;
+      if (hz && Array.from(hz).length <= 4 && g && g.length <= 24 && !/[;(\/]/.test(g)) WPOOL.push({ ref: "w:" + hz, zh: hz, it: g, word: true });
+    });
+    return WPOOL;
+  }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var SERIES = 10, WORDS_PER = 3;
+  /* una serie a caso di frasi (7) e parole (3) non ancora registrate né saltate, mescolate */
+  function makeQueue(recs) {
     var lang = curLang(), nat = native(), have = {};
     recs.forEach(function (r) { have[r.id] = 1; });
-    var P = pool();
-    for (var i = 0; i < P.length; i++) { var id = recId(P[i].ref, lang, nat); if (!have[id] && !S.skip[id]) return P[i]; }
-    return null;
+    function free(p) { var id = recId(p.ref, lang, nat); return !have[id] && !S.skip[id]; }
+    var sen = shuffle(pool().filter(free)).slice(0, SERIES - WORDS_PER), wd = shuffle(words().filter(free)).slice(0, WORDS_PER);
+    if (sen.length < SERIES - WORDS_PER) wd = shuffle(words().filter(free)).slice(0, SERIES - sen.length);
+    return shuffle(sen.concat(wd));
   }
 
   /* ---- la registrazione ---- */
@@ -125,20 +141,42 @@
     });
   }
   function markSent(ids) { return all().then(function (rs) { return Promise.all(rs.filter(function (r) { return ids.indexOf(r.id) >= 0; }).map(function (r) { r.sent = Date.now(); return put(r); })); }); }
-  function send(how) {
-    all().then(function (rs) {
-      rs = rs.filter(function (r) { return !r.sent; });
-      if (!rs.length || !CP._zip) return;
-      return buildZip(rs).then(function (z) {
-        var name = "mandarino-voci-" + new Date().toISOString().slice(0, 10) + ".zip", file;
-        try { file = new File([z.blob], name, { type: "application/zip" }); } catch (e) { file = null; }
-        var done = function () { return markSent(z.ids).then(function () { S.sentFile = name; render(); }); };
-        if (how === "share" && file && navigator.canShare && navigator.canShare({ files: [file] })) return navigator.share({ files: [file], title: "màndarínō · voci" }).then(done, function () {});
-        var u = URL.createObjectURL(z.blob), a = document.createElement("a");
-        a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.parentNode.removeChild(a); setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
-        return done();
-      });
+  /* il file si prepara in anticipo, appena si apre il foglio: così il tocco su «Invia» condivide subito (il telefono vuole che
+     Condividi parta da un tocco) */
+  function prepare(rs) {
+    PRE = null;
+    var todo = rs.filter(function (r) { return !r.sent; });
+    if (!todo.length || !CP._zip) return;
+    buildZip(todo).then(function (z) {
+      var name = "mandarino-voci-" + new Date().toISOString().slice(0, 10) + ".zip", file = null;
+      try { file = new File([z.blob], name, { type: "application/zip" }); } catch (e) {}
+      PRE = { z: z, name: name, file: file };
     });
+  }
+  function body(name) {
+    var c = consent() || {};
+    return T("sc.s.body", { f: name, n: c.show && c.nick ? c.nick : "" });
+  }
+  function download(z, name) {
+    var u = URL.createObjectURL(z.blob), a = document.createElement("a");
+    a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.parentNode.removeChild(a); setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+  }
+  /* «mail»: con Condividi (dove c'è) il telefono apre la scelta dell'e-mail con il file già allegato; altrimenti scarica il file e apre
+     la bozza dell'e-mail. «file»: solo il file. Si parte solo se le tre autorizzazioni sono firmate. */
+  function send(how) {
+    if (!consent()) { consentSheet(); return; }
+    var go = function (pre) {
+      var done = function () { return markSent(pre.z.ids).then(function () { S.sentFile = pre.name; render(); }); };
+      var subject = T("sc.s.subject");
+      if (how === "mail" && pre.file && navigator.canShare && navigator.canShare({ files: [pre.file] })) {
+        return navigator.share({ files: [pre.file], title: subject, text: body(pre.name) }).then(done, function () {});
+      }
+      download(pre.z, pre.name);
+      if (how === "mail") location.href = "mailto:" + MAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body(pre.name));
+      return done();
+    };
+    if (PRE) return go(PRE);
+    all().then(function (rs) { prepare(rs); var t = setInterval(function () { if (PRE) { clearInterval(t); go(PRE); } }, 80); setTimeout(function () { clearInterval(t); }, 4000); });
   }
 
   /* ---- i fogli ---- */
@@ -151,20 +189,22 @@
       '<label class="sc-f small"><span>' + esc(T("sc.c.region")) + '</span><select id="sc-region"><option value="">' + esc(T("sc.c.none")) + "</option>" + rg.map(function (x, i) { return '<option value="' + (i + 1) + '"' + (String(c.region) === String(i + 1) ? " selected" : "") + ">" + esc(x) + "</option>"; }).join("") + "</select></label>" +
       '<label class="sc-chk"><input id="sc-ok" type="checkbox" data-sc-chk> ' + esc(T("sc.c.ok1")) + "</label>" +
       '<label class="sc-chk"><input id="sc-age" type="checkbox" data-sc-chk> ' + esc(T("sc.c.ok2")) + "</label>" +
+      '<label class="sc-chk"><input id="sc-pub" type="checkbox" data-sc-chk> ' + esc(T("sc.c.ok3")) + "</label>" +
       '<div class="acts"><button type="button" class="btn-main" id="sc-go" data-sc-go disabled>' + esc(T("sc.c.go")) + "</button></div>" +
       '<p class="small muted">' + esc(T("sc.priv")) + "</p>";
     CP.openSheet(h);
   }
   function mainSheet(recs) {
     var c = consent() || {}, sent = recs.filter(function (r) { return r.sent; }).length, todo = recs.length - sent, h;
+    prepare(recs);
     h = '<div class="fam-head"><div class="meta"><b>' + esc(T("sc.title")) + '</b><div class="small muted">' + esc(T("sc.have", { n: recs.length, s: sent })) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>";
     h += '<div class="acts"><button type="button" class="btn-main" data-sc-rec="own">🎙️ ' + esc(T("sc.m.rec")) + "</button>" + (c.other ? '<button type="button" class="btn-s" data-sc-rec="other">🎙️ ' + esc(T("sc.m.recOther")) + "</button>" : "") + "</div>";
     h += '<label class="sc-chk small"><input id="sc-other" type="checkbox" data-sc-other' + (c.other ? " checked" : "") + "> " + esc(T("sc.m.other")) + '</label><p class="small muted" style="margin:0 0 8px">' + esc(T("sc.m.otherNote")) + "</p>";
     if (todo) {
-      h += '<p class="small muted">' + esc(T("sc.s.help")) + '</p><div class="acts">' + (navigator.canShare ? '<button type="button" class="btn-s" data-sc-send="share">📤 ' + esc(T("sc.s.share")) + " (" + todo + ")</button>" : "") +
-        '<button type="button" class="btn-s" data-sc-send="file">⬇️ ' + esc(T("sc.s.file")) + " (" + todo + ")</button></div>";
+      h += '<p class="small muted">' + esc(T("sc.s.help")) + '</p><div class="acts"><button type="button" class="btn-main" data-sc-send="mail">📧 ' + esc(T("sc.s.mail")) + " (" + todo + ')</button>' +
+        '<button type="button" class="btn-s" data-sc-send="file">⬇️ ' + esc(T("sc.s.file")) + "</button></div>";
     }
-    if (S.sentFile) h += '<p class="small okline" role="status">' + esc(T("sc.s.done", { f: S.sentFile })) + ' <a href="mailto:' + MAIL + "?subject=" + encodeURIComponent("màndarínō · voci") + '">' + esc(MAIL) + "</a></p>";
+    if (S.sentFile) h += '<p class="small okline" role="status">' + esc(T("sc.s.done", { f: S.sentFile })) + ' <a href="mailto:' + MAIL + "?subject=" + encodeURIComponent(T("sc.s.subject")) + '">' + esc(MAIL) + "</a></p>";
     h += '<p class="small"><a href="' + SITE + '" target="_blank" rel="noopener">' + esc(T("sc.c.site")) + "</a> · " + esc(T("sc.c.siteNote")) + "</p>";
     if (recs.length) {
       h += '<h4 class="set-h">' + esc(T("sc.m.list")) + '</h4><ul class="sc-list">' + recs.map(function (r) {
@@ -177,16 +217,19 @@
     CP.openSheet(h);
   }
   function recSheet(recs) {
-    var p = S.cur = S.cur || nextSentence(recs), lang = curLang();
+    if (!S.queue) { S.queue = makeQueue(recs); S.qi = 0; }
+    var p = S.cur = S.queue[S.qi] || null, lang = curLang();
     var h = '<div class="fam-head"><div class="meta"><b>🎙️ ' + esc(T("sc.m.rec")) + '</b>' + (native() ? "" : '<div class="small muted">' + esc(T("sc.m.nn")) + "</div>") + '</div><button type="button" class="fam-x btn-s" data-sc-back>' + esc(T("sc.r.back")) + "</button></div>";
-    if (!p) { CP.openSheet(h + '<p>' + esc(T("sc.r.none")) + "</p>"); return; }
-    h += '<p class="small muted" style="margin:0">' + esc(T("sc.r.prompt")) + '</p><p class="sc-big" lang="' + lang + '">' + esc(textOf(p, lang)) + '</p><p class="small muted" lang="' + (lang === "zh-CN" ? "it-IT" : "zh-CN") + '">' + esc(textOf(p, lang === "zh-CN" ? "it-IT" : "zh-CN")) + "</p>";
+    if (!p) { CP.openSheet(h + '<p>' + esc(T(S.queue.length ? "sc.r.done" : "sc.r.none")) + '</p><div class="acts">' + (S.queue.length ? '<button type="button" class="btn-main" data-sc-more>' + esc(T("sc.r.more")) + "</button>" : "") + '<button type="button" class="btn-s" data-sc-back>' + esc(T("sc.r.back")) + "</button></div>"); return; }
+    h += '<p class="small muted" style="margin:0">' + esc(T("sc.r.prompt")) + " · " + (S.qi + 1) + " / " + S.queue.length + (p.word ? " · " + esc(T("sc.r.word")) : "") + '</p><p class="sc-big" lang="' + lang + '">' + esc(textOf(p, lang)) + '</p><p class="small muted" lang="' + (lang === "zh-CN" ? "it-IT" : "zh-CN") + '">' + esc(textOf(p, lang === "zh-CN" ? "it-IT" : "zh-CN")) + "</p>";
     if (S.err) h += '<p class="small" role="alert">' + esc(S.err) + "</p>";
     if (S.busy) h += '<div class="acts"><button type="button" class="btn-main" data-sc-stop>⏹ ' + esc(T("sc.r.stop")) + '</button></div><p class="small muted" role="status">' + esc(T("sc.r.limit")) + "</p>";
     else if (S.blob) h += '<div class="acts"><button type="button" class="btn-s" data-sc-prev>▶ ' + esc(T("sc.m.play")) + '</button><button type="button" class="btn-main" data-sc-keep>' + esc(T("sc.r.keep")) + '</button><button type="button" class="btn-s" data-sc-redo>' + esc(T("sc.r.redo")) + "</button></div>";
     else h += '<div class="acts"><button type="button" class="btn-main" data-sc-start>🎙️ ' + esc(T("sc.r.start")) + '</button><button type="button" class="btn-s" data-sc-skip>' + esc(T("sc.r.skip")) + "</button></div>";
     CP.openSheet(h);
   }
+  /* le tre autorizzazioni, tutte spuntate: ho capito, ho 18 anni, autorizzo la pubblicazione CC BY 4.0 */
+  function allSigned() { return ["sc-ok", "sc-age", "sc-pub"].every(function (i) { var e = document.getElementById(i); return e && e.checked; }); }
   var view = "main";
   function render() { all().then(function (recs) { if (view === "rec") recSheet(recs); else mainSheet(recs); }); }
   function open() { if (!consent()) { consentSheet(); return; } view = "main"; S.useOther = false; render(); }
@@ -196,27 +239,28 @@
   function playBlob(b) { try { if (audio) audio.pause(); var u = URL.createObjectURL(b); audio = new Audio(u); audio.onended = function () { URL.revokeObjectURL(u); }; audio.play(); } catch (e) {} }
   document.addEventListener("change", function (e) {
     var t = e.target; if (!t || !t.closest) return;
-    if (t.id === "sc-ok" || t.id === "sc-age") { var go = document.getElementById("sc-go"); if (go) go.disabled = !(document.getElementById("sc-ok").checked && document.getElementById("sc-age").checked); }
+    if (t.id === "sc-ok" || t.id === "sc-age" || t.id === "sc-pub") { var go = document.getElementById("sc-go"); if (go) go.disabled = !allSigned(); }
     if (t.hasAttribute && t.hasAttribute("data-sc-other")) opt("other", t.checked);
   });
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-sc-go],[data-sc-rec],[data-sc-back],[data-sc-start],[data-sc-stop],[data-sc-prev],[data-sc-keep],[data-sc-redo],[data-sc-skip],[data-sc-play],[data-sc-del],[data-sc-send],[data-sc-revoke]") : null; if (!b) return;
     if (b.hasAttribute("data-sc-go")) {
-      if (!(document.getElementById("sc-ok").checked && document.getElementById("sc-age").checked)) return;
-      setConsent({ v: 1, t: Date.now(), ok: true, age: true, nick: document.getElementById("sc-nick").value.trim(), show: document.getElementById("sc-show").checked, region: document.getElementById("sc-region").value, other: false, lang: ownLang() });
+      if (!allSigned()) return;
+      setConsent({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: document.getElementById("sc-nick").value.trim(), show: document.getElementById("sc-show").checked, region: document.getElementById("sc-region").value, other: false, lang: ownLang() });
       CP.sfx("tap"); open();
-    } else if (b.hasAttribute("data-sc-rec")) { view = "rec"; S.useOther = b.getAttribute("data-sc-rec") === "other"; S.cur = null; S.blob = null; S.err = ""; render(); }
-    else if (b.hasAttribute("data-sc-back")) { if (S.rec) S.rec.stop(); view = "main"; S.cur = null; S.blob = null; S.busy = false; render(); }
+    } else if (b.hasAttribute("data-sc-rec")) { view = "rec"; S.useOther = b.getAttribute("data-sc-rec") === "other"; S.queue = null; S.cur = null; S.blob = null; S.err = ""; render(); }
+    else if (b.hasAttribute("data-sc-back")) { if (S.rec) S.rec.stop(); view = "main"; S.queue = null; S.cur = null; S.blob = null; S.busy = false; render(); }
     else if (b.hasAttribute("data-sc-start")) start();
     else if (b.hasAttribute("data-sc-stop")) { if (S.rec) S.rec.stop(); }
     else if (b.hasAttribute("data-sc-prev")) { if (S.blob) playBlob(S.blob); }
-    else if (b.hasAttribute("data-sc-keep")) { keep().then(render); }
+    else if (b.hasAttribute("data-sc-keep")) { keep().then(function () { S.qi++; render(); }); }
+    else if (b.hasAttribute("data-sc-more")) { S.queue = null; S.skip = {}; render(); }
     else if (b.hasAttribute("data-sc-redo")) { S.blob = null; S.err = ""; render(); }
-    else if (b.hasAttribute("data-sc-skip")) { if (S.cur) S.skip[recId(S.cur.ref, curLang(), native())] = 1; S.cur = null; S.blob = null; render(); }
+    else if (b.hasAttribute("data-sc-skip")) { if (S.cur) S.skip[recId(S.cur.ref, curLang(), native())] = 1; S.qi++; S.cur = null; S.blob = null; render(); }
     else if (b.hasAttribute("data-sc-play")) { var id = b.getAttribute("data-sc-play"); all().then(function (rs) { var r = rs.filter(function (x) { return x.id === id; })[0]; if (r) playBlob(r.blob); }); }
     else if (b.hasAttribute("data-sc-del")) { del(b.getAttribute("data-sc-del")).then(function () { CP.sfx("tap"); render(); }); }
     else if (b.hasAttribute("data-sc-send")) send(b.getAttribute("data-sc-send"));
     else if (b.hasAttribute("data-sc-revoke")) { clear().then(function () { setConsent(null); S.sentFile = null; CP.closeSheet(); if (CP.toast) CP.toast(T("sc.m.revoked")); }); }
   });
-  CP.scambio = { open: open, consent: consent, all: all, put: put, del: del, clear: clear, pool: pool, ownLang: ownLang, manifest: manifest, buildZip: buildZip, SITE: SITE };
+  CP.scambio = { makeQueue: makeQueue, words: words, send: send, open: open, consent: consent, all: all, put: put, del: del, clear: clear, pool: pool, ownLang: ownLang, manifest: manifest, buildZip: buildZip, SITE: SITE };
 })();
