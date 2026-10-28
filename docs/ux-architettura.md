@@ -53,6 +53,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 | Immersione a schermo pieno | E | per gli esercizi |
 | Carta del giorno | R | |
 | Taccuino del viaggiatore (mappa, pagine, pagina da condividere) | R | si apre dalla carta in «I miei progressi» (un pulsante secondario); dentro il foglio nessun pulsante principale; la carta da condividere ha il suo |
+| Scambio linguistico (consenso, registrazione, elenco, invio) | R | sezione in ⚙️ → Suoni e musica con un solo pulsante «Partecipa»; il foglio ha un pulsante principale per volta (Accetto e continuo, poi Registra), la casella delle 18 anni e quella del «ho capito» separate e non spuntate |
 | Contributi | A | |
 | Crediti | A | |
 | Passaggio con QR | A | |

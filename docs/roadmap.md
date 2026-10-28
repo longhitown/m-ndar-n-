@@ -30,8 +30,8 @@ La lista completa, da spuntare, è in [checklist-dispositivo.md](checklist-dispo
 - **Riconoscimento vocale offline (Vosk) e pacchetti voce (sherpa-onnx).** Valutati e non implementati: **non si fanno
   finché non c'è una prova su un telefono vero** (peso, velocità, qualità in cinese). Oggi la voce è quella del
   telefono; quella online parte solo se è stata permessa.
-- **Voci di madrelingua** (scambio linguistico): progetto in [scambio-linguistico.md](scambio-linguistico.md), in attesa
-  di una decisione.
+- **Voci di madrelingua** (scambio linguistico): attivo in [scambio-linguistico.md](scambio-linguistico.md): consenso, registrazione
+  e invio sono nell'app; mancano l'importazione e il pacchetto voci scaricabile, dopo le prime registrazioni.
 
 ## Distribuzione
 
