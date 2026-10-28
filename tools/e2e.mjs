@@ -1406,6 +1406,19 @@ try {
     check("Voce online muta: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* apertura: l'animazione c'è ogni volta e dura almeno il minimo previsto (nei test è a zero: navigator.webdriver) */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+    await ctx.addInitScript(() => { window.__MD_SPLASH_MIN = 1800; localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base);
+    const early = await p.evaluate(() => ({ there: !!document.getElementById("splash") && !document.getElementById("splash").classList.contains("gone"), letters: document.querySelectorAll("#splash .sp-word > span").length, tones: document.querySelectorAll("#splash .sp-tones path").length, t: performance.now() }));
+    await p.waitForFunction(() => !document.getElementById("splash"), null, { timeout: 8000 });
+    const gone = await p.evaluate(() => performance.now());
+    check("Apertura: l'animazione (lettere e quattro toni) c'è ogni volta e resta almeno il tempo previsto prima di lasciare l'app", early.there && early.letters === 9 && early.tones === 4 && gone >= 1700, JSON.stringify({ early, gone: Math.round(gone) }));
+    check("Apertura: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* APK: se il motore vocale è stato spento dal sistema la prima richiesta fallisce; una seconda, poco dopo, riesce */
   {
     const ctx = await browser.newContext({ viewport: { width: 360, height: 740 } });
