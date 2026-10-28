@@ -1381,6 +1381,22 @@ try {
     check("Voce online muta: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* APK: se il motore vocale è stato spento dal sistema la prima richiesta fallisce; una seconda, poco dopo, riesce */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 740 } });
+    await ctx.addInitScript(() => {
+      window.__said = []; window.__MD_APK = { version: "test" };
+      const fake = { speaking: false, pending: false, cancel() {}, getVoices() { return []; }, addEventListener() {}, onvoiceschanged: null,
+        speak(u) { window.__said.push(u.text); if (window.__said.length === 1) setTimeout(() => u.onerror && u.onerror({ error: "synthesis-failed" }), 5); else { setTimeout(() => u.onstart && u.onstart(), 5); setTimeout(() => u.onend && u.onend(), 20); } } };
+      Object.defineProperty(window, "speechSynthesis", { value: fake, configurable: true });
+    });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload(); await p.waitForTimeout(600);
+    const r = await p.evaluate(() => new Promise((ok) => CP.speak("你好", { noClip: true, onEnd: () => ok({ said: window.__said.length }) })));
+    check("APK: se il motore vocale fallisce la prima volta, si riprova una volta e la voce parte", r.said === 2, JSON.stringify(r));
+    check("APK, voce: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 8. Impostazioni a pagine: cinque carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */
   {
     /* l'elenco di prima (quattro gruppi con sezioni annidate), voce per voce: id della sezione, pagina in cui sta ora, un comando che deve esserci */
