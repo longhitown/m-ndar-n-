@@ -2,7 +2,7 @@
 # L'etichetta «contributo» nell'indirizzo vale solo per chi gestisce il repository, quindi la mette questa Action.
 # 1. A ogni issue aperta o modificata: tools/merge-contrib.mjs controlla la patch (senza applicarla) e risponde nella issue
 #    con il riepilogo: da applicare, doppioni, conflitti, scartati.
-# 2. Quando chi gestisce il repository aggiunge l'etichetta «applica»: applica le voci valide, ricostruisce dist/ e apre
+# 2. Quando chi gestisce il repository aggiunge l'etichetta «applica»: applica le voci valide, controlla la build e apre
 #    una pull request da rileggere. Niente entra nel ramo principale senza una persona che la unisca.
 # Il testo della issue non è fidato: passa solo come variabile d'ambiente e come file, mai dentro lo script.
 name: contributi
@@ -58,12 +58,12 @@ jobs:
           node tools/merge-contrib.mjs "$RUNNER_TEMP/arrivati/issue-$NUM.json" --apply || true
           node tools/build.mjs
           node tools/grammar.mjs
-          if git diff --quiet -- src dist/index.html; then gh issue comment "$NUM" --body "Nessuna voce da applicare."; exit 0; fi
+          if git diff --quiet -- src; then gh issue comment "$NUM" --body "Nessuna voce da applicare."; exit 0; fi
           BR="contributo/issue-$NUM"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BR"
-          git add src dist/index.html dist/sw.js
+          git add src
           git commit -m "Contributo dalla issue #$NUM"
           git push -f origin "$BR"
           { echo "Voci del contributo della issue #$NUM, applicate da tools/merge-contrib.mjs. Rileggi ogni riga prima di unire."; echo; cat "$RUNNER_TEMP/riepilogo.md"; } > "$RUNNER_TEMP/pr.md"
