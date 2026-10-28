@@ -1,8 +1,9 @@
 # Scambio linguistico: voci di madrelingua
 
-> **Stato (ottobre 2026): attivo, prima parte.** Nell'app ci sono il foglio del consenso, la registrazione, l'elenco con ascolto e
-> cancellazione, e l'invio come `.zip`. **Non ci sono ancora** l'importazione (`tools/merge-contrib.mjs` per `mandarino-voice/1`) e il
-> pacchetto voci scaricabile: arrivano quando ci sono le prime registrazioni da provare. Le decisioni qui sotto sono di chi gestisce il progetto.
+> **Stato (ottobre 2026): attivo, parti 1 e 2.** Nell'app ci sono il foglio del consenso (tre autorizzazioni), la registrazione di una
+> serie a caso di frasi e parole, l'elenco con ascolto e cancellazione, e un solo tasto «Invia per e-mail» che prepara il `.zip` da sé.
+> **Non ci sono ancora** l'importazione (`tools/merge-contrib.mjs` per `mandarino-voice/1`) e il pacchetto voci scaricabile: arrivano
+> quando ci sono le prime registrazioni da provare. Le decisioni qui sotto sono di chi gestisce il progetto.
 
 ## L'idea
 
@@ -28,18 +29,20 @@ studia la frase nella propria lingua accanto alla traduzione, quindi l'esercizio
 
 ## Che cosa si registra
 
-- **Solo frasi che esistono già nell'app**, con i riferimenti di `tools/review-sample.mjs`: `phr:<gruppo>:<riga>` (frasi di tutti i
-  giorni), `dlg:<id>:<riga>` (battute dei dialoghi), `ex:<parola>` (frasi d'esempio). Niente testo libero: nessun rischio di contenuti
-  personali dentro le registrazioni.
-- Una frase per volta, con il testo grande e la traduzione sotto. Si può riascoltare, tenere o rifare; «Un'altra frase» salta.
+- **Solo frasi e parole che esistono già nell'app**, con i riferimenti di `tools/review-sample.mjs`: `phr:<gruppo>:<riga>` (frasi di tutti i
+  giorni), `dlg:<id>:<riga>` (battute dei dialoghi), `ex:<parola>` (frasi d'esempio) e `w:<parola>` (singole parole con il significato
+  breve). Niente testo libero: nessun rischio di contenuti personali dentro le registrazioni.
+- **Si registra solo dal foglio dello scambio**, che pesca a caso: una *serie* di 10 elementi (7 frasi e 3 parole) non ancora registrati né
+  saltati, senza doppioni; finita la serie, «Un'altra serie». Non ci sono pulsanti 🎙️ in altri punti dell'app.
+- Una voce per volta, con il testo grande, il contatore («3 / 10») e la traduzione sotto. Si può riascoltare, tenere o rifare; «Un'altra frase» salta.
 - Si registra nella **propria** lingua: cinese nel corso di italiano (interfaccia in cinese), italiano nel corso di cinese.
 
 ## Il foglio del consenso
 
 Nell'app: ⚙️ → Suoni e musica → **Scambio linguistico: la tua voce** → *Partecipa*. Otto punti (che cosa si registra e dove resta,
 CC BY 4.0, la voce si riconosce, chi ascolta, nome e regione, come chiedere di togliere una registrazione, solo maggiorenni, lingua
-madre), nome o nickname e regione facoltativi, due caselle non spuntate di base («Ho letto e capito», «Ho almeno 18 anni») e il
-pulsante «Accetto e continuo», spento finché non sono spuntate entrambe. Il consenso resta sul telefono in `md-voice-consent`
+madre), nome o nickname e regione facoltativi, tre caselle non spuntate di base («Ho letto e capito», «Ho almeno 18 anni», «Autorizzo la pubblicazione con licenza CC BY 4.0 se le invio») e il
+pulsante «Accetto e continuo», spento finché non sono spuntate tutte. Il consenso resta sul telefono in `md-voice-consent`
 (chiave senza il prefisso `cp-`: non entra nei backup né nella sincronizzazione). *Ritira il consenso e cancella tutto* toglie
 registrazioni e consenso dal telefono.
 
@@ -66,9 +69,11 @@ stampare o salvare in PDF. Per registrare basta il foglio dell'app; il modulo è
 
 - **Sul telefono**: IndexedDB `mandarino-voices-v1`, fuori dal backup e dalla sincronizzazione (pesano e sono personali). Un elenco
   nel foglio mostra le registrazioni con ascolto (▶) e cancellazione (×).
-- **L'invio**: *Condividi* (dove il telefono lo permette) o *Scarica il file*, poi la persona manda il `.zip` a mandarinoapp@gmail.com o
-  dove preferisce (come allegato a una issue, il limite è 25 MB). Le registrazioni incluse si segnano «inviata». **Nessun
-  caricamento automatico, nessuna richiesta di rete.**
+- **L'invio**: il file `.zip` lo crea l'app da sé, in anticipo, appena si apre il foglio. Un solo tasto principale, **«Invia per e-mail»**:
+  dove il telefono lo permette apre la condivisione con il file già allegato e il testo del consenso pronto per mandarinoapp@gmail.com;
+  altrimenti scarica il file e apre la bozza dell'e-mail (da allegare a mano). Parte solo se le tre autorizzazioni sono firmate
+  (senza, riappare il foglio). Un secondo tasto, «Scarica il file», salva solo il `.zip`. Le registrazioni incluse si segnano «inviata».
+  Il tasto prepara l'invio, l'invio lo fa la persona: **nessun caricamento automatico, nessuna richiesta di rete.**
 
 ## Da fare dopo, quando ci sono le prime registrazioni
 
@@ -78,4 +83,3 @@ stampare o salvare in PDF. Per registrare basta il foglio dell'app; il modulo è
    −16 LUFS, Opus/Ogg). Il nickname va nei Crediti solo se permesso. Le registrazioni `native: false` non si pubblicano come madrelingua.
 3. Il **pacchetto voci** scaricabile a parte, come la musica (⚙️ → Suoni e musica → «Voci di madrelingua (N MB)»), mai all'avvio; dove
    c'è una voce vera 🔊 la usa al posto della sintesi, con il segno «voce vera» e il nickname nei dettagli. Il peso dell'APK non cambia.
-4. 🎙️ accanto alle frasi nel foglio della parola e nei dialoghi (oggi si registra dal foglio dello scambio).
