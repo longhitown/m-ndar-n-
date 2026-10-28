@@ -121,6 +121,8 @@
   }
   CP.repaintSettings = paint;
   function paintLang() { Array.prototype.forEach.call(el.querySelectorAll("[data-lang-set]"), function (b) { var on = b.getAttribute("data-lang-set") === LANG; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); }); }
+  CP.settingsPage = function () { return cur; };
+  CP.settingsGo = function (p) { if (PAGES.indexOf(p) >= 0) go(p); };
   CP.openSettings = function (sec) {
     paint(); paintLang(); CP.trap(el, onEsc);
     var page = "", tgt = null, d = sec ? document.getElementById(sec) : null;

@@ -26,7 +26,7 @@
   function hzOf(t, p) { return t.map(hz).join("") + (FW[p] || ""); }
   function full(t, p, noGloss) {
     return '<div class="full"><div class="lp">' + CP.pinyinHTML(pyOf(t, p)) + "</div>" + CP.toneCurveHTML(pyOf(t, "")) + '<div class="lh" lang="zh-CN">' + CP.hanziHTML(hzOf(t, p), pyOf(t, p)) +
-      "</div>" + (noGloss ? "" : '<div class="gloss" lang="it">' + esc(t.map(gloss).join(" · ")) + "</div>") + "</div>";
+      "</div>" + (noGloss ? "" : '<div class="gloss" lang="it"><span class="small muted">' + T("lab.literal") + ':</span> ' + t.map(function (k) { return '<span class="flw"><span class="han" lang="zh-CN">' + esc(W[k].hz) + "</span> " + esc(gloss(k)) + "</span>"; }).join(" → ") + "</div>") + "</div>";
   }
 
   /* ---- sandhi tonale: il pinyin come si pronuncia davvero ---- */

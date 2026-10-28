@@ -1,61 +1,47 @@
-/* màndarínō · «Novità» (⚙️ → Informazioni e supporto): l'elenco dei cambiamenti, dal più recente.
-   Ogni voce: { v: versione, d: "AAAA-MM", it: [righe], zh: [righe] }. Righe brevi, scritte per chi studia, non per chi
-   programma. Una versione nuova va in cima; tools/build.mjs controlla che ogni voce abbia le due lingue. */
+/* màndarínō · «Novità» (⚙️ → Informazioni): l'elenco dei cambiamenti, dal più recente.
+   Ogni voce: { v: versione, d: "AAAA-MM", it: [righe], zh: [righe] }. Righe brevi (una frase), scritte per chi studia, non per chi
+   programma; le novità della versione in corso in cima, il resto riassunto per temi in una voce sola. Una versione nuova va in cima;
+   tools/build.mjs controlla che ogni voce abbia le due lingue con lo stesso numero di righe; le prime righe finiscono anche nelle
+   note di rilascio degli store (tools/store-assets.mjs, 500 caratteri). */
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
-      "Apertura più bella: ogni volta che apri l\'app il frutto rimbalza, il nome si compone, i quattro toni si disegnano e volano sulle lettere (à, í, ō) e sulle due foglie, poi resta il logo (circa tre secondi). Con il movimento ridotto è più breve.",
-      "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e i primi mini-dialoghi con l'audio (lezioni 1–5, nei due corsi).",
-      "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e in tutte le 30 lezioni dei due corsi un mini-dialogo con l'audio e due esempi in più.",
-      "25 lezioni nuove per il cinese (anche, ancora, durata, volte, da…a…, 给/跟/对, 让/请, 要…了, forse/deve…) e 21 per l'italiano (avverbi, preposizioni, quantità, date, domande, «secondo me»…).",
-      "Ripasso con esercizi vari (⚙️ → Avanzate → Stile di ripasso): Guidato «impara · esercitati · verifica», Misto, o Classico come prima.",
-      "Frasi a buco, rimetti in ordine, scrivi il pinyin e il significato, abbina, traccia; la verifica di tappa con 12 domande.",
-      "Lettura graduata: testi brevi per livello con domande (Frasi → Leggi → Testi).",
-      "Voci reali: frasi lette da persone vere. Sul sito si scaricano una volta da ⚙️ → Voce (circa 7 MB); nell'app Android ci sono già.",
-      "Benvenuto nuovo: scegli lo scopo e il ritmo, prova i toni, e un test di livello di pochi minuti ti fa partire dal punto giusto.",
-      "L'interfaccia si apre un po' alla volta: le schede Parole e Frasi arrivano quando servono. In ⚙️ → Avanzate puoi mostrare tutto subito.",
-      "Sostieni il progetto: una voce in ⚙️ e i sigilli di gratitudine, solo estetici.",
-      "Licenze e crediti riordinati; i contenuti didattici sono sotto CC BY 4.0.",
-      "Corso di italiano per chi parla cinese: 30 lezioni, 4780 parole, esercizi di frasi e un correttore di frasi italiane.",
-      "Vocabolario HSK 3.0 livelli 1-5 in sei capitoli, frasi d'esempio per tutte le parole, ordine dei tratti offline.",
-      "Sincronizzazione senza server (file nel tuo cloud o QR), app Android con widget e promemoria facoltativo.",
-      "«Cerca ovunque», scorrimento tra le schede, immersione a schermo pieno, jukebox con 22 brani originali.",
-      "Puoi proporre correzioni e parole nuove da ⚙️ → Dati e privacy → Contributi, e comparire nei Crediti se vuoi.",
-      "Un giorno di riposo a settimana non spezza la serie; oltre i 10.000 punti ci sono nuovi gradi e le stagioni; i progressi della settimana sono in evidenza in Studia.",
-      "Corso di italiano: la carta «今天» con la lezione da continuare e la frase del giorno, le lezioni come percorso, i traguardi e le carte da condividere.",
-      "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️.",
-      "Di che cosa è fatto un carattere: le sue parti, quale dà il significato e quale il suono. Sfida un amico su dieci parole con un link o un QR; pacchetti classe per chi insegna.",
-      "Ripasso più vario: rispondi scegliendo tra quattro risposte, ascolta, riconosci il tono. Se preferisci le carte di prima, ⚙️ → Avanzate → Stile di ripasso → Classico.",
-      "Le due foglie del mandarino nel logo fanno sentire il terzo tono, come le lettere con l'accento fanno sentire gli altri.",
-      "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
+      "Grammatica più ricca: 55 lezioni per il cinese e 51 per l'italiano, con mini-dialoghi, esempi con audio e un ripasso ogni cinque lezioni.",
+      "Apertura animata: i quattro toni volano sulle lettere e sulle foglie del logo.",
+      "Microfono e voce più affidabili su Android, e messaggi chiari al posto dei codici di errore.",
+      "La card di oggi del cinese ha formato, colore e firma, come quella di italiano.",
+      "Cambiare la lingua dei menu non ripete l'animazione e riapre la stessa pagina delle impostazioni.",
+      "Più ordine: niente menu «Copia» di Android sul tocco lungo, Stampa funzionante nell'app, mappa del Taccuino visibile intera.",
+      "Su Android: widget «Oggi» e «Pausa» (25 minuti di studio e pausa caffè)."
     ],
     zh: [
-      "更漂亮的启动画面：每次打开应用，橘子弹出、名字逐字出现、四个声调画出后飞到字母（à、í、ō）和两片叶子上，最后只剩标志（约三秒）。开启“减少动态效果”时会更短。",
-      "课程：每学五课有一次复习，题目取自刚学的几课；前五课（两门课程）还加入了带发音的小对话。",
-      "课程：每学五课有一次复习，题目取自刚学的几课；两门课程的 30 课都加入了带发音的小对话，并多了两个例句。",
-      "新增课程：中文 25 课（也/都、还/再/又、时量、次数、从…到、给/跟/对、请/让、要…了、可能/应该 等），意大利语 21 课（副词、介词、数量、日期、疑问句、表达看法 等）。",
-      "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
-      "新练习：填空、排序、听写、动词形式、听句子。",
-      "短文阅读：按级别的意大利语短文，附中文问题（在「句子」里）。",
-      "真人录音：由真人朗读的句子。网页版在 ⚙️ → 语音 下载一次（约 7 MB）；安卓应用里已经有了。",
-      "全新的欢迎流程：选择目标和节奏，试听声调，几分钟的水平测试帮你从合适的地方开始。",
-      "界面逐步展开：需要时才出现“词语”和“句子”标签。在 ⚙️ → 高级 中可以立即显示全部。",
-      "支持项目：⚙️ 里新增一项，以及仅作纪念的感谢印章。",
-      "整理了许可协议和致谢；教学内容采用 CC BY 4.0。",
-      "面向中文使用者的意大利语课程：30 课、4780 个词、句子练习和意大利语句子检查。",
-      "HSK 3.0 一至五级词汇分为六章，每个词都有例句，离线笔顺。",
-      "无需服务器的同步（你自己的云端文件或二维码），安卓应用带小组件和可选提醒。",
-      "“全局搜索”、标签间滑动、全屏沉浸练习、22 首原创曲目的音乐盒。",
-      "可以在 ⚙️ → 数据和隐私 → 贡献 中提出更正和新词，愿意的话还可以出现在致谢中。",
-      "每周休息一天不会中断连续天数；一万分以上有新的等级和“季”；“学习”里突出显示本周进步。",
-      "意大利语课程：“今天”卡片显示要继续的课和今日意大利语，课程变成一条路，还有纪念卡和分享卡片。",
-      "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。",
-      "汉字的组成：由哪些部分构成，哪部分表意、哪部分表音。用链接或二维码和朋友比一比十个词；给老师用的班级学习包。",
-      "复习更多样：从四个答案中选择、听音、辨认声调。喜欢以前的卡片的话：⚙️ → 高级 → 复习方式 → 经典。",
-      "标志里的两片橘叶会读出第三声，就像带声调的字母会读出其他声调。",
-      "旅行手账（学习 → 我的进步）：一张从罗马到桂林的古地图，每学完一站就到一座城市。把两个相似的词弄混时，出错会变成手写的旅途趣事；你可以选择把某一页做成图片分享。"
+      "语法更丰富：中文 55 课、意大利语 51 课，带小对话、有声例句，每五课一次复习。",
+      "启动动画：四个声调飞到标志的字母和两片叶子上。",
+      "安卓上的麦克风和语音更稳定，出错时显示清楚的说明，不再显示错误代码。",
+      "中文课程的今日卡片也能选择比例、颜色和署名，与意大利语课程一致。",
+      "切换菜单语言不再重复动画，并回到刚才的设置页面。",
+      "更整洁：长按不再弹出安卓的“复制”菜单，应用内可以打印，旅行手账的地图完整可见。",
+      "安卓桌面小组件：“今天”和“休息”（学习 25 分钟加咖啡休息）。"
     ] },
-  { v: "6.6", d: "2026-10",
-    it: ["La versione di partenza: un solo file index.html con vocabolario, ripasso a intervalli e frasi."],
-    zh: ["起始版本：单个网页文件，包含词汇、间隔复习和句子。"] }
+  { v: "6.0–6.6", d: "2026-10",
+    it: [
+      "Due corsi in un'app: il cinese per italiani (6385 parole, HSK 1–5) e l'italiano per chi parla cinese (4780 parole).",
+      "Ripasso a intervalli (FSRS-6) in tre stili, Guidato, Misto e Classico, con esercizi vari e verifica di tappa.",
+      "Voci reali, 22 brani originali, orecchio ai toni, pronuncia con il microfono e modalità guida a mani libere.",
+      "Laboratorio di frasi, radicali, ordine dei tratti, lettura graduata e 32 dialoghi.",
+      "Sincronizzazione senza server (cloud tuo o QR), backup, esportazione per Anki e foglio di lavoro in PDF.",
+      "Gradi, serie con giorno di riposo, sfida a un amico, pacchetto classe e carte da condividere.",
+      "Taccuino del viaggiatore: una mappa da Roma a Guilin, una città per ogni tappa del Percorso.",
+      "Sostieni il progetto e sigilli di gratitudine, solo estetici: tutto resta gratis."
+    ],
+    zh: [
+      "一个应用，两门课程：给意大利人的中文（6385 个词，HSK 1–5）和给中国人的意大利语（4780 个词）。",
+      "间隔复习（FSRS-6），三种方式：引导、混合、经典；有多种练习和阶段测验。",
+      "真人录音、22 首原创音乐、声调听力、麦克风发音练习和免手持导览模式。",
+      "造句实验室、部件、笔顺、分级阅读和 32 个对话。",
+      "无需服务器的同步（自己的云端或二维码）、备份、导出到 Anki、可打印的练习 PDF。",
+      "等级、可休息一天的连续天数、和朋友比一比、班级学习包和分享卡片。",
+      "旅行手账：一张从罗马到桂林的地图，每学完一站到一座城市。",
+      "支持项目和仅作纪念的感谢印章：一切依然免费。"
+    ] }
 ];
