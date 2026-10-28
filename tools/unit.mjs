@@ -10,6 +10,7 @@ import path from "path";
 import vm from "vm";
 import { fileURLToPath } from "url";
 import { lab } from "./lib/lab.mjs";
+import { recipes, recipesFile } from "./lib/radicali.mjs";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), ".."), SRC = path.join(ROOT, "src");
 const results = [];
@@ -231,6 +232,34 @@ function sandbox() {
   check("traguardi del corso di italiano: unione, per ognuno la prima volta", m.first === 100 && m.s7 === 500 && m.w100 === 300, JSON.stringify(m));
 }
 
+/* ---- Laboratorio dei radicali: le ricette vengono dai dati dell'app, le letture a mano sono coerenti ---- */
+{
+  const { list, base } = recipes(SRC), norm = (c) => base[c] || c;
+  const cur = fs.existsSync(path.join(SRC, "data/lab-recipes.js")) ? fs.readFileSync(path.join(SRC, "data/lab-recipes.js"), "utf8") : "";
+  check("laboratorio dei radicali: src/data/lab-recipes.js è aggiornato (node tools/radicali.mjs)", cur === recipesFile(list), list.length + " ricette");
+  check("laboratorio dei radicali: ogni ricetta ha due componenti, un carattere dell'app con i suoi tratti e il pinyin", list.length > 1000 && list.every((r) => r.length === 8 && r[1] && r[2] && /^[⿰⿱]$/.test(r[3]) && r[6]));
+  const ctx = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(SRC, "data/lab-readings.js"), "utf8"), ctx);
+  const R = vm.runInContext("LAB_READ", ctx), by = Object.fromEntries(list.map((r) => [r[0], r])), bad = [];
+  for (const [ch, v] of Object.entries(R)) {
+    const r = by[ch]; if (!r) { bad.push(ch + ": non è una ricetta"); continue; }
+    if ([...v[0]].map(norm).sort().join("") !== [r[1], r[2]].map(norm).sort().join("")) bad.push(ch + ": le parti non sono quelle dei dati");
+    if (!/[㐀-鿿]/.test(v[2]) || v[1].length < 15 || v[1].length > 150 || v[2].length < 6 || v[2].length > 60) bad.push(ch + ": lettura troppo corta o troppo lunga");
+    /* mai storia o origine: sono battute, non etimologie */
+    if (/(in origine|originariamente|anticamente|nell'antichità|gli antichi|un tempo|etimolog|deriva|dinastia|secol[oi]|storicamente|i cinesi (pensavano|credevano))/i.test(v[1]) || /(古代|最初|本来|起源|字源|据说)/.test(v[2])) bad.push(ch + ": suona come un'etimologia");
+  }
+  check("laboratorio dei radicali: almeno 60 letture simpatiche, ognuna con le parti giuste, in italiano e in cinese, senza etimologie", Object.keys(R).length >= 60 && !bad.length, Object.keys(R).length + " letture; " + bad.slice(0, 4).join("; "));
+  const it = fs.readFileSync(path.join(SRC, "i18n/lab-rad.js"), "utf8"), keys = (lang) => { const m = it.split("Object.assign(I18N." + lang + ",")[1].split("});")[0]; return [...m.matchAll(/"(lr.[^"]+)":/g)].map((x) => x[1]).sort(); };
+  const ki = keys("it"), kz = keys("zh");
+  check("laboratorio dei radicali: i testi hanno le stesse chiavi in italiano e in cinese", ki.length > 40 && ki.join() === kz.join(), ki.filter((k) => !kz.includes(k)).concat(kz.filter((k) => !ki.includes(k))).join(", "));
+}
+{
+  const { Store, LS } = sandbox();
+  LS.setItem("cp-labrad-v1", JSON.stringify({ f: { 好: 200, 休: 500 } }));
+  await Store.importObj({ app: "mandarino", v: 5, kv: { "cp-labrad-v1": JSON.stringify({ f: { 好: 100, 明: 300 } }) }, log: [] }, "merge");
+  const f = JSON.parse(LS.getItem("cp-labrad-v1")).f;
+  check("laboratorio dei radicali: le scoperte si uniscono tra dispositivi (per ognuna la prima volta)", f["好"] === 100 && f["休"] === 500 && f["明"] === 300, JSON.stringify(f));
+}
+
 /* ---- pagina cinese (docs/zh/, il QR delle carte): leggera, cinese per primo, nessuna risorsa esterna; l'unico script è in
    pagina e riconosce solo il browser di WeChat ---- */
 {
@@ -367,6 +396,8 @@ function sandbox() {
   check("avvio: i dati pesanti (esempi, tratti, lessico, jsQR) restano fuori dalla compilazione iniziale", lazy > 700 * 1024, KB(lazy) + " KB");
   /* il gruppo ESERCIZI (motore, distrattori, digitazione…) e i dati dei materiali sono testo letto al primo uso */
   const grp = [...html.matchAll(/<script type="text\/plain" id="group-esercizi-\d+">/g)].length, exData = ["frasi_zh", "frasi_it", "voce_zh", "voce_it", "insiemi"].every((n) => html.includes('<script type="application/json" id="lazy-' + n + '">'));
+  const lab = [...html.matchAll(/<script type="text\/plain" id="group-labrad-\d+">/g)].length;
+  check("avvio: il gruppo LABRAD (ricette, letture, laboratorio) è testo letto al primo uso, non JavaScript compilato all'apertura", lab === 4 && /\["LABRAD"\] = function/.test(html), "gruppo " + lab);
   check("avvio: il gruppo ESERCIZI e i dati dei materiali non si compilano all'apertura (limite di 1500 KB invariato)", grp >= 4 && exData && /__mdLoad = window.__mdLoad/.test(html), "gruppo " + grp + ", dati " + exData);
 }
 
