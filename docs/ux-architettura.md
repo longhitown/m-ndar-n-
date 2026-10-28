@@ -13,7 +13,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 | Scheda | Contenuto | Classe | A chi serve, quando |
 |---|---|---|---|
 | **Percorso** | carta «Continua» (tappa, parole, lezione e dialogo della tappa), grado e serie, capitoli e tappe | E | a tutti, ogni giorno: è la home «Oggi» |
-| **Studia** | carta «Oggi» (ripassi, nuove, *Inizia*), personalizza, Orecchio ai toni, Sfida, Progressi (con la carta del Taccuino del viaggiatore), backup | E | a tutti, ogni giorno |
+| **Studia** | carta «Oggi» (ripassi, nuove, *Inizia*), personalizza, Orecchio ai toni, Sfida, Progressi (con la carta del Taccuino del viaggiatore, anche nel corso di italiano come «我的进步»), backup | E | a tutti, ogni giorno |
 | **Parole** | tabella di 6385 parole, ricerca, filtri, legenda, dettaglio della parola | R | dal 2°-3° giorno, quando si cerca una parola |
 | **Frasi** | 4 gruppi, 8 strumenti (sotto) | R/A | dopo le prime parole |
 

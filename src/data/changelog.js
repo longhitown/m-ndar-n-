@@ -6,6 +6,7 @@
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
+      "Corso di italiano: anche il tuo Taccuino del viaggiatore, da Guilin a Roma. Ogni lezione superata ti porta più vicino alla prossima città.",
       "Grammatica più ricca: 55 lezioni per il cinese e 51 per l'italiano, con mini-dialoghi, esempi con audio e un ripasso ogni cinque lezioni.",
       "Apertura animata: i quattro toni volano sulle lettere e sulle foglie del logo.",
       "Microfono e voce più affidabili su Android, e messaggi chiari al posto dei codici di errore.",
@@ -15,6 +16,7 @@ var CHANGELOG = [
       "Su Android: widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora (mattina, pomeriggio, sera, notte)."
     ],
     zh: [
+      "意大利语课程也有旅行手账了：从桂林到罗马，每通过一课，就离下一座城市更近。",
       "语法更丰富：中文 55 课、意大利语 51 课，带小对话、有声例句，每五课一次复习。",
       "启动动画：四个声调飞到标志的字母和两片叶子上。",
       "安卓上的麦克风和语音更稳定，出错时显示清楚的说明，不再显示错误代码。",

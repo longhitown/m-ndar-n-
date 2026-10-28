@@ -1,4 +1,4 @@
-/* ===== màndarínō · Taccuino del viaggiatore (corso di cinese).
+/* ===== màndarínō · Taccuino del viaggiatore (corso di cinese; per il corso di italiano il viaggio al contrario, Guilin → Roma, con le lezioni superate).
    Un viaggio immaginario Roma → Guilin: le città (DIARY.stops, data/diary.js) si «sbloccano» con le tappe del Percorso
    finite (CP.pathDoneCount). Gli sbagli non sono penalità: se la persona ha davvero scambiato una coppia di parole simili
    (cp-ex-v1.conf, scritto da CP.exConf in study/memory.js), sulla pagina della città compare l'aneddoto scritto a mano.
@@ -8,11 +8,24 @@
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, S = DIARY.stops, N = DIARY.notes, ZH = typeof LANG !== "undefined" && LANG === "zh";
   function lget(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
-  function city(i) { return ZH ? S[i].zh : S[i].it; }
+  /* il corso di italiano (per chi parla cinese) fa lo stesso viaggio al contrario: le stesse città, soglie in lezioni superate */
+  var ITS = S.slice().reverse().map(function (s, j) { var o = {}; Object.keys(s).forEach(function (k) { o[k] = s[k]; }); o.th = DIARY.itTh[j]; return o; });
+  function stopsOf(c) { return c === "it" ? ITS : S; }
+  function city(i, st) { st = st || S; return ZH ? st[i].zh : st[i].it; }
 
   /* ---- dove si è arrivati ---- */
-  function stopAt(n) { var i = 0; S.forEach(function (s, j) { if (n >= s.th) i = j; }); return i; }
-  function doneCount() { return CP.pathDoneCount ? CP.pathDoneCount() : 0; }
+  function stopAt(n, st) { var i = 0; (st || S).forEach(function (s, j) { if (n >= s.th) i = j; }); return i; }
+  function itLessons() { return typeof ITLESSONS === "undefined" ? [] : ITLESSONS.slice().sort(function (a, b) { return a.n - b.n; }); }
+  function doneCount(c) {
+    if (c !== "it") return CP.pathDoneCount ? CP.pathDoneCount() : 0;
+    var P = lget("cp-it-lessons-v1") || {};
+    return itLessons().filter(function (l) { var p = P[l.id] || {}; return p.done || (p.best || 0) >= 80; }).length;
+  }
+  /* le frasi della lezione che ha aperto la città (corso di italiano): fino a tre esempi, italiano + cinese */
+  function examplesOfStop(i, st) {
+    var L = itLessons(), l = i > 0 ? L[Math.min(L.length, st[i].th) - 1] : null;
+    return l && l.ex ? l.ex.slice(0, 3).map(function (e) { return { it: e[0], zh: e[1] }; }) : [];
+  }
 
   /* ---- gli aneddoti guadagnati: coppie scambiate nei dati, membri dell'insieme ---- */
   function member(m) { var p = m.split(" "); return { hz: p[0], py: p[1] }; }
@@ -55,12 +68,16 @@
   }
 
   /* ---- le pagine: dalla più recente ---- */
-  function build() {
-    var n = doneCount(), cur = stopAt(n), pages = [], i;
-    for (i = 0; i <= cur; i++) pages.push({ i: i, notes: [], words: wordsOfStop(i) });
+  function build(c) {
+    var st = stopsOf(c), n = doneCount(c), cur = stopAt(n, st), pages = [], i;
+    if (c === "it") {
+      for (i = 0; i <= cur; i++) pages.push({ i: i, st: st, course: "it", notes: [], words: [], ex: examplesOfStop(i, st) });
+      return { n: n, cur: cur, st: st, course: "it", pages: pages.reverse() };
+    }
+    for (i = 0; i <= cur; i++) pages.push({ i: i, st: st, notes: [], words: wordsOfStop(i) });
     earned().forEach(function (e) { var p = pages[Math.min(cur, stopAt(e.ev.d === 1e9 ? n : e.ev.d))]; p.notes.push(e); });
     pages.forEach(function (p) { p.notes.sort(function (a, b) { return b.ev.ultimo - a.ev.ultimo; }); });
-    return { n: n, cur: cur, pages: pages.reverse() };
+    return { n: n, cur: cur, st: st, pages: pages.reverse() };
   }
   function noteText(note, i) { return String(ZH ? note.zh : note.it).replace(/\{c\}/g, city(i)); }
 
@@ -83,7 +100,8 @@
     var pts = [], k, a, q = 12; for (k = 0; k <= q; k++) { a = k / q * Math.PI * 2 + 0.3; pts.push([cx + Math.cos(a) * rad * (1 + (r() - 0.5) * 0.14), cy + Math.sin(a) * rad * (1 + (r() - 0.5) * 0.14)]); }
     return smooth(pts);
   }
-  function mapSVG(cur) {
+  function mapSVG(cur, S) {
+    S = S || stopsOf();
     var r = rng(20260), h = "", i, s, a, b;
     var ink = function (d, w, extra) { return '<path d="' + d + '" fill="none" stroke="currentColor" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (extra || "") + "/>"; };
     /* il foglio e il suo bordo: i quattro lati, a tratti, con l'inchiostro che trema un poco */
@@ -124,7 +142,8 @@
     return '<svg class="dy-map" viewBox="0 0 360 620" role="img" aria-label="' + CP.attr(T("dy.mapAria", { n: cur + 1, m: S.length })) + '" focusable="false">' + h + "</svg>";
   }
   /* la strisciolina della carta in Studia */
-  function strip(cur) {
+  function strip(cur, S) {
+    S = S || stopsOf();
     var r = rng(77), w = 300, pts = S.map(function (s, i) { return [10 + i * (w - 20) / (S.length - 1), 14 + (i % 2 ? 3 : -3)]; }), h = "";
     h += '<path d="' + smooth(jit(pts, r, 0.8)) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="dy-road-off" stroke-dasharray="2 5"/>';
     if (cur > 0) h += '<path d="' + smooth(jit(pts.slice(0, cur + 1), r, 0.8)) + '" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="dy-road"/>';
@@ -133,10 +152,10 @@
   }
 
   /* ---- la carta in Studia ---- */
-  function card() {
-    var d = build();
-    return '<div class="dy-card">' + strip(d.cur) + '<div class="dy-card-t"><b>' + esc(T("dy.title")) + '</b><span class="small muted">' + esc(T("dy.at", { c: city(d.cur), n: d.cur + 1, m: S.length })) + "</span></div>" +
-      '<p class="small muted" style="margin:0">' + esc(T("dy.cardSub")) + '</p><button type="button" class="btn-s" data-diary-open>' + esc(T("dy.open")) + "</button></div>";
+  function card(c) {
+    var d = build(c), it = c === "it";
+    return '<div class="dy-card">' + strip(d.cur, d.st) + '<div class="dy-card-t"><b>' + esc(T("dy.title")) + '</b><span class="small muted">' + esc(T("dy.at", { c: city(d.cur, d.st), n: d.cur + 1, m: d.st.length })) + "</span></div>" +
+      '<p class="small muted" style="margin:0">' + esc(T(it ? "dyi.cardSub" : "dy.cardSub")) + '</p><button type="button" class="btn-s" data-diary-open="' + (it ? "it" : "zh") + '">' + esc(T("dy.open")) + "</button></div>";
   }
 
   /* ---- il foglio ---- */
@@ -152,9 +171,19 @@
       return '<li><span class="dy-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="dy-py">' + CP.pinyinHTML(x.py) + "</span>" + (w ? '<span class="dy-gl" lang="it">' + esc(CP.gloss(w)) + "</span>" : "") + "</li>";
     }).join("") + "</ul>";
   }
+  function exChips(ex) {
+    if (!ex.length) return "";
+    return '<div class="dy-words"><p class="small muted">' + esc(T("dyi.words")) + '</p><ul>' + ex.map(function (e) {
+      return '<li><span class="dy-gl" lang="it">' + esc(e.it) + '</span><span class="dy-gl"' + (ZH ? ' lang="zh-CN"' : "") + ">" + esc(ZH ? e.zh : "") + "</span></li>";
+    }).join("") + "</ul></div>";
+  }
   function page(p, open) {
-    var st = S[p.i], h = '<article class="dy-page" aria-label="' + CP.attr(T("dy.page", { n: p.i + 1 }) + " · " + city(p.i)) + '">' +
-      '<h4><small>' + esc(T("dy.page", { n: p.i + 1 })) + "</small> <span" + (ZH ? ' lang="zh-CN"' : "") + ">" + esc(city(p.i)) + "</span></h4>";
+    var st = p.st, h = '<article class="dy-page" aria-label="' + CP.attr(T("dy.page", { n: p.i + 1 }) + " · " + city(p.i, st)) + '">' +
+      '<h4><small>' + esc(T("dy.page", { n: p.i + 1 })) + "</small> <span" + (ZH ? ' lang="zh-CN"' : "") + ">" + esc(city(p.i, st)) + "</span></h4>";
+    if (p.course === "it") {
+      var ln = DIARY.itLines[st[p.i].id], tx = ln ? String(ZH ? ln.zh : ln.it).replace(/\{c\}/g, city(p.i, st)) : "";
+      return h + '<p class="dy-hand"' + (ZH ? ' lang="zh-CN"' : ' lang="it"') + ">" + esc(tx) + "</p>" + exChips(p.ex) + "</article>";
+    }
     if (p.i === 0) h += '<p class="dy-hand"' + (ZH ? ' lang="zh-CN"' : ' lang="it"') + ">" + esc(T("dy.start")) + "</p>";
     h += wordChips(p.words);
     p.notes.forEach(function (e) {
@@ -164,13 +193,13 @@
     if (!p.notes.length) h += '<div class="dy-note"><button type="button" class="btn-s" data-diary-share="' + CP.attr("|" + p.i) + '">' + esc(T("dy.share")) + "</button></div>";
     return h + "</article>";
   }
-  function open() {
-    var d = build(), total = d.pages.reduce(function (n, p) { return n + p.notes.length; }, 0), next = S[d.cur + 1];
-    var h = '<div class="fam-head"><div class="meta"><b>' + esc(T("dy.title")) + '</b><div class="small muted">' + esc(T("dy.at", { c: city(d.cur), n: d.cur + 1, m: S.length })) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
-      '<div class="dy-wrap">' + mapSVG(d.cur) + "</div>" +
-      '<p class="small muted dy-next">' + esc(next ? T("dy.next", { c: city(d.cur + 1), n: d.n, k: next.th }) : T("dy.end")) + "</p>";
+  function open(c) {
+    var d = build(c), it = c === "it", St = d.st, total = d.pages.reduce(function (n, p) { return n + p.notes.length; }, 0), next = St[d.cur + 1];
+    var h = '<div class="fam-head"><div class="meta"><b>' + esc(T("dy.title")) + '</b><div class="small muted">' + esc(T("dy.at", { c: city(d.cur, St), n: d.cur + 1, m: St.length })) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<div class="dy-wrap">' + mapSVG(d.cur, St) + "</div>" +
+      '<p class="small muted dy-next">' + esc(next ? T(it ? "dyi.next" : "dy.next", { c: city(d.cur + 1, St), n: d.n, k: next.th }) : T(it ? "dyi.end" : "dy.end")) + "</p>";
     h += page(d.pages[0]);
-    if (!total) h += '<p class="dy-empty small muted">' + esc(T("dy.none")) + "</p>";
+    if (!total && !it) h += '<p class="dy-empty small muted">' + esc(T("dy.none")) + "</p>";
     if (d.pages.length > 1) h += '<details class="dy-older"><summary>' + esc(T("dy.older", { n: d.pages.length - 1 })) + "</summary>" + d.pages.slice(1).map(function (p) { return page(p); }).join("") + "</details>";
     h += '<p class="small muted dy-priv">' + esc(T("dy.privacy")) + "</p>";
     CP.openSheet(h);
@@ -185,7 +214,7 @@
   }
   document.addEventListener("click", function (ev) {
     var b = ev.target.closest ? ev.target.closest("[data-diary-open], [data-diary-share]") : null; if (!b) return;
-    if (b.hasAttribute("data-diary-open")) { open(); return; }
+    if (b.hasAttribute("data-diary-open")) { open(b.getAttribute("data-diary-open") === "it" ? "it" : "zh"); return; }
     var v = b.getAttribute("data-diary-share").split("|");
     CP.shareCard.open("zh-diary", shareData(v[0], +v[1]));
   });
