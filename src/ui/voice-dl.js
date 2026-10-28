@@ -1,4 +1,4 @@
-/* ===== màndarínō · «Scarica le voci»: ⚙️ → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
+/* ===== màndarínō · «Scarica le voci»: ⚙️ → Suoni e musica → Voce → «Voci reali». Sul sito le clip si scaricano solo da qui, una
    volta, nella cache mandarino-voice (il service worker la tiene tra un aggiornamento e l'altro); poi cp-voice-dl = "1" e
    CP.speak le usa (core/voice-clip.js). Nell'APK sono già dentro. Si carica al primo uso di CP.voiceDl. ===== */
 (function () {
@@ -22,7 +22,7 @@
     }).then(function () { if (!fail) lsSet(DLK, "1"); return { done: done, fail: fail, tot: list.length }; });
   }
   function remove() { lsSet(DLK, ""); return window.caches ? caches.delete(VCACHE) : Promise.resolve(); }
-  /* ⚙️ → Voce: «Voci reali», con il pulsante per scaricarle (sul sito) */
+  /* ⚙️ → Suoni e musica → Voce: «Voci reali», con il pulsante per scaricarle (sul sito) */
   function html() {
     var T = CP.t; if (!langs().length) return "";
     var h = '<div class="vab vc-box" id="vc-box"><div class="small" style="font-weight:700">' + T("vc.title") + '</div><p class="small muted" style="margin:2px 0 6px">' + T("vc.desc") + "</p>";

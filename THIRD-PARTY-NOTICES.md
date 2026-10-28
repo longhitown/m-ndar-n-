@@ -1,7 +1,7 @@
 # Componenti di terzi
 
 Tutto ciò che màndarínō contiene e non è stato scritto per màndarínō. I testi delle licenze stanno in `LICENZE/` e nella
-schermata ⚙️ → Informazioni e supporto → Come funziona → Crediti. La build (`tools/build.mjs`) si ferma se in `src/vendor/`
+schermata ⚙️ → Informazioni → Come funziona → Crediti. La build (`tools/build.mjs`) si ferma se in `src/vendor/`
 compare un file, o in `src/data/` un dato esterno, che non è nominato qui. Il sito (`docs/`) usa anche le tre parti elencate sotto «Solo per il sito».
 
 | Componente | Licenza | Indirizzo | Versione / data | File nell'app |
