@@ -197,6 +197,7 @@ async function auditView(browser, file, vw, vh, theme) {
     if (!(await page.$(btn))) continue;
     await page.click(btn); await page.waitForTimeout(150); await page.evaluate(PAGE_LIB);
     await screen("Foglio " + lbl);
+    if (btn === "#settings-btn") await settingsPages(page, screen, lbl);
     await page.keyboard.press("Escape"); await page.waitForTimeout(80);
   }
   /* sessione */
@@ -242,6 +243,16 @@ async function auditView(browser, file, vw, vh, theme) {
 }
 
 /* il corso di italiano per chi parla cinese: carta «今天» e percorso, le altre schede, «我的进步», la carta */
+/* ⚙️: la pagina iniziale con la ricerca attiva e ognuna delle cinque pagine (chiamata con il foglio già aperto) */
+async function settingsPages(page, screen, lbl) {
+  await page.fill("#set-q", "a"); await page.waitForTimeout(80); await page.evaluate(PAGE_LIB); await screen("Foglio " + lbl + " · ricerca");
+  await page.fill("#set-q", ""); await page.waitForTimeout(60);
+  for (const p of ["look", "sound", "study", "data", "info"]) {
+    await page.click(`[data-set-open="${p}"]`); await page.waitForTimeout(220); await page.evaluate(PAGE_LIB);
+    await screen("Foglio " + lbl + " · " + p);
+    await page.click("[data-set-back]"); await page.waitForTimeout(80);
+  }
+}
 async function auditIt(browser, file, vw, vh, theme) {
   const fails = [];
   const seed = { "cp-course": "it", "cp-lang": "zh", "cp-it-welcome": "1", "cp-ux-v1": JSON.stringify({ onboarded: 1, legendSeen: 1, swipeHints: 9, unlv: 1, showAll: 1 }),
@@ -261,6 +272,7 @@ async function auditIt(browser, file, vw, vh, theme) {
     await page.evaluate((x) => CP.itShow(x), t); await page.waitForTimeout(200); await settle(page); await page.evaluate(() => window.scrollTo(0, 0)); await page.evaluate(PAGE_LIB);
     await screen("意大利语 · " + t);
   }
+  await page.click("#settings-btn"); await page.waitForTimeout(150); await page.evaluate(PAGE_LIB); await screen("Foglio ⚙️"); await settingsPages(page, screen, "⚙️"); await page.keyboard.press("Escape"); await page.waitForTimeout(100);
   for (const [open, lbl] of [[() => CP.itProgress(), "我的进步"], [() => CP.shareCard.open("it-day"), "分享卡片"]]) {
     await page.evaluate(open); await page.waitForTimeout(500); await settle(page); await page.evaluate(PAGE_LIB);
     await screen("Foglio " + lbl);

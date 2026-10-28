@@ -36,7 +36,7 @@ for (const c of need) if (!out[c]) miss.push(c);
 const keys = Object.keys(out).sort();
 const js = "/* Ordine e direzione dei tratti di " + keys.length + " caratteri, da Make Me a Hanzi (github.com/skishore/makemeahanzi),\n" +
   "   ricavati dai font Arphic PL KaitiM GB e UKai. Questo file è sotto la Arphic Public License: il testo completo è nei\n" +
-  "   crediti dell'app (⚙️ → Come funziona → Crediti e licenze) e in LICENZE/ARPHIC-PUBLIC-LICENSE.txt.\n" +
+  "   crediti dell'app (⚙️ → Informazioni → Come funziona → Crediti e licenze) e in LICENZE/ARPHIC-PUBLIC-LICENSE.txt.\n" +
   "   Modifiche rispetto a graphics.txt (fatte il " + new Date().toISOString().slice(0, 10) + " da tools/strokes.mjs): tenuti solo i caratteri del vocabolario e solo\n" +
   "   le mediane dei tratti (non i contorni), coordinate raddrizzate (y verso il basso) e arrotondate a 91 livelli. Non modificarlo a mano. */\n" +
   "var STROKES_A = " + JSON.stringify(A) + ";\nvar STROKES = {\n" + keys.map((k) => JSON.stringify(k) + ":" + JSON.stringify(out[k])).join(",\n") + "\n};\n";

@@ -5,7 +5,7 @@
    (itc.*) e le chiavi composte a runtime (onb.d + i) danno falsi allarmi noti. Uso:  node tools/lang-audit.mjs */
 import fs from "fs"; import vm from "vm"; import path from "path";
 const SRC = "src/i18n";
-const files = ["i18n.js", "it.js", "zh.js", "titles.js", "exercises.js", "voice.js", "credits-t12.js", "it-course.js", "together.js"];
+const files = ["i18n.js", "it.js", "zh.js", "titles.js", "exercises.js", "voice.js", "credits-t12.js", "it-course.js", "together.js", "worksheet.js"];
 const ctx = { console, window: {}, localStorage: { getItem: () => null }, document: { documentElement: { setAttribute() {} }, querySelectorAll: () => [] }, navigator: {} };
 vm.createContext(ctx);
 for (const f of files) { try { vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), ctx, { filename: f }); } catch (e) { console.log("ERRORE di caricamento", f, e.message); } }
