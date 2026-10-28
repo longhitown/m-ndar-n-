@@ -7,6 +7,22 @@
        {c} = la città dove l'aneddoto è stato «scritto» (la tappa raggiunta quando l'errore è avvenuto)
    Un aneddoto compare solo se la persona ha davvero scambiato quei membri (cp-ex-v1.conf, vedi study/memory.js). ===== */
 var DIARY = {
+  /* corso di italiano per chi parla cinese: il viaggio al contrario, Guilin → Roma, le stesse città in ordine inverso.
+     «th» = quante lezioni superate (≥ 80 %) servono per arrivarci; «line» = la riga scritta a mano sulla pagina della città (zh, e it per chi usa l'app in italiano) */
+  itTh: [0, 2, 5, 9, 14, 20, 26, 32, 38, 45, 51],
+  itLines: {
+    guilin: { zh: "出发前的晚上：行李箱里只有一本意大利语课本和一支笔。", it: "La sera prima di partire: in valigia un libro di italiano e una penna." },
+    shanghai: { zh: "在{c}的码头，我第一次大声说出“Buongiorno”。有人回了我一个微笑。", it: "Al porto di {c} ho detto «Buongiorno» a voce alta per la prima volta. Qualcuno mi ha sorriso." },
+    pechino: { zh: "在{c}，我开始分清阴性和阳性。城墙还是那么高，但冠词不再让我头疼了。", it: "A {c} comincio a distinguere maschile e femminile. Le mura sono alte, ma gli articoli non fanno più paura." },
+    chengdu: { zh: "在{c}喝茶时，我用意大利语点了人生中第一杯“caffè”。", it: "Davanti al tè di {c} ho ordinato in italiano il mio primo «caffè»." },
+    xian: { zh: "在{c}的城墙上，我背了一整页动词变位，风一吹，忘了一半，但另一半留下来了。", it: "Sulle mura di {c} ho ripetuto una pagina di verbi: il vento ne ha portati via metà, l'altra metà è rimasta." },
+    dunhuang: { zh: "在{c}的沙丘上，我给自己讲了一个意大利语小故事，只有骆驼听见。", it: "Sulle dune di {c} ho raccontato una storiella in italiano. Solo i cammelli l'hanno sentita." },
+    kashgar: { zh: "在{c}的集市里，我用意大利语数到了一百，商人们以为我在念咒语。", it: "Nel mercato di {c} ho contato in italiano fino a cento. I mercanti credevano a un incantesimo." },
+    samarcanda: { zh: "在{c}，我第一次用意大利语写了一张明信片，收信人是明天的自己。", it: "A {c} ho scritto la mia prima cartolina in italiano. Destinatario: me stesso di domani." },
+    istanbul: { zh: "在{c}，海的两岸，我听懂了一首意大利语歌里的一整句话。", it: "A {c}, tra le due sponde, ho capito una frase intera di una canzone italiana." },
+    venezia: { zh: "在{c}的运河边，我问路、听懂了回答，还说了“grazie”。", it: "Lungo i canali di {c} ho chiesto la strada, ho capito la risposta e ho detto «grazie»." },
+    roma: { zh: "到{c}了！我走进一家小餐馆，全程用意大利语点餐。服务员说：“Bravissimo!”", it: "Sono a {c}! In una trattoria ho ordinato tutto in italiano. Il cameriere ha detto: «Bravissimo!»" }
+  },
   stops: [
     { id: "roma", th: 0, x: 66, y: 566, side: "r", it: "Roma", zh: "罗马" },
     { id: "venezia", th: 1, x: 126, y: 512, side: "l", it: "Venezia", zh: "威尼斯" },

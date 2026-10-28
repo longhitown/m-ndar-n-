@@ -378,10 +378,11 @@ function sandbox() {
   check("Taccuino: almeno 40 aneddoti, id unici, ogni membro è nel vocabolario con lo stesso pinyin, {c} e testi nelle due lingue (" + DI.notes.length + ")", DI.notes.length >= 40 && !bad.length, bad.slice(0, 4).join("; "));
   const st = DI.stops, up = st.every((s, i) => !i || s.th > st[i - 1].th) && st[0].th === 0;
   check("Taccuino: le città hanno soglie crescenti dalla prima (0) e un nome in italiano e in cinese (" + st.length + ")", up && st.every((s) => s.it && /[一-鿿]/.test(s.zh) && s.x > 0 && s.y > 0), st.map((s) => s.th).join());
+  check("Taccuino (corso di italiano): 11 soglie in lezioni superate crescenti da 0 fino a 51, una riga a mano per ogni città in cinese e in italiano con {c}", DI.itTh.length === st.length && DI.itTh[0] === 0 && DI.itTh.every((v, i) => !i || v > DI.itTh[i - 1]) && DI.itTh[DI.itTh.length - 1] === 51 && st.every((x) => DI.itLines[x.id] && /[一-鿿]/.test(DI.itLines[x.id].zh) && DI.itLines[x.id].it.length > 30 && (x.id === "guilin" || (/\{c\}/.test(DI.itLines[x.id].zh) && /\{c\}/.test(DI.itLines[x.id].it)))), DI.itTh.join());
   /* i testi del taccuino (caricati al primo uso): stesse chiavi nelle due lingue e nessuna chiave usata che manchi */
   const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc); vm.runInContext(fs.readFileSync(path.join(SRC, "i18n/diary.js"), "utf8"), tc);
   const TI = vm.runInContext("I18N", tc), ki = Object.keys(TI.it).sort().join(), kz = Object.keys(TI.zh).sort().join();
-  const usedD = new Set(["ui/diary.js", "ui/share-card.js"].flatMap((f) => [...fs.readFileSync(path.join(SRC, f), "utf8").matchAll(/T\(\s*"((?:dy|dcard)\.[\w.]+)"/g)].map((m) => m[1])));
+  const usedD = new Set(["ui/diary.js", "ui/share-card.js"].flatMap((f) => [...fs.readFileSync(path.join(SRC, f), "utf8").matchAll(/T\(\s*"((?:dy|dyi|dcard)\.[\w.]+)"/g)].map((m) => m[1])));
   ["light", "sepia", "dark"].forEach((t) => usedD.add("dcard.th." + t));
   const missD = [...usedD].filter((k) => !TI.it[k] || !TI.zh[k]);
   check("Taccuino: stessi testi in italiano e in cinese e nessun testo usato che manchi (" + Object.keys(TI.it).length + ")", ki === kz && !missD.length, missD.join(", "));
