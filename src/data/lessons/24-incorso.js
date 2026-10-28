@@ -19,7 +19,15 @@ LESSONS.push({
     ["你在做什么呢？", "Che cosa stai facendo?"],
     ["我在学中文呢。", "Sto studiando cinese."],
     ["我没在看电视。", "Non sto guardando la TV."],
-    ["妈妈在做饭呢。", "La mamma sta cucinando."]
+    ["妈妈在做饭呢。", "La mamma sta cucinando."],
+    ["我在看电视呢。", "Sto guardando la TV."],
+    ["他不在做饭。", "Lui non sta cucinando."]
+  ],
+  "dlg": [
+    ["A", "你在做什么呢？", "Che cosa stai facendo?"],
+    ["B", "我在学中文呢。你在做什么？", "Sto studiando cinese. Tu che cosa fai?"],
+    ["A", "我正在吃饭。妈妈在做饭呢。", "Sto mangiando. La mamma sta cucinando."],
+    ["B", "好，我们一起吃饭吧。", "Bene, mangiamo insieme."]
   ],
   "traps": [
     ["我正在吃饭了。", "我正在吃饭。", "In corso: niente 了 (了 dice che è finita)."],

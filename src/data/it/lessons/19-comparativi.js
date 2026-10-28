@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Oggi fa più caldo di ieri.", "今天比昨天热。"],
     ["Questo telefono è meno caro.", "这部手机便宜一些。"],
     ["È il ristorante migliore della città.", "这是城里最好的饭店。"],
-    ["La pizza è buonissima!", "披萨好吃极了！"]
+    ["La pizza è buonissima!", "披萨好吃极了！"],
+    ["Roma è più grande di Milano.", "罗马比米兰大。"],
+    ["Questo è il più caro.", "这个最贵。"]
+  ],
+  "dlg": [
+    ["A", "Questo telefono è più caro di quel telefono.", "这部手机比那部贵。"],
+    ["B", "Ma è anche migliore.", "但也更好。"],
+    ["A", "Allora compri questo?", "那你买这部吗？"],
+    ["B", "No, compro quello. È meno caro.", "不，我买那部。它便宜一些。"]
   ],
   "traps": [
     ["Marco è alto più di me.", "Marco è più alto di me.", "più 放在形容词前面。"],

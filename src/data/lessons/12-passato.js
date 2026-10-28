@@ -18,7 +18,15 @@ LESSONS.push({
     ["我们昨天吃了饺子。", "Ieri abbiamo mangiato i ravioli."],
     ["你吃饭了吗？", "Hai mangiato?"],
     ["我没吃饭。", "Non ho mangiato."],
-    ["下雨了。", "Piove."]
+    ["下雨了。", "Piove."],
+    ["我吃了早饭。", "Ho fatto colazione."],
+    ["他没来。", "Lui non è venuto."]
+  ],
+  "dlg": [
+    ["A", "你吃饭了吗？", "Hai mangiato?"],
+    ["B", "没有，我没吃饭。你吃了吗？", "No, non ho mangiato. E tu, hai mangiato?"],
+    ["A", "我吃了。我昨天吃了饺子。", "Sì. Ieri ho mangiato i ravioli."],
+    ["B", "太好了！我今天想吃饺子。", "Che bello! Oggi vorrei mangiare i ravioli."]
   ],
   "traps": [
     ["我没吃饭了。", "我没吃饭。", "Al negativo niente 了: basta 没."],

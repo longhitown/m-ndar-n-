@@ -19,7 +19,14 @@ LESSONS.push({
     ["杯子被他打破了。", "Il bicchiere l'ha rotto lui."],
     ["我的钱包被偷了。", "Mi hanno rubato il portafoglio."],
     ["他被老师批评了。", "È stato rimproverato dall'insegnante."],
-    ["我的自行车没被偷。", "La mia bici non è stata rubata."]
+    ["我的自行车没被偷。", "La mia bici non è stata rubata."],
+    ["我的自行车被偷了。", "Mi hanno rubato la bici."],
+    ["我的书被朋友拿走了。", "Il mio libro l'ha preso un amico."]
+  ],
+  "dlg": [
+    ["A", "我的手机被偷了。", "Mi hanno rubato il cellulare."],
+    ["B", "太不好了！你的钱包也被偷了吗？", "Che brutto! Ti hanno rubato anche il portafoglio?"],
+    ["A", "没有，我的钱包没被偷。", "No, il portafoglio non me l'hanno rubato."]
   ],
   "traps": [
     ["我的手机被偷。", "我的手机被偷了。", "Dopo il verbo serve 了 o un risultato."],

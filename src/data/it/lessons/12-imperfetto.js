@@ -18,7 +18,15 @@ ITLESSONS.push({
     ["Quando ero in Cina, mangiavo spesso i ravioli.", "我在中国的时候，常常吃饺子。"],
     ["Pioveva e faceva freddo.", "那时候在下雨，天很冷。"],
     ["Mentre leggevo, è squillato il telefono.", "我在看书的时候，电话响了。"],
-    ["Prima abitavamo a Milano.", "以前我们住在米兰。"]
+    ["Prima abitavamo a Milano.", "以前我们住在米兰。"],
+    ["Ero stanco.", "我那时很累。"],
+    ["Mangiavamo sempre insieme.", "我们总是一起吃饭。"]
+  ],
+  "dlg": [
+    ["A", "Dove abitavi da bambino?", "你小时候住在哪里？"],
+    ["B", "Abitavo a Milano.", "我住在米兰。"],
+    ["A", "Che cosa facevi?", "你那时候做什么？"],
+    ["B", "Giocavo a calcio ogni giorno.", "我每天踢足球。"]
   ],
   "traps": [
     ["Da bambino ho giocato sempre a calcio.", "Da bambino giocavo sempre a calcio.", "过去的习惯用未完成过去时。"],

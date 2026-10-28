@@ -18,7 +18,16 @@ ITLESSONS.push({
     ["Mi scusi, dov'è la stazione?", "打扰一下，火车站在哪儿？"],
     ["Si accomodi, prego.", "请坐。"],
     ["La ringrazio molto.", "非常感谢您。"],
-    ["Possiamo darci del tu?", "我们可以用\"你\"称呼吗？"]
+    ["Possiamo darci del tu?", "我们可以用\"你\"称呼吗？"],
+    ["Mi scusi!", "打扰一下！"],
+    ["Come si chiama?", "您叫什么名字？"]
+  ],
+  "dlg": [
+    ["A", "Buongiorno, come sta?", "您好，您好吗？"],
+    ["B", "Bene, grazie. E Lei?", "很好，谢谢。您呢？"],
+    ["A", "Bene. Mi scusi, dov'è la stazione?", "很好。打扰一下，火车站在哪儿？"],
+    ["B", "La stazione è là, a destra.", "火车站在那边，在右边。"],
+    ["A", "La ringrazio molto.", "非常感谢您。"]
   ],
   "traps": [
     ["Come stai? (a un professore)", "Come sta?", "对老师、长辈用 Lei：Come sta?"],
