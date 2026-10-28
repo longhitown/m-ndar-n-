@@ -153,11 +153,13 @@ try {
       await p.evaluate(() => { if (document.getElementById("quit")) document.getElementById("quit").click(); });
       check("Da zero: nella barra solo Percorso e Studia", (await tabs(p)) === "path,study", await tabs(p));
       await p.evaluate(() => CP.go("frasi")); await p.waitForTimeout(150);
-      check("?go=frasi con Frasi ancora chiusa porta alla scheda aperta più vicina, senza errori", await p.evaluate(() => !document.getElementById("view-path").hidden && document.getElementById("view-build").hidden));
+      const g1 = await p.evaluate(() => ({ path: !document.getElementById("view-path").hidden, build: !document.getElementById("view-build").hidden, cls: document.body.className, errs: 0 }));
+      check("?go=frasi con Frasi ancora chiusa porta alla scheda aperta più vicina, senza errori", g1.path && !g1.build, JSON.stringify(g1));
       await p.evaluate(() => CP.unlock.peek("build", () => CP.build.openLesson(CP.lessons.list()[0].id), "Frasi")); await p.waitForTimeout(250);
       check("Lezione dal Percorso con Frasi chiusa: si apre in immersione, senza la scheda Frasi", await p.evaluate(() => document.body.classList.contains("in-focus") && getComputedStyle(document.querySelector("nav.dock")).display === "none" && document.getElementById("tab-build").hidden));
       await p.keyboard.press("Escape"); await p.waitForTimeout(250);
-      check("…e all'uscita si torna al Percorso", await p.evaluate(() => !document.body.classList.contains("in-focus") && !document.getElementById("view-path").hidden));
+      const g2 = await p.evaluate(() => ({ focus: document.body.classList.contains("in-focus"), path: !document.getElementById("view-path").hidden, cls: document.body.className }));
+      check("…e all'uscita si torna al Percorso", !g2.focus && g2.path, JSON.stringify(g2));
       await p.evaluate(() => CP.finder()); await p.fill("#fd-q", "laboratorio"); await p.waitForTimeout(150);
       check("Cerca ovunque: uno strumento ancora chiuso compare con «si apre…» e non porta a una scheda nascosta", /🔒/.test(await p.textContent("#fd-res")));
       await p.keyboard.press("Escape");
