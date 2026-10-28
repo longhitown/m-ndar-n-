@@ -1,0 +1,58 @@
+/* ===== Taccuino del viaggiatore (ui/diary.js): carta in Studia, mappa d'epoca, pagine scritte a mano ===== */
+:root {
+  --dy-paper: #FBF6EC; --dy-edge: #B79F7C; --dy-ink: #3A2E22; --dy-faint: #6F6250; --dy-seal: #C8312B; --dy-tick: #FFF6EA; --dy-page: #FFFDF8;
+  --f-hand: "Bradley Hand", "Segoe Print", "Chalkboard SE", "Noto Sans Handwriting", "Comic Sans MS", "Marker Felt", cursive;
+  --f-kai: "Kaiti SC", "STKaiti", "KaiTi", "楷体", "Noto Serif SC", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) { --dy-paper: #1D2420; --dy-edge: #6B5E48; --dy-ink: #E9DFCB; --dy-faint: #B3A890; --dy-seal: #D2453C; --dy-tick: #FFF6EA; --dy-page: #232B27; }
+}
+:root[data-theme="dark"] { --dy-paper: #1D2420; --dy-edge: #6B5E48; --dy-ink: #E9DFCB; --dy-faint: #B3A890; --dy-seal: #D2453C; --dy-tick: #FFF6EA; --dy-page: #232B27; }
+:root[data-theme="sepia"] { --dy-paper: #F6EBD3; --dy-edge: #A98E66; --dy-page: #FBF3E1; }
+
+/* la carta nel riquadro dei progressi */
+.dy-card { margin-top: 14px; padding: 12px; display: grid; gap: 8px; border: 1px dashed var(--dy-edge); border-radius: 12px; background: var(--dy-paper); color: var(--dy-ink); }
+.dy-card-t { display: grid; gap: 2px; }
+.dy-card-t b { font-family: var(--f-hand); font-size: 18px; font-weight: 700; letter-spacing: .01em; }
+.dy-card .btn-s { justify-self: start; min-height: 44px; }
+.dy-strip { width: 100%; height: 28px; color: var(--dy-ink); }
+.dy-strip .dy-off-dot { fill: none; stroke: var(--dy-faint); stroke-width: 1.5; }
+
+/* la mappa */
+.dy-wrap { margin-top: 12px; color: var(--dy-ink); }
+.dy-map { display: block; width: 100%; height: auto; }
+.dy-sheet { fill: var(--dy-paper); }
+.dy-edge { stroke: var(--dy-edge); }
+.dy-deco { color: var(--dy-faint); opacity: .85; }
+.dy-n { font: 700 13px var(--f-hand); fill: var(--dy-faint); }
+.dy-road { stroke: var(--dy-ink); }
+.dy-road-off { stroke: var(--dy-faint); }
+.dy-seal { fill: var(--dy-seal); }
+.dy-tick { stroke: var(--dy-tick); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.dy-here { stroke: var(--dy-seal); }
+.dy-off { stroke: var(--dy-faint); }
+.dy-city { font: 700 15px var(--f-hand); fill: var(--dy-ink); }
+.dy-city.off { fill: var(--dy-faint); font-weight: 600; }
+.dy-city.cur { font-size: 17px; }
+.dy-city[lang="zh-CN"] { font-family: var(--f-kai); }
+.dy-next { margin: 10px 0 0; }
+
+/* le pagine */
+.dy-page { margin-top: 14px; padding: 14px; border: 1px solid var(--dy-edge); border-radius: 12px; background: var(--dy-page); color: var(--dy-ink); }
+.dy-page h4 { margin: 0 0 8px; font: 700 22px var(--f-hand); text-transform: none; letter-spacing: 0; color: var(--dy-ink); }
+.dy-page h4:lang(zh) { font-family: var(--f-kai); }
+.dy-page h4 small { font: 600 13px var(--f-body); color: var(--dy-faint); margin-right: 6px; letter-spacing: .04em; text-transform: uppercase; }
+.dy-hand { margin: 0 0 8px; font: 600 18px/1.45 var(--f-hand); }
+.dy-hand:lang(zh) { font-family: var(--f-kai); font-size: 18px; }
+.dy-words p { margin: 0 0 4px; }
+.dy-words ul, .dy-pair { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.dy-words li, .dy-pair li { display: grid; gap: 1px; justify-items: center; min-width: 64px; padding: 6px 8px; border: 1px dashed var(--dy-edge); border-radius: 10px; }
+.dy-hz { font-size: 24px; line-height: 1.15; font-family: var(--f-han); }
+.dy-py { font-size: 14px; }
+.dy-gl { font-size: 13px; color: var(--dy-faint); max-width: 14ch; text-align: center; }
+.dy-pair li { border-style: solid; background: var(--dy-paper); }
+.dy-note + .dy-note { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--dy-edge); }
+.dy-note .btn-s { min-height: 44px; }
+.dy-older { margin-top: 14px; }
+.dy-older summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.dy-empty, .dy-priv { margin: 12px 0 0; }

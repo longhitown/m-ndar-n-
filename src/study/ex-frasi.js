@@ -42,7 +42,8 @@
       var s = pick(forWord(w), r, function (x) { return !!x.it; }); if (!s) return null;
       var i = s.toks.findIndex(function (t) { return t.w && t.w.key === w.key; }), x = D.word(w, ctx.pool(), ctx, r); if (i < 0 || !x) return null;
       var o = D.options('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r);
-      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(s.toks, i, s.it), say: s.zh, sentence: s };
+      var keys = {}; keys['<span class="ex-han">' + esc(w.hz) + "</span>"] = w.hz; x.forEach(function (y) { keys['<span class="ex-han">' + esc(y.hz) + "</span>"] = y.hz; });
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(s.toks, i, s.it), say: s.zh, sentence: s, keys: o.opts.map(function (h) { return keys[h]; }) };
     } });
 
   /* ---- buco grammaticale: un elemento dell'insieme al posto di un altro ---- */
@@ -74,7 +75,8 @@
       var g = c[Math.floor(r() * c.length)], right = g.s.toks[g.i].w.hz, wrong = D.shuffle(g.set.membri.filter(function (m) { return m !== right; }), r).slice(0, 3);
       if (wrong.length < 1) return null;
       var o = D.options('<span class="ex-han">' + esc(right) + "</span>", wrong.map(function (m) { return '<span class="ex-han">' + esc(m) + "</span>"; }), r);
-      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(g.s.toks, g.i, g.s.it), say: g.s.zh, note: g.set.nota };
+      var hz = {}; hz['<span class="ex-han">' + esc(right) + "</span>"] = right; wrong.forEach(function (m) { hz['<span class="ex-han">' + esc(m) + "</span>"] = m; });
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(g.s.toks, g.i, g.s.it), say: g.s.zh, note: g.set.nota, keys: o.opts.map(function (h) { return hz[h]; }) };
     },
     risposta: function (it) { if (it.note) { var fb = document.querySelector(".ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="it">💡 ' + esc(it.note) + "</p>"); } } });
 

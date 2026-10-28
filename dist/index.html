@@ -1721,6 +1721,66 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 @media (prefers-reduced-motion: no-preference) { .set-page:not([hidden]) { animation: set-in 0.18s ease-out; } .set-flash { animation: set-flash 1.6s ease-out; } .set-tile { transition: border-color 0.15s ease, transform 0.1s ease; } .set-tile:active { transform: scale(0.985); } }
 @media (prefers-reduced-motion: reduce) { .set-flash { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0.65); } }
 
+/* ---- styles/diary.css ---- */
+/* ===== Taccuino del viaggiatore (ui/diary.js): carta in Studia, mappa d'epoca, pagine scritte a mano ===== */
+:root {
+  --dy-paper: #FBF6EC; --dy-edge: #B79F7C; --dy-ink: #3A2E22; --dy-faint: #6F6250; --dy-seal: #C8312B; --dy-tick: #FFF6EA; --dy-page: #FFFDF8;
+  --f-hand: "Bradley Hand", "Segoe Print", "Chalkboard SE", "Noto Sans Handwriting", "Comic Sans MS", "Marker Felt", cursive;
+  --f-kai: "Kaiti SC", "STKaiti", "KaiTi", "楷体", "Noto Serif SC", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) { --dy-paper: #1D2420; --dy-edge: #6B5E48; --dy-ink: #E9DFCB; --dy-faint: #B3A890; --dy-seal: #D2453C; --dy-tick: #FFF6EA; --dy-page: #232B27; }
+}
+:root[data-theme="dark"] { --dy-paper: #1D2420; --dy-edge: #6B5E48; --dy-ink: #E9DFCB; --dy-faint: #B3A890; --dy-seal: #D2453C; --dy-tick: #FFF6EA; --dy-page: #232B27; }
+:root[data-theme="sepia"] { --dy-paper: #F6EBD3; --dy-edge: #A98E66; --dy-page: #FBF3E1; }
+
+/* la carta nel riquadro dei progressi */
+.dy-card { margin-top: 14px; padding: 12px; display: grid; gap: 8px; border: 1px dashed var(--dy-edge); border-radius: 12px; background: var(--dy-paper); color: var(--dy-ink); }
+.dy-card-t { display: grid; gap: 2px; }
+.dy-card-t b { font-family: var(--f-hand); font-size: 18px; font-weight: 700; letter-spacing: .01em; }
+.dy-card .btn-s { justify-self: start; min-height: 44px; }
+.dy-strip { width: 100%; height: 28px; color: var(--dy-ink); }
+.dy-strip .dy-off-dot { fill: none; stroke: var(--dy-faint); stroke-width: 1.5; }
+
+/* la mappa */
+.dy-wrap { margin-top: 12px; color: var(--dy-ink); }
+.dy-map { display: block; width: 100%; height: auto; }
+.dy-sheet { fill: var(--dy-paper); }
+.dy-edge { stroke: var(--dy-edge); }
+.dy-deco { color: var(--dy-faint); opacity: .85; }
+.dy-n { font: 700 13px var(--f-hand); fill: var(--dy-faint); }
+.dy-road { stroke: var(--dy-ink); }
+.dy-road-off { stroke: var(--dy-faint); }
+.dy-seal { fill: var(--dy-seal); }
+.dy-tick { stroke: var(--dy-tick); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.dy-here { stroke: var(--dy-seal); }
+.dy-off { stroke: var(--dy-faint); }
+.dy-city { font: 700 15px var(--f-hand); fill: var(--dy-ink); }
+.dy-city.off { fill: var(--dy-faint); font-weight: 600; }
+.dy-city.cur { font-size: 17px; }
+.dy-city[lang="zh-CN"] { font-family: var(--f-kai); }
+.dy-next { margin: 10px 0 0; }
+
+/* le pagine */
+.dy-page { margin-top: 14px; padding: 14px; border: 1px solid var(--dy-edge); border-radius: 12px; background: var(--dy-page); color: var(--dy-ink); }
+.dy-page h4 { margin: 0 0 8px; font: 700 22px var(--f-hand); text-transform: none; letter-spacing: 0; color: var(--dy-ink); }
+.dy-page h4:lang(zh) { font-family: var(--f-kai); }
+.dy-page h4 small { font: 600 13px var(--f-body); color: var(--dy-faint); margin-right: 6px; letter-spacing: .04em; text-transform: uppercase; }
+.dy-hand { margin: 0 0 8px; font: 600 18px/1.45 var(--f-hand); }
+.dy-hand:lang(zh) { font-family: var(--f-kai); font-size: 18px; }
+.dy-words p { margin: 0 0 4px; }
+.dy-words ul, .dy-pair { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.dy-words li, .dy-pair li { display: grid; gap: 1px; justify-items: center; min-width: 64px; padding: 6px 8px; border: 1px dashed var(--dy-edge); border-radius: 10px; }
+.dy-hz { font-size: 24px; line-height: 1.15; font-family: var(--f-han); }
+.dy-py { font-size: 14px; }
+.dy-gl { font-size: 13px; color: var(--dy-faint); max-width: 14ch; text-align: center; }
+.dy-pair li { border-style: solid; background: var(--dy-paper); }
+.dy-note + .dy-note { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--dy-edge); }
+.dy-note .btn-s { min-height: 44px; }
+.dy-older { margin-top: 14px; }
+.dy-older summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.dy-empty, .dy-priv { margin: 12px 0 0; }
+
 /* ---- styles/lab-rad.css ---- */
 /* ===== màndarínō · Laboratorio dei radicali (phrases/radicali.js). Il banco, la mensola degli elementi, la reazione.
    Movimento ridotto: nessuna animazione, il disegno dei tratti compare già fatto. ===== */
@@ -16075,7 +16135,14 @@ function tg(key, gram) {
       var t = E[k] = E[k] || {}; Object.keys(ex[k] || {}).forEach(function (ty) { var y = ex[k][ty], x = t[ty]; if (!x || (y && (y.n || 0) > (x.n || 0)) || (y && (y.n || 0) === (x.n || 0) && (y.ultimo || 0) > (x.ultimo || 0))) t[ty] = y; });
     }); });
     [a.read || {}, b.read || {}].forEach(function (r) { Object.keys(r).forEach(function (id) { RD[id] = Math.max(RD[id] || 0, r[id] || 0); }); });
+    /* coppie scambiate (Taccuino del viaggiatore): per ogni coppia la voce con n più alto, la prima tappa più bassa, l'ultima volta più recente */
+    var CF = {};
+    [a.conf || {}, b.conf || {}].forEach(function (cf) { Object.keys(cf).forEach(function (k) {
+      var y = cf[k] || {}, x = CF[k]; if (!x) { CF[k] = JSON.parse(JSON.stringify(y)); return; }
+      CF[k] = { n: Math.max(x.n || 0, y.n || 0), ultimo: Math.max(x.ultimo || 0, y.ultimo || 0), d: Math.min(x.d || 0, y.d || 0) }; if (x.t || y.t) CF[k].t = x.t || y.t;
+    }); });
     var out = { units: U, ex: E, read: RD };
+    if (Object.keys(CF).length) out.conf = CF;
     Object.keys(b).concat(Object.keys(a)).forEach(function (f) { if (!(f in out)) out[f] = a[f] !== undefined ? a[f] : b[f]; });
     return out;
   }
@@ -18521,7 +18588,9 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
     if (!cur || cur.done) return;
     var w = cur.w, kit = cur.kit, ex = kit.example ? kit.example(w.key) : null;
     cur.done = true; cur.g = res.g; cur.ms = Date.now() - cur.t0;
-    stat(w.key, cur.e.exType, res.ok); LAD.hist.push(!!res.ok); LAD.last.push(cur.e.exType); if (LAD.last.length > 4) LAD.last.shift();
+    stat(w.key, cur.e.exType, res.ok);
+    if (!res.ok && cur.item.keys && res.picked != null && CP.exConf) CP.exConf(cur.item.keys[cur.item.right], cur.item.keys[res.picked], cur.e.exType);
+    LAD.hist.push(!!res.ok); LAD.last.push(cur.e.exType); if (LAD.last.length > 4) LAD.last.shift();
     if (CP.pref.sfx) CP.sfx(res.ok ? "ok" : "ko"); CP.haptic(res.ok ? 8 : [20, 40, 20]);
     var fb = kit.root.querySelector(".ex-fb");
     /* nella verifica del percorso guidato (kit.noReveal) solo l'esito: niente parola completa, esempio né ascolto */
@@ -18569,15 +18638,25 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   function sylls(py) { return String(py).split(/[.\s']+/).filter(Boolean); }
   function listenBtn(text) { return '<div class="ex-listen">' + CP.sayBtn(text).replace('class="say"', 'class="say big"') + "</div>"; }
   function mc(right, wrong, r, extra) { var o = D.options(right, wrong, r); return Object.assign({ kind: "mc", opts: o.opts, right: o.right }, extra || {}); }
+  /* come mc(), ma ricorda quale parola c'è dietro ogni opzione (item.keys): se si sbaglia, la coppia scambiata va in
+     cp-ex-v1.conf (CP.exConf) e può diventare un aneddoto del Taccuino. f(parola) → html dell'opzione */
+  function mcw(w, wrong, f, r, extra) {
+    var m = {}; m[f(w)] = w.hz; wrong.forEach(function (y) { m[f(y)] = y.hz; });
+    var it = mc(f(w), wrong.map(f), r, extra); it.keys = it.opts.map(function (o) { return m[o]; }); return it;
+  }
+  function hanOpt(y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }
   register({ id: "mc-significato", famiglia: 0, corso: "zh", q: "exm.q.meaning",
-    crea: function (w, ctx, r) { var x = D.meaning(w, ctx.pool(), ctx, r); return x && mc(esc(D.gloss(w.it)), x.map(function (y) { return esc(D.gloss(y.it)); }), r, { prompt: hzpy(w), lang: "it", wide: true, say: CP.sayHz(w) }); } });
+    crea: function (w, ctx, r) { var x = D.meaning(w, ctx.pool(), ctx, r); return x && mcw(w, x, function (y) { return esc(D.gloss(y.it)); }, r, { prompt: hzpy(w), lang: "it", wide: true, say: CP.sayHz(w) }); } });
   register({ id: "mc-parola", famiglia: 0, corso: "zh", q: "exm.q.word",
-    crea: function (w, ctx, r) { var x = D.word(w, ctx.pool(), ctx, r); return x && mc('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r, { prompt: '<div class="cd-it" lang="it">' + esc(w.it) + "</div>", lang: "zh-CN" }); } });
+    crea: function (w, ctx, r) { var x = D.word(w, ctx.pool(), ctx, r); return x && mcw(w, x, hanOpt, r, { prompt: '<div class="cd-it" lang="it">' + esc(w.it) + "</div>", lang: "zh-CN" }); } });
   register({ id: "mc-pinyin", famiglia: 0, corso: "zh", q: "exm.q.pinyin",
-    crea: function (w, ctx, r) { var x = D.pinyin(w, ctx.pool(), ctx, r); return x && mc(CP.pinyinHTML(sylls(w.py).join(" ")), x.map(function (p) { return CP.pinyinHTML(p); }), r, { prompt: '<div class="cd-hz" lang="zh-CN">' + esc(w.hz) + "</div>" }); } });
+    crea: function (w, ctx, r) { var x = D.pinyin(w, ctx.pool(), ctx, r); if (!x) return null; var it = mc(CP.pinyinHTML(sylls(w.py).join(" ")), x.map(function (p) { return CP.pinyinHTML(p); }), r, { prompt: '<div class="cd-hz" lang="zh-CN">' + esc(w.hz) + "</div>" });
+      /* una sillaba sola: la scelta sbagliata è un tono, e il Taccuino lo legge come «a|~tono» */
+      if (sylls(w.py).length === 1) { var tn = {}; x.forEach(function (p) { tn[CP.pinyinHTML(p)] = CP.tone(p); }); it.keys = it.opts.map(function (o, i) { return i === it.right ? w.hz : tn[o] ? "~" + tn[o] : null; }); }
+      return it; } });
   register({ id: "mc-ascolto", famiglia: 1, corso: "zh", q: "exm.q.listen",
     richiede: function (w, ctx) { return ctx.hasVoice() && !ctx.poly(w.hz); },
-    crea: function (w, ctx, r) { var x = D.listen(w, ctx.pool(), ctx, r); return x && mc('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r, { prompt: listenBtn(CP.sayHz(w)), lang: "zh-CN", say: CP.sayHz(w), autoSay: true }); } });
+    crea: function (w, ctx, r) { var x = D.listen(w, ctx.pool(), ctx, r); return x && mcw(w, x, hanOpt, r, { prompt: listenBtn(CP.sayHz(w)), lang: "zh-CN", say: CP.sayHz(w), autoSay: true }); } });
   /* il tono di una parola di una sillaba: dal pinyin senza accento (e dalla voce, se c'è) alla curva giusta */
   var CURVES = ["mā", "má", "mǎ", "mà"];
   register({ id: "tono", famiglia: 1, corso: "zh", q: "exm.q.tone",
@@ -18647,7 +18726,8 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
       var s = pick(forWord(w), r, function (x) { return !!x.it; }); if (!s) return null;
       var i = s.toks.findIndex(function (t) { return t.w && t.w.key === w.key; }), x = D.word(w, ctx.pool(), ctx, r); if (i < 0 || !x) return null;
       var o = D.options('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r);
-      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(s.toks, i, s.it), say: s.zh, sentence: s };
+      var keys = {}; keys['<span class="ex-han">' + esc(w.hz) + "</span>"] = w.hz; x.forEach(function (y) { keys['<span class="ex-han">' + esc(y.hz) + "</span>"] = y.hz; });
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(s.toks, i, s.it), say: s.zh, sentence: s, keys: o.opts.map(function (h) { return keys[h]; }) };
     } });
 
   /* ---- buco grammaticale: un elemento dell'insieme al posto di un altro ---- */
@@ -18679,7 +18759,8 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
       var g = c[Math.floor(r() * c.length)], right = g.s.toks[g.i].w.hz, wrong = D.shuffle(g.set.membri.filter(function (m) { return m !== right; }), r).slice(0, 3);
       if (wrong.length < 1) return null;
       var o = D.options('<span class="ex-han">' + esc(right) + "</span>", wrong.map(function (m) { return '<span class="ex-han">' + esc(m) + "</span>"; }), r);
-      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(g.s.toks, g.i, g.s.it), say: g.s.zh, note: g.set.nota };
+      var hz = {}; hz['<span class="ex-han">' + esc(right) + "</span>"] = right; wrong.forEach(function (m) { hz['<span class="ex-han">' + esc(m) + "</span>"] = m; });
+      return { kind: "mc", opts: o.opts, right: o.right, lang: "zh-CN", prompt: sentHTML(g.s.toks, g.i, g.s.it), say: g.s.zh, note: g.set.nota, keys: o.opts.map(function (h) { return hz[h]; }) };
     },
     risposta: function (it) { if (it.note) { var fb = document.querySelector(".ex-fb"); if (fb) fb.insertAdjacentHTML("afterbegin", '<p class="ex-note small" lang="it">💡 ' + esc(it.note) + "</p>"); } } });
 
@@ -20249,6 +20330,9 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   };
   CP.onPath = function () { render(); };
   CP.pathCurrent = function () { return currentIdx(); };
+  /* quante tappe sono finite (80% delle parole iniziate): serve al Taccuino del viaggiatore (ui/diary.js) */
+  CP.pathDoneCount = function () { var n = 0; SECTIONS.forEach(function (s) { if (stats(s.id).done) n++; }); return n; };
+  CP.pathStats = stats;
 
   function goWords(id) {
     CP.resetFilters();
@@ -21635,9 +21719,26 @@ Object.assign(I18N.zh, { "exm.q.listenSent": "听一听：你听到的是哪一�
   /* ---- matrice di confusione dei toni (orecchio) ---- */
   var M; try { M = JSON.parse(lget(EARKEY) || "null"); } catch (e) { M = null; }
   if (!M || !M.m) M = { m: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], n: 0 };
-  CP.confuse = function (expected, chosen) {
+  CP.confuse = function (expected, chosen, key) {
     if (!(expected >= 1 && expected <= 4 && chosen >= 1 && chosen <= 4)) return;
     M.m[expected - 1][chosen - 1]++; M.n++; lset(EARKEY, JSON.stringify(M));
+    /* per il Taccuino del viaggiatore: la parola e il tono che si è scelto al suo posto */
+    var w = key && CP.WORDS && CP.WORDS[key];
+    if (expected !== chosen && w) CP.exConf(w.hz, "~" + chosen, "tono");
+  };
+  /* ---- le coppie davvero scambiate (cp-ex-v1.conf), per gli aneddoti del Taccuino (ui/diary.js)
+     «a|b» = a era la risposta giusta e si è scelta la parola b (le due in ordine alfabetico: il verso non conta);
+     «a|~3» = a era giusta e si è scelto il tono 3. Valore: { n, ultimo, d } (d = tappe del Percorso finite la prima volta).
+     Resta sul telefono; si tengono le 300 più recenti. Non cambia né ripassi né voti. ---- */
+  CP.exConf = function (right, picked, type) {
+    if (!right || !picked || right === picked) return;
+    var o; try { o = JSON.parse(lget("cp-ex-v1") || "null"); } catch (e) { o = null; }
+    if (!o || typeof o !== "object") o = {};
+    var k = picked.charAt(0) === "~" ? right + "|" + picked : [right, picked].sort().join("|"), c = o.conf = o.conf || {}, e = c[k];
+    if (!e) { e = c[k] = { n: 0, ultimo: 0, d: CP.pathDoneCount ? CP.pathDoneCount() : 0 }; }
+    e.n++; e.ultimo = Date.now(); if (type) e.t = type;
+    var ks = Object.keys(c); if (ks.length > 300) ks.sort(function (a, b) { return c[a].ultimo - c[b].ultimo; }).slice(0, ks.length - 300).forEach(function (x) { delete c[x]; });
+    lset("cp-ex-v1", JSON.stringify(o));
   };
   CP.confusion = function () { return M; };
   function NAME(n) { return T("tone." + n); }
@@ -25863,7 +25964,8 @@ var CHANGELOG = [
       "Per chi lo usa: esportazione per Anki, collegamento a Pleco, informativa sulla privacy in ⚙️.",
       "Di che cosa è fatto un carattere: le sue parti, quale dà il significato e quale il suono. Sfida un amico su dieci parole con un link o un QR; pacchetti classe per chi insegna.",
       "Ripasso più vario: rispondi scegliendo tra quattro risposte, ascolta, riconosci il tono. Se preferisci le carte di prima, ⚙️ → Avanzate → Stile di ripasso → Classico.",
-      "Le due foglie del mandarino nel logo fanno sentire il terzo tono, come le lettere con l'accento fanno sentire gli altri."
+      "Le due foglie del mandarino nel logo fanno sentire il terzo tono, come le lettere con l'accento fanno sentire gli altri.",
+      "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
     ],
     zh: [
       "复习有了多种练习（⚙️ → 复习方式）：引导、混合，或和以前一样的经典方式。",
@@ -25884,7 +25986,8 @@ var CHANGELOG = [
       "需要的话：导出到 Anki、Pleco 链接、⚙️ 里的隐私说明。",
       "汉字的组成：由哪些部分构成，哪部分表意、哪部分表音。用链接或二维码和朋友比一比十个词；给老师用的班级学习包。",
       "复习更多样：从四个答案中选择、听音、辨认声调。喜欢以前的卡片的话：⚙️ → 高级 → 复习方式 → 经典。",
-      "标志里的两片橘叶会读出第三声，就像带声调的字母会读出其他声调。"
+      "标志里的两片橘叶会读出第三声，就像带声调的字母会读出其他声调。",
+      "旅行手账（学习 → 我的进步）：一张从罗马到桂林的古地图，每学完一站就到一座城市。把两个相似的词弄混时，出错会变成手写的旅途趣事；你可以选择把某一页做成图片分享。"
     ] },
   { v: "6.6", d: "2026-10",
     it: ["La versione di partenza: un solo file index.html con vocabolario, ripasso a intervalli e frasi."],
@@ -25957,12 +26060,486 @@ var CHANGELOG = [
         : [[sure, T("st.sure")], [W[W.length - 1].good, T("st.goodWeek")], [CP.game ? CP.game.activeDays() : 0, T("st.days")]];
       return '<p class="st-sum">' + summary(course, W, tone) + "</p>" +
         '<div class="stats">' + nums.map(function (x) { return '<div class="stat"><b>' + x[0] + "</b><span>" + esc(x[1]) + "</span></div>"; }).join("") + "</div>" + bars(W, course) +
+        (course === "zh" && CP.diary ? CP.diary.card() : "") +   /* il Taccuino del viaggiatore (ui/diary.js, caricato al primo uso) */
         /* il foglio di lavoro in PDF (ui/worksheet-stub.js): pulsante secondario, il pulsante pieno di Studia resta «Inizia» */
         '<div class="ws-cta"><button type="button" class="btn-s" data-ws-open>📝 ' + esc(T("ws.btn")) + '</button><p class="small muted">' + esc(T("ws.btnSub")) + "</p></div>";
     });
   }
   CP.story = { weeks: weeks, html: html, hardTone: hardTone, sureCount: sureCount };
 })();
+</script>
+<script type="text/plain" id="lazy-mod-diary">
+/* ---- i18n/diary.js ---- */
+/* testi del Taccuino del viaggiatore (ui/diary.js) e della sua pagina da condividere (ui/share-card.js, modello «zh-diary»).
+   Si caricano insieme al modulo, al primo uso; stesse chiavi in italiano e in cinese (controllo in tools/unit.mjs). */
+Object.assign(I18N.it, {
+  "dy.title": "Taccuino del viaggiatore", "dy.cardSub": "Un viaggio da Roma a Guilin: ogni tappa del Percorso è una città. Gli sbagli diventano aneddoti, mai punti persi.",
+  "dy.at": "Sei a {c} · città {n} di {m}", "dy.open": "Apri il taccuino", "dy.mapAria": "Mappa d'epoca del viaggio: {n} città su {m} raggiunte",
+  "dy.next": "Prossima città: {c}. Tappe del Percorso finite: {n} su {k}.", "dy.end": "Hai raggiunto l'ultima città del viaggio. Il taccuino resta aperto: l'aneddoto più bello è quello che non hai ancora scritto.",
+  "dy.page": "Città {n}", "dy.words": "Parole raccolte", "dy.start": "Si parte con la valigia aperta e tanta curiosità. Le prime parole arrivano con la prima tappa.",
+  "dy.none": "Nessun aneddoto per ora. Quando due parole simili ti giocano uno scherzo, qui nasce una pagina divertente: niente punti persi, solo storie.",
+  "dy.older": "Pagine precedenti ({n})", "dy.share": "Condividi questa pagina", "dy.cardEmpty": "Una tappa tranquilla a {c}: nella valigia ci sono parole nuove e nessun incidente.",
+  "dy.privacy": "Il taccuino vive solo su questo telefono, niente viene inviato. Se condividi una pagina, lo decidi tu.",
+  "dcard.title": "Una pagina del taccuino", "dcard.privacy": "L'immagine nasce sul tuo telefono; quello che ne fai è una tua scelta.", "dcard.format": "Formato", "dcard.theme": "Colore",
+  "dcard.th.light": "Chiaro", "dcard.th.sepia": "Carta di riso", "dcard.th.dark": "Scuro", "dcard.sign": "Firma la pagina", "dcard.namePh": "Il tuo nome (resta solo su questo telefono)",
+  "dcard.share": "Condividi", "dcard.alt": "Pagina del taccuino di viaggio, città {n}: {c}. {p}", "dcard.head": "Taccuino del viaggiatore", "dcard.page": "Città {n} di {m} · {c}",
+  "dcard.words": "Parole raccolte", "dcard.foot": "gratis · offline · senza pubblicità", "dcard.scan": "Inquadra per conoscere màndarínō", "dcard.sub": "il cinese a tappe, dall'Italia alla Cina"
+});
+Object.assign(I18N.zh, {
+  "dy.title": "旅行手账", "dy.cardSub": "从罗马到桂林的旅程：学完一站，就到一座新城市。出错会变成旅途趣事，不会扣分。",
+  "dy.at": "你在{c} · 第 {n} 座城市（共 {m} 座）", "dy.open": "打开手账", "dy.mapAria": "旅行古地图：已到达 {n} / {m} 座城市",
+  "dy.next": "下一座城市：{c}。已学完的站：{n} / {k}。", "dy.end": "你已到达旅程的最后一座城市。手账继续敞开：最好的趣事，还没写下来。",
+  "dy.page": "第 {n} 座城市", "dy.words": "收集的词", "dy.start": "行李箱敞开着，满怀好奇，出发！学完第一站，就会收集到第一批词。",
+  "dy.none": "暂时没有趣事。当两个相似的词捉弄你时，这里会多出一页有趣的故事：不扣分，只有故事。",
+  "dy.older": "以前的页面（{n}）", "dy.share": "分享这一页", "dy.cardEmpty": "在{c}的一站很平静：行李里多了新词，没有出任何岔子。",
+  "dy.privacy": "手账只保存在这台手机上，不会上传。要不要分享某一页，由你决定。",
+  "dcard.title": "手账的一页", "dcard.privacy": "图片在你的手机上生成；要不要分享由你决定。", "dcard.format": "比例", "dcard.theme": "颜色",
+  "dcard.th.light": "浅色", "dcard.th.sepia": "米纸", "dcard.th.dark": "深色", "dcard.sign": "在这一页署名", "dcard.namePh": "你的名字（只保存在这台手机上）",
+  "dcard.share": "分享", "dcard.alt": "旅行手账的一页，第 {n} 座城市：{c}。{p}", "dcard.head": "旅行手账", "dcard.page": "第 {n} / {m} 座城市 · {c}",
+  "dcard.words": "收集的词", "dcard.foot": "免费 · 离线 · 无广告", "dcard.scan": "扫码了解 màndarínō", "dcard.sub": "分站学中文，从意大利到中国"
+});
+/* ---- data/diary.js ---- */
+/* ===== màndarínō · Taccuino del viaggiatore: i dati.
+   - DIARY.stops: le città del viaggio Roma → Guilin; «th» = quante tappe del Percorso servono per arrivarci;
+     «x, y» = il punto sulla mappa (viewBox 360 × 620); «side» = da che lato sta il nome, «dy» = quanto alzarlo o abbassarlo.
+   - DIARY.notes: una riga per coppia (o insieme) di parole che si confondono. Scritte a mano.
+       m  = i membri: «caratteri pinyin», come nel vocabolario dell'app (tools/unit.mjs li controlla uno per uno)
+       it = l'aneddoto in italiano, in prima persona, mai un giudizio; zh = lo stesso in cinese
+       {c} = la città dove l'aneddoto è stato «scritto» (la tappa raggiunta quando l'errore è avvenuto)
+   Un aneddoto compare solo se la persona ha davvero scambiato quei membri (cp-ex-v1.conf, vedi study/memory.js). ===== */
+var DIARY = {
+  stops: [
+    { id: "roma", th: 0, x: 66, y: 566, side: "r", it: "Roma", zh: "罗马" },
+    { id: "venezia", th: 1, x: 126, y: 512, side: "l", it: "Venezia", zh: "威尼斯" },
+    { id: "istanbul", th: 5, x: 220, y: 482, side: "l", it: "Istanbul", zh: "伊斯坦布尔" },
+    { id: "samarcanda", th: 10, x: 288, y: 424, side: "l", it: "Samarcanda", zh: "撒马尔罕" },
+    { id: "kashgar", th: 15, x: 228, y: 366, side: "l", it: "Kashgar", zh: "喀什" },
+    { id: "dunhuang", th: 30, x: 148, y: 322, side: "r", it: "Dunhuang", zh: "敦煌" },
+    { id: "xian", th: 44, x: 92, y: 266, side: "r", it: "Xi'an", zh: "西安" },
+    { id: "chengdu", th: 64, x: 158, y: 212, side: "l", dy: -12, it: "Chengdu", zh: "成都" },
+    { id: "pechino", th: 86, x: 254, y: 172, side: "l", it: "Pechino", zh: "北京" },
+    { id: "shanghai", th: 116, x: 300, y: 112, side: "l", it: "Shanghai", zh: "上海" },
+    { id: "guilin", th: 170, x: 204, y: 66, side: "l", it: "Guilin", zh: "桂林" }
+  ],
+  notes: [
+    { id: "ma-mamma-cavallo", m: ["妈 mā", "马 mǎ"],
+      it: "A {c} volevo chiedere dov'era la mamma e ho chiesto dov'era il cavallo. Sono usciti tutti a cercarlo.",
+      zh: "在{c}，我想问“妈妈在哪儿”，却说成了“马在哪儿”。大家都出去找马了。" },
+    { id: "shui-dormire-ravioli", m: ["睡 shuì", "水 shuǐ"],
+      it: "A {c} volevo dire «vado a dormire» (睡觉, shuìjiào). Il tono è scivolato e sul tavolo sono comparsi dei ravioli bollenti (水饺, shuǐjiǎo).",
+      zh: "在{c}，我想说“我要去睡觉”，声调说错了，服务员端来了一盘水饺。" },
+    { id: "mai-comprare-vendere", m: ["买 mǎi", "卖 mài"],
+      it: "A {c} ho annunciato al negoziante «vendo!» invece di «compro!». Mi ha guardato, ha sorriso e mi ha fatto lo sconto lo stesso.",
+      zh: "在{c}，我想说“我要买”，却说成了“我要卖”。老板愣了一下，笑着给我打了折。" },
+    { id: "shu-libro-albero", m: ["书 shū", "树 shù"],
+      it: "In libreria a {c} ho chiesto un albero invece di un libro. La libraia mi ha indicato il parco, con molta gentilezza.",
+      zh: "在{c}的书店，我想买书，却说成了买树。店员客气地指了指公园。" },
+    { id: "yu-pesce-pioggia", m: ["鱼 yú", "雨 yǔ"],
+      it: "Volevo dire «oggi c'è pioggia». Ho detto «oggi c'è pesce», e il cuoco di {c} ne ha portato uno vero.",
+      zh: "我想说“今天有雨”，却说成了“今天有鱼”。{c}的厨师真的端来一条鱼。" },
+    { id: "gou-cane-basta", m: ["狗 gǒu", "够 gòu"],
+      it: "Ho detto «gǒu le» invece di «gòu le»: non «basta così», ma «è un cane». A {c} abbiamo guardato tutti sotto il tavolo.",
+      zh: "我想说“够了，谢谢”，却说成了“狗了，谢谢”。在{c}，大家都低头看桌子底下。" },
+    { id: "yao-volere-medicina", m: ["要 yào", "药 yào"],
+      it: "A {c}, in farmacia, volevo scrivere «medicina» (药) e ho scritto «voglio» (要). Il farmacista ha risposto: «Che cosa vuole?»",
+      zh: "在{c}的药店，我想写“药”，却写成了“要”。药剂师问：“您要什么？”" },
+    { id: "qian-soldi-davanti", m: ["钱 qián", "前 qián"],
+      it: "Volevo sapere se la stazione era «davanti» (前). A {c} ho detto «soldi» (钱) e un passante gentile mi ha mostrato il portafoglio.",
+      zh: "我想问“车站在前面吗？”，却说成了“车站在钱面吗？”。在{c}，路人笑着给我看他的钱包。" },
+    { id: "si-shi-quattro-dieci", m: ["四 sì", "十 shí"],
+      it: "A {c} ho ordinato quattro ravioli (sì) e ne sono arrivati dieci (shí). Li ho mangiati tutti, con coraggio.",
+      zh: "在{c}，我点了四个饺子，老板听成了十个。我鼓起勇气，全吃完了。" },
+    { id: "xi-ovest-lavare", m: ["西 xī", "洗 xǐ"],
+      it: "A {c} ho chiesto «un'anguria» (西瓜) ma ho detto «lavare l'anguria» (洗瓜). Il fruttivendolo l'ha lavata con cura e poi me l'ha data.",
+      zh: "在{c}，我想买西瓜，却说成了“洗瓜”。老板认真地洗了一遍，才递给我。" },
+    { id: "xiao-shao-piccolo-poco", m: ["小 xiǎo", "少 shǎo"],
+      it: "Volevo una porzione piccola (小) e ho detto «poco» (少). A {c} nella ciotola c'erano tre chicchi di riso, ordinatissimi.",
+      zh: "我想要一小碗饭，却说成了“饭少”。在{c}，碗里只有三粒米，摆得很整齐。" },
+    { id: "jin-vicino-entrare", m: ["近 jìn", "进 jìn"],
+      it: "Ho chiesto «il parco è vicino?» (近) con il carattere di «entrare» (进). A {c} il custode ha risposto: «Prego, entri!»",
+      zh: "我想问“公园近吗？”，却说成了“公园进吗？”。在{c}，看门人说：“请进！”" },
+    { id: "zhu-abitare-maiale", m: ["住 zhù", "猪 zhū"],
+      it: "In albergo a {c} volevo «alloggiare una notte» (住) e ho detto «maiale una notte» (猪). Il portiere ha controllato dietro il banco, poi ha riso.",
+      zh: "在{c}的旅馆，我想说“住一晚”，却说成了“猪一晚”。前台看了看柜台后面，然后笑了。" },
+    { id: "tang-zucchero-zuppa", m: ["糖 táng", "汤 tāng"],
+      it: "Volevo una zuppa e ho chiesto lo zucchero. A {c} mi hanno portato una ciotolina di zucchero e un cucchiaino serissimo.",
+      zh: "我想喝汤，却说成了“我要糖”。在{c}，老板端来一小碗白糖，还配了一把勺子。" },
+    { id: "ting-ascoltare-fermarsi", m: ["听 tīng", "停 tíng"],
+      it: "Al tassista di {c} volevo dire «si fermi qui» (停). Ho detto «ascolti» (听): ha spento la radio e abbiamo ascoltato il motore.",
+      zh: "我想对{c}的司机说“请停车”，却说成了“请听车”。他关了收音机，认真地听。" },
+    { id: "jiao-insegnare-chiamarsi", m: ["教 jiāo", "叫 jiào"],
+      it: "A {c} ho detto «insegno Marco» (教) invece di «mi chiamo Marco» (叫). Gli studenti hanno chiesto che materia fosse.",
+      zh: "在{c}，我想说“我叫小李”，却说成了“我教小李”。学生们问：“小李是什么课？”" },
+    { id: "you-avere-di-nuovo", m: ["有 yǒu", "又 yòu"],
+      it: "Volevo dire «eccomi di nuovo» (我又来了). A {c} ho detto «ho venuto» (我有来了): il cameriere ha cercato la mia prenotazione.",
+      zh: "我想说“我又来了”，却说成了“我有来了”。在{c}，服务员翻了翻预订本。" },
+    { id: "mang-man-occupato-lento", m: ["忙 máng", "慢 màn"],
+      it: "Al ristorante di {c} ho chiesto «per favore, più occupato» (忙) invece di «più piano» (慢). Il cameriere ha cominciato a correre.",
+      zh: "我想对{c}的服务员说“请慢一点”，却说成了“请忙一点”。他跑得更快了。" },
+    { id: "chang-lungo-spesso", m: ["长 cháng", "常 cháng"],
+      it: "Volevo dire «vengo spesso» (常) ma ho scelto il carattere di «lungo» (长). Il sarto di {c} ha tirato fuori il metro.",
+      zh: "我想写“我常来”，却写成了“我长来”。{c}的裁缝拿出了软尺。" },
+    { id: "he-fiume-bere", m: ["河 hé", "喝 hē"],
+      it: "Avevo sete e invece di «bere» (喝) ho detto «fiume» (河). A {c} mi hanno indicato il fiume fuori dalla finestra.",
+      zh: "我渴了，想说“我要喝水”，却说成了“我要河水”。在{c}，大家指了指窗外的河。" },
+    { id: "zuo-fare-sedersi", m: ["做 zuò", "坐 zuò"],
+      it: "Ho scritto «prego, faccia» (请做) invece di «prego, si accomodi» (请坐). A {c} l'ospite è rimasto in piedi, chiedendosi che cosa fare.",
+      zh: "我想写“请坐”，却写成了“请做”。在{c}，客人站着，不知道该做什么。" },
+    { id: "xiang-pensare-somigliare", m: ["想 xiǎng", "像 xiàng"],
+      it: "A un'amica di {c} volevo scrivere «mi manchi» (我想你). Ho scritto «ti somiglio» (我像你). Ha risposto: «Forse un po'.»",
+      zh: "我想对{c}的朋友说“我想你”，却写成了“我像你”。她回我：“是有点像。”" },
+    { id: "yi-qi-uno-sette", m: ["一 yī", "七 qī"],
+      it: "A {c} ho chiesto la camera uno e il portiere ha capito sette. Ho salito sette piani a piedi, ripassando i numeri a ogni gradino.",
+      zh: "在{c}，我要一号房间，前台听成了七号。我爬了七层楼，一路都在复习数字。" },
+    { id: "jiu-nove-lungo-liquore", m: ["九 jiǔ", "久 jiǔ", "酒 jiǔ"],
+      it: "Nove, a lungo, liquore: tre parole, un solo suono. A {c} ho chiesto nove ravioli (九) e il cameriere, per sicurezza, ha portato anche un bicchierino di liquore (酒).",
+      zh: "九、久、酒，读音都一样。在{c}，我点九个饺子，服务员怕听错，又送来一小杯酒。" },
+    { id: "dao-coltello-arrivare", m: ["刀 dāo", "到 dào"],
+      it: "Ho annunciato il mio arrivo (我到了) ma ho detto «coltello» (我刀了). A {c} la cameriera ha subito apparecchiato le posate.",
+      zh: "我想说“我到了”，却说成了“我刀了”。在{c}，服务员赶紧拿来一把刀。" },
+    { id: "bao-borsa-sazio", m: ["包 bāo", "饱 bǎo"],
+      it: "Volevo dire «sono sazio» (饱). A {c} ho detto «borsa» (包) e la padrona mi ha porto la sua borsa, per sicurezza.",
+      zh: "我想说“我饱了”，却说成了“我包了”。在{c}，老板娘把她的包递给了我。" },
+    { id: "nan-difficile-uomo", m: ["难 nán", "男 nán"],
+      it: "A {c} ho scritto «il cinese è uomo» (男) invece di «il cinese è difficile» (难). L'insegnante ha corretto: «Quasi… ma no.»",
+      zh: "我想写“汉语很难”，却写成了“汉语很男”。在{c}，老师批改说：“汉语不是男的。”" },
+    { id: "ba-papa-otto", m: ["爸 bà", "八 bā"],
+      it: "A {c} volevo presentare mio papà (爸) e ho detto «otto» (八). Gli ospiti hanno chiesto: «Otto che cosa?»",
+      zh: "在{c}，我想介绍“这是我爸”，却说成了“这是我八”。大家问：“八什么？”" },
+    { id: "jiao-piedi-ravioli", m: ["脚 jiǎo", "饺子 jiǎozi"],
+      it: "Ho chiesto dei ravioli (饺子) e ho detto «piedi» (脚). A {c} il cameriere ha guardato le mie scarpe, poi ha sorriso.",
+      zh: "我想点饺子，却说成了“来两只脚”。{c}的服务员低头看了看我的鞋。" },
+    { id: "lu-strada-verde", m: ["路 lù", "绿 lǜ"],
+      it: "Ho chiesto «qual è la strada?» (路) dicendo «verde» (绿). A {c} mi hanno indicato un prato, molto bello.",
+      zh: "我想问“哪条路去公园”，却说成了“哪条绿去公园”。在{c}，路人指着一片草地。" },
+    { id: "feiji-aereo-pollo", m: ["飞机 fēijī", "鸡 jī"],
+      it: "A {c} ho detto che viaggiavo in «pollo volante» (飞鸡) invece di «aereo» (飞机). Tutti hanno chiesto se il pollo fosse puntuale.",
+      zh: "在{c}，我想说“我坐飞机”，却说成了“我坐飞鸡”。大家问：“鸡会飞吗？”" },
+    { id: "che-veicolo-te", m: ["车 chē", "茶 chá"],
+      it: "A {c} volevo una tazza di tè (茶). Ho chiesto un veicolo (车), e il gestore mi ha dato le chiavi di una bici.",
+      zh: "我想点一杯茶，却说成了“来一辆车”。在{c}，老板笑着递给我一把自行车钥匙。" },
+    { id: "zao-buongiorno-cercare", m: ["早 zǎo", "找 zhǎo"],
+      it: "La mattina a {c} ho salutato tutti con «cerco!» (找) invece di «buongiorno!» (早). L'hotel intero si è messo a cercare con me.",
+      zh: "早上在{c}，我想说“早！”，却说成了“找！”。大家问我：“你在找什么？”" },
+    { id: "wen-chiedere-annusare", m: ["问 wèn", "闻 wén"],
+      it: "A {c} volevo chiedere la strada (问) e ho detto «annusare» (闻). Il passante ha annusato l'aria con me, in silenzio.",
+      zh: "在{c}，我想问路，却说成了“我想闻路”。路人和我一起闻了闻空气。" },
+    { id: "mao-gatto-centesimi", m: ["猫 māo", "毛 máo"],
+      it: "Il prezzo era tre «mao» (毛, dieci centesimi di yuan). Al mercato di {c} ho capito «tre gatti» (猫) e ho cercato i gatti in giro.",
+      zh: "价钱是三毛，我听成了“三猫”。在{c}的市场，我找了半天猫在哪儿。" },
+    { id: "cai-piatto-solo-allora", m: ["菜 cài", "才 cái"],
+      it: "Volevo dire «sono qui solo adesso» (才). A {c} ho detto «verdura» (菜): il cameriere ha chiesto quale piatto volessi.",
+      zh: "我想说“我才到”，却说成了“我菜到”。在{c}，服务员问我：“您要点什么菜？”" },
+    { id: "zuo-you-sinistra-destra", m: ["左 zuǒ", "右 yòu"],
+      it: "Ho detto «a sinistra» (左) invece di «a destra» (右). Il tassista di {c} ha ubbidito e abbiamo scoperto il mercato del pesce.",
+      zh: "我想说“向右转”，却说成了“向左转”。在{c}，司机照做了，我们意外到了鱼市。" },
+    { id: "kai-aprire-chiudere", m: ["开 kāi", "关 guān"],
+      it: "A {c} volevo dire «chiuda la porta» (关). Ho detto «apra» (开), e il vento è entrato in sala.",
+      zh: "我想说“请关门”，却说成了“请开门”。在{c}，风一下子吹了进来。" },
+    { id: "chi-he-mangiare-bere", m: ["吃 chī", "喝 hē"],
+      it: "A {c} ho detto «mangio il tè» (吃茶) invece di «bevo il tè» (喝茶). Il cameriere mi ha portato le bacchette, con garbo.",
+      zh: "我想说“我喝茶”，却说成了“我吃茶”。在{c}，服务员给了我一双筷子。" },
+    { id: "xue-studiare-neve", m: ["学 xué", "雪 xuě"],
+      it: "Volevo dire «studio il cinese» (学). Ho detto «neve il cinese» (雪). A {c} gli amici hanno guardato fuori: «Ma non nevica!»",
+      zh: "我想说“我学汉语”，却说成了“我雪汉语”。在{c}，朋友看了看窗外：“没下雪呀。”" },
+    { id: "xie-scrivere-scarpa", m: ["写 xiě", "鞋 xié"],
+      it: "A {c} mi hanno detto «scriva il nome» (写). Ho sentito «scarpa» (鞋) e ho guardato le mie, con molta attenzione.",
+      zh: "在{c}，他让我“写名字”，我听成了“鞋名字”，低头看了看自己的鞋。" },
+    { id: "yan-sale-fumo", m: ["盐 yán", "烟 yān"],
+      it: "Ho chiesto del sale (盐) ma ho detto «fumo» (烟). Il cuoco di {c} ha alzato le mani: «In cucina, niente fumo!»",
+      zh: "我想要盐，却说成了“烟”。{c}的厨师摆摆手：“厨房里不能有烟！”" },
+    { id: "bi-confronto-penna", m: ["比 bǐ", "笔 bǐ"],
+      it: "Volevo scrivere «lui è più alto di me» (比). A {c} ho scritto «penna» (笔) al suo posto: l'insegnante ha disegnato una penna accanto.",
+      zh: "我想写“他比我高”，却写成了“他笔我高”。在{c}，老师在旁边画了一支笔。" },
+    { id: "bei-tazza-schiena", m: ["杯 bēi", "背 bèi"],
+      it: "A {c} volevo un bicchiere d'acqua (杯). Ho detto «schiena» (背) e il cameriere ha guardato la mia schiena, preoccupato.",
+      zh: "我想要一杯水，却说成了“一背水”。在{c}，服务员担心地看了看我的背。" },
+    { id: "bai-bianco-cento", m: ["白 bái", "百 bǎi"],
+      it: "Il prezzo era cento (百). A {c} ho capito «bianco» (白) e ho cercato nel portafoglio una banconota bianca.",
+      zh: "价钱是一百块，我听成了“一白块”。在{c}，我在钱包里找白色的钱。" },
+    { id: "pa-paura-scalare", m: ["怕 pà", "爬 pá"],
+      it: "Ai piedi della Grande Muraglia volevo dire «ho paura» (怕). Ho detto «salgo» (爬). La guida di {c} ha risposto: «Allora si parte!»",
+      zh: "在长城脚下，我想说“我怕”，却说成了“我爬”。{c}的导游说：“好，我们出发！”" },
+    { id: "ban-mezzo-turno", m: ["半 bàn", "班 bān"],
+      it: "Volevo dire «alle sei e mezza» (半). A {c} ho detto «alle sei turno» (班). Il collega ha risposto: «Sei già al lavoro?»",
+      zh: "我想说“六点半”，却说成了“六点班”。在{c}，同事问：“你已经在上班了？”" },
+    { id: "qi-alzarsi-cavalcare", m: ["起 qǐ", "骑 qí"],
+      it: "A {c} volevo dire «mi alzo alle sei» (起床). Ho detto «cavalco il letto» (骑床): la padrona di casa ha riso a lungo.",
+      zh: "我想说“六点起床”，却说成了“六点骑床”。在{c}，房东笑着说：“床可不能骑。”" },
+    { id: "jiu-subito-vecchio", m: ["就 jiù", "旧 jiù"],
+      it: "Volevo dire «prendo subito questo» (就). A {c} ho detto «vecchio» (旧): il negoziante mi ha dato il più vecchio che aveva.",
+      zh: "我想说“我就要这个”，却说成了“我旧要这个”。在{c}，老板给了我最旧的那一个。" },
+    { id: "dian-negozio-elettricita", m: ["店 diàn", "电 diàn"],
+      it: "Cercavo un negozio (店) e ho chiesto l'elettricità (电). A {c} un passante mi ha indicato una presa nel muro.",
+      zh: "我想找一家店，却说成了找电。在{c}，路人指着墙上的插座。" },
+    { id: "hua-parole-disegnare", m: ["话 huà", "画 huà"],
+      it: "A {c} ho scritto «parliamo» (说话) con il carattere del disegno: «diciamo un disegno» (说画). Il mio amico ha preso i pennarelli.",
+      zh: "我想写“我们说话吧”，却写成了“我们说画吧”。在{c}，朋友拿出了画笔。" },
+    { id: "xian-prima-filo", m: ["先 xiān", "线 xiàn"],
+      it: "Per cortesia volevo dire «prima lei!» (先). A {c} ho detto «filo!» (线) e mi hanno dato un gomitolo.",
+      zh: "我想客气地说“您先请”，却说成了“您线请”。在{c}，店员递给我一团线。" },
+    { id: "yisheng-medico-vestiti", m: ["医生 yīshēng", "衣服 yīfu"],
+      it: "Avevo mal di testa e volevo un medico (医生). A {c} ho detto «vestiti» (衣服), e mi hanno portato un cappotto bello caldo.",
+      zh: "我头疼，想找医生，却说成了“找衣服”。在{c}，店员给我拿来一件大衣。" },
+    { id: "yu-pesce-giada", m: ["鱼 yú", "玉 yù"],
+      it: "Volevo comprare un pesce (鱼) e ho detto «giada» (玉). A {c} mi hanno mostrato un gioiello bellissimo, e anche il prezzo era bellissimo.",
+      zh: "我想买鱼，却说成了买玉。在{c}，老板拿出一块漂亮的玉，价钱也很“漂亮”。" },
+    { id: "xia-scendere-gambero", m: ["下 xià", "虾 xiā"],
+      it: "Sull'autobus di {c} volevo gridare «scendo!» (下). Ho gridato «gambero!» (虾), e i passeggeri si sono guardati attorno.",
+      zh: "在{c}的公交车上，我想喊“我要下车”，却喊成了“我要虾车”。大家四处看了看。" },
+    { id: "wu-cinque-danza", m: ["五 wǔ", "舞 wǔ"],
+      it: "Ho prenotato un tavolo per cinque (五). A {c} il cameriere ha capito «danza» (舞) e ha chiesto se volessi ballare.",
+      zh: "我订了五个人的位子，{c}的服务员却问我：“您要跳舞吗？”" },
+    { id: "er-liang-due", m: ["二 èr", "两 liǎng"],
+      it: "A {c} ho ordinato «二 tazze di tè» e il cameriere, con garbo, mi ha corretto sottovoce: «Le tazze si contano con 两.»",
+      zh: "我点了“二杯茶”。在{c}，服务员小声说：“是‘两杯’。”" },
+    { id: "dian-ora-negozio", m: ["点 diǎn", "店 diàn"],
+      it: "Volevo chiedere «che ore sono?» (几点). A {c} ho detto «quanti negozi?» (几店) e un passante ha risposto: «Qui davanti, ce ne sono tre.»",
+      zh: "我想问“现在几点？”，却说成了“现在几店？”。在{c}，路人说：“前面有三家店。”" },
+    { id: "hui-tornare-sapere", m: ["回 huí", "会 huì"],
+      it: "Volevo dire «torno a casa» (回). A {c} ho detto «so fare casa» (会): gli amici hanno chiesto che cosa sapessi fare.",
+      zh: "我想说“我回家了”，却说成了“我会家了”。在{c}，朋友们问：“你会什么？”" },
+    { id: "ma-ne-ba-particelle", m: ["吗 ma", "呢 ne", "吧 ba"],
+      it: "Volevo dire «andiamo!» (我们走吧). A {c} ho chiuso con 吗 e l'amico ha risposto con calma: «Boh, andiamo?»",
+      zh: "我想说“我们走吧”，却说成了“我们走吗”。在{c}，朋友想了想：“走吗？你说呢？”" },
+    { id: "zai-in-di-nuovo", m: ["在 zài", "再 zài"],
+      it: "Al saluto ho detto 在见 invece di 再见. A {c} l'amico ha chiesto: «In che posto?»",
+      zh: "分别时，我说了“在见”。在{c}，朋友问：“在哪儿见？”" },
+    { id: "you-zai-passato-futuro", m: ["又 yòu", "再 zài"],
+      it: "Ho detto 再 («di nuovo», futuro) per qualcosa già successo, che vuole 又. A {c} il cameriere è tornato un'altra volta e ha fatto un piccolo inchino.",
+      zh: "我说“他再来了”，应该说“他又来了”。在{c}，服务员又来了，笑着点点头。" },
+    { id: "bu-mei-negazioni", m: ["不 bù", "没 méi"],
+      it: "A {c} ho detto «non mangio» (不) invece di «non ho mangiato» (没). Il cuoco ha rispettato la mia scelta e non mi ha servito niente.",
+      zh: "我想说“我没吃饭”，却说成了“我不吃饭”。在{c}，厨师尊重我的决定，什么都没端来。" },
+    { id: "hui-neng-keyi-modali", m: ["会 huì", "能 néng", "可以 kěyǐ"],
+      it: "Davanti a un tempio di {c} volevo il permesso di fotografare (可以). Ho chiesto «sai fotografare?» (会) e il custode ha risposto: «Benissimo, grazie!»",
+      zh: "我想问“可以拍照吗？”，却问成了“会拍照吗？”。在{c}，看门人笑着说：“会，我拍得很好！”" },
+    { id: "de-de-particelle", m: ["的 de", "得 de"],
+      it: "Ho scritto 说的好 invece di 说得好. A {c} la maestra ha cerchiato la particella e ha scritto: «Quasi!»",
+      zh: "我想写“你说得很好”，却写成了“你说的很好”。在{c}，老师在“的”旁边画了个圈，写了“差一点”。" },
+    { id: "le-guo-zhe-aspetto", m: ["了 le", "过 guo", "着 zhe"],
+      it: "Volevo dire «ci sono stato una volta» (我去过北京) e ho detto 我去了北京. A {c} un amico ha pensato che fossi ancora là e mi ha chiesto com'era il tempo.",
+      zh: "我想说“我去过北京”，却说成了“我去了北京”。在{c}，朋友以为我还在北京，问我天气怎么样。" },
+    { id: "gradi-di-intensita", m: ["太 tài", "很 hěn", "最 zuì", "更 gèng"],
+      it: "Volevo «ancora più grande» (更大). A {c} ho detto «il più grande» (最大) e il negoziante ha portato la scatola più grande del negozio.",
+      zh: "我想要“更大”的，却说成了“最大”的。在{c}，老板搬来了店里最大的那个。" },
+    { id: "ye-dou-anche-tutti", m: ["也 yě", "都 dōu"],
+      it: "Volevo dire «andiamo tutti» (都). A {c} ho detto «anche noi andiamo» (也), e la guida ha chiesto: «Anche? Chi c'è già?»",
+      zh: "我想说“我们都去”，却说成了“我们也去”。在{c}，导游问：“也？谁已经去了？”" },
+    { id: "jiu-cai-subito-solo-ora", m: ["就 jiù", "才 cái"],
+      it: "Volevo dire «arrivo subito» (我就来). A {c} ho detto 才, che suona come «solo ora»: l'amico ha risposto «Ti aspetto da un'ora!»",
+      zh: "我想说“我就来”，却说成了“我才来”。在{c}，朋友说：“你才来？我等了一个小时！”" },
+    { id: "gei-gen-a-con", m: ["给 gěi", "跟 gēn"],
+      it: "Volevo dire «ti telefono» (我给你打电话). A {c} ho detto 跟 («con te»): lei ha chiesto a chi dovevamo telefonare insieme.",
+      zh: "我想说“我给你打电话”，却说成了“我跟你打电话”。在{c}，她问：“我们要给谁打电话？”" },
+    { id: "cong-dao-da-fino-a", m: ["从 cóng", "到 dào"],
+      it: "A {c} ho capito «il treno parte da Xi'an» (从) invece di «arriva a Xi'an» (到). Ho viaggiato nella direzione opposta, godendomi il paesaggio.",
+      zh: "在{c}，我把“火车到西安”看成了“火车从西安”。我往反方向坐了半天，看了不少风景。" },
+    { id: "chuang-letto-finestra", m: ["床 chuáng", "窗户 chuānghu"],
+      it: "A {c} ho chiesto di aprire il letto (床) invece della finestra (窗户). L'albergatore ha provato per un po', gentilissimo.",
+      zh: "我想说“请开窗户”，却说成了“请开床”。在{c}，旅馆老板试了半天。" }
+  ]
+};
+/* ---- ui/diary.js ---- */
+/* ===== màndarínō · Taccuino del viaggiatore (corso di cinese).
+   Un viaggio immaginario Roma → Guilin: le città (DIARY.stops, data/diary.js) si «sbloccano» con le tappe del Percorso
+   finite (CP.pathDoneCount). Gli sbagli non sono penalità: se la persona ha davvero scambiato una coppia di parole simili
+   (cp-ex-v1.conf, scritto da CP.exConf in study/memory.js), sulla pagina della città compare l'aneddoto scritto a mano.
+   Senza sbagli il taccuino è bello lo stesso: le tappe e le parole raccolte lungo la strada.
+   La mappa è un SVG disegnato qui, con un tremolio dell'inchiostro fisso (nessuna libreria, nessuna rete). Ogni pagina si può
+   trasformare in un'immagine (CP.shareCard, modello «zh-diary») solo se la persona lo sceglie. Caricato al primo uso (LAZYMOD). ===== */
+(function () {
+  var CP = window.CP, T = CP.t, esc = CP.esc, S = DIARY.stops, N = DIARY.notes, ZH = typeof LANG !== "undefined" && LANG === "zh";
+  function lget(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+  function city(i) { return ZH ? S[i].zh : S[i].it; }
+
+  /* ---- dove si è arrivati ---- */
+  function stopAt(n) { var i = 0; S.forEach(function (s, j) { if (n >= s.th) i = j; }); return i; }
+  function doneCount() { return CP.pathDoneCount ? CP.pathDoneCount() : 0; }
+
+  /* ---- gli aneddoti guadagnati: coppie scambiate nei dati, membri dell'insieme ---- */
+  function member(m) { var p = m.split(" "); return { hz: p[0], py: p[1] }; }
+  function plain(py) { return String(py).normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function toneOf(py) { var t = String(py).normalize("NFD"); return /̄/.test(t) ? 1 : /́/.test(t) ? 2 : /̌/.test(t) ? 3 : /̀/.test(t) ? 4 : 0; }
+  /* la prova che questa persona ha scambiato i membri della nota: { n, ultimo, d } o null */
+  function evidence(note, conf) {
+    var ms = note.m.map(member), ev = null;
+    Object.keys(conf || {}).forEach(function (k) {
+      var p = k.split("|"), a = p[0], b = p[1], c = conf[k], hit = false;
+      var ia = ms.filter(function (x) { return x.hz === a; })[0];
+      if (!ia) return;
+      if (b && b.charAt(0) === "~") {
+        var tn = +b.slice(1);
+        hit = Array.from(ia.hz).length === 1 && ms.some(function (y) { return y !== ia && Array.from(y.hz).length === 1 && plain(y.py) === plain(ia.py) && toneOf(y.py) === tn; });
+      } else hit = ms.some(function (y) { return y.hz === b; });
+      if (!hit) return;
+      if (!ev) ev = { n: 0, ultimo: 0, d: 1e9 };
+      ev.n += c.n || 1; ev.ultimo = Math.max(ev.ultimo, c.ultimo || 0); ev.d = Math.min(ev.d, c.d || 0);
+    });
+    return ev;
+  }
+  function earned() {
+    var o = lget("cp-ex-v1") || {}, cf = o.conf || {}, out = [];
+    N.forEach(function (n) { var ev = evidence(n, cf); if (ev) out.push({ note: n, ev: ev }); });
+    return out;
+  }
+
+  /* ---- parole raccolte: le prime parole iniziate della tappa che ha aperto la città ---- */
+  var SECK = null;
+  function wordsOfSection(sec) {
+    if (!SECK) { SECK = {}; CP.ORDER.forEach(function (k) { var w = CP.WORDS[k]; if (w) (SECK[w.sec] = SECK[w.sec] || []).push(k); }); }
+    var ks = SECK[sec] || [], got = ks.filter(function (k) { return CP.state(k) >= 1; });
+    return (got.length ? got : ks).slice(0, 5).map(function (k) { return CP.WORDS[k]; });
+  }
+  function wordsOfStop(i) {
+    if (i < 1 || typeof SECTIONS === "undefined") return [];
+    var sec = SECTIONS[Math.min(SECTIONS.length - 1, S[i].th - 1)];
+    return sec ? wordsOfSection(sec.id) : [];
+  }
+
+  /* ---- le pagine: dalla più recente ---- */
+  function build() {
+    var n = doneCount(), cur = stopAt(n), pages = [], i;
+    for (i = 0; i <= cur; i++) pages.push({ i: i, notes: [], words: wordsOfStop(i) });
+    earned().forEach(function (e) { var p = pages[Math.min(cur, stopAt(e.ev.d === 1e9 ? n : e.ev.d))]; p.notes.push(e); });
+    pages.forEach(function (p) { p.notes.sort(function (a, b) { return b.ev.ultimo - a.ev.ultimo; }); });
+    return { n: n, cur: cur, pages: pages.reverse() };
+  }
+  function noteText(note, i) { return String(ZH ? note.zh : note.it).replace(/\{c\}/g, city(i)); }
+
+  /* ---- l'inchiostro: tremolio fisso, sempre uguale ---- */
+  function rng(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function f1(p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); }
+  function smooth(pts, closed) {
+    var d = "M" + f1(pts[0]), i;
+    for (i = 1; i < pts.length - 1; i++) d += " Q" + f1(pts[i]) + " " + f1([(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2]);
+    return d + " L" + f1(pts[pts.length - 1]) + (closed ? "Z" : "");
+  }
+  function jit(pts, r, j) { return pts.map(function (p, k) { return k && k < pts.length - 1 ? [p[0] + (r() - 0.5) * 2 * j, p[1] + (r() - 0.5) * 2 * j] : p; }); }
+  function poly(pts, r, j) { return smooth(jit(pts, r, j)); }
+  function leg(a, b, i, r) {
+    var dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx * dx + dy * dy) || 1, bow = (i % 2 ? 1 : -1) * len * 0.16, cx = (a.x + b.x) / 2 - dy / len * bow, cy = (a.y + b.y) / 2 + dx / len * bow, n = Math.max(4, Math.round(len / 12)), pts = [], k, t, u;
+    for (k = 0; k <= n; k++) { t = k / n; u = 1 - t; pts.push([u * u * a.x + 2 * u * t * cx + t * t * b.x, u * u * a.y + 2 * u * t * cy + t * t * b.y]); }
+    return smooth(jit(pts, r, 1.6));
+  }
+  function ring(cx, cy, rad, r) {
+    var pts = [], k, a, q = 12; for (k = 0; k <= q; k++) { a = k / q * Math.PI * 2 + 0.3; pts.push([cx + Math.cos(a) * rad * (1 + (r() - 0.5) * 0.14), cy + Math.sin(a) * rad * (1 + (r() - 0.5) * 0.14)]); }
+    return smooth(pts);
+  }
+  function mapSVG(cur) {
+    var r = rng(20260), h = "", i, s, a, b;
+    var ink = function (d, w, extra) { return '<path d="' + d + '" fill="none" stroke="currentColor" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (extra || "") + "/>"; };
+    /* il foglio e il suo bordo: i quattro lati, a tratti, con l'inchiostro che trema un poco */
+    var edge = [], q;
+    for (q = 0; q <= 18; q++) edge.push([12 + 336 * q / 18, 10]);
+    for (q = 1; q <= 30; q++) edge.push([348, 10 + 600 * q / 30]);
+    for (q = 1; q <= 18; q++) edge.push([348 - 336 * q / 18, 610]);
+    for (q = 1; q <= 29; q++) edge.push([12, 610 - 600 * q / 30]);
+    edge.push(edge[0]);
+    h += '<rect x="3" y="3" width="354" height="614" rx="10" class="dy-sheet"/><path d="' + smooth(jit(edge, r, 1.3)) + '" fill="none" class="dy-edge" stroke-width="2" stroke-linejoin="round"/>';
+    h += '<g class="dy-deco">';
+    /* bussola */
+    h += ink(ring(42, 54, 20, r), 1.6) + ink(poly([[42, 28], [42, 80]], r, 0.8), 1.4) + ink(poly([[16, 54], [68, 54]], r, 0.8), 1.4) + ink(poly([[42, 30], [47, 54], [42, 78], [37, 54], [42, 30]], r, 0.6), 1.2) + '<text x="42" y="22" text-anchor="middle" class="dy-n">N</text>';
+    /* onde tra Roma e Istanbul */
+    for (i = 0; i < 4; i++) h += ink(poly([[140 + i * 6, 548 + i * 9], [150 + i * 6, 543 + i * 9], [160 + i * 6, 549 + i * 9], [170 + i * 6, 543 + i * 9], [180 + i * 6, 549 + i * 9]], r, 0.9), 1.5);
+    /* monti dell'Asia centrale */
+    [[304, 384], [324, 350], [334, 392]].forEach(function (m) { h += ink(poly([[m[0] - 20, m[1]], [m[0] - 6, m[1] - 24], [m[0], m[1] - 14], [m[0] + 8, m[1] - 30], [m[0] + 24, m[1]]], r, 1), 1.6); });
+    /* dune di Dunhuang */
+    for (i = 0; i < 3; i++) h += ink(poly([[20, 338 + i * 11], [36, 330 + i * 11], [54, 336 + i * 11], [70, 329 + i * 11]], r, 0.9), 1.4);
+    /* la Muraglia */
+    h += ink(poly([[296, 214], [304, 204], [312, 214], [320, 204], [328, 214], [336, 204], [344, 212]], r, 0.7), 1.8);
+    /* colline di Guilin */
+    [[262, 76], [290, 70], [318, 78]].forEach(function (m) { h += ink(poly([[m[0] - 12, m[1]], [m[0] - 8, m[1] - 18], [m[0], m[1] - 24], [m[0] + 8, m[1] - 16], [m[0] + 12, m[1]]], r, 0.8), 1.5); });
+    h += "</g>";
+    /* la strada */
+    for (i = 0; i < S.length - 1; i++) {
+      a = S[i]; b = S[i + 1];
+      h += i < cur ? ink(leg(a, b, i, r), 2.6, ' class="dy-road"') : ink(leg(a, b, i, r), 2, ' class="dy-road-off" stroke-dasharray="2 8"');
+    }
+    /* le città */
+    S.forEach(function (st, j) {
+      var side = st.side === "r" ? 1 : -1, tx = st.x + side * (j === cur ? 20 : 15), ty = st.y + 5 + (st.dy || 0), lbl = ZH ? st.zh : st.it;
+      if (j < cur) h += '<circle cx="' + st.x + '" cy="' + st.y + '" r="8" class="dy-seal"/><path d="M' + (st.x - 3.6) + " " + (st.y + 0.2) + " l2.6 2.8 l5 -6" + '" class="dy-tick" fill="none"/>';
+      else if (j === cur) h += '<circle cx="' + st.x + '" cy="' + st.y + '" r="9.5" class="dy-seal"/>' + ink(ring(st.x, st.y, 15, r), 2, ' class="dy-here"') + '<path d="M' + (st.x - 3.6) + " " + (st.y + 0.2) + " l2.6 2.8 l5 -6" + '" class="dy-tick" fill="none"/>';
+      else h += ink(ring(st.x, st.y, 7.5, r), 1.8, ' class="dy-off" stroke-dasharray="2 3"');
+      h += '<text x="' + tx + '" y="' + ty + '" text-anchor="' + (side > 0 ? "start" : "end") + '" class="dy-city' + (j > cur ? " off" : "") + (j === cur ? " cur" : "") + '"' + (ZH ? ' lang="zh-CN"' : "") + ">" + esc(lbl) + "</text>";
+    });
+    return '<svg class="dy-map" viewBox="0 0 360 620" role="img" aria-label="' + CP.attr(T("dy.mapAria", { n: cur + 1, m: S.length })) + '" focusable="false">' + h + "</svg>";
+  }
+  /* la strisciolina della carta in Studia */
+  function strip(cur) {
+    var r = rng(77), w = 300, pts = S.map(function (s, i) { return [10 + i * (w - 20) / (S.length - 1), 14 + (i % 2 ? 3 : -3)]; }), h = "";
+    h += '<path d="' + smooth(jit(pts, r, 0.8)) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="dy-road-off" stroke-dasharray="2 5"/>';
+    if (cur > 0) h += '<path d="' + smooth(jit(pts.slice(0, cur + 1), r, 0.8)) + '" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="dy-road"/>';
+    pts.forEach(function (p, i) { h += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1] + '" r="' + (i === cur ? 6.5 : 4.5) + '" class="' + (i <= cur ? "dy-seal" : "dy-off-dot") + '"/>'; });
+    return '<svg class="dy-strip" viewBox="0 0 ' + w + ' 28" aria-hidden="true" focusable="false">' + h + "</svg>";
+  }
+
+  /* ---- la carta in Studia ---- */
+  function card() {
+    var d = build();
+    return '<div class="dy-card">' + strip(d.cur) + '<div class="dy-card-t"><b>' + esc(T("dy.title")) + '</b><span class="small muted">' + esc(T("dy.at", { c: city(d.cur), n: d.cur + 1, m: S.length })) + "</span></div>" +
+      '<p class="small muted" style="margin:0">' + esc(T("dy.cardSub")) + '</p><button type="button" class="btn-s" data-diary-open>' + esc(T("dy.open")) + "</button></div>";
+  }
+
+  /* ---- il foglio ---- */
+  function wordChips(ws) {
+    if (!ws.length) return "";
+    return '<div class="dy-words"><p class="small muted">' + esc(T("dy.words")) + '</p><ul>' + ws.map(function (w) {
+      return '<li><span class="dy-hz" lang="zh-CN">' + esc(w.hz) + '</span><span class="dy-py">' + CP.pinyinHTML(w.py) + '</span><span class="dy-gl" lang="it">' + esc(CP.gloss(w)) + "</span></li>";
+    }).join("") + "</ul></div>";
+  }
+  function pairChips(note) {
+    return '<ul class="dy-pair">' + note.m.map(function (m) {
+      var x = member(m), w = CP.WORDS[x.hz];
+      return '<li><span class="dy-hz" lang="zh-CN">' + esc(x.hz) + '</span><span class="dy-py">' + CP.pinyinHTML(x.py) + "</span>" + (w ? '<span class="dy-gl" lang="it">' + esc(CP.gloss(w)) + "</span>" : "") + "</li>";
+    }).join("") + "</ul>";
+  }
+  function page(p, open) {
+    var st = S[p.i], h = '<article class="dy-page" aria-label="' + CP.attr(T("dy.page", { n: p.i + 1 }) + " · " + city(p.i)) + '">' +
+      '<h4><small>' + esc(T("dy.page", { n: p.i + 1 })) + "</small> <span" + (ZH ? ' lang="zh-CN"' : "") + ">" + esc(city(p.i)) + "</span></h4>";
+    if (p.i === 0) h += '<p class="dy-hand"' + (ZH ? ' lang="zh-CN"' : ' lang="it"') + ">" + esc(T("dy.start")) + "</p>";
+    h += wordChips(p.words);
+    p.notes.forEach(function (e) {
+      h += '<div class="dy-note"><p class="dy-hand"' + (ZH ? ' lang="zh-CN"' : ' lang="it"') + ">" + esc(noteText(e.note, p.i)) + "</p>" + pairChips(e.note) +
+        '<button type="button" class="btn-s" data-diary-share="' + CP.attr(e.note.id + "|" + p.i) + '">' + esc(T("dy.share")) + "</button></div>";
+    });
+    if (!p.notes.length) h += '<div class="dy-note"><button type="button" class="btn-s" data-diary-share="' + CP.attr("|" + p.i) + '">' + esc(T("dy.share")) + "</button></div>";
+    return h + "</article>";
+  }
+  function open() {
+    var d = build(), total = d.pages.reduce(function (n, p) { return n + p.notes.length; }, 0), next = S[d.cur + 1];
+    var h = '<div class="fam-head"><div class="meta"><b>' + esc(T("dy.title")) + '</b><div class="small muted">' + esc(T("dy.at", { c: city(d.cur), n: d.cur + 1, m: S.length })) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<div class="dy-wrap">' + mapSVG(d.cur) + "</div>" +
+      '<p class="small muted dy-next">' + esc(next ? T("dy.next", { c: city(d.cur + 1), n: d.n, k: next.th }) : T("dy.end")) + "</p>";
+    h += page(d.pages[0]);
+    if (!total) h += '<p class="dy-empty small muted">' + esc(T("dy.none")) + "</p>";
+    if (d.pages.length > 1) h += '<details class="dy-older"><summary>' + esc(T("dy.older", { n: d.pages.length - 1 })) + "</summary>" + d.pages.slice(1).map(function (p) { return page(p); }).join("") + "</details>";
+    h += '<p class="small muted dy-priv">' + esc(T("dy.privacy")) + "</p>";
+    CP.openSheet(h);
+  }
+
+  /* ---- una pagina da condividere ---- */
+  function shareData(noteId, stopIdx) {
+    var d = build(), p = d.pages.filter(function (x) { return x.i === stopIdx; })[0] || d.pages[0], e = noteId ? p.notes.filter(function (x) { return x.note.id === noteId; })[0] : null;
+    return { stop: { n: p.i + 1, m: S.length, city: city(p.i) }, route: S.map(function (s, i) { return i <= d.cur; }),
+      text: e ? noteText(e.note, p.i) : T("dy.cardEmpty", { c: city(p.i) }), pair: e ? e.note.m.map(member) : [], words: p.words.slice(0, 4).map(function (w) { return { hz: w.hz, py: String(w.py).replace(/\./g, ""), it: CP.gloss(w) }; }),
+      date: new Date(e ? e.ev.ultimo || Date.now() : Date.now()), name: "" };
+  }
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("[data-diary-open], [data-diary-share]") : null; if (!b) return;
+    if (b.hasAttribute("data-diary-open")) { open(); return; }
+    var v = b.getAttribute("data-diary-share").split("|");
+    CP.shareCard.open("zh-diary", shareData(v[0], +v[1]));
+  });
+
+  CP.diary = { card: card, open: open, build: build, earned: earned, evidence: evidence, stopAt: stopAt, shareData: shareData, stops: S, notes: N, mapSVG: mapSVG };
+})();
+</script>
+<script>
+/* ---- i18n/diary.js + data/diary.js + ui/diary.js (al primo uso di CP.diary) ---- */
+(function () { var P = ["diary"], done = false; function load() { if (done) return; done = true; P.forEach(function (p) { delete CP[p]; }); var el = document.getElementById("lazy-mod-diary"), sc = document.createElement("script"); sc.textContent = el ? el.textContent : ""; document.head.appendChild(sc); if (el) el.parentNode.removeChild(el); }
+  P.forEach(function (p) { Object.defineProperty(CP, p, { configurable: true, enumerable: true, get: function () { load(); return CP[p]; } }); }); })();
 </script>
 <script>
 /* ---- data/radicals.js ---- */
@@ -31022,6 +31599,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
 /* ===== màndarínō · le carte da condividere: un'immagine (canvas) che nasce sul telefono, senza server.
    Motore e modelli: CP.shareCard.templates, alimentati da un oggetto dati per corso.
    - «zh-day»: la carta del giorno del corso di cinese (1080×1350), identica a prima;
+   - «zh-diary»: una pagina del Taccuino del viaggiatore (ui/diary.js), negli stessi tre formati e colori;
    - «it-day», «it-milestone», «it-week»: le carte del corso di italiano (testo in cinese), in tre formati (FORMATS) e tre
      colori (i temi dell'app), con il QR della pagina dell'app (MD_CONFIG.SHARE_URL, senza parametri), un nome facoltativo
      («署名», spento di base, solo sul telefono: cp-card-v1) e, se la persona l'ha scelto, il sigillo di gratitudine.
@@ -31095,7 +31673,7 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   var IT_SERIF = "'Iowan Old Style', Georgia, 'Noto Serif', 'Times New Roman', serif";
   /* testo che va a capo entro w; restituisce le righe. Se una parola sola non entra, si segna come «taglio» */
   function wrap(x, text, w, cut) {
-    var out = [], line = "", toks = /[㐀-鿿]/.test(text) ? Array.from(text) : String(text).split(/(\s+)/);
+    var cjk = (String(text).match(/[㐀-鿿]/g) || []).length, out = [], line = "", toks = cjk && cjk > String(text).replace(/\s/g, "").length * 0.4 ? Array.from(text) : String(text).split(/(\s+)/);
     toks.forEach(function (t) { var tryL = line + t; if (x.measureText(tryL.trim()).width > w && line.trim()) { out.push(line.trim()); line = t.trimStart ? t.trimStart() : t; } else line = tryL; });
     if (line.trim()) out.push(line.trim());
     out.forEach(function (l) { if (x.measureText(l).width > w + 1) cut.push(l); });
@@ -31113,6 +31691,21 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     return real;
   }
   function zhDate(d) { return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"; }
+  /* il piede della carta: data, nome facoltativo, QR a sinistra, sigillo di gratitudine a destra (solo se scelto) */
+  function footer(x, cv, W, H, M, C, opt, data, cut, foot, scan) {
+    var gap = function (n) { return Math.round(n * H / 1440); };
+    var fy = H - gap(300), qs = Math.round(W * 0.22);
+    var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
+    var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
+    x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
+    if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
+    x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
+    x.font = "500 24px " + SANS; x.fillText(foot, tx, fy + 196); fit(x, foot, W - tx - (opt.seal ? 190 : 30), cut);
+    if (qr) { x.font = "500 22px " + SANS; x.fillText(scan, tx, fy + 232); }
+    var sl = opt.seal && CP.seals && CP.seals.forShare && CP.seals.forShare();
+    if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
+    cv.__qr = !!qr;
+  }
   /* dati: { rank, streak, words, lessons, total, phrase: { it, zh }, date, name?, milestone?, week? } (it/today.js) */
   function drawIt(cv, tpl, data, opt) {
     var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
@@ -31156,18 +31749,60 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
       var ty = y + 70 + Math.max(0, (boxH - 70 - lines.length * size * 1.25 - 70) / 2);
       x.fillStyle = C.ink; lines.forEach(function (l) { ty += size * 1.25; x.fillText(l, W / 2, ty - size * 0.25); });
       x.fillStyle = C.mute; x.font = "500 36px " + SANS; wrap(x, ph.zh, W - 2 * M - 20, cut).slice(0, 2).forEach(function (l) { ty += 54; x.fillText(l, W / 2, ty); });
-      /* fondo: data, nome facoltativo, QR a sinistra, sigillo di gratitudine a destra (solo se scelto) */
-      var fy = H - gap(300), qs = Math.round(W * 0.22);
-      var qr = qrPaint(x, shareURL(), M, fy + 10, qs);
-      var tx = qr ? M + qr + 46 : M; x.textAlign = "left";
-      x.fillStyle = C.ink; x.font = "700 34px " + SANS; x.fillText(zhDate(data.date || new Date()), tx, fy + 52);
-      if (data.name) { x.fillStyle = C.ink; x.font = "600 32px " + SANS; x.fillText("—— " + data.name, tx, fy + 100); fit(x, "—— " + data.name, W - tx - 200, cut); }
-      x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText("màndarínō", tx, fy + 160);
-      x.font = "500 24px " + SANS; x.fillText(T("itcard.foot"), tx, fy + 196); fit(x, T("itcard.foot"), W - tx - (opt.seal ? 190 : 30), cut);
-      if (qr) { x.font = "500 22px " + SANS; x.fillText(T("itcard.scan"), tx, fy + 232); }
-      var sl = opt.seal && CP.seals && CP.seals.forShare && CP.seals.forShare();
-      if (sl) { CP.seals.paint(x, sl.lvl, W - 196, H - 214, 150); x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 20px " + SANS; x.fillText(T("seal.ed", { y: sl.year, n: sl.num }), W - 121, H - 40); }
-      cv.__qr = !!qr;
+      footer(x, cv, W, H, M, C, opt, data, cut, T("itcard.foot"), T("itcard.scan"));
+      return cv;
+    });
+  }
+  /* Taccuino del viaggiatore (corso di cinese): una pagina scritta a mano. Dati (ui/diary.js, shareData):
+     { stop: { n, m, city }, route: [bool], text, pair: [{ hz, py }], words: [{ hz, py, it }], date, name } */
+  var HAND = "'Bradley Hand', 'Segoe Print', 'Chalkboard SE', 'Noto Sans Handwriting', 'Comic Sans MS', 'Marker Felt', cursive";
+  var KAI = "'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', 'Songti SC', serif";
+  function drawDiary(cv, data, opt) {
+    var F = FORMATS[opt.format] || FORMATS[FORMAT_DEFAULT], W = F[0], H = F[1], C = THEMES[opt.theme] || THEMES.light, x = cv.getContext("2d"), cut = [];
+    cv.width = W; cv.height = H; cv.__cut = cut;
+    var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.bg[0]); g.addColorStop(1, C.bg[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var k = H / 1440, M = 84, gap = function (n) { return Math.round(n * k); }, zh = typeof LANG !== "undefined" && LANG === "zh";
+    /* un bordo di carta, tratteggiato come una pagina di taccuino */
+    x.save(); x.strokeStyle = C.mute; x.lineWidth = 3; x.setLineDash([2, 14]); x.lineCap = "round"; roundRect(x, 30, 30, W - 60, H - 60, 28); x.stroke(); x.restore();
+    return logoImg().then(function (logo) {
+      var y = gap(70);
+      if (logo) x.drawImage(logo, W / 2 - 60, y, 120, 126); y += 132;
+      x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = C.mute; x.font = "600 28px " + SANS; x.fillText("màndarínō", W / 2, y + 28); y += gap(56);
+      x.fillStyle = C.accent; x.font = "700 62px " + (zh ? KAI : HAND); x.fillText(T("dcard.head"), W / 2, y + 52); fit(x, T("dcard.head"), W - 2 * M, cut); y += gap(84);
+      x.fillStyle = C.ink; x.font = "700 40px " + (zh ? KAI : HAND); var pg = T("dcard.page", { n: data.stop.n, m: data.stop.m, c: data.stop.city }); x.fillText(pg, W / 2, y + 36); fit(x, pg, W - 2 * M, cut); y += gap(70);
+      /* la strada: una città per punto, piena se raggiunta */
+      var rt = data.route || [], n = rt.length, x0 = M + 20, x1 = W - M - 20, i, px = function (j) { return x0 + (x1 - x0) * j / Math.max(1, n - 1); };
+      x.strokeStyle = C.mute; x.lineWidth = 3; x.lineCap = "round"; x.setLineDash([2, 10]);
+      x.beginPath(); for (i = 0; i < n; i++) { var yy = y + (i % 2 ? 6 : -6); if (i) x.lineTo(px(i), yy); else x.moveTo(px(i), yy); } x.stroke(); x.setLineDash([]);
+      for (i = 0; i < n; i++) { x.beginPath(); x.arc(px(i), y + (i % 2 ? 6 : -6), rt[i] ? 11 : 8, 0, Math.PI * 2); if (rt[i]) { x.fillStyle = C.seal; x.fill(); } else { x.lineWidth = 2.5; x.stroke(); } }
+      y += gap(46);
+      /* l'aneddoto */
+      var wordsH = (data.words || []).length ? gap(150) : 0, pairH = (data.pair || []).length ? gap(190) : 0, bottom = H - gap(330), boxH = Math.max(300, bottom - y - wordsH - gap(20));
+      x.fillStyle = C.box; roundRect(x, M - 20, y, W - 2 * M + 40, boxH, 36); x.fill();
+      var size = 60, lines, fnt = zh ? KAI : HAND, inner = boxH - pairH - 60;
+      for (; size >= 34; size -= 3) { x.font = "600 " + size + "px " + fnt; var c2 = []; lines = wrap(x, data.text || "", W - 2 * M - 40, c2); if (!c2.length && lines.length * size * 1.35 < inner) break; }
+      x.font = "600 " + size + "px " + fnt; lines = wrap(x, data.text || "", W - 2 * M - 40, cut);
+      var ty = y + 36 + Math.max(0, (inner - lines.length * size * 1.35) / 2); x.fillStyle = C.ink; x.textAlign = "center";
+      lines.forEach(function (l) { ty += size * 1.35; x.fillText(l, W / 2, ty - size * 0.3); });
+      /* la coppia scambiata */
+      var pr = data.pair || [];
+      if (pr.length) {
+        var cw = Math.min(260, (W - 2 * M - 40) / pr.length), cx0 = W / 2 - cw * pr.length / 2, py0 = y + boxH - pairH + 10;
+        pr.forEach(function (p, j) {
+          var cx = cx0 + cw * (j + 0.5); x.textAlign = "center";
+          x.fillStyle = C.ink; x.font = "500 78px " + SERIF; x.fillText(p.hz, cx, py0 + 74); fit(x, p.hz, cw, cut);
+          x.fillStyle = C.accent; x.font = "600 34px " + SANS; x.fillText(p.py, cx, py0 + 122); fit(x, p.py, cw, cut);
+        });
+      }
+      y += boxH + gap(24);
+      /* le parole raccolte */
+      if (wordsH) {
+        x.textAlign = "center"; x.fillStyle = C.mute; x.font = "600 26px " + SANS; x.fillText(T("dcard.words"), W / 2, y + 20);
+        var wl = data.words.map(function (w) { return w.hz + " " + w.py; }).join("  ·  "), fs = 36;
+        for (; fs >= 24; fs -= 2) { x.font = "500 " + fs + "px " + SANS; if (x.measureText(wl).width <= W - 2 * M) break; }
+        x.fillStyle = C.ink; x.fillText(wl, W / 2, y + 74); fit(x, wl, W - 2 * M, cut);
+      }
+      footer(x, cv, W, H, M, C, opt, data, cut, T("dcard.foot"), T("dcard.scan"));
       return cv;
     });
   }
@@ -31228,7 +31863,8 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
     "zh-day": { course: "zh", draw: function (cv) { return drawZh(cv); } },
     "it-day": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-day", d, o); } },
     "it-milestone": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-milestone", d, o); } },
-    "it-week": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-week", d, o); } }
+    "it-week": { course: "it", draw: function (cv, d, o) { return drawIt(cv, "it-week", d, o); } },
+    "zh-diary": { course: "zh", ns: "dcard", draw: function (cv, d, o) { return drawDiary(cv, d, o); } }
   };
   function render(cv, tpl, data, opt) { var t = TEMPLATES[tpl] || TEMPLATES["zh-day"]; return t.draw(cv, data || {}, opt || {}); }
 
@@ -31249,23 +31885,18 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   function paintSheet() {
     var cv = document.querySelector(".card-cv"); if (!cv || !cur) return;
     var p = prefs(), d = Object.assign({}, cur.data, { name: p.sign && p.name ? p.name : "" });
-    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", cur.tpl === "zh-rad" ? T("lr.card.alt", { c: d.ch, p: d.py, a: d.a, b: d.b }) : T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
+    render(cv, cur.tpl, d, { format: p.format, theme: p.theme, seal: true }).then(function () { cv.setAttribute("aria-label", cur.ns === "dcard" ? T("dcard.alt", { n: (d.stop || {}).n, c: (d.stop || {}).city, p: d.text || "" }) : cur.tpl === "zh-rad" ? T("lr.card.alt", { c: d.ch, p: d.py, a: d.a, b: d.b }) : T("itcard.alt", { p: (d.phrase || {}).it || "", r: (d.rank || {}).name || "" })); });
   }
-  /* le etichette del foglio: quelle del corso di italiano (itcard.*) o, per la carta del Laboratorio dei radicali, lr.card.* */
-  function labels(tpl) {
-    var P = tpl === "zh-rad" ? "lr.card." : "itcard.";
-    return { title: P + "title", priv: P + "privacy", format: P + "format", theme: P + "theme", th: P + "th.", sign: P + "sign", ph: P + "namePh", share: P + "share" };
-  }
-  function itSheet(tpl, data) {
-    cur = { tpl: tpl, data: data }; var p = prefs(), L = labels(tpl);
+  function itSheet(tpl, data, ns) {
+    ns = ns || (tpl === "zh-rad" ? "lr.card" : "itcard"); cur = { tpl: tpl, data: data, ns: ns }; var p = prefs();
     var chip = function (attr, val, label, on) { return '<button type="button" data-' + attr + '="' + val + '" aria-pressed="' + (on ? "true" : "false") + '"' + (on ? ' class="on"' : "") + ">" + label + "</button>"; };
-    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T(L.title)) + '</b><div class="small muted">' + esc(T(L.priv)) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
-      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T(L.title)) + '"></canvas>' +
-      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(L.format)) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
-      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(L.theme)) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T(L.th + t), t === p.theme); }).join("") + "</div>" +
-      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T(L.sign)) + "</label>" +
-      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T(L.ph)) + '" aria-label="' + CP.attr(T(L.sign)) + '"' + (p.sign ? "" : " hidden") + ">" +
-      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T(L.share)) + "</button></div>");
+    CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T(ns + ".title")) + '</b><div class="small muted">' + esc(T(ns + ".privacy")) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>" +
+      '<canvas class="card-cv it-card-cv" role="img" aria-label="' + CP.attr(T(ns + ".title")) + '"></canvas>' +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(ns + ".format")) + '">' + Object.keys(FORMATS).map(function (f) { return chip("card-format", f, f, f === p.format); }).join("") + "</div>" +
+      '<div class="seg card-seg" role="group" aria-label="' + CP.attr(T(ns + ".theme")) + '">' + ["light", "sepia", "dark"].map(function (t) { return chip("card-theme", t, T(ns + ".th." + t), t === p.theme); }).join("") + "</div>" +
+      '<label class="chk"><input type="checkbox" id="card-sign"' + (p.sign ? " checked" : "") + "> " + esc(T(ns + ".sign")) + "</label>" +
+      '<input type="text" id="card-name" maxlength="24" value="' + CP.attr(p.name) + '" placeholder="' + CP.attr(T(ns + ".namePh")) + '" aria-label="' + CP.attr(T(ns + ".sign")) + '"' + (p.sign ? "" : " hidden") + ">" +
+      '<div class="acts"><button type="button" class="btn-main" data-card-share style="margin:0">' + esc(T(ns + ".share")) + "</button></div>");
     paintSheet();
   }
   function zhSheet() {
@@ -31276,7 +31907,11 @@ Object.assign(I18N.it, {"itx.q.sig": "Che cosa vuol dire questa parola italiana?
   }
   /* CP.shareCard(): la carta del giorno del corso aperto; CP.shareCard.open(modello, dati) per le altre */
   CP.shareCard = function () { if (CP.course && CP.course() === "it" && CP.itCardData) itSheet("it-day", CP.itCardData()); else zhSheet(); };
-  CP.shareCard.open = function (tpl, data) { if (tpl === "zh-rad") itSheet(tpl, data); else if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet(); };
+  CP.shareCard.open = function (tpl, data) {
+    if (tpl === "zh-rad") itSheet(tpl, data);
+    else if (TEMPLATES[tpl] && TEMPLATES[tpl].ns) itSheet(tpl, data, TEMPLATES[tpl].ns);
+    else if (TEMPLATES[tpl] && TEMPLATES[tpl].course === "it") itSheet(tpl, data || (CP.itCardData && CP.itCardData())); else zhSheet();
+  };
   CP.shareCard.templates = TEMPLATES;
   CP.shareCard.render = render;
   CP.shareCard.FORMATS = FORMATS; CP.shareCard.THEMES = THEMES; CP.shareCard.url = shareURL; CP.shareCard.sharePNG = share;
