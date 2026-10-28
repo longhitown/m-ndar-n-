@@ -20,7 +20,7 @@ ITLESSONS.push({
     ["Mi piace cucinare.", "我喜欢做饭。"],
     ["Ti piace l'Italia?", "你喜欢意大利吗？"],
     ["Anche a me piace il tè.", "我也喜欢茶。"],
-    ["Ti piace la pizza?", "你喜欢比萨吗？"],
+    ["Ti piace la pizza?", "你喜欢披萨吗？"],
     ["Mi piacciono i ravioli.", "我喜欢饺子。"]
   ],
   "dlg": [
