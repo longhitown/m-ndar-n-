@@ -629,6 +629,12 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 .itq-w:hover, .itq-w:focus-visible { background: var(--chip); }
 .ex-sent-opt { font-size: 1.15rem; line-height: 1.5; }
 
+/* foglio di lavoro: anteprima delle pagine del PDF */
+.ws-cta { display: grid; gap: 6px; justify-items: start; margin-top: var(--sp-3, 12px); }
+.ws-cta p { margin: 0; }
+.ws-pages { display: grid; gap: 14px; margin: 10px 0; }
+.ws-page { margin: 0; display: grid; gap: 4px; }
+.ws-page canvas { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--line); border-radius: 4px; }
 @keyframes set-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
 @keyframes set-flash { 0%, 55% { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0.65); } 100% { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0); } }
 @media (prefers-reduced-motion: no-preference) { .set-page:not([hidden]) { animation: set-in 0.18s ease-out; } .set-flash { animation: set-flash 1.6s ease-out; } .set-tile { transition: border-color 0.15s ease, transform 0.1s ease; } .set-tile:active { transform: scale(0.985); } }
