@@ -9,7 +9,9 @@
   function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
   function prog(id) { return load()[id] || {}; }
   function mark(id, patch) { var o = load(), p = o[id] || {}; Object.keys(patch).forEach(function (k) { p[k] = patch[k]; }); o[id] = p; save(o); }
-  function sorted() { return LESSONS.slice().sort(function (a, b) { return (a.n || 0) - (b.n || 0); }); }
+  /* le lezioni oltre la trentesima stanno in un gruppo caricato al primo uso (tools/build.mjs, LEZIONIX): chi non apre mai le lezioni non le scarica né le compila */
+  CP.lessonsMore = function () { if (window.__mdLoad && window.__mdLoad.LEZIONIX) window.__mdLoad.LEZIONIX(); };
+  function sorted() { CP.lessonsMore(); return LESSONS.slice().sort(function (a, b) { return (a.n || 0) - (b.n || 0); }); }
   /* un ripasso ogni cinque lezioni: due domande a sorte da ciascuna delle cinque, prese dai loro esercizi (nessun contenuto nuovo) */
   var REV = 5;
   function revDefs() { var out = [], tot = sorted().length; for (var k = 1; k * REV <= tot; k++) out.push({ id: "rip-" + k, k: k, from: (k - 1) * REV + 1, to: k * REV }); return out; }

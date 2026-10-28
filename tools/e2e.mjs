@@ -570,7 +570,7 @@ try {
       const play = !!document.querySelector(".ls-quiz .ls-prog") && !!document.querySelector(".ls-quiz .ask");
       return { dl, au, nRev, nList, page, play };
     });
-    check("Lezioni: mini-dialogo con audio, un ripasso ogni cinque lezioni (6), i ripassi non contano tra le lezioni, il ripasso si fa come un quiz", rz.dl >= 3 && rz.au >= rz.dl && rz.nRev === 6 && rz.nList === 30 && rz.page && rz.play, JSON.stringify(rz));
+    check("Lezioni: mini-dialogo con audio, un ripasso ogni cinque lezioni, le lezioni aggiuntive si caricano all'apertura dell'elenco, il ripasso si fa come un quiz", rz.dl >= 3 && rz.au >= rz.dl && rz.nRev === Math.floor(rz.nList / 5) && rz.nList >= 35 && rz.page && rz.play, JSON.stringify(rz));
     check("Esercizi con le frasi: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -821,7 +821,7 @@ try {
       CP.itApi.open("pronuncia");
       return { nodes, real, page, play, dl: document.querySelectorAll(".ls-dl").length, say: document.querySelectorAll(".ls-dl [data-it-say]").length };
     });
-    check("Corso di italiano: mini-dialogo con audio e un ripasso ogni cinque lezioni (6, oltre alle 30 lezioni)", ri.nodes === 6 && ri.real === 30 && ri.page && ri.play && ri.dl >= 3 && ri.say >= ri.dl, JSON.stringify(ri));
+    check("Corso di italiano: mini-dialogo con audio e un ripasso ogni cinque lezioni (oltre alle lezioni)", ri.nodes === Math.floor(ri.real / 5) && ri.real >= 38 && ri.page && ri.play && ri.dl >= 3 && ri.say >= ri.dl, JSON.stringify(ri));
     const res = await p.evaluate(() => {
       const out = [], click = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error("manca " + sel); e.click(); };
       try { document.getElementById("fam").hidden = true; } catch (e) {}
@@ -876,7 +876,7 @@ try {
     const xp1 = await p.evaluate(() => CP.game.rank().xp); await p.reload(); await p.waitForTimeout(700); const xp2 = await p.evaluate(() => CP.game.rank().xp);
     check("Corso di italiano: chi aveva già studiato parte dai punti che vale (2 lezioni e 5 parole = 110), senza contarli due volte", xp1 === 110 && xp2 === 110, xp1 + " " + xp2);
     const today = await p.evaluate(() => { const c = document.querySelector("#view-it .it-today"); return c ? { primary: document.querySelectorAll("#view-it .btn-main").length, go: (c.querySelector("[data-itd-go]") || {}).textContent, nodes: document.querySelectorAll(".itp-node:not(.rev)").length, done: document.querySelectorAll(".itp-node.done:not(.rev)").length, now: (document.querySelector(".itp-node.now [data-itl-open]") || {}).getAttribute && document.querySelector(".itp-node.now [data-itl-open]").getAttribute("data-itl-open"), phrase: !!c.querySelector(".itd-phrase .itd-it"), ring: !!c.querySelector(".ring") } : null; });
-    check("Carta «今天»: un solo pulsante primario «继续：第 3 课», anello, frase del giorno; sotto il percorso di 30 lezioni con 2 superate e la terza evidenziata", today && today.primary === 1 && /第 3 课/.test(today.go) && today.nodes === 30 && today.done === 2 && today.now === "articoli" && today.phrase && today.ring, JSON.stringify(today));
+    check("Carta «今天»: un solo pulsante primario «继续：第 3 课», anello, frase del giorno; sotto il percorso di tutte le lezioni con 2 superate e la terza evidenziata", today && today.primary === 1 && /第 3 课/.test(today.go) && today.nodes >= 38 && today.done === 2 && today.now === "articoli" && today.phrase && today.ring, JSON.stringify(today));
     const ph = await p.evaluate(() => { const d = new Date(2026, 9, 27), a = CP.itToday.phraseOfDay(d), b = CP.itToday.phraseOfDay(new Date(2026, 9, 27)), pool = CP.itToday.pool(); return { same: a.it === b.it, inPool: pool.some((x) => x.it === a.it), fromPassed: pool.every((x) => x.n <= 2) }; });
     check("Frase del giorno: scelta in modo deterministico tra gli esempi delle lezioni superate", ph.same && ph.inPool && ph.fromPassed, JSON.stringify(ph));
     /* si avvia la lezione corrente e la si supera: anello, serie, «+30 分» e il traguardo con «分享纪念卡» nel messaggio */
