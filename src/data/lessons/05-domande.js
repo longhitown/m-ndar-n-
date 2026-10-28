@@ -17,7 +17,9 @@ LESSONS.push({
     ["你会说中文吗？", "Sai parlare cinese?"],
     ["你有时间吗？", "Hai tempo?"],
     ["他是不是中国人？", "Lui è cinese?"],
-    ["你明天来吗？", "Domani vieni?"]
+    ["你明天来吗？", "Domani vieni?"],
+    ["你是学生吗？", "Sei studente?"],
+    ["你喝茶吗？", "Bevi tè?"]
   ],
   "dlg": [
     ["A", "你好！你是中国人吗？", "Ciao! Sei cinese?"],

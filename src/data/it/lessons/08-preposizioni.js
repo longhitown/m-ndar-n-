@@ -19,7 +19,15 @@ ITLESSONS.push({
     ["Vado al ristorante.", "我去饭店。"],
     ["Sono a casa.", "我在家。"],
     ["Il libro dell'insegnante è caro.", "老师的书很贵。"],
-    ["Vengo dalla Cina.", "我从中国来。"]
+    ["Vengo dalla Cina.", "我从中国来。"],
+    ["Abito a Milano.", "我住在米兰。"],
+    ["Vengo dall'Italia.", "我从意大利来。"]
+  ],
+  "dlg": [
+    ["A", "Dove abiti?", "你住在哪里？"],
+    ["B", "Abito a Roma. E tu?", "我住在罗马。你呢？"],
+    ["A", "Abito in Cina, a Pechino.", "我住在中国，在北京。"],
+    ["B", "Allora vieni dalla Cina!", "那你是从中国来的！"]
   ],
   "traps": [
     ["Vado in Roma.", "Vado a Roma.", "城市前用 a。"],

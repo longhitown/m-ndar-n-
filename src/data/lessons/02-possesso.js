@@ -18,7 +18,9 @@ LESSONS.push({
     ["她是我妈妈。", "Lei è la mia mamma."],
     ["我的朋友是中国人。", "Il mio amico è cinese."],
     ["老师的书很贵。", "Il libro dell'insegnante è caro."],
-    ["这是我爸爸的书。", "Questo è il libro del mio papà."]
+    ["这是我爸爸的书。", "Questo è il libro del mio papà."],
+    ["这是你的手机。", "Questo è il tuo cellulare."],
+    ["她是我的朋友。", "Lei è la mia amica."]
   ],
   "dlg": [
     ["A", "这是我的书，那是你的书。", "Questo è il mio libro, quello è il tuo."],

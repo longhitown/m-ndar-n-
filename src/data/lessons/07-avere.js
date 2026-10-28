@@ -18,7 +18,14 @@ LESSONS.push({
     ["你有时间吗？", "Hai tempo?"],
     ["我们有很多朋友。", "Abbiamo molti amici."],
     ["这里有一个超市。", "Qui c'è un supermercato."],
-    ["这里没有超市。", "Qui non ci sono supermercati."]
+    ["这里没有超市。", "Qui non ci sono supermercati."],
+    ["我有一个姐姐。", "Ho una sorella maggiore."],
+    ["这里没有咖啡。", "Qui non c'è caffè."]
+  ],
+  "dlg": [
+    ["A", "你有哥哥吗？", "Hai un fratello maggiore?"],
+    ["B", "有，我有一个哥哥。你有孩子吗？", "Sì, ho un fratello maggiore. Tu hai figli?"],
+    ["A", "我没有孩子，我有很多朋友。", "Non ho figli, ho molti amici."]
   ],
   "traps": [
     ["我不有时间。", "我没有时间。", "有 si nega solo con 没."],

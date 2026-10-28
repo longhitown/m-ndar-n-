@@ -19,7 +19,15 @@ ITLESSONS.push({
     ["Lui prende un caffè.", "他要一杯咖啡。"],
     ["Dormiamo a casa.", "我们在家睡觉。"],
     ["Capisci?", "你懂吗？"],
-    ["Domani vado a Roma.", "明天我去罗马。"]
+    ["Domani vado a Roma.", "明天我去罗马。"],
+    ["Mangiamo insieme.", "我们一起吃饭。"],
+    ["Voi parlate cinese.", "你们说中文。"]
+  ],
+  "dlg": [
+    ["A", "Parli italiano?", "你会说意大利语吗？"],
+    ["B", "Un po'. Studio italiano.", "会一点。我在学意大利语。"],
+    ["A", "Capisci?", "你懂吗？"],
+    ["B", "Sì, capisco.", "是的，我懂。"]
   ],
   "traps": [
     ["Io parlare cinese.", "Parlo cinese.", "动词要变位，不能直接用原形。"],
