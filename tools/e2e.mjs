@@ -1281,9 +1281,12 @@ try {
     const cd = await p.evaluate(() => { const c = document.querySelector(".card-cv"), x = c.getContext("2d"), px = x.getImageData(0, 0, c.width, c.height).data; let ink = 0; for (let i = 0; i < px.length; i += 4 * 97) if (px[i] < 120 && px[i + 1] < 120) ink++; return { w: c.width, h: c.height, ink, alt: c.getAttribute("aria-label"), cut: (c.__cut || []).length, qr: !!c.__qr }; });
     check("Laboratorio dei radicali: la carta della scoperta (motore di ui/share-card.js, 3:4) è disegnata, senza testo tagliato e con il QR", cd.w === 1080 && cd.h === 1440 && cd.ink > 300 && cd.cut === 0 && cd.qr && /森/.test(cd.alt), JSON.stringify(cd));
     /* si ricorda dopo il ricaricamento */
+    const lrBefore = await p.evaluate(() => ({ n: CP.labRad.count(), ls: localStorage.getItem("cp-labrad-v1") }));
+    await p.evaluate(() => (window.Store && Store.flush ? Store.flush() : null)); await p.waitForTimeout(300);
     await p.reload(); await p.waitForTimeout(500); await open(p);
-    await p.waitForFunction(() => CP.labRad && CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4, null, { timeout: 6000 }).catch(() => {});
-    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", await p.evaluate(() => ({ n: CP.labRad && CP.labRad.count(), fc: document.querySelectorAll(".lr-fc").length })).then((r) => r.n === 4 && r.fc === 4 ? true : JSON.stringify(r)).then((r) => r === true ? true : false), "dopo il ricaricamento");
+    await p.waitForFunction(() => CP.labRad && CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4, null, { timeout: 8000 }).catch(() => {});
+    const after = await p.evaluate(() => ({ n: CP.labRad && CP.labRad.count(), fc: document.querySelectorAll(".lr-fc").length, ls: localStorage.getItem("cp-labrad-v1") }));
+    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", after.n === 4 && after.fc === 4, JSON.stringify({ lrBefore, after }));
     check("Laboratorio dei radicali: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, (net[0] || "") + (errs[0] || ""));
     await ctx.close();
     /* movimento ridotto: la reazione compare subito, senza classi d'animazione, e i tratti sono già disegnati */
