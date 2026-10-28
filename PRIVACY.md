@@ -46,6 +46,10 @@ salva niente nel tuo browser: font, script e immagini arrivano tutti dal sito st
 
 - **Microfono:** solo per gli esercizi di pronuncia e solo mentre li usi. L'oscilloscopio dei toni lavora sul dispositivo;
   la registrazione non viene salvata né inviata.
+- **Scambio linguistico (facoltativo, spento di base):** solo se apri ⚙️ → Suoni e musica → Scambio linguistico e confermi il foglio
+  del consenso, registri la tua voce mentre leggi frasi dell'app. Le registrazioni restano solo sul telefono finché non le mandi tu
+  (un file `.zip` che invii come vuoi: nessun caricamento automatico). Se le mandi, possono essere pubblicate nell'app con licenza CC BY 4.0;
+  le ascolta soltanto chi gestisce il progetto. Si possono cancellare in qualsiasi momento dallo stesso foglio. Solo per maggiorenni.
 - **Fotocamera:** solo per leggere un QR (passaggio a un altro telefono, sigilli). Le immagini non vengono salvate.
 - **Notifiche (Android):** solo per il promemoria facoltativo e per la musica in secondo piano.
 - **Pleco** (facoltativo, spento di base, solo sul telefono): se lo accendi e tocchi «Apri in Pleco», la parola passa

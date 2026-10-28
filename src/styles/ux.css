@@ -640,3 +640,11 @@ body.in-session #study-root.is-card > .ex-card { align-content: start; }
 @keyframes set-flash { 0%, 55% { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0.65); } 100% { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0); } }
 @media (prefers-reduced-motion: no-preference) { .set-page:not([hidden]) { animation: set-in 0.18s ease-out; } .set-flash { animation: set-flash 1.6s ease-out; } .set-tile { transition: border-color 0.15s ease, transform 0.1s ease; } .set-tile:active { transform: scale(0.985); } }
 @media (prefers-reduced-motion: reduce) { .set-flash { box-shadow: 0 0 0 3px rgba(243, 121, 5, 0.65); } }
+
+/* ===== Scambio linguistico (ui/scambio.js) ===== */
+.sc-terms { margin: 8px 0; padding-left: 1.3em; } .sc-terms li { margin: 6px 0; }
+.sc-f { display: grid; gap: 4px; margin: 8px 0; } .sc-f input, .sc-f select { min-height: 44px; font: inherit; }
+.sc-chk { display: flex; gap: 8px; align-items: center; min-height: 44px; margin: 4px 0; } .sc-chk input { width: 22px; height: 22px; flex: none; }
+.sc-big { font-size: 1.5rem; line-height: 1.5; margin: 6px 0; }
+.sc-list { list-style: none; margin: 0; padding: 0; } .sc-list li { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line, rgba(127,127,127,.25)); }
+.sc-list .sc-t { grid-column: 1 / -1; } .sc-list li > .muted { grid-column: 1; } .sc-list .btn-s { min-height: 44px; min-width: 44px; }

@@ -1,9 +1,8 @@
-# Scambio linguistico: voci di madrelingua (progetto)
+# Scambio linguistico: voci di madrelingua
 
-> **Stato: progetto, in attesa di approvazione.** Nell'app non c'è ancora niente.
->
-> La registrazione e il salvataggio locale si implementano solo dopo l'approvazione di chi gestisce il progetto.
-> Le scelte segnate con **[da decidere]** sono le domande ancora aperte.
+> **Stato (ottobre 2026): attivo, prima parte.** Nell'app ci sono il foglio del consenso, la registrazione, l'elenco con ascolto e
+> cancellazione, e l'invio come `.zip`. **Non ci sono ancora** l'importazione (`tools/merge-contrib.mjs` per `mandarino-voice/1`) e il
+> pacchetto voci scaricabile: arrivano quando ci sono le prime registrazioni da provare. Le decisioni qui sotto sono di chi gestisce il progetto.
 
 ## L'idea
 
@@ -15,100 +14,68 @@ L'app ha due corsi, quindi due comunità che si completano:
 L'app ottiene così ciò che le manca: voci vere di madrelingua al posto della sintesi vocale del telefono. Chi registra
 studia la frase nella propria lingua accanto alla traduzione, quindi l'esercizio serve anche a lui.
 
+## Le decisioni (ottobre 2026)
+
+1. **Licenza**: CC BY 4.0, come i contenuti.
+2. **Minori**: esclusi. L'app non ha account e non può verificare l'età: il foglio dice chiaramente che confermando si dichiara di
+   avere almeno 18 anni (casella separata «Ho almeno 18 anni»). Una certezza al 100 % non c'è e il testo non la promette.
+3. **Regione di provenienza** (facoltativa, per gli accenti) e **nome o nickname** (facoltativo): il nome compare nei Crediti solo se
+   la persona lo scrive e spunta «Può comparire nei Crediti».
+4. **Lingua che si studia**: non si registra come madrelingua. Si può registrare solo se la persona lo attiva (casella nella schermata
+   principale); quelle voci sono segnate `native: false` / «non madrelingua» e chi le usa nell'app deve mostrare un avviso.
+5. **Chi ascolta**: soltanto Claudio Longhitano, che gestisce il progetto e le può usare nell'app a propria discrezione. Non c'è
+   un secondo revisore.
+
 ## Che cosa si registra
 
-- **Solo frasi che esistono già nell'app**, identificate come in `tools/review-sample.mjs`:
-  - `ex:<parola>` per le frasi d'esempio;
-  - `dlg:<id>:<riga>` per le battute dei dialoghi;
-  - `phr:<gruppo>:<riga>` per le frasi di tutti i giorni;
-  - per l'italiano, la frase italiana della stessa riga.
+- **Solo frasi che esistono già nell'app**, con i riferimenti di `tools/review-sample.mjs`: `phr:<gruppo>:<riga>` (frasi di tutti i
+  giorni), `dlg:<id>:<riga>` (battute dei dialoghi), `ex:<parola>` (frasi d'esempio). Niente testo libero: nessun rischio di contenuti
+  personali dentro le registrazioni.
+- Una frase per volta, con il testo grande e la traduzione sotto. Si può riascoltare, tenere o rifare; «Un'altra frase» salta.
+- Si registra nella **propria** lingua: cinese nel corso di italiano (interfaccia in cinese), italiano nel corso di cinese.
 
-  Niente testo libero: nessun rischio di contenuti personali dentro le registrazioni.
-- Una frase per volta, con il testo davanti. Si ascolta prima di tenere la registrazione e si può rifare.
-- Si registra solo nella **propria** lingua, quella dell'interfaccia del corso (cinese nel corso di italiano, italiano nel
-  corso di cinese). **[da decidere]** Se permettere anche la lingua che si studia, segnata come «non madrelingua» e non
-  pubblicata.
+## Il foglio del consenso
 
-## Consenso esplicito
+Nell'app: ⚙️ → Suoni e musica → **Scambio linguistico: la tua voce** → *Partecipa*. Otto punti (che cosa si registra e dove resta,
+CC BY 4.0, la voce si riconosce, chi ascolta, nome e regione, come chiedere di togliere una registrazione, solo maggiorenni, lingua
+madre), nome o nickname e regione facoltativi, due caselle non spuntate di base («Ho letto e capito», «Ho almeno 18 anni») e il
+pulsante «Accetto e continuo», spento finché non sono spuntate entrambe. Il consenso resta sul telefono in `md-voice-consent`
+(chiave senza il prefisso `cp-`: non entra nei backup né nella sincronizzazione). *Ritira il consenso e cancella tutto* toglie
+registrazioni e consenso dal telefono.
 
-Prima della prima registrazione, un foglio (in cinese o in italiano) dice:
-
-1. che cosa si registra (la tua voce mentre leggi frasi dell'app) e dove resta (solo su questo telefono, finché non decidi tu);
-2. che, se la mandi, sarà **pubblicata** nell'app con licenza **CC BY 4.0** (la stessa dei contenuti) o **CC0**
-   **[da decidere]**, e che chiunque potrà riascoltarla e riusarla;
-3. che il nome compare nei Crediti solo se lo chiedi, come per i contributi di testo;
-4. che una voce si riconosce: chi non vuole essere riconosciuto non dovrebbe mandarla;
-5. che si può chiedere di togliere una registrazione già pubblicata (per e-mail); resterà nelle versioni già scaricate.
-
-Due caselle separate, non spuntate di base: «ho capito» e «ho almeno 18 anni». **[da decidere]** Per i minori si può
-chiedere il consenso di un genitore, oppure escluderli del tutto; la scelta più semplice è escluderli.
+**Pagina del consenso sul sito**: `docs/partecipa-voci.html` → <https://mandarinoapp.org/partecipa-voci.html?da=app>. Non è collegata dal
+sito, non è nella sitemap, `robots.txt` la esclude, ha `noindex` e senza `?da=app` mostra solo «Questa pagina si apre dall'app». Il
+link compare nell'app solo dopo la conferma. È nascosta, non segreta (un sito statico non può chiudere una pagina davvero). Non c'è un
+server: il modulo non invia nulla, prepara un'e-mail a mandarinoapp@gmail.com con le risposte, che la persona invia da sé, e si può
+stampare o salvare in PDF. Per registrare basta il foglio dell'app; il modulo è facoltativo.
 
 ## Formato e limiti
 
 | Campo | Valore |
 |---|---|
-| Audio | Opus in contenitore Ogg (`MediaRecorder`, `audio/ogg;codecs=opus` dove c'è, altrimenti WebM/Opus convertito in fase di importazione), mono, 24 kbit/s |
-| Durata | al massimo 8 s per frase (le frasi dell'app ne richiedono 2-5); oltre si taglia la registrazione |
-| Dimensione | circa 25 KB per frase; al massimo 200 frasi per invio (≈ 5 MB) |
-| Silenzi | tolti all'inizio e alla fine in fase di importazione, non sul telefono |
-| Livello | normalizzato a −16 LUFS in fase di importazione |
+| Audio | quello che offre `MediaRecorder` (di solito `audio/webm;codecs=opus`, altrove `audio/ogg;codecs=opus` o `audio/mp4`), mono, 24 kbit/s; si converte in fase di importazione |
+| Durata | al massimo 8 s per frase; oltre si ferma da sola |
+| Dimensione | circa 25 KB per frase; al massimo 200 frasi per invio |
+| Silenzi e livello | si trattano in fase di importazione (ffmpeg, sul computer di chi gestisce il progetto), non sul telefono |
 
-Metadati di ogni registrazione, in un `manifest.json` accanto ai file:
-
-```json
-{ "schema": "mandarino-voice/1", "ref": "dlg:taxi:3", "lang": "zh-CN", "text": "好。多少钱？",
-  "speaker": "nickname facoltativo", "native": true, "license": "CC-BY-4.0", "app": "6.7", "ms": 2140, "created": 1761550000000 }
-```
-
-Niente età, sesso, provenienza né posizione: non servono. **[da decidere]** Se chiedere la regione di provenienza (per
-esempio «nord / sud / Taiwan»), utile per gli accenti; è un dato personale e la scelta più semplice è non chiederla.
+`manifest.json` nello `.zip` (schema `mandarino-voice/1`): `license`, `speaker` (solo se la persona ha dato il permesso), `region`
+(numero della scelta fatta; vuoto se «preferisco non dirlo»), `adult: true` e, per ogni registrazione, `ref`, `lang`, `native`, `text`
+(il testo letto), `ms`, `created`, `file`. Nessuna età, nessun sesso, nessuna posizione.
 
 ## Dove resta, come si manda
 
-- **Sul telefono.** Le registrazioni stanno in IndexedDB (come i backup), non in `localStorage`. Non entrano nella
-  sincronizzazione né nel backup, perché pesano troppo; una voce in ⚙️ le elenca e le cancella. Nuova chiave
-  `cp-voice-v1`, solo per l'indice (riferimento, data, già inviata sì/no); regola d'unione: si sommano per riferimento,
-  vince la registrazione più recente.
-- **L'invio.** Si manda un unico file `.zip` (lo stesso `zip` di `pwa/pwa.js`) con il `manifest.json` e i `.ogg`:
-  - per e-mail a mandarinoapp@gmail.com, oppure con «Condividi» (WeChat, WhatsApp…);
-  - come allegato a una issue GitHub, dove il limite è 25 MB.
+- **Sul telefono**: IndexedDB `mandarino-voices-v1`, fuori dal backup e dalla sincronizzazione (pesano e sono personali). Un elenco
+  nel foglio mostra le registrazioni con ascolto (▶) e cancellazione (×).
+- **L'invio**: *Condividi* (dove il telefono lo permette) o *Scarica il file*, poi la persona manda il `.zip` a mandarinoapp@gmail.com o
+  dove preferisce (come allegato a una issue, il limite è 25 MB). Le registrazioni incluse si segnano «inviata». **Nessun
+  caricamento automatico, nessuna richiesta di rete.**
 
-  Nessun caricamento automatico.
+## Da fare dopo, quando ci sono le prime registrazioni
 
-## Revisione e importazione
-
-1. `tools/merge-contrib.mjs` impara un secondo schema, `mandarino-voice/1`. Controlla che `ref` esista e che `text` sia
-   ancora quello della frase (se la frase è cambiata, la registrazione è da rifare), oltre a durata, formato e licenza.
-2. Un riepilogo Markdown con un link a ogni file. **Chi gestisce il progetto o un revisore madrelingua ascolta ogni registrazione**:
-   pronuncia, rumore di fondo, nessuna voce di terzi.
-3. Con `--apply` i file accettati vanno in `src/audio/voices/<lingua>/<ref>.<impronta>.ogg`, con normalizzazione e
-   taglio dei silenzi (ffmpeg, solo sul computer di chi gestisce il progetto). Il nickname va nei Crediti se chiesto.
-4. La build scrive l'indice delle voci nella pagina (come `window.MUSIC_FILES`), così l'app sa quali frasi hanno una
-   voce vera.
-
-## Nell'app: il pacchetto voci
-
-- Come la musica (`audio/file-player.js`): un **pacchetto scaricabile a parte**, mai all'avvio. ⚙️ → Suoni e musica → «Voci di
-  madrelingua (N MB)» lo scarica nella cache del service worker, dopo che l'utente lo chiede.
-- Dove c'è una voce vera, 🔊 la usa al posto della sintesi vocale, con un piccolo segno «voce vera» e il nickname nei
-  dettagli. Dove non c'è, resta la voce del telefono.
-- Il peso dell'APK non cambia: il pacchetto si scarica come i brani della musica.
-
-## Che cosa implementare per primo, dopo l'approvazione
-
-Solo **registrazione e salvataggio locale**, come chiede la specifica:
-
-- il foglio del consenso;
-- il pulsante 🎙️ accanto a una frase (nel foglio della parola e nei dialoghi), solo nella propria lingua;
-- l'elenco in ⚙️ con ascolto e cancellazione.
-
-Si possono già riusare `CP.canRecord()` (`core/core.js`) e l'IndexedDB di `core/store.js`. L'invio, l'importazione e il
-pacchetto voci vengono dopo, quando ci sono le prime registrazioni da provare.
-
-## Domande aperte, riassunte
-
-1. Licenza delle registrazioni: CC BY 4.0, come i contenuti (proposta), oppure CC0?
-2. Minori: escluderli (proposta) o chiedere il consenso di un genitore?
-3. Regione di provenienza: non chiederla (proposta) o chiederla per gli accenti?
-4. Registrare anche la lingua che si studia, come «non madrelingua» non pubblicata?
-5. Chi ascolta le registrazioni prima della pubblicazione, oltre a chi gestisce il progetto?
+1. `tools/merge-contrib.mjs` impara `mandarino-voice/1`: controlla che `ref` esista e che `text` sia ancora quello della frase,
+   oltre a durata, formato e licenza; riepilogo Markdown con un link a ogni file. Le ascolta solo chi gestisce il progetto.
+2. Con `--apply`, i file accettati vanno in `src/audio/voices/<lingua>/<ref>.<impronta>.ogg` (ffmpeg: taglio dei silenzi,
+   −16 LUFS, Opus/Ogg). Il nickname va nei Crediti solo se permesso. Le registrazioni `native: false` non si pubblicano come madrelingua.
+3. Il **pacchetto voci** scaricabile a parte, come la musica (⚙️ → Suoni e musica → «Voci di madrelingua (N MB)»), mai all'avvio; dove
+   c'è una voce vera 🔊 la usa al posto della sintesi, con il segno «voce vera» e il nickname nei dettagli. Il peso dell'APK non cambia.
+4. 🎙️ accanto alle frasi nel foglio della parola e nei dialoghi (oggi si registra dal foglio dello scambio).
