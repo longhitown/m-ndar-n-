@@ -222,6 +222,8 @@
     /* preferenze dell'interfaccia: si aggiungono le voci mancanti, a parità vince questo dispositivo */
     if (k === "cp-ux-v1") return mergeUx(a, b);
     if (k === "cp-seal-v1") return mergeSeal(a, b);
+    /* Laboratorio dei radicali: i caratteri scoperti si uniscono, per ognuno la data più vecchia */
+    if (k === "cp-labrad-v1") { var lf = {}, LA = (a && a.f) || {}, LB = (b && b.f) || {}; Object.keys(LA).concat(Object.keys(LB)).forEach(function (c) { var x = LA[c], y = LB[c]; lf[c] = x && y ? Math.min(x, y) : x || y; }); return { f: lf }; }
     /* traguardi del corso di italiano: unione, per ognuno la data più vecchia */
     if (k === "cp-it-cards-v1") { var m = {}, A = (a && a.m) || {}, B = (b && b.m) || {}; Object.keys(A).concat(Object.keys(B)).forEach(function (id) { var x = A[id], y = B[id]; m[id] = x && y ? Math.min(x, y) : x || y; }); return { m: m }; }
     /* pacchetti classe: unione per id; chi è stato tolto su un dispositivo resta tolto (la data più recente) */

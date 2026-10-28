@@ -34,6 +34,7 @@ src/                       ← si lavora qui (si apre anche così com'è, da fil
   core/                    fsrs.js (ripasso), store.js (salvataggi e backup), core.js (stato condiviso, voce, fogli), game.js,
                            segment.js (taglio di una frase in parole: lo stesso codice nella pagina e negli strumenti)
   words/ study/ path/ phrases/ voice/ ui/ contrib/ selftest/ pwa/   le schede e le funzioni, un modulo per file
+  data/lab-recipes.js      le ricette del Laboratorio dei radicali (generato: tools/radicali.mjs);  data/lab-readings.js = le letture simpatiche a mano
   audio/synth.js           attrezzi sonori per gli effetti + registro delle tracce (CP.audioTracks.add)
   audio/music/<id>.ogg     i 22 brani originali del jukebox (la build li copia come <id>.<impronta>.ogg);
                            audio/file-player.js = il loro riproduttore (a flusso: <audio> collegato al grafo Web Audio)
@@ -60,7 +61,7 @@ android/                   l'app Android: una WebView che apre dist/index.html d
 .github/workflows/web.yml  a ogni push: prove unitarie, dist/ aggiornato, grammatica, build, e2e e ux-audit con Playwright
 .github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
 tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
-                           freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), android-smoke.mjs,
+                           freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), radicali.mjs (rigenera lab-recipes.js, le ricette del Laboratorio dei radicali), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), misura-avvio.mjs (tempo di apertura), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs e review-import.mjs (rilettura da madrelingua, docs/rilettura.md),
                            icons.mjs (rigenera le icone PWA e Android, mandarino + wordmark, con Playwright),
@@ -407,6 +408,7 @@ Chiavi aggiunte con gli esercizi vari e la lettura:
 - `cp-ex-style`: lo stile di ripasso (`guided`, `mixed`, `classic`); `cp-ex-dur`: durata del passo guidato (5, 10, 15). Preferenze del dispositivo.
 - `cp-class-v1`: i pacchetti classe importati `{ p: { id: pacchetto }, x: { id: quando è stato tolto } }`; nell'unione si sommano (per ognuno la data d'importazione più vecchia) e chi è stato tolto resta tolto.
 - `cp-it-cards-v1`: i traguardi del corso di italiano `{ m: { id: data } }`; nell'unione, per ognuno la data più vecchia.
+- `cp-labrad-v1`: le scoperte del Laboratorio dei radicali `{ f: { carattere: quando } }`; nell'unione si sommano, per ognuna la data più vecchia.
 - `cp-card-v1`: formato, colore e nome facoltativo delle carte da condividere; preferenza del dispositivo.
 - `cp-pleco-v1`: «1» se è acceso il collegamento a Pleco; preferenza del dispositivo (vince quello corrente).
 - `cp-contrib-credit-v1`: «1» se chi contribuisce vuole comparire nei Crediti; preferenza del dispositivo (nell'unione vince quello corrente, come `cp-contrib-nick`).
@@ -529,6 +531,35 @@ La build si ferma se trova nel repository:
   ultimi 60 giorni). I numeri tecnici (memoria, matrice dei toni) restano sotto, in un riquadro chiuso. Lo stesso modulo fa
   la pagina 我的进步 del corso di italiano.
 - **Prove su un telefono vero**: [docs/checklist-dispositivo.md](checklist-dispositivo.md).
+
+## Laboratorio dei radicali (solo corso di cinese)
+
+Frasi → Impara → Radicali (`src/phrases/radicali.js`, gruppo `LABRAD`, letto al primo uso come il gruppo degli esercizi). Un banco da
+laboratorio con due posti: si mettono due componenti dei caratteri come elementi chimici e, se formano un carattere del
+vocabolario, «reagiscono»: il carattere compare, i suoi tratti si disegnano uno dopo l'altro (colorati per componente), poi
+pinyin, significato e una **lettura simpatica**. Se non reagiscono, una battuta gentile: niente penalità, niente punti, niente serie.
+Il solo contatore è la collezione («Elementi scoperti», chiave `cp-labrad-v1`, unione con la data più vecchia). Ogni scoperta ha una
+carta da condividere (`ui/share-card.js`, modello `zh-rad`: gli stessi formati, colori, QR, firma facoltativa e sigillo delle altre carte).
+
+- **Ricette.** `tools/radicali.mjs` le ricava da `src/data/anatomy.js` e dal vocabolario e scrive `src/data/lab-recipes.js`: un carattere
+  del vocabolario è una ricetta se la sua scomposizione è fatta di due componenti (`⿰` a fianco, `⿱` sopra e sotto). Le forme strette
+  (亻, 氵, 扌…) valgono come i radicali di `src/data/radicals.js`; un componente fatto di due caratteri uguali (木木) vale il carattere
+  che già c'è (林). `node tools/radicali.mjs --check` (e `tools/unit.mjs`) dicono se il file è aggiornato; si rilancia dopo aver aggiunto parole.
+  Il file resta sotto la LGPL 3.0 o successiva di Make Me a Hanzi (`THIRD-PARTY-NOTICES.md`).
+- **Elementi e composti.** Gli elementi della mensola sono i componenti che non si scompongono ancora (più i radicali Kangxi); i caratteri
+  scoperti che sono a loro volta componenti (林 → 森, 你 → 您) compaiono sulla mensola come «composti». La mensola comincia da 18 pezzi
+  famosi e se ne aggiungono altri 18 a ogni tocco su «Altri elementi». «Suggerimento» segna con • chi reagisce con l'elemento sul banco.
+- **Letture simpatiche.** `src/data/lab-readings.js`: più di cento combinazioni scritte a mano, in italiano e in cinese. Sono battute, **non
+  etimologie**: l'app non racconta come sono nati i caratteri (vedi «Anatomia del carattere», qui sotto) e il Laboratorio lo dice sempre accanto
+  alla lettura e nella carta. Si parla solo di ciò che i dati confermano (nomi dei componenti da `radicals.js` e dal vocabolario), mai di storia
+  o d'origine; tono gentile, mai a spese di una persona. `tools/unit.mjs` controlla che ogni lettura abbia le due parti giuste e non usi parole
+  da etimologia. I testi cinesi aspettano un madrelingua (`docs/rilettura.md`). Per aggiungerne una: una riga `"carattere": ["parti", "italiano", "cinese"]`.
+- **Gesti.** Pointer Events a mano, senza libreria (nessuna dipendenza in più nell'app): il tocco mette l'elemento nel primo posto libero
+  (funziona sempre, anche con la tastiera e i lettori di schermo); il mouse trascina subito, il dito dopo una pressione breve (così la pagina
+  continua a scorrere). Movimento ridotto: nessuna animazione, i tratti compaiono già disegnati. Suoni solo dopo un tocco; nessuna richiesta di rete.
+- **Prove.** `tools/unit.mjs` (ricette aggiornate, letture coerenti, chiavi dei testi, unione dei salvataggi, peso dell'avvio), `tools/e2e.mjs`
+  (apertura, reazione riuscita, reazione a vuoto, trascinamento, movimento ridotto, carta, cinese, rete) e `tools/ux-audit.mjs` (banco vuoto,
+  reazione, nessuna reazione).
 
 ## Anatomia del carattere (solo corso di cinese)
 
