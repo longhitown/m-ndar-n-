@@ -1284,7 +1284,8 @@ try {
     check("Laboratorio dei radicali: la carta della scoperta (motore di ui/share-card.js, 3:4) è disegnata, senza testo tagliato e con il QR", cd.w === 1080 && cd.h === 1440 && cd.ink > 300 && cd.cut === 0 && cd.qr && /森/.test(cd.alt), JSON.stringify(cd));
     /* si ricorda dopo il ricaricamento */
     await p.reload(); await p.waitForTimeout(500); await open(p);
-    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", await p.evaluate(() => CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4));
+    await p.waitForFunction(() => CP.labRad && CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4, null, { timeout: 6000 }).catch(() => {});
+    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", await p.evaluate(() => ({ n: CP.labRad && CP.labRad.count(), fc: document.querySelectorAll(".lr-fc").length })).then((r) => r.n === 4 && r.fc === 4 ? true : JSON.stringify(r)).then((r) => r === true ? true : false), "dopo il ricaricamento");
     check("Laboratorio dei radicali: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, (net[0] || "") + (errs[0] || ""));
     await ctx.close();
     /* movimento ridotto: la reazione compare subito, senza classi d'animazione, e i tratti sono già disegnati */
