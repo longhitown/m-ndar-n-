@@ -143,9 +143,7 @@
     return h + "</div></details>";
   }
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "info", html: sectionHTML });
-  /* una riga nella schermata «Come funziona» */
-  var about = document.getElementById("about-support");
-  if (about && DON) { about.hidden = false; about.innerHTML = esc(T("sup.aboutLine")) + ' <button type="button" class="linklike" data-sup-open>' + esc(T("sup.title")) + "</button>"; }
+  /* niente riga di sostegno in «Come funziona»: subito sotto c'è già la carta «Sostieni il progetto» (la riga era una ripetizione) */
 
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("[data-seal-add], [data-seal-prefs], [data-seal-prefs-open], [data-seal-try], [data-seal-scan], [data-sup-open]") : null; if (!b) return;

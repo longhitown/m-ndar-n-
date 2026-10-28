@@ -326,6 +326,10 @@ public class Bridge {
         }
     }
 
+    /** «Stampa» nella scheda Parole: apre il servizio di stampa di Android (anche «Salva come PDF») */
+    @JavascriptInterface
+    public void print() { act.printPage(); }
+
     /* ---------------- file: backup e pacchetti ---------------- */
 
     /** salva un file. Android 10+: nella cartella Download. Android 8-9: lo apre nel foglio «Condividi». */

@@ -80,7 +80,10 @@
   var SP = null, sprintTimer = 0;
   function sprintPool() {
     var started = CP.ORDER.filter(function (k) { return CP.state(k) >= 1; });
-    return (started.length >= 12 ? started : CP.ORDER.slice(0, 300)).map(function (k) { return W[k]; });
+    if (started.length < 12) return CP.ORDER.slice(0, 300).map(function (k) { return W[k]; });
+    /* con poche parole già viste la sfida si ripeteva (la stessa parola 4 volte in 22 domande): si completa con le prossime della lista fino a 30 */
+    if (started.length < 30) CP.ORDER.some(function (k) { if (started.indexOf(k) < 0) started.push(k); return started.length >= 30; });
+    return started.map(function (k) { return W[k]; });
   }
   function shortGloss(w) { var g = CP.gloss(w); return g.length > 38 ? g.slice(0, 36) + "…" : g; }
   function sprintStart() {
@@ -93,8 +96,11 @@
   function mult() { return SP.streak >= 6 ? 3 : SP.streak >= 3 ? 2 : 1; }
   function sprintQ() {
     var w, tries = 0;
-    do { w = pick(SP.pool); tries++; } while (SP.last === w.key && tries < 20);
-    SP.last = w.key;
+    /* mai una parola vista nelle ultime 8 domande (finché il gruppo lo permette) */
+    SP.recent = SP.recent || [];
+    var win = Math.min(8, Math.max(1, SP.pool.length - 1));
+    do { w = pick(SP.pool); tries++; } while (SP.recent.indexOf(w.key) >= 0 && tries < 60);
+    SP.last = w.key; SP.recent.push(w.key); while (SP.recent.length > win) SP.recent.shift();
     var same = CP.ORDER.map(function (k) { return W[k]; }).filter(function (o) { return o.sec === w.sec && o.key !== w.key && CP.gloss(o) !== CP.gloss(w); });
     var others = CP.ORDER.map(function (k) { return W[k]; }).filter(function (o) { return o.key !== w.key && CP.gloss(o) !== CP.gloss(w); });
     var ds = [];

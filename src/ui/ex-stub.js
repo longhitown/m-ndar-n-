@@ -44,9 +44,8 @@
     if (p.passo === "ripassa" && !p.ripassi) return "";   /* niente da fare: resta la carta di sempre */
     var label = T("gd." + p.passo, { n: p.nuove });
     return '<div class="panel resume gd-card"><div class="small muted">' + T("path.stage", { n: p.i + 1 }) + ' · <span lang="it">' + CP.esc(((typeof SECTIONS !== "undefined" && SECTIONS[p.i]) || { title: "" }).title.replace(/^\d+\.\s*/, "")) + "</span></div>" +
-      (p.passo === "impara" || p.passo === "ripassa" ? '<div class="seg gd-dur" role="group" aria-label="' + CP.attr(T("gd.durAria")) + '">' + DURS.map(function (x) { return '<button type="button" data-gd-dur="' + x + '" aria-pressed="' + (x === d) + '"' + (x === d ? ' class="on"' : "") + ">" + T("gd.dur", { n: x }) + "</button>"; }).join("") + "</div>" : "") +
       '<button type="button" class="btn-main" data-gd-go>' + label + "</button>" +
-      '<div class="small muted">' + plan.join(" · ") + (p.noNew ? " · " + T("gd.noNew") : "") + '</div><button type="button" class="linklike small" data-gd-free>' + T("gd.free") + "</button></div>";
+      '<div class="small muted">' + ((p.passo === "impara" || p.passo === "ripassa") ? T("gd.dur", { n: d }) + " · " : "") + plan.join(" · ") + (p.noNew ? " · " + T("gd.noNew") : "") + '</div><button type="button" class="linklike small" data-gd-free>' + T("gd.free") + "</button></div>";
   }
   CP.ex.prossimo = prossimo; CP.ex.guidaHTML = guidaHTML; CP.ex.unit = unit; CP.ex.dur = dur;
   CP.ex.verificata = function (id) { var u = unit(id); return !!(u && u.verifica && u.verifica.ok); };

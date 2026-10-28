@@ -158,7 +158,7 @@
           if (e.blob) { if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(e.blob); me.disabled = false; both.disabled = false; }
           if (e.error && e.error !== "silence") {
             var n = e.error;
-            status(n === "NotAllowedError" || n === "SecurityError" ? T("vp.blocked") + " " + CP.frameBtn() : n === "NotFoundError" ? T("vp.nomic") : T("vp.err", { e: esc(n) }), "ko");
+            status(n === "NotAllowedError" || n === "SecurityError" ? T("vp.blocked") + " " + CP.frameBtn() : n === "NotFoundError" ? T("vp.nomic") : n === "NotReadableError" || n === "AbortError" || n === "TrackStartError" ? T("vp.busy") : T("vp.err"), "ko");
             if (CP.micBlocked && (n === "NotAllowedError" || n === "SecurityError")) CP.micBlocked();
             CP.sfx("ko"); return;
           }
