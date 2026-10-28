@@ -426,7 +426,8 @@ body.in-onb .dock, body.in-onb .unl-note { display: none; }
 .st-cols { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; align-items: end; margin-top: 6px; }
 .st-col { display: grid; justify-items: center; gap: 2px; font-size: 13px; }
 .st-col b { font-size: 13px; }
-.st-bar { display: flex; align-items: flex-end; width: 100%; max-width: 34px; height: 64px; background: var(--line); border-radius: 6px; overflow: hidden; }
+/* il fondo della colonna è appena un filo: una settimana a zero non deve sembrare una barra piena */
+.st-bar { display: flex; align-items: flex-end; width: 100%; max-width: 34px; height: 64px; background: transparent; box-shadow: inset 0 -3px 0 var(--line); border-radius: 6px; overflow: hidden; }
 .st-bar i { display: block; width: 100%; background: var(--accent); opacity: .55; border-radius: 6px 6px 0 0; }
 .st-col.now .st-bar i { opacity: 1; }
 .st-col small { color: var(--muted); font-size: 13px; }

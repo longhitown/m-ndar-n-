@@ -12,6 +12,8 @@
     applyI18n(); paintLang(); CP.sfx("tap");
     /* molte parti si disegnano una volta sola all'avvio (tabella delle parole, filtri, voce): si riparte da capo,
        così ogni testo è nella lingua nuova. I progressi sono già salvati. */
+    /* si ricarica senza ripetere l'animazione d'avvio e si riapre la stessa pagina delle impostazioni (main.js, index.html: cp-fast) */
+    try { sessionStorage.setItem("cp-fast", JSON.stringify({ set: CP.settingsPage ? CP.settingsPage() : "" })); } catch (e) {}
     setTimeout(function () { location.reload(); }, 150);
   };
   btn.addEventListener("click", function () { CP.openSettings(); });

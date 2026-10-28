@@ -66,7 +66,9 @@ public class MusicService extends Service {
         boolean playing = i != null && i.getBooleanExtra("playing", false);
         if (title == null || title.isEmpty()) title = "màndarínō";
         MediaSession ms = session();
-        ms.setMetadata(new MediaMetadata.Builder().putString(MediaMetadata.METADATA_KEY_TITLE, title).putString(MediaMetadata.METADATA_KEY_ARTIST, "màndarínō").build());
+        ms.setMetadata(new MediaMetadata.Builder().putString(MediaMetadata.METADATA_KEY_TITLE, title).putString(MediaMetadata.METADATA_KEY_ARTIST, "màndarínō")
+                /* musica in loop: nessuna durata né posizione, così la scheda di sistema non mostra una barra ferma «00:00 – 00:00» (e non c'è ACTION_SEEK_TO) */
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, -1L).build());
         ms.setPlaybackState(new PlaybackState.Builder()
                 .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS | PlaybackState.ACTION_STOP)
                 .setState(playing ? PlaybackState.STATE_PLAYING : PlaybackState.STATE_PAUSED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, playing ? 1f : 0f).build());

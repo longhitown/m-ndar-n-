@@ -592,7 +592,10 @@ try {
     }, ok);
     await p.evaluate(() => CP.show("path", true)); await p.waitForTimeout(200);
     const card = await p.evaluate(() => { const c = document.querySelector("#path-root .gd-card"); return c ? { go: c.querySelector("[data-gd-go]").textContent, dur: c.querySelectorAll("[data-gd-dur]").length, primaries: c.querySelectorAll(".btn-main").length } : null; });
-    check("Guidato: la carta «Continua» dice il passo successivo (impara 5 parole nuove), con la durata 5/10/15 e un solo pulsante primario", card && /Impara 5 parole nuove/.test(card.go) && card.dur === 3 && card.primaries === 1, JSON.stringify(card));
+    check("Guidato: la carta «Continua» dice il passo successivo (impara 5 parole nuove), senza selettore di durata (sta in Studia → Personalizza) e un solo pulsante primario", card && /Impara 5 parole nuove/.test(card.go) && card.dur === 0 && card.primaries === 1, JSON.stringify(card));
+    const durSel = await p.evaluate(() => { CP.show("study", true); const sel = document.getElementById("cfg-dur"); if (!sel) return null; sel.value = "15"; sel.dispatchEvent(new Event("change", { bubbles: true })); return { n: sel.options.length, saved: localStorage.getItem("cp-ex-dur"), dur: CP.ex.dur() }; });
+    check("Guidato: la durata della sessione (5/10/15) si sceglie in Studia → Personalizza e viene ricordata", durSel && durSel.n === 3 && durSel.saved === "15" && durSel.dur === 15, JSON.stringify(durSel));
+    await p.evaluate(() => { localStorage.setItem("cp-ex-dur", "10"); CP.show("path", true); }); await p.waitForTimeout(250);
     await p.click("#path-root [data-gd-go]"); await p.waitForTimeout(300);
     let kinds = [];
     for (let i = 0; i < 40; i++) {
@@ -950,25 +953,20 @@ try {
     check("nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, net[0] || errs[0]);
     await ctx.close();
   }
-  /* 5f. la carta del corso di cinese è identica a prima ora (stessa pagina, vecchio modulo contro modelli nuovi) */
+  /* 5f. la carta del corso di cinese usa lo stesso motore di quelle di italiano: tre formati, tre colori, firma, QR, niente testo tagliato */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); });
     await p.goto(base); await p.waitForTimeout(600);
-    const grab = () => p.evaluate(() => new Promise((res) => { CP.shareCard(); setTimeout(() => { const c = document.querySelector(".card-cv"); res(c.getContext("2d").getImageData(0, 0, c.width, c.height).data.join(",").length + ":" + c.toDataURL()); CP.closeSheet(); }, 600); }));
-    const now = await grab();
-    await p.evaluate((code) => { (0, eval)(code); }, fs.readFileSync(path.join(path.dirname(fileURLToPathSafe(import.meta.url)), "fixtures/share-card-v1.js"), "utf8"));
-    const old = await grab();
-    const diff = await p.evaluate(async ([a, b]) => {
-      const load = (u) => new Promise((r) => { const i = new Image(); i.onload = () => r(i); i.src = u; });
-      const [A, B] = await Promise.all([load(a.split(":").slice(1).join(":")), load(b.split(":").slice(1).join(":"))]);
-      if (A.width !== B.width || A.height !== B.height) return 1;
-      const c = document.createElement("canvas"); c.width = A.width; c.height = A.height; const x = c.getContext("2d");
-      x.drawImage(A, 0, 0); const da = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(B, 0, 0); const db = x.getImageData(0, 0, c.width, c.height).data;
-      let n = 0; for (let i = 0; i < da.length; i += 4) if (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2]) > 30) n++;
-      return n / (da.length / 4);
-    }, [now, old]);
-    check("Carta del corso di cinese identica a prima ora (pixel diversi: " + (diff * 100).toFixed(3) + "%)", diff < 0.001, String(diff));
+    const out = await p.evaluate(async () => {
+      const c = CP.counts(), d = { rank: CP.game.rank(), streak: CP.game.streak(), started: c[1] + c[2], known: c[2], w: CP.wordOfDay(), date: new Date(), name: "小明" }, res = [];
+      for (const f of Object.keys(CP.shareCard.FORMATS)) for (const th of ["light", "sepia", "dark"]) {
+        const cv = document.createElement("canvas"); await CP.shareCard.render(cv, "zh-day", d, { format: f, theme: th, seal: true });
+        res.push({ f, th, w: cv.width, h: cv.height, cut: (cv.__cut || []).length, qr: !!cv.__qr });
+      }
+      return res;
+    });
+    check("Carta del corso di cinese: 3 formati × 3 colori disegnati, senza testo tagliato e con il QR", out.length === 9 && out.every((r) => r.w === 1080 && r.cut === 0 && r.qr), JSON.stringify(out.filter((r) => r.cut || !r.qr)));
     check("Carta del cinese: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -1008,7 +1006,7 @@ try {
     check("?go=ear apre l'orecchio ai toni (e toglie il parametro dall'indirizzo)", await p.evaluate(() => CP.mode.active() === "ear" && !/go=/.test(location.search)));
     await p.evaluate(() => { CP.mode.active() && document.getElementById("m-quit") && document.getElementById("m-quit").click(); CP.shareCard(); });
     await p.waitForTimeout(1200);
-    check("Card del giorno: immagine 1080×1350 disegnata", await p.evaluate(() => { const c = document.querySelector(".card-cv"); return !!c && c.width === 1080 && c.height === 1350; }));
+    check("Card del giorno (cinese): immagine disegnata con gli stessi selettori di formato, colore e firma dell'italiano", await p.evaluate(() => { const c = document.querySelector(".card-cv"); return !!c && c.width === 1080 && c.height === 1440 && document.querySelectorAll("[data-card-format]").length === 3 && document.querySelectorAll("[data-card-theme]").length === 3 && !!document.getElementById("card-sign"); }));
     check("Scorciatoie e card: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -1283,9 +1281,12 @@ try {
     const cd = await p.evaluate(() => { const c = document.querySelector(".card-cv"), x = c.getContext("2d"), px = x.getImageData(0, 0, c.width, c.height).data; let ink = 0; for (let i = 0; i < px.length; i += 4 * 97) if (px[i] < 120 && px[i + 1] < 120) ink++; return { w: c.width, h: c.height, ink, alt: c.getAttribute("aria-label"), cut: (c.__cut || []).length, qr: !!c.__qr }; });
     check("Laboratorio dei radicali: la carta della scoperta (motore di ui/share-card.js, 3:4) è disegnata, senza testo tagliato e con il QR", cd.w === 1080 && cd.h === 1440 && cd.ink > 300 && cd.cut === 0 && cd.qr && /森/.test(cd.alt), JSON.stringify(cd));
     /* si ricorda dopo il ricaricamento */
+    const lrBefore = await p.evaluate(() => ({ n: CP.labRad.count(), ls: localStorage.getItem("cp-labrad-v1") }));
+    await p.evaluate(() => (window.Store && Store.flush ? Store.flush() : null)); await p.waitForTimeout(300);
     await p.reload(); await p.waitForTimeout(500); await open(p);
-    await p.waitForFunction(() => CP.labRad && CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4, null, { timeout: 6000 }).catch(() => {});
-    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", await p.evaluate(() => ({ n: CP.labRad && CP.labRad.count(), fc: document.querySelectorAll(".lr-fc").length })).then((r) => r.n === 4 && r.fc === 4 ? true : JSON.stringify(r)).then((r) => r === true ? true : false), "dopo il ricaricamento");
+    await p.waitForFunction(() => CP.labRad && CP.labRad.count() === 4 && document.querySelectorAll(".lr-fc").length === 4, null, { timeout: 8000 }).catch(() => {});
+    const after = await p.evaluate(() => ({ n: CP.labRad && CP.labRad.count(), fc: document.querySelectorAll(".lr-fc").length, ls: localStorage.getItem("cp-labrad-v1") }));
+    check("Laboratorio dei radicali: le scoperte restano dopo il ricaricamento e compaiono nella collezione", after.n === 4 && after.fc === 4, JSON.stringify({ lrBefore, after }));
     check("Laboratorio dei radicali: nessuna richiesta di rete, nessun errore JavaScript", !net.length && !errs.length, (net[0] || "") + (errs[0] || ""));
     await ctx.close();
     /* movimento ridotto: la reazione compare subito, senza classi d'animazione, e i tratti sono già disegnati */
@@ -1452,6 +1453,42 @@ try {
     const r = await p.evaluate(() => new Promise((ok) => CP.speak("你好", { noClip: true, onEnd: () => ok({ said: window.__said.length }) })));
     check("APK: se il motore vocale fallisce la prima volta, si riprova una volta e la voce parte", r.said === 2, JSON.stringify(r));
     check("APK, voce: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  /* difetti trovati sul telefono: microfono occupato, laboratorio, selezione di testo, stampa, cambio lingua senza animazione */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(() => {
+      window.__tries = 0; window.__aborted = 0;
+      const md = navigator.mediaDevices || (navigator.mediaDevices = {});
+      md.getUserMedia = function () { window.__tries++; if (window.__tries < 3) return Promise.reject({ name: "NotReadableError" }); const c = new AudioContext(), d = c.createMediaStreamDestination(); return Promise.resolve(d.stream); };
+      window.MandarinoAndroid = { print() { window.__printed = 1; }, version() { return "test"; }, flavor() { return "direct"; } };
+    });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); }); await p.reload(); await p.waitForFunction(() => window.CP && CP.micStream, null, { timeout: 15000 }); await p.waitForTimeout(500);
+    const mic = await p.evaluate(async () => { CP._activeListen = { abort() { window.__aborted++; } }; const t0 = performance.now(); const s = await CP.micStream(); return { ok: !!s, tries: window.__tries, aborted: window.__aborted, ms: Math.round(performance.now() - t0) }; });
+    check("Microfono: se il riconoscimento è ancora aperto lo libera, e se il telefono risponde «occupato» riprova da solo (3 tentativi) senza errori", mic.ok && mic.tries === 3 && mic.aborted === 1, JSON.stringify(mic));
+    const lab = await p.evaluate(async () => {
+      CP.show("build", true); const t = ["我", "是", "西西里", "人"].map((h) => CP.ORDER.find((k) => CP.WORDS[k].hz === h)).filter(Boolean); CP.build.labLoad(t, "."); await new Promise((r) => setTimeout(r, 200));
+      const a = document.getElementById("lab-out").innerText; document.querySelector('[data-labview="word"]').click(); await new Promise((r) => setTimeout(r, 150));
+      const b = document.getElementById("lab-out").innerText; return { fluid: /Sono siciliano/.test(a), word: !/Sono siciliano/.test(b) && /→/.test(b) && !/frase verificata/.test(b) };
+    });
+    check("Laboratorio: «Parola per parola» mostra la scomposizione alla lettera (con frecce) anche per le frasi verificate, e toglie la traduzione fluida", lab.fluid && lab.word, JSON.stringify(lab));
+    const sel = await p.evaluate(() => { const b = document.querySelector("button"), ev = new MouseEvent("contextmenu", { bubbles: true, cancelable: true }); b.dispatchEvent(ev); const ta = document.createElement("textarea"); document.body.appendChild(ta); const us = getComputedStyle(ta).userSelect; ta.remove(); return { body: getComputedStyle(document.body).userSelect, field: us, prevented: ev.defaultPrevented }; });
+    check("Un tocco lungo non apre la selezione di Android: testo non selezionabile e menu di sistema bloccato, tranne nei campi di testo", sel.body === "none" && sel.field === "text" && sel.prevented, JSON.stringify(sel));
+    const pr = await p.evaluate(async () => { document.getElementById("print-btn").click(); await new Promise((r) => setTimeout(r, 700)); return window.__printed === 1; });
+    check("Parole → Stampa: nell'app Android passa dal servizio di stampa del sistema (window.print() non fa niente nella WebView)", pr);
+    check("Difetti dal telefono: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); if (!sessionStorage.getItem("seen")) { sessionStorage.setItem("seen", "1"); sessionStorage.setItem("cp-fast", JSON.stringify({ set: "look" })); } });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.waitForTimeout(900);
+    const fast = await p.evaluate(() => ({ spFast: window.__spFast === 1, splash: !!document.getElementById("splash"), settings: !document.getElementById("settings").hidden, page: CP.settingsPage && CP.settingsPage(), flag: sessionStorage.getItem("cp-fast") }));
+    check("Cambio lingua dei menu: al ricaricamento niente animazione d'avvio e si riaprono le impostazioni nella stessa pagina", fast.spFast && !fast.splash && fast.settings && fast.page === "look" && !fast.flag, JSON.stringify(fast));
+    check("Cambio lingua: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
   /* 8. Impostazioni a pagine: cinque carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */

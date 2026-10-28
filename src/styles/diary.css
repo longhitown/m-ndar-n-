@@ -20,7 +20,8 @@
 
 /* la mappa */
 .dy-wrap { margin-top: 12px; color: var(--dy-ink); }
-.dy-map { display: block; width: 100%; height: auto; }
+/* la mappa non deve riempire lo schermo: così si vede intera, senza scorrere, insieme al titolo della tappa */
+.dy-map { display: block; width: 100%; height: auto; max-height: 46vh; margin: 0 auto; }
 .dy-sheet { fill: var(--dy-paper); }
 .dy-edge { stroke: var(--dy-edge); }
 .dy-deco { color: var(--dy-faint); opacity: .85; }
