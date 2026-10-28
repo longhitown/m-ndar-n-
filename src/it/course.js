@@ -94,7 +94,10 @@
     var w = W[keys[0]], zh = w.hz, py = w.py, alt = keys.slice(1).map(function (k) { return W[k].hz; });
     if (r[1] === "n") {
       var g = r[3], one = g === "mf" ? "m" : g, main = art(r[2], one, "s"), forms = [main, art(r[4], one, "p")];
-      if (g === "mf") forms = [main + " / " + art(r[2], "f", "s"), art(r[4], "m", "p") + " / " + art(r[4], "f", "p")];
+      if (g === "mf") {
+        var plF = /a$/.test(r[2]) && /i$/.test(r[4]) ? r[4].slice(0, -1) + "e" : r[4];
+        forms = [main + " / " + art(r[2], "f", "s"), art(r[4], "m", "p") + " / " + art(plF, "f", "p")];
+      }
       add({ id: "it:n:" + keys[0], it: main, say: main, kind: "noun", g: g, forms: forms, zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
     } else if (r[1] === "j") add({ id: "it:j:" + keys[0], it: r[3][0] === r[3][1] ? r[3][0] : r[3][0] + ", " + r[3][1], say: r[3][0], kind: "adj", forms: r[3], zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
     else if (r[1] === "v") add({ id: "it:v:" + keys[0], it: r[2], say: r[2], kind: "verb", aux: null, zh: zh, py: py, sec: w.sec, ex: keys[0], alt: alt });
