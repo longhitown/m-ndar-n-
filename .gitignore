@@ -9,9 +9,8 @@ android/app/build/
 *.jks
 *.keystore
 
-# file pesanti di dist/: si generano con «node tools/build.mjs» (gli originali sono in src/)
-/dist/audio/
-/dist/data/
+# dist/ è generato da «node tools/build.mjs» (gli originali sono in src/): non si committa, lo costruisce la CI
+/dist/
 
 # dipendenze di sviluppo (Playwright, solo per le prove)
 /node_modules/

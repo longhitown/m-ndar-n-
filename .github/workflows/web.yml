@@ -1,12 +1,12 @@
 # màndarínō · prove dell'app web a ogni push e pull request:
 # - prove veloci senza browser (tools/unit.mjs: taglio in parole, unione dei dati, peso dell'avvio);
-# - dist/ aggiornato e frasi verificate (tools/build.mjs --check, tools/grammar.mjs);
+# - la build (dist/ non sta nel repository: si costruisce qui, così le pull request non litigano su un file generato) e le frasi verificate;
 # - prove nel browser vero (tools/e2e.mjs, tools/ux-audit.mjs) con Playwright, dichiarato in package.json.
 name: web
 
 on:
   push:
-    paths: ["src/**", "tools/**", "dist/index.html", "package.json", ".github/workflows/web.yml"]
+    paths: ["src/**", "tools/**", "package.json", ".github/workflows/web.yml"]
   pull_request:
   workflow_dispatch:
 
@@ -21,14 +21,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Build (dati, lezioni e frasi controllati) e frasi verificate
+        run: node tools/build.mjs && node tools/grammar.mjs
+
       - name: Prove veloci (senza browser)
         run: node tools/unit.mjs
-
-      - name: dist/ aggiornato e frasi verificate
-        run: node tools/build.mjs --check && node tools/grammar.mjs
 
       - name: Playwright e Chromium
         run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
 
-      - name: Build completa (anche i file pesanti) e prove nel browser
-        run: node tools/build.mjs && node tools/e2e.mjs && node tools/ux-audit.mjs
+      - name: Prove nel browser
+        run: node tools/e2e.mjs && node tools/ux-audit.mjs
