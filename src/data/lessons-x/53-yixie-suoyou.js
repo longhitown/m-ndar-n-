@@ -23,7 +23,7 @@ LESSONS.push({
   "dlg": [
     ["A", "你还要别的吗？", "Vuoi altro?"],
     ["B", "我再买一些水果。", "Compro ancora un po' di frutta."],
-    ["A", "好，所有的水果都很新。", "Va bene, tutta la frutta è freschissima."],
+    ["A", "好，所有的水果都很新鲜。", "Va bene, tutta la frutta è freschissima."],
     ["B", "每个人都喜欢吃水果。", "A tutti piace mangiare frutta."]
   ],
   "traps": [

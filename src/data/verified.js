@@ -182,7 +182,7 @@ var VERIFIED = [
   ["我给你一本书","Ti do un libro."],
   ["我送你一个礼物","Ti faccio un regalo."],
   ["我学习汉语","Studio cinese."],
-  ["我不懂中文","Non capisco cinese."],
+  ["我不懂中文","Non capisco il cinese."],
   ["你懂吗","Capisci?"],
   ["我明白了","Ho capito."],
   ["我的朋友是中国人","Il mio amico è cinese."],

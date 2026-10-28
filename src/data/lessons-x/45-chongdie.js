@@ -1,8 +1,8 @@
-/* Lezione 45 · Un po' e per provare: 看看, 一点儿. Formato: vedi il commento in cima a lessons/01-essere.js (zh) o it/lessons/01-pronuncia.js. Lezione aggiuntiva: si carica al primo uso (gruppo LEZIONIX / corso di italiano). */
+/* Lezione 45 · Un po' e per provare: 看看, 一点. Formato: vedi il commento in cima a lessons/01-essere.js (zh) o it/lessons/01-pronuncia.js. Lezione aggiuntiva: si carica al primo uso (gruppo LEZIONIX / corso di italiano). */
 LESSONS.push({
   "id": "chongdie",
   "n": 45,
-  "title": "Un po' e per provare: 看看, 一点儿",
+  "title": "Un po' e per provare: 看看, 一点",
   "goal": "Usare i verbi raddoppiati per «provare un po'» e distinguere 一点, 有点 e 一下.",
   "body": [
     "Se **raddoppi un verbo**, la frase diventa più leggera: «fai un po'», «prova a». 看看 = dai un'occhiata; 想想 = pensaci un po'; 试试 = prova. Spesso si aggiunge 一下 (yíxià): 看一下, 等一下 = aspetta un attimo.",

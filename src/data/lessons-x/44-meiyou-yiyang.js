@@ -9,7 +9,7 @@ LESSONS.push({
     "Al negativo: 跟…不一样 = «è diverso da…»: 我的跟你的不一样 = il mio è diverso dal tuo.",
     "**A 没有 B + aggettivo** = «A non è (così) … come B»: 今天没有昨天热 = oggi non fa caldo come ieri. È il contrario di 比 (lezione 15): 昨天比今天热 = ieri faceva più caldo di oggi.",
     "Per «un po' più» o «molto più» si mette dopo l'aggettivo: 比他高一点 (un po' più alto), 比他高多了 (molto più alto).",
-    "Attenzione: **non si usa 很 con 比**: 他比我高 (non 他比我很高). Con 没有 e 一样 tutto è normale."
+    "Attenzione: **non si usa 很** né con 比 né con 没有: 他比我高 (non 他比我很高), 今天没有昨天热 (non 今天没有昨天很热)."
   ],
   "pattern": ["A", "跟 B 一样 / 没有 B", "aggettivo"],
   "ex": [
