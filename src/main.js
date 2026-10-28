@@ -36,10 +36,11 @@
 (function () {
   var s = document.getElementById("splash"); if (!s) return;
   clearTimeout(window.__spT); clearInterval(window.__spI); clearTimeout(window.__spX);
-  /* l'apertura è sempre presente (non solo la prima volta) e dura almeno 1,7 s, così l'animazione si vede per intero; chi arriva da un
+  /* se l'app è pronta prima del volo dei toni (chi esce subito) le lettere prendono comunque l'accento giusto */
+  /* l'apertura è sempre presente (non solo la prima volta) e dura almeno 3,2 s, così l'animazione si vede per intero; chi arriva da un
      collegamento (widget, scorciatoia) o ha il movimento ridotto aspetta meno, e i test automatici (navigator.webdriver) niente */
   var reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-  var min = typeof window.__MD_SPLASH_MIN === "number" ? window.__MD_SPLASH_MIN : navigator.webdriver ? 0 : window.__mdGoing ? 700 : reduce ? 500 : 1700;
+  var min = typeof window.__MD_SPLASH_MIN === "number" ? window.__MD_SPLASH_MIN : navigator.webdriver ? 0 : window.__mdGoing ? 700 : reduce ? 500 : 3200;
   var wait = Math.max(0, min - (window.performance && performance.now ? performance.now() : 0));
   setTimeout(function () {
     requestAnimationFrame(function () {
