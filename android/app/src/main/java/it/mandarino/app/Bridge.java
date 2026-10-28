@@ -3,6 +3,7 @@ package it.mandarino.app;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.database.Cursor;
@@ -14,6 +15,8 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -48,17 +51,42 @@ import java.util.concurrent.Executors;
 public class Bridge {
     private final MainActivity act;
     private TextToSpeech tts;
-    private volatile boolean ttsReady = false;
+    private volatile boolean ttsReady = false, ttsStarting = false;
+    /* una richiesta arrivata mentre il motore vocale si riavvia: parte appena è pronto (l'ultima vince, come QUEUE_FLUSH) */
+    private String pendId = null;
+    private Runnable pendRun = null;
     private SpeechRecognizer recognizer;
     private String recId = null, recPending = null;
+    private boolean musicWasMuted = false;
 
     Bridge(MainActivity act) {
         this.act = act;
+        initTts();
+    }
+
+    /** (ri)avvia il motore di sintesi. Android può chiudere il servizio vocale quando l'app resta ferma qualche minuto: da quel
+     *  momento speak() fallisce per sempre, e la voce restava muta fino al riavvio dell'app. */
+    private void initTts() {
+        final TextToSpeech old = tts;
+        ttsReady = false; ttsStarting = true;
         tts = new TextToSpeech(act.getApplicationContext(), status -> {
+            ttsStarting = false;
             ttsReady = status == TextToSpeech.SUCCESS;
-            if (ttsReady) tts.setOnUtteranceProgressListener(new Progress());
+            if (ttsReady) {
+                tts.setOnUtteranceProgressListener(new Progress());
+                try { tts.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build()); } catch (RuntimeException ignored) { }
+            }
             emit("voices", "", ttsReady ? "ok" : "none");
+            final String id = pendId; final Runnable run = pendRun; pendId = null; pendRun = null;
+            if (run != null) { if (ttsReady) run.run(); else emit("tts-error", id, "synthesis-unavailable"); }
         });
+        if (old != null) { try { old.stop(); old.shutdown(); } catch (RuntimeException ignored) { } }
+    }
+
+    private void retryAfterRestart(String id, Runnable run) {
+        if (pendId != null) emit("tts-error", pendId, "interrupted");
+        pendId = id; pendRun = run;
+        if (!ttsStarting) act.runOnUiThread(this::initTts);
     }
 
     private void emit(String type, String id, String data) {
@@ -71,7 +99,7 @@ public class Bridge {
         @Override public void onStart(String id) { emit("tts-start", id, ""); }
         @Override public void onDone(String id) { emit("tts-end", id, ""); }
         @Override @Deprecated public void onError(String id) { emit("tts-error", id, "synthesis-failed"); }
-        @Override public void onError(String id, int code) { emit("tts-error", id, code == TextToSpeech.ERROR_NETWORK || code == TextToSpeech.ERROR_NETWORK_TIMEOUT ? "network" : "synthesis-failed"); }
+        @Override public void onError(String id, int code) { if (code == TextToSpeech.ERROR_SERVICE) ttsReady = false; emit("tts-error", id, code == TextToSpeech.ERROR_NETWORK || code == TextToSpeech.ERROR_NETWORK_TIMEOUT ? "network" : "synthesis-failed"); }
         @Override public void onStop(String id, boolean interrupted) { emit("tts-error", id, "interrupted"); }
     }
 
@@ -99,8 +127,24 @@ public class Bridge {
 
     /** true se la frase è stata messa in coda; gli eventi arrivano poi come tts-start / tts-end / tts-error */
     @JavascriptInterface
-    public boolean ttsSpeak(String id, String text, String lang, String voiceName, float rate, float pitch) {
-        if (!ttsReady || text == null) return false;
+    public boolean ttsSpeak(final String id, final String text, final String lang, final String voiceName, final float rate, final float pitch) {
+        if (text == null) return false;
+        if (!ttsReady) {
+            /* il motore non c'è (spento dal sistema): lo si riavvia e la frase parte appena è pronto; gli esiti arrivano come eventi */
+            retryAfterRestart(id, () -> { int r = speakNow(id, text, lang, voiceName, rate, pitch); if (r != 1) emit("tts-error", id, r == 0 ? "language-unavailable" : "synthesis-failed"); });
+            return true;
+        }
+        int r = speakNow(id, text, lang, voiceName, rate, pitch);
+        if (r == -1) {   /* il motore ha risposto con un errore: probabilmente è morto, lo si riavvia una volta e si riprova */
+            ttsReady = false;
+            retryAfterRestart(id, () -> { int r2 = speakNow(id, text, lang, voiceName, rate, pitch); if (r2 != 1) emit("tts-error", id, r2 == 0 ? "language-unavailable" : "synthesis-failed"); });
+            return true;
+        }
+        return r == 1;
+    }
+
+    /** 1 = in coda, 0 = lingua non disponibile, -1 = il motore non risponde */
+    private int speakNow(String id, String text, String lang, String voiceName, float rate, float pitch) {
         try {
             boolean set = false;
             if (voiceName != null && !voiceName.isEmpty()) {
@@ -110,15 +154,15 @@ public class Bridge {
             if (!set) {
                 Locale loc = Locale.forLanguageTag(lang == null || lang.isEmpty() ? "zh-CN" : lang);
                 int r = tts.setLanguage(loc);
-                if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) return false;
+                if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) return 0;
             }
             tts.setSpeechRate(rate > 0 ? rate : 1f);
             tts.setPitch(pitch > 0 ? pitch : 1f);
             Bundle p = new Bundle();
             p.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, id);
-            return tts.speak(text, TextToSpeech.QUEUE_FLUSH, p, id) == TextToSpeech.SUCCESS;
+            return tts.speak(text, TextToSpeech.QUEUE_FLUSH, p, id) == TextToSpeech.SUCCESS ? 1 : -1;
         } catch (RuntimeException e) {
-            return false;
+            return -1;
         }
     }
 
@@ -170,6 +214,8 @@ public class Bridge {
 
     private void beginRecognizer(String id, String lang, int maxResults) {
         try {
+            AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
+            musicWasMuted = am != null && am.isStreamMute(AudioManager.STREAM_MUSIC);
             recognizer = SpeechRecognizer.createSpeechRecognizer(act);
             recognizer.setRecognitionListener(new Listener(id));
             Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -208,8 +254,24 @@ public class Bridge {
         if (recognizer != null) {
             try { recognizer.cancel(); recognizer.destroy(); } catch (RuntimeException ignored) { }
             recognizer = null;
+            /* su alcuni telefoni il riconoscitore silenzia il volume dei media durante l'ascolto e, se lo si chiude in fretta, non lo
+               ripristina: parole, toni e musica restano muti finché non si riavvia l'app. Se prima non era muto, lo si riaccende. */
+            act.getWindow().getDecorView().postDelayed(() -> {
+                try {
+                    AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
+                    if (recognizer == null && !musicWasMuted && am != null && am.isStreamMute(AudioManager.STREAM_MUSIC)) am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                } catch (RuntimeException ignored) { }
+            }, 800);
         }
         recId = null;
+    }
+
+    /** l'app passa in secondo piano: il microfono si libera subito */
+    void pause() {
+        if (recognizer == null) return;
+        final String id = recId;
+        stopRecognizer();
+        if (id != null) emit("sr-end", id, "");
     }
 
     private class Listener implements RecognitionListener {

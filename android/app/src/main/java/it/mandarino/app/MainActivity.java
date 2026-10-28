@@ -337,6 +337,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        bridge.pause();
         web.evaluateJavascript("window.Store && Store.flush && Store.flush(); window.__mdWidget && window.__mdWidget()", null);
     }
 
