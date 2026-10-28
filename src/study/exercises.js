@@ -114,7 +114,9 @@
     if (!cur || cur.done) return;
     var w = cur.w, kit = cur.kit, ex = kit.example ? kit.example(w.key) : null;
     cur.done = true; cur.g = res.g; cur.ms = Date.now() - cur.t0;
-    stat(w.key, cur.e.exType, res.ok); LAD.hist.push(!!res.ok); LAD.last.push(cur.e.exType); if (LAD.last.length > 4) LAD.last.shift();
+    stat(w.key, cur.e.exType, res.ok);
+    if (!res.ok && cur.item.keys && res.picked != null && CP.exConf) CP.exConf(cur.item.keys[cur.item.right], cur.item.keys[res.picked], cur.e.exType);
+    LAD.hist.push(!!res.ok); LAD.last.push(cur.e.exType); if (LAD.last.length > 4) LAD.last.shift();
     if (CP.pref.sfx) CP.sfx(res.ok ? "ok" : "ko"); CP.haptic(res.ok ? 8 : [20, 40, 20]);
     var fb = kit.root.querySelector(".ex-fb");
     /* nella verifica del percorso guidato (kit.noReveal) solo l'esito: niente parola completa, esempio né ascolto */
@@ -162,15 +164,25 @@
   function sylls(py) { return String(py).split(/[.\s']+/).filter(Boolean); }
   function listenBtn(text) { return '<div class="ex-listen">' + CP.sayBtn(text).replace('class="say"', 'class="say big"') + "</div>"; }
   function mc(right, wrong, r, extra) { var o = D.options(right, wrong, r); return Object.assign({ kind: "mc", opts: o.opts, right: o.right }, extra || {}); }
+  /* come mc(), ma ricorda quale parola c'è dietro ogni opzione (item.keys): se si sbaglia, la coppia scambiata va in
+     cp-ex-v1.conf (CP.exConf) e può diventare un aneddoto del Taccuino. f(parola) → html dell'opzione */
+  function mcw(w, wrong, f, r, extra) {
+    var m = {}; m[f(w)] = w.hz; wrong.forEach(function (y) { m[f(y)] = y.hz; });
+    var it = mc(f(w), wrong.map(f), r, extra); it.keys = it.opts.map(function (o) { return m[o]; }); return it;
+  }
+  function hanOpt(y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }
   register({ id: "mc-significato", famiglia: 0, corso: "zh", q: "exm.q.meaning",
-    crea: function (w, ctx, r) { var x = D.meaning(w, ctx.pool(), ctx, r); return x && mc(esc(D.gloss(w.it)), x.map(function (y) { return esc(D.gloss(y.it)); }), r, { prompt: hzpy(w), lang: "it", wide: true, say: CP.sayHz(w) }); } });
+    crea: function (w, ctx, r) { var x = D.meaning(w, ctx.pool(), ctx, r); return x && mcw(w, x, function (y) { return esc(D.gloss(y.it)); }, r, { prompt: hzpy(w), lang: "it", wide: true, say: CP.sayHz(w) }); } });
   register({ id: "mc-parola", famiglia: 0, corso: "zh", q: "exm.q.word",
-    crea: function (w, ctx, r) { var x = D.word(w, ctx.pool(), ctx, r); return x && mc('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r, { prompt: '<div class="cd-it" lang="it">' + esc(w.it) + "</div>", lang: "zh-CN" }); } });
+    crea: function (w, ctx, r) { var x = D.word(w, ctx.pool(), ctx, r); return x && mcw(w, x, hanOpt, r, { prompt: '<div class="cd-it" lang="it">' + esc(w.it) + "</div>", lang: "zh-CN" }); } });
   register({ id: "mc-pinyin", famiglia: 0, corso: "zh", q: "exm.q.pinyin",
-    crea: function (w, ctx, r) { var x = D.pinyin(w, ctx.pool(), ctx, r); return x && mc(CP.pinyinHTML(sylls(w.py).join(" ")), x.map(function (p) { return CP.pinyinHTML(p); }), r, { prompt: '<div class="cd-hz" lang="zh-CN">' + esc(w.hz) + "</div>" }); } });
+    crea: function (w, ctx, r) { var x = D.pinyin(w, ctx.pool(), ctx, r); if (!x) return null; var it = mc(CP.pinyinHTML(sylls(w.py).join(" ")), x.map(function (p) { return CP.pinyinHTML(p); }), r, { prompt: '<div class="cd-hz" lang="zh-CN">' + esc(w.hz) + "</div>" });
+      /* una sillaba sola: la scelta sbagliata è un tono, e il Taccuino lo legge come «a|~tono» */
+      if (sylls(w.py).length === 1) { var tn = {}; x.forEach(function (p) { tn[CP.pinyinHTML(p)] = CP.tone(p); }); it.keys = it.opts.map(function (o, i) { return i === it.right ? w.hz : tn[o] ? "~" + tn[o] : null; }); }
+      return it; } });
   register({ id: "mc-ascolto", famiglia: 1, corso: "zh", q: "exm.q.listen",
     richiede: function (w, ctx) { return ctx.hasVoice() && !ctx.poly(w.hz); },
-    crea: function (w, ctx, r) { var x = D.listen(w, ctx.pool(), ctx, r); return x && mc('<span class="ex-han">' + esc(w.hz) + "</span>", x.map(function (y) { return '<span class="ex-han">' + esc(y.hz) + "</span>"; }), r, { prompt: listenBtn(CP.sayHz(w)), lang: "zh-CN", say: CP.sayHz(w), autoSay: true }); } });
+    crea: function (w, ctx, r) { var x = D.listen(w, ctx.pool(), ctx, r); return x && mcw(w, x, hanOpt, r, { prompt: listenBtn(CP.sayHz(w)), lang: "zh-CN", say: CP.sayHz(w), autoSay: true }); } });
   /* il tono di una parola di una sillaba: dal pinyin senza accento (e dalla voce, se c'è) alla curva giusta */
   var CURVES = ["mā", "má", "mǎ", "mà"];
   register({ id: "tono", famiglia: 1, corso: "zh", q: "exm.q.tone",
