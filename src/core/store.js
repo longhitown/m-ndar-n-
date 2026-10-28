@@ -196,7 +196,14 @@
       var t = E[k] = E[k] || {}; Object.keys(ex[k] || {}).forEach(function (ty) { var y = ex[k][ty], x = t[ty]; if (!x || (y && (y.n || 0) > (x.n || 0)) || (y && (y.n || 0) === (x.n || 0) && (y.ultimo || 0) > (x.ultimo || 0))) t[ty] = y; });
     }); });
     [a.read || {}, b.read || {}].forEach(function (r) { Object.keys(r).forEach(function (id) { RD[id] = Math.max(RD[id] || 0, r[id] || 0); }); });
+    /* coppie scambiate (Taccuino del viaggiatore): per ogni coppia la voce con n più alto, la prima tappa più bassa, l'ultima volta più recente */
+    var CF = {};
+    [a.conf || {}, b.conf || {}].forEach(function (cf) { Object.keys(cf).forEach(function (k) {
+      var y = cf[k] || {}, x = CF[k]; if (!x) { CF[k] = JSON.parse(JSON.stringify(y)); return; }
+      CF[k] = { n: Math.max(x.n || 0, y.n || 0), ultimo: Math.max(x.ultimo || 0, y.ultimo || 0), d: Math.min(x.d || 0, y.d || 0) }; if (x.t || y.t) CF[k].t = x.t || y.t;
+    }); });
     var out = { units: U, ex: E, read: RD };
+    if (Object.keys(CF).length) out.conf = CF;
     Object.keys(b).concat(Object.keys(a)).forEach(function (f) { if (!(f in out)) out[f] = a[f] !== undefined ? a[f] : b[f]; });
     return out;
   }
