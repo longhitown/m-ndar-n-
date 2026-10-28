@@ -67,6 +67,7 @@ export function checkLessons(L) {
     if (l.path && !L.D.SECTIONS.some((s) => s.id === l.path)) err.push(w + ": la tappa «" + l.path + "» non esiste");
     (l.ex || []).forEach((e, j) => { if (!Array.isArray(e) || e.length < 2) err.push(w + ` ex[${j}]: deve essere [cinese, italiano]`); else zhOk(w + ` ex[${j}]`, e[0]); });
     (l.traps || []).forEach((t, j) => { if (!Array.isArray(t) || t.length !== 3) err.push(w + ` traps[${j}]: deve essere [sbagliata, giusta, perché]`); else { zhOk(w + ` traps[${j}]`, t[0]); zhOk(w + ` traps[${j}]`, t[1]); } });
+    if (l.dlg) { if (!Array.isArray(l.dlg) || l.dlg.length < 3 || l.dlg.length > 8) err.push(w + ": il mini-dialogo (dlg) ha da 3 a 8 battute"); else l.dlg.forEach((d, j) => { if (!Array.isArray(d) || d.length !== 3 || !/^[AB]$/.test(d[0]) || !d[2]) err.push(w + ` dlg[${j}]: deve essere [A|B, cinese, italiano]`); else zhOk(w + ` dlg[${j}]`, d[1]); }); }
     (l.quiz || []).forEach((q, j) => {
       const at = w + ` quiz[${j}]`;
       if (q.k === "order") { zhOk(at, q.zh); if (L.tokens(q.zh).length < 2) err.push(at + ": servono almeno due tessere"); if (!q.it) err.push(at + ": manca l'italiano"); }
@@ -93,6 +94,7 @@ export function checkLessons(L) {
     ["title", "goal"].forEach((f) => { if (!l[f]) err.push(w + ": manca " + f); });
     (l.ex || []).forEach((e, j) => { if (!Array.isArray(e) || e.length !== 2 || !e[0] || !e[1]) err.push(w + ` ex[${j}]: deve essere [italiano, cinese]`); });
     (l.traps || []).forEach((t, j) => { if (!Array.isArray(t) || t.length !== 3) err.push(w + ` traps[${j}]: deve essere [sbagliato, giusto, perché]`); else if (t[0] === t[1]) err.push(w + ` traps[${j}]: sbagliato = giusto`); });
+    if (l.dlg) { if (!Array.isArray(l.dlg) || l.dlg.length < 3 || l.dlg.length > 8) err.push(w + ": il mini-dialogo (dlg) ha da 3 a 8 battute"); else l.dlg.forEach((d, j) => { if (!Array.isArray(d) || d.length !== 3 || !/^[AB]$/.test(d[0]) || !d[1] || !d[2]) err.push(w + ` dlg[${j}]: deve essere [A|B, italiano, cinese]`); }); }
     (l.quiz || []).forEach((q, j) => {
       const at = w + ` quiz[${j}]`;
       if (q.k === "order") { if (String(q.it || "").split(/\s+/).filter(Boolean).length < 2 || !q.zh) err.push(at + ": servono it (almeno due parole) e zh"); }

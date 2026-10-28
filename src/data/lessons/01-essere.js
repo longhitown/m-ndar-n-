@@ -27,6 +27,12 @@ LESSONS.push({
     ["我不是老师。", "Non sono insegnante."],
     ["这是我的书。", "Questo è il mio libro."]
   ],
+  "dlg": [
+    ["A", "你好，我是马可。我是学生。", "Ciao, sono Marco. Sono studente."],
+    ["B", "你好，马可。我是小王。我是老师。", "Ciao, Marco. Sono Xiao Wang. Sono insegnante."],
+    ["A", "你是中国人，我是意大利人。", "Tu sei cinese, io sono italiano."],
+    ["B", "对。我们是朋友。", "Esatto. Siamo amici."]
+  ],
   "traps": [
     ["我是累。", "我很累。", "Con un aggettivo non si usa 是: ci vuole 很."],
     ["我是意大利。", "我是意大利人。", "意大利 è il paese, l'Italia. «Italiano» è 意大利人: la persona dell'Italia."],
