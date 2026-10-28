@@ -4,6 +4,7 @@
 var CHANGELOG = [
   { v: "6.7", d: "2026-10",
     it: [
+      "Widget «Giada»: sfondo verde che cambia con l'ora (mattina, pomeriggio, sera, notte), striscia dell'obiettivo di oggi, un proverbio la sera e, di notte, solo un augurio di buon riposo. Anche il widget Pausa ha il nuovo aspetto.",
       "Apertura più bella: ogni volta che apri l\'app il frutto rimbalza, il nome si compone, i quattro toni si disegnano e volano sulle lettere (à, í, ō) e sulle due foglie, poi resta il logo (circa tre secondi). Con il movimento ridotto è più breve.",
       "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e i primi mini-dialoghi con l'audio (lezioni 1–5, nei due corsi).",
       "Lezioni: un ripasso ogni cinque lezioni, con le domande delle lezioni appena fatte, e in tutte le 30 lezioni dei due corsi un mini-dialogo con l'audio e due esempi in più.",
@@ -30,6 +31,7 @@ var CHANGELOG = [
       "Taccuino del viaggiatore (Studia → I miei progressi): una mappa d'epoca da Roma a Guilin, una città per ogni tappa del Percorso. Quando scambi due parole simili, lo sbaglio diventa un aneddoto scritto a mano; una pagina si può condividere come immagine, solo se vuoi."
     ],
     zh: [
+      "「翡翠」小组件：背景随时间变化（早晨、下午、傍晚、夜晚），有今日目标进度条，傍晚显示一句谚语，夜里只留一句晚安。「休息」小组件也换了新外观。",
       "更漂亮的启动画面：每次打开应用，橘子弹出、名字逐字出现、四个声调画出后飞到字母（à、í、ō）和两片叶子上，最后只剩标志（约三秒）。开启“减少动态效果”时会更短。",
       "课程：每学五课有一次复习，题目取自刚学的几课；前五课（两门课程）还加入了带发音的小对话。",
       "课程：每学五课有一次复习，题目取自刚学的几课；两门课程的 30 课都加入了带发音的小对话，并多了两个例句。",

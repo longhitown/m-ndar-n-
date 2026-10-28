@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- widget «Giada»: sfondo verde con sfumatura, testi chiari, accenti arancione e menta. Le «atmosfere» (mattina, pomeriggio, sera, notte) cambiano lo sfondo e l'arancione -->
+<resources>
+    <color name="w_g_a">#17695A</color>
+    <color name="w_g_b">#0E4338</color>
+    <color name="w_g_na">#0A1A17</color>
+    <color name="w_g_nb">#050E0C</color>
+    <color name="w_g_dawn_0">#00FFC46B</color>
+    <color name="w_g_dawn_1">#47FFC46B</color>
+    <color name="w_g_dusk_0">#00F0701E</color>
+    <color name="w_g_dusk_1">#4DF0701E</color>
+    <color name="w_g_text">#F4FFF9</color>
+    <color name="w_g_mute">#BFDDD2</color>
+    <color name="w_g_mint">#9BE8CB</color>
+    <color name="w_g_orange">#FFA03A</color>
+    <color name="w_g_orange_deep">#F57C00</color>
+    <color name="w_g_on_orange">#2A1604</color>
+    <color name="w_g_glass">#29FFFFFF</color>
+    <color name="w_g_glass_line">#47FFFFFF</color>
+    <color name="w_g_seg_off">#33FFFFFF</color>
+    <color name="w_g_seal">#C8312B</color>
+    <color name="w_g_ripple">#33FFFFFF</color>
+</resources>

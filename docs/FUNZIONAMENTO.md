@@ -274,6 +274,7 @@ Una **WebView** che apre `dist/index.html` dal pacchetto, più un **ponte nativo
 Due versioni con lo stesso `applicationId` e la stessa chiave: **direct** (GitHub Releases; controllo aggiornamenti, sostegno e sigilli accesi) e **store** (senza queste tre cose).
 
 - **Widget «Oggi»** (4×2 e 2×1): serie di giorni con un messaggio gentile, ripassi in scadenza (calcolati sul telefono dall'istogramma delle prossime 168 ore), parola del giorno (un tocco mostra il significato), «Studia ora».
+- **Widget «Oggi» e «Pausa» in stile «Giada»**: sfondo verde, riquadro di vetro per la parola del giorno, striscia di dieci segmenti con l'obiettivo di oggi. Cambiano faccia in quattro momenti, uguali nei due corsi: **mattina** (6–11, riflesso d'alba, «Inizia la giornata»), **pomeriggio** (12–16, «Pausa studio? Bastano N minuti.»), **sera** (17–21, accenti arancioni, fiamma più scura, quanti mancano all'obiettivo e un proverbio al posto della parola), **notte** (22–5, quasi nero, luna, nessun pulsante, «A domani!»). Niente mascotte e niente toni di paura: solo inviti. Sfocatura e animazioni non esistono nei widget Android, quindi il vetro è una trasparenza.
 - **Widget «Pausa»** (4×1): giri di studio da **25 minuti** e **pausa caffè** da 5; il conto alla rovescia è un cronometro in discesa che Android fa scorrere da solo (un widget non può animarsi); un allarme ai cambi di fase aggiorna il widget e manda un avviso; da fermo mostra «Riposo» di notte (22–6) e «Pausa caffè a Xi'an» dalle 14 alle 18.
 - **Scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Musica.
 - **Promemoria** facoltativo (⚙️ → Studio): un avviso al giorno all'ora scelta, calcolato sul telefono, solo se oggi non si è studiato e c'è qualcosa da fare.
@@ -309,7 +310,7 @@ Dipendenze di terzi dentro l'app: pochi file in `src/vendor/` (jsPDF per il Fogl
 |---|---|---|
 | Dati e lezioni validi, frasi cinesi fatte di parole del vocabolario, ogni file di dati elencato | `node tools/build.mjs` | passa |
 | Frasi verificate, regole di traduzione | `node tools/grammar.mjs` | 378/378 |
-| Prove veloci senza browser (taglio in parole, FSRS, QR, sigilli, sito, peso dell'avvio, widget) | `node tools/unit.mjs` | 75/75 |
+| Prove veloci senza browser (taglio in parole, FSRS, QR, sigilli, sito, peso dell'avvio, widget) | `node tools/unit.mjs` | 79/79 |
 | Prove nel browser (benvenuto, corsi, immersione, sincronizzazione, QR, sigilli, musica, voce, impostazioni, apertura…) | `node tools/e2e.mjs` | 284/284 |
 | Regole di interfaccia e accessibilità | `node tools/ux-audit.mjs` | nessun problema |
 | Documenti: link, ancore, parole vietate, strutture protette | `node tools/check-docs.mjs --strict` | 0 errori |
