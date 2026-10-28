@@ -9,8 +9,19 @@
   function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
   function prog(id) { return load()[id] || {}; }
   function mark(id, patch) { var o = load(), p = o[id] || {}; Object.keys(patch).forEach(function (k) { p[k] = patch[k]; }); o[id] = p; save(o); }
-  function byId(id) { return LESSONS.filter(function (l) { return l.id === id; })[0] || null; }
   function sorted() { return LESSONS.slice().sort(function (a, b) { return (a.n || 0) - (b.n || 0); }); }
+  /* un ripasso ogni cinque lezioni: due domande a sorte da ciascuna delle cinque, prese dai loro esercizi (nessun contenuto nuovo) */
+  var REV = 5;
+  function revDefs() { var out = [], tot = sorted().length; for (var k = 1; k * REV <= tot; k++) out.push({ id: "rip-" + k, k: k, from: (k - 1) * REV + 1, to: k * REV }); return out; }
+  function makeReview(r) {
+    var q = [];
+    sorted().slice(r.from - 1, r.to).forEach(function (l) { q = q.concat(shuffle((l.quiz || []).slice()).slice(0, 2)); });
+    return { id: r.id, review: true, to: r.to, n: r.to + 0.5, title: T("ls.revTitle", { a: r.from, b: r.to }), goal: T("ls.revGoal"), body: [T("ls.revBody")], ex: [], traps: [], quiz: shuffle(q) };
+  }
+  function byId(id) {
+    var r = revDefs().filter(function (d) { return d.id === id; })[0]; if (r) return makeReview(r);
+    return LESSONS.filter(function (l) { return l.id === id; })[0] || null;
+  }
 
   /* una frase cinese con pinyin e toni a colori, presa dal vocabolario */
   var PUNCT = { "。": ".", "？": "?", "！": "!", "，": ",", "、": "," };
@@ -28,12 +39,16 @@
   /* ---- elenco ---- */
   function listHTML() {
     var P = load(), done = 0;
+    var revAfter = {}; revDefs().forEach(function (d) { revAfter[d.to] = d; });
     var cards = sorted().map(function (l) {
       var p = P[l.id] || {}, ok = (p.best || 0) >= PASS; if (ok) done++;
+      var rv = revAfter[l.n], rp = rv ? P[rv.id] || {} : null, rok = rv && (rp.best || 0) >= PASS;
       return '<button type="button" class="ls-card' + (ok ? " done" : "") + '" data-ls-open="' + CP.attr(l.id) + '">' +
         '<span class="ls-n" aria-hidden="true">' + (ok ? "✓" : l.n) + "</span>" +
         '<span class="ls-t" lang="it"><b>' + rich(l.title) + "</b><span class=\"small muted\">" + esc(l.goal) + "</span></span>" +
-        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? T("ls.read") : "") + "</span></button>";
+        '<span class="ls-st small">' + (p.best != null ? p.best + "%" : p.seen ? T("ls.read") : "") + "</span></button>" +
+        (rv ? '<button type="button" class="ls-card ls-rev' + (rok ? " done" : "") + '" data-ls-open="' + rv.id + '"><span class="ls-n" aria-hidden="true">' + (rok ? "✓" : "🔁") + '</span><span class="ls-t" lang="it"><b>' +
+          esc(T("ls.revTitle", { a: rv.from, b: rv.to })) + '</b><span class="small muted">' + esc(T("ls.revGoal")) + '</span></span><span class="ls-st small">' + (rp.best != null ? rp.best + "%" : "") + "</span></button>" : "");
     }).join("");
     return '<p class="lede" style="margin:14px 0 4px">' + T("ls.lede", { p: PASS }) + "</p>" +
       '<p class="small muted" style="margin:0 0 10px">' + T("ls.passed", { n: done, tot: LESSONS.length }) + "</p>" +
@@ -44,14 +59,17 @@
   function lessonHTML(l) {
     var p = prog(l.id), qn = (l.quiz || []).length;
     return '<div class="acts" style="margin:14px 0 0"><button type="button" class="btn-s" data-ls-back>← ' + T("sub.lessons") + "</button></div>" +
-      '<article class="panel ls-lesson"><span class="tag muted small">' + T("ls.n", { n: l.n }) + (p.best != null ? " · " + T("ls.best", { p: p.best }) : "") + "</span>" +
+      '<article class="panel ls-lesson"><span class="tag muted small">' + (l.review ? T("ls.rev") : T("ls.n", { n: l.n })) + (p.best != null ? " · " + T("ls.best", { p: p.best }) : "") + "</span>" +
       '<h3 lang="it">' + rich(l.title) + "</h3>" +
       '<p class="ls-goal" lang="it">🎯 ' + esc(l.goal) + "</p>" +
       l.body.map(function (b) { return '<p lang="it">' + rich(b) + "</p>"; }).join("") +
       (l.pattern ? '<div class="ls-pat" lang="it" aria-label="' + CP.attr(T("ls.pattern")) + '">' + l.pattern.map(function (f, j) { return (j ? '<span class="ls-plus">+</span>' : "") + '<span class="fx">' + (isZh(f) ? '<span class="han" lang="zh-CN">' + esc(f) + "</span>" : esc(f)) + "</span>"; }).join("") + "</div>" : "") +
-      "<h4>" + T("ls.examples") + "</h4>" + (l.ex || []).map(function (e) {
+      ((l.ex || []).length ? "<h4>" + T("ls.examples") + "</h4>" : "") + (l.ex || []).map(function (e) {
         return '<div class="ls-ex">' + zhHTML(e[0]) + '<div class="small muted" lang="it">' + esc(e[1]) + "</div>" + CP.audioBtns(e[0].replace(/[。？！，]/g, "")) + "</div>";
       }).join("") +
+      ((l.dlg || []).length ? "<h4>" + T("ls.dlg") + "</h4>" + l.dlg.map(function (d) {
+        return '<div class="ls-ex ls-dl ' + (d[0] === "B" ? "b" : "a") + '"><span class="tag muted small" aria-hidden="true">' + esc(d[0]) + "</span>" + zhHTML(d[1]) + '<div class="small muted" lang="it">' + esc(d[2]) + "</div>" + CP.audioBtns(d[1].replace(/[。？！，]/g, "")) + "</div>";
+      }).join("") : "") +
       ((l.traps || []).length ? "<h4>" + T("ls.traps") + "</h4>" + l.traps.map(function (t) {
         return '<div class="ls-trap"><div class="ls-bad">❌ <span class="han" lang="zh-CN">' + esc(t[0]) + '</span></div><div class="ls-good">✅ <span class="han" lang="zh-CN">' + esc(t[1]) + '</span></div><div class="small" lang="it">' + rich(t[2]) + "</div></div>";
       }).join("") : "") +
@@ -121,7 +139,7 @@
       (!quiz.extra && (l.ex || []).length && CP.ex && CP.ex.stile() !== "classic" ? '<button type="button" class="btn-s" data-ls-mini>' + T("ls.mini") + "</button>" : "") +
       '<button type="button" class="btn-s" data-ls-back>' + T("ls.all") + "</button>" + (ok && nextOf(l) ? '<button type="button" class="btn-s" data-ls-open="' + CP.attr(nextOf(l).id) + '">' + T("ls.nextL") + " →</button>" : "") + "</div></div>";
   }
-  function nextOf(l) { var s = sorted(), i = s.indexOf(l); return s[i + 1] || null; }
+  function nextOf(l) { var s = sorted(); if (l.review) return s[l.to] || null; var i = s.indexOf(l); return s[i + 1] || null; }
   function finish() {
     if (quiz.extra) { view = "result"; CP.sfx("tap"); return; }
     var l = quiz.l, pct = Math.round(quiz.score * 100 / l.quiz.length), p = prog(l.id), patch = { best: Math.max(p.best || 0, pct) };
@@ -147,7 +165,8 @@
   CP.subs = CP.subs || {};
   CP.subs.lessons = { render: function () { return '<div id="ls-root">' + html() + "</div>"; }, after: function () {} };
   CP.lessons = {
-    list: sorted,
+    list: sorted,            /* solo le lezioni vere: i ripassi (rip-N) non contano nei «superate» */
+    reviews: function () { return revDefs(); },
     open: open,
     forPath: function (secId) { return sorted().filter(function (l) { return l.path === secId; }); },
     progress: function (id) { return prog(id); }
