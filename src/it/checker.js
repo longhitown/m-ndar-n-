@@ -73,7 +73,7 @@
           strip(x).split(" / ").forEach(function (y) {
             var m = /^(il|lo|la|i|gli|le|l')\s*(.+)$/.exec(y.trim()), w = (m ? m[2] : y).toLowerCase(), a = m ? ARTS[m[1]] : null;
             if (n === "s" && !sg) sg = w; if (n === "p" && !pl) pl = w;
-            var both = e.g === "mf" || /(ante|ente|ista|isti)$/.test(w);   /* l'insegnante, il/la cantante, il/la giornalista */
+            var both = n === "s" ? (e.g === "mf" || /(ante|ente|ista)$/.test(w)) : (e.g === "mf" && !/(isti|eti|iste|ete)$/.test(w) || /(anti|enti)$/.test(w));   /* l'insegnante, il/la cantante, il/la giornalista */
             (both ? ["m", "f"] : [a && a[0] !== "x" ? a[0] : gs[0]]).forEach(function (g) {
               var r = { g: g, n: n, sg: "", pl: "" };
               if (w.indexOf(" ") < 0) push(N, w, r); else if (w.split(" ").length === 2) push(N2, w, r);
