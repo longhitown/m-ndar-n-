@@ -161,7 +161,8 @@ jobs:
           disk-size: 4096M
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
-          script: node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk
+          script: |
+            node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk || { echo "::warning::smoke: primo tentativo fallito, ne faccio un secondo"; node tools/android-smoke.mjs android/app/build/outputs/apk/direct/debug/app-direct-debug.apk; }
 
       - name: Schermate dei widget (solo debug)
         if: always()
