@@ -52,4 +52,26 @@
         <item quantity="one">%d parola nuova</item>
         <item quantity="other">%d parole nuove</item>
     </plurals>
+    <!-- widget «Pausa»: giri di studio da 25 minuti e pausa caffè da 5 -->
+    <string name="p_name">Pausa</string>
+    <string name="p_desc">Giri di studio da 25 minuti e pausa caffè a Xi\'an</string>
+    <string name="p_title_rest">Riposo</string>
+    <string name="p_sub_rest">Buonanotte: a domani</string>
+    <string name="p_title_coffee">Pausa caffè a Xi\'an</string>
+    <string name="p_sub_coffee">Cinque minuti per te</string>
+    <string name="p_title_idle">Un giro di studio</string>
+    <string name="p_sub_idle">25 minuti, poi 5 di pausa</string>
+    <string name="p_title_focus">Concentrazione</string>
+    <string name="p_sub_focus">Poi pausa caffè a Xi\'an</string>
+    <string name="p_title_break">Pausa caffè a Xi\'an</string>
+    <string name="p_sub_break">Respira: si riparte tra poco</string>
+    <string name="p_b_focus">Studia 25′</string>
+    <string name="p_b_break">☕ 5′</string>
+    <string name="p_b_stop">Ferma</string>
+    <string name="p_b_skip">Salta</string>
+    <string name="p_n_break_title">Pausa caffè a Xi\'an</string>
+    <string name="p_n_break_text">Hai studiato 25 minuti: prenditi 5 minuti.</string>
+    <string name="p_n_end_title">Pausa finita</string>
+    <string name="p_n_end_text">Pronto per un altro giro?</string>
+    <string name="p_n_channel">Timer di studio</string>
 </resources>

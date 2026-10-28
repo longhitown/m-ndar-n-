@@ -1382,6 +1382,28 @@ try {
     check("Microfono: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
+  /* voce online accesa ma muta (limite del servizio, rete assente): si legge con la voce del telefono e per 5 minuti non si riprova */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 740 } });
+    await ctx.addInitScript(() => {
+      window.__said = []; window.__audioTries = 0;
+      const fake = { speaking: false, pending: false, cancel() {}, getVoices() { return []; }, addEventListener() {}, onvoiceschanged: null,
+        speak(u) { window.__said.push(u.text); setTimeout(() => u.onstart && u.onstart(), 5); setTimeout(() => u.onend && u.onend(), 20); } };
+      Object.defineProperty(window, "speechSynthesis", { value: fake, configurable: true });
+      window.Audio = function () { window.__audioTries++; const a = { play() { setTimeout(() => a.onerror && a.onerror(), 5); return Promise.resolve(); }, pause() {} }; return a; };
+    });
+    const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.evaluate(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); }); await p.reload(); await p.waitForTimeout(600);
+    const r = await p.evaluate(async () => {
+      CP.setPref("alt", true);
+      const one = () => new Promise((ok) => CP.speak("你好", { noClip: true, onEnd: ok }));
+      await one(); const afterFirst = { said: window.__said.length, tries: window.__audioTries };
+      await one(); return { afterFirst, said: window.__said.length, tries: window.__audioTries };
+    });
+    check("Voce online muta: si passa alla voce del telefono e per 5 minuti non si riprova", r.afterFirst.tries === 1 && r.afterFirst.said === 1 && r.tries === 1 && r.said === 2, JSON.stringify(r));
+    check("Voce online muta: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 8. Impostazioni a pagine: cinque carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */
   {
     /* l'elenco di prima (quattro gruppi con sezioni annidate), voce per voce: id della sezione, pagina in cui sta ora, un comando che deve esserci */

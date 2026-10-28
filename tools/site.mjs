@@ -23,7 +23,7 @@ const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] :
 
 /* ---------- Markdown minimo → HTML (titoli, paragrafi, elenchi, tabelle, grassetto, codice, link) ---------- */
 const escH = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const inline = (s) => escH(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+const inline = (s) => escH(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/~~([^~]+)~~/g, "<s>$1</s>")
   .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => `<a href="${u.replace(/"/g, "&quot;")}">${t}</a>`);
 export function md2html(md) {
   const out = [], lines = md.replace(/\r/g, "").split("\n");
@@ -83,6 +83,85 @@ ${md2html(md)}
 </html>
 `;
 }
+/* MANIFESTO.md → HTML: righe a capo conservate, citazioni «> », elenchi puntati e numerati (con il corpo rientrato) */
+export function manifestoHtml(md) {
+  const out = [], lines = md.replace(/\r/g, "").split("\n");
+  let para = [], ul = null, ol = null, inSec = false;
+  const flush = () => {
+    if (para.length) { out.push("<p>" + para.map(inline).join("<br>\n") + "</p>"); para = []; }
+    if (ul) { out.push("<ul>" + ul.map((l) => "<li>" + inline(l) + "</li>").join("") + "</ul>"); ul = null; }
+    if (ol) { out.push("<ol>" + ol.map((l) => "<li>" + l.map(inline).join("<br>\n") + "</li>").join("") + "</ol>"); ol = null; }
+  };
+  for (const raw of lines) {
+    const l = raw.trimEnd();
+    const h = /^(#{1,2})\s+(.*)$/.exec(l);
+    if (h) {
+      flush();
+      const txt = h[2].trim();
+      if (h[1] === "##") { if (inSec) out.push("</section>"); inSec = true; const zh = txt === "中文"; out.push(`<section lang="${zh ? "zh-CN" : "it"}" id="${zh ? "中文" : "italiano"}">`); }
+      else if (inSec) out.push(`<h1>${inline(txt)}</h1>`);
+      continue;
+    }
+    if (!inSec) continue;
+    if (!l.trim()) { flush(); continue; }
+    let m;
+    if ((m = /^>\s?(.*)$/.exec(l))) { flush(); out.push(`<blockquote>${inline(m[1])}</blockquote>`); continue; }
+    if ((m = /^-\s+(.*)$/.exec(l))) { if (para.length || ol) flush(); (ul = ul || []).push(m[1]); continue; }
+    if ((m = /^\d+\.\s+(.*)$/.exec(l))) { if (para.length || ul) flush(); (ol = ol || []).push([m[1]]); continue; }
+    if (/^\s+\S/.test(l) && ol) { ol[ol.length - 1].push(l.trim()); continue; }
+    if (ul || ol) flush();
+    if (/^— /.test(l)) { flush(); out.push(`<p class="sign">${inline(l)}</p>`); continue; }
+    para.push(l.trim());
+  }
+  flush(); if (inSec) out.push("</section>");
+  return out.join("\n").replace(/href="PRIVACY[.]md/g, 'href="privacy.html');   /* nel repository il link va a PRIVACY.md, sul sito alla pagina generata */
+}
+function manifestoPage() {
+  const md = fs.readFileSync(path.join(ROOT, "MANIFESTO.md"), "utf8");
+  return `<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il Manifesto · màndarínō</title>
+<meta name="description" content="Gratuita, offline, privata e senza stronzate. 免费、离线、保护隐私，不整虚的。">
+<meta property="og:title" content="Il Manifesto di màndarínō · màndarínō 宣言">
+<meta property="og:description" content="Gratuita, offline, privata e senza stronzate. 免费、离线、保护隐私，不整虚的。">
+<meta property="og:image" content="${SITE}/img/manifesto-it.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<!-- generata da tools/site.mjs a partire da MANIFESTO.md: non modificarla a mano -->
+<style>
+:root { --bg: #F5F7F5; --ink: #16201B; --mute: #4A5A52; --accent: #14594A; --line: #D5DED9; --card: #FFFFFF; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0F1412; --ink: #E9EFEB; --mute: #A9B8B0; --accent: #5CC4A5; --line: #2A3530; --card: #18201C; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
+main { max-width: 680px; margin: 0 auto; padding: 24px 16px 56px; }
+a { color: var(--accent); } a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1 { font-size: 2rem; line-height: 1.2; margin: .4em 0 .2em; }
+section + section { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+blockquote { margin: 1.4em 0; padding: .2em 0 .2em 1em; border-left: 4px solid var(--accent); font-size: 1.1em; font-weight: 600; }
+ol, ul { padding-left: 1.3em; } li { margin: .8em 0; }
+.sign { font-weight: 600; margin-top: 2em; }
+.nav { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.nav a { display: inline-block; min-height: 44px; line-height: 44px; }
+.cards { display: flex; gap: 12px; flex-wrap: wrap; margin: 1.4em 0; }
+.cards a { display: block; width: calc(50% - 6px); min-width: 140px; } .cards img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); display: block; }
+.cards span { display: block; font-size: .9rem; color: var(--mute); margin-top: 4px; }
+</style>
+</head>
+<body><main>
+<p class="nav"><a href="./">← màndarínō</a> · <a href="#italiano">Italiano</a> · <a href="#中文" lang="zh-CN">中文</a></p>
+${manifestoHtml(md)}
+<section aria-labelledby="carte">
+<h2 id="carte" style="font-size:1.1rem">Condividi · 分享</h2>
+<div class="cards">
+<a href="img/manifesto-it.png" download="manifesto-mandarino.png"><img src="img/manifesto-it.png" alt="La carta del Manifesto di màndarínō: Gratuita, offline, privata e senza stronzate." width="540" height="675" loading="lazy"><span>Scarica la carta · italiano</span></a>
+<a href="img/manifesto-zh.png" download="manifesto-mandarino-zh.png" lang="zh-CN"><img src="img/manifesto-zh.png" alt="màndarínō 宣言的分享卡：免费、离线、保护隐私，不整虚的。" width="540" height="675" loading="lazy"><span>下载分享卡 · 中文</span></a>
+</div>
+</section>
+</main></body>
+</html>
+`;
+}
 function copyDir(a, b, skip = new Set()) {
   fs.mkdirSync(b, { recursive: true });
   for (const e of fs.readdirSync(a, { withFileTypes: true })) {
@@ -101,12 +180,13 @@ function assemble(out) {
   fs.copyFileSync(path.join(ROOT, "docs/404.html"), path.join(out, "404.html"));
   fs.writeFileSync(path.join(out, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
   fs.writeFileSync(path.join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    ["/", "/zh/", "/privacy.html"].map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join("\n") + `\n</urlset>\n`);
+    ["/", "/zh/", "/privacy.html", "/manifesto.html"].map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join("\n") + `\n</urlset>\n`);
   copyDir(path.join(ROOT, "docs/zh"), path.join(out, "zh"));   /* la pagina cinese, quella del QR delle carte */
   fs.writeFileSync(path.join(out, "privacy.html"), privacyPage());
+  fs.writeFileSync(path.join(out, "manifesto.html"), manifestoPage());
   copyDir(path.join(ROOT, "dist"), path.join(out, "app"), new Set(["_headers"]));
   fs.writeFileSync(path.join(out, ".nojekyll"), "");
-  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, 404.html, zh/, privacy.html, tester.html, img/, assets/, audio/, licenze/, robots.txt, sitemap.xml, app/");
+  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, 404.html, zh/, privacy.html, manifesto.html, tester.html, img/, assets/, audio/, licenze/, robots.txt, sitemap.xml, app/");
 }
 
 async function assets() {

@@ -58,6 +58,12 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_small_info" />
         </receiver>
 
+        <!-- widget «Pausa» (4×1): giri da 25 minuti e pausa da 5, con il conto alla rovescia che scorre da solo (Chronometer) -->
+        <receiver android:name=".PauseWidget" android:exported="true" android:label="@string/p_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_pause_info" />
+        </receiver>
+
         <service android:name=".MusicService" android:exported="false" android:foregroundServiceType="mediaPlayback" />
 
         <receiver android:name=".Reminder" android:exported="false">
