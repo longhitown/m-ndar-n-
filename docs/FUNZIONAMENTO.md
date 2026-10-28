@@ -234,6 +234,7 @@ Il microfono usa il riconoscimento del sistema (`SpeechRecognition`; nell'APK il
 - **Pacchetto classe** (per chi insegna): un tratto del corso, un obiettivo e una data diventano un codice (`MDK1-…`); chi studia lo importa e vede l'avanzamento; il riepilogo per l'insegnante si crea solo se lo si chiede e contiene solo conteggi.
 - **Sigilli di gratitudine** (印章): codici firmati (ECDSA P-256, `MDS1.<contenuto>.<firma>`) che si riscattano nell'app; 支 Sostegno, 交 Cultura, 永 Custodire; solo estetici. L'app non sa chi ha donato. Le chiavi pubbliche stanno in `src/config.js` (**oggi la lista è vuota**: il riscatto non è ancora attivo finché non si genera una chiave con `tools/seal-keygen.mjs`).
 - **Taccuino del viaggiatore** (cinese): un viaggio immaginario Roma → Guilin; le città si sbloccano con le tappe del Percorso finite; gli sbagli non sono penalità (una coppia di parole scambiata diventa un aneddoto).
+- **Taccuino del viaggiatore** (corso di italiano per chi parla cinese): lo stesso viaggio **al contrario**, da Guilin a Roma. Le 11 città si raggiungono con le **lezioni superate** (≥ 80 %): 2, 5, 9, 14, 20, 26, 32, 38, 45 e 51 (tutte). Ogni pagina ha una riga scritta a mano e le frasi della lezione che ha aperto la città; non ci sono aneddoti sugli errori e non c'è condivisione. Sta in «我的进步», come una carta con un solo pulsante secondario.
 - **Foglio di lavoro**: un PDF A4 personale (caratteri o parole più difficili + quelli delle ultime lezioni) da stampare e scrivere a mano; si può anche condividere come codice.
 
 ---

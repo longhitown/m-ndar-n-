@@ -1244,6 +1244,23 @@ try {
     check(L + "Taccuino: nessuna richiesta di rete e nessun errore JavaScript", !errs.length && !ext.length && ext.length === reqBefore, (errs[0] || "") + ext.slice(0, 2).join(" "));
     await ctx.close();
   }
+  /* Taccuino del viaggiatore (corso di italiano per chi parla cinese): il viaggio al contrario Guilin → Roma, avanza con le lezioni superate */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+    await ctx.addInitScript(() => { try { localStorage.setItem("cp-course", "it"); localStorage.setItem("cp-lang", "zh"); localStorage.setItem("cp-it-welcome", "1"); localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); } catch (e) {} });
+    const p = await ctx.newPage(); const errs = [], ext = []; p.on("pageerror", (e) => errs.push(e.message));
+    p.on("request", (r) => { const u = r.url(); if (!/^(http:\/\/127\.0\.0\.1|data:|blob:|file:)/.test(u)) ext.push(u); });
+    await p.goto(base); await p.waitForTimeout(700);
+    await p.evaluate(() => { const L = {}; ITLESSONS.slice().sort((a, b) => a.n - b.n).slice(0, 12).forEach((l) => { L[l.id] = { best: 90, done: Date.now() }; }); localStorage.setItem("cp-it-lessons-v1", JSON.stringify(L)); CP.itProgress(); });
+    await p.waitForTimeout(900);
+    const c0 = await p.evaluate(() => ({ card: !!document.querySelector("#itp-story .dy-card"), btn: document.querySelector("#itp-story [data-diary-open]") && document.querySelector("#itp-story [data-diary-open]").getAttribute("data-diary-open"), txt: (document.querySelector("#itp-story .dy-card") || { textContent: "" }).textContent }));
+    check("意大利语课程 · 手账：进度里有一张卡片，只有一个次要按钮，当前在成都（第 4 座）", c0.card && c0.btn === "it" && /成都/.test(c0.txt) && /4/.test(c0.txt), JSON.stringify(c0));
+    await p.click("[data-diary-open]"); await p.waitForTimeout(500);
+    const t = await p.evaluate(() => ({ stops: [...document.querySelectorAll(".dy-city")].map((e) => e.textContent), off: document.querySelectorAll(".dy-city.off").length, pages: document.querySelectorAll(".dy-page").length, share: document.querySelectorAll("[data-diary-share]").length, ex: document.querySelectorAll(".dy-page .dy-words li").length, hand: [...document.querySelectorAll(".dy-page .dy-hand")].map((e) => e.textContent).join("|"), next: (document.querySelector(".dy-next") || { textContent: "" }).textContent }));
+    check("意大利语课程 · 手账：路线是桂林 → 罗马，已到 4 座、还有 7 座，4 页日记（每页一句手写和本站句子），没有分享按钮，提示下一站", t.stops[0] === "桂林" && t.stops[10] === "罗马" && t.off === 7 && t.pages === 4 && t.share === 0 && t.ex >= 6 && !/\{c\}/.test(t.hand) && /西安/.test(t.next) && /12 \/ 14/.test(t.next), JSON.stringify(t));
+    check("意大利语课程 · 手账：没有网络请求，也没有 JavaScript 错误", !errs.length && !ext.length, (errs[0] || "") + ext.slice(0, 2).join(" "));
+    await ctx.close();
+  }
   /* Laboratorio dei radicali (Frasi → Impara → Radicali): apertura, una reazione riuscita, una a vuoto, il trascinamento, il
      movimento ridotto e la carta da condividere; nessuna richiesta di rete */
   {
