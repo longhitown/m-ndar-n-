@@ -189,7 +189,7 @@ function sandbox() {
   const ext = [...h.matchAll(/<(?:script|img|iframe|source|video|audio)\b[^>]*?(?:src|poster)="([^"]+)"/gi)].map((m) => m[1])
     .concat([...h.matchAll(/<link\b[^>]*\brel="(?:stylesheet|icon|preload|modulepreload)"[^>]*?href="([^"]+)"/gi)].map((m) => m[1])).filter(isExt);
   const scripts = [...h.matchAll(/<script\b([^>]*)>/gi)].map((m) => m[1]);
-  const GENERATI = ["app/", "privacy.html", "mandarino.apk"];   /* nascono con la pubblicazione: non stanno in docs/ */
+  const GENERATI = ["app/", "privacy.html", "manifesto.html", "mandarino.apk"];   /* nascono con la pubblicazione: non stanno in docs/ */
   const local = [...h.matchAll(/\b(?:src|poster|href)="([^"#?]+)(?:[#?][^"]*)?"/g)].map((m) => m[1])
     .filter((u) => !/^(https?:|mailto:|tel:|\/\/|data:)/i.test(u) && !GENERATI.includes(u)).filter((f) => !fs.existsSync(path.join(DOCS, f)));
   const ctas = (h.match(/class="btn"/g) || []).length;
@@ -210,6 +210,16 @@ function sandbox() {
   const { md2html } = await import("./site.mjs");
   const pv = md2html(fs.readFileSync(path.join(ROOT, "PRIVACY.md"), "utf8"));
   check("privacy.html da PRIVACY.md: tabelle, sezione cinese con lang, nessuno script", /<table>/.test(pv) && /<section lang="zh-CN">[\s\S]*<table>/.test(pv) && !/<script/i.test(pv) && /api\.github\.com/.test(pv));
+  /* il Manifesto: due sezioni, struttura uguale, e i numeri che cita sono veri */
+  const { manifestoHtml } = await import("./site.mjs");
+  const mdM = fs.readFileSync(path.join(ROOT, "MANIFESTO.md"), "utf8"), mh = manifestoHtml(mdM);
+  const secs = mh.split(/<section lang=/).slice(1).map((x) => ({ ol: (x.match(/<li><b>/g) || []).length, bq: (x.match(/<blockquote>/g) || []).length, s: (x.match(/<s>/g) || []).length, ul: (x.match(/<ul><li>/g) || []).length }));
+  check("manifesto.html da MANIFESTO.md: italiano e cinese con la stessa struttura (4 princìpi, 2 citazioni, 1 barrato, 1 elenco), nessuno script", secs.length === 2 && secs.every((x) => x.ol === 4 && x.bq === 2 && x.s === 1 && x.ul === 1) && !/<script/i.test(mh), JSON.stringify(secs));
+  const exCtx = vm.createContext({}); fs.readdirSync(path.join(SRC, "data/examples")).filter((f) => f.endsWith(".js")).forEach((f) => { try { vm.runInContext(fs.readFileSync(path.join(SRC, "data/examples", f), "utf8"), exCtx); } catch (e) {} });
+  const nEx = Object.keys(exCtx.EXAMPLES || {}).length;
+  const minTracks = fs.readdirSync(path.join(SRC, "audio/tracks")).filter((f) => f !== "index.js").reduce((a, f) => a + +((/sec:\s*(\d+)/.exec(fs.readFileSync(path.join(SRC, "audio/tracks", f), "utf8")) || [0, 0])[1]), 0) / 60;
+  const fsrsV = /VERSION: "FSRS-6/.test(fs.readFileSync(path.join(SRC, "core/fsrs.js"), "utf8"));
+  check("manifesto: «5.700 frasi», «oltre un'ora di musica» e «FSRS-6» sono veri", nEx >= 5700 && minTracks > 60 && fsrsV && /5\.700 frasi/.test(mdM) && /FSRS-6/.test(mdM), nEx + " frasi, " + Math.round(minTracks) + " min");
 }
 
 /* ---- versione per gli store: src/config.js con il ponte Android che dice «store» ---- */
