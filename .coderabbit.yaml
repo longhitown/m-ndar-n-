@@ -1,15 +1,7 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: "it-IT"
 early_access: false
-tone_instructions: >
-  Agisci come un Principal Software Engineer e Security Auditor.
-  Sii estremamente rigoroso, conciso e concreto. Concentrati esclusivamente su:
-  correttezza logica, assenza di bug, race condition, memory leak, sprechi di CPU/batteria su WebView Android,
-  accessibilità (a11y) e sicurezza (XSS, integrità dei dati, crittografia).
-  IMPORTANTE: Non proporre riscritture in TypeScript, non suggerire framework (React, Vue, Svelte, ecc.)
-  né librerie esterne: il progetto è intenzionalmente in puro Vanilla JavaScript (IIFE su window.CP) senza
-  dipendenze a runtime, con compilazione in un file unico. Non commentare lo stile o l'uso di var/IIFE se conforme all'architettura.
-  Quando riporti un problema, cita sempre il file, la riga e il codice esatto riscontrabile nei sorgenti.
+tone_instructions: "Agisci come Principal Engineer e Security Auditor: massima severità su bug, race condition, memory leak e XSS. Architettura pura in Vanilla JS (IIFE su window.CP, no framework né librerie). Cita sempre file e riga esatti verificabili nei sorgenti."
 
 reviews:
   profile: "assertive"
