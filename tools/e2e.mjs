@@ -1262,7 +1262,7 @@ try {
     await ctx.close();
   }
   /* Su file:// Chromium non conserva sempre il localStorage dopo un ricaricamento (visto solo nella CI): le prove che ricaricano la pagina usano il server locale, come l'app vera. */
-  /* Scambio linguistico: foglio del consenso (due caselle), registrazione di una frase nella propria lingua, elenco, invio in .zip, ritiro del consenso */
+  /* Scambio linguistico: foglio del consenso (tre caselle), registrazione di una frase nella propria lingua, elenco, invio in .zip, ritiro del consenso */
   for (const [lang, course] of [["it", "zh"], ["zh", "it"]]) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await ctx.addInitScript((a) => {
