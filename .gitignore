@@ -27,3 +27,4 @@ cambi.json
 __pycache__/
 _site/
 build-demo-*/
+_carousel/
