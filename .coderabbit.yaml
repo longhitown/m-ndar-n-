@@ -16,7 +16,7 @@ reviews:
 
   path_filters:
     - "!src/data/**"
-    - "!src/audio/**"
+    - "!src/audio/music/**"
     - "!materiali/**"
     - "!docs/img/**"
     - "!docs/audio/**"
@@ -24,6 +24,10 @@ reviews:
     - "!fastlane/**"
 
   path_instructions:
+    - path: "src/audio/**"
+      instructions: >
+        Verifica la gestione del grafo Web Audio, il bus sfx/music, il rilascio dei nodi Analyser e la prevenzione di memory leak
+        o buffer non deallocati durante la riproduzione in streaming e in loop.
     - path: "src/ui/scambio*.js"
       instructions: >
         Modulo delicato per lo scambio vocale: verifica il flusso del consenso informato (maggiorenni, CC BY 4.0),
