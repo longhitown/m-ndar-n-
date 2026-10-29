@@ -68,7 +68,7 @@ stampare o salvare in PDF. Per registrare basta il foglio dell'app; il modulo è
 ## Dove resta, come si manda
 
 - **Sul telefono**: IndexedDB `mandarino-voices-v1`, fuori dal backup e dalla sincronizzazione (pesano e sono personali). Un elenco
-  nel foglio mostra le registrazioni con ascolto (▶) e cancellazione (×).
+  nel foglio mostra le registrazioni con ascolto (▶) e cancellazione (×). Gli errori di memoria (lettura, salvataggio o cancellazione) vengono mostrati all'utente e non nascosti.
 - **L'invio**: il file `.zip` lo crea l'app da sé, in anticipo, appena si apre il foglio. Un solo tasto principale, **«Invia per e-mail»**:
   dove il telefono lo permette apre la condivisione con il file già allegato e il testo del consenso pronto per mandarinoapp@gmail.com;
   altrimenti scarica il file e apre la bozza dell'e-mail (da allegare a mano). Parte solo se le tre autorizzazioni sono firmate
