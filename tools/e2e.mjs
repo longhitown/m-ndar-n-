@@ -1262,7 +1262,7 @@ try {
     await ctx.close();
   }
   /* Su file:// Chromium non conserva sempre il localStorage dopo un ricaricamento (visto solo nella CI): le prove che ricaricano la pagina usano il server locale, come l'app vera. */
-  /* Scambio linguistico: foglio del consenso (due caselle), registrazione di una frase nella propria lingua, elenco, invio in .zip, ritiro del consenso */
+  /* Scambio linguistico: foglio del consenso (tre caselle), registrazione di una frase nella propria lingua, elenco, invio in .zip, ritiro del consenso */
   for (const [lang, course] of [["it", "zh"], ["zh", "it"]]) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await ctx.addInitScript((a) => {
@@ -1314,6 +1314,55 @@ try {
     const rv = await p.evaluate(async () => ({ n: (await CP.scambio.all()).length, c: CP.scambio.consent() }));
     check(L + "Scambio: «ritira il consenso» cancella tutte le registrazioni e il consenso", rv.n === 0 && rv.c === null, JSON.stringify(rv));
     check(L + "Scambio: nessuna richiesta di rete e nessun errore JavaScript", !errs.length && !ext.length, (errs[0] || "") + ext.slice(0, 2).join(" "));
+    await ctx.close();
+  }
+  /* Audit PR 1 (R22, R07, R14, R01): prove di guasto, nate per fallire sul codice precedente alle correzioni */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(() => {
+      try {
+        localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-lang", "it"); localStorage.setItem("cp-course", "zh"); localStorage.setItem("cp-music", "0");
+        localStorage.setItem("md-voice-consent", JSON.stringify({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: "", show: false, region: "", other: false, lang: "it-IT" }));
+        localStorage.setItem("cp-ear-v1", JSON.stringify({ n: 20, m: [[1, '<img src="data:," onerror="document.documentElement.dataset.auditXss=1">', 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] }));
+      } catch (e) {}
+      window.__urls = new Set(); const mk = URL.createObjectURL.bind(URL), rv = URL.revokeObjectURL.bind(URL);
+      URL.createObjectURL = (b) => { const u = mk(b); if (b && /^audio/.test(b.type || "")) window.__urls.add(u); return u; };
+      URL.revokeObjectURL = (u) => { window.__urls.delete(u); return rv(u); };
+      window.Audio = class { constructor(u) { this.src = u; } play() { return Promise.resolve(); } pause() {} };
+    });
+    const p = await ctx.newPage(), errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.waitForFunction(() => window.CP && CP.course && CP.homeProgress, null, { timeout: 15000 }); await p.waitForTimeout(500);
+    /* R01: una cella ostile nella matrice dei toni (backup alterato) non deve diventare HTML */
+    const x1 = await p.evaluate(async () => { const h = CP.homeProgress(), d = document.createElement("div"); d.innerHTML = h; await new Promise((r) => setTimeout(r, 300)); return { raw: /<img/i.test(h), img: d.querySelectorAll("#doctor img").length, xss: document.documentElement.dataset.auditXss || "" }; });
+    check("Audit R01: una cella della matrice dei toni con HTML viene mostrata come testo (nessun <img>, nessuna esecuzione)", !x1.raw && x1.img === 0 && x1.xss === "", JSON.stringify(x1));
+    await p.evaluate(() => CP.scambio.open()); await p.waitForSelector("[data-sc-rec]", { timeout: 4000 });
+    /* R07: due parole cinesi diverse non devono avere lo stesso nome nello .zip né nel manifest */
+    const z7 = await p.evaluate(async () => {
+      const mk = (ref) => ({ id: ref + "|it-IT|n", ref, lang: "it-IT", native: true, text: ref, ms: 1000, mime: "audio/webm", blob: new Blob([new Uint8Array(50)], { type: "audio/webm" }), created: Date.now(), sent: 0 });
+      const rs = [mk("w:你"), mk("w:好")]; await CP.scambio.put(rs[0]); await CP.scambio.put(rs[1]);
+      const z = await CP.scambio.buildZip(rs), u = new Uint8Array(await z.blob.arrayBuffer()), dv = new DataView(u.buffer), names = [];
+      for (let i = 0; i + 30 < u.length; i++) if (dv.getUint32(i, true) === 0x04034b50) { const n = dv.getUint16(i + 26, true); names.push(new TextDecoder().decode(u.subarray(i + 30, i + 30 + n))); }
+      const t = new TextDecoder().decode(u), files = [...t.matchAll(/"file":\s*"([^"]+)"/g)].map((m) => m[1]);
+      return { audio: names.filter((n) => n !== "manifest.json"), files };
+    });
+    check("Audit R07: due parole diverse hanno due file distinti nello .zip e il manifest punta a ciascuno", z7.audio.length === 2 && new Set(z7.audio).size === 2 && z7.files.length === 2 && new Set(z7.files).size === 2 && z7.files.every((f) => z7.audio.includes(f)), JSON.stringify(z7));
+    /* R14: un solo URL audio vivo alla volta; nessuno dopo aver riaperto il foglio */
+    await p.evaluate(() => CP.scambio.open()); await p.waitForSelector("[data-sc-play]", { timeout: 4000 });
+    await p.locator("[data-sc-play]").nth(0).click(); await p.waitForTimeout(200); await p.locator("[data-sc-play]").nth(1).click(); await p.waitForTimeout(200);
+    const u2 = await p.evaluate(() => window.__urls.size);
+    await p.evaluate(() => CP.scambio.open()); await p.waitForTimeout(300);
+    const u0 = await p.evaluate(() => window.__urls.size);
+    check("Audit R14: dopo due ascolti di fila resta un solo URL audio vivo, e nessuno dopo aver riaperto il foglio", u2 === 1 && u0 === 0, "dopo due ascolti " + u2 + ", dopo la riapertura " + u0);
+    /* R22: finita la serie, «Un'altra serie» deve rispondere */
+    await p.waitForSelector('[data-sc-rec="own"]'); await p.click('[data-sc-rec="own"]'); await p.waitForSelector("[data-sc-skip]", { timeout: 4000 });
+    for (let i = 0; i < 10; i++) {
+      await p.click("[data-sc-skip]");
+      await p.waitForFunction((n) => n === 9 ? !!document.querySelector("[data-sc-more]") : new RegExp("\\b" + (n + 2) + " / 10").test(document.body.innerText), i, { timeout: 4000 });
+    }
+    await p.click("[data-sc-more]");
+    const again = await p.waitForSelector("[data-sc-start]", { timeout: 2500 }).then(() => true, () => false);
+    check("Audit R22: «Un'altra serie» dopo i dieci elementi avvia una nuova serie", again === true, "pulsante «Registra» comparso: " + again);
+    check("Audit PR 1: nessun errore JavaScript", !errs.length, errs[0] || "");
     await ctx.close();
   }
   /* Laboratorio dei radicali (Frasi → Impara → Radicali): apertura, una reazione riuscita, una a vuoto, il trascinamento, il

@@ -48,7 +48,7 @@
       var tot = r.reduce(function (x, y) { return x + y; }, 0);
       h += '<tr><th scope="row" class="t' + (i + 1) + '">' + (i + 1) + "°</th>" + r.map(function (v, j) {
         var a = v / max, cls = i === j ? "d" : "x";
-        return '<td class="' + cls + '" style="--a:' + a.toFixed(2) + '" title="' + CP.attr(T("doc.cell", { a: i + 1, b: j + 1, n: v })) + '">' + (v || "") + "</td>";
+        return '<td class="' + cls + '" style="--a:' + a.toFixed(2) + '" title="' + CP.attr(T("doc.cell", { a: i + 1, b: j + 1, n: v })) + '">' + esc(v || "") + "</td>";
       }).join("") + "</tr>";
     });
     return h + "</tbody></table>";

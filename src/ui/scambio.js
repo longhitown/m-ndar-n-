@@ -130,12 +130,16 @@
     var c = consent() || {};
     return { schema: "mandarino-voice/1", license: "CC-BY-4.0", app: (CP.version || ""), created: Date.now(),
       speaker: c.show && c.nick ? c.nick : "", region: c.region || "", adult: true,
-      items: rs.map(function (r) { return { ref: r.ref, lang: r.lang, native: r.native, text: r.text, ms: r.ms, created: r.created, file: fname(r) }; }) };
+      items: rs.map(function (r, i) { return { ref: r.ref, lang: r.lang, native: r.native, text: r.text, ms: r.ms, created: r.created, file: names(rs)[i] }; }) };
   }
-  function fname(r) { return r.ref.replace(/[^\w.-]+/g, "_") + "." + r.lang + "." + (r.native ? "n" : "x") + "." + ext(r.mime); }
+  /* i caratteri cinesi non entrano nel nome del file: la sigla del riferimento completo tiene distinti w:你 e w:好 */
+  function sig(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
+  function fname(r) { return r.ref.replace(/[^\w.-]+/g, "_") + "-" + sig(r.ref) + "." + r.lang + "." + (r.native ? "n" : "x") + "." + ext(r.mime); }
+  /* nomi unici nello .zip e nel manifest: se due coincidessero comunque, si numera il secondo */
+  function names(rs) { var seen = {}; return rs.map(function (r) { var n = fname(r), k = n, i = 1; while (seen[k]) k = n.replace(/(\.[^.]+)$/, "-" + (++i) + "$1"); seen[k] = 1; return k; }); }
   function buildZip(rs) {
-    rs = rs.slice(0, MAXSEND);
-    return Promise.all(rs.map(function (r) { return r.blob.arrayBuffer().then(function (b) { return { name: fname(r), data: new Uint8Array(b) }; }); })).then(function (files) {
+    rs = rs.slice(0, MAXSEND); var nm = names(rs);
+    return Promise.all(rs.map(function (r, i) { return r.blob.arrayBuffer().then(function (b) { return { name: nm[i], data: new Uint8Array(b) }; }); })).then(function (files) {
       files.unshift({ name: "manifest.json", data: JSON.stringify(manifest(rs), null, 1) });
       return { blob: CP._zip(files), n: rs.length, ids: rs.map(function (r) { return r.id; }) };
     });
@@ -231,19 +235,25 @@
   /* le tre autorizzazioni, tutte spuntate: ho capito, ho 18 anni, autorizzo la pubblicazione CC BY 4.0 */
   function allSigned() { return ["sc-ok", "sc-age", "sc-pub"].every(function (i) { var e = document.getElementById(i); return e && e.checked; }); }
   var view = "main";
-  function render() { all().then(function (recs) { if (view === "rec") recSheet(recs); else mainSheet(recs); }); }
+  function render() { stopAudio(); all().then(function (recs) { if (view === "rec") recSheet(recs); else mainSheet(recs); }); }
   function open() { if (!consent()) { consentSheet(); return; } view = "main"; S.useOther = false; render(); }
 
   /* ---- tocchi ---- */
-  var audio = null;
-  function playBlob(b) { try { if (audio) audio.pause(); var u = URL.createObjectURL(b); audio = new Audio(u); audio.onended = function () { URL.revokeObjectURL(u); }; audio.play(); } catch (e) {} }
+  /* un solo audio alla volta e un solo URL vivo: si libera prima di sostituire, a fine o errore, a ogni nuovo foglio e alla revoca */
+  var audio = null, aurl = "";
+  function stopAudio() {
+    var a = audio, u = aurl; audio = null; aurl = "";
+    if (a) { try { a.onended = a.onerror = null; a.pause(); } catch (e) {} }
+    if (u) { try { URL.revokeObjectURL(u); } catch (e) {} }
+  }
+  function playBlob(b) { try { stopAudio(); aurl = URL.createObjectURL(b); audio = new Audio(aurl); audio.onended = audio.onerror = stopAudio; audio.play(); } catch (e) { stopAudio(); } }
   document.addEventListener("change", function (e) {
     var t = e.target; if (!t || !t.closest) return;
     if (t.id === "sc-ok" || t.id === "sc-age" || t.id === "sc-pub") { var go = document.getElementById("sc-go"); if (go) go.disabled = !allSigned(); }
     if (t.hasAttribute && t.hasAttribute("data-sc-other")) opt("other", t.checked);
   });
   document.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("[data-sc-go],[data-sc-rec],[data-sc-back],[data-sc-start],[data-sc-stop],[data-sc-prev],[data-sc-keep],[data-sc-redo],[data-sc-skip],[data-sc-play],[data-sc-del],[data-sc-send],[data-sc-revoke]") : null; if (!b) return;
+    var b = e.target.closest ? e.target.closest("[data-sc-go],[data-sc-rec],[data-sc-back],[data-sc-start],[data-sc-stop],[data-sc-prev],[data-sc-keep],[data-sc-redo],[data-sc-skip],[data-sc-play],[data-sc-del],[data-sc-send],[data-sc-revoke],[data-sc-more]") : null; if (!b) return;
     if (b.hasAttribute("data-sc-go")) {
       if (!allSigned()) return;
       setConsent({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: document.getElementById("sc-nick").value.trim(), show: document.getElementById("sc-show").checked, region: document.getElementById("sc-region").value, other: false, lang: ownLang() });
@@ -260,7 +270,7 @@
     else if (b.hasAttribute("data-sc-play")) { var id = b.getAttribute("data-sc-play"); all().then(function (rs) { var r = rs.filter(function (x) { return x.id === id; })[0]; if (r) playBlob(r.blob); }); }
     else if (b.hasAttribute("data-sc-del")) { del(b.getAttribute("data-sc-del")).then(function () { CP.sfx("tap"); render(); }); }
     else if (b.hasAttribute("data-sc-send")) send(b.getAttribute("data-sc-send"));
-    else if (b.hasAttribute("data-sc-revoke")) { clear().then(function () { setConsent(null); S.sentFile = null; CP.closeSheet(); if (CP.toast) CP.toast(T("sc.m.revoked")); }); }
+    else if (b.hasAttribute("data-sc-revoke")) { clear().then(function () { stopAudio(); setConsent(null); S.sentFile = null; CP.closeSheet(); if (CP.toast) CP.toast(T("sc.m.revoked")); }); }
   });
   CP.scambio = { makeQueue: makeQueue, words: words, send: send, open: open, consent: consent, all: all, put: put, del: del, clear: clear, pool: pool, ownLang: ownLang, manifest: manifest, buildZip: buildZip, SITE: SITE };
 })();
