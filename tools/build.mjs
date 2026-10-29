@@ -144,14 +144,13 @@ const VOICE_CLIPS = [];
 }
 
 /* niente segreti né dati di donatori nell'app: nessun file di chiave nel repository, e in src/ nessuna chiave privata,
-   nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo in lo strumento di emissione
-   e sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
+   nessun token o indirizzo di webhook, nessun campo delle notifiche di Ko-fi (quelli vivono solo sul computer dell'autore). Lo stesso controllo si ripete sul file unico, più sotto. */
 const SECRET = [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, /verification_token/i, /kofi_transaction_id/i, /webhook/i];
 {
   const skip = new Set([".git", "node_modules", "build", ".gradle", ".idea", "music"]);
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => skip.has(e.name) ? [] : e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
   const keyFiles = walk(path.join(SRC, "..")).filter((f) => /\.(pem|key|p8|jks|keystore)$/i.test(f));
-  if (keyFiles.length) fail("file di chiave nel repository (vanno fuori, vedi docs/sigilli.md): " + keyFiles.map((f) => path.relative(path.join(SRC, ".."), f)).join(", "));
+  if (keyFiles.length) fail("file di chiave nel repository (vanno fuori dal repository): " + keyFiles.map((f) => path.relative(path.join(SRC, ".."), f)).join(", "));
   const bad = walk(SRC).filter((f) => /\.(js|html|json|css|txt|md)$/.test(f) && SECRET.some((re) => re.test(fs.readFileSync(f, "utf8"))));
   if (bad.length) fail("in src/ c'è qualcosa che sembra un segreto o un dato dei donatori: " + bad.map((f) => path.relative(SRC, f)).join(", "));
 }

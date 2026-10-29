@@ -313,7 +313,7 @@ Dipendenze di terzi dentro l'app: pochi file in `src/vendor/` (jsPDF per il Fogl
 |---|---|---|
 | Dati e lezioni validi, frasi cinesi fatte di parole del vocabolario, ogni file di dati elencato | `node tools/build.mjs` | passa |
 | Frasi verificate, regole di traduzione | `node tools/grammar.mjs` | 378/378 |
-| Prove veloci senza browser (taglio in parole, FSRS, QR, sigilli, sito, peso dell'avvio, widget) | `node tools/unit.mjs` | 79/79 |
+| Prove veloci senza browser (taglio in parole, FSRS, QR, sigilli, sito, peso dell'avvio, widget) | `node tools/unit.mjs` | 77/77 |
 | Prove nel browser (benvenuto, corsi, immersione, sincronizzazione, QR, sigilli, musica, voce, impostazioni, apertura…) | `node tools/e2e.mjs` | 320/320 |
 | Regole di interfaccia e accessibilità | `node tools/ux-audit.mjs` | nessun problema |
 | Documenti: link, ancore, parole vietate, strutture protette | `node tools/check-docs.mjs --strict` | 0 errori |
@@ -330,7 +330,7 @@ Dipendenze di terzi dentro l'app: pochi file in `src/vendor/` (jsPDF per il Fogl
 
 - **Rilettura da madrelingua**: ancora nessuna (cinese delle lezioni di italiano, italiano delle lezioni di cinese, frasi, mini-dialoghi, versione cinese del Manifesto).
 - **Prove su telefono vero** ancora da fare: widget, voce con motore spento, microfono, musica a schermo spento, giro dei brani senza vuoti, voci reali senza rete, comportamento in Cina (Pleco, WeChat).
-- **Sigilli**: lista di chiavi pubbliche vuota; per attivarli serve generare una chiave e fare una prova con un codice di prova (`docs/sigilli.md`).
+- **Sigilli**: lista di chiavi pubbliche vuota; per attivarli serve generare una chiave e fare una prova con un codice di prova (la chiave si genera sul computer di chi gestisce il progetto).
 - **Correttore di frasi italiane**: copre solo gli accordi (26 degli 88 errori tipici delle lezioni).
 - **Il corso di italiano** non ha ancora «Rifai i tuoi errori» né la mini-verifica dopo la lezione (nel corso di cinese ci sono).
 - **Test di livello**: la scala va da 0 a 30 lezioni note (le lezioni aggiuntive sono oltre la scala).
