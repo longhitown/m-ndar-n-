@@ -22,7 +22,7 @@ tracciamento, e funziona anche senza connessione.
 ## Per chi sviluppa
 
 Le prove si lanciano con `npm install && npm test`. Come sono fatti i moduli: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
-Per pubblicare una versione c'è [docs/rilascio.md](docs/rilascio.md); quello che manca è in
+Quello che manca è in
 [docs/roadmap.md](docs/roadmap.md); le prove su un telefono vero sono in
 [docs/checklist-dispositivo.md](docs/checklist-dispositivo.md).
 
@@ -31,7 +31,7 @@ Per pubblicare una versione c'è [docs/rilascio.md](docs/rilascio.md); quello ch
 [![Sostieni il progetto](docs/img/sostieni.svg)](https://ko-fi.com/mandarinoapp)
 
 màndarínō è gratuita e resta gratuita. Una donazione è del tutto libera e non sblocca nulla. Se vuoi, ti mando in cambio
-un sigillo di gratitudine, che assegno a mano ([come funziona](docs/sigilli.md)).
+un sigillo di gratitudine, che assegno a mano: è un codice firmato, solo estetico, e l'app non sa chi ha donato.
 
 ## Licenze
 

@@ -228,7 +228,7 @@ L'immagine per le condivisioni (`docs/img/anteprima.png` 1200×630) la genera
 
 Una volta sola: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Poi la pubblicazione parte da sola
 a ogni push sul ramo `main` che tocca l'app, la pagina o PRIVACY.md, a ogni nuova Release (il workflow «APK Android» lancia `pages` dopo averla creata) oppure a mano (Actions → pages → Run workflow). L'indirizzo è
-`https://mandarinoapp.org/` (app in `…/app/`, pagina cinese in `…/zh/`): il dominio si imposta in Settings → Pages → Custom domain, con i record DNS descritti in [rilascio.md](rilascio.md). `SITE_URL` e `SHARE_URL` in
+`https://mandarinoapp.org/` (app in `…/app/`, pagina cinese in `…/zh/`): il dominio si imposta in Settings → Pages → Custom domain, con i record DNS indicati da GitHub Pages (la procedura completa non è pubblica). `SITE_URL` e `SHARE_URL` in
 `src/config.js` puntano a quell'indirizzo: li usano i link dei sigilli, delle sfide e il QR delle carte.
 
 ## Pubblicare (Cloudflare Pages, il più semplice)
@@ -478,9 +478,7 @@ pulsante nel README è un SVG locale (`docs/img/sostieni.svg`), senza immagini n
 - si riscattano dal link `#seal=…`, incollando il codice o inquadrando il QR, sempre con una conferma;
 - nell'app si mostrano in grande; nelle immagini condivise solo se la persona lo sceglie; dietro il frutto all'avvio.
 
-L'emissione si fa sul computer di chi gestisce il progetto con `tools/seal-keygen.mjs` e `tools/seal-issue.mjs`: simulazione per
-default, registro privato fuori dal repository, invio delle e-mail a mano. La procedura è in
-**[docs/sigilli.md](sigilli.md)**.
+L'emissione si fa sul computer di chi gestisce il progetto, con strumenti che **non stanno in questo repository** (sono in un repository privato): simulazione per default, registro privato fuori da ogni repository, invio delle e-mail a mano. Qui restano il verificatore (`src/core/seal-code.js`), la schermata (`src/ui/seals.js`) e la chiave pubblica (`SEAL_PUBKEYS` in `src/config.js`, che non è un segreto): l'app controlla soltanto la firma.
 
 Con `MD_CONFIG.SEAL_PUBKEYS` vuoto (com'è ora) la parte «Riscatta» non compare. Con `FEATURE_DONATE` e `FEATURE_SEALS`
 spenti (versione per gli store) non compare nulla.
@@ -921,7 +919,7 @@ licenza dei contenuti: lo dicono il foglio dei contributi dell'app, `NOTICE.md` 
 
 ## Comportamenti delicati
 
-L'elenco di ciò che resta da fare è in [roadmap.md](roadmap.md); per pubblicare una versione c'è [rilascio.md](rilascio.md). Il corso di italiano ha 30 lezioni: se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
+L'elenco di ciò che resta da fare è in [roadmap.md](roadmap.md); le procedure di rilascio sono tenute fuori da questo repository. Il corso di italiano ha 30 lezioni: se ne aggiungono altre con un file in `src/data/it/lessons/` (stesso formato).
 
 - FSRS: il giorno di studio cambia alle 4 del mattino (come Anki); la ripetizione di una carta nella stessa sessione la
   aggiorna solo se chiude un «Non la so», non dopo un «Quasi».

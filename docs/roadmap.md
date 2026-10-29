@@ -47,7 +47,7 @@ La lista completa, da spuntare, è in [checklist-dispositivo.md](checklist-dispo
 
 ## Altre cose aperte
 
-- **Servizio per le notifiche di Ko-fi** (per ricevere le donazioni e conservarle per `tools/seal-issue.mjs`): non si fa senza una decisione su dove ospitarlo, su chi è responsabile del
+- **Servizio per le notifiche di Ko-fi** (per ricevere le donazioni e conservarle per lo strumento di emissione dei sigilli (non pubblico)): non si fa senza una decisione su dove ospitarlo, su chi è responsabile del
   trattamento dei dati (GDPR) e su un'informativa. Non conterrebbe la chiave dei sigilli né invierebbe e-mail; l'app non lo contatterebbe mai.
 - **Testi cinesi** (corso di italiano, carte, pagina `zh/`): rilettura da parte di madrelingua ([rilettura.md](rilettura.md)).
 - **Corso di italiano:** «Rifai i tuoi errori» e la mini-verifica dopo la lezione, che il corso di cinese ha già.

@@ -149,33 +149,6 @@ function sandbox() {
   check("sigilli: i testi predefiniti non hanno desinenze di genere (" + DEF.length + " testi)", !gendered.length, gendered.join(", "));
   const forms = [1, 2, "2it", 3].every((n) => ["m", "f", "n"].every((g) => typeof tg("seal.t" + n, g) === "string") && tg("seal.t" + n, "n") === "" && tg("seal.t" + n, "m") && TT.zh["seal.t" + n].x);
   check("sigilli: ogni titolo ha forma maschile, femminile e «senza titolo» (vuota) in italiano, e una forma in cinese", forms && I.zh["seal.n1"] && I.zh["seal.s3"]);
-  /* lo strumento dell'autore: regole (funzione pura) e riga di comando in una cartella usa-e-getta */
-  const T = await import("./seal-issue.mjs");
-  const D = (id, email, amount, date, extra) => Object.assign({ id, email, amount, currency: "EUR", date, message: "Per il SIGILLO, grazie", type: "Donation" }, extra || {});
-  const reg0 = { v: 1, people: {}, done: {}, counters: {} }, rates = { EUR: 1, USD: 0.9 };
-  let r = T.plan(reg0, [D("a1", "a@x.it", 3, "2026-10-01"), D("a1", "a@x.it", 3, "2026-10-01")], "2026-10-20", rates);
-  check("strumento: donazione doppia non conta due volte; sotto i 5 € nessun sigillo ma una bozza di ringraziamento", r.reg.people["a@x.it"].cents === 300 && !r.log.issue.length && r.log.thanks.length === 1 && r.log.skipped.length === 1);
-  r = T.plan(r.reg, [D("a2", "a@x.it", 60, "2026-10-02", { type: "Tip" })], "2026-10-20", rates);
-  check("strumento: somma cumulativa, salto di più livelli (Tip vale come Donation): un solo sigillo, il più alto", r.log.issue.length === 1 && r.log.issue[0].seal.lvl === 3 && r.reg.people["a@x.it"].cents === 6300);
-  r = T.plan(reg0, [D("b1", "b@x.it", 10, "2026-10-01", { currency: "USD" }), D("c1", "c@x.it", 50.5, "2026-10-01"), D("d1", "d@x.it", 30, "2026-10-01", { message: "grazie!" }), D("e1", "e@x.it", 30, "2026-10-18")], "2026-10-20", rates);
-  const lv = Object.fromEntries(r.log.issue.map((x) => [x.email, x.seal.lvl]));
-  check("strumento: cambio arrotondato a favore di chi dona (10 USD = 9 €), 50,50 € = Cultura, senza parola chiave ignorata, attesa di 7 giorni", r.reg.people["b@x.it"].cents === 900 && lv["b@x.it"] === 1 && lv["c@x.it"] === 2 && r.log.ignored.length === 1 && r.log.waiting.length === 1 && !r.reg.people["d@x.it"]);
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), "md-seal-")), env = Object.assign({}, process.env, { MANDARINO_SEAL_HOME: home, MANDARINO_SEAL_PASS: "frase-di-prova-lunga" });
-  fs.writeFileSync(path.join(home, "seal-private-t1.pem"), privateKey.export({ type: "pkcs8", format: "pem", cipher: "aes-256-cbc", passphrase: "frase-di-prova-lunga" }));
-  fs.writeFileSync(path.join(home, "in.json"), JSON.stringify([{ verification_token: "esempio", message_id: "m1", kofi_transaction_id: "tx1", type: "Donation", from_name: "Ada", message: "SIGILLO", amount: "25.00", currency: "EUR", email: "Ada@Esempio.it ", timestamp: "2026-10-01T10:00:00Z" }]));
-  const run = (...a) => spawnSync(process.execPath, [path.join(ROOT, "tools/seal-issue.mjs"), ...a], { env, encoding: "utf8" });
-  const dry = run("process", path.join(home, "in.json"), "--today", "2026-10-20", "--site", "https://esempio.org/app/");
-  check("strumento: per default è una simulazione (non scrive niente)", /Simulazione/.test(dry.stdout) && !fs.existsSync(path.join(home, "registro.json")), dry.stderr);
-  const ap = run("process", path.join(home, "in.json"), "--today", "2026-10-20", "--site", "https://esempio.org/app/", "--apply");
-  const out = path.join(home, "uscita", "2026-10-20", "2026-2-1"), files = fs.existsSync(out) ? fs.readdirSync(out) : [];
-  const codeOut = files.length ? fs.readFileSync(path.join(out, "codice.txt"), "utf8").trim() : "", ver = codeOut ? await S.verify(codeOut, KEYS) : {};
-  const leaks = files.filter((f) => f !== "mailto.txt" && /ada@esempio|Ada/i.test(fs.readFileSync(path.join(out, f), "utf8")));
-  check("strumento: con --apply emette il sigillo (Cultura n. 1), il codice si verifica nell'app, nessun dato personale nei file tranne il mailto", ver.ok && ver.seal.lvl === 2 && files.includes("qr.svg") && files.includes("email.txt") && !leaks.length && /mailto:ada@esempio\.it/.test(fs.readFileSync(path.join(out, "mailto.txt"), "utf8")), ap.stderr + " " + leaks.join(","));
-  const again = run("process", path.join(home, "in.json"), "--today", "2026-10-21", "--apply");
-  check("strumento: rielaborare la stessa transazione non emette niente di nuovo", /già elaborata/.test(again.stdout) && !/★/.test(again.stdout));
-  run("forget", "--email", "ada@esempio.it", "--apply");
-  check("strumento: forget cancella davvero la persona dal registro", !JSON.parse(fs.readFileSync(path.join(home, "registro.json"), "utf8")).people["ada@esempio.it"]);
-  fs.rmSync(home, { recursive: true, force: true });
 }
 
 /* ---- contributi: chi chiede di comparire nei Crediti (tools/merge-contrib.mjs, su una copia di src/) ---- */

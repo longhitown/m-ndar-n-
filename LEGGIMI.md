@@ -99,7 +99,7 @@ Se hai il dizionario Pleco sul telefono, ⚙️ → Studio → «Mostra il colle
 ## Sostenere il progetto
 
 ⚙️ → Informazioni → «Sostieni il progetto» porta a Ko-fi. Una donazione è libera e non sblocca nulla. Se vuoi un segno di gratitudine, scrivi «SIGILLO» nel messaggio: ti mando un sigillo
-(支 Sostegno, 交 Cultura, 永 Custodire), un codice firmato che puoi riscattare nell'app e che è solo estetico. L'app non sa chi ha donato. Come funziona: [docs/sigilli.md](docs/sigilli.md).
+(支 Sostegno, 交 Cultura, 永 Custodire), un codice firmato che puoi riscattare nell'app e che è solo estetico. L'app non sa chi ha donato. Il codice è firmato e l'app controlla soltanto la firma: non contatta nessuno e non ti identifica.
 
 ## Privacy e licenze
 

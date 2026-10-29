@@ -1,8 +1,8 @@
 /* ===== màndarínō · codici dei sigilli di gratitudine: formato e verifica della firma (funzioni pure, senza pagina: le
-   prove in Node le usano così come sono, tools/seal-issue.mjs le usa per scrivere i codici).
+   prove in Node le usano così come sono, lo strumento di emissione, non pubblico, le usa per scrivere i codici).
    Codice: MDS1.<payload>.<firma>, in base64url. Il payload è il testo «1.<kid>.<livello>.<anno>.<numero>»: versione, chiave,
    livello (1 Sostegno, 2 Cultura, 3 Custodire), anno dell'edizione, numero progressivo. Nessun dato personale.
-   Firma: ECDSA P-256 con SHA-256, nella forma «grezza» r‖s di 64 byte che vuole WebCrypto (tools/seal-issue.mjs firma con
+   Firma: ECDSA P-256 con SHA-256, nella forma «grezza» r‖s di 64 byte che vuole WebCrypto (lo strumento di emissione firma con
    dsaEncoding: 'ieee-p1363'). La chiave pubblica sta in MD_CONFIG.SEAL_PUBKEYS ({ kid, jwk }); quella privata solo sul
    computer dell'autore. Un'app offline non può verificare un pagamento: verifica soltanto che l'autore abbia firmato. ===== */
 var MDSeal = (function () {
