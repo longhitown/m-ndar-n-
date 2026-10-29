@@ -1365,6 +1365,144 @@ try {
     check("Audit PR 1: nessun errore JavaScript", !errs.length, errs[0] || "");
     await ctx.close();
   }
+  /* Audit PR 2 (R08, R09, R11): prove di guasto per lo scambio linguistico, nate per fallire sul codice precedente */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(() => {
+      try {
+        localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-lang", "it"); localStorage.setItem("cp-course", "zh"); localStorage.setItem("cp-music", "0");
+        localStorage.setItem("md-voice-consent", JSON.stringify({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: "", show: false, region: "", other: false, lang: "it-IT" }));
+      } catch (e) {}
+      const md = navigator.mediaDevices || (navigator.mediaDevices = {});
+      window.__gumQueue = [];
+      window.__gumMode = "immediate";
+      md.getUserMedia = () => {
+        const c = new AudioContext(), d = c.createMediaStreamDestination();
+        if (window.__gumMode === "manual") return new Promise((res) => { window.__gumQueue.push(() => res(d.stream)); });
+        return Promise.resolve(d.stream);
+      };
+      window.__recStarts = 0; window.__recThrow = false;
+      window.MediaRecorder = class {
+        constructor() { this.state = "inactive"; this.mimeType = "audio/webm;codecs=opus"; }
+        static isTypeSupported() { return true; }
+        start() { if (window.__recThrow) throw new Error("rec-start-fail"); window.__recStarts++; this.state = "recording"; }
+        stop() { this.state = "inactive"; setTimeout(() => { this.ondataavailable && this.ondataavailable({ data: new Blob([new Uint8Array(600)], { type: "audio/webm" }) }); this.onstop && this.onstop(); }, 15); }
+      };
+    });
+    const p = await ctx.newPage(), errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(base); await p.waitForFunction(() => window.CP && CP.course, null, { timeout: 15000 }); await p.waitForTimeout(400);
+    /* R08: registra e tieni 1 frase; ritarda arrayBuffer, apri il foglio principale, cancella col pulsante reale, risolvi la vecchia Promise, invia */
+    await p.evaluate(() => CP.scambio.open()); await p.waitForSelector('[data-sc-rec="own"]', { timeout: 4000 });
+    await p.click('[data-sc-rec="own"]'); await p.waitForSelector("[data-sc-start]", { timeout: 4000 });
+    await p.click("[data-sc-start]"); await p.waitForSelector("[data-sc-stop]"); await p.click("[data-sc-stop]");
+    await p.waitForSelector("[data-sc-keep]", { timeout: 3000 }); await p.click("[data-sc-keep]"); await p.waitForSelector("[data-sc-start]", { timeout: 3000 });
+    await p.evaluate(() => {
+      const origAB = Blob.prototype.arrayBuffer;
+      window.__releaseAB = null;
+      Blob.prototype.arrayBuffer = function () {
+        const self = this;
+        if (!window.__releaseAB) return new Promise((res) => { window.__releaseAB = () => origAB.call(self).then(res); });
+        return origAB.call(self);
+      };
+      window.__r08Shared = null;
+      navigator.canShare = () => true;
+      navigator.share = (d) => { window.__r08Shared = d.files.map((f) => f.name + ":" + f.size); return Promise.resolve(); };
+    });
+    await p.click("[data-sc-back]"); await p.waitForSelector("[data-sc-del]", { timeout: 4000 });
+    await p.click("[data-sc-del]");
+    await p.waitForFunction(() => !document.querySelector("[data-sc-del]"), null, { timeout: 3000 });
+    const r08 = await p.evaluate(async () => {
+      if (window.__releaseAB) await window.__releaseAB();
+      await new Promise((r) => setTimeout(r, 80));
+      const b = document.createElement("button"); b.setAttribute("data-sc-send", "mail"); document.body.appendChild(b); b.click(); b.remove();
+      await new Promise((r) => setTimeout(r, 150));
+      return { dbCount: (await CP.scambio.all()).length, shared: window.__r08Shared };
+    });
+    check("Audit R08: un buildZip completato in ritardo dopo la cancellazione non condivide l'audio eliminato", r08.dbCount === 0 && r08.shared === null, JSON.stringify(r08));
+    /* R09a: IDBObjectStore.prototype.put lancia InvalidStateError */
+    await p.click('[data-sc-rec="own"]'); await p.waitForSelector("[data-sc-start]", { timeout: 4000 });
+    await p.click("[data-sc-start]"); await p.waitForSelector("[data-sc-stop]"); await p.click("[data-sc-stop]"); await p.waitForSelector("[data-sc-keep]", { timeout: 3000 });
+    const r09a = await p.evaluate(async () => {
+      const origPut = IDBObjectStore.prototype.put, origToast = CP.toast, toasts = [];
+      CP.toast = (m) => { toasts.push(String(m)); if (origToast) origToast(m); };
+      IDBObjectStore.prototype.put = function () { throw new DOMException("fail", "InvalidStateError"); };
+      document.querySelector("[data-sc-keep]").click();
+      await new Promise((r) => setTimeout(r, 200));
+      IDBObjectStore.prototype.put = origPut; CP.toast = origToast;
+      const dbCount = (await CP.scambio.all()).length;
+      return { savedToast: toasts.some((t) => /salvata/i.test(t)), keepStillThere: !!document.querySelector("[data-sc-keep]"), alert: (document.querySelector('#fam [role="alert"]') || {}).textContent || "", dbCount };
+    });
+    check("Audit R09a: se IDB put fallisce, nessun toast «salvata», il pulsante «Tieni» resta visibile e il DB resta vuoto", !r09a.savedToast && r09a.keepStillThere && r09a.alert.length > 0 && r09a.dbCount === 0, JSON.stringify(r09a));
+    /* R09b: IDBObjectStore.prototype.clear lancia InvalidStateError */
+    await p.click("[data-sc-back]"); await p.waitForSelector("[data-sc-revoke]", { timeout: 4000 });
+    const r09b = await p.evaluate(async () => {
+      const origClear = IDBObjectStore.prototype.clear;
+      IDBObjectStore.prototype.clear = function () { throw new DOMException("fail", "InvalidStateError"); };
+      document.querySelector("[data-sc-revoke]").click();
+      await new Promise((r) => setTimeout(r, 200));
+      IDBObjectStore.prototype.clear = origClear;
+      const hasConsent = CP.scambio.consent() !== null;
+      if (!hasConsent) localStorage.setItem("md-voice-consent", JSON.stringify({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: "", show: false, region: "", other: false, lang: "it-IT" }));
+      return { hasConsent, alert: (document.querySelector('#fam [role="alert"]') || {}).textContent || "" };
+    });
+    check("Audit R09b: se IDB clear fallisce, il consenso non viene cancellato e compare un messaggio di errore", r09b.hasConsent && r09b.alert.length > 0, JSON.stringify(r09b));
+    /* R09c: IDBObjectStore.prototype.getAll lancia InvalidStateError */
+    const r09c = await p.evaluate(async () => {
+      const origGetAll = IDBObjectStore.prototype.getAll;
+      IDBObjectStore.prototype.getAll = function () { throw new DOMException("fail", "InvalidStateError"); };
+      CP.scambio.open();
+      await new Promise((r) => setTimeout(r, 200));
+      IDBObjectStore.prototype.getAll = origGetAll;
+      const want = CP.t("sc.e.mem"), sheetTxt = (document.querySelector(".fam-sheet") || document.body).innerText || "";
+      return { want, hasMsg: want !== "sc.e.mem" && sheetTxt.includes(want), hasRecBtn: !!document.querySelector("[data-sc-rec]") };
+    });
+    check("Audit R09c: se IDB getAll fallisce, il foglio mostra sc.e.mem e non una lista vuota", r09c.hasMsg && !r09c.hasRecBtn, JSON.stringify(r09c));
+    /* R11a: «Registra» → «Indietro» → risolvi il permesso → start() mai chiamato e users === 0 */
+    await p.evaluate(() => { CP.scambio.open(); }); await p.waitForSelector('[data-sc-rec="own"]', { timeout: 4000 });
+    await p.click('[data-sc-rec="own"]'); await p.waitForSelector("[data-sc-start]", { timeout: 4000 });
+    const r11a = await p.evaluate(async () => {
+      CP.micClose(); window.__recStarts = 0; window.__gumMode = "manual"; window.__gumQueue = [];
+      document.querySelector("[data-sc-start]").click();
+      await new Promise((r) => setTimeout(r, 30));
+      document.querySelector("[data-sc-back]").click();
+      await new Promise((r) => setTimeout(r, 30));
+      while (window.__gumQueue.length) window.__gumQueue.shift()();
+      await new Promise((r) => setTimeout(r, 80));
+      window.__gumMode = "immediate";
+      return { starts: window.__recStarts, users: CP.micInfo().users };
+    });
+    check("Audit R11a: «Registra» seguito da «Indietro» prima del permesso non avvia MediaRecorder e rilascia il microfono", r11a.starts === 0 && r11a.users === 0, JSON.stringify(r11a));
+    /* R11b: start() del registratore che lancia → users === 0 e messaggio d'errore visibile */
+    await p.waitForSelector('[data-sc-rec="own"]', { timeout: 4000 }); await p.click('[data-sc-rec="own"]'); await p.waitForSelector("[data-sc-start]", { timeout: 4000 });
+    const r11b = await p.evaluate(async () => {
+      CP.micClose(); window.__recThrow = true;
+      document.querySelector("[data-sc-start]").click();
+      await new Promise((r) => setTimeout(r, 100));
+      window.__recThrow = false;
+      return { users: CP.micInfo().users, alert: (document.querySelector('#fam [role="alert"]') || {}).textContent || "", busyBtn: !!document.querySelector("[data-sc-stop]") };
+    });
+    check("Audit R11b: se MediaRecorder.start() lancia un'eccezione, la lease del microfono viene rilasciata e compare l'errore", r11b.users === 0 && r11b.alert.length > 0 && !r11b.busyBtn, JSON.stringify(r11b));
+    await ctx.close();
+    /* R09d: indexedDB assente (delete window.indexedDB) → nessun pulsante di registrazione e compare sc.e.nodb */
+    const ctxNoDb = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctxNoDb.addInitScript(() => {
+      try {
+        localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-lang", "it"); localStorage.setItem("cp-course", "zh"); localStorage.setItem("cp-music", "0");
+        localStorage.setItem("md-voice-consent", JSON.stringify({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: "", show: false, region: "", other: false, lang: "it-IT" }));
+        delete Window.prototype.indexedDB; delete window.indexedDB;
+      } catch (e) {}
+    });
+    const p2 = await ctxNoDb.newPage();
+    await p2.goto(base); await p2.waitForFunction(() => window.CP && CP.course, null, { timeout: 15000 }); await p2.waitForTimeout(400);
+    const r09d = await p2.evaluate(async () => {
+      CP.scambio.open();
+      await new Promise((r) => setTimeout(r, 200));
+      const want = CP.t("sc.e.nodb"), sheetTxt = (document.querySelector(".fam-sheet") || document.body).innerText || "";
+      return { want, hasMsg: want !== "sc.e.nodb" && sheetTxt.includes(want), hasRecBtn: !!document.querySelector("[data-sc-rec]") };
+    });
+    check("Audit R09d: senza indexedDB non c'è alcun pulsante di registrazione e compare sc.e.nodb", r09d.hasMsg && !r09d.hasRecBtn, JSON.stringify(r09d));
+    await ctxNoDb.close();
+  }
   /* Laboratorio dei radicali (Frasi → Impara → Radicali): apertura, una reazione riuscita, una a vuoto, il trascinamento, il
      movimento ridotto e la carta da condividere; nessuna richiesta di rete */
   {
