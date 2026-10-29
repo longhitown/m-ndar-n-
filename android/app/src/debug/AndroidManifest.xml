@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
-        <!-- solo nelle build di debug: mostra i widget «Oggi» in una finestra, per le schermate di confronto in CI -->
-        <activity android:name=".WidgetPreview" android:exported="true" />
-    </application>
-</manifest>

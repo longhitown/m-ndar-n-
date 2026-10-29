@@ -9,7 +9,7 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["src/**", "docs/index.html", "docs/404.html", "docs/assets/**", "docs/audio/**", "docs/licenze/**", "docs/zh/**", "docs/tester.html", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "MANIFESTO.md", "tools/build.mjs", "tools/site.mjs", ".github/workflows/pages.yml"]
+    paths: ["src/**", "docs/index.html", "docs/404.html", "docs/assets/**", "docs/audio/**", "docs/licenze/**", "docs/zh/**", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "MANIFESTO.md", "tools/build.mjs", "tools/site.mjs", ".github/workflows/pages.yml"]
   release:
     types: [published]
   workflow_dispatch:

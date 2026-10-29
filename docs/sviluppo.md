@@ -478,7 +478,7 @@ pulsante nel README è un SVG locale (`docs/img/sostieni.svg`), senza immagini n
 - si riscattano dal link `#seal=…`, incollando il codice o inquadrando il QR, sempre con una conferma;
 - nell'app si mostrano in grande; nelle immagini condivise solo se la persona lo sceglie; dietro il frutto all'avvio.
 
-L'emissione si fa sul computer di chi gestisce il progetto, con strumenti propri: simulazione per default, registro privato fuori da ogni repository, invio delle e-mail a mano. Qui restano il verificatore (`src/core/seal-code.js`), la schermata (`src/ui/seals.js`) e la chiave pubblica (`SEAL_PUBKEYS` in `src/config.js`, che non è un segreto): l'app controlla soltanto la firma.
+L'emissione si fa sul computer di chi gestisce il progetto, con strumenti propri: simulazione per default, registro privato fuori da ogni repository, invio delle e-mail a mano. Qui restano il verificatore (`src/core/seal-code.js`), la schermata (`src/ui/seals.js`) e la chiave pubblica (`SEAL_PUBKEYS` in `src/config.js`, che non è un segreto): l'app controlla soltanto la firma. Come funziona, e perché la chiave privata si genera sul computer di chi gestisce il progetto e non entra mai nel repository: **[sigilli.md](sigilli.md)**.
 
 Con `MD_CONFIG.SEAL_PUBKEYS` vuoto (com'è ora) la parte «Riscatta» non compare. Con `FEATURE_DONATE` e `FEATURE_SEALS`
 spenti (versione per gli store) non compare nulla.

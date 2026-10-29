@@ -12,7 +12,6 @@ pubblicazione. **La pubblicazione la decide chi gestisce il progetto.**
 | Testi, immagini, note di versione | `fastlane/metadata/android/<lingua>/`, [it-IT.md](it-IT.md), [zh-CN.md](zh-CN.md) | pronti (`node tools/store-assets.mjs`) |
 | Moduli dello store | Play Console | risposte pronte |
 | F-Droid | [f-droid.md](f-droid.md) | struttura pronta, anti-caratteristiche segnalate |
-| Test chiuso con 12 tester per 14 giorni | pagina `docs/tester.html`  | testi pronti |
 
 **Peso.** Il `.aab` pesa circa 84 MB (quasi tutto la musica, 80 MB). Google Play accetta fino a 200 MB di download
 compresso per il modulo base, quindi non servono pacchetti di risorse a parte. Se la musica crescesse molto, la si

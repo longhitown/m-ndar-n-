@@ -1,0 +1,17 @@
+# Fine riga LF in ogni sistema: la build confronta pezzi di testo con «\n» (Windows con core.autocrlf=true estraeva CRLF e la build falliva).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ogg binary
+*.mp3 binary
+*.mp4 binary
+*.webm binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+*.ico binary
+*.jar binary
+*.keystore binary

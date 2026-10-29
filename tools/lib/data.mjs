@@ -13,7 +13,7 @@ import vm from "vm";
 
 /* i <script src> e <link rel="stylesheet"> di src/index.html, in ordine */
 export function assets(srcDir) {
-  const html = fs.readFileSync(path.join(srcDir, "index.html"), "utf8");
+  const html = fs.readFileSync(path.join(srcDir, "index.html"), "utf8").replace(/\r\n/g, "\n");   /* anche con fine riga CRLF (Windows con core.autocrlf) */
   const scripts = [...html.matchAll(/<script\b([^>]*)\bsrc="([^"]+)"([^>]*)><\/script>/g)].map((m) => ({ tag: m[0], src: m[2], id: ((m[1] + m[3]).match(/\bid="([^"]+)"/) || [])[1] || "" }));
   const styles = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"[^>]*>/g)].map((m) => ({ tag: m[0], href: m[1] }));
   return { html, scripts, styles };

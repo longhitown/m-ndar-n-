@@ -31,7 +31,7 @@ Quello che manca è in
 [![Sostieni il progetto](docs/img/sostieni.svg)](https://ko-fi.com/mandarinoapp)
 
 màndarínō è gratuita e resta gratuita. Una donazione è del tutto libera e non sblocca nulla. Se vuoi, ti mando in cambio
-un sigillo di gratitudine, che assegno a mano: è un codice firmato, solo estetico, e l'app non sa chi ha donato.
+un sigillo di gratitudine, che assegno a mano: è un codice firmato, solo estetico, e l'app non sa chi ha donato ([come funziona](docs/sigilli.md)).
 
 ## Licenze
 
