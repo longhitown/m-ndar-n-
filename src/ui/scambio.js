@@ -7,7 +7,7 @@
    come vuole (Condividi o e-mail). Nessuna rete. Si carica al primo uso di CP.scambio. ===== */
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, LIM = 8000, MAXSEND = 200, SITE = "https://mandarinoapp.org/partecipa-voci.html?da=app", MAIL = "mandarinoapp@gmail.com";
-  var DB = null, PRE = null, S = { queue: null, qi: 0, cur: null, skip: {}, rec: null, blob: null, ms: 0, busy: false, mime: "", err: "", sentFile: null };
+  var DB = null, PRE = null, REV = 0, SES = 0, S = { queue: null, qi: 0, cur: null, skip: {}, rec: null, blob: null, ms: 0, busy: false, mime: "", err: "", sentFile: null, lease: null };
 
   /* ---- consenso (localStorage, chiave senza «cp-»: non entra nei backup) ---- */
   function consent() { try { var o = JSON.parse(localStorage.getItem("md-voice-consent") || "null"); return o && o.age && o.ok && o.pub ? o : null; } catch (e) { return null; } }
@@ -28,18 +28,19 @@
     });
     return DB;
   }
+  function idbErr(code) { var e = new Error("idb"); e.code = code; return e; }
   function tx(mode, fn) {
     return db().then(function (d) {
-      if (!d) return null;
-      return new Promise(function (res) {
-        try { var t = d.transaction("rec", mode), r = fn(t.objectStore("rec")); t.oncomplete = function () { res(r && "result" in r ? r.result : true); }; t.onerror = t.onabort = function () { res(null); }; } catch (e) { res(null); }
+      if (!d) throw idbErr("unavailable");
+      return new Promise(function (res, rej) {
+        try { var t = d.transaction("rec", mode), r = fn(t.objectStore("rec")); t.oncomplete = function () { res(r && "result" in r ? r.result : true); }; t.onerror = t.onabort = function () { rej(idbErr("failed")); }; } catch (e) { rej(idbErr("failed")); }
       });
     });
   }
   function all() { return tx("readonly", function (s) { return s.getAll(); }).then(function (a) { return Array.isArray(a) ? a.sort(function (x, y) { return y.created - x.created; }) : []; }); }
-  function put(r) { return tx("readwrite", function (s) { return s.put(r); }); }
-  function del(id) { return tx("readwrite", function (s) { return s.delete(id); }); }
-  function clear() { return tx("readwrite", function (s) { return s.clear(); }); }
+  function put(r) { return tx("readwrite", function (s) { return s.put(r); }).then(function (x) { REV++; return x; }); }
+  function del(id) { return tx("readwrite", function (s) { return s.delete(id); }).then(function (x) { REV++; return x; }); }
+  function clear() { return tx("readwrite", function (s) { return s.clear(); }).then(function (x) { REV++; return x; }); }
 
   /* ---- lingue: si registra la propria; a richiesta anche quella che si studia (non madrelingua) ---- */
   function ownLang() { return CP.course && CP.course() === "it" ? "zh-CN" : "it-IT"; }
@@ -92,30 +93,37 @@
     for (var i = 0; i < c.length; i++) { try { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c[i])) return c[i]; } catch (e) {} }
     return "";
   }
-  var held = false, timer = 0;
-  function release() { if (held) { held = false; if (CP.micRelease) CP.micRelease(); } }
+  /* ogni avvio ha un proprio contratto (lease) e un numero di sessione (SES): se la persona torna indietro mentre il permesso è in attesa
+     o se il registratore fallisce, il microfono si rilascia una sola volta e non parte a vuoto */
+  var timer = 0;
+  function release(l) { l = l || S.lease; if (l && l.on) { l.on = false; if (CP.micRelease) CP.micRelease(); } }
   function start() {
     if (S.busy || !CP.canRecord()) { S.err = T("sc.r.err"); return render(); }
+    var ses = ++SES, lease = { on: true }; S.lease = lease;
     S.busy = true; S.err = ""; S.blob = null; S.ms = 0; render();
-    var gs = CP.micStream(); held = true;
+    var gs = CP.micStream();
     gs.then(function (stream) {
-      var chunks = [], mime = pickMime(), rec;
-      try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); } catch (e) { rec = new MediaRecorder(stream); }
-      S.mime = rec.mimeType || mime || "audio/webm";
-      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
-      var t0 = Date.now(), fired = false;
-      function fin() {
-        if (fired) return; fired = true; clearTimeout(timer); release();
-        S.ms = Math.min(LIM, Date.now() - t0); S.busy = false; S.rec = null;
-        S.blob = chunks.length ? new Blob(chunks, { type: S.mime }) : null;
-        if (!S.blob) S.err = T("sc.r.err");
-        render();
-      }
-      rec.onstop = fin;
-      S.rec = { stop: function () { clearTimeout(timer); try { if (rec.state !== "inactive") rec.stop(); } catch (e) {} setTimeout(fin, 700); } };
-      rec.start();
-      timer = setTimeout(function () { if (S.rec) S.rec.stop(); }, LIM);
-    }, function () { S.busy = false; held = false; S.err = T("sc.r.err"); render(); });
+      if (ses !== SES || view !== "rec") { release(lease); return; }
+      try {
+        var chunks = [], mime = pickMime(), rec;
+        try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); } catch (e) { rec = new MediaRecorder(stream); }
+        S.mime = rec.mimeType || mime || "audio/webm";
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+        var t0 = Date.now(), fired = false;
+        function fin() {
+          if (fired) return; fired = true; clearTimeout(timer); release(lease);
+          if (ses !== SES) return;
+          S.ms = Math.min(LIM, Date.now() - t0); S.busy = false; S.rec = null;
+          S.blob = chunks.length ? new Blob(chunks, { type: S.mime }) : null;
+          if (!S.blob) S.err = T("sc.r.err");
+          render();
+        }
+        rec.onstop = fin; rec.onerror = function () { fin(); };
+        S.rec = { stop: function () { clearTimeout(timer); try { if (rec.state !== "inactive") rec.stop(); } catch (e) {} setTimeout(fin, 700); } };
+        rec.start();
+        timer = setTimeout(function () { if (S.rec) S.rec.stop(); }, LIM);
+      } catch (e) { release(lease); S.busy = false; S.rec = null; S.err = T("sc.r.err"); render(); }
+    }, function () { lease.on = false; S.busy = false; S.err = T("sc.r.err"); render(); });
   }
   function ext(m) { return /ogg/.test(m) ? "ogg" : /mp4/.test(m) ? "m4a" : "webm"; }
   function keep() {
@@ -144,17 +152,18 @@
       return { blob: CP._zip(files), n: rs.length, ids: rs.map(function (r) { return r.id; }) };
     });
   }
-  function markSent(ids) { return all().then(function (rs) { return Promise.all(rs.filter(function (r) { return ids.indexOf(r.id) >= 0; }).map(function (r) { r.sent = Date.now(); return put(r); })); }); }
+  function markSent(ids) { return all().then(function (rs) { return Promise.all(rs.filter(function (r) { return ids.indexOf(r.id) >= 0; }).map(function (r) { r.sent = Date.now(); return put(r); })); }).then(function (x) { REV++; return x; }); }
   /* il file si prepara in anticipo, appena si apre il foglio: così il tocco su «Invia» condivide subito (il telefono vuole che
-     Condividi parta da un tocco) */
+     Condividi parta da un tocco). REV invalida uno .zip preparato su dati poi cambiati o cancellati */
   function prepare(rs) {
-    PRE = null;
+    var rev = REV; PRE = null;
     var todo = rs.filter(function (r) { return !r.sent; });
     if (!todo.length || !CP._zip) return;
     buildZip(todo).then(function (z) {
+      if (rev !== REV) return;
       var name = "mandarino-voci-" + new Date().toISOString().slice(0, 10) + ".zip", file = null;
       try { file = new File([z.blob], name, { type: "application/zip" }); } catch (e) {}
-      PRE = { z: z, name: name, file: file };
+      PRE = { z: z, name: name, file: file, rev: rev };
     });
   }
   function body(name) {
@@ -169,8 +178,10 @@
      la bozza dell'e-mail. «file»: solo il file. Si parte solo se le tre autorizzazioni sono firmate. */
   function send(how) {
     if (!consent()) { consentSheet(); return; }
+    var onErr = function () { S.err = T("sc.e.send"); render(); };
     var go = function (pre) {
-      var done = function () { return markSent(pre.z.ids).then(function () { S.sentFile = pre.name; render(); }); };
+      if (!pre || pre.rev !== REV) return;
+      var done = function () { PRE = null; return markSent(pre.z.ids).then(function () { S.sentFile = pre.name; render(); }, onErr); };
       var subject = T("sc.s.subject");
       if (how === "mail" && pre.file && navigator.canShare && navigator.canShare({ files: [pre.file] })) {
         return navigator.share({ files: [pre.file], title: subject, text: body(pre.name) }).then(done, function () {});
@@ -179,8 +190,8 @@
       if (how === "mail") location.href = "mailto:" + MAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body(pre.name));
       return done();
     };
-    if (PRE) return go(PRE);
-    all().then(function (rs) { prepare(rs); var t = setInterval(function () { if (PRE) { clearInterval(t); go(PRE); } }, 80); setTimeout(function () { clearInterval(t); }, 4000); });
+    if (PRE && PRE.rev === REV) return go(PRE);
+    all().then(function (rs) { prepare(rs); var t = setInterval(function () { if (PRE && PRE.rev === REV) { clearInterval(t); go(PRE); } }, 80); setTimeout(function () { clearInterval(t); }, 4000); }, onErr);
   }
 
   /* ---- i fogli ---- */
@@ -202,6 +213,7 @@
     var c = consent() || {}, sent = recs.filter(function (r) { return r.sent; }).length, todo = recs.length - sent, h;
     prepare(recs);
     h = '<div class="fam-head"><div class="meta"><b>' + esc(T("sc.title")) + '</b><div class="small muted">' + esc(T("sc.have", { n: recs.length, s: sent })) + '</div></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>";
+    if (S.err) h += '<p class="small" role="alert">' + esc(S.err) + "</p>";
     h += '<div class="acts"><button type="button" class="btn-main" data-sc-rec="own">🎙️ ' + esc(T("sc.m.rec")) + "</button>" + (c.other ? '<button type="button" class="btn-s" data-sc-rec="other">🎙️ ' + esc(T("sc.m.recOther")) + "</button>" : "") + "</div>";
     h += '<label class="sc-chk small"><input id="sc-other" type="checkbox" data-sc-other' + (c.other ? " checked" : "") + "> " + esc(T("sc.m.other")) + '</label><p class="small muted" style="margin:0 0 8px">' + esc(T("sc.m.otherNote")) + "</p>";
     if (todo) {
@@ -235,8 +247,14 @@
   /* le tre autorizzazioni, tutte spuntate: ho capito, ho 18 anni, autorizzo la pubblicazione CC BY 4.0 */
   function allSigned() { return ["sc-ok", "sc-age", "sc-pub"].every(function (i) { var e = document.getElementById(i); return e && e.checked; }); }
   var view = "main";
-  function render() { stopAudio(); all().then(function (recs) { if (view === "rec") recSheet(recs); else mainSheet(recs); }); }
-  function open() { if (!consent()) { consentSheet(); return; } view = "main"; S.useOther = false; render(); }
+  function render() {
+    stopAudio();
+    all().then(function (recs) { if (view === "rec") recSheet(recs); else mainSheet(recs); }, function (e) {
+      var nodb = e && e.code === "unavailable", msg = nodb ? T("sc.e.nodb") : T("sc.e.mem");
+      CP.openSheet('<div class="fam-head"><div class="meta"><b>' + esc(T("sc.title")) + '</b></div><button type="button" class="fam-x btn-s" data-famclose>' + esc(T("common.close")) + '</button></div><p class="small" role="alert">' + esc(msg) + "</p>" + (nodb ? "" : '<div class="acts"><button type="button" class="btn-s" data-famclose>' + esc(T("common.close")) + "</button></div>"));
+    });
+  }
+  function open() { if (!consent()) { consentSheet(); return; } view = "main"; S.useOther = false; S.err = ""; render(); }
 
   /* ---- tocchi ---- */
   /* un solo audio alla volta e un solo URL vivo: si libera prima di sostituire, a fine o errore, a ogni nuovo foglio e alla revoca */
@@ -246,7 +264,7 @@
     if (a) { try { a.onended = a.onerror = null; a.pause(); } catch (e) {} }
     if (u) { try { URL.revokeObjectURL(u); } catch (e) {} }
   }
-  function playBlob(b) { try { stopAudio(); aurl = URL.createObjectURL(b); audio = new Audio(aurl); audio.onended = audio.onerror = stopAudio; audio.play(); } catch (e) { stopAudio(); } }
+  function playBlob(b) { try { stopAudio(); aurl = URL.createObjectURL(b); audio = new Audio(aurl); audio.onended = audio.onerror = stopAudio; var p = audio.play(); if (p && p.catch) p.catch(stopAudio); } catch (e) { stopAudio(); } }
   document.addEventListener("change", function (e) {
     var t = e.target; if (!t || !t.closest) return;
     if (t.id === "sc-ok" || t.id === "sc-age" || t.id === "sc-pub") { var go = document.getElementById("sc-go"); if (go) go.disabled = !allSigned(); }
@@ -259,18 +277,18 @@
       setConsent({ v: 2, t: Date.now(), ok: true, age: true, pub: true, nick: document.getElementById("sc-nick").value.trim(), show: document.getElementById("sc-show").checked, region: document.getElementById("sc-region").value, other: false, lang: ownLang() });
       CP.sfx("tap"); open();
     } else if (b.hasAttribute("data-sc-rec")) { view = "rec"; S.useOther = b.getAttribute("data-sc-rec") === "other"; S.queue = null; S.cur = null; S.blob = null; S.err = ""; render(); }
-    else if (b.hasAttribute("data-sc-back")) { if (S.rec) S.rec.stop(); view = "main"; S.queue = null; S.cur = null; S.blob = null; S.busy = false; render(); }
+    else if (b.hasAttribute("data-sc-back")) { SES++; clearTimeout(timer); if (S.rec) S.rec.stop(); release(); view = "main"; S.queue = null; S.cur = null; S.blob = null; S.busy = false; S.err = ""; render(); }
     else if (b.hasAttribute("data-sc-start")) start();
     else if (b.hasAttribute("data-sc-stop")) { if (S.rec) S.rec.stop(); }
     else if (b.hasAttribute("data-sc-prev")) { if (S.blob) playBlob(S.blob); }
-    else if (b.hasAttribute("data-sc-keep")) { keep().then(function () { S.qi++; render(); }); }
+    else if (b.hasAttribute("data-sc-keep")) { keep().then(function () { S.qi++; render(); }, function () { S.err = T("sc.e.save"); render(); }); }
     else if (b.hasAttribute("data-sc-more")) { S.queue = null; S.skip = {}; render(); }
     else if (b.hasAttribute("data-sc-redo")) { S.blob = null; S.err = ""; render(); }
     else if (b.hasAttribute("data-sc-skip")) { if (S.cur) S.skip[recId(S.cur.ref, curLang(), native())] = 1; S.qi++; S.cur = null; S.blob = null; render(); }
-    else if (b.hasAttribute("data-sc-play")) { var id = b.getAttribute("data-sc-play"); all().then(function (rs) { var r = rs.filter(function (x) { return x.id === id; })[0]; if (r) playBlob(r.blob); }); }
-    else if (b.hasAttribute("data-sc-del")) { del(b.getAttribute("data-sc-del")).then(function () { CP.sfx("tap"); render(); }); }
+    else if (b.hasAttribute("data-sc-play")) { var id = b.getAttribute("data-sc-play"); all().then(function (rs) { var r = rs.filter(function (x) { return x.id === id; })[0]; if (r) playBlob(r.blob); }, function () {}); }
+    else if (b.hasAttribute("data-sc-del")) { S.err = ""; del(b.getAttribute("data-sc-del")).then(function () { CP.sfx("tap"); render(); }, function () { S.err = T("sc.e.del"); render(); }); }
     else if (b.hasAttribute("data-sc-send")) send(b.getAttribute("data-sc-send"));
-    else if (b.hasAttribute("data-sc-revoke")) { clear().then(function () { stopAudio(); setConsent(null); S.sentFile = null; CP.closeSheet(); if (CP.toast) CP.toast(T("sc.m.revoked")); }); }
+    else if (b.hasAttribute("data-sc-revoke")) { PRE = null; REV++; stopAudio(); clear().then(function () { setConsent(null); S.sentFile = null; CP.closeSheet(); if (CP.toast) CP.toast(T("sc.m.revoked")); }, function () { S.err = T("sc.e.clear"); render(); }); }
   });
   CP.scambio = { makeQueue: makeQueue, words: words, send: send, open: open, consent: consent, all: all, put: put, del: del, clear: clear, pool: pool, ownLang: ownLang, manifest: manifest, buildZip: buildZip, SITE: SITE };
 })();

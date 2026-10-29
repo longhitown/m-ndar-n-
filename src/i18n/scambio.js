@@ -47,7 +47,13 @@ Object.assign(I18N.it, {
  "sc.s.help": "L'app prepara da sola il file con le tue registrazioni. Il tasto qui sotto apre l'e-mail (con il file già allegato, dove il telefono lo permette): l'invio lo fai tu. Nessun caricamento automatico.", "sc.s.mail": "Invia per e-mail", "sc.s.subject": "màndarínō · voci di madrelingua", "sc.s.body": "Ciao, ti mando le mie registrazioni per lo scambio linguistico di màndarínō (file: {f}). Dichiaro di aver letto e capito il foglio del consenso, di avere almeno 18 anni e di autorizzare la pubblicazione con licenza CC BY 4.0. {n}",
  "sc.s.share": "Condividi",
  "sc.s.file": "Scarica il file",
- "sc.s.done": "File pronto: {f}. Mandalo a"
+ "sc.s.done": "File pronto: {f}. Mandalo a",
+ "sc.e.nodb": "Questo browser non permette di tenere le registrazioni sul telefono.",
+ "sc.e.mem": "Non riesco a leggere le registrazioni sul telefono. Chiudi e riprova.",
+ "sc.e.save": "Non riesco a salvare la registrazione (forse lo spazio sul telefono è pieno). Puoi riprovare.",
+ "sc.e.send": "Non riesco a preparare o aggiornare le registrazioni. Riprova tra un momento.",
+ "sc.e.del": "Non riesco a cancellare questa registrazione. Riprova.",
+ "sc.e.clear": "Non sono riuscito a cancellare tutte le registrazioni dal telefono: il consenso è rimasto attivo. Riprova."
 });
 Object.assign(I18N.zh, {
  "sc.c.h": "开始之前，请仔细阅读",
@@ -97,5 +103,11 @@ Object.assign(I18N.zh, {
  "sc.s.help": "应用会自动准备好包含你录音的文件。下面的按钮会打开电子邮件（在手机支持时已附上文件）：由你自己发送。不会自动上传。", "sc.s.mail": "通过电子邮件发送", "sc.s.subject": "màndarínō · 母语录音", "sc.s.body": "你好，这是我为 màndarínō 语言交换录的音（文件：{f}）。我声明已阅读并理解同意书，已年满 18 岁，并授权以 CC BY 4.0 许可发布。{n}",
  "sc.s.share": "分享",
  "sc.s.file": "下载文件",
- "sc.s.done": "文件已准备好：{f}。请发送到"
+ "sc.s.done": "文件已准备好：{f}。请发送到",
+ "sc.e.nodb": "当前浏览器不支持在手机上保存录音。",
+ "sc.e.mem": "无法读取手机上的录音，请关闭后重试。",
+ "sc.e.save": "无法保存这条录音（可能是手机存储空间已满），可以再试一次。",
+ "sc.e.send": "无法准备或更新录音文件，请稍后再试。",
+ "sc.e.del": "无法删除这条录音，请重试。",
+ "sc.e.clear": "未能从手机上删除全部录音，同意状态仍保留，请重试。"
 });
