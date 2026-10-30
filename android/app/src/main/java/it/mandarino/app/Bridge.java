@@ -330,8 +330,15 @@ public class Bridge {
         return used;
     }
 
+    /** Ferma la cattura e aspetta (al massimo 0,4 s) che AudioRecord sia rilasciato: chi parte subito dopo, ad esempio il riconoscimento vocale delle carte, trova il microfono libero. */
     @JavascriptInterface
-    public void nativeMicStop() { capRun = false; }
+    public void nativeMicStop() {
+        capRun = false;
+        Thread t = capThread;
+        if (t != null && t != Thread.currentThread()) {
+            try { t.join(400); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        }
+    }
 
     @JavascriptInterface
     public boolean nativeMicRunning() { return capRun; }
@@ -567,6 +574,38 @@ public class Bridge {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType(type);
                 i.putExtra(Intent.EXTRA_STREAM, uri);
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                try { act.startActivity(Intent.createChooser(i, act.getString(R.string.share_title))); }
+                catch (ActivityNotFoundException ignored) { }
+            });
+            return true;
+        } catch (IOException | RuntimeException e) { return false; }
+    }
+
+    /**
+     * Apre la scelta dell'app di posta con destinatario, oggetto e testo già compilati e il file ALLEGATO (ACTION_SEND con EXTRA_STREAM).
+     * Il «mailto:» non può allegare nulla: per questo lo scambio linguistico passa da qui. Non invia niente: l'invio lo fa la persona.
+     */
+    @JavascriptInterface
+    public boolean sendMail(final String to, final String subject, final String text, String name, String mime, String base64) {
+        String safe = name == null ? "mandarino.zip" : name.replaceAll("[^A-Za-z0-9._-]", "_");
+        byte[] data;
+        try { data = Base64.decode(base64, Base64.DEFAULT); } catch (IllegalArgumentException e) { return false; }
+        try {
+            File dir = new File(act.getCacheDir(), "share");
+            if (!dir.isDirectory() && !dir.mkdirs()) return false;
+            File f = new File(dir, safe);
+            try (FileOutputStream out = new FileOutputStream(f)) { out.write(data); }
+            final Uri uri = ShareProvider.uriFor(f);
+            final String type = mime == null || mime.isEmpty() ? "application/zip" : mime;
+            act.runOnUiThread(() -> {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType(type);
+                if (to != null && !to.isEmpty()) i.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+                i.putExtra(Intent.EXTRA_SUBJECT, subject == null ? "" : subject);
+                i.putExtra(Intent.EXTRA_TEXT, text == null ? "" : text);
+                i.putExtra(Intent.EXTRA_STREAM, uri);
+                i.setClipData(android.content.ClipData.newRawUri(safe, uri));
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 try { act.startActivity(Intent.createChooser(i, act.getString(R.string.share_title))); }
                 catch (ActivityNotFoundException ignored) { }

@@ -567,6 +567,7 @@
         };
         rec.onerror = function (ev) {
           var e = (ev && ev.error) || "error";
+          if (CP.micLog) CP.micLog("carte-riconoscimento-errore", e + (tries ? " (secondo tentativo)" : ""));   /* il diario lo legge l'autodiagnosi */
           if (!got && !done && !stopped && tries < 1 && TRANSIENT_ERR.test(e)) { tries++; retrying = true; setTimeout(run, 420); return; }
           finish({ ok: false, heard: "", error: e });
         };
