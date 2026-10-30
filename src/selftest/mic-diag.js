@@ -84,7 +84,7 @@
             if (rec && rec.state !== "inactive") { rec.addEventListener("stop", function () { fin(); }); try { rec.stop(); } catch (e) { fin(); } setTimeout(fin, 900); } else fin();
           }).then(function () {
             var rms = nbuf ? Math.sqrt(sum / nbuf) : 0, bytes = chunks.reduce(function (a, b) { return a + b.size; }, 0);
-            if (an) row("Livello del suono (come i toni)", peak > 0.01, "picco " + peak.toFixed(4) + " · medio " + rms.toFixed(4) + " · " + zero + " pacchetti su " + nbuf + " esattamente a zero" + (zero === nbuf && nbuf ? " → SILENZIO ASSOLUTO: Android o il telefono bloccano il microfono" : peak <= 0.01 ? " → quasi niente: hai parlato?" : ""));
+            if (an) row("Livello del suono (come i toni)", peak > 0.01, "picco " + peak.toFixed(4) + " · medio " + rms.toFixed(4) + " · " + zero + " pacchetti su " + nbuf + " esattamente a zero" + (zero === nbuf && nbuf ? " → SILENZIO ASSOLUTO: l'ingresso non manda suono (microfono muto o bloccato dal sistema, microfono virtuale, privacy)" : peak <= 0.01 ? " → quasi niente: hai parlato?" : ""));
             row("Traccia dopo 3 secondi", tr.readyState === "live" && !endedAt, tr.readyState + (endedAt ? " · FINITA da sola dopo " + endedAt + " ms" : " · mai interrotta") + (muteAt ? " · diventata MUTA dopo " + muteAt + " ms" : ""));
             if (rec) row("Registratore (come lo scambio linguistico)", !recErr && recState !== "inactive" && bytes > 0, "stato prima dello stop: " + recState + " · " + chunks.length + " pezzi, " + bytes + " byte" + (recMime ? " · " + recMime : "") + (recErr ? " · ERRORE " + recErr : "") + (recState === "inactive" && recEnd ? " · si è fermato da solo dopo " + recEnd + " ms" : ""));
             if (natMid) {
@@ -101,7 +101,16 @@
           return p.then(function () {
             return nav.mediaDevices.getUserMedia(v[1]).then(function (s) { s.getTracks().forEach(function (t) { t.stop(); }); row("Variante " + v[0], true, "SI APRE"); }, function (er) { row("Variante " + v[0], false, errTxt(er)); });
           });
-        }, Promise.resolve());
+        }, Promise.resolve()).then(function () {
+          /* prova nativa: se qui il microfono funziona, il guasto è della WebView; se fallisce anche qui, è del telefono (privacy, HyperOS, altra app) */
+          if (!A || typeof A.micProbe !== "function") return;
+          var pr; try { pr = JSON.parse(A.micProbe()); } catch (er) { row("Prova nativa (AudioRecord)", false, errTxt(er)); return; }
+          pr.forEach(function (x) {
+            if (x.error) { row("Nativo " + (x.source || ""), false, x.error); return; }
+            var good = x.initialized && x.recording && x.samples > 0 && !x.readError;
+            row("Nativo " + x.source, !!good, "avviato " + !!x.initialized + " · in registrazione " + !!x.recording + " · campioni " + (x.samples || 0) + " · picco " + (x.peak || 0) + (x.readError ? " · errore di lettura " + x.readError : "") + (good && x.peak === 0 ? " · TUTTO A ZERO (silenziato dal sistema)" : ""));
+          });
+        });
       }).then(function () { if (held) CP.micRelease(); }, function (e) { if (held) CP.micRelease(); row("Prova interrotta", false, errTxt(e)); });
     });
     return P.then(function () {
