@@ -158,17 +158,18 @@
     held = true;
     gs.then(function (stream) {
       if (S.stopped) { release(); return; }
-      if (!c) { cleanup(); release(); o.onEnd({ pts: [], error: "NotSupportedError" }); return; }
+      if (!c) { if (CP.micLog) CP.micLog("toni-senza-audiocontext", ""); cleanup(); release(); o.onEnd({ pts: [], error: "NotSupportedError" }); return; }
       if (c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
       src = c.createMediaStreamSource(stream); an = c.createAnalyser(); an.fftSize = 2048;
       sink = c.createGain(); sink.gain.value = 0;   /* il grafo resta «vivo» anche nei browser che non elaborano i nodi senza uscita */
       src.connect(an); an.connect(sink); sink.connect(c.destination);
       buf = new Float32Array(an.fftSize);
-      if (window.MediaRecorder) { try { rec = new MediaRecorder(stream); rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); }; rec.start(); } catch (e) { rec = null; } }
+      if (window.MediaRecorder) { try { rec = new MediaRecorder(stream); rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); }; rec.start(); } catch (e) { if (CP.micLog) CP.micLog("toni-registratore", e); rec = null; } }
       tStart = performance.now() / 1000;
       raf = requestAnimationFrame(loop);
       iv = setInterval(function () { if (document.hidden) step(); }, 50);   /* rAF si ferma a schermo spento: si continua comunque */
     }, function (err) {
+      if (CP.micLog) CP.micLog("toni-microfono-negato", err);
       held = false; cleanup(); if (CP.musicHold) CP.musicHold(false);
       o.onEnd({ pts: [], error: (err && err.name) || "error" });
     });

@@ -148,7 +148,7 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `#seal=…` | `ui/seals.js` | link di un sigillo di gratitudine (§3c) |
 | primo avvio: benvenuto e test di livello | `ui/welcome.js` → `CP.onboarding` (§3b) | si apre se manca `cp-ux-v1.onboarded` (corso di cinese) o `cp-it-welcome` (corso di italiano), e non c'è un `?go=` o un link |
 | configurazione | `config.js` → `MD_CONFIG` (§0) | il primo script dopo `boot.js`; nell'APK la versione (`direct`/`store`) la sceglie `MandarinoAndroid.flavor()` |
-| `#selftest`, `#dev` / `#nodev` | `selftest/selftest.js`, `audio/audio-ui.js` (`CP.dev()`) | controlli dentro l'app; modo sviluppatore (mostra il «pacchetto PWA per GitHub») |
+| `#selftest`, `#dev` / `#nodev` | `selftest/selftest.js`, `selftest/mic-diag.js` (diagnosi del microfono: stato e prova di 3 secondi, nell’APK anche `Bridge.micDiag()`), `audio/audio-ui.js` (`CP.dev()`) | controlli dentro l'app; modo sviluppatore (mostra il «pacchetto PWA per GitHub») |
 
 ## Il ponte Android
 

@@ -203,7 +203,8 @@ public class MainActivity extends Activity {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, REQ_CAM);
                 return;
             }
-            if (hasMic()) { request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE}); return; }
+            if (hasMic()) { micEvt("pagina chiede il microfono: concesso subito"); request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE}); return; }
+            micEvt("pagina chiede il microfono: permesso Android mancante" + (pendingWebPermission != null ? ", nega la richiesta precedente" : ""));
             if (pendingWebPermission != null) pendingWebPermission.deny();
             pendingWebPermission = request;
             requestMic(null);
@@ -211,6 +212,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onPermissionRequestCanceled(PermissionRequest request) {
+            if (request.getResources().length > 0 && PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(request.getResources()[0])) micEvt("richiesta microfono annullata dalla pagina");
             if (pendingWebPermission == request) pendingWebPermission = null;
             if (pendingCamera == request) pendingCamera = null;
         }
@@ -251,6 +253,15 @@ public class MainActivity extends Activity {
         return checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
 
+    /* diario dei permessi del microfono (ultimi 12, in memoria): lo legge l'autodiagnosi con Bridge.micDiag() */
+    private final java.util.ArrayList<String> micLog = new java.util.ArrayList<>();
+    private final long micT0 = System.currentTimeMillis();
+    synchronized void micEvt(String s) {
+        micLog.add((System.currentTimeMillis() - micT0) + " ms · " + s);
+        if (micLog.size() > 12) micLog.remove(0);
+    }
+    synchronized java.util.List<String> micEvents() { return new java.util.ArrayList<>(micLog); }
+
     /** chiede il microfono; «then» parte solo se il permesso viene concesso */
     void requestMic(Runnable then) {
         if (hasMic()) { if (then != null) then.run(); return; }
@@ -273,6 +284,7 @@ public class MainActivity extends Activity {
         }
         if (code != REQ_MIC) return;
         boolean ok = results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED;
+        micEvt("risposta di Android al permesso microfono: " + (ok ? "concesso" : "negato"));
         if (pendingWebPermission != null) {
             if (ok) pendingWebPermission.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
             else pendingWebPermission.deny();

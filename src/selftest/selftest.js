@@ -12,6 +12,12 @@
     for (var s = 0; s + win <= n; s += hop) { var r = CP._detect(buf.subarray(s, s + win), sr); if (r.f) out.push({ s: 12 * Math.log(r.f / 150) / Math.LN2 }); }
     return out;
   }
+  var MICROWS = [];
+  function micHtml() {
+    var h = '<h3>Microfono</h3><ul>';
+    MICROWS.forEach(function (r) { h += '<li class="' + (r[1] ? "ok" : "wa") + '"><b>' + (r[1] ? "✓" : "!") + "</b> " + esc(r[0]) + ' <span class="muted small">— ' + esc(r[2]) + "</span></li>"; });
+    return h + '</ul><div class="acts"><button type="button" class="btn-s" id="st-mic">Prova il microfono (parla per 3 secondi)</button></div>';
+  }
   function run() {
     R = [];
     /* dati */
@@ -124,7 +130,7 @@
     info.push(["Dentro un riquadro?", !CP.inFrame, CP.inFrame ? "sì: microfono e audio possono essere bloccati" : "no"]);
     /* l'apertura di IndexedDB è asincrona: su un telefono o un emulatore lento non è ancora finita quando parte l'autodiagnosi, quindi si aspetta (exportObj la attende) prima di giudicarla */
     return Store.exportObj(true).then(function (o) { var s2 = Store.status(); add("Copia di sicurezza interna (IndexedDB)", !!s2.idb, s2.idb ? "ok" : "non disponibile (resta il solo localStorage)"); return o; }).then(function (o) { add("Backup: il file si genera e si rilegge", !!o && o.app === "mandarino" && o.v === 5 && typeof o.kv === "object" && Array.isArray(o.log), "versione " + (o && o.v) + ", " + Object.keys(o.kv || {}).length + " chiavi"); }, function (e) { add("Backup", false, String(e)); })
-      .then(function () { return CP.micState(); }).then(function (m) { info.push(["Permesso microfono", m !== "denied", m]); return info; });
+      .then(function () { return CP.micState(); }).then(function (m) { info.push(["Permesso microfono", m !== "denied", m]); return CP.micDiag(false); }).then(function (rows) { MICROWS = rows; return info; });
   }
   function close() { CP.untrap(box); if (location.hash === "#selftest") history.replaceState(null, "", location.pathname + location.search); }
   function show() {
@@ -137,7 +143,7 @@
         R.forEach(function (r) { h += '<li class="' + (r.ok ? "ok" : "ko") + '"><b>' + (r.ok ? "✓" : "✗") + "</b> " + esc(r.name) + (r.detail ? ' <span class="muted small">— ' + esc(r.detail) + "</span>" : "") + "</li>"; });
         h += '</ul><h3>Questo dispositivo</h3><ul>';
         info.forEach(function (r) { h += '<li class="' + (r[1] ? "ok" : "wa") + '"><b>' + (r[1] ? "✓" : "!") + "</b> " + esc(r[0]) + ' <span class="muted small">— ' + esc(r[2]) + "</span></li>"; });
-        h += '</ul><div class="acts"><button type="button" class="btn-s" id="st-copy">Copia il risultato</button><button type="button" class="btn-s" id="st-close">Chiudi</button></div></div>';
+        h += '</ul><div id="st-micbox">' + micHtml() + '</div><div class="acts"><button type="button" class="btn-s" id="st-copy">Copia il risultato</button><button type="button" class="btn-s" id="st-close">Chiudi</button></div></div>';
         box.innerHTML = h; window.__SELFTEST = { pass: pass, total: R.length, results: R, info: info };
         var cb = document.getElementById("st-close"); if (cb) cb.focus({ preventScroll: true });
       });
@@ -145,8 +151,17 @@
   }
   box.addEventListener("click", function (e) {
     if (e.target.id === "st-close") close();
+    if (e.target.id === "st-mic") {
+      var btn = e.target; btn.disabled = true; btn.textContent = "Sto ascoltando… parla ora";
+      CP.micDiag(true).then(function (rows) { MICROWS = rows; var mb = document.getElementById("st-micbox"); if (mb) mb.innerHTML = micHtml(); },
+        function (er) { MICROWS = MICROWS.concat([["Prova", false, String(er)]]); var mb = document.getElementById("st-micbox"); if (mb) mb.innerHTML = micHtml(); });
+    }
     if (e.target.id === "st-copy") {
-      var t = R.map(function (r) { return (r.ok ? "OK  " : "KO  ") + r.name + " — " + r.detail; }).join("\n");
+      var inf = (window.__SELFTEST && window.__SELFTEST.info) || [];
+      var t = "màndarínō · autodiagnosi · " + new Date().toISOString() + "\n" +
+        R.map(function (r) { return (r.ok ? "OK  " : "KO  ") + r.name + " — " + r.detail; }).join("\n") +
+        "\n\nQuesto dispositivo\n" + inf.map(function (r) { return (r[1] ? "OK  " : "!!  ") + r[0] + " — " + r[2]; }).join("\n") +
+        "\n\nMicrofono\n" + MICROWS.map(function (r) { return (r[1] ? "OK  " : "!!  ") + r[0] + " — " + r[2]; }).join("\n");
       try { navigator.clipboard.writeText(t).then(function () { CP.toast("Copiato."); }, function () { CP.toast("Non riesco a copiare: fai uno screenshot."); }); } catch (er) { CP.toast("Non riesco a copiare: fai uno screenshot."); }
     }
   });

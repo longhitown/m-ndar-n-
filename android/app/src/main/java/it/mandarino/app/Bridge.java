@@ -197,6 +197,41 @@ public class Bridge {
     @JavascriptInterface
     public boolean srAvailable() { return SpeechRecognizer.isRecognitionAvailable(act); }
 
+    /** Stato del microfono lato Android, per l'autodiagnosi: JSON con permesso, modalità audio, registrazioni già in corso e diario dei permessi. */
+    @JavascriptInterface
+    public String micDiag() {
+        JSONObject o = new JSONObject();
+        try {
+            o.put("model", Build.MANUFACTURER + " " + Build.MODEL);
+            o.put("android", Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")");
+            o.put("permission", act.hasMic());
+            o.put("recognizerBusy", recId != null || recPending != null);
+            o.put("recognizerAvailable", SpeechRecognizer.isRecognitionAvailable(act));
+            AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
+            if (am != null) {
+                o.put("micMuted", am.isMicrophoneMute());
+                o.put("mode", am.getMode());   /* 0 normale · 1 suoneria · 2 telefonata · 3 chiamata in app */
+                if (Build.VERSION.SDK_INT >= 24) {
+                    java.util.List<android.media.AudioRecordingConfiguration> cfg = am.getActiveRecordingConfigurations();
+                    JSONArray a = new JSONArray();
+                    for (android.media.AudioRecordingConfiguration c : cfg) {
+                        JSONObject r = new JSONObject();
+                        r.put("source", c.getClientAudioSource());
+                        if (Build.VERSION.SDK_INT >= 29) r.put("silenced", c.isClientSilenced());
+                        a.put(r);
+                    }
+                    o.put("recordings", a);
+                }
+            }
+            JSONArray ev = new JSONArray();
+            for (String s : act.micEvents()) ev.put(s);
+            o.put("events", ev);
+        } catch (Exception e) {
+            try { o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
+        }
+        return o.toString();
+    }
+
     @JavascriptInterface
     public void srStart(final String id, final String lang, final int maxResults) {
         act.runOnUiThread(() -> { recPending = id; act.requestMic(() -> { recPending = null; startRecognizer(id, lang, maxResults); }); });

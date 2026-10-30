@@ -118,12 +118,13 @@
           if (!S.blob) S.err = T("sc.r.err");
           render();
         }
-        rec.onstop = fin; rec.onerror = function () { fin(); };
+        rec.onstop = function () { if (CP.micLog) CP.micLog("scambio-stop", (Date.now() - t0) + " ms, " + chunks.length + " pezzi"); fin(); };
+        rec.onerror = function (ev) { if (CP.micLog) CP.micLog("scambio-errore-registratore", (ev && ev.error) || "errore"); fin(); };
         S.rec = { stop: function () { clearTimeout(timer); try { if (rec.state !== "inactive") rec.stop(); } catch (e) {} setTimeout(fin, 700); } };
         rec.start();
         timer = setTimeout(function () { if (S.rec) S.rec.stop(); }, LIM);
-      } catch (e) { release(lease); S.busy = false; S.rec = null; S.err = T("sc.r.err"); render(); }
-    }, function () { lease.on = false; S.busy = false; S.err = T("sc.r.err"); render(); });
+      } catch (e) { if (CP.micLog) CP.micLog("scambio-avvio-fallito", e); release(lease); S.busy = false; S.rec = null; S.err = T("sc.r.err"); render(); }
+    }, function (e) { if (CP.micLog) CP.micLog("scambio-microfono-negato", e); lease.on = false; S.busy = false; S.err = T("sc.r.err"); render(); });
   }
   function ext(m) { return /ogg/.test(m) ? "ogg" : /mp4/.test(m) ? "m4a" : "webm"; }
   function keep() {
