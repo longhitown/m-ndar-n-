@@ -205,6 +205,30 @@ function sandbox() {
   const usati = [...((/var CH = \[([\s\S]*?)\];/.exec(prova) || ["", ""])[1]).matchAll(/\["(.)"/g)].map((m) => m[1]);
   const manca = usati.filter((c) => !hz[c] || !hz[c].strokes || hz[c].strokes.length !== (hz[c].medians || []).length);
   check("microprove del sito: hanzi.json ha i tratti di ogni carattere usato da prova.js", usati.length >= 8 && !manca.length, manca.join(" "));
+  /* SEO del sito: il JSON-LD nasce dalla fabbrica di tools/seo.mjs e deve essere valido; meta e mappa del sito coerenti */
+  {
+    const { PAGES, graphFor, decorate, build, graph, ldScript, sitemapXml, llmsTxt, readFaq } = await import("./seo.mjs");
+    const home = fs.readFileSync(path.join(DOCS, "index.html"), "utf8"), homeZh = fs.readFileSync(path.join(DOCS, "zh/index.html"), "utf8");
+    let ok = true; const why = [];
+    const must = (c, m) => { if (!c) { ok = false; why.push(m); } };
+    const gh = graphFor(PAGES.find((x) => x.path === "/"), home, { modified: "2026-01-01" }), gz = graphFor(PAGES.find((x) => x.path === "/zh/"), homeZh, {});
+    const types = (g) => g["@graph"].map((n) => n["@type"]);
+    must(["Organization", "WebSite", "WebPage", "MobileApplication", "WebApplication", "FAQPage"].every((t) => types(gh).includes(t)), "tipi della home");
+    must(types(gz).includes("MobileApplication") && gz["@graph"].find((n) => n["@type"] === "WebPage").inLanguage === "zh-CN", "pagina cinese");
+    must(readFaq(home, "it").length >= 6, "domande frequenti non lette");
+    const app = gh["@graph"].find((n) => n["@type"] === "MobileApplication");
+    must(app.offers.price === "0" && app.isAccessibleForFree === true && !JSON.stringify(gh).includes("aggregateRating"), "app gratuita, nessuna valutazione inventata");
+    must(JSON.stringify(JSON.parse(ldScript(gh).replace(/^<script[^>]*>|<\/script>$/g, ""))) === JSON.stringify(gh), "il JSON-LD si rilegge uguale");
+    must(!ldScript({ x: "</script><b>" }).slice(0, -"</script>".length).includes("</script"), "il testo non chiude lo script");
+    let rej = 0;
+    for (const f of [() => build("Article", { url: "https://mandarinoapp.org/x" }), () => build("Nope", {}), () => graph([{ "@type": "WebPage", isPartOf: { "@id": "https://mandarinoapp.org/#manca" } }]), () => graph([{ "@type": "WebPage", url: "/relativo" }])]) { try { f(); } catch (e) { rej++; } }
+    must(rej === 4, "la fabbrica deve rifiutare campi mancanti, tipi ignoti, riferimenti rotti e indirizzi relativi");
+    const dh = decorate(home, PAGES.find((x) => x.path === "/"), {}), d404 = decorate("<head></head>", PAGES.find((x) => x.path === "/404.html"));
+    must((dh.match(/rel="canonical"/g) || []).length === 1 && (dh.match(/hreflang=/g) || []).length === 3 && /noindex/.test(d404) && !/ld\+json/.test(d404), "canonical unico, hreflang, 404 noindex");
+    must(/hreflang="zh-CN"/.test(sitemapXml()) && !/<lastmod>/.test(sitemapXml()) && /<lastmod>2026-01-02<\/lastmod>/.test(sitemapXml({ lastmod: { "/": "2026-01-02" } })), "mappa del sito: alternative e data solo se nota");
+    must(/mandarinoapp\.org\/app\//.test(llmsTxt()) && !/https?:\/\/(?!mandarinoapp\.org|github\.com\/longhitown)/.test(llmsTxt()), "llms.txt solo con indirizzi nostri");
+    check("SEO del sito: JSON-LD a fabbrica valido (grafo, riferimenti, indirizzi assoluti), meta, hreflang, mappa del sito, 404 noindex, llms.txt", ok, why.join("; "));
+  }
   const brani = ["biblioteca", "calligrafia", "bambu"].filter((id) => !["ogg", "m4a"].every((e) => fs.existsSync(path.join(DOCS, "audio", id + "." + e))));
   check("radio del sito: i tre brani esistono in .ogg e .m4a", !brani.length, brani.join(", "));
   const { md2html } = await import("./site.mjs");
@@ -463,8 +487,8 @@ function sandbox() {
   check("Scambio linguistico: stessi testi in italiano e in cinese e nessun testo usato che manchi (" + keys(TI.it).length + ")", keys(TI.it).join() === keys(TI.zh).join() && !lack.length, lack.join(", "));
   const terms = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => TI.it["sc.c." + i] + TI.zh["sc.c." + i]).join(" ");
   check("Scambio linguistico: il consenso dice licenza CC BY 4.0, maggiorenni, chi ascolta, il ritiro e la lingua non madre", /CC BY 4\.0/.test(terms) && /18/.test(terms) && /Claudio Longhitano/.test(terms) && /mandarinoapp@gmail\.com/.test(terms) && /non madrelingua/.test(terms) && /非母语/.test(terms));
-  const pg = fs.readFileSync(path.join(ROOT, "docs/partecipa-voci.html"), "utf8"), st = fs.readFileSync(path.join(ROOT, "tools/site.mjs"), "utf8");
-  check("Scambio linguistico: la pagina del consenso sul sito è nascosta (noindex, fuori dalla sitemap e dentro robots.txt, aperta solo con ?da=app) e senza rete", /noindex/.test(pg) && /da.*app/.test(pg) && /Disallow: \/partecipa-voci\.html/.test(st) && !/"\/partecipa-voci/.test(st) && !/<script[^>]+src=/.test(pg) && !/fetch\(|XMLHttpRequest/.test(pg) && /f-ok/.test(pg) && /f-age/.test(pg), "");
+  const pg = fs.readFileSync(path.join(ROOT, "docs/partecipa-voci.html"), "utf8"), seoR = await import("./seo.mjs"), robots = seoR.robotsTxt(), smap = seoR.sitemapXml();
+  check("Scambio linguistico: la pagina del consenso sul sito è nascosta (noindex, fuori dalla sitemap e dentro robots.txt, aperta solo con ?da=app) e senza rete", /noindex/.test(pg) && /da.*app/.test(pg) && /Disallow: \/partecipa-voci\.html/.test(robots) && !/partecipa-voci/.test(smap) && !/<script[^>]+src=/.test(pg) && !/fetch\(|XMLHttpRequest/.test(pg) && /f-ok/.test(pg) && /f-age/.test(pg), "");
   check("Scambio linguistico: il modulo non fa richieste di rete e tiene il consenso fuori dalle chiavi cp-", !/fetch\(|XMLHttpRequest|sendBeacon/.test(code) && /md-voice-consent/.test(code) && !/"cp-voice/.test(code));
 }
 
