@@ -203,6 +203,7 @@ public class Bridge {
      * solo dall'autodiagnosi, quando l'apertura normale è già fallita.
      */
     @JavascriptInterface
+    @android.annotation.SuppressLint("MissingPermission")   /* il permesso si controlla qui sotto con hasMic(), che lint non riconosce */
     public String micProbe() {
         JSONArray out = new JSONArray();
         if (!act.hasMic()) return "[{\"error\":\"permesso mancante\"}]";
