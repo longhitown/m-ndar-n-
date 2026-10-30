@@ -171,6 +171,9 @@
     var c = consent() || {};
     return T("sc.s.body", { f: name, n: c.show && c.nick ? c.nick : "" });
   }
+  function toB64(blob) {
+    return new Promise(function (ok, no) { var fr = new FileReader(); fr.onload = function () { var s = String(fr.result); ok(s.slice(s.indexOf(",") + 1)); }; fr.onerror = no; fr.readAsDataURL(blob); });
+  }
   function download(z, name) {
     var u = URL.createObjectURL(z.blob), a = document.createElement("a");
     a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.parentNode.removeChild(a); setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
@@ -183,13 +186,29 @@
     var go = function (pre) {
       if (!pre || pre.rev !== REV) return;
       var done = function () { PRE = null; return markSent(pre.z.ids).then(function () { S.sentFile = pre.name; render(); }, onErr); };
-      var subject = T("sc.s.subject");
+      var subject = T("sc.s.subject"), A = window.MandarinoAndroid;
+      S.needAttach = false;
+      /* APK: l'e-mail si apre con il file davvero allegato (il «mailto:» non può allegare nulla) */
+      if (how === "mail" && A && typeof A.sendMail === "function") {
+        return toB64(pre.z.blob).then(function (b64) {
+          var sent = false; try { sent = A.sendMail(MAIL, subject, body(pre.name), pre.name, "application/zip", b64); } catch (e) {}
+          if (sent) return done();
+          return viaDownload();
+        }, onErr);
+      }
+      function viaDownload() {
+        download(pre.z, pre.name);
+        if (how === "mail") {
+          S.needAttach = true;   /* il mailto: non porta il file: l'avviso dice di allegarlo a mano */
+          if (CP.toast) CP.toast(T("sc.s.attach", { f: pre.name }));
+          location.href = "mailto:" + MAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body(pre.name));
+        }
+        return done();
+      }
       if (how === "mail" && pre.file && navigator.canShare && navigator.canShare({ files: [pre.file] })) {
         return navigator.share({ files: [pre.file], title: subject, text: body(pre.name) }).then(done, function () {});
       }
-      download(pre.z, pre.name);
-      if (how === "mail") location.href = "mailto:" + MAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body(pre.name));
-      return done();
+      return viaDownload();
     };
     if (PRE && PRE.rev === REV) return go(PRE);
     all().then(function (rs) { prepare(rs); var t = setInterval(function () { if (PRE && PRE.rev === REV) { clearInterval(t); go(PRE); } }, 80); setTimeout(function () { clearInterval(t); }, 4000); }, onErr);
@@ -221,7 +240,7 @@
       h += '<p class="small muted">' + esc(T("sc.s.help")) + '</p><div class="acts"><button type="button" class="btn-main" data-sc-send="mail">📧 ' + esc(T("sc.s.mail")) + " (" + todo + ')</button>' +
         '<button type="button" class="btn-s" data-sc-send="file">⬇️ ' + esc(T("sc.s.file")) + "</button></div>";
     }
-    if (S.sentFile) h += '<p class="small okline" role="status">' + esc(T("sc.s.done", { f: S.sentFile })) + ' <a href="mailto:' + MAIL + "?subject=" + encodeURIComponent(T("sc.s.subject")) + '">' + esc(MAIL) + "</a></p>";
+    if (S.sentFile) h += '<p class="small okline" role="status">' + esc(T("sc.s.done", { f: S.sentFile })) + ' <a href="mailto:' + MAIL + "?subject=" + encodeURIComponent(T("sc.s.subject")) + '">' + esc(MAIL) + "</a></p>" + (S.needAttach ? '<p class="small" role="alert">⚠️ ' + esc(T("sc.s.attach", { f: S.sentFile })) + "</p>" : "");
     h += '<p class="small"><a href="' + SITE + '" target="_blank" rel="noopener">' + esc(T("sc.c.site")) + "</a> · " + esc(T("sc.c.siteNote")) + "</p>";
     if (recs.length) {
       h += '<h4 class="set-h">' + esc(T("sc.m.list")) + '</h4><ul class="sc-list">' + recs.map(function (r) {
