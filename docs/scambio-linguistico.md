@@ -63,7 +63,7 @@ stampare o salvare in PDF. Per registrare basta il foglio dell'app; il modulo è
 
 `manifest.json` nello `.zip` (schema `mandarino-voice/1`): `license`, `speaker` (solo se la persona ha dato il permesso), `region`
 (numero della scelta fatta; vuoto se «preferisco non dirlo»), `adult: true` e, per ogni registrazione, `ref`, `lang`, `native`, `text`
-(il testo letto), `ms`, `created`, `file`. Nessuna età, nessun sesso, nessuna posizione.
+(il testo letto), `ms`, `created`, `file` e, se il controllo nell'app ha funzionato, `checked`, `heard`, `match`. Nessuna età, nessun sesso, nessuna posizione.
 
 ## Dove resta, come si manda
 
@@ -74,6 +74,18 @@ stampare o salvare in PDF. Per registrare basta il foglio dell'app; il modulo è
   altrimenti scarica il file e apre la bozza dell'e-mail (da allegare a mano). Parte solo se le tre autorizzazioni sono firmate
   (senza, riappare il foglio). Un secondo tasto, «Scarica il file», salva solo il `.zip`. Le registrazioni incluse si segnano «inviata».
   Il tasto prepara l'invio, l'invio lo fa la persona: **nessun caricamento automatico, nessuna richiesta di rete.**
+
+## Il filtro: che cosa impedisce che una voce dica altro
+
+Il testo che compare nel `manifest.json` è quello **mostrato**, non quello **detto**: il file audio potrebbe contenere qualunque cosa. Tre livelli, dal più debole al più forte; solo l'ultimo è una garanzia.
+
+1. **Frasi fisse** (già così): nessun testo libero, si registra solo ciò che l'app mostra. Non impedisce di dire altro.
+2. **Controllo nell'app** (APK, Android 13+): mentre si registra, il riconoscimento vocale di sistema ascolta la **stessa** cattura (`RecognizerIntent.EXTRA_AUDIO_SOURCE`). Se il testo sentito non somiglia alla frase mostrata (soglia 0,6, per suono nel cinese, per lettere nell'italiano; le frasi con aggiunte estranee scendono sotto soglia), la registrazione **non si tiene** e si riprova. Nel manifest ogni voce porta `checked` (true/false), `heard` (il testo sentito) e `match` (0–1, -1 se non verificata). Se il riconoscimento non c'è, non risponde o non sente nulla, la voce resta `checked: false`: non si può dire che sia sbagliata. È un filtro contro scherzi ed errori, **non** contro chi vuole davvero aggirarlo: lo .zip si può costruire a mano e `checked` si può scrivere a mano.
+3. **Revisione prima di pubblicare** (obbligatoria, nell'importazione): nulla entra nell'app senza essere passato da chi gestisce il progetto.
+   - `tools/merge-contrib.mjs` non pubblica mai da solo: senza `--apply` produce solo il riepilogo; con `--apply` porta nell'app **soltanto** le voci che la persona ha approvato una per una nel riepilogo.
+   - Ogni voce, anche `checked: true`, si **ascolta** prima di approvarla. `checked` e `heard` servono a ordinare il lavoro (prima le voci non verificate o con `match` basso), non a saltarlo.
+   - Prima dell'ascolto si trascrive ogni voce **sul computer di chi gestisce il progetto**, con un riconoscitore locale (per esempio Whisper): se la trascrizione non somiglia a `text`, o contiene parole di un elenco di insulti (cinese e italiano, tenuto fuori dal repository pubblico), la voce è scartata senza ascolto. Nessun audio lascia il computer.
+   - Il file `manifest.json` e i nomi dei file non vengono mai eseguiti né usati come percorsi senza controllo (niente `..`, niente nomi fuori dall'elenco).
 
 ## Da fare dopo, quando ci sono le prime registrazioni
 

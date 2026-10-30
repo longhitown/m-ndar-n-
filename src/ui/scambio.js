@@ -93,6 +93,58 @@
     for (var i = 0; i < c.length; i++) { try { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c[i])) return c[i]; } catch (e) {} }
     return "";
   }
+  /* ---- filtro: il testo riconosciuto dalla voce registrata deve somigliare alla frase mostrata ----
+     Il riconoscimento vocale di sistema ascolta la STESSA cattura che viene registrata (Android: Bridge.nativeSrAttach). Se la voce dice altro
+     (per scherzo o per cattiveria) la registrazione non si tiene. Vale come filtro contro gli scherzi e gli errori, NON come garanzia: chi vuole
+     può costruirsi lo .zip a mano. La garanzia è l'ascolto prima di pubblicare (docs/scambio-linguistico.md, «Il filtro»). */
+  var MATCH_MIN = 0.6;
+  var CJKR = /[\u3400-\u9fff]/;
+  function bareSyl(x) { return x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ü/g, "v").toLowerCase(); }
+  function lcs(a, b, eq) {
+    var m = a.length, n = b.length, d = [], i, j;
+    for (i = 0; i <= m; i++) { d[i] = []; for (j = 0; j <= n; j++) d[i][j] = 0; }
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++) d[i][j] = eq(a[i - 1], b[j - 1]) ? d[i - 1][j - 1] + 1 : Math.max(d[i - 1][j], d[i][j - 1]);
+    return d[m][n];
+  }
+  function lev(a, b) {
+    var p = [], i, j, c;
+    for (j = 0; j <= b.length; j++) p[j] = j;
+    for (i = 1; i <= a.length; i++) { var prev = p[0]; p[0] = i; for (j = 1; j <= b.length; j++) { c = p[j]; p[j] = Math.min(p[j] + 1, p[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = c; } }
+    return p[b.length];
+  }
+  function normIt(x) { return String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+  /* 0..1: quanto la frase sentita somiglia a quella attesa (cinese: per suono, sillaba per sillaba; italiano: per lettere) */
+  function score(expected, heard, lang) {
+    if (lang === "zh-CN") {
+      var g = Array.from(String(expected || "")).filter(function (c) { return CJKR.test(c); }), h = Array.from(String(heard || "")).filter(function (c) { return CJKR.test(c); });
+      if (!g.length || !h.length) return 0;
+      var l = lcs(g, h, function (x, y) {
+        if (x === y) return true;
+        var a = CP.readings ? CP.readings(x).map(bareSyl) : [], b = CP.readings ? CP.readings(y).map(bareSyl) : [];
+        return a.some(function (z) { return b.indexOf(z) >= 0; });
+      });
+      return l / Math.max(g.length, h.length);
+    }
+    var a2 = normIt(expected), b2 = normIt(heard);
+    if (!a2 || !b2) return 0;
+    return 1 - lev(a2, b2) / Math.max(a2.length, b2.length);
+  }
+  function bestScore(expected, alts, lang) {
+    var best = { s: 0, t: "" };
+    (alts || []).forEach(function (t) { var v = score(expected, t, lang); if (v > best.s || !best.t) best = { s: v, t: t }; });
+    return best;
+  }
+  /* esito del controllo: ok (tenere), no (rifare, con il motivo) o non verificato (il riconoscimento non c'è o non risponde) */
+  function verdict(expected, r, lang) {
+    if (r && r.alts && r.alts.length) {
+      var b = bestScore(expected, r.alts, lang);
+      return b.s >= MATCH_MIN ? { ok: true, checked: true, heard: b.t, score: b.s } : { ok: false, why: "mismatch", heard: b.t, score: b.s };
+    }
+    /* nessun testo (silenzio, servizio assente, lingua non installata, nessuna risposta): non si può dire che sia sbagliato, si segna «non verificato»
+       e lo giudica chi ascolta prima di pubblicare. Rifiutare qui bloccherebbe tutti sui telefoni dove il riconoscimento non funziona. */
+    return { ok: true, checked: false, heard: "", score: -1 };
+  }
+
   /* ogni avvio ha un proprio contratto (lease) e un numero di sessione (SES): se la persona torna indietro mentre il permesso è in attesa
      o se il registratore fallisce, il microfono si rilascia una sola volta e non parte a vuoto */
   var timer = 0;
@@ -100,27 +152,44 @@
   function start() {
     if (S.busy || !CP.canRecord()) { S.err = T("sc.r.err"); return render(); }
     var ses = ++SES, lease = { on: true }; S.lease = lease;
-    S.busy = true; S.err = ""; S.blob = null; S.ms = 0; render();
+    S.busy = true; S.err = ""; S.blob = null; S.ms = 0; S.heard = ""; S.score = -1; S.checked = false; S.checking = false; S.sr = null; render();
     var gs = CP.micStream();
     gs.then(function (stream) {
       if (ses !== SES || view !== "rec") { release(lease); return; }
       try {
-        var chunks = [], mime = pickMime(), rec;
+        var chunks = [], mime = pickMime(), rec, lang0 = curLang(), expected = textOf(S.cur || {}, lang0);
         try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); } catch (e) { rec = new MediaRecorder(stream); }
         S.mime = rec.mimeType || mime || "audio/webm";
         rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
         var t0 = Date.now(), fired = false;
         function fin() {
-          if (fired) return; fired = true; clearTimeout(timer); release(lease);
+          if (fired) return; fired = true; clearTimeout(timer);
+          var srP = S.sr ? S.sr.finish() : null;   /* chiude subito il flusso verso il riconoscimento: i secondi in più di microfono aperto non vi entrano */
+          release(lease);
           if (ses !== SES) return;
           S.ms = Math.min(LIM, Date.now() - t0); S.busy = false; S.rec = null;
           S.blob = chunks.length ? new Blob(chunks, { type: S.mime }) : null;
           if (!S.blob) S.err = T("sc.r.err");
+          if (S.blob && srP) {
+            S.checking = true; render();
+            srP.then(function (r) {
+              if (ses !== SES) return;
+              var v = verdict(expected, r, lang0);
+              S.checking = false; S.sr = null;
+              if (CP.micLog) CP.micLog("scambio-controllo", (v.ok ? (v.checked ? "ok " + v.score.toFixed(2) : "non verificato" + (r && r.error ? " (" + r.error + ")" : "")) : "RIFIUTATO " + v.why + " " + v.score.toFixed(2)));
+              if (v.ok) { S.heard = v.heard; S.score = v.score; S.checked = v.checked; }
+              else { S.blob = null; S.err = T("sc.r.mismatch", { h: v.heard }); }
+              render();
+            });
+            return;
+          }
           render();
         }
         rec.onstop = function () { if (CP.micLog) CP.micLog("scambio-stop", (Date.now() - t0) + " ms, " + chunks.length + " pezzi"); fin(); };
         rec.onerror = function (ev) { if (CP.micLog) CP.micLog("scambio-errore-registratore", (ev && ev.error) || "errore"); fin(); };
         S.rec = { stop: function () { clearTimeout(timer); try { if (rec.state !== "inactive") rec.stop(); } catch (e) {} setTimeout(fin, 700); } };
+        var nat = stream._mdNative, sr = nat && nat.sr && nat.sr.attach(lang0) ? nat.sr : null;
+        S.sr = sr;
         rec.start();
         timer = setTimeout(function () { if (S.rec) S.rec.stop(); }, LIM);
       } catch (e) { if (CP.micLog) CP.micLog("scambio-avvio-fallito", e); release(lease); S.busy = false; S.rec = null; S.err = T("sc.r.err"); render(); }
@@ -130,7 +199,7 @@
   function keep() {
     var p = S.cur; if (!p || !S.blob) return Promise.resolve();
     var lang = curLang(), nat = native();
-    var r = { id: recId(p.ref, lang, nat), ref: p.ref, lang: lang, native: nat, text: textOf(p, lang), ms: S.ms, mime: S.mime, blob: S.blob, created: Date.now(), sent: 0 };
+    var r = { id: recId(p.ref, lang, nat), ref: p.ref, lang: lang, native: nat, text: textOf(p, lang), ms: S.ms, mime: S.mime, blob: S.blob, created: Date.now(), sent: 0, heard: S.heard || "", match: S.checked ? Math.round(S.score * 100) / 100 : -1, checked: !!S.checked };
     return put(r).then(function () { S.blob = null; S.cur = null; if (CP.toast) CP.toast(T("sc.r.saved")); });
   }
 
@@ -139,7 +208,7 @@
     var c = consent() || {};
     return { schema: "mandarino-voice/1", license: "CC-BY-4.0", app: (CP.version || ""), created: Date.now(),
       speaker: c.show && c.nick ? c.nick : "", region: c.region || "", adult: true,
-      items: rs.map(function (r, i) { return { ref: r.ref, lang: r.lang, native: r.native, text: r.text, ms: r.ms, created: r.created, file: names(rs)[i] }; }) };
+      items: rs.map(function (r, i) { return { ref: r.ref, lang: r.lang, native: r.native, text: r.text, ms: r.ms, created: r.created, file: names(rs)[i], checked: !!r.checked, heard: r.checked ? r.heard : "", match: r.checked ? r.match : -1 }; }) };
   }
   /* i caratteri cinesi non entrano nel nome del file: la sigla del riferimento completo tiene distinti w:你 e w:好 */
   function sig(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
@@ -260,6 +329,7 @@
     h += '<p class="small muted" style="margin:0">' + esc(T("sc.r.prompt")) + " · " + (S.qi + 1) + " / " + S.queue.length + (p.word ? " · " + esc(T("sc.r.word")) : "") + '</p><p class="sc-big" lang="' + lang + '">' + esc(textOf(p, lang)) + '</p><p class="small muted" lang="' + (lang === "zh-CN" ? "it-IT" : "zh-CN") + '">' + esc(textOf(p, lang === "zh-CN" ? "it-IT" : "zh-CN")) + "</p>";
     if (S.err) h += '<p class="small" role="alert">' + esc(S.err) + "</p>";
     if (S.busy) h += '<div class="acts"><button type="button" class="btn-main" data-sc-stop>⏹ ' + esc(T("sc.r.stop")) + '</button></div><p class="small muted" role="status">' + esc(T("sc.r.limit")) + "</p>";
+    else if (S.checking) h += '<p class="small muted" role="status">' + esc(T("sc.r.checking")) + "</p>";
     else if (S.blob) h += '<div class="acts"><button type="button" class="btn-s" data-sc-prev>▶ ' + esc(T("sc.m.play")) + '</button><button type="button" class="btn-main" data-sc-keep>' + esc(T("sc.r.keep")) + '</button><button type="button" class="btn-s" data-sc-redo>' + esc(T("sc.r.redo")) + "</button></div>";
     else h += '<div class="acts"><button type="button" class="btn-main" data-sc-start>🎙️ ' + esc(T("sc.r.start")) + '</button><button type="button" class="btn-s" data-sc-skip>' + esc(T("sc.r.skip")) + "</button></div>";
     CP.openSheet(h);
@@ -310,5 +380,5 @@
     else if (b.hasAttribute("data-sc-send")) send(b.getAttribute("data-sc-send"));
     else if (b.hasAttribute("data-sc-revoke")) { PRE = null; REV++; stopAudio(); clear().then(function () { setConsent(null); S.sentFile = null; CP.closeSheet(); if (CP.toast) CP.toast(T("sc.m.revoked")); }, function () { S.err = T("sc.e.clear"); render(); }); }
   });
-  CP.scambio = { makeQueue: makeQueue, words: words, send: send, open: open, consent: consent, all: all, put: put, del: del, clear: clear, pool: pool, ownLang: ownLang, manifest: manifest, buildZip: buildZip, SITE: SITE };
+  CP.scambio = { makeQueue: makeQueue, words: words, send: send, open: open, consent: consent, all: all, put: put, del: del, clear: clear, pool: pool, ownLang: ownLang, manifest: manifest, buildZip: buildZip, score: score, verdict: verdict, SITE: SITE };
 })();

@@ -38,7 +38,7 @@
         if (!Ctx) { no({ name: "NotSupportedError" }); return; }
         var c = (window.CP && window.CP.getCtx && window.CP.getCtx()) || new Ctx();
         if (c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
-        var dest = c.createMediaStreamDestination(), id = nid("m"), next = 0, stopped = false;
+        var dest = c.createMediaStreamDestination(), id = nid("m"), next = 0, stopped = false, srWait = null, srPre = null;
         function stop() {
           if (stopped) return; stopped = true; delete wait[id];
           try { A.nativeMicStop(); } catch (e) {}
@@ -52,11 +52,27 @@
             var s = c.createBufferSource(); s.buffer = buf; s.connect(dest);
             var t = c.currentTime; if (next < t + 0.02) next = t + 0.06;   /* un piccolo anticipo assorbe i ritardi dei messaggi */
             s.start(next); next += buf.duration;
+          } else if (type === "sr-result" || type === "sr-error") {
+            /* testo riconosciuto dalla STESSA voce che si sta registrando (vedi nativeSrAttach in Bridge.java) */
+            var alts = []; if (type === "sr-result") { try { alts = JSON.parse(data).map(function (a) { return a.t; }); } catch (e) {} }
+            var res = type === "sr-result" ? { alts: alts } : { error: data || "error" };
+            if (srWait) { var w = srWait; srWait = null; w(res); } else srPre = res;
           } else if (type === "mic-end") { stopped = true; delete wait[id]; dest.stream.getTracks().forEach(function (t) { try { t.stop(); t.dispatchEvent(new Event("ended")); } catch (e) {} }); }
         };
         var used = ""; try { used = A.nativeMicStart(id); } catch (e) { used = ""; }
         if (!used) { delete wait[id]; no({ name: "NotReadableError", message: "cattura nativa non avviata" }); return; }
-        dest.stream._mdNative = { id: id, source: used, stop: stop };
+        var piped = false; try { piped = !!(A.srPipedSupported && A.srPipedSupported() && A.nativeSrAttach); } catch (e) {}
+        dest.stream._mdNative = { id: id, source: used, stop: stop, sr: !piped ? null : {
+          /* attach(lang): il riconoscimento vocale di sistema ascolta la cattura in corso. finish(): chiude e restituisce {alts:[testi]} o {error} */
+          attach: function (lang) { srWait = null; srPre = null; try { return !!A.nativeSrAttach(lang, 3); } catch (e) { return false; } },
+          finish: function () {
+            return new Promise(function (ok) {
+              if (srPre) { var r = srPre; srPre = null; ok(r); return; }
+              srWait = ok; try { A.nativeSrFinish(); } catch (e) {}
+              setTimeout(function () { if (srWait === ok) { srWait = null; ok({ error: "timeout" }); } }, 6000);
+            });
+          } } };
+        try { localStorage.setItem("md-native-mic", "1"); } catch (e) {}   /* su questo telefono la WebView non apre il microfono: anche il riconoscimento delle carte userà l'audio nostro */
         ok(dest.stream);
       });
     };
@@ -139,7 +155,12 @@
         } else if (type === "sr-error") fire(self, "error", { error: data || "error", message: "" });
         else if (type === "sr-end") { ended = true; delete wait[id]; self._id = null; fire(self, "end"); }
       };
-      A.srStart(id, this.lang || "zh-CN", Math.max(1, this.maxAlternatives | 0));
+      /* su un telefono dove la WebView non apre il microfono (cattura nativa in uso) anche il riconoscimento di sistema può non sentire niente:
+         gli si dà l'audio della nostra cattura (Android 13+). Altrove resta il percorso di sempre. */
+      var piped = false; try { piped = localStorage.getItem("md-native-mic") === "1" && !!A.srPipedSupported && A.srPipedSupported() && !!A.srStartPiped; } catch (e) {}
+      if (window.CP && window.CP.micLog) window.CP.micLog("carte-riconoscimento", piped ? "audio nativo" : "audio di sistema");
+      if (piped) A.srStartPiped(id, this.lang || "zh-CN", Math.max(1, this.maxAlternatives | 0));
+      else A.srStart(id, this.lang || "zh-CN", Math.max(1, this.maxAlternatives | 0));
     };
     Rec.prototype.stop = function () { if (this._id) A.srStop(this._id); };
     Rec.prototype.abort = function () { if (this._id) A.srAbort(this._id); };
