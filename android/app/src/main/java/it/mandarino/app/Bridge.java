@@ -197,6 +197,53 @@ public class Bridge {
     @JavascriptInterface
     public boolean srAvailable() { return SpeechRecognizer.isRecognitionAvailable(act); }
 
+    /**
+     * Prova nativa del microfono, senza passare dalla WebView: apre un AudioRecord per ogni sorgente e legge ~250 ms.
+     * Dice se è il telefono (fallisce anche qui) o la WebView (qui funziona, getUserMedia no). Dura circa 1,5 s: la pagina la chiama
+     * solo dall'autodiagnosi, quando l'apertura normale è già fallita.
+     */
+    @JavascriptInterface
+    public String micProbe() {
+        JSONArray out = new JSONArray();
+        if (!act.hasMic()) return "[{\"error\":\"permesso mancante\"}]";
+        int[] src = {1, 6, 9, 7, 5};
+        String[] nm = {"MIC", "VOICE_RECOGNITION", "UNPROCESSED", "VOICE_COMMUNICATION", "CAMCORDER"};
+        for (int k = 0; k < src.length; k++) {
+            JSONObject o = new JSONObject();
+            android.media.AudioRecord ar = null;
+            try {
+                o.put("source", nm[k]);
+                int min = android.media.AudioRecord.getMinBufferSize(16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT);
+                o.put("minBuffer", min);
+                if (min <= 0) { o.put("error", "getMinBufferSize=" + min); out.put(o); continue; }
+                ar = new android.media.AudioRecord(src[k], 16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT, min * 2);
+                o.put("initialized", ar.getState() == android.media.AudioRecord.STATE_INITIALIZED);
+                if (ar.getState() == android.media.AudioRecord.STATE_INITIALIZED) {
+                    ar.startRecording();
+                    o.put("recording", ar.getRecordingState() == android.media.AudioRecord.RECORDSTATE_RECORDING);
+                    short[] b = new short[1600];
+                    long end = System.currentTimeMillis() + 250;
+                    int total = 0, peak = 0, last = 0;
+                    while (System.currentTimeMillis() < end) {
+                        int n = ar.read(b, 0, b.length);
+                        if (n < 0) { last = n; break; }
+                        total += n;
+                        for (int i = 0; i < n; i++) peak = Math.max(peak, Math.abs((int) b[i]));
+                    }
+                    o.put("samples", total);
+                    o.put("peak", peak);
+                    if (last < 0) o.put("readError", last);
+                }
+            } catch (Throwable e) {
+                try { o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
+            } finally {
+                if (ar != null) { try { ar.stop(); } catch (Throwable ignore) {} try { ar.release(); } catch (Throwable ignore) {} }
+            }
+            out.put(o);
+        }
+        return out.toString();
+    }
+
     /** Stato del microfono lato Android, per l'autodiagnosi: JSON con permesso, modalità audio, registrazioni già in corso e diario dei permessi. */
     @JavascriptInterface
     public String micDiag() {
