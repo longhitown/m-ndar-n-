@@ -95,7 +95,13 @@
         });
       }, function (e) {
         row("Apertura del microfono (via di toni e scambio)", false, errTxt(e) + " · dopo " + (Date.now() - t0) + " ms");
-        var nm = nativeMic(); if (nm) { row("Android dopo il fallimento", !!nm.permission, "permesso " + (nm.permission ? "concesso" : "NEGATO") + " · riconoscimento " + (nm.recognizerBusy ? "IN USO" : "fermo") + " · registrazioni altrui " + recList(nm) + (nm.events && nm.events.length ? " · diario: " + nm.events.join(" | ") : "")); }
+        var nm = nativeMic(); if (nm) { row("Android dopo il fallimento", !!nm.permission, "permesso " + (nm.permission ? "concesso" : "NEGATO") + " · riconoscimento " + (nm.recognizerBusy ? "IN USO" : "fermo") + " · registrazioni altrui " + recList(nm) + (nm.events && nm.events.length ? " · diario: " + nm.events.slice(-3).join(" | ") : "")); }
+        /* l'app ha già provato anche senza vincoli; qui ogni variante si prova da sola, per sapere se una (e quale) si apre */
+        return [["audio: true", { audio: true }], ["solo guadagno automatico", { audio: { autoGainControl: true } }], ["mono a 16 kHz", { audio: { channelCount: 1, sampleRate: 16000 } }]].reduce(function (p, v) {
+          return p.then(function () {
+            return nav.mediaDevices.getUserMedia(v[1]).then(function (s) { s.getTracks().forEach(function (t) { t.stop(); }); row("Variante " + v[0], true, "SI APRE"); }, function (er) { row("Variante " + v[0], false, errTxt(er)); });
+          });
+        }, Promise.resolve());
       }).then(function () { if (held) CP.micRelease(); }, function (e) { if (held) CP.micRelease(); row("Prova interrotta", false, errTxt(e)); });
     });
     return P.then(function () {

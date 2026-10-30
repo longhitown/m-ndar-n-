@@ -49,6 +49,11 @@
       return navigator.mediaDevices.getUserMedia({ audio: AUDIO }).catch(function (e) {
         var busy = e && (e.name === "NotReadableError" || e.name === "AbortError" || e.name === "TrackStartError");
         if (busy && n < 4) return wait(260).then(function () { return open(n + 1); });
+        /* ultimo ripiego: alcuni telefoni rifiutano i vincoli audio personalizzati; col microfono «semplice» si apre */
+        if (busy && n === 4) {
+          CP.micLog("ripiego-senza-vincoli", e);
+          return navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) { CP.micLog("ripiego-riuscito", ""); return s; }, function () { throw e; });
+        }
         throw e;
       });
     }
