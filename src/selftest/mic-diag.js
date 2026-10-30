@@ -43,9 +43,31 @@
     });
     if (active) P = P.then(function () {
       var t0 = Date.now(), held = false;
+      /* approfondimento (si esegue sempre, a flusso chiuso): ogni variante di vincoli direttamente sulla WebView e la prova nativa di Android */
+      function deep() {
+        var V = [["tutto spento (eco, rumore, guadagno)", { audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }],
+          ["eco spento con exact", { audio: { echoCancellation: { exact: false } } }],
+          ["audio: true", { audio: true }], ["solo guadagno automatico", { audio: { autoGainControl: true } }], ["mono a 16 kHz", { audio: { channelCount: 1, sampleRate: 16000 } }]];
+        return V.reduce(function (p, v) {
+          return p.then(function () {
+            return nav.mediaDevices.getUserMedia(v[1]).then(function (s) { s.getTracks().forEach(function (t) { t.stop(); }); row("WebView diretta, " + v[0], true, "SI APRE"); }, function (er) { row("WebView diretta, " + v[0], false, errTxt(er)); });
+          });
+        }, Promise.resolve()).then(function () {
+          /* prova nativa: se qui il microfono funziona e nella WebView no, il guasto è della WebView; se fallisce anche qui, è del telefono */
+          if (!A || typeof A.micProbe !== "function") return;
+          var pr; try { pr = JSON.parse(A.micProbe()); } catch (er) { row("Prova nativa (AudioRecord)", false, errTxt(er)); return; }
+          pr.forEach(function (x) {
+            if (x.info) { row("Effetti hardware del telefono", true, "eco " + !!x.echoCanceler + " · rumore " + !!x.noiseSuppressor + " · guadagno " + !!x.autoGain); return; }
+            if (x.error) { row("Nativo " + (x.source || ""), false, x.error); return; }
+            var good = x.initialized && x.recording && x.samples > 0 && !x.readError;
+            row("Nativo " + x.source, !!good && x.peak > 0, "avviato " + !!x.initialized + " · in registrazione " + !!x.recording + " · campioni " + (x.samples || 0) + " · picco " + (x.peak || 0) + (x.readError ? " · errore di lettura " + x.readError : "") + (good && x.peak === 0 ? " · TUTTO A ZERO (silenziato dal sistema)" : ""));
+          });
+        });
+      }
       return CP.micStream().then(function (stream) {
         held = true;
         row("Apertura del microfono (via di toni e scambio)", true, (Date.now() - t0) + " ms");
+        row("Origine del flusso", true, stream._mdNative ? "NATIVO (AudioRecord " + stream._mdNative.source + "): la WebView non apre il microfono, lo apre Android" : "WebView (getUserMedia)");
         var tr = stream.getAudioTracks()[0], born = Date.now(), endedAt = 0, muteAt = 0;
         if (!tr) { row("Traccia audio", false, "il flusso non ha tracce audio"); return; }
         tr.addEventListener("ended", function () { if (!endedAt) endedAt = Date.now() - born; });
@@ -96,22 +118,8 @@
       }, function (e) {
         row("Apertura del microfono (via di toni e scambio)", false, errTxt(e) + " · dopo " + (Date.now() - t0) + " ms");
         var nm = nativeMic(); if (nm) { row("Android dopo il fallimento", !!nm.permission, "permesso " + (nm.permission ? "concesso" : "NEGATO") + " · riconoscimento " + (nm.recognizerBusy ? "IN USO" : "fermo") + " · registrazioni altrui " + recList(nm) + (nm.events && nm.events.length ? " · diario: " + nm.events.slice(-3).join(" | ") : "")); }
-        /* l'app ha già provato anche senza vincoli; qui ogni variante si prova da sola, per sapere se una (e quale) si apre */
-        return [["audio: true", { audio: true }], ["solo guadagno automatico", { audio: { autoGainControl: true } }], ["mono a 16 kHz", { audio: { channelCount: 1, sampleRate: 16000 } }]].reduce(function (p, v) {
-          return p.then(function () {
-            return nav.mediaDevices.getUserMedia(v[1]).then(function (s) { s.getTracks().forEach(function (t) { t.stop(); }); row("Variante " + v[0], true, "SI APRE"); }, function (er) { row("Variante " + v[0], false, errTxt(er)); });
-          });
-        }, Promise.resolve()).then(function () {
-          /* prova nativa: se qui il microfono funziona, il guasto è della WebView; se fallisce anche qui, è del telefono (privacy, HyperOS, altra app) */
-          if (!A || typeof A.micProbe !== "function") return;
-          var pr; try { pr = JSON.parse(A.micProbe()); } catch (er) { row("Prova nativa (AudioRecord)", false, errTxt(er)); return; }
-          pr.forEach(function (x) {
-            if (x.error) { row("Nativo " + (x.source || ""), false, x.error); return; }
-            var good = x.initialized && x.recording && x.samples > 0 && !x.readError;
-            row("Nativo " + x.source, !!good, "avviato " + !!x.initialized + " · in registrazione " + !!x.recording + " · campioni " + (x.samples || 0) + " · picco " + (x.peak || 0) + (x.readError ? " · errore di lettura " + x.readError : "") + (good && x.peak === 0 ? " · TUTTO A ZERO (silenziato dal sistema)" : ""));
-          });
-        });
-      }).then(function () { if (held) CP.micRelease(); }, function (e) { if (held) CP.micRelease(); row("Prova interrotta", false, errTxt(e)); });
+      }).then(function () { if (held) CP.micRelease(); }, function (e) { if (held) CP.micRelease(); row("Prova interrotta", false, errTxt(e)); })
+        .then(function () { CP.micClose(); return deep(); });
     });
     return P.then(function () {
       var lg = CP.micLogList ? CP.micLogList() : [];

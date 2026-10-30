@@ -209,41 +209,132 @@ public class Bridge {
         if (!act.hasMic()) return "[{\"error\":\"permesso mancante\"}]";
         int[] src = {1, 6, 9, 7, 5};
         String[] nm = {"MIC", "VOICE_RECOGNITION", "UNPROCESSED", "VOICE_COMMUNICATION", "CAMCORDER"};
-        for (int k = 0; k < src.length; k++) {
-            JSONObject o = new JSONObject();
-            android.media.AudioRecord ar = null;
+        for (int k = 0; k < src.length; k++) out.put(probeSource(src[k], nm[k]));
+        /* Chromium apre la cattura in «modalità comunicazione» quando il telefono ha l'eco cancellation hardware: si riprova la sorgente
+           delle chiamate con la modalità audio di Android portata a MODE_IN_COMMUNICATION (poi ripristinata) e si dice cosa offre il telefono */
+        AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) {
+            int old = am.getMode();
             try {
-                o.put("source", nm[k]);
-                int min = android.media.AudioRecord.getMinBufferSize(16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT);
-                o.put("minBuffer", min);
-                if (min <= 0) { o.put("error", "getMinBufferSize=" + min); out.put(o); continue; }
-                ar = new android.media.AudioRecord(src[k], 16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT, min * 2);
-                o.put("initialized", ar.getState() == android.media.AudioRecord.STATE_INITIALIZED);
-                if (ar.getState() == android.media.AudioRecord.STATE_INITIALIZED) {
-                    ar.startRecording();
-                    o.put("recording", ar.getRecordingState() == android.media.AudioRecord.RECORDSTATE_RECORDING);
-                    short[] b = new short[1600];
-                    long end = System.currentTimeMillis() + 250;
-                    int total = 0, peak = 0, last = 0;
-                    while (System.currentTimeMillis() < end) {
-                        int n = ar.read(b, 0, b.length);
-                        if (n < 0) { last = n; break; }
-                        total += n;
-                        for (int i = 0; i < n; i++) peak = Math.max(peak, Math.abs((int) b[i]));
-                    }
-                    o.put("samples", total);
-                    o.put("peak", peak);
-                    if (last < 0) o.put("readError", last);
-                }
+                am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                out.put(probeSource(7, "VOICE_COMMUNICATION in MODE_IN_COMMUNICATION"));
             } catch (Throwable e) {
-                try { o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
+                JSONObject o = new JSONObject();
+                try { o.put("source", "VOICE_COMMUNICATION in MODE_IN_COMMUNICATION"); o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
+                out.put(o);
             } finally {
-                if (ar != null) { try { ar.stop(); } catch (Throwable ignore) {} try { ar.release(); } catch (Throwable ignore) {} }
+                try { am.setMode(old); } catch (Throwable ignore) {}
             }
-            out.put(o);
         }
+        JSONObject fx = new JSONObject();
+        try {
+            fx.put("source", "EFFETTI HARDWARE");
+            fx.put("echoCanceler", android.media.audiofx.AcousticEchoCanceler.isAvailable());
+            fx.put("noiseSuppressor", android.media.audiofx.NoiseSuppressor.isAvailable());
+            fx.put("autoGain", android.media.audiofx.AutomaticGainControl.isAvailable());
+            fx.put("info", true);
+        } catch (Throwable e) {
+            try { fx.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
+        }
+        out.put(fx);
         return out.toString();
     }
+
+    /** Apre un AudioRecord con la sorgente data, legge ~250 ms e riporta stato, campioni e picco. */
+    @android.annotation.SuppressLint("MissingPermission")
+    private JSONObject probeSource(int source, String name) {
+        JSONObject o = new JSONObject();
+        android.media.AudioRecord ar = null;
+        try {
+            o.put("source", name);
+            int min = android.media.AudioRecord.getMinBufferSize(16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT);
+            o.put("minBuffer", min);
+            if (min <= 0) { o.put("error", "getMinBufferSize=" + min); return o; }
+            ar = new android.media.AudioRecord(source, 16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT, min * 2);
+            o.put("initialized", ar.getState() == android.media.AudioRecord.STATE_INITIALIZED);
+            if (ar.getState() == android.media.AudioRecord.STATE_INITIALIZED) {
+                ar.startRecording();
+                o.put("recording", ar.getRecordingState() == android.media.AudioRecord.RECORDSTATE_RECORDING);
+                short[] b = new short[1600];
+                long end = System.currentTimeMillis() + 250;
+                int total = 0, peak = 0, last = 0;
+                while (System.currentTimeMillis() < end) {
+                    int n = ar.read(b, 0, b.length);
+                    if (n < 0) { last = n; break; }
+                    total += n;
+                    for (int i = 0; i < n; i++) peak = Math.max(peak, Math.abs((int) b[i]));
+                }
+                o.put("samples", total);
+                o.put("peak", peak);
+                if (last < 0) o.put("readError", last);
+            }
+        } catch (Throwable e) {
+            try { o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
+        } finally {
+            if (ar != null) { try { ar.stop(); } catch (Throwable ignore) {} try { ar.release(); } catch (Throwable ignore) {} }
+        }
+        return o;
+    }
+
+    /* ---------------- cattura nativa (piano B di getUserMedia) ----------------
+       Se la WebView non riesce ad aprire il microfono (NotReadableError), la pagina chiede ad Android di registrare con AudioRecord
+       (sorgenti che funzionano: MIC, VOICE_RECOGNITION, CAMCORDER, UNPROCESSED) e riceve i campioni PCM 16 bit mono a 16 kHz come
+       eventi «mic-pcm» (base64, blocchi da 20 ms). src/voice/mic.js li trasforma in un MediaStream: il resto dell'app non cambia. */
+    private volatile boolean capRun = false;
+    private Thread capThread;
+
+    @JavascriptInterface
+    @android.annotation.SuppressLint("MissingPermission")   /* il permesso si controlla qui sotto con hasMic() */
+    public synchronized String nativeMicStart(final String id) {
+        capRun = false;
+        if (!act.hasMic()) return "";
+        int[] src = {1, 6, 5, 9};
+        String[] nm = {"MIC", "VOICE_RECOGNITION", "CAMCORDER", "UNPROCESSED"};
+        int min = android.media.AudioRecord.getMinBufferSize(16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT);
+        if (min <= 0) return "";
+        android.media.AudioRecord ar = null;
+        String used = "";
+        for (int k = 0; k < src.length && ar == null; k++) {
+            android.media.AudioRecord t = null;
+            try {
+                t = new android.media.AudioRecord(src[k], 16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT, Math.max(min * 2, 6400));
+                if (t.getState() == android.media.AudioRecord.STATE_INITIALIZED) {
+                    t.startRecording();
+                    if (t.getRecordingState() == android.media.AudioRecord.RECORDSTATE_RECORDING) { ar = t; used = nm[k]; continue; }
+                }
+            } catch (Throwable ignore) { }
+            if (t != null) { try { t.release(); } catch (Throwable ignore) { } }
+        }
+        if (ar == null) return "";
+        final android.media.AudioRecord rec = ar;
+        capRun = true;
+        capThread = new Thread(() -> {
+            short[] b = new short[320];
+            byte[] by = new byte[640];
+            try {
+                while (capRun) {
+                    int n = rec.read(b, 0, b.length);
+                    if (n < 0) break;
+                    if (n == 0) continue;
+                    for (int i = 0; i < n; i++) { by[2 * i] = (byte) b[i]; by[2 * i + 1] = (byte) (b[i] >> 8); }
+                    emit("mic-pcm", id, Base64.encodeToString(by, 0, n * 2, Base64.NO_WRAP));
+                }
+            } catch (Throwable ignore) {
+            } finally {
+                try { rec.stop(); } catch (Throwable ignore) { }
+                try { rec.release(); } catch (Throwable ignore) { }
+                emit("mic-end", id, "");
+            }
+        }, "md-mic");
+        capThread.start();
+        return used;
+    }
+
+    @JavascriptInterface
+    public void nativeMicStop() { capRun = false; }
+
+    @JavascriptInterface
+    public boolean nativeMicRunning() { return capRun; }
 
     /** Stato del microfono lato Android, per l'autodiagnosi: JSON con permesso, modalità audio, registrazioni già in corso e diario dei permessi. */
     @JavascriptInterface

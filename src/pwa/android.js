@@ -27,6 +27,41 @@
     var w = wait[id]; if (w) w(type, data);
   };
 
+  /* ---------------- microfono nativo (piano B di getUserMedia) ----------------
+     Se la WebView non riesce ad aprire il microfono (NotReadableError «Could not start audio source»), src/voice/mic.js chiede qui un
+     MediaStream: Android registra con AudioRecord e manda i campioni PCM (16 kHz, mono, blocchi da 20 ms, base64) come eventi «mic-pcm»;
+     qui diventano un MediaStream (AudioContext → MediaStreamDestination), quindi toni, scambio e oscilloscopio non cambiano. */
+  if (typeof A.nativeMicStart === "function") {
+    window.__mdNativeMic = function () {
+      return new Promise(function (ok, no) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) { no({ name: "NotSupportedError" }); return; }
+        var c = (window.CP && window.CP.getCtx && window.CP.getCtx()) || new Ctx();
+        if (c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
+        var dest = c.createMediaStreamDestination(), id = nid("m"), next = 0, stopped = false;
+        function stop() {
+          if (stopped) return; stopped = true; delete wait[id];
+          try { A.nativeMicStop(); } catch (e) {}
+          dest.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
+        }
+        wait[id] = function (type, data) {
+          if (stopped) return;
+          if (type === "mic-pcm") {
+            var bin = atob(data), n = bin.length >> 1, buf = c.createBuffer(1, n, 16000), ch = buf.getChannelData(0);
+            for (var i = 0; i < n; i++) { var v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); if (v & 0x8000) v -= 0x10000; ch[i] = v / 32768; }
+            var s = c.createBufferSource(); s.buffer = buf; s.connect(dest);
+            var t = c.currentTime; if (next < t + 0.02) next = t + 0.06;   /* un piccolo anticipo assorbe i ritardi dei messaggi */
+            s.start(next); next += buf.duration;
+          } else if (type === "mic-end") { stopped = true; delete wait[id]; dest.stream.getTracks().forEach(function (t) { try { t.stop(); t.dispatchEvent(new Event("ended")); } catch (e) {} }); }
+        };
+        var used = ""; try { used = A.nativeMicStart(id); } catch (e) { used = ""; }
+        if (!used) { delete wait[id]; no({ name: "NotReadableError", message: "cattura nativa non avviata" }); return; }
+        dest.stream._mdNative = { id: id, source: used, stop: stop };
+        ok(dest.stream);
+      });
+    };
+  }
+
   /* ---------------- speechSynthesis ---------------- */
   var voices = [];
   function loadVoices() {
