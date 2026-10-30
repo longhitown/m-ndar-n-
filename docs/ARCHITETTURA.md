@@ -143,6 +143,8 @@ L'elenco è `LAZYMOD` in `tools/build.mjs`.
 | `window.__mdGo(azione)` | `ui/launch.js` | `MainActivity.onNewIntent` (scorciatoia o widget con l'app già aperta) |
 | `window.__mdBack()` | `pwa/android.js`, `it/course.js` | tasto Indietro di Android: chiude foglio, immersione, sottomenu, poi esce |
 | `window.__mdWidget()` = `CP.widgetPush` | `pwa/widget.js` | `MainActivity.onPause`: lo stato «Oggi» va al widget prima che l'app vada in pausa |
+| widget «Ripasso rapido» (2×1) | `ReviewWidget.java` | il numero di carte da ripassare adesso (`WidgetState`, dallo stato di `setWidgetState`); un tocco apre `mandarino://go/study`, cioè `?go=study` / `CP.go("study")`; si ridisegna da `TodayWidget.updateAll` |
+| `MandarinoAndroid.widgetPinSupported()`, `MandarinoAndroid.pinWidget(kind)` | `WidgetPin.java` (da `Bridge.java`, in fondo) | le Impostazioni (JavaScript) per «Aggiungi alla Home»: `kind` è `today_large`, `today_small`, `pause` o `review`; mostra la richiesta di sistema (`requestPinAppWidget`, Android 8+) e ritorna `true` se è stata mostrata; non invia dati e non parte mai da sola. Il JavaScript controlla sempre `typeof window.MandarinoAndroid.pinWidget === "function"` |
 | `CP.jukebox.remote(cmd)` | `audio/player.js` | pulsanti della notifica della musica (`MusicService.java`) e Media Session |
 | `#sfida=MDC1-…`, `#classe=MDK1-…` | `ui/together.js` | link di una sfida o di un pacchetto classe; il frammento si toglie subito dall'indirizzo |
 | `#seal=…` | `ui/seals.js` | link di un sigillo di gratitudine (§3c) |

@@ -16,6 +16,19 @@
     <string name="w_large_name">今天</string>
     <string name="w_small_desc">连续天数和待复习数量</string>
     <string name="w_large_desc">连续天数、待复习数量和今日一词</string>
+    <string name="r_name">快速复习</string>
+    <string name="r_desc">现在有多少张卡片要复习；点一下开始复习</string>
+    <string name="r_empty">打开应用</string>
+    <string name="r_done">都复习完了</string>
+    <string name="r_cd_empty">快速复习。打开应用开始学习</string>
+    <string name="r_cd_done">都复习完了。点一下打开应用</string>
+    <string name="r_sample_label">张卡片待复习</string>
+    <plurals name="r_cards">
+        <item quantity="other">张卡片待复习</item>
+    </plurals>
+    <plurals name="r_cd_cards">
+        <item quantity="other">%d 张卡片待复习，点一下开始复习</item>
+    </plurals>
     <string name="m_play">继续</string>
     <string name="m_pause">暂停</string>
     <string name="m_prev">上一首</string>

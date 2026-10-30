@@ -157,5 +157,6 @@ public class TodayWidget extends AppWidgetProvider {
             try { TodayWidget w = k.newInstance(); for (int id : ids) m.updateAppWidget(id, w.views(c)); } catch (Exception ignored) { }
         }
         PauseWidget.updateAll(c);
+        ReviewWidget.updateAll(c);
     }
 }

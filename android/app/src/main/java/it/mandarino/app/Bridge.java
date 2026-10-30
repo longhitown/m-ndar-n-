@@ -909,4 +909,35 @@ public class Bridge {
         try { if (tts != null) { tts.stop(); tts.shutdown(); } } catch (RuntimeException ignored) { }
         stopRecognizer();
     }
+
+    /* ---------------- aggiungere un widget dalla Home (richiesta di sistema) ---------------- */
+
+    /**
+     * Contratto con le Impostazioni (JavaScript): il launcher sa mostrare la richiesta «Aggiungi widget» (Android 8+)?
+     * Controllare sempre prima con typeof window.MandarinoAndroid.pinWidget === "function".
+     */
+    @JavascriptInterface
+    public boolean widgetPinSupported() {
+        try { return WidgetPin.supported(act.getApplicationContext()); } catch (RuntimeException e) { return false; }
+    }
+
+    /**
+     * Contratto con le Impostazioni: kind = "today_large", "today_small", "pause" o "review". Mostra la richiesta di sistema
+     * (la esegue sul thread dell'interfaccia) e ritorna true se è stata mostrata; false se non è supportata o il nome è sconosciuto.
+     * Non invia dati e non parte mai da sola: solo da un tocco dell'utente.
+     */
+    @JavascriptInterface
+    public boolean pinWidget(final String kind) {
+        final android.content.Context c = act.getApplicationContext();
+        final java.util.concurrent.FutureTask<Boolean> job = new java.util.concurrent.FutureTask<>(() -> WidgetPin.request(c, kind));
+        act.runOnUiThread(job);
+        try {
+            return job.get(3, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException | RuntimeException e) {
+            return false;
+        }
+    }
 }
