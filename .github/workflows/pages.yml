@@ -9,7 +9,7 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["src/**", "docs/index.html", "docs/404.html", "docs/assets/**", "docs/audio/**", "docs/licenze/**", "docs/zh/**", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "MANIFESTO.md", "tools/build.mjs", "tools/site.mjs", ".github/workflows/pages.yml"]
+    paths: ["src/**", "docs/index.html", "docs/404.html", "docs/assets/**", "docs/audio/**", "docs/licenze/**", "docs/zh/**", "docs/icon.svg", "docs/img/**", "PRIVACY.md", "MANIFESTO.md", "tools/build.mjs", "tools/site.mjs", "tools/seo.mjs", ".github/workflows/pages.yml"]
   release:
     types: [published]
   workflow_dispatch:
@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false   # un deploy già avviato finisce; in coda resta solo l’ultimo (gli altri risultano «annullati»: è normale)
 
 jobs:
   sito:
@@ -31,6 +31,8 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # la storia serve a tools/seo.mjs per le date di ultima modifica (lastmod) della mappa del sito
 
       - uses: actions/setup-node@v4
         with:

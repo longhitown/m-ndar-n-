@@ -16,6 +16,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { createRequire } from "module";
+import { SITE, PAGES, decorate, gitDate, sitemapXml, robotsTxt, llmsTxt } from "./seo.mjs";   /* meta, hreflang, JSON-LD, sitemap, robots, llms.txt */
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -174,23 +175,28 @@ function copyDir(a, b, skip = new Set()) {
     if (e.isDirectory()) copyDir(s, d, skip); else fs.copyFileSync(s, d);
   }
 }
-const SITE = "https://mandarinoapp.org";
 function assemble(out) {
   if (!fs.existsSync(path.join(ROOT, "dist/index.html"))) throw new Error("Manca dist/: lancia prima node tools/build.mjs");
   fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
-  for (const f of ["index.html", "icon.svg", "partecipa-voci.html"]) fs.copyFileSync(path.join(ROOT, "docs", f), path.join(out, f));
+  const pg = (p) => PAGES.find((x) => x.path === p), ctxOf = (p) => ({ modified: gitDate(pg(p).sources), published: p === "/manifesto.html" ? gitDate(pg(p).sources, true) : undefined });
+  const lastmod = Object.fromEntries(PAGES.filter((x) => !x.noindex).map((x) => [x.path, gitDate(x.sources)]));   /* da git: se la storia manca il campo si omette */
+  const put = (p, file, html) => fs.writeFileSync(path.join(out, file), decorate(html, pg(p), ctxOf(p)));
+  fs.copyFileSync(path.join(ROOT, "docs/icon.svg"), path.join(out, "icon.svg"));
+  put("/", "index.html", fs.readFileSync(path.join(ROOT, "docs/index.html"), "utf8"));
+  put("/partecipa-voci.html", "partecipa-voci.html", fs.readFileSync(path.join(ROOT, "docs/partecipa-voci.html"), "utf8"));
   copyDir(path.join(ROOT, "docs/img"), path.join(out, "img"));
   for (const dir of ["assets", "audio", "licenze"]) copyDir(path.join(ROOT, "docs", dir), path.join(out, dir));   /* stile e script, musica, testi delle licenze */
-  fs.copyFileSync(path.join(ROOT, "docs/404.html"), path.join(out, "404.html"));
-  fs.writeFileSync(path.join(out, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /partecipa-voci.html\nSitemap: ${SITE}/sitemap.xml\n`);
-  fs.writeFileSync(path.join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    ["/", "/zh/", "/privacy.html", "/manifesto.html"].map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join("\n") + `\n</urlset>\n`);
+  put("/404.html", "404.html", fs.readFileSync(path.join(ROOT, "docs/404.html"), "utf8"));
+  fs.writeFileSync(path.join(out, "robots.txt"), robotsTxt());
+  fs.writeFileSync(path.join(out, "llms.txt"), llmsTxt());
+  fs.writeFileSync(path.join(out, "sitemap.xml"), sitemapXml({ lastmod }));
   copyDir(path.join(ROOT, "docs/zh"), path.join(out, "zh"));   /* la pagina cinese, quella del QR delle carte */
-  fs.writeFileSync(path.join(out, "privacy.html"), privacyPage());
-  fs.writeFileSync(path.join(out, "manifesto.html"), manifestoPage());
+  put("/zh/", "zh/index.html", fs.readFileSync(path.join(ROOT, "docs/zh/index.html"), "utf8"));
+  put("/privacy.html", "privacy.html", privacyPage());
+  put("/manifesto.html", "manifesto.html", manifestoPage());
   copyDir(path.join(ROOT, "dist"), path.join(out, "app"), new Set(["_headers"]));
   fs.writeFileSync(path.join(out, ".nojekyll"), "");
-  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, 404.html, zh/, privacy.html, manifesto.html, partecipa-voci.html, img/, assets/, audio/, licenze/, robots.txt, sitemap.xml, app/");
+  console.log("✓ sito in " + path.relative(ROOT, out) + ": index.html, 404.html, zh/, privacy.html, manifesto.html, partecipa-voci.html, img/, assets/, audio/, licenze/, robots.txt, llms.txt, sitemap.xml, app/");
 }
 
 /* Anteprime del link (Open Graph) 1200×630. WhatsApp, WeChat, Telegram e i social le ritagliano in modi diversi (la striscia 1,91:1
