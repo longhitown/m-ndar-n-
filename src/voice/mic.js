@@ -10,6 +10,15 @@
      e la voce guida e la musica finiscono nell'altoparlante del telefono, bassissime. */
   var AUDIO = { echoCancellation: false, noiseSuppression: false, autoGainControl: true, channelCount: 1 };
   var M = { stream: null, pending: null, users: 0, idle: 0, opened: 0, at: 0 };
+  /* diario del microfono (ultimi 24 eventi, solo in memoria): lo legge l'autodiagnosi per dire PERCHÉ una registrazione si è fermata */
+  var LOG = [], T0 = Date.now();
+  CP.micLog = function (tag, detail) {
+    var d = detail;
+    if (d && typeof d === "object") d = (d.name || "") + (d.message ? ": " + d.message : "") + (d.name || d.message ? "" : String(d));
+    LOG.push({ ms: Date.now() - T0, tag: String(tag), detail: d == null ? "" : String(d).slice(0, 160) });
+    if (LOG.length > 24) LOG.shift();
+  };
+  CP.micLogList = function () { return LOG.slice(); };
   function live(s) { return !!(s && s.getAudioTracks && s.getAudioTracks().some(function (t) { return t.readyState === "live"; })); }
   /* 🎙️ nella barra finché il flusso è aperto: un tocco lo chiude */
   var liveBtn = document.createElement("button");
@@ -19,6 +28,7 @@
   function paintLive() { liveBtn.hidden = !live(M.stream); }
   liveBtn.addEventListener("click", function () { M.users = 0; drop(); if (CP.toast) CP.toast("Microfono chiuso."); });
   function drop() {
+    if (M.stream) CP.micLog("chiuso", "utenti " + M.users);
     clearTimeout(M.idle); M.idle = 0; M.users = 0;
     var s = M.stream; M.stream = null; CP._micStream = null;
     try { if (s) s.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
@@ -44,10 +54,16 @@
     }
     M.pending = (freed ? wait(220) : Promise.resolve()).then(function () { return open(0); }).then(function (s) {
       M.pending = null; M.stream = s; M.opened++; CP._micStream = s;
-      s.getTracks().forEach(function (t) { t.addEventListener("ended", function () { if (M.stream === s) { M.stream = null; CP._micStream = null; paintLive(); } }); });
+      var born = Date.now();
+      CP.micLog("aperto", s.getAudioTracks().map(function (t) { return t.readyState + (t.muted ? "/muto" : ""); }).join(","));
+      s.getTracks().forEach(function (t) {
+        t.addEventListener("ended", function () { CP.micLog("traccia-finita", (Date.now() - born) + " ms dopo l'apertura, utenti " + M.users); if (M.stream === s) { M.stream = null; CP._micStream = null; paintLive(); } });
+        t.addEventListener("mute", function () { CP.micLog("traccia-muta", (Date.now() - born) + " ms dopo l'apertura"); });
+        t.addEventListener("unmute", function () { CP.micLog("traccia-torna", (Date.now() - born) + " ms dopo l'apertura"); });
+      });
       paintLive();
       return s;
-    }, function (e) { M.pending = null; M.users = Math.max(0, M.users - 1); throw e; });
+    }, function (e) { M.pending = null; M.users = Math.max(0, M.users - 1); CP.micLog("apertura-fallita", e); throw e; });
     return M.pending;
   };
   /* rilascio "morbido": il flusso resta aperto ancora qualche secondo (niente nuovo permesso a ogni parola) */
