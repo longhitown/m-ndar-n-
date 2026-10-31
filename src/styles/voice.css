@@ -116,3 +116,17 @@ td.hz .m-hz, .cd-hz, .fam-card .lh { -webkit-touch-callout: none; -webkit-user-s
   @keyframes vt-in-r { from { transform: translateX(28px); opacity: 0; } }
   @keyframes vt-in-l { from { transform: translateX(-28px); opacity: 0; } }
 }
+
+/* l'etichetta «Voce reale» (ui/voice-tag.js): fissa in basso, sopra gli avvisi; niente animazioni, non sposta nulla */
+.vtag { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom, 0px)); z-index: 55; width: max-content; max-width: calc(100% - 32px); display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+body.in-session .vtag { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+.vtag > * { pointer-events: auto; }
+.vtag-b { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14); }
+.vtag-b:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vtag-d { width: min(400px, 100%); box-sizing: border-box; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22); }
+.vtag-d[hidden] { display: none; }
+.vtag-d p { margin: 0 0 8px; }
+.vtag-h { font-weight: 700; }
+.vtag-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.vtag-acts .btn-s { min-height: 44px; }
+@media print { .vtag { display: none !important; } }
