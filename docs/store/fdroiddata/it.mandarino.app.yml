@@ -17,14 +17,14 @@ IssueTracker: https://github.com/longhitown/mandarino/issues
 AutoName: màndarínō
 
 # Anti-caratteristiche, dichiarate in modo onesto (spiegazione in docs/store/f-droid.md):
-# - NonFreeNet: la voce online facoltativa (ripiego se la voce del telefono non parte, o scelta in ⚙️) legge il parlato dal servizio
+# - NonFreeNet: la voce online facoltativa (spenta di base, la accende la persona in ⚙️) legge il parlato dal servizio
 #   di sintesi vocale di Google. Nella versione «store» è l'unica richiesta di rete verso un servizio non libero.
 # Non servono: NonFreeDep (nessuna libreria di Google né di terzi nel pacchetto), Tracking, Ads, NonFreeAdd, UpstreamNonFree
 # (il codice è MIT, i contenuti CC BY 4.0, i brani sono originali). Il riconoscimento vocale usa il servizio di sistema del telefono.
 AntiFeatures:
   NonFreeNet:
-    en-US: The optional online voice (a fallback when the phone's own voice fails, or when switched on in Settings) uses Google's text-to-speech service.
-    it-IT: La voce online facoltativa (ripiego se la voce del telefono non parte, oppure scelta nelle impostazioni) usa il servizio di sintesi vocale di Google.
+    en-US: The optional online voice (off by default, switched on by the user in Settings) uses Google's text-to-speech service.
+    it-IT: La voce online facoltativa (spenta di base, la accende la persona nelle impostazioni) usa il servizio di sintesi vocale di Google.
 
 RepoType: git
 Repo: https://github.com/longhitown/mandarino.git

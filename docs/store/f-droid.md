@@ -61,9 +61,10 @@ direzione. Nella ricetta, a questo servono due campi, ora commentati:
 
 La ricetta dichiara **solo `NonFreeNet`**:
 
-- La **voce online** per il cinese usa il servizio di sintesi vocale di Google (`translate.googleapis.com`). Si usa come ripiego, se la voce
-  del telefono non parte (o manca), oppure se la si sceglie in ⚙️; nella versione store non c'è un interruttore che la spenga del tutto.
-  Per questo si dichiara. Se in futuro la versione store la togliesse, `NonFreeNet` sparirebbe.
+- La **voce online** per il cinese usa il servizio di sintesi vocale di Google (`translate.googleapis.com`). È **facoltativa e spenta di base**:
+  parte solo se la persona la accende in ⚙️ → Suoni e musica → Voce (opzione `cp-alt`); senza, non esce nessuna richiesta (se la voce del
+  telefono tace, l'app lo dice una volta e spiega come accenderla). La funzione esiste nel codice e F-Droid chiede di dichiarare i servizi non
+  liberi anche quando sono facoltativi: per questo si dichiara. Se in futuro la versione store la togliesse, `NonFreeNet` sparirebbe.
 - Il **controllo delle release su GitHub** esiste solo nella versione diretta; nella versione store, quella per F-Droid, è spento.
 
 Non si dichiarano, perché non ci sono: `NonFreeDep` (nessuna libreria di Google o di terzi nel pacchetto: solo l'SDK di Android),
