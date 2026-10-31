@@ -31,9 +31,10 @@ android {
     flavorDimensions = ["dist"]
     productFlavors {
         direct { dimension "dist" }
-        /* il suffisso «-store» distingue la versione store; F-Droid confronta il versionName dell'APK con quello della ricetta,
-           che viene da version.properties: la ricetta (prebuild) imposta mdSenzaSuffisso e il suffisso non si aggiunge */
-        store { dimension "dist"; if (!project.hasProperty("mdSenzaSuffisso")) versionNameSuffix "-store" }
+        /* «-store» solo nelle build per push (MD_VERSION_CODE impostato), per distinguerle dalle altre. Nelle release stabili la
+           versione è quella di version.properties, senza suffisso: F-Droid confronta il versionName dell'APK con quello della
+           ricetta (che legge lo stesso file) e le build riproducibili devono dare lo stesso APK dell'APK store pubblicato. */
+        store { dimension "dist"; if (envCode) versionNameSuffix "-store" }
     }
     signingConfigs {
         release {

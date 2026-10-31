@@ -1,0 +1,63 @@
+# BOZZA della ricetta F-Droid per màndarínō. Va proposta al repository «fdroiddata» (GitLab, https://gitlab.com/fdroid/fdroiddata)
+# come metadata/it.mandarino.app.yml, con una merge request. Qui è una copia di lavoro: non viene letta da niente.
+# Testi (titolo, descrizioni, immagini, note di versione): F-Droid li legge da fastlane/metadata/android/ nel repository dell'app.
+# Spiegazioni, controlli ancora da fare e decisioni aperte: docs/store/f-droid.md.
+#
+# Prima di inviarla controlla in locale con gli strumenti di F-Droid (fdroidserver):
+#   fdroid readmeta && fdroid rewritemeta it.mandarino.app && fdroid lint it.mandarino.app && fdroid build -v -l it.mandarino.app
+# Nota: «Education» non è un nome di categoria di F-Droid; il più vicino è «Science & Education».
+
+Categories:
+  - Science & Education
+License: MIT
+WebSite: https://mandarinoapp.org/
+SourceCode: https://github.com/longhitown/mandarino
+IssueTracker: https://github.com/longhitown/mandarino/issues
+
+AutoName: màndarínō
+
+# Anti-caratteristiche, dichiarate in modo onesto (spiegazione in docs/store/f-droid.md):
+# - NonFreeNet: la voce online facoltativa (ripiego se la voce del telefono non parte, o scelta in ⚙️) legge il parlato dal servizio
+#   di sintesi vocale di Google. Nella versione «store» è l'unica richiesta di rete verso un servizio non libero.
+# Non servono: NonFreeDep (nessuna libreria di Google né di terzi nel pacchetto), Tracking, Ads, NonFreeAdd, UpstreamNonFree
+# (il codice è MIT, i contenuti CC BY 4.0, i brani sono originali). Il riconoscimento vocale usa il servizio di sistema del telefono.
+AntiFeatures:
+  NonFreeNet:
+    en-US: The optional online voice (a fallback when the phone's own voice fails, or when switched on in Settings) uses Google's text-to-speech service.
+    it-IT: La voce online facoltativa (ripiego se la voce del telefono non parte, oppure scelta nelle impostazioni) usa il servizio di sintesi vocale di Google.
+
+RepoType: git
+Repo: https://github.com/longhitown/mandarino.git
+
+Builds:
+  - versionName: 0.9.0
+    versionCode: 1000
+    commit: r0.9.0
+    subdir: android/app
+    # dist/ (l'app web che finisce nel pacchetto) si costruisce con Node: solo moduli integrati, nessun pacchetto npm, nessuna rete.
+    # Serve Node 20 o più recente (engines di package.json): CONTROLLA quale versione dà apt nella buildserver in uso.
+    sudo:
+      - apt-get update
+      - apt-get install -y nodejs
+    gradle:
+      - store
+    # il prebuild gira in android/app: tools/ sta due cartelle più su
+    prebuild:
+      - node --version
+      - node ../../tools/build.mjs
+    output: build/outputs/apk/store/release/app-store-release.apk
+
+# Build riproducibili (F-Droid pubblica l'APK firmato da noi se identico a quello costruito da lui): togli i «#» solo dopo aver
+# creato la chiave nuova, aver firmato con quella la release e verificato che l'APK store della Release si ricostruisca uguale.
+# Il segnaposto è l'impronta SHA-256 del certificato (64 cifre esadecimali minuscole, senza due punti): è quella che il workflow
+# «release» scrive nel riepilogo di ogni corsa. Non è un segreto.
+# Binaries: https://github.com/longhitown/mandarino/releases/download/r%v/mandarino-store.apk
+# AllowedAPKSigningKeys: INCOLLA-QUI-L-IMPRONTA-SHA-256-DEL-CERTIFICATO
+
+# Come F-Droid scopre le versioni nuove: i tag r<x.y.z> (non i v6.7.N delle build per push) e il file android/version.properties
+# (righe semplici versionCode=… e versionName=…, scritte da tools/release.mjs).
+AutoUpdateMode: Version r%v
+UpdateCheckMode: Tags ^r\d+\.\d+\.\d+$
+UpdateCheckData: android/version.properties|versionCode=(\d+)|.|versionName=(.*)
+CurrentVersion: 0.9.0
+CurrentVersionCode: 1000

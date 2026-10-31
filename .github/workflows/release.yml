@@ -122,11 +122,11 @@ jobs:
           if "$BT/apksigner" verify --print-certs "$D" | grep -q "CN=Android Debug"; then
             echo "::error::L'APK è firmato con la chiave di debug: una release stabile non può."; exit 1
           fi
-          # versione dentro ai pacchetti = versione del file (e quindi del tag)
+          # versione dentro ai pacchetti = versione del file (e quindi del tag), uguale in tutti e due gli APK (senza «-store»)
           for F in "$D" "$S"; do
             INFO=$("$BT/aapt2" dump badging "$F" | head -1)
             echo "$INFO" | grep -q "versionCode='$VCODE'" || { echo "::error::versionCode di $F diverso da $VCODE: $INFO"; exit 1; }
-            echo "$INFO" | grep -q "versionName='$VERSION\(-store\)\?'" || { echo "::error::versionName di $F diverso da $VERSION: $INFO"; exit 1; }
+            echo "$INFO" | grep -q "versionName='$VERSION'" || { echo "::error::versionName di $F diverso da $VERSION: $INFO"; exit 1; }
           done
           # il pacchetto .aab deve essere firmato con la stessa chiave (solo avviso: dipende dal formato dell'output di keytool)
           CB=$(keytool -printcert -jarfile "$B" 2>/dev/null | sed -n 's/^ *SHA256: *//p' | head -1 | tr -d ':' | tr 'A-F' 'a-f')
