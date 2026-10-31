@@ -45,7 +45,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 
 | Foglio o strato | Classe | Note |
 |---|---|---|
-| ⚙️ Impostazioni | — | foglio dal basso: ricerca, cinque riquadri e cinque pagine |
+| ⚙️ Impostazioni | — | foglio dal basso: ricerca, sei riquadri e sei pagine |
 | 🔍 Cerca ovunque | R | |
 | 🎵 Jukebox | R | |
 | Dettaglio parola e famiglia del carattere | R | |
@@ -53,7 +53,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 | Immersione a schermo pieno | E | per gli esercizi |
 | Carta del giorno | R | |
 | Taccuino del viaggiatore (mappa, pagine, pagina da condividere) | R | si apre dalla carta in «I miei progressi» (un pulsante secondario); dentro il foglio nessun pulsante principale; la carta da condividere ha il suo |
-| Scambio linguistico (consenso, registrazione, elenco, invio) | R | sezione in ⚙️ → Suoni e musica con un solo pulsante «Partecipa»; il foglio ha un pulsante principale per volta (Accetto e continuo, poi Registra), la casella delle 18 anni e quella del «ho capito» separate e non spuntate |
+| Scambio linguistico (consenso, registrazione, elenco, invio) | R | sezione in ⚙️ → Comunità e voci con un solo pulsante «Partecipa»; il foglio ha un pulsante principale per volta (Accetto e continuo, poi Registra), la casella delle 18 anni e quella del «ho capito» separate e non spuntate |
 | Contributi | A | |
 | Crediti | A | |
 | Passaggio con QR | A | |
@@ -63,7 +63,7 @@ Questa mappa dice dove sta ogni funzione e quando compare. Vale per i due corsi.
 ### Impostazioni: inventario voce per voce
 
 Prima erano un foglio lungo con quattro gruppi (Essenziali, Dati e privacy, Avanzate, Informazioni e supporto) e sezioni che si
-aprivano a cascata. Ora sono una pagina con cinque riquadri e cinque pagine (vedi la proposta, sotto). Ogni voce di prima c'è
+aprivano a cascata. Ora sono una pagina con sei riquadri e sei pagine (vedi la proposta, sotto). Ogni voce di prima c'è
 ancora; `e2e.mjs` controlla l'elenco (25 comandi, in tutti e due i corsi e nelle due lingue). «Quanto serve»: **ogni giorno**,
 **a volte**, **raramente**, **una volta sola** (poi si dimentica).
 
@@ -131,7 +131,7 @@ gli strumenti compaiono per gradi (le soglie sono in `src/ui/unlock.js`):
 Prima di quel momento lo strumento si vede nella sua carta con «si apre dopo…». Non sparisce mai, e
 ⚙️ → Studio → «Livello e schede» → «Mostra tutto» lo apre subito.
 
-**Impostazioni: cinque riquadri, cinque pagine.** ⚙️ apre un foglio con la ricerca e cinque riquadri grandi. Ogni riquadro apre una
+**Impostazioni: sei riquadri, sei pagine.** ⚙️ apre un foglio con la ricerca e sei riquadri grandi. Ogni riquadro apre una
 pagina propria, con il titolo, «‹ Indietro» e «Chiudi». Profondità massima: due livelli (riquadri → pagina). Dentro una pagina le
 sezioni sono sempre aperte, una sotto l'altra, e non si annidano.
 
@@ -139,6 +139,7 @@ sezioni sono sempre aperte, una sotto l'altra, e non si annidano.
 |---|---|---|
 | Aspetto | Aspetto | tema, dimensione dei caratteri, toni con un segno, lingua dei menu |
 | Suoni e musica | Suoni e musica | audio, volume, musica, voce, microfono |
+| Comunità e voci | Comunità e voci | scambio linguistico, i tuoi numeri, ringraziamenti, invito a un amico, widget (solo APK), pacchetto voci; pallino «Nuovo» su ⚙️ finché la pagina o le novità non sono state viste |
 | Studio | Studio | corso, stile di ripasso, livello e schede, anatomia, Pleco, promemoria, sfide e classe |
 | Dati e sincronizzazione | Dati e sincronizzazione | sincronizzazione, backup e ripristino, esportazione, contributi |
 | Informazioni | Informazioni | come funziona, sostieni il progetto, novità, privacy |
@@ -192,7 +193,7 @@ ha tutto sbloccato.
 | ripasso | 复习 | le carte che oggi è il momento di rivedere |
 | serie | 连续天数 | i giorni di studio di fila |
 | grado | 等级 | il titolo che cresce con i punti (XP) |
-| pagina (delle impostazioni) | 设置页 | una delle cinque schermate di ⚙️: Aspetto, Suoni e musica, Studio, Dati e sincronizzazione, Informazioni (外观, 声音和音乐, 学习, 数据与同步, 关于) |
+| pagina (delle impostazioni) | 设置页 | una delle sei schermate di ⚙️: Aspetto, Suoni e musica, Comunità e voci, Studio, Dati e sincronizzazione, Informazioni (外观, 声音和音乐, 社区与声音, 学习, 数据与同步, 关于) |
 | riquadro | 入口 | il pulsante grande della pagina iniziale di ⚙️ che apre una pagina (da non confondere con la «carta» da ripassare) |
 
 ## 4. Regole controllate dagli audit
@@ -200,8 +201,8 @@ ha tutto sbloccato.
 - **[10] Un solo `.btn-main` visibile** per schermata, oppure dentro il foglio aperto. Oggi violava solo «Slot»: il
   pulsante «Gira tutto» è diventato secondario.
 - **[11] Un menu non ha più di `MENU_MAX = 7` voci visibili.** Vale per `.dock`, `[role=tablist]` e `.seg`.
-- **Impostazioni (`e2e.mjs`):** cinque riquadri; nessuna sezione a cascata (`details`); ogni voce dell'inventario raggiungibile; al massimo un pulsante
-  primario per pagina; Esc e Indietro di Android scendono di un livello alla volta. `ux-audit.mjs` guarda la pagina iniziale, la ricerca e ognuna delle cinque pagine, nei due corsi.
+- **Impostazioni (`e2e.mjs`):** sei riquadri; nessuna sezione a cascata (`details`); ogni voce dell'inventario raggiungibile; al massimo un pulsante
+  primario per pagina; Esc e Indietro di Android scendono di un livello alla volta. `ux-audit.mjs` guarda la pagina iniziale, la ricerca e ognuna delle sei pagine, nei due corsi.
 - **Le regole già presenti restano:** bersagli da 44 px, contrasto, testi da almeno 13 px, nessun overflow, avvio leggero.
 
 ## 5. Parità tra i due corsi

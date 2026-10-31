@@ -23,4 +23,6 @@
   document.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("[data-card-open]") : null; if (b && CP.shareCard) { CP.sfx("tap"); CP.shareCard(); } });
   /* U7: toni anche con la forma (per chi non distingue il rosso dal verde) */
   try { if (localStorage.getItem("cp-toneshapes") === "1") document.body.classList.add("tone-shapes"); } catch (e) {}
+  /* pallino «Nuovo» su ⚙️: pagina Comunità o novità non ancora viste (lo stato iniziale; poi lo tiene ui/community.js) */
+  try { var sv = window.__MD_APK && window.__MD_APK.version || CP.VERSION, ls = localStorage, sr = document.getElementById("set-new-sr"); if (sr && (!ls.getItem("md-seen-community") || ls.getItem("md-seen-version") !== sv)) { btn.classList.add("has-new"); btn.setAttribute("aria-describedby", "set-new-sr"); sr.textContent = LANG === "zh" ? "有新内容" : "Ci sono novità"; } } catch (e) {}
 })();

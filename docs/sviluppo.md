@@ -174,7 +174,7 @@ uno» (`cp-ux-v1.unl`). Una scheda chiusa non si apre mai per sbaglio:
 - lezioni e dialoghi della tappa si aprono in immersione;
 - widget e scorciatoie di Android portano solo a Studia, ripasso e musica.
 
-**Impostazioni** in una pagina con cinque riquadri (Aspetto, Suoni e musica, Studio, Dati e sincronizzazione, Informazioni) e la ricerca; ogni riquadro apre una pagina. Vedi
+**Impostazioni** in una pagina con sei riquadri (Aspetto, Suoni e musica, Comunità e voci, Studio, Dati e sincronizzazione, Informazioni) e la ricerca; ogni riquadro apre una pagina. Vedi
 `docs/ux-architettura.md`.
 
 ## La grammatica del laboratorio: come si migliora

@@ -1,30 +1,33 @@
-/* ===== ⚙️ Impostazioni: una schermata con cinque carte (Aspetto, Suoni e musica, Studio, Dati e sincronizzazione, Informazioni),
+/* ===== ⚙️ Impostazioni: una schermata con sei carte (Aspetto, Suoni e musica, Comunità e voci, Studio, Dati e sincronizzazione, Informazioni),
    ognuna apre una pagina propria con «Indietro»: due livelli, mai sezioni annidate (docs/ux-architettura.md). In cima c'è la ricerca.
    I moduli aggiungono le loro sezioni con CP.settingsExtras: una funzione che rende HTML (pagina «Studio») oppure
    { group: "data"|"adv"|"info", html }. La sezione finisce nella pagina del suo id (PAGE_OF) o, se non lo conosce, in quella del gruppo.
-   CP.openSettings(id) accetta l'id di una sezione (set-sync, set-pleco…), di una pagina (look, sound, study, data, info)
+   CP.openSettings(id) accetta l'id di una sezione (set-sync, set-pleco…), di una pagina (look, sound, community, study, data, info)
    o i vecchi nomi dei gruppi (grp-ess, grp-data, grp-adv, grp-info).
    Si carica al primo uso di CP.openSettings o CP.repaintSettings, insieme a i18n/settings.js (tools/build.mjs, LAZYMOD);
    il pulsante ⚙️ e la lingua dei menu stanno in ui/settings.js. ===== */
 (function () {
   var CP = window.CP, el = document.getElementById("settings");
   if (!el) return;
-  var PAGES = ["look", "sound", "study", "data", "info"];
+  var PAGES = ["look", "sound", "community", "study", "data", "info"];
   /* la pagina di ogni sezione nota e l'ordine in cui compare: le sezioni dei moduli arrivano in ordine di caricamento, qui si mettono a posto */
   var ORDER = {
     look: ["set-look", "set-lang"],
-    sound: ["set-sound", "vset", "set-mic-box", "set-scambio"],
+    sound: ["set-sound", "vset", "set-mic-box"],
+    community: ["set-scambio", "set-mine", "set-thanks", "set-invite", "set-widgets", "set-voicepack"],
     study: ["set-course", "set-exstyle", "set-level", "set-anat", "set-pleco", "set-reminder", "set-together"],
     data: ["set-sync", "set-data", "set-export", "set-contrib"],
     info: ["set-about", "set-support", "set-news", "set-privacy"]
   };
   var PAGE_OF = {}; PAGES.forEach(function (p) { ORDER[p].forEach(function (id) { PAGE_OF[id] = p; }); });
-  var GROUP_PAGE = { data: "data", adv: "study", info: "info", sound: "sound" };
+  var GROUP_PAGE = { data: "data", adv: "study", info: "info", sound: "sound", community: "community" };
   /* i nomi vecchi dei gruppi e delle pagine continuano ad aprire la pagina giusta */
   var ALIAS = { "grp-ess": "look", "grp-data": "data", "grp-adv": "study", "grp-info": "info" };
   PAGES.forEach(function (p) { ALIAS[p] = p; ALIAS["page-" + p] = p; });
+  /* nomi comodi per la nuova pagina (lo scambio linguistico stava in «Suoni e musica») */
+  ALIAS["grp-community"] = "community"; ALIAS.scambio = "community"; ALIAS.widget = "community"; ALIAS.voci = "community";
   /* parole in più per la ricerca, per le sezioni fisse (il resto si cerca nel testo della sezione) */
-  var KW = { "set-look": "set.kwLook", "set-sound": "set.kwSound" };
+  var KW = { "set-look": "set.kwLook", "set-sound": "set.kwSound", "set-scambio": "set.kwComm", "set-mine": "set.kwComm", "set-thanks": "set.kwComm", "set-invite": "set.kwComm", "set-widgets": "set.kwComm", "set-voicepack": "set.kwComm" };
   var cur = "", lastTile = null, q = document.getElementById("set-q"), tiles = document.getElementById("set-tiles"), hits = document.getElementById("set-hits"),
     back = el.querySelector("[data-set-back]"), head = document.getElementById("set-title"), card = el.querySelector(".set-card");
   function pageEl(p) { return el.querySelector('[data-set-page="' + p + '"]'); }
@@ -78,6 +81,7 @@
     });
     if (fk && (!document.activeElement || document.activeElement === document.body)) { var nf = el.querySelector(fk); if (nf && nf.focus) nf.focus({ preventScroll: true }); }
     paintMic();
+    if (CP.communityPaint) CP.communityPaint();
     if (q && q.value) search();
   }
   /* ---- le pagine ---- */
@@ -88,6 +92,7 @@
     PAGES.forEach(function (p) { pageEl(p).hidden = p !== cur; });
     back.hidden = !cur; head.textContent = cur ? pageName(cur) : CP.t("set.title");
     card.scrollTop = 0;
+    if (CP.communityShown) CP.communityShown(cur);   /* ui/community.js: la pagina aperta è vista (pallino «Nuovo») */
     if (target) {
       target.scrollIntoView({ block: "start" });
       target.classList.add("set-flash"); setTimeout(function () { target.classList.remove("set-flash"); }, 1700);

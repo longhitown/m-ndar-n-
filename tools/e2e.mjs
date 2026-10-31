@@ -1757,12 +1757,13 @@ try {
     check("Cambio lingua: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
-  /* 8. Impostazioni a pagine: cinque carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */
+  /* 8. Impostazioni a pagine: sei carte, ogni voce di prima raggiungibile, due livelli, ricerca, Esc e «Indietro» di Android, in tutti e due i corsi e le due lingue */
   {
     /* l'elenco di prima (quattro gruppi con sezioni annidate), voce per voce: id della sezione, pagina in cui sta ora, un comando che deve esserci */
     const VOCI = [
       ["set-look", "look", "[data-theme-set=sepia]"], ["set-look", "look", "#hz-plus"], ["set-look", "look", "#opt-toneshapes"], ["set-lang", "look", "[data-lang-set=zh]"],
       ["set-sound", "sound", "[data-audio-set=fx]"], ["set-sound", "sound", "#set-sfxvol"], ["set-sound", "sound", "#set-music"], ["vset", "sound", "#vset-body"], ["set-mic-box", "sound", "#set-mic-close"],
+      ["set-scambio", "community", "[data-sc-open]"], ["set-mine", "community", "#cm-n-rec"], ["set-thanks", "community", "[data-credits]"], ["set-invite", "community", "[data-cm-invite]"], ["set-voicepack", "community", "[data-cm-check]"],
       ["set-course", "study", "[data-course-set=it]"], ["set-exstyle", "study", "[data-exs=guided]"], ["set-level", "study", "[data-unl-redo]"], ["set-level", "study", "#opt-showall"], ["set-reminder", "study", "#rm-body"], ["set-together", "study", "[data-chal-open]"],
       ["set-data", "data", "#set-bk-down"], ["set-data", "data", "#set-bk-up"], ["set-sync", "data", "#sy-body"], ["set-contrib", "data", "[data-ct-find]"],
       ["set-about", "info", "#set-welcome"], ["set-about", "info", "#set-selftest"], ["set-about", "info", "[data-credits]"], ["set-news", "info", ".news-list"], ["set-privacy", "info", ".pv-list"], ["set-support", "info", "#set-support .vbody"]
@@ -1774,7 +1775,7 @@ try {
       const tag = " (" + course + "/" + lang + ")";
       await p.evaluate(() => CP.openSettings()); await p.waitForTimeout(150);
       const home = await p.evaluate(() => ({ tiles: document.querySelectorAll("#set-tiles .set-tile").length, pagesShown: [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).length, details: document.querySelectorAll("#settings details.set-sec, #settings details.set-grp").length, raw: /set\.p\./.test(document.getElementById("settings").innerText), title: document.getElementById("set-title").textContent, back: document.querySelector("[data-set-back]").hidden }));
-      check("Impostazioni: la pagina iniziale ha cinque carte e la ricerca, nessuna pagina aperta, nessuna sezione a cascata, testi nella lingua scelta" + tag, home.tiles === 5 && !home.pagesShown && !home.details && !home.raw && home.back && (lang === "zh" ? /设置/.test(home.title) : /Impostazioni/.test(home.title)), JSON.stringify(home));
+      check("Impostazioni: la pagina iniziale ha sei carte e la ricerca, nessuna pagina aperta, nessuna sezione a cascata, testi nella lingua scelta" + tag, home.tiles === 6 && !home.pagesShown && !home.details && !home.raw && home.back && (lang === "zh" ? /设置/.test(home.title) : /Impostazioni/.test(home.title)), JSON.stringify(home));
       const missing = [];
       for (const [id, page, sel] of VOCI) {
         if (course === "it" && (id === "set-contrib")) continue;   /* nel corso di italiano i contributi non ci sono (come prima) */
@@ -1792,7 +1793,7 @@ try {
       const al = await p.evaluate(() => ["grp-ess", "grp-data", "grp-adv", "grp-info", "set-export", "page-sound"].map((g) => { CP.openSettings(g); const v = [...document.querySelectorAll("[data-set-page]")].filter((x) => !x.hidden).map((x) => x.getAttribute("data-set-page")); return g + ":" + v.join(","); }).join(" "));
       check("Impostazioni: i vecchi collegamenti (grp-ess, grp-data, grp-adv, grp-info, set-export) aprono la pagina giusta" + tag, al === "grp-ess:look grp-data:data grp-adv:study grp-info:info set-export:data page-sound:sound", al);
       /* un solo pulsante primario in ogni pagina */
-      const prim = await p.evaluate(() => ["look", "sound", "study", "data", "info"].map((g) => { CP.openSettings(g); return g + ":" + [...document.querySelectorAll("#settings .btn-main")].filter((b) => b.offsetParent && b.getBoundingClientRect().height > 0).length; }).join(" "));
+      const prim = await p.evaluate(() => ["look", "sound", "community", "study", "data", "info"].map((g) => { CP.openSettings(g); return g + ":" + [...document.querySelectorAll("#settings .btn-main")].filter((b) => b.offsetParent && b.getBoundingClientRect().height > 0).length; }).join(" "));
       check("Impostazioni: al massimo un pulsante primario per pagina" + tag, prim.split(" ").every((x) => +x.split(":")[1] <= 1), prim);
       /* ricerca */
       await p.evaluate(() => CP.openSettings()); await p.fill("#set-q", lang === "zh" ? "备份" : "Backup"); await p.waitForTimeout(100);
@@ -1813,6 +1814,49 @@ try {
       check("Impostazioni: Esc e il tasto Indietro di Android (che per l'app è lo stesso Esc, android.js) tornano dalla pagina alla pagina iniziale e poi chiudono; «Indietro» a schermo torna alla pagina iniziale" + tag, e1.open && e1.home && !e2 && b1 && !b2 && bk, JSON.stringify({ e1, e2, b1, b2, bk }));
       check("Impostazioni: nessun errore JavaScript" + tag, !errs.length, errs[0]);
       await ctx.close();
+    }
+  }
+  /* 9. «Comunità e voci»: la pagina, l'invito che copia, il pallino «Nuovo», il controllo del pacchetto voci (rete simulata) */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = [], ext = [];
+    p.on("pageerror", (e) => errs.push(e.message)); p.on("request", (r) => { if (!r.url().startsWith(base) && !/^(data|blob):/.test(r.url())) ext.push(r.url()); });
+    await ctx.addInitScript(() => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); window.__copied = null; });
+    await ctx.route("https://mandarinoapp.org/voci/index.json", (r) => r.fulfill({ status: 404, body: "" }));
+    await p.goto(base); await p.waitForTimeout(700);
+    const dot0 = await p.evaluate(() => ({ on: document.getElementById("settings-btn").classList.contains("has-new"), d: document.getElementById("settings-btn").getAttribute("aria-describedby"), t: document.getElementById("set-new-sr").textContent }));
+    check("Comunità: prima di aprire la pagina c'è il pallino su ⚙️, con il testo per i lettori di schermo, e a riposo nessuna richiesta esterna", dot0.on && dot0.d === "set-new-sr" && dot0.t.length > 3 && !ext.length, JSON.stringify(dot0) + ext[0]);
+    await p.evaluate(() => CP.openSettings()); await p.waitForTimeout(200);
+    const tile = await p.evaluate(() => document.querySelector('[data-set-open="community"]').classList.contains("has-new"));
+    await p.click('[data-set-open="community"]'); await p.waitForTimeout(500);
+    const pg = await p.evaluate(() => ({ secs: [...document.querySelectorAll('[data-set-page="community"] .set-sec')].map((x) => x.id), n: document.getElementById("cm-n-rec").textContent + "/" + document.getElementById("cm-n-chk").textContent, seen: localStorage.getItem("md-seen-community"), widgets: !!document.getElementById("set-widgets") }));
+    check("Comunità: la voce «Nuovo» c'è, la pagina ha scambio, numeri (0/0 senza registrazioni), ringraziamenti, invito e pacchetto voci, e fuori dall'APK niente widget", tile && pg.secs.join() === "set-scambio,set-mine,set-thanks,set-invite,set-voicepack" && pg.n === "0/0" && pg.seen === "1" && !pg.widgets, JSON.stringify(pg));
+    await p.evaluate(() => { Object.defineProperty(navigator, "clipboard", { value: { writeText: (t) => { window.__copied = t; return Promise.resolve(); } }, configurable: true }); });
+    await p.click("[data-cm-invite]"); await p.waitForTimeout(200);
+    const cp = await p.evaluate(() => window.__copied);
+    check("Comunità: «Copia il messaggio» mette negli appunti un testo pulito con mandarinoapp.org e senza parametri di tracciamento", /mandarinoapp\.org/.test(cp || "") && !/utm_|\?/.test(cp || ""), cp);
+    await p.evaluate(() => { CP.openSettings("info"); }); await p.waitForTimeout(200);
+    const dot1 = await p.evaluate(() => ({ on: document.getElementById("settings-btn").classList.contains("has-new"), v: localStorage.getItem("md-seen-version") }));
+    check("Comunità: dopo aver aperto la pagina e Informazioni (Novità) il pallino su ⚙️ si spegne", !dot1.on && !!dot1.v, JSON.stringify(dot1));
+    await p.evaluate(() => CP.openSettings("community")); await p.waitForTimeout(300);
+    await p.click("[data-cm-check]"); await p.waitForTimeout(400);
+    const vp = await p.evaluate(() => ({ msg: document.getElementById("cm-vp-msg").textContent, line: document.getElementById("cm-vp-line").textContent, stored: localStorage.getItem("md-voicepack") }));
+    check("Comunità: «Controlla aggiornamenti» con 404 dice «Nessun pacchetto pubblicato ancora» e non salva niente; la richiesta è partita solo al tocco", /Nessun pacchetto/.test(vp.msg) && /nessuno ancora/.test(vp.line) && vp.stored === null && ext.length === 1 && /voci\/index\.json$/.test(ext[0]), JSON.stringify(vp) + ext.join());
+    await ctx.unroute("https://mandarinoapp.org/voci/index.json");
+    await ctx.route("https://mandarinoapp.org/voci/index.json", (r) => r.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify({ v: 1, updated: "2026-11-02", count: 120, bytes: 5242880, files: [] }) }));
+    await p.click("[data-cm-check]"); await p.waitForTimeout(400);
+    const vp2 = await p.evaluate(() => ({ line: document.getElementById("cm-vp-line").textContent, o: JSON.parse(localStorage.getItem("md-voicepack") || "null") }));
+    check("Comunità: con un elenco valido la riga dice data e numero di voci e in md-voicepack resta solo l'ultimo esito (senza prefisso cp-)", /120 voci/.test(vp2.line) && vp2.o && vp2.o.count === 120 && vp2.o.bytes === 5242880 && vp2.o.updated === "2026-11-02" && !Object.keys(vp2.o).some((k) => !/^(updated|count|bytes|checked)$/.test(k)), JSON.stringify(vp2));
+    check("Comunità: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+    /* nell'APK (ponte simulato) i quattro widget hanno il pulsante solo se il ponte lo permette */
+    for (const sup of [true, false]) {
+      const c2 = await browser.newContext({ viewport: { width: 390, height: 844 } }); const q = await c2.newPage();
+      await c2.addInitScript((sp) => { localStorage.setItem("cp-ux-v1", '{"onboarded":1}'); window.__pins = []; window.MandarinoAndroid = { widgetPinSupported: () => sp, pinWidget: (k) => { window.__pins.push(k); return true; } }; }, sup);
+      await q.goto(base); await q.waitForTimeout(500); await q.evaluate(() => CP.openSettings("set-widgets")); await q.waitForTimeout(300);
+      const n = await q.evaluate(() => ({ rows: document.querySelectorAll("#set-widgets .cm-list li").length, btn: document.querySelectorAll("[data-cm-pin]").length, txt: /tieni premuta/i.test(document.getElementById("set-widgets").textContent) }));
+      if (sup) { await q.click('[data-cm-pin="review"]'); n.pin = await q.evaluate(() => window.__pins.join()); }
+      check("Widget (APK simulato, pin " + (sup ? "supportato" : "non supportato") + "): quattro righe; " + (sup ? "quattro pulsanti e il tocco chiama pinWidget review" : "nessun pulsante, solo la spiegazione a mano"), n.rows === 4 && (sup ? n.btn === 4 && n.pin === "review" : n.btn === 0 && n.txt), JSON.stringify(n));
+      await c2.close();
     }
   }
 } finally {
