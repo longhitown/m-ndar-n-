@@ -11,6 +11,7 @@ import vm from "vm";
 import { fileURLToPath } from "url";
 import { lab } from "./lib/lab.mjs";
 import { recipes, recipesFile } from "./lib/radicali.mjs";
+import * as REL from "./release.mjs";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), ".."), SRC = path.join(ROOT, "src");
 const results = [];
@@ -988,6 +989,27 @@ function sandbox() {
   const cr = fs.readFileSync(path.join(SRC, "i18n/credits-t12.js"), "utf8"), co = fs.readFileSync(path.join(SRC, "core/core.js"), "utf8"), vcss = (fs.readFileSync(path.join(SRC, "styles/voice.css"), "utf8").split("l'etichetta «Voce reale»")[1] || "");
   check("Voce reale (etichetta): stesse parole dei Crediti (NM1 · Tatoeba · CC BY 4.0; Mozilla Common Voice · CC0)", /NM1, Tatoeba, CC BY 4\.0/.test(cr) && /Mozilla Common Voice, CC0/.test(cr) && /NM1/.test(TI.it["vt.byIt"]) && /Tatoeba/.test(TI.it["vt.byIt"]) && /CC BY 4\.0/.test(TI.it["vt.byIt"]) && /Mozilla Common Voice/.test(TI.it["vt.byZh"]) && /CC0/.test(TI.it["vt.byZh"]));
   check("Voce reale (etichetta): CP.speak la chiama una sola volta, alla fine della clip vera (mai per la voce sintetica); il modulo non fa rete né suoni e il CSS non ha animazioni", (co.match(/CP\.voiceTag\./g) || []).length === 1 && /ca\.onended = function[^\n]*CP\.voiceTag\.show/.test(co) && !/fetch\(|XMLHttpRequest|sendBeacon|Audio\(/.test(code) && vcss.length > 100 && !/animation|transition/.test(vcss));
+}
+/* ---- 7. rilascio (tools/release.mjs): versione, versionCode e android/version.properties ---- */
+{
+  const R = REL, P = "# commento\nversionCode=1000\nversionName=0.9.0\n";
+  check("rilascio: formato x.y.z (tre numeri, niente zeri iniziali, niente prefissi)", R.parseVersion("0.9.1") && R.parseVersion("10.20.30") && !R.parseVersion("1.0") && !R.parseVersion("01.2.3") && !R.parseVersion("v1.2.3") && !R.parseVersion("1.2.3-store") && !R.parseVersion(""));
+  check("rilascio: confronto numerico (0.10.0 è maggiore di 0.9.9, 1.0.0 di 0.99.99, uguali = 0)", R.compareVersions("0.10.0", "0.9.9") === 1 && R.compareVersions("1.0.0", "0.99.99") === 1 && R.compareVersions("0.9.0", "0.9.1") === -1 && R.compareVersions("2.0.0", "2.0.0") === 0);
+  check("rilascio: la versione precedente è la più alta tra file e tag, ignorando le non valide", R.maxVersion(["0.9.0", "0.10.0", "x", "0.9.9"]) === "0.10.0" && R.maxVersion([]) === null);
+  check("rilascio: versionCode = max(precedente + 1, commit + 50): sopra alla CI per push, mai uguale o minore del precedente", R.nextVersionCode(1000, 268) === 1001 && R.nextVersionCode(1000, 2000) === 2050 && R.nextVersionCode(500, 10) === 501 && R.nextVersionCode(9, 0) === 50);
+  let boom = 0; for (const a of [[0, 5], [1.5, 5], [10, -1], [10, "x"]]) try { R.nextVersionCode(...a); } catch (e) { boom++; }
+  check("rilascio: versionCode con numeri non validi → errore", boom === 4);
+  const r = R.readProps(P);
+  check("rilascio: legge android/version.properties (righe chiave=valore, commenti ignorati)", r.versionCode === 1000 && r.versionName === "0.9.0");
+  const w = R.writeProps(P, { versionCode: 1234, versionName: "1.2.3" });
+  check("rilascio: scrive le due righe e lascia il commento, fine riga LF, si rilegge uguale", w === "# commento\nversionCode=1234\nversionName=1.2.3\n" && R.readProps(w).versionCode === 1234 && !/\r/.test(R.writeProps(P.replace(/\n/g, "\r\n"), { versionCode: 7, versionName: "0.0.7" })));
+  let miss = 0; for (const t of ["versionName=1.0.0\n", "versionCode=12\n", "versionCode=abc\nversionName=1.0.0\n"]) try { R.readProps(t); } catch (e) { miss++; }
+  check("rilascio: file senza versionCode numerico o senza versionName → errore", miss === 3);
+  const real = fs.readFileSync(path.join(ROOT, "android/version.properties"), "utf8"), rr = R.readProps(real);
+  check("rilascio: android/version.properties del repository: versione x.y.z, codice intero, solo righe semplici (F-Droid le legge con una regex)", !!R.parseVersion(rr.versionName) && rr.versionCode >= 1 && !/\r/.test(real) && real.split("\n").filter((l) => /^version(Code|Name)\s*=/.test(l)).length === 2);
+  check("rilascio: note di versione, massimo 500 caratteri (i simboli contano uno)", R.noteProblem("ok") === "" && R.noteProblem("•".repeat(500)) === "" && R.noteProblem("a".repeat(501)) !== "" && R.noteProblem("  ") !== "");
+  const gr = fs.readFileSync(path.join(ROOT, "android/app/build.gradle"), "utf8");
+  check("rilascio: build.gradle legge version.properties se manca MD_VERSION_CODE, e spegne dependenciesInfo (build riproducibili)", /MD_VERSION_CODE/.test(gr) && /version\.properties/.test(gr) && /includeInApk = false/.test(gr) && /includeInBundle = false/.test(gr));
 }
 
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
