@@ -381,7 +381,7 @@ public class Bridge {
                 case SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED: case SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE: e = "language-not-supported"; break;   /* Android 12+; costanti copiate nel codice, sicure anche prima */
                 default: e = "service-not-allowed";
             }
-            emit("sr-code", id, String(code));   /* il codice grezzo di Android: «no-speech» raccoglie ERROR_NO_MATCH (7, ha sentito ma non ha capito) e ERROR_SPEECH_TIMEOUT (6, silenzio) */
+            emit("sr-code", id, String.valueOf(code));   /* il codice grezzo di Android: «no-speech» raccoglie ERROR_NO_MATCH (7, ha sentito ma non ha capito) e ERROR_SPEECH_TIMEOUT (6, silenzio) */
             emit("sr-error", id, e);
             end();
         }
