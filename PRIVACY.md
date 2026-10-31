@@ -2,7 +2,7 @@
 
 [Italiano](#italiano) · [中文](#中文)
 
-Ultimo aggiornamento · 最后更新：2026-10
+Ultimo aggiornamento · 最后更新：2026-11
 
 ## Italiano
 
@@ -21,13 +21,21 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
 
 | Che cosa | Quando | Che cosa parte | Dove |
 |---|---|---|---|
-| **Controllo degli aggiornamenti** (solo app Android) | al massimo una volta al giorno; si spegne in ⚙️ | una richiesta senza dati personali | GitHub (`api.github.com`) |
+| **Controllo degli aggiornamenti** (solo app Android scaricata dal sito o da GitHub: nelle versioni di Google Play e di F-Droid non esiste, aggiorna lo store) | al massimo una volta al giorno; si spegne in ⚙️ | una richiesta senza dati personali | GitHub (`api.github.com`) |
 | **Voce online** | solo se la accendi in ⚙️ → Suoni e musica → Voce (spenta di base) | il testo cinese da leggere | un servizio di sintesi vocale di Google, non ufficiale |
 | **Riconoscimento della voce** negli esercizi di pronuncia | solo quando tocchi il microfono | l'audio di quello che dici | nel browser Chrome lo elabora il fornitore del browser (Google); nell'app Android il riconoscitore del telefono, che può funzionare anche offline |
 | **Controllo del pacchetto voci** (⚙️ → Comunità e voci → «Controlla aggiornamenti») | solo quando tocchi il pulsante, mai da sola | una richiesta `GET` senza cookie e senza intestazione Referer a `https://mandarinoapp.org/voci/index.json`, un piccolo elenco pubblico (versione, data, numero di voci, dimensione, file). Non parte nessun dato tuo: la richiesta è uguale per tutti | `mandarinoapp.org` (GitHub Pages: come per ogni visita al sito può registrare l'indirizzo IP, vedi sotto). Nell'app resta solo l'ultimo esito (data, numero, dimensione, quando hai controllato), in `localStorage` alla chiave `md-voicepack`, fuori dai backup. Per ora non scarica nulla |
 | **Link esterni** (sostegno, GitHub, e-mail) | solo quando li tocchi | quello che apri tu | il sito che apri |
 | **Musica e dizionario dei nomi** (versione web) | al primo ascolto di un brano, al primo uso dei «nomi e termini» del Lettore | la richiesta del file | lo stesso sito dell'app |
 | **Aggiornamenti dell'app** (versione web) | all'apertura, se c'è rete | la richiesta della versione nuova | lo stesso sito dell'app |
+
+### Dove scaricare l'app (sito, Google Play, F-Droid)
+
+L'app è la stessa; cambia solo chi la distribuisce. La versione dal sito o da GitHub (APK) controlla da sola le novità, come
+spiegato sopra. Quando l'app è distribuita da **Google Play** o da **F-Droid**, quel controllo è spento: gli aggiornamenti li
+porta lo store. Lo store ha la sua informativa: Google Play può raccogliere dati sull'installazione e, se hai acconsentito
+sul telefono, sugli arresti anomali; io ricevo soltanto totali anonimi nella Play Console, mai dati su di te. Dal codice
+dell'app non parte nessuna richiesta verso gli store.
 
 ### Il sito mandarinoapp.org
 
@@ -55,6 +63,10 @@ salva niente nel tuo browser: font, script e immagini arrivano tutti dal sito st
 - **Notifiche (Android):** solo per il promemoria facoltativo e per la musica in secondo piano.
 - **Pleco** (facoltativo, spento di base, solo sul telefono): se lo accendi e tocchi «Apri in Pleco», la parola passa
   all'app Pleco sul tuo telefono, non a internet.
+
+- **Altri permessi di Android:** Internet (le richieste elencate nella tabella), vibrazione, gestione dell'audio mentre ascolti o
+  registri, avvio del telefono (solo per rimettere il promemoria facoltativo) e servizio in primo piano (solo per la musica in
+  secondo piano). Nessuno di questi legge contatti, posizione, messaggi o file tuoi.
 
 ### Backup automatico di Android
 
@@ -123,13 +135,17 @@ dati dal mio registro. Il codice del sigillo non contiene dati personali.
 
 | 内容 | 时间 | 发送什么 | 发往哪里 |
 |---|---|---|---|
-| **检查更新**（仅安卓应用） | 每天最多一次；可在 ⚙️ 中关闭 | 一个不含个人数据的请求 | GitHub（`api.github.com`） |
+| **检查更新**（仅限从网站或 GitHub 下载的安卓应用；Google Play 和 F-Droid 版本没有这个功能，由商店负责更新） | 每天最多一次；可在 ⚙️ 中关闭 | 一个不含个人数据的请求 | GitHub（`api.github.com`） |
 | **在线语音** | 只有在 ⚙️ → 声音和音乐 → 语音 中打开后（默认关闭） | 要朗读的文字 | 谷歌的一个非官方语音合成服务 |
 | **语音识别**（发音练习） | 只有点麦克风时 | 你说话的音频 | 在 Chrome 浏览器中由浏览器提供方（谷歌）处理；在安卓应用中由手机的识别器处理，可能离线 |
 | **检查语音包**（⚙️ → 社区与声音 → “检查更新”） | 只有点按钮时，绝不会自动进行 | 向 `https://mandarinoapp.org/voci/index.json` 发出一个不带 Cookie、不带 Referer 的 `GET` 请求，取回一份公开的小清单（版本、日期、录音数量、大小、文件）。不会发送任何你的数据：这个请求对所有人都一样 | `mandarinoapp.org`（GitHub Pages：和访问网站一样，可能记录 IP 地址，见下文）。应用里只保留最近一次的结果（日期、数量、大小、检查时间），存在 `localStorage` 的 `md-voicepack` 键里，不进入备份。目前不下载任何内容 |
 | **外部链接**（支持、GitHub、电子邮件） | 只有点击时 | 你打开的内容 | 你打开的网站 |
 | **音乐和人名地名词典**（网页版） | 第一次播放某首曲子、第一次使用阅读器的“人名和术语”时 | 文件请求 | 应用所在的同一网站 |
 | **应用更新**（网页版） | 打开应用且有网络时 | 新版本请求 | 应用所在的同一网站 |
+
+### 在哪里下载应用（网站、Google Play、F-Droid）
+
+应用是同一个，只是发布渠道不同。从网站或 GitHub 下载的版本（APK）会自己检查更新，见上文。通过 **Google Play** 或 **F-Droid** 分发时，这项检查是关闭的：更新由商店负责。商店有各自的隐私政策：Google Play 可能收集安装信息，以及（如果你在手机上同意了）崩溃信息；我只能在 Play 管理后台看到匿名的汇总数字，看不到任何关于你的数据。应用代码本身不会向商店发出任何请求。
 
 ### 网站 mandarinoapp.org
 
@@ -147,6 +163,9 @@ dati dal mio registro. Il codice del sigillo non contiene dati personali.
 - **相机：** 只用于扫描二维码（换手机、印章）。图像不会保存。
 - **通知（安卓）：** 只用于可选的提醒和后台音乐。
 - **Pleco**（可选，默认关闭，仅限手机）：打开后点击“在 Pleco 中打开”，词语会传给你手机上的 Pleco 应用，不会发送到网络。
+
+- **语言交流（可选，默认关闭）：** 只有在你打开 ⚙️ → 声音和音乐 → 语言交换并确认同意书之后，才会在你朗读应用里的句子时录下你的声音。录音在你自己发送之前只保存在手机上（一个 `.zip` 文件，你想怎么发都行：不会自动上传）。如果你发送，录音可能以 CC BY 4.0 许可发布在应用里；只有项目管理者会听到。可以随时在同一界面删除。仅限成年人。
+- **安卓的其他权限：** 联网（表格里列出的请求）、振动、听音或录音时的音频管理、开机（仅用于恢复可选的提醒）、前台服务（仅用于后台音乐）。这些权限都不会读取你的通讯录、位置、信息或文件。
 
 ### 安卓自动备份
 

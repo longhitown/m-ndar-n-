@@ -26,12 +26,14 @@ const TXT = {
   it: {
     org: "màndarínō è un'app gratuita, offline e senza pubblicità per imparare il cinese (per italiani) e l'italiano (per chi parla cinese).",
     app: "App gratuita, offline e senza pubblicità per imparare il cinese e l'italiano. Nessuna registrazione, nessun tracciamento.",
+    alt: ["mandarino", "mandarino app", "mandarino cinese", "app per imparare il cinese", "app cinese per italiani"],
     features: ["Funziona offline, senza connessione", "Nessuna pubblicità e nessuna registrazione", "Ripasso a intervalli con l'algoritmo FSRS", "Analisi dei toni cinesi con il microfono", "Ordine dei tratti dei caratteri"],
     home: "Pagina di presentazione di màndarínō", crumb: "Home"
   },
   "zh-CN": {
     org: "màndarínō 是一款免费、离线、无广告的学习应用：意大利人学中文，中国人学意大利语。",
     app: "免费、离线、无广告的中文与意大利语学习应用。无需注册，不追踪用户。",
+    alt: ["mandarino", "mandarino app", "意大利语学习应用", "学意大利语"],
     features: ["离线使用，无需联网", "无广告，无需注册", "FSRS 间隔复习", "意大利语动词变位练习"],
     home: "màndarínō 介绍页", crumb: "首页"
   }
@@ -54,7 +56,7 @@ export const make = {
   },
   WebSite(p) {
     need("WebSite", p, ["lang"]);
-    return { "@type": "WebSite", "@id": ID.site, url: SITE + "/", name: "màndarínō", description: TXT[p.lang].org, inLanguage: ["it", "zh-CN"], publisher: ref(ID.org) };
+    return { "@type": "WebSite", "@id": ID.site, url: SITE + "/", name: "màndarínō", alternateName: TXT[p.lang].alt, description: TXT[p.lang].org, inLanguage: ["it", "zh-CN"], publisher: ref(ID.org) };
   },
   WebPage(p) {
     need("WebPage", p, ["url", "name", "description", "lang"]);
@@ -68,7 +70,7 @@ export const make = {
   WebApplication(p) { return make._app("WebApplication", ID.web, "Web (Chrome, Safari, Firefox, Edge)", p, { url: SITE + "/app/" }); },
   _app(type, id, os, p, extra) {
     need(type, p, ["lang"]);
-    return Object.assign({ "@type": type, "@id": id, name: "màndarínō", description: TXT[p.lang].app, operatingSystem: os, applicationCategory: "EducationalApplication",
+    return Object.assign({ "@type": type, "@id": id, name: "màndarínō", alternateName: TXT[p.lang].alt, description: TXT[p.lang].app, operatingSystem: os, applicationCategory: "EducationalApplication",
       inLanguage: ["it", "zh-CN"], isAccessibleForFree: true, offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", availability: "https://schema.org/InStock" },
       featureList: TXT[p.lang].features, image: SITE + "/img/anteprima.png", publisher: ref(ID.org), author: ref(ID.org), license: "https://opensource.org/licenses/MIT" }, extra);
   },

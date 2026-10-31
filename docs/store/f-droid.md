@@ -48,9 +48,9 @@ direzione. Nella ricetta, a questo servono due campi, ora commentati:
 
 - Nessuna build vera è stata eseguita (qui non ci sono JDK né Gradle): la riproducibilità va provata con `fdroid build` e confrontando l'APK
   con `mandarino-store.apk` della Release (per esempio con `apksigcopier` e `diffoscope`).
-- **Manca il wrapper di Gradle** (`gradlew` e `gradle/wrapper/`): la CI usa Gradle 8.14.3 installato dall'azione, F-Droid userebbe la
-  propria versione. Va creato una volta, da un computer con Gradle, con `gradle wrapper --gradle-version 8.14.3` dentro `android/`, e
-  committato (F-Droid verifica anche il file `gradle-wrapper.jar`).
+- **Il wrapper di Gradle c'è** (`android/gradlew`, `android/gradle/wrapper/`): Gradle 8.14.3, con `distributionSha256Sum` e `gradle-wrapper.jar`
+  uguale al checksum pubblicato da Gradle (`7d3a4ac4…6172`). Non è stato eseguito qui (nessun JDK): la CI continua a usare Gradle installato
+  dall'azione. Per F-Droid conviene lasciare nella ricetta `gradle: [store]` e provare con `fdroid build`.
 - La versione di Node e quella del JDK sulla buildserver di F-Droid.
 - Lo scanner di F-Droid sui file minificati di `src/vendor/` (jsQR, jsPDF), che sono librerie libere con la loro licenza in
   THIRD-PARTY-NOTICES.md: potrebbe chiedere di costruirle dal sorgente.
