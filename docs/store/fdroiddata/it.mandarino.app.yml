@@ -52,7 +52,7 @@ Builds:
 # Il segnaposto è l'impronta SHA-256 del certificato (64 cifre esadecimali minuscole, senza due punti): è quella che il workflow
 # «release» scrive nel riepilogo di ogni corsa. Non è un segreto.
 # Binaries: https://github.com/longhitown/mandarino/releases/download/r%v/mandarino-store.apk
-# AllowedAPKSigningKeys: INCOLLA-QUI-L-IMPRONTA-SHA-256-DEL-CERTIFICATO
+# AllowedAPKSigningKeys: e706415ebf0e7143b68a3db3258e445bf34f03d04319d12850da3af3703ce59d
 
 # Come F-Droid scopre le versioni nuove: i tag r<x.y.z> (non i v6.7.N delle build per push) e il file android/version.properties
 # (righe semplici versionCode=… e versionName=…, scritte da tools/release.mjs).
