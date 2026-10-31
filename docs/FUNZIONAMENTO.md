@@ -96,9 +96,9 @@ L'app mostra poco all'inizio e apre le parti man mano (`ui/unlock.js`, le soglie
 
 | Corso | Subito | Si apre con |
 |---|---|---|
-| Cinese | **Percorso**, **Studia** | **Parole**: 200 punti e 2 giorni di studio · **Frasi**: 300 punti e 3 giorni |
+| Cinese | **Percorso**, **Studia** | **Parole**: 200 punti e 1 giorno di studio · **Frasi**: 300 punti e 2 giorni (i primi 300 punti valgono il doppio) |
 | Cinese, dentro Frasi | Lezioni, Esercizi, Dialoghi | Modelli e Ordine del Pensiero: 3 lezioni superate · Laboratorio, Slot, Lettore, Radicali: 6 lezioni superate (oppure 1000 punti) |
-| Italiano | **课程**, **复习** | **单词**: 200 punti e 2 giorni · **变位** e **句子**: 300 punti e 3 giorni (变位 anche dopo la lezione sul presente) |
+| Italiano | **课程**, **复习** | **单词**: 200 punti e 1 giorno · **变位** e **句子**: 300 punti e 2 giorni (变位 anche dopo la lezione sul presente) |
 | Tutto | — | A **1500 punti** (grado «Mercante di Seta») tutto è aperto; chi aveva già progressi ha tutto aperto; ⚙️ → Studio → «Mostra tutto» apre tutto subito |
 
 Uno sblocco non si perde mai, nemmeno azzerando i progressi; tra dispositivi vale «basta uno» (regola d'unione in `core/store.js`).

@@ -152,10 +152,10 @@ test mai ripassate, i punti e gli sblocchi del test) e «Mostra tutto, subito» 
 
 **Rivelazione progressiva** (`src/ui/unlock.js`, soglie nella costante `UNLOCK`):
 
-| Corso | All'inizio | 200 XP e 2 giorni di studio | 300 XP e 3 giorni | Altro |
+| Corso | All'inizio | 200 XP e 1 giorno di studio | 300 XP e 2 giorni | Altro |
 |---|---|---|---|---|
 | Cinese | Percorso, Studia | Parole | Frasi | — |
-| Italiano | 课程, 复习 | 单词 | 句子 | 变位: dopo la lezione sul presente o con 300 XP e 3 giorni |
+| Italiano | 课程, 复习 | 单词 | 句子 | 变位: dopo la lezione sul presente o con 300 XP e 2 giorni |
 
 Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; Modelli e Pensiero dopo 3 lezioni; Laboratorio, Slot e Lettore dopo 6
 lezioni o 1000 XP. Quando scatta c'è un messaggio caldo sopra la barra, una novità alla volta.

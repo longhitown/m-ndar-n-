@@ -1012,5 +1012,33 @@ function sandbox() {
   check("rilascio: build.gradle legge version.properties se manca MD_VERSION_CODE, e spegne dependenciesInfo (build riproducibili)", /MD_VERSION_CODE/.test(gr) && /version\.properties/.test(gr) && /includeInApk = false/.test(gr) && /includeInBundle = false/.test(gr));
 }
 
+/* ---- l'app cresce con chi la usa: Novità, punti d'inizio, pop-up di sblocco, scheda, widget in Aspetto, pallini per pagina ---- */
+{
+  const rd = (p) => fs.readFileSync(path.join(SRC, p), "utf8");
+  const cx = {}; vm.runInNewContext(rd("data/changelog.js") + ";this.C=CHANGELOG;", cx);
+  const C = cx.C || [], dates = C.map((e) => e.d);
+  check("Novità: almeno 5 tappe, ognuna con titolo in italiano e in cinese, data AAAA-MM-GG e dal più recente al più vecchio",
+    C.length >= 5 && C.every((e) => e.v && e.vz && /^\d{4}-\d{2}-\d{2}$/.test(e.d)) && dates.join() === dates.slice().sort().reverse().join(), dates.join(" "));
+  const gc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", gc); vm.runInContext(rd("i18n/grow.js"), gc);
+  const gk = (l) => Object.keys(gc.I18N[l]).sort().join(), gsrc = rd("ui/grow.js"), used = new Set([...gsrc.matchAll(/T\("(grow\.[A-Za-z]+)"/g)].map((m) => m[1]));
+  const gmiss = [...used].filter((k) => !gc.I18N.it[k] || !gc.I18N.zh[k]);
+  check("Pop-up di sblocco e scheda «Il tuo studio cresce»: stessi testi in italiano e in cinese e nessun testo usato che manchi", gk("it") === gk("zh") && !gmiss.length, gmiss.join(", "));
+  const ic = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", ic); ["i18n/it.js", "i18n/zh.js"].forEach((p) => vm.runInContext(rd(p), ic));
+  const unl = rd("ui/unlock.js"), names = (((unl.match(/var NAME = \{([^}]*)\}/) || [])[1] || "").match(/"(?:nav|sub|unl)\.[A-Za-z]+"/g) || []).length;
+  const kinds = ["words", "build", "fr_pat", "fr_thought", "fr_lab", "fr_slot", "fr_reader", "fr_rad", "it_words", "it_conj", "it_phrases"], noTx = kinds.filter((k) => !ic.I18N.it["unl." + k] || !ic.I18N.zh["unl." + k]);
+  check("Sblocchi: ogni scheda o strumento che si apre ha il suo testo («a che cosa serve») in italiano e in cinese", names >= 11 && !noTx.length, noTx.join(", "));
+  const gm = rd("core/game.js");
+  check("Punti: i primi 300 valgono il doppio (la soglia è una sola, dichiarata, e award() restituisce i punti dati)", /var EARLY = 300;/.test(gm) && /if \(G\.xp < EARLY\) n \*= 2;/.test(gm) && /return n;\s*\}\s*function rankInfo/.test(gm));
+  check("Sblocchi: Parole a 200 punti e 1 giorno, Costruisci a 300 e 2 giorni (con il doppio d'inizio si vedono presto)", /words: 200, build: 300, minDays: \{ words: 1, build: 2 \}/.test(unl));
+  check("Sblocchi: il pop-up passa da CP.unlockPop e, se non c'è, resta la riga in basso", /CP\.unlockPop && CP\.unlockPop\(k,/.test(unl) && /unl-note/.test(unl));
+  check("Scheda «Il tuo studio cresce»: sta in cima al Percorso e alle Lezioni; Pleco, Anki e widget hanno ognuno il suo ingresso", /CP\.growCard \? CP\.growCard\(\)/.test(rd("path/path.js")) && /CP\.growCard \? CP\.growCard\(\)/.test(rd("it/course.js")) && ["set-pleco", "set-export", "set-widgets"].every((k) => gsrc.includes(k)));
+  const sp = rd("ui/settings-pages.js"), cm = rd("ui/community.js");
+  check("Widget: stanno in ⚙️ → Aspetto, con l'anteprima dei quattro e senza bisogno di Android per vederli",
+    /look: \["set-look", "set-lang", "set-widgets"\]/.test(sp) && !/community: \[[^\]]*set-widgets/.test(sp) && /function wdPreview/.test(cm) && !/if \(!bridge\(\)\) return "";/.test(cm) && ["today_large", "today_small", "pause", "review"].every((k) => cm.includes('"' + k + '"') || cm.includes("'" + k + "'")));
+  const pgs = (sp.match(/var PAGES = \[([^\]]*)\]/) || [])[1] || "", cpg = (cm.match(/var PAGES = \[([^\]]*)\]/) || [])[1] || "";
+  check("Pallino «Nuovo»: c'è su tutte le pagine delle Impostazioni e si toglie solo a pagina scorsa fino in fondo e con il tempo di vederla",
+    pgs && pgs.replace(/\s/g, "") === cpg.replace(/\s/g, "") && /function readStart/.test(cm) && /scrollTop >= max - 8/.test(cm) && /SEG_MS = 500/.test(cm) && !/md-seen-community/.test(cm) && /md-seen-p-/.test(rd("ui/settings.js")));
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);

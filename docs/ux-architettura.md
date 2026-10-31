@@ -175,7 +175,7 @@ sezioni sono sempre aperte, una sotto l'altra, e non si annidano.
 | Momento | Schede |
 |---|---|
 | subito | Percorso, Studia |
-| 200 XP e almeno 2 giorni attivi | Parole |
+| 200 XP e almeno 1 giorno attivo | Parole |
 | 300 XP e almeno 3 giorni attivi | Frasi |
 
 Le costanti stanno in un solo punto, `UNLOCK` in `src/ui/unlock.js`. Chi ha già progressi o ha già visto il benvenuto
@@ -226,3 +226,13 @@ Che cosa corrisponde a che cosa (cinese → italiano):
 - **Etichetta «Voce reale»:** dopo una clip vera (mai per la sintesi) compare per qualche secondo una riga fissa in basso, «🎙️ Voce reale · Tatoeba» o «… · Common Voice»; il tocco apre di chi è la voce, la licenza e l'invito allo Scambio linguistico. Si spegne in ⚙️ → Suoni e musica → Voce («Mostra chi ha letto la frase», `cp-voicetag`). Modulo `ui/voice-tag.js`, caricato al primo uso.
 
 Ancora aperti (anche in [roadmap.md](roadmap.md)): la rilettura dei testi cinesi da parte di un madrelingua (corso, carta e pagina `zh/`) e i «vuoti curati» (oggi la carta «今天» mostra sempre la prossima lezione, anche quando non ce n'è ancora nessuna).
+
+## L'app cresce con chi la usa (pop-up, scheda, pallini)
+
+Chi comincia vede poco di proposito; deve però capire che è l'inizio. Tre pezzi, tutti in `ui/grow.js` e `ui/unlock.js`:
+
+- **I primi 300 punti valgono il doppio** (`EARLY` in `core/game.js`): Parole (200) e Frasi (300) arrivano nei primi giorni, non dopo settimane. I giorni minimi sono 1 e 2.
+- **Pop-up di sblocco** (`CP.unlockPop`): riconosce quello che la persona ha fatto, dice a che cosa serve la scheda nuova e mostra la prossima sorpresa con la strada già fatta. Nessuna colpa, nessuna scadenza, un tocco per chiudere e la riga su dove rivedere tutto. Se non si può mostrare resta la riga in basso.
+- **Scheda «Il tuo studio cresce con te»** (`CP.growCard`) in cima al Percorso e alle Lezioni: le tappe, la prossima con la sua barra e, a parte, Pleco, Anki e i widget, perché chi non apre le impostazioni sappia che ci sono. Si nasconde con ✕.
+- **Pallino «Nuovo»** su ⚙️ e su ogni pagina delle Impostazioni (`ui/community.js`): si toglie solo a pagina letta davvero, cioè ogni «schermata» in vista per mezzo secondo (due secondi e mezzo se la pagina è corta). Chi scorre di corsa vede il pallino restare. Informazioni torna «nuova» a ogni versione.
+- I **widget** stanno in ⚙️ → Aspetto, con l'anteprima dei quattro, visibile anche fuori da Android.

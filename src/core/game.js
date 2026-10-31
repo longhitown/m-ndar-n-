@@ -97,10 +97,14 @@
     return out;
   }
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
+  /* la prima fase corre il doppio: a 200 e 300 punti si aprono Parole e Costruisci (ui/unlock.js) e chi comincia deve vederlo presto */
+  var EARLY = 300;
   function award(n) {
+    if (G.xp < EARLY) n *= 2;
     var b = rankIdx(G.xp), sb = season(G.xp); G.xp += n; G.xpBy[DEV] = (G.xpBy[DEV] | 0) + n; var a = rankIdx(G.xp), sa = season(G.xp);
     if (CP.onAward) try { CP.onAward(n); } catch (e) {}
     if (a > b || sa > sb) { var r = rankInfo(); CP.toast(CP.t("rank.toast", { r: r.name })); CP.sfx("level"); if (CP.onRankUp) try { CP.onRankUp(r); } catch (e) {} }
+    return n;
   }
   function rankInfo() {
     var i = rankIdx(G.xp), r = RANKS[i], nx = RANKS[i + 1] || null, se = season(G.xp);
@@ -123,7 +127,7 @@
     },
     sentence: function () { var r = rec(true); r.s = (r.s || 0) + 1; award(15); save(); ui(); },
     ear: function (ok) { var r = rec(true); r.e = (r.e || 0) + 1; if (ok) award(3); save(); ui(); },
-    xp: function (n) { var r = rec(true); r.e = (r.e || 0) + 1; award(n); save(); ui(); },
+    xp: function (n) { var r = rec(true); r.e = (r.e || 0) + 1; var got = award(n); save(); ui(); return got; },
     /* parole nuove introdotte oggi (nw) e permesso extra chiesto dall'utente (nx) */
     newToday: function () { var r = rec(false); return r && r.nw ? r.nw : 0; },
     addNew: function (n) { var r = rec(true); r.nw = (r.nw || 0) + n; save(); },

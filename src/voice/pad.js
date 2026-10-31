@@ -357,7 +357,7 @@
       }
       if (avg > 70) {
         var key = S.cur === "all" ? "*" : chars[S.cur];
-        if (!S.awarded[key]) { S.awarded[key] = 1; if (CP.game && CP.game.xp) { CP.game.xp(5); html += '<p class="small" style="color:var(--accent)">+5 XP</p>'; } CP.sfx("ok"); }
+        if (!S.awarded[key]) { S.awarded[key] = 1; if (CP.game && CP.game.xp) { var gx = CP.game.xp(5); html += '<p class="small" style="color:var(--accent)">+' + (gx || 5) + ' XP</p>'; } CP.sfx("ok"); }
       } else CP.sfx("tap");
       res.className = "pad-res"; res.innerHTML = html; res.hidden = false;
       /* la valutazione compare sotto il pulsante, spesso fuori dallo schermo: si porta in vista */

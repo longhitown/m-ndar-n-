@@ -28,7 +28,9 @@ Il codice è libero (MIT), i contenuti sono CC BY 4.0. Puoi proporre correzioni 
 
 **Note di versione** (ultima):
 
-• Scambio linguistico (facoltativo): registra con la tua voce frasi nella tua lingua madre, per aiutare chi studia. Frasi e parole a caso, tutto sul telefono finché non decidi tu: un solo tasto prepara il file e apre l'e-mail. Prima c'è un foglio del consenso e serve avere 18 anni.
-• Corso di italiano: anche il tuo Taccuino del viaggiatore, da Guilin a Roma. Ogni lezione superata ti porta più vicino alla prossima città.
+• Su Android, il nuovo widget «Ripasso rapido» (4×4): cinque minuti di ripasso dalla schermata Home, una carta alla volta.
+• Il microfono ora funziona anche sui telefoni dove prima falliva.
+• Voce e brani più affidabili: corretti nove difetti dell'audio.
+• Nuova pagina ⚙️ → Comunità e voci (scambio linguistico, pacchetto voci); i widget stanno in ⚙️ → Aspetto, con l'anteprima.
 
 **Immagini:** `images/icon.png` (512×512), `images/featureGraphic.png` (1024×500), `images/phoneScreenshots/1-4.png` (1080×1920).

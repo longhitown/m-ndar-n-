@@ -12,9 +12,9 @@
   var PAGES = ["look", "sound", "community", "study", "data", "info"];
   /* la pagina di ogni sezione nota e l'ordine in cui compare: le sezioni dei moduli arrivano in ordine di caricamento, qui si mettono a posto */
   var ORDER = {
-    look: ["set-look", "set-lang"],
+    look: ["set-look", "set-lang", "set-widgets"],
     sound: ["set-sound", "vset", "set-mic-box"],
-    community: ["set-scambio", "set-mine", "set-thanks", "set-invite", "set-widgets", "set-voicepack"],
+    community: ["set-scambio", "set-mine", "set-thanks", "set-invite", "set-voicepack"],
     study: ["set-course", "set-exstyle", "set-level", "set-anat", "set-pleco", "set-reminder", "set-together"],
     data: ["set-sync", "set-data", "set-export", "set-contrib"],
     info: ["set-about", "set-support", "set-news", "set-privacy"]
@@ -25,7 +25,7 @@
   var ALIAS = { "grp-ess": "look", "grp-data": "data", "grp-adv": "study", "grp-info": "info" };
   PAGES.forEach(function (p) { ALIAS[p] = p; ALIAS["page-" + p] = p; });
   /* nomi comodi per la nuova pagina (lo scambio linguistico stava in «Suoni e musica») */
-  ALIAS["grp-community"] = "community"; ALIAS.scambio = "community"; ALIAS.widget = "community"; ALIAS.voci = "community";
+  ALIAS["grp-community"] = "community"; ALIAS.scambio = "community"; ALIAS.widget = "look"; ALIAS.voci = "community";
   /* parole in più per la ricerca, per le sezioni fisse (il resto si cerca nel testo della sezione) */
   var KW = { "set-look": "set.kwLook", "set-sound": "set.kwSound", "set-scambio": "set.kwComm", "set-mine": "set.kwComm", "set-thanks": "set.kwComm", "set-invite": "set.kwComm", "set-widgets": "set.kwComm", "set-voicepack": "set.kwComm" };
   var cur = "", lastTile = null, q = document.getElementById("set-q"), tiles = document.getElementById("set-tiles"), hits = document.getElementById("set-hits"),
