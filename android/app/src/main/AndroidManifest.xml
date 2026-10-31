@@ -3,6 +3,9 @@
 
     <!-- microfono: «Registra e confronta», oscilloscopio dei toni e riconoscimento vocale -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- La WebView (Chromium) lo usa per aprire la sorgente audio di getUserMedia (AudioManager.setMode per la «modalità comunicazione»). Senza,
+         l'apertura fallisce con NotReadableError «Could not start audio source» anche col microfono concesso. Permesso normale: nessuna richiesta all'utente. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- fotocamera: solo per leggere i QR quando si passano i progressi da un telefono all'altro -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -23,6 +26,11 @@
         <intent><action android:name="android.speech.RecognitionService" /></intent>
         <!-- Pleco (facoltativo, ⚙️ → Studio): per aprire una parola nel dizionario, se installato -->
         <package android:name="com.pleco.chinesesystem" />
+        <!-- servizi vocali: solo per mostrare nell'autodiagnosi chi fa il riconoscimento vocale (nessun dato lascia il telefono) -->
+        <package android:name="com.google.android.googlequicksearchbox" />
+        <package android:name="com.google.android.tts" />
+        <package android:name="com.miui.voiceassist" />
+        <package android:name="com.xiaomi.mibrain.speech" />
     </queries>
 
     <application

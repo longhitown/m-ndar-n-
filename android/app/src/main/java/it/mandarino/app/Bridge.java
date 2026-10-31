@@ -198,6 +198,31 @@ public class Bridge {
     @JavascriptInterface
     public boolean srAvailable() { return SpeechRecognizer.isRecognitionAvailable(act); }
 
+    /** Chi fa il riconoscimento vocale su questo telefono (per l'autodiagnosi): servizio predefinito, servizi installati e versioni delle app vocali note. */
+    @JavascriptInterface
+    public String srInfo() {
+        JSONObject o = new JSONObject();
+        try {
+            o.put("available", SpeechRecognizer.isRecognitionAvailable(act));
+            if (Build.VERSION.SDK_INT >= 33) o.put("onDevice", SpeechRecognizer.isOnDeviceRecognitionAvailable(act));
+            String def = android.provider.Settings.Secure.getString(act.getContentResolver(), "voice_recognition_service");
+            o.put("default", def == null ? "" : def);
+            JSONArray svc = new JSONArray();
+            for (android.content.pm.ResolveInfo r : act.getPackageManager().queryIntentServices(new Intent(android.speech.RecognitionService.SERVICE_INTERFACE), 0)) {
+                if (r.serviceInfo != null) svc.put(r.serviceInfo.packageName + "/" + r.serviceInfo.name);
+            }
+            o.put("services", svc);
+            JSONObject ver = new JSONObject();
+            for (String p : new String[]{"com.google.android.googlequicksearchbox", "com.google.android.tts", "com.miui.voiceassist", "com.xiaomi.mibrain.speech"}) {
+                try { ver.put(p, act.getPackageManager().getPackageInfo(p, 0).versionName); } catch (Exception ignore) { }
+            }
+            o.put("versions", ver);
+        } catch (Exception e) {
+            try { o.put("error", String.valueOf(e)); } catch (JSONException ignore) { }
+        }
+        return o.toString();
+    }
+
     /**
      * Prova nativa del microfono, senza passare dalla WebView: apre un AudioRecord per ogni sorgente e legge ~250 ms.
      * Dice se è il telefono (fallisce anche qui) o la WebView (qui funziona, getUserMedia no). Dura circa 1,5 s: la pagina la chiama
