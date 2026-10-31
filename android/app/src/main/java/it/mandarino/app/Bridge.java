@@ -58,6 +58,9 @@ public class Bridge {
     private SpeechRecognizer recognizer;
     private String recId = null, recPending = null;
     private boolean musicWasMuted = false;
+    /* musicWasMuted vale per tutta la serie di ascolti ravvicinati: si fissa al primo e si azzera solo quando il volume è stato ripristinato.
+       Se un secondo ascolto partisse prima del ripristino leggerebbe il silenzio messo dal riconoscitore e lo scambierebbe per una scelta della persona. */
+    private boolean muteBaseSet = false;
 
     Bridge(MainActivity act) {
         this.act = act;
@@ -275,7 +278,7 @@ public class Bridge {
     private void beginRecognizer(String id, String lang, int maxResults) {
         try {
             AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
-            musicWasMuted = am != null && am.isStreamMute(AudioManager.STREAM_MUSIC);
+            if (!muteBaseSet) { musicWasMuted = am != null && am.isStreamMute(AudioManager.STREAM_MUSIC); muteBaseSet = true; }
             recognizer = SpeechRecognizer.createSpeechRecognizer(act);
             recognizer.setRecognitionListener(new Listener(id));
             Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -319,7 +322,9 @@ public class Bridge {
             act.getWindow().getDecorView().postDelayed(() -> {
                 try {
                     AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
-                    if (recognizer == null && !musicWasMuted && am != null && am.isStreamMute(AudioManager.STREAM_MUSIC)) am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                    if (recognizer != null) return;   /* un nuovo ascolto è già partito: il ripristino spetta all'ultimo */
+                    if (!musicWasMuted && am != null && am.isStreamMute(AudioManager.STREAM_MUSIC)) am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                    muteBaseSet = false;
                 } catch (RuntimeException ignored) { }
             }, 800);
         }
