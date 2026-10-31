@@ -1,0 +1,191 @@
+# màndarínō · release STABILE, uguale per tutti i canali: una sola versione, una sola firma.
+# Parte solo quando si spinge un tag r<x.y.z> (per esempio r0.9.0). I tag v6.7.N delle build per push non la fanno partire.
+# Si prepara con «node tools/release.mjs <versione>» (aggiorna android/version.properties e le note di versione); poi pull request,
+# merge in main, e il tag sul commit di main. Istruzioni complete: docs/store/rilascio.md.
+#
+# Che cosa fa:
+# - controlla che il tag sia r<x.y.z>, stia su main e coincida con versionName di android/version.properties;
+# - costruisce dist/, lancia le prove, costruisce APK diretto, APK store e .aab (versionCode e versionName dal file, senza MD_VERSION_CODE);
+# - firma SEMPRE con la chiave dei segreti: se mancano, si ferma (una release stabile non va mai firmata con la chiave di prova);
+# - controlla che i due APK abbiano lo stesso certificato e ne scrive l'impronta SHA-256 nel riepilogo;
+# - pubblica la Release (non prerelease, «latest») con mandarino.apk, mandarino-store.apk, mandarino-store.aab e SHA256SUMS.txt;
+# - lancia «pages», così il sito offre l'APK nuovo.
+# Google Play NON è automatico: l'.aab si carica a mano nella Play Console (c'è un passo pronto, spento, più sotto).
+# Segreti (gli stessi di «APK Android»): MD_KEYSTORE_B64, MD_KEYSTORE_PASSWORD; facoltativi MD_KEY_ALIAS, MD_KEY_PASSWORD.
+name: release
+
+on:
+  push:
+    tags: ["r[0-9]*.[0-9]*.[0-9]*"]
+
+permissions:
+  contents: write   # crea la Release e carica i file
+  actions: write    # per lanciare «pages» dopo la Release: il sito offre l'APK appena pubblicato
+
+concurrency:
+  group: release
+  cancel-in-progress: false   # una release già avviata finisce sempre
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262   # v4.4.0
+        with:
+          fetch-depth: 0   # la storia completa serve a controllare che il tag stia su main
+
+      - name: Controlla il tag e la versione
+        run: |
+          if ! echo "$TAG" | grep -Eq '^r(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'; then
+            echo "::error::Il tag «$TAG» non ha la forma r<x.y.z> (per esempio r0.9.0)."; exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Il tag $TAG non punta a un commit di main. Le release si fanno solo da main (vedi docs/store/rilascio.md)."; exit 1
+          fi
+          NAME=$(sed -n 's/^versionName=//p' android/version.properties | tr -d '\r[:space:]')
+          CODE=$(sed -n 's/^versionCode=//p' android/version.properties | tr -d '\r[:space:]')
+          if [ "${TAG#r}" != "$NAME" ]; then
+            echo "::error::Il tag $TAG non coincide con versionName=$NAME di android/version.properties. Aggiorna il file (node tools/release.mjs ${TAG#r}), fai il merge e rimetti il tag sul commit giusto."; exit 1
+          fi
+          if ! echo "$CODE" | grep -Eq '^[0-9]+$'; then
+            echo "::error::versionCode non valido in android/version.properties: «$CODE»."; exit 1
+          fi
+          for L in it-IT zh-CN; do
+            F="fastlane/metadata/android/$L/changelogs/$CODE.txt"
+            if [ ! -s "$F" ]; then echo "::error::Mancano le note di versione $F (node tools/release.mjs le crea)."; exit 1; fi
+          done
+          echo "VERSION=$NAME" >> "$GITHUB_ENV"
+          echo "VCODE=$CODE" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020   # v4.4.0
+        with:
+          node-version: 20
+
+      - name: Controlla la lunghezza delle note di versione (500 caratteri, il limite di Google Play)
+        run: |
+          node -e 'const fs = require("fs"); let ko = 0; for (const L of ["it-IT", "zh-CN"]) { const f = "fastlane/metadata/android/" + L + "/changelogs/" + process.env.VCODE + ".txt"; const n = [...fs.readFileSync(f, "utf8").trim()].length; if (n > 500) { console.log("::error::" + f + " ha " + n + " caratteri: il limite di Google Play è 500."); ko = 1; } } process.exit(ko);'
+
+      - name: Build di dist/ e prove
+        run: node tools/build.mjs && node tools/grammar.mjs && node tools/unit.mjs && node tools/check-docs.mjs --strict
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3   # v4.9.1
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a   # v4.4.3
+        with:
+          gradle-version: "8.14.3"
+
+      # a differenza di «APK Android», qui la chiave è obbligatoria: niente chiave di prova per una release stabile
+      - name: Chiave di firma (obbligatoria)
+        env:
+          MD_KEYSTORE_B64: ${{ secrets.MD_KEYSTORE_B64 }}
+          MD_KEYSTORE_PASSWORD: ${{ secrets.MD_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$MD_KEYSTORE_B64" ] || [ -z "$MD_KEYSTORE_PASSWORD" ]; then
+            echo "::error::Mancano i segreti MD_KEYSTORE_B64 e/o MD_KEYSTORE_PASSWORD (Settings → Secrets and variables → Actions). Una release stabile non si firma con la chiave di prova: aggiungili e rilancia la corsa (Re-run)."
+            exit 1
+          fi
+          echo "$MD_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/mandarino.jks"
+          if [ ! -s "$RUNNER_TEMP/mandarino.jks" ]; then echo "::error::MD_KEYSTORE_B64 non contiene una chiave leggibile (base64)."; exit 1; fi
+          echo "MD_KEYSTORE=$RUNNER_TEMP/mandarino.jks" >> "$GITHUB_ENV"
+
+      # senza MD_VERSION_CODE: valgono versionCode e versionName di android/version.properties
+      - name: Costruisci e controlla APK diretto, APK store e .aab
+        env:
+          MD_KEYSTORE_PASSWORD: ${{ secrets.MD_KEYSTORE_PASSWORD }}
+          MD_KEY_ALIAS: ${{ secrets.MD_KEY_ALIAS }}
+          MD_KEY_PASSWORD: ${{ secrets.MD_KEY_PASSWORD }}
+        run: |
+          unset MD_VERSION_CODE
+          gradle -p android --no-daemon assembleDirectRelease assembleStoreRelease bundleStoreRelease lintDirectRelease lintStoreRelease
+
+      - name: Verifica firma, versione e certificato
+        run: |
+          D=android/app/build/outputs/apk/direct/release/app-direct-release.apk
+          S=android/app/build/outputs/apk/store/release/app-store-release.apk
+          B=android/app/build/outputs/bundle/storeRelease/app-store-release.aab
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify "$D"
+          "$BT/apksigner" verify "$S"
+          unzip -l "$D" | grep -q "assets/www/index.html"
+          unzip -l "$S" | grep -q "assets/www/index.html"
+          cert() { "$BT/apksigner" verify --print-certs "$1" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | tr 'A-F' 'a-f'; }
+          CD=$(cert "$D"); CS=$(cert "$S")
+          if [ -z "$CD" ] || [ "$CD" != "$CS" ]; then
+            echo "::error::I due APK non hanno lo stesso certificato (diretto: «$CD», store: «$CS»)."; exit 1
+          fi
+          if "$BT/apksigner" verify --print-certs "$D" | grep -q "CN=Android Debug"; then
+            echo "::error::L'APK è firmato con la chiave di debug: una release stabile non può."; exit 1
+          fi
+          # versione dentro ai pacchetti = versione del file (e quindi del tag)
+          for F in "$D" "$S"; do
+            INFO=$("$BT/aapt2" dump badging "$F" | head -1)
+            echo "$INFO" | grep -q "versionCode='$VCODE'" || { echo "::error::versionCode di $F diverso da $VCODE: $INFO"; exit 1; }
+            echo "$INFO" | grep -q "versionName='$VERSION\(-store\)\?'" || { echo "::error::versionName di $F diverso da $VERSION: $INFO"; exit 1; }
+          done
+          # il pacchetto .aab deve essere firmato con la stessa chiave (solo avviso: dipende dal formato dell'output di keytool)
+          CB=$(keytool -printcert -jarfile "$B" 2>/dev/null | sed -n 's/^ *SHA256: *//p' | head -1 | tr -d ':' | tr 'A-F' 'a-f')
+          if [ "$CB" != "$CD" ]; then echo "::warning::Non riesco a confermare che l'.aab abbia lo stesso certificato degli APK (aab: «$CB», apk: «$CD»). Controllalo prima di caricarlo su Google Play."; fi
+          echo "CERT=$CD" >> "$GITHUB_ENV"
+          mkdir -p release
+          cp "$D" release/mandarino.apk
+          cp "$S" release/mandarino-store.apk
+          cp "$B" release/mandarino-store.aab
+          (cd release && sha256sum mandarino.apk mandarino-store.apk mandarino-store.aab > SHA256SUMS.txt && cat SHA256SUMS.txt)
+
+      - name: Pubblica la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="$RUNNER_TEMP/notes.md"
+          {
+            printf 'màndarínō %s per Android (8.0 o più recente).\n\n' "$VERSION"
+            cat "fastlane/metadata/android/it-IT/changelogs/$VCODE.txt"
+            printf '\n\nScarica **mandarino.apk**, aprilo e consenti l’installazione da questa fonte. Gli aggiornamenti si installano sopra la versione precedente senza perdere i progressi.\n\n'
+            printf '`mandarino-store.apk` e `mandarino-store.aab` sono la stessa versione per gli store (senza controllo degli aggiornamenti, sostegno e sigilli), con la stessa firma. Le somme di controllo sono in `SHA256SUMS.txt`.\n\n'
+            printf 'Impronta SHA-256 del certificato di firma: `%s`\n' "$CERT"
+          } > "$NOTES"
+          FILES="release/mandarino.apk release/mandarino-store.apk release/mandarino-store.aab release/SHA256SUMS.txt"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            # esiste già (per esempio creata a mano con gh release create): la si completa
+            gh release upload "$TAG" $FILES --clobber
+            gh release edit "$TAG" --title "màndarínō $VERSION" --notes-file "$NOTES" --draft=false --prerelease=false --latest
+          else
+            gh release create "$TAG" $FILES --title "màndarínō $VERSION" --notes-file "$NOTES" --verify-tag --latest
+          fi
+          # una Release creata con il token del workflow non lancia altri workflow da sola: si lancia «pages» a mano (dal ramo principale)
+          gh workflow run pages.yml --ref "${{ github.event.repository.default_branch }}" || echo "::warning::pages.yml non lanciato: lancialo a mano (Actions → pages → Run workflow) perché il sito offra l'APK nuovo."
+
+      # --- Google Play: SPENTO. Serve un account di servizio della Play Console con il permesso di pubblicare ---
+      # Quando c'è: aggiungi il segreto PLAY_SERVICE_ACCOUNT_JSON (il JSON dell'account di servizio), togli i «#» qui sotto e scegli la
+      # traccia (internal per cominciare). Fino ad allora l'.aab si carica a mano (vedi il riepilogo di ogni corsa).
+      # - name: Carica su Google Play
+      #   uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5   # v1.1.5
+      #   with:
+      #     serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+      #     packageName: it.mandarino.app
+      #     releaseFiles: release/mandarino-store.aab
+      #     track: internal
+      #     status: draft
+
+      - name: Riepilogo
+        run: |
+          {
+            echo "## màndarínō $VERSION (versionCode $VCODE)"
+            echo
+            echo "- Release: https://github.com/${{ github.repository }}/releases/tag/$TAG"
+            echo "- Scarica: https://github.com/${{ github.repository }}/releases/latest/download/mandarino.apk"
+            echo "- Impronta SHA-256 del certificato (APK diretto e APK store, uguali): \`$CERT\`"
+            echo "- Dimensioni: $(du -h release/mandarino.apk | cut -f1) (APK diretto), $(du -h release/mandarino-store.aab | cut -f1) (.aab)"
+            echo
+            echo "### Da fare a mano"
+            echo
+            echo "**Carica \`mandarino-store.aab\` nella Play Console** (Test → traccia interna o chiusa, poi produzione): è la stessa versione $VERSION, con la stessa firma. Google ne controlla il contenuto: ore o giorni."
+            echo
+            echo "F-Droid segue il tag $TAG da solo (compila a lotti: giorni)."
+          } >> "$GITHUB_STEP_SUMMARY"
