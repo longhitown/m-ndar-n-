@@ -223,5 +223,6 @@ Che cosa corrisponde a che cosa (cinese → italiano):
 - **Lettura graduata:** testi per livello, «giusto per te», pinyin e traduzione a scelta, domande, parole nuove nel ripasso → 句子 → «短文阅读»: testi A1-B1, domande in cinese, «适合你», «已读».
 - **Esercizi a buco, ordina, digitazione** → `it-buco`, `it-buco-gram`, `it-ordina`, `it-scrivi`, `it-dettato`, `it-verbo`.
 - **Voci reali:** «ascolta la frase» con Common Voice e «Scarica le voci» in ⚙️ → Voce → voce NM1 nelle frasi italiane, dettato e «听句子» con clip.
+- **Etichetta «Voce reale»:** dopo una clip vera (mai per la sintesi) compare per qualche secondo una riga fissa in basso, «🎙️ Voce reale · Tatoeba» o «… · Common Voice»; il tocco apre di chi è la voce, la licenza e l'invito allo Scambio linguistico. Si spegne in ⚙️ → Suoni e musica → Voce («Mostra chi ha letto la frase», `cp-voicetag`). Modulo `ui/voice-tag.js`, caricato al primo uso.
 
 Ancora aperti (anche in [roadmap.md](roadmap.md)): la rilettura dei testi cinesi da parte di un madrelingua (corso, carta e pagina `zh/`) e i «vuoti curati» (oggi la carta «今天» mostra sempre la prossima lezione, anche quando non ce n'è ancora nessuna).

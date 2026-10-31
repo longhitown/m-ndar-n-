@@ -293,7 +293,7 @@
         var o2 = {}; Object.keys(o).forEach(function (k) { o2[k] = o[k]; }); o2.noClip = true; CP.speak(text, o2);
       };
       curAudio = ca; if (rate < 1) { ca.playbackRate = 0.85; ca.preservesPitch = true; }
-      ca.onended = function () { ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null; finish(); };
+      ca.onended = function () { ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null; var mi = token === mine; finish(); if (mi) try { CP.voiceTag.show(text, zh ? "zh" : "it"); } catch (e) {} };
       ca.onerror = back;
       try { var cp = ca.play(); if (cp && cp.catch) cp.catch(back); } catch (e) { back(); }
       return;

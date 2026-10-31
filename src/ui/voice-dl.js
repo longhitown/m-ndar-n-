@@ -30,7 +30,7 @@
     else if (DL) h += '<p class="small" style="margin:0" role="status">' + T("vc.dling", DL) + "</p>";
     else if (local()) h += '<p class="small okline" style="margin:0">✓ ' + T("vc.ok") + '</p><button type="button" class="btn-s" data-vc-del>' + T("vc.del") + "</button>";
     else if (window.caches && location.protocol !== "file:") h += '<button type="button" class="btn-s" data-vc-dl>' + T("vc.dl", { mb: mb().toFixed(1).replace(".", T("vc.dec")) }) + "</button>";
-    return h + "</div>";
+    return h + CP.voiceTag.setting() + "</div>";
   }
   function repaint() { var b = document.getElementById("vc-box"); if (b) b.outerHTML = html(); }
   document.addEventListener("click", function (e) {

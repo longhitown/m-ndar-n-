@@ -796,6 +796,45 @@ try {
     check("Voci reali: nessuna richiesta fuori dall'app, nessun errore JavaScript", !ext.length && !errs.length, ext[0] || errs[0]);
     await ctx.close();
   }
+  /* 4n-bis. etichetta «Voce reale» (ui/voice-tag.js): compare solo dopo una clip vera; tocco → fonte e licenza + invito allo Scambio;
+     l'interruttore in ⚙️ → Suoni e musica → Voce la spegne. Qui si chiama CP.voiceTag.show come fa CP.speak a clip finita. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
+    await ctx.addInitScript(() => { if (!localStorage.getItem("cp-ux-v1")) { localStorage.setItem("cp-ux-v1", '{"onboarded":1,"showAll":1}'); localStorage.setItem("cp-voice-dl", "1"); } });
+    await p.goto(base); await p.waitForTimeout(800);
+    const v0 = await p.evaluate(async () => { CP.speak("还有很多时间", { noClip: true }); await new Promise((r) => setTimeout(r, 200)); const b = document.querySelector("#vtag [data-vt-open]"); return { tag: !!b, url: CP.voiceClip.url("还有很多时间", "zh") }; });
+    check("Etichetta «Voce reale»: la voce sintetica (clip rifiutata) non ha etichetta", !v0.tag && /audio\/voce\/zh\//.test(v0.url), JSON.stringify(v0));
+    const v1 = await p.evaluate(async () => {
+      CP.voiceTag.show("还有很多时间", "zh"); await new Promise((r) => setTimeout(r, 50));
+      const b = document.querySelector("#vtag [data-vt-open]"), r = b.getBoundingClientRect(), d = document.getElementById("vtag-d");
+      const out = { text: b.textContent, aria: b.getAttribute("aria-label"), h: Math.round(r.height), hidden0: d.hidden, exp0: b.getAttribute("aria-expanded"), pos: getComputedStyle(document.getElementById("vtag")).position, tr: getComputedStyle(b).transitionDuration };
+      b.click(); await new Promise((r) => setTimeout(r, 30));
+      out.hidden1 = document.getElementById("vtag-d").hidden; out.exp1 = document.querySelector("#vtag [data-vt-open]").getAttribute("aria-expanded"); out.detail = document.getElementById("vtag-d").textContent;
+      out.go = Math.round(document.querySelector("#vtag [data-vt-go]").getBoundingClientRect().height);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); await new Promise((r) => setTimeout(r, 30));
+      out.hidden2 = document.getElementById("vtag-d").hidden;
+      return out;
+    });
+    check("Etichetta «Voce reale»: dopo una clip vera compare «Voce reale · Common Voice», fissa, ≥ 44 px, con aria-label, senza transizioni", /Voce reale · Common Voice/.test(v1.text) && /Voce reale, Common Voice/.test(v1.aria) && v1.h >= 44 && v1.pos === "fixed" && v1.hidden0 && v1.exp0 === "false" && /^0s/.test(v1.tr), JSON.stringify(v1));
+    check("Etichetta «Voce reale»: un tocco apre il dettaglio (CC0, nessun dato di chi parla, invito allo Scambio linguistico, pulsante ≥ 44 px), Esc lo chiude", !v1.hidden1 && v1.exp1 === "true" && /Common Voice/.test(v1.detail) && /CC0/.test(v1.detail) && /Scambio linguistico/.test(v1.detail) && /prestare la tua voce/.test(v1.detail) && v1.go >= 44 && v1.hidden2, JSON.stringify(v1));
+    const v2 = await p.evaluate(async () => {
+      let opened = 0; CP.scambio.open = () => { opened++; };
+      CP.voiceTag.show("还有很多时间", "zh"); document.querySelector("#vtag [data-vt-open]").click(); document.querySelector("#vtag [data-vt-go]").click(); await new Promise((r) => setTimeout(r, 30));
+      return { opened, gone: !document.querySelector("#vtag [data-vt-open]") };
+    });
+    check("Etichetta «Voce reale»: «Scambio linguistico» nel dettaglio apre lo Scambio (CP.scambio.open) e l'etichetta sparisce", v2.opened === 1 && v2.gone, JSON.stringify(v2));
+    const v3 = await p.evaluate(async () => {
+      CP.show("settings"); await new Promise((r) => setTimeout(r, 200));
+      const c = document.getElementById("opt-vtag"); if (!c) return { c: null };
+      const on0 = c.checked; c.checked = false; c.dispatchEvent(new Event("change", { bubbles: true }));
+      CP.voiceTag.show("还有很多时间", "zh"); const off = !document.querySelector("#vtag [data-vt-open]");
+      c.checked = true; c.dispatchEvent(new Event("change", { bubbles: true })); CP.voiceTag.show("还有很多时间", "zh");
+      return { on0, off, key: localStorage.getItem("cp-voicetag"), back: !!document.querySelector("#vtag [data-vt-open]") };
+    });
+    check("Etichetta «Voce reale»: l'interruttore «Mostra chi ha letto la frase» è acceso di base, spento non compare, riacceso sì", v3.on0 === true && v3.off && v3.key === "1" && v3.back, JSON.stringify(v3));
+    check("Etichetta «Voce reale»: nessun errore JavaScript", !errs.length, errs[0]);
+    await ctx.close();
+  }
   /* 5. corso di italiano per chi parla cinese */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));

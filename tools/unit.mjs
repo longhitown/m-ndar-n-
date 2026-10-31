@@ -519,5 +519,32 @@ function sandbox() {
   check("PRIVACY.md: il controllo del pacchetto voci è nella tabella della rete, in italiano e in cinese", /Controllo del pacchetto voci[^\n]*voci\/index\.json/.test(pv) && /检查语音包[^\n]*voci\/index\.json/.test(pv) && /md-voicepack/.test(pv));
 }
 
+/* ---- 6. etichetta «Voce reale» (src/ui/voice-tag.js): solo con la clip vera, testi uguali ai Crediti, interruttore ---- */
+{
+  const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc); vm.runInContext(fs.readFileSync(path.join(SRC, "i18n/voice-tag.js"), "utf8"), tc);
+  const TI = vm.runInContext("I18N", tc), ki = Object.keys(TI.it).sort().join(), kz = Object.keys(TI.zh).sort().join();
+  const code = fs.readFileSync(path.join(SRC, "ui/voice-tag.js"), "utf8"), used = new Set([...code.matchAll(/"(vt\.[A-Za-z]+)"/g)].map((x) => x[1]));
+  const lack = [...used].filter((k) => !TI.it[k] || !TI.zh[k]);
+  check("Voce reale (etichetta): stessi testi in italiano e in cinese e nessun testo usato che manchi (" + Object.keys(TI.it).length + ")", ki === kz && !lack.length, lack.join(", "));
+  const mk = (store, lang) => {
+    const st = { n: 0, html: "" }, box = { id: "", setAttribute() {}, set innerHTML(v) { st.html = v; }, get innerHTML() { return st.html; }, contains() { return false; }, querySelector() { return null; } };
+    const doc = { addEventListener() {}, createElement() { st.n++; return box; }, body: { appendChild() {} }, getElementById() { return null; } };
+    const CP = { t: (k, v) => String(TI[lang][k] ?? k).replace(/\{(\w+)\}/g, (m, x) => v && v[x] != null ? v[x] : m), attr: (x) => String(x), voiceClip: { url: (t, l) => (l === "it" && t === "Ciao come stai") || (l === "zh" && t === "你好") ? "audio/voce/" + l + "/1.ab12cd34.ogg" : "" } };
+    const ctx = vm.createContext({ window: { CP }, document: doc, localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; } }, setTimeout: () => 1, clearTimeout() {}, Object, String });
+    vm.runInContext(code, ctx); return { VT: CP.voiceTag, st };
+  };
+  const a = mk({}, "it");
+  check("Voce reale (etichetta): senza clip (voce sintetica, frase senza registrazione, lingua sbagliata) non compare e non crea nulla", a.VT.info("frase mai registrata", "it") === null && a.VT.info("Ciao come stai", "zh") === null && a.VT.info("你好", "fr") === null && (a.VT.show("frase mai registrata", "it"), a.st.n === 0 && a.st.html === ""));
+  a.VT.show("Ciao come stai", "it");
+  check("Voce reale (etichetta): con la clip italiana dice «Voce reale · Tatoeba», di chi è la voce (NM1, CC BY 4.0) e invita allo Scambio linguistico", a.st.n === 1 && /Voce reale · Tatoeba/.test(a.st.html) && /NM1/.test(a.st.html) && /CC BY 4\.0/.test(a.st.html) && /data-vt-go/.test(a.st.html) && /Scambio linguistico/.test(a.st.html) && /hidden/.test(a.st.html) && /aria-expanded="false"/.test(a.st.html), a.st.html.slice(0, 200));
+  const b = mk({}, "zh"); b.VT.show("你好", "zh");
+  check("Voce reale (etichetta): con la clip cinese dice «Common Voice», CC0 e nessun dato di chi parla; in cinese tutto il testo è cinese", /Common Voice/.test(b.st.html) && /CC0/.test(b.st.html) && /真人录音/.test(b.st.html) && /语言交换/.test(b.st.html) && !/Voce reale/.test(b.st.html));
+  const c = mk({ "cp-voicetag": "0" }, "it"); c.VT.show("Ciao come stai", "it");
+  check("Voce reale (etichetta): con l'interruttore spento (cp-voicetag = 0) non compare mai", !c.VT.on() && c.st.n === 0 && c.st.html === "");
+  const cr = fs.readFileSync(path.join(SRC, "i18n/credits-t12.js"), "utf8"), co = fs.readFileSync(path.join(SRC, "core/core.js"), "utf8"), vcss = (fs.readFileSync(path.join(SRC, "styles/voice.css"), "utf8").split("l'etichetta «Voce reale»")[1] || "");
+  check("Voce reale (etichetta): stesse parole dei Crediti (NM1 · Tatoeba · CC BY 4.0; Mozilla Common Voice · CC0)", /NM1, Tatoeba, CC BY 4\.0/.test(cr) && /Mozilla Common Voice, CC0/.test(cr) && /NM1/.test(TI.it["vt.byIt"]) && /Tatoeba/.test(TI.it["vt.byIt"]) && /CC BY 4\.0/.test(TI.it["vt.byIt"]) && /Mozilla Common Voice/.test(TI.it["vt.byZh"]) && /CC0/.test(TI.it["vt.byZh"]));
+  check("Voce reale (etichetta): CP.speak la chiama una sola volta, alla fine della clip vera (mai per la voce sintetica); il modulo non fa rete né suoni e il CSS non ha animazioni", (co.match(/CP\.voiceTag\./g) || []).length === 1 && /ca\.onended = function[^\n]*CP\.voiceTag\.show/.test(co) && !/fetch\(|XMLHttpRequest|sendBeacon|Audio\(/.test(code) && vcss.length > 100 && !/animation|transition/.test(vcss));
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);
