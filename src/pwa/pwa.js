@@ -66,12 +66,13 @@
       if (t.hasAttribute("data-sw-update") && reg.waiting) { t.disabled = true; t.textContent = CP.t("upd.going"); if (window.Store) Store.flush(); reg.waiting.postMessage({ type: "SKIP_WAITING" }); }
     };
   }
+  /* i tag delle release sono v6.7.N (per push) o r<x.y.z> (stabili): il prefisso si toglie prima di confrontare con la versione installata */
   /* APK: un controllo leggero e facoltativo dell'ultima Release su GitHub (una richiesta al giorno, solo con la rete),
      con lo stesso avviso della PWA. Si spegne in ⚙️ → Suoni e musica → Voce (e Studio → Promemoria per l'app Android). */
   var REPO = MD_CONFIG.REPO;   /* src/config.js; se il repository cambia nome, GitHub reindirizza anche le API */
   /* nella versione per gli store (MD_CONFIG.APK_UPDATES false) niente controllo né interruttore: gli aggiornamenti li dà lo store */
   CP.apkUpdates = window.MD_CONFIG && MD_CONFIG.APK_UPDATES === false ? null : { on: function () { try { return localStorage.getItem("cp-apkcheck") !== "0"; } catch (e) { return true; } }, set: function (v) { try { localStorage.setItem("cp-apkcheck", v ? "1" : "0"); } catch (e) {} } };
-  function vnum(v) { return String(v || "").replace(/^v/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
+  function vnum(v) { return String(v || "").replace(/^[vr]/, "").split(".").map(function (x) { return parseInt(x, 10) || 0; }); }
   function newer(a, b) { a = vnum(a); b = vnum(b); for (var i = 0; i < Math.max(a.length, b.length); i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); } return false; }
   function apkCheck() {
     var cur = window.__MD_APK && window.__MD_APK.version; if (!cur || !CP.apkUpdates || !CP.apkUpdates.on() || navigator.onLine === false || !swNote) return;
@@ -82,8 +83,8 @@
       if (!rel || !rel.tag_name || !newer(rel.tag_name, cur)) return;
       var skip = ""; try { skip = localStorage.getItem("md-apkskip") || ""; } catch (e) {}
       if (skip === rel.tag_name) return;
-      var asset = (rel.assets || []).filter(function (a) { return /\.apk$/.test(a.name); })[0], href = asset ? asset.browser_download_url : rel.html_url;
-      swNote.innerHTML = "<p><b>" + CP.t("upd.apk", { v: CP.esc(rel.tag_name.replace(/^v/, "")) }) + "</b> " + CP.t("upd.apkKeep") + '</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-s" href="' + CP.attr(href) + '" target="_blank" rel="noopener">' + CP.t("upd.dl") + '</a><button type="button" class="btn-s" data-apk-later>' + CP.t("common.later") + "</button></div>";
+      var apks = (rel.assets || []).filter(function (a) { return /\.apk$/.test(a.name); }), asset = apks.filter(function (a) { return a.name === "mandarino.apk"; })[0] || apks.filter(function (a) { return !/store|nightly/.test(a.name); })[0], href = asset ? asset.browser_download_url : rel.html_url;
+      swNote.innerHTML = "<p><b>" + CP.t("upd.apk", { v: CP.esc(rel.tag_name.replace(/^[vr]/, "")) }) + "</b> " + CP.t("upd.apkKeep") + '</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn-s" href="' + CP.attr(href) + '" target="_blank" rel="noopener">' + CP.t("upd.dl") + '</a><button type="button" class="btn-s" data-apk-later>' + CP.t("common.later") + "</button></div>";
       swNote.hidden = false;
       swNote.onclick = function (e) { var t = e.target.closest ? e.target.closest("[data-apk-later]") : null; if (t) { swNote.hidden = true; try { localStorage.setItem("md-apkskip", rel.tag_name); } catch (er) {} } };
     }).catch(function () {});

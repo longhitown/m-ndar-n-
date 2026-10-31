@@ -3,6 +3,8 @@
 # - Costruisce l'APK (android/), lo controlla con Android lint e lo allega alla corsa («Artifacts»).
 # - Sul ramo principale, se ci sono i segreti della chiave di firma, pubblica una Release: il link
 #   https://github.com/<utente>/<repository>/releases/latest/download/mandarino.apk scarica sempre l'ultima versione.
+# Con la variabile del repository MD_NIGHTLY=prerelease le Release per push diventano una sola prerelease «nightly» (le release stabili le fa
+# il workflow «release» sui tag r<x.y.z>).
 # Segreti (Settings → Secrets and variables → Actions): MD_KEYSTORE_B64 (la chiave, in base64) e MD_KEYSTORE_PASSWORD.
 # Senza segreti l'APK è firmato con una chiave di prova: si installa, ma la versione dopo non si installerà sopra.
 name: APK Android
@@ -106,7 +108,18 @@ jobs:
         if: env.SIGNED == '1' && github.ref_name == github.event.repository.default_branch
         env:
           GH_TOKEN: ${{ github.token }}
+          MD_NIGHTLY: ${{ vars.MD_NIGHTLY }}   # variabile del repository (Settings → Secrets and variables → Actions → Variables); vedi docs/store/rilascio.md
         run: |
+          # Con MD_NIGHTLY=prerelease (da impostare DOPO la prima release stabile, workflow «release») ogni push non crea più una Release
+          # «latest» nuova: c'è UNA sola prerelease mobile con tag «nightly», ricreata a ogni push. Senza la variabile: comportamento di sempre.
+          if [ "$MD_NIGHTLY" = "prerelease" ]; then
+            cp mandarino.apk mandarino-nightly.apk
+            printf 'Versione di prova automatica %s, costruita a ogni modifica del ramo principale. NON è una release stabile: può avere difetti. Per la versione stabile usa l’ultima Release.\n\nSHA-256: `%s`\n' "$VERSION" "$SHA" > notes.md
+            gh release delete nightly --yes --cleanup-tag >/dev/null 2>&1 || true
+            gh release create nightly mandarino-nightly.apk --title "màndarínō nightly ($VERSION)" --notes-file notes.md --target "$GITHUB_SHA" --prerelease --latest=false
+            echo "Prerelease mobile: https://github.com/${{ github.repository }}/releases/tag/nightly (mandarino-nightly.apk)" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           TAG="v$VERSION"
           printf 'màndarínō %s per Android (8.0 o più recente).\n\nScarica **mandarino.apk**, aprilo e consenti l’installazione da questa fonte. Gli aggiornamenti si installano sopra la versione precedente senza perdere i progressi.\n\nSHA-256: `%s`\n' "$VERSION" "$SHA" > notes.md
           if gh release view "$TAG" >/dev/null 2>&1; then
