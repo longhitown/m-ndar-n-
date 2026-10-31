@@ -93,7 +93,7 @@
     if (!allowed()) return "";
     var opts = [["mine", T("anki.mine")], ["sure", T("anki.sure")], ["all", T("anki.all")]].concat(IT ? [] : [["sec", T("anki.sec")]]);
     return '<details class="set-sec" id="set-export"><summary>📤 ' + T("anki.more") + '</summary><div class="vbody">' +
-      '<p class="small muted" style="margin:0">' + T("anki.diff") + "</p>" +
+      (CP.ankiGuide ? CP.ankiGuide() : '<p class="small muted" style="margin:0">' + T("anki.diff") + "</p>") +
       '<fieldset class="anki-pick"><legend class="small">' + T(IT ? "anki.ledeIt" : "anki.lede") + "</legend>" + opts.map(function (x) {
         return '<label class="chk"><input type="radio" name="anki-which" value="' + x[0] + '"' + (pick.which === x[0] ? " checked" : "") + "> " + x[1] + "</label>";
       }).join("") +

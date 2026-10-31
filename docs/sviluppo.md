@@ -839,7 +839,7 @@ fa all'apertura: leggere, compilare ed eseguire il JavaScript prima che sparisca
 
 Per chi ha studiato molto e vuole portare le parole anche in Anki, senza togliere niente a màndarínō. La voce compare
 **solo dopo 400 parole iniziate o 400 ripassi** (`ANKI_MIN` in `src/core/export-anki.js`), in ⚙️ → Dati e sincronizzazione →
-«Altre opzioni di esportazione», accanto alla sincronizzazione. Il testo spiega la differenza: sincronizzare passa i
+«Anki: porta le tue parole», accanto alla sincronizzazione. Il testo spiega la differenza: sincronizzare passa i
 progressi a un altro dispositivo con màndarínō, esportare porta le parole in un'altra app. Prima di salvare servono due
 conferme. Il primo foglio dice che cosa fa e che cosa non fa.
 

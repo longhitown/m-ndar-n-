@@ -1,12 +1,6 @@
-/* ===== màndarínō · rivelazione progressiva: le schede (e gli strumenti di Frasi) compaiono quando hanno senso.
-   docs/ux-architettura.md spiega il perché; qui stanno le soglie, in un solo punto (UNLOCK).
-   - Corso di cinese: all'inizio Percorso e Studia; Parole e Frasi arrivano con i punti E un minimo di giorni di studio.
-   - Corso di italiano: all'inizio 课程 e 复习; 单词, 变位 e 句子 con la stessa logica (变位 anche dopo la lezione sul presente).
-   - Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; gli strumenti più avanzati dopo qualche lezione superata.
-   Chi aveva già progressi (o aveva già visto il benvenuto) ha tutto sbloccato. Uno sblocco non si perde mai, nemmeno
-   azzerando i progressi; tra dispositivi vale «basta uno» (cp-ux-v1.unl, regola d'unione in core/store.js).
-   ⚙️ → Studio → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
-   ovunque», ?go= e il corso di italiano prima di portare l'utente da qualche parte. ===== */
+/* ===== màndarínō · rivelazione progressiva: le schede (e gli strumenti di Frasi) compaiono quando hanno senso; le soglie stanno in UNLOCK.
+   Perché, regole, pop-up: docs/ux-architettura.md. Chi aveva già progressi ha tutto aperto; uno sblocco non si perde mai (cp-ux-v1.unl).
+   ⚙️ → Studio → «Mostra tutto» apre tutto; CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca ovunque» e ?go=. ===== */
 (function () {
   var CP = window.CP, T = CP.t;
   var UNLOCK = {
@@ -51,7 +45,7 @@
   function due() {
     var xd = xpDays(), xp = xd[0], days = xd[1], u = unl(), out = [], pl = CP.ux.get("pl") || {};
     var adv = xp >= UNLOCK.advancedXp || (pl.adv && !pl.undone);
-    function want(k, cond) { if (!u[k] && (cond || adv)) out.push(k); }
+    function want(k, cond, no) { if (!u[k] && (cond || (adv && !no))) out.push(k); }
     if (IT) {
       Object.keys(UNLOCK.it).forEach(function (t) { var c = UNLOCK.it[t]; if (!Array.isArray(c)) return; want("it:" + t, (xp >= c[0] && days >= c[1]) || (t === "conj" && itLessonDone(UNLOCK.it.conjLesson))); });
     } else {
@@ -60,24 +54,29 @@
       var ld = lessonsDone();
       Object.keys(UNLOCK.frasi).forEach(function (t) { want("fr:" + t, ld >= UNLOCK.frasi[t] || xp >= UNLOCK.frasiXp); });
     }
+    want("x:pleco", !IT && CP.pleco && CP.pleco.available() && xp >= 500 && days >= 2, 1);
+    want("x:anki", CP.anki && CP.anki.allowed(), 1);
     return out;
   }
-  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "fr:rad": "sub.rad", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases" };
+  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "fr:rad": "sub.rad", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases", "x:pleco": "plc.title", "x:anki": "anki.title" };
   var queue = [], noteEl = null, popOpen = false, soloKey = "";
   /* il messaggio dello sblocco: una riga dentro la pagina, sopra la barra in basso; una novità alla volta, mai un pop-up */
   function announce() {
+    if (queue.length && document.querySelector("[data-itr-grade]")) { setTimeout(announce, 4000); return; }
     if (noteEl || popOpen || !queue.length || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return;
     var k = queue.shift(), tabK = k === "words" || k === "build" ? k : /^it:/.test(k) ? k.slice(3) : /^fr:/.test(k) ? "build" : null;
     /* pop-up (ui/grow.js) solo per UNA scheda guadagnata studiando e mai sopra un'altra finestra; altrimenti la riga in basso */
-    if (k === soloKey) {
+    if (k === soloKey || /^x:/.test(k)) {
       if (CP.topSheet && CP.topSheet()) { queue.unshift(k); setTimeout(announce, 5000); return; }
       try { var xd = xpDays(); popOpen = !!(CP.unlockPop && CP.unlockPop(k, { tab: tabK, xp: xd[0], days: xd[1], next: next() }, function () { popOpen = false; setTimeout(announce, 400); })); } catch (e) { popOpen = false; }
       if (popOpen) return;
+      if (/^x:/.test(k)) { var u2 = unl(); delete u2[k]; delete u2["new:" + k]; setUnl(u2); return; }
     }
     noteEl = document.createElement("div"); noteEl.className = "unl-note"; noteEl.setAttribute("role", "status");
     noteEl.innerHTML = '<span class="unl-ico" aria-hidden="true">✨</span><span class="unl-tx">' + CP.esc(T("unl.new", { n: T(NAME[k]) })) + "<small>" + CP.esc(T("unl." + k.replace(":", "_"))) + "</small></span>" +
       (tabK ? '<button type="button" class="btn-s" data-unl-go="' + tabK + '">' + CP.esc(T("unl.go")) + "</button>" : "") + '<button type="button" class="btn-s unl-x" data-unl-x aria-label="' + CP.attr(T("common.close")) + '">✕</button>';
     document.body.appendChild(noteEl);
+    var me = noteEl; setTimeout(function () { if (noteEl === me) closeNote(); }, 9000);   /* la riga si toglie da sola */
   }
   function closeNote() { if (noteEl && noteEl.parentNode) noteEl.parentNode.removeChild(noteEl); noteEl = null; setTimeout(announce, 400); }
   document.addEventListener("click", function (e) {

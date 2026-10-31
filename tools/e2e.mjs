@@ -321,7 +321,7 @@ try {
     await p.click("[data-anki-go]"); await p.waitForSelector("[data-anki-ok1]"); const before = await p.evaluate(() => window.__dl);
     await p.click("[data-anki-ok1]"); await p.waitForSelector("[data-anki-ok2]"); await p.click("[data-anki-ok2]"); await p.waitForTimeout(200);
     const dl = await p.evaluate(() => window.__dl);
-    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e sincronizzazione → Altre opzioni di esportazione, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
+    check("Anki: nascosto sotto la soglia (" + 400 + "), poi in ⚙️ → Dati e sincronizzazione → Anki: porta le tue parole, salva solo dopo due conferme (.txt, text/tab-separated-values)", hidden && shown && !before && dl && /^mandarino-anki-mine-\d{8}\.txt$/.test(dl.n) && dl.m === "text/tab-separated-values", JSON.stringify({ hidden, shown, dl }));
     check("Anki: nessun errore JavaScript", !errs.length, errs[0]);
     await ctx.close();
   }
@@ -664,7 +664,7 @@ try {
       return { rights, score: (document.querySelector(".rdg-end .gd-score") || {}).textContent, read: !!JSON.parse(localStorage.getItem("cp-ex-v1")).read["zh-t01-la-mia-giornata"], add: document.querySelectorAll("[data-rdg-add]").length };
     });
     const xp1 = await p.evaluate(() => CP.game.rank().xp);
-    check("Lettura: domande con la giusta in posti diversi (non sempre la prima), testo segnato «letto» e +5 punti", new Set(q.rights).size > 1 && /3 risposte giuste su 3/.test(q.score) && q.read && xp1 - xp0 === 5, JSON.stringify({ q, xp0, xp1 }));
+    check("Lettura: domande con la giusta in posti diversi (non sempre la prima), testo segnato «letto» e +5 punti", new Set(q.rights).size > 1 && /3 risposte giuste su 3/.test(q.score) && q.read && (xp1 - xp0 === 5 || xp1 - xp0 === 10), JSON.stringify({ q, xp0, xp1 }));   /* 5 punti, il doppio nei primi 300 */
     const add = await p.evaluate(() => { const b = document.querySelector("[data-rdg-add]"); if (!b) return "nessuna"; const k = b.getAttribute("data-rdg-add"); b.click(); return CP.state(k) >= 1 ? "ok" : "no"; });
     check("Lettura: una parola nuova del testo entra nel ripasso con un tocco", add === "ok", add);
     /* riletto: niente punti la seconda volta */
@@ -739,7 +739,7 @@ try {
       const next = (document.querySelector(".it-today [data-itg-go]") || {}).textContent;
       return { label, text, id: t.id, q, score, read: !!JSON.parse(localStorage.getItem("cp-ex-v1")).read[t.id], xp: CP.game.rank().xp - xp0, next };
     });
-    check("Corso di italiano, Guidato: «今天» dice il passo (un testo), la lettura ha domande in cinese, «已读» e +5 una volta, poi la lezione successiva", /短文/.test(r4.label) && r4.text && /[一-鿿]/.test(r4.q) && /3 \/ 3/.test(r4.score) && r4.read && r4.xp === 5 && /第 4 课/.test(r4.next), JSON.stringify(r4));
+    check("Corso di italiano, Guidato: «今天» dice il passo (un testo), la lettura ha domande in cinese, «已读» e +5 una volta, poi la lezione successiva", /短文/.test(r4.label) && r4.text && /[一-鿿]/.test(r4.q) && /3 \/ 3/.test(r4.score) && r4.read && (r4.xp === 5 || r4.xp === 10) && /第 4 课/.test(r4.next), JSON.stringify(r4));
     /* Classico: le carte di prima */
     const r5 = await p.evaluate(async () => { localStorage.setItem("cp-ex-style", "classic"); CP.itApi.nextCard(); CP.itShow("review"); await new Promise((r) => setTimeout(r, 100)); return { classic: !!document.querySelector("[data-itr-show]"), ex: !!document.querySelector("#it-ex-root") }; });
     check("Corso di italiano, Classico: il ripasso di prima (carta da girare, quattro voti)", r5.classic && !r5.ex, JSON.stringify(r5));
@@ -952,7 +952,7 @@ try {
       }
       return { stamp: !!document.querySelector(".ls-quiz .it-stamp"), share: !!document.querySelector("#view-it [data-itd-share]"), gain: (document.querySelector(".it-gain") || {}).textContent || "", streak: CP.game.streak(), toast: document.getElementById("toast").textContent, act: !!document.querySelector("#toast .toast-act") };
     });
-    check("Lezione corrente avviata dalla carta e superata: sigillo «通过», «+30 分», serie aggiornata, «分享» a fine lezione", opened && passed.stamp && passed.share && /\+30/.test(passed.gain) && passed.streak >= 1, JSON.stringify(passed));
+    check("Lezione corrente avviata dalla carta e superata: sigillo «通过», «+30 分», serie aggiornata, «分享» a fine lezione", opened && passed.stamp && passed.share && /\+(30|60)/.test(passed.gain) && passed.streak >= 1, JSON.stringify(passed));
     await p.waitForTimeout(150);
     const leafIt = await p.evaluate(() => { const els = document.querySelectorAll('.brand [data-tone="3"]'); if (!els.length) return { n: 0, toast: "" }; els[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); return { n: els.length, toast: (document.getElementById("toast") || {}).textContent || "" }; });
     check("Logo: le due foglie suonano il terzo tono (avviso «3° tono» o «第三声», secondo la lingua)", leafIt.n === 2 && /3° tono|第三声/.test(leafIt.toast), JSON.stringify(leafIt));
@@ -1153,9 +1153,9 @@ try {
     const st = (p) => p.evaluate(() => ({ srs: Object.keys(JSON.parse(localStorage.getItem("cp-srs-v1") || "{}")).length, xp: JSON.parse(localStorage.getItem("cp-game-v1") || "{}").xp }));
     await study(A, 0, 50, 100); await A.evaluate(() => CP.sync.full());
     await study(B, 40, 30, 70); const rb = await B.evaluate(() => CP.sync.full()), sb = await st(B);
-    check("Sincronizzazione: il secondo dispositivo riceve e unisce (parole 50 + 30 con 10 in comune, punti per dispositivo)", rb.changed && sb.srs === 70 && sb.xp === 170, JSON.stringify(sb));
+    check("Sincronizzazione: il secondo dispositivo riceve e unisce (parole 50 + 30 con 10 in comune, punti per dispositivo)", rb.changed && sb.srs === 70 && sb.xp === 340, JSON.stringify(sb));   /* 100 + 70, ognuno doppio perché sotto i 300 punti del suo dispositivo */
     const ra = await A.evaluate(() => CP.sync.full()), sa = await st(A), again = await A.evaluate(() => CP.sync.full());
-    check("Sincronizzazione: il primo dispositivo riceve; rifarla non cambia niente (nessun riavvio a vuoto)", ra.changed && sa.srs === 70 && sa.xp === 170 && !again.changed, JSON.stringify([sa, again]));
+    check("Sincronizzazione: il primo dispositivo riceve; rifarla non cambia niente (nessun riavvio a vuoto)", ra.changed && sa.srs === 70 && sa.xp === 340 && !again.changed, JSON.stringify([sa, again]));
     /* QR: A prepara i codici come li mostra, li si legge con jsQR dal disegno, C li ricompone e li unisce */
     const fr = await A.evaluate(async () => {
       const bytes = await CP.qrTransfer.pack(), sid = CP.qrTransfer.crc32(bytes), s = CP.qr.b45enc(bytes), C = CP.qrTransfer.CHUNK, n = Math.ceil(s.length / C), out = [], cv = document.createElement("canvas");
@@ -1867,15 +1867,27 @@ try {
     await p.evaluate(() => CP.openSettings()); await p.waitForTimeout(200);
     const tile = await p.evaluate(() => document.querySelector('[data-set-open="community"]').classList.contains("has-new"));
     await p.click('[data-set-open="community"]'); await p.waitForTimeout(500);
-    const pg = await p.evaluate(() => ({ secs: [...document.querySelectorAll('[data-set-page="community"] .set-sec')].map((x) => x.id), n: document.getElementById("cm-n-rec").textContent + "/" + document.getElementById("cm-n-chk").textContent, seen: localStorage.getItem("md-seen-community"), widgets: !!document.getElementById("set-widgets") }));
-    check("Comunità: la voce «Nuovo» c'è, la pagina ha scambio, numeri (0/0 senza registrazioni), ringraziamenti, invito e pacchetto voci, e fuori dall'APK niente widget", tile && pg.secs.join() === "set-scambio,set-mine,set-thanks,set-invite,set-voicepack" && pg.n === "0/0" && pg.seen === "1" && !pg.widgets, JSON.stringify(pg));
+    const pg = await p.evaluate(() => ({ secs: [...document.querySelectorAll('[data-set-page="community"] .set-sec')].map((x) => x.id), n: document.getElementById("cm-n-rec").textContent + "/" + document.getElementById("cm-n-chk").textContent, widgets: !!document.querySelector('[data-set-page="community"] #set-widgets') }));
+    check("Comunità: la voce «Nuovo» c'è, la pagina ha scambio, numeri (0/0 senza registrazioni), ringraziamenti, invito e pacchetto voci (i widget stanno in Aspetto)", tile && pg.secs.join() === "set-scambio,set-mine,set-thanks,set-invite,set-voicepack" && pg.n === "0/0" && !pg.widgets, JSON.stringify(pg));
     await p.evaluate(() => { Object.defineProperty(navigator, "clipboard", { value: { writeText: (t) => { window.__copied = t; return Promise.resolve(); } }, configurable: true }); });
     await p.click("[data-cm-invite]"); await p.waitForTimeout(200);
     const cp = await p.evaluate(() => window.__copied);
     check("Comunità: «Copia il messaggio» mette negli appunti un testo pulito con mandarinoapp.org e senza parametri di tracciamento", /mandarinoapp\.org/.test(cp || "") && !/utm_|\?/.test(cp || ""), cp);
-    await p.evaluate(() => { CP.openSettings("info"); }); await p.waitForTimeout(200);
-    const dot1 = await p.evaluate(() => ({ on: document.getElementById("settings-btn").classList.contains("has-new"), v: localStorage.getItem("md-seen-version") }));
-    check("Comunità: dopo aver aperto la pagina e Informazioni (Novità) il pallino su ⚙️ si spegne", !dot1.on && !!dot1.v, JSON.stringify(dot1));
+    /* il pallino resta se si salta in fondo di corsa, e si toglie solo a pagina letta davvero (ogni schermata in vista), per tutte e sei le pagine */
+    const fast = await p.evaluate(async () => { CP.openSettings("look"); await new Promise((r) => setTimeout(r, 300)); const c = document.querySelector("#settings .set-card"); c.scrollTop = c.scrollHeight; await new Promise((r) => setTimeout(r, 1500)); return { tile: document.querySelector('[data-set-open="look"]').classList.contains("has-new") || !!document.querySelector('#settings:not([hidden])') && localStorage.getItem("md-seen-p-look") === null, key: localStorage.getItem("md-seen-p-look"), btn: document.getElementById("settings-btn").classList.contains("has-new") }; });
+    check("Pallino «Nuovo»: scorrere di corsa fino in fondo non lo toglie", fast.key === null && fast.btn, JSON.stringify(fast));
+    const readAll = await p.evaluate(async () => {
+      const keys = {};
+      for (const pg of ["look", "sound", "community", "study", "data", "info"]) {
+        CP.openSettings(pg); await new Promise((r) => setTimeout(r, 300));
+        const c = document.querySelector("#settings .set-card"), ch = c.clientHeight;
+        for (let y = 0; y <= c.scrollHeight; y += ch * 0.4) { c.scrollTop = y; await new Promise((r) => setTimeout(r, 560)); }
+        c.scrollTop = c.scrollHeight; await new Promise((r) => setTimeout(r, 2800));
+        keys[pg] = localStorage.getItem("md-seen-p-" + pg);
+      }
+      return { keys, on: document.getElementById("settings-btn").classList.contains("has-new") };
+    });
+    check("Pallino «Nuovo»: leggendo davvero tutte e sei le pagine (una schermata alla volta) il pallino su ⚙️ si spegne", !readAll.on && Object.values(readAll.keys).every(Boolean), JSON.stringify(readAll));
     await p.evaluate(() => CP.openSettings("community")); await p.waitForTimeout(300);
     await p.click("[data-cm-check]"); await p.waitForTimeout(400);
     const vp = await p.evaluate(() => ({ msg: document.getElementById("cm-vp-msg").textContent, line: document.getElementById("cm-vp-line").textContent, stored: localStorage.getItem("md-voicepack") }));

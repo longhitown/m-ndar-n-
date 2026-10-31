@@ -93,7 +93,7 @@
   (CP.settingsExtras = CP.settingsExtras || []).push({ group: "adv", html: function () {
     if (!available()) return "";
     return '<details class="set-sec" id="set-pleco"><summary>' + ICON + " " + T("plc.title") + '</summary><div class="vbody">' +
-      '<p class="small muted" style="margin:0">' + T("plc.lede") + "</p>" +
+      (CP.plecoGuide ? CP.plecoGuide() : '<p class="small muted" style="margin:0">' + T("plc.lede") + "</p>") +
       '<label class="chk"><input type="checkbox" id="opt-pleco"' + (on() ? " checked" : "") + "> " + T("plc.toggle") + "</label>" +
       (on() ? '<p class="small muted" style="margin:0">' + T("plc.how") + "</p>" : "") + "</div></details>";
   } });

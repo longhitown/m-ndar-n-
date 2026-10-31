@@ -1037,7 +1037,7 @@ function sandbox() {
     /look: \["set-look", "set-lang", "set-widgets"\]/.test(sp) && !/community: \[[^\]]*set-widgets/.test(sp) && /function wdPreview/.test(cm) && !/if \(!bridge\(\)\) return "";/.test(cm) && ["today_large", "today_small", "pause", "review"].every((k) => cm.includes('"' + k + '"') || cm.includes("'" + k + "'")));
   const pgs = (sp.match(/var PAGES = \[([^\]]*)\]/) || [])[1] || "", cpg = (cm.match(/var PAGES = \[([^\]]*)\]/) || [])[1] || "";
   check("Pallino «Nuovo»: c'è su tutte le pagine delle Impostazioni e si toglie solo a pagina scorsa fino in fondo e con il tempo di vederla",
-    pgs && pgs.replace(/\s/g, "") === cpg.replace(/\s/g, "") && /function readStart/.test(cm) && /scrollTop >= max - 8/.test(cm) && /SEG_MS = 500/.test(cm) && !/md-seen-community/.test(cm) && /md-seen-p-/.test(rd("ui/settings.js")));
+    pgs && pgs.replace(/\s/g, "") === cpg.replace(/\s/g, "") && /function readStart/.test(cm) && /Math\.round\(card\.scrollTop \/ max \* \(n - 1\)\)/.test(cm) && /SEG_MS = 500/.test(cm) && !/md-seen-community/.test(cm) && /md-seen-p-/.test(rd("ui/settings.js")));
 }
 
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
