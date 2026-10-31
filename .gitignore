@@ -27,3 +27,9 @@ cambi.json
 __pycache__/
 _site/
 build-demo-*/
+
+# importazione delle voci (tools/voice-import.mjs): le cartelle di revisione contengono registrazioni di persone, e l'elenco delle parole vietate sta fuori dal repository
+/revisione*/
+/review-*/
+/blocklist*.txt
+/mandarino-voci-*.zip

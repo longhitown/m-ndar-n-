@@ -64,6 +64,7 @@ tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), radicali.mjs (rigenera lab-recipes.js, le ricette del Laboratorio dei radicali), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), misura-avvio.mjs (tempo di apertura), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs e review-import.mjs (rilettura da madrelingua, docs/rilettura.md),
+                           voice-import.mjs (importazione delle voci di madrelingua, con ascolto e approvazione a mano: docs/scambio-linguistico.md),
                            icons.mjs (rigenera le icone PWA e Android, mandarino + wordmark, con Playwright),
                            hunspell-check.py, lib/ (Node puro, zero dipendenze; gli strumenti di controllo leggono file esterni solo in sviluppo)
 ```
