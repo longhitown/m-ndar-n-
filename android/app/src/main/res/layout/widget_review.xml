@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- widget «Ripasso rapido» 2×1, stile «Giada»: il numero di carte da ripassare (grande) e sotto la parola; un tocco apre il ripasso -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center" android:padding="10dp" android:background="@drawable/w_giada_afternoon"
+    android:contentDescription="@string/r_cd_empty">
+    <TextView android:id="@+id/r_n" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1"
+        android:text="@string/w_sample_n" android:textColor="@color/w_g_mint" android:textSize="32sp" android:textStyle="bold" android:importantForAccessibility="no" />
+    <TextView android:id="@+id/r_l" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:ellipsize="end"
+        android:text="@string/r_sample_label" android:textColor="@color/w_g_text" android:textSize="13sp" android:textStyle="bold" android:importantForAccessibility="no" />
+</LinearLayout>
