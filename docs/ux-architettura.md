@@ -175,7 +175,7 @@ sezioni sono sempre aperte, una sotto l'altra, e non si annidano.
 | Momento | Schede |
 |---|---|
 | subito | Percorso, Studia |
-| 200 XP e almeno 2 giorni attivi | Parole |
+| 200 XP e almeno 1 giorno attivo | Parole |
 | 300 XP e almeno 3 giorni attivi | Frasi |
 
 Le costanti stanno in un solo punto, `UNLOCK` in `src/ui/unlock.js`. Chi ha già progressi o ha già visto il benvenuto
@@ -226,3 +226,19 @@ Che cosa corrisponde a che cosa (cinese → italiano):
 - **Etichetta «Voce reale»:** dopo una clip vera (mai per la sintesi) compare per qualche secondo una riga fissa in basso, «🎙️ Voce reale · Tatoeba» o «… · Common Voice»; il tocco apre di chi è la voce, la licenza e l'invito allo Scambio linguistico. Si spegne in ⚙️ → Suoni e musica → Voce («Mostra chi ha letto la frase», `cp-voicetag`). Modulo `ui/voice-tag.js`, caricato al primo uso.
 
 Ancora aperti (anche in [roadmap.md](roadmap.md)): la rilettura dei testi cinesi da parte di un madrelingua (corso, carta e pagina `zh/`) e i «vuoti curati» (oggi la carta «今天» mostra sempre la prossima lezione, anche quando non ce n'è ancora nessuna).
+
+## L'app cresce con chi la usa (pop-up, pallini, Novità)
+
+Chi comincia vede poco di proposito; deve però capire che è l'inizio, **senza aggiungere niente alla schermata principale** (una scheda
+«il tuo studio cresce» in cima al Percorso è stata provata e tolta: troppo affollata). La ricerca consultata (NN/g sulle finestre modali,
+sulla rivelazione progressiva e sull'onboarding: aiuto «a richiesta», non tour iniziali) porta a questo schema:
+
+- **I primi 300 punti valgono il doppio** (`EARLY` in `core/game.js`): Parole (200) e Frasi (300) arrivano nei primi giorni. Giorni minimi: 1 e 2.
+- **Pop-up di sblocco** (`CP.unlockPop`, `ui/grow.js`): rarissimo e sobrio. Solo per UNA scheda guadagnata studiando (non dopo il test di
+  livello né quando si uniscono due dispositivi: lì resta la riga in basso), al massimo uno al giorno, mai durante una sessione di studio
+  e mai sopra un'altra finestra. Riconosce il lavoro fatto, dice a che cosa serve la scheda e mostra la prossima con la strada già fatta
+  (progresso reale). Solo l'ultimo della serie nomina Pleco, Anki e i widget. Nessuna colpa, nessuna scadenza.
+- **Canale permanente: ⚙️ → Informazioni → Novità** (con il pallino). Tutto resta ritrovabile lì, senza interrompere nessuno.
+- **Pallino «Nuovo»** su ⚙️ e su ogni pagina delle Impostazioni (`ui/community.js`): si toglie solo a pagina letta davvero, cioè ogni
+  «schermata» in vista per mezzo secondo (due secondi e mezzo se la pagina è corta). Chi scorre di corsa lo vede restare.
+- I **widget** stanno in ⚙️ → Aspetto, con l'anteprima dei quattro, visibile anche fuori da Android.

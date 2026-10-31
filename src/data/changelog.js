@@ -1,57 +1,87 @@
-/* màndarínō · «Novità» (⚙️ → Informazioni): l'elenco dei cambiamenti, dal più recente.
-   Ogni voce: { v: versione, d: "AAAA-MM", it: [righe], zh: [righe] }. Righe brevi (una frase), scritte per chi studia, non per chi
-   programma; le novità della versione in corso in cima, il resto riassunto per temi in una voce sola. Una versione nuova va in cima;
-   tools/build.mjs controlla che ogni voce abbia le due lingue con lo stesso numero di righe; le prime righe finiscono anche nelle
-   note di rilascio degli store (tools/store-assets.mjs, 500 caratteri). */
+/* màndarínō · «Novità» (⚙️ → Informazioni): l'elenco dei cambiamenti, dal più recente, per far vedere come l'app è cresciuta.
+   Ogni voce: { v: titolo (it), vz: titolo (zh), d: "AAAA-MM-GG", it: [righe], zh: [righe] }. Righe brevi (una frase), scritte per chi studia,
+   non per chi programma; solo cose vere, ricavate dalla storia del progetto (git). Una versione nuova va in cima; tools/build.mjs controlla
+   che ogni voce abbia le due lingue con lo stesso numero di righe; le prime righe della prima voce finiscono anche nelle note di
+   rilascio degli store (tools/store-assets.mjs, 500 caratteri). */
 var CHANGELOG = [
-  { v: "6.7", d: "2026-10",
+  { v: "Widget e microfono", vz: "小组件和麦克风", d: "2026-10-31",
     it: [
-      "Scambio linguistico (facoltativo): registra con la tua voce frasi nella tua lingua madre, per aiutare chi studia. Frasi e parole a caso, tutto sul telefono finché non decidi tu: un solo tasto prepara il file e apre l'e-mail. Prima c'è un foglio del consenso e serve avere 18 anni.",
-      "Corso di italiano: anche il tuo Taccuino del viaggiatore, da Guilin a Roma. Ogni lezione superata ti porta più vicino alla prossima città.",
-      "Grammatica più ricca: 55 lezioni per il cinese e 51 per l'italiano, con mini-dialoghi, esempi con audio e un ripasso ogni cinque lezioni.",
-      "Apertura animata: i quattro toni volano sulle lettere e sulle foglie del logo.",
-      "Microfono e voce più affidabili su Android, e messaggi chiari al posto dei codici di errore.",
-      "La card di oggi del cinese ha formato, colore e firma, come quella di italiano.",
-      "Cambiare la lingua dei menu non ripete l'animazione e riapre la stessa pagina delle impostazioni.",
-      "Più ordine: niente menu «Copia» di Android sul tocco lungo, Stampa funzionante nell'app, mappa del Taccuino visibile intera.",
-      "Su Android: widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora (mattina, pomeriggio, sera, notte).",
-      "Su Android il nuovo widget «Ripasso rapido» (4×4) ti fa ripassare cinque minuti dalla schermata Home, una carta alla volta, senza aprire l'app: i voti li registra l'app quando la riapri. C'è anche la versione piccola, con il numero delle carte. Si aggiungono da ⚙️ → Comunità e voci, solo se lo vuoi.",
-      "Il microfono ora funziona anche su telefoni dove prima falliva.",
-      "Nuova pagina ⚙️ → Comunità e voci: lo Scambio linguistico, quante frasi hai registrato (numeri che restano sul telefono), un messaggio da copiare per consigliare l'app a un amico e il controllo manuale del pacchetto voci."
+      "Su Android, il nuovo widget «Ripasso rapido» (4×4): cinque minuti di ripasso dalla schermata Home, una carta alla volta.",
+      "Il microfono ora funziona anche sui telefoni dove prima falliva.",
+      "Voce e brani più affidabili: corretti nove difetti dell'audio.",
+      "Nuova pagina ⚙️ → Comunità e voci (scambio linguistico, pacchetto voci); i widget stanno in ⚙️ → Aspetto, con l'anteprima."
     ],
     zh: [
-      "语言交换（可选）：用你的母语录下句子，帮助学习的人。随机句子和词语，在你决定之前一切都只保存在手机上：一个按钮就会准备好文件并打开电子邮件。录音前有同意书，需年满 18 岁。",
-      "意大利语课程也有旅行手账了：从桂林到罗马，每通过一课，就离下一座城市更近。",
-      "语法更丰富：中文 55 课、意大利语 51 课，带小对话、有声例句，每五课一次复习。",
-      "启动动画：四个声调飞到标志的字母和两片叶子上。",
-      "安卓上的麦克风和语音更稳定，出错时显示清楚的说明，不再显示错误代码。",
-      "中文课程的今日卡片也能选择比例、颜色和署名，与意大利语课程一致。",
-      "切换菜单语言不再重复动画，并回到刚才的设置页面。",
-      "更整洁：长按不再弹出安卓的“复制”菜单，应用内可以打印，旅行手账的地图完整可见。",
-      "安卓桌面小组件：“今天”和“休息”换成翡翠风格，随时间（早晨、下午、傍晚、夜晚）变化。",
-      "安卓上新增“快速复习”小组件（4×4）：不用打开应用，在主屏幕上就能一张一张复习五分钟；下次打开应用时，应用会把这些结果记进去。另有只显示卡片数量的小号版本。你愿意的话，可在 ⚙️ → 社区与声音 中添加。",
+      "安卓上新增“快速复习”小组件（4×4）：在主屏幕上用五分钟，一张一张复习卡片。",
       "麦克风现在也能在以前出问题的手机上使用。",
-      "新页面 ⚙️ → 社区与声音：语言交换、你录了多少句子（数字只留在手机上）、可复制的推荐消息，以及手动检查语音包。"
+      "语音和音乐更稳定：修复了九处音频问题。",
+      "新页面 ⚙️ → 社区与声音（语言交换、语音包）；小组件在 ⚙️ → 外观，可先看预览。"
     ] },
-  { v: "6.0–6.6", d: "2026-10",
+  { v: "Scambio linguistico", vz: "语言交换", d: "2026-10-29",
     it: [
-      "Due corsi in un'app: il cinese per italiani (6385 parole, HSK 1–5) e l'italiano per chi parla cinese (4780 parole).",
-      "Ripasso a intervalli (FSRS-6) in tre stili, Guidato, Misto e Classico, con esercizi vari e verifica di tappa.",
-      "Voci reali, 22 brani originali, orecchio ai toni, pronuncia con il microfono e modalità guida a mani libere.",
-      "Laboratorio di frasi, radicali, ordine dei tratti, lettura graduata e 32 dialoghi.",
-      "Sincronizzazione senza server (cloud tuo o QR), backup, esportazione per Anki e foglio di lavoro in PDF.",
-      "Gradi, serie con giorno di riposo, sfida a un amico, pacchetto classe e carte da condividere.",
-      "Taccuino del viaggiatore: una mappa da Roma a Guilin, una città per ogni tappa del Percorso.",
-      "Sostieni il progetto e sigilli di gratitudine, solo estetici: tutto resta gratis."
+      "Scambio linguistico (facoltativo): registra con la tua voce frasi nella tua lingua madre, per aiutare chi studia. Tutto resta sul telefono finché non decidi tu. Serve avere 18 anni.",
+      "Diagnosi del microfono su Android, con messaggi chiari al posto dei codici di errore.",
+      "Il sito presenta l'app in italiano e in cinese."
     ],
     zh: [
-      "一个应用，两门课程：给意大利人的中文（6385 个词，HSK 1–5）和给中国人的意大利语（4780 个词）。",
-      "间隔复习（FSRS-6），三种方式：引导、混合、经典；有多种练习和阶段测验。",
-      "真人录音、22 首原创音乐、声调听力、麦克风发音练习和免手持导览模式。",
-      "造句实验室、部件、笔顺、分级阅读和 32 个对话。",
-      "无需服务器的同步（自己的云端或二维码）、备份、导出到 Anki、可打印的练习 PDF。",
-      "等级、可休息一天的连续天数、和朋友比一比、班级学习包和分享卡片。",
-      "旅行手账：一张从罗马到桂林的地图，每学完一站到一座城市。",
-      "支持项目和仅作纪念的感谢印章：一切依然免费。"
+      "语言交换（可选）：用你的母语录下句子，帮助学习的人。在你决定之前一切都只保存在手机上。需年满 18 岁。",
+      "安卓上的麦克风诊断，出错时显示清楚的说明，不再显示错误代码。",
+      "网站用意大利语和中文介绍这款应用。"
+    ] },
+  { v: "Lezioni e Taccuino", vz: "课程和旅行手账", d: "2026-10-28",
+    it: [
+      "Grammatica: 55 lezioni per il cinese e 51 per l'italiano, con mini-dialoghi, esempi con audio e un ripasso ogni cinque lezioni.",
+      "Laboratorio dei radicali: unisci due componenti e scopri i caratteri che nascono.",
+      "Taccuino del viaggiatore: una mappa da Roma a Guilin, una città per ogni tappa; c'è anche per chi studia italiano.",
+      "Su Android i widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora.",
+      "Foglio di lavoro in PDF da stampare."
+    ],
+    zh: [
+      "语法：中文 55 课、意大利语 51 课，带小对话、有声例句，每五课一次复习。",
+      "部件实验室：把两个部件合在一起，看看会出现哪些汉字。",
+      "旅行手账：一张从罗马到桂林的地图，每学完一站到一座城市；学意大利语的人也有。",
+      "安卓上的“今天”和“休息”小组件换成翡翠风格，随时间变化。",
+      "可打印的练习 PDF。"
+    ] },
+  { v: "Benvenuto e sblocchi", vz: "欢迎和逐步开放", d: "2026-10-27",
+    it: [
+      "Un test di livello di pochi minuti all'inizio, e l'app si apre un po' alla volta: Parole e Frasi arrivano quando servono.",
+      "Tre stili di ripasso: Guidato, Misto e Classico, con esercizi vari e verifica di tappa.",
+      "Lettura graduata: testi per livello, con le parole che conosci.",
+      "Sfida a un amico e pacchetti classe, senza server.",
+      "Pleco facoltativo, musica che continua con lo schermo spento, sostegno volontario con sigilli di gratitudine."
+    ],
+    zh: [
+      "开始时有几分钟的水平测试，应用会一点一点打开：词语和句子在需要时出现。",
+      "三种复习方式：引导、混合、经典，有多种练习和阶段测验。",
+      "分级阅读：按等级分的文章，用你已经认识的词。",
+      "和朋友比一比、班级学习包，都不需要服务器。",
+      "可选的 Pleco，息屏后音乐继续播放，自愿支持和感谢印章。"
+    ] },
+  { v: "Due corsi in un'app", vz: "一个应用，两门课程", d: "2026-10-26",
+    it: [
+      "Nasce il corso di italiano per chi parla cinese: 4780 parole, esercizi di frasi e un correttore di frasi italiane.",
+      "Tutto l'HSK 3.0, livelli 1–5: 6385 parole in sei capitoli, ognuna con una frase d'esempio.",
+      "Immersione a schermo pieno per esercizi, lezioni e dialoghi recitati.",
+      "Laboratorio di frasi con un traduttore prudente: dice «non so ancora» quando non è sicuro.",
+      "Sincronizzazione senza server (un file nel tuo cloud o dei QR) e 22 brani originali per studiare."
+    ],
+    zh: [
+      "给中国人的意大利语课程上线：4780 个词、句子练习和意大利语句子检查。",
+      "完整的 HSK 3.0 一至五级：6385 个词，分六章，每个词都有例句。",
+      "全屏沉浸模式，用于练习、课程和对话表演。",
+      "造句实验室带一个谨慎的翻译器：不确定时会说“还不会”。",
+      "无需服务器的同步（自己云端的文件或二维码），以及 22 首原创学习音乐。"
+    ] },
+  { v: "La base", vz: "基础版本", d: "2026-10-25",
+    it: [
+      "Ripasso a intervalli (FSRS-6), parole con pinyin, toni e sessioni a schermo pieno.",
+      "Interfaccia in italiano o in 中文, tema Carta di riso e caratteri leggibili.",
+      "Microfono per la pronuncia: registra e confronta."
+    ],
+    zh: [
+      "间隔复习（FSRS-6），带拼音、声调的词语，以及全屏学习模式。",
+      "界面可选意大利语或中文，宣纸主题，字体清晰易读。",
+      "用于发音练习的麦克风：录音并对比。"
     ] }
 ];

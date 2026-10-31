@@ -152,10 +152,10 @@ test mai ripassate, i punti e gli sblocchi del test) e «Mostra tutto, subito» 
 
 **Rivelazione progressiva** (`src/ui/unlock.js`, soglie nella costante `UNLOCK`):
 
-| Corso | All'inizio | 200 XP e 2 giorni di studio | 300 XP e 3 giorni | Altro |
+| Corso | All'inizio | 200 XP e 1 giorno di studio | 300 XP e 2 giorni | Altro |
 |---|---|---|---|---|
 | Cinese | Percorso, Studia | Parole | Frasi | — |
-| Italiano | 课程, 复习 | 单词 | 句子 | 变位: dopo la lezione sul presente o con 300 XP e 3 giorni |
+| Italiano | 课程, 复习 | 单词 | 句子 | 变位: dopo la lezione sul presente o con 300 XP e 2 giorni |
 
 Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; Modelli e Pensiero dopo 3 lezioni; Laboratorio, Slot e Lettore dopo 6
 lezioni o 1000 XP. Quando scatta c'è un messaggio caldo sopra la barra, una novità alla volta.
@@ -839,7 +839,7 @@ fa all'apertura: leggere, compilare ed eseguire il JavaScript prima che sparisca
 
 Per chi ha studiato molto e vuole portare le parole anche in Anki, senza togliere niente a màndarínō. La voce compare
 **solo dopo 400 parole iniziate o 400 ripassi** (`ANKI_MIN` in `src/core/export-anki.js`), in ⚙️ → Dati e sincronizzazione →
-«Altre opzioni di esportazione», accanto alla sincronizzazione. Il testo spiega la differenza: sincronizzare passa i
+«Anki: porta le tue parole», accanto alla sincronizzazione. Il testo spiega la differenza: sincronizzare passa i
 progressi a un altro dispositivo con màndarínō, esportare porta le parole in un'altra app. Prima di salvare servono due
 conferme. Il primo foglio dice che cosa fa e che cosa non fa.
 

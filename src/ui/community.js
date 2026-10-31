@@ -6,24 +6,49 @@
 (function () {
   var CP = window.CP, T = CP.t, esc = CP.esc, el = document.getElementById("settings"), btn = document.getElementById("settings-btn");
   if (!el) return;
-  var PACK_URL = "https://mandarinoapp.org/voci/index.json", K_PACK = "md-voicepack", K_COMM = "md-seen-community", K_VER = "md-seen-version";
+  var PACK_URL = "https://mandarinoapp.org/voci/index.json", K_PACK = "md-voicepack";
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   /* la versione dell'app: quella dell'APK se c'è, altrimenti quella della build */
   function ver() { return String((window.__MD_APK && window.__MD_APK.version) || CP.VERSION || ""); }
 
-  /* ---- pallino «Nuovo»: solo un punto e un testo per i lettori di schermo, mai numeri né suoni ---- */
+  /* ---- pallino «Nuovo»: su ⚙️ e su ogni voce delle Impostazioni, finché la pagina non è stata letta davvero ----
+     «Letta» vuol dire: scorsa fino in fondo, fermandosi in ogni schermata abbastanza da vederla (vedi readStart).
+     Chi scorre di corsa vede il pallino restare: è fatto apposta, perché le Impostazioni si guardino, non si saltino.
+     Solo un punto e un testo per i lettori di schermo, mai numeri né suoni. */
+  var PAGES = ["look", "sound", "community", "study", "data", "info"], KP = "md-seen-p-";
+  function seenVal(p) { return p === "info" ? ver() : "1"; }   /* Informazioni (con le Novità) torna «nuova» a ogni versione */
+  function unseen(p) { return get(KP + p) !== seenVal(p); }
   function dots() {
-    var c = !get(K_COMM), n = get(K_VER) !== ver(), sr = document.getElementById("set-new-sr");
-    if (btn) { btn.classList.toggle("has-new", c || n); if (c || n) btn.setAttribute("aria-describedby", "set-new-sr"); else btn.removeAttribute("aria-describedby"); }
-    if (sr) sr.textContent = c || n ? T("cm.new") : "";
-    [["community", c], ["info", n]].forEach(function (x) {
-      var tile = el.querySelector('[data-set-open="' + x[0] + '"]'), b = tile && tile.querySelector("b"), old = tile && tile.querySelector(".nd-sr");
+    var any = PAGES.some(unseen), sr = document.getElementById("set-new-sr");
+    if (btn) { btn.classList.toggle("has-new", any); if (any) btn.setAttribute("aria-describedby", "set-new-sr"); else btn.removeAttribute("aria-describedby"); }
+    if (sr) sr.textContent = any ? T("cm.new") : "";
+    PAGES.forEach(function (p) {
+      var tile = el.querySelector('[data-set-open="' + p + '"]'), b = tile && tile.querySelector("b"), old = tile && tile.querySelector(".nd-sr");
       if (!tile) return;
-      tile.classList.toggle("has-new", x[1]);
+      tile.classList.toggle("has-new", unseen(p));
       if (old) old.parentNode.removeChild(old);
-      if (x[1] && b) { var s = document.createElement("span"); s.className = "sr nd-sr"; s.textContent = " " + T("cm.newItem"); b.appendChild(s); }
+      if (unseen(p) && b) { var s = document.createElement("span"); s.className = "sr nd-sr"; s.textContent = " " + T("cm.newItem"); b.appendChild(s); }
     });
+  }
+  /* la lettura si misura a pezzi: la pagina è divisa in «schermate» e ognuna deve restare in vista almeno mezzo secondo
+     (una pagina corta, due secondi e mezzo); chi salta in fondo di corsa lascia le schermate di mezzo senza tempo e il pallino resta */
+  var card = el.querySelector(".set-card"), rdg = null, SEG_MS = 500, ONE_MS = 2500;
+  function readStop() { if (rdg) { clearInterval(rdg.t); rdg = null; } }
+  function readStart(page) {
+    readStop(); if (!card || !page || !unseen(page)) return;
+    var me = { t: 0, dw: [] }, TICK = 200;
+    function tick() {
+      if (rdg !== me) return;
+      if (el.hidden || document.hidden) return;
+      var ch = Math.max(1, card.clientHeight), step = ch * 0.85, max = card.scrollHeight - ch, n = max <= 4 ? 1 : Math.ceil(max / step) + 1, i, ok = true;
+      var cur = max <= 4 ? 0 : Math.min(n - 1, Math.round(card.scrollTop / max * (n - 1)));   /* n «schermate» a distanza uguale, dalla prima all'ultima */
+      while (me.dw.length < n) me.dw.push(0);
+      me.dw[cur] += TICK;
+      for (i = 0; i < n; i++) if (me.dw[i] < (n === 1 ? ONE_MS : SEG_MS)) { ok = false; break; }
+      if (ok) { set(KP + page, seenVal(page)); readStop(); dots(); }
+    }
+    rdg = me; me.t = setInterval(tick, TICK);
   }
 
   /* ---- i tuoi numeri (IndexedDB locale, via CP.scambio.all) ---- */
@@ -95,15 +120,36 @@
   var KINDS = ["today_large", "today_small", "pause", "review"];
   function bridge() { return window.MandarinoAndroid || null; }
   function canPin() { var A = bridge(); try { return !!(A && typeof A.pinWidget === "function" && typeof A.widgetPinSupported === "function" && A.widgetPinSupported() === true); } catch (e) { return false; } }
+  /* le anteprime: piccoli disegni dei quattro widget (solo CSS, nessuna immagine), visibili anche fuori da Android */
+  function wdCss() {
+    if (document.getElementById("wd-css")) return;
+    var s = document.createElement("style"); s.id = "wd-css";
+    s.textContent = ".wd-pv{display:grid;place-items:center;min-height:96px;padding:10px;border-radius:14px;background:var(--chip)}" +
+      ".wd{box-sizing:border-box;color:#FAF7EE;background-color:#14594A;background-image:linear-gradient(145deg,#14594A,#1E7A63);border-radius:18px;padding:10px 12px;display:grid;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.18);font-size:13px;line-height:1.25}" +
+      ".wd b{font-size:13px}.wd .hz{font-size:30px;line-height:1;font-family:var(--f-han,serif)}.wd .mut{opacity:.8}" +
+      ".wd-l{width:200px;grid-template-columns:auto 1fr;align-items:center;gap:10px}.wd-s{width:108px;text-align:center}.wd-p{width:150px;text-align:center}.wd-p .t{font-size:24px;font-weight:700}" +
+      ".wd-p .go{justify-self:center;background:#FAF7EE;color:#14594A;border-radius:99px;padding:2px 12px;font-weight:700}.wd-r{width:184px}" +
+      ".wd-r .py{opacity:.85}.wd-r .bt{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;font-size:13px;text-align:center}.wd-r .bt i{font-style:normal;background:rgba(250,247,238,.2);border-radius:6px;padding:3px 0}" +
+      ".cm-list li.wd-li{display:grid;gap:8px}.cm-list li.wd-li .wd-row{display:flex;align-items:center;justify-content:space-between;gap:10px}";
+    document.head.appendChild(s);
+  }
+  function wdPreview(k) {
+    var w = function (x) { return T("wd." + x); };
+    if (k === "today_large") return '<div class="wd wd-l"><span class="hz" lang="zh-CN">今</span><div><b>' + w("today") + '</b><div class="mut">6 ' + w("words") + ' · 🔥 4 ' + w("streak") + "</div></div></div>";
+    if (k === "today_small") return '<div class="wd wd-s"><span class="hz" lang="zh-CN">今</span><div class="mut">6 ' + w("words") + "</div></div>";
+    if (k === "pause") return '<div class="wd wd-p"><b>' + w("pause") + '</b><div class="t">25:00</div><div class="go">' + w("start") + "</div></div>";
+    return '<div class="wd wd-r"><div class="hz" lang="zh-CN">你好</div><div class="py">nǐ hǎo</div><div class="bt"><i>' + w("again") + "</i><i>" + w("hard") + "</i><i>" + w("good") + "</i><i>" + w("easy") + "</i></div></div>";
+  }
   function widgetsHTML() {
-    if (!bridge()) return "";
-    var pin = canPin();
-    return '<section class="set-sec" id="set-widgets" aria-labelledby="set-widgets-h"><h3 class="set-h" id="set-widgets-h">' + T("cm.w.t") + '</h3><div class="vbody"><p class="small muted" style="margin:0">' + T("cm.w.p") + "</p>" +
+    wdCss();
+    var pin = canPin(), droid = !!bridge();
+    return '<section class="set-sec" id="set-widgets" aria-labelledby="set-widgets-h"><h3 class="set-h" id="set-widgets-h">' + T("cm.w.t") + '</h3><div class="vbody"><p class="small muted" style="margin:0">' + T(droid ? "cm.w.p" : "wd.web") + "</p>" +
       '<ul class="cm-list">' + KINDS.map(function (k) {
         var n = T("cm.w." + k);
-        return '<li><div><b>' + esc(n) + '</b><div class="small muted">' + T("cm.w." + k + "D") + "</div></div>" +
-          (pin ? '<button type="button" class="btn-s" data-cm-pin="' + k + '" aria-label="' + CP.attr(T("cm.w.addAria", { n: n })) + '">' + T("cm.w.add") + "</button>" : "") + "</li>";
-      }).join("") + "</ul>" + (pin ? "" : '<p class="small" style="margin:0">' + T("cm.w.manual") + "</p>") + "</div></section>";
+        return '<li class="wd-li"><div class="wd-pv" role="img" aria-label="' + CP.attr(T("wd.t") + ": " + n) + '">' + wdPreview(k) + "</div>" +
+          '<div class="wd-row"><div><b>' + esc(n) + '</b><div class="small muted">' + T("cm.w." + k + "D") + "</div></div>" +
+          (pin ? '<button type="button" class="btn-s" data-cm-pin="' + k + '" aria-label="' + CP.attr(T("cm.w.addAria", { n: n })) + '">' + T("cm.w.add") + "</button>" : "") + "</div></li>";
+      }).join("") + "</ul>" + (droid && !pin ? '<p class="small" style="margin:0">' + T("cm.w.manual") + "</p>" : "") + "</div></section>";
   }
   function pinWidget(kind) {
     var ok = false;
@@ -129,8 +175,8 @@
   /* ganci chiamati da ui/settings-pages.js: dopo ogni disegno, e quando si apre una pagina (aprirla = averla vista) */
   CP.communityPaint = function () { dots(); paintMine(); if (CP.settingsPage() === "community") loadMine(); };
   CP.communityShown = function (page) {
-    if (page === "community") { set(K_COMM, "1"); paintMine(); loadMine(); }
-    if (page === "info") set(K_VER, ver());
+    if (page === "community") { paintMine(); loadMine(); }
+    readStart(page);
     dots();
   };
 

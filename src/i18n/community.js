@@ -58,3 +58,39 @@ Object.assign(I18N.zh, {
   "cm.vp.found": "已找到：{n} 条录音，{mb} MB，{d} 更新。没有下载任何东西。", "cm.vp.nope": "还没有发布语音包（或网络没有响应）。", "cm.vp.bad": "回复无效：请稍后再试。",
   "cm.vp.on": "已有语音包", "cm.vp.off": "没有语音包"
 });
+Object.assign(I18N.it, {
+  "wd.t": "Come saranno sulla Home",
+  "wd.web": "Disponibili nell'app per Android.",
+  "wd.today": "Oggi",
+  "wd.pause": "Pausa",
+  "wd.review": "Ripasso rapido",
+  "wd.words": "parole",
+  "wd.streak": "giorni di fila",
+  "wd.start": "Inizia",
+  "wd.cards": "carte",
+  "wd.again": "Ancora",
+  "wd.hard": "Difficile",
+  "wd.good": "Bene",
+  "wd.easy": "Facile",
+  "news.sum": "In pochi giorni, dal {d}: due corsi, 11165 parole, 106 lezioni, 22 brani e quattro widget. L'app continua a crescere.",
+  "pg.unseen": "Da leggere",
+  "pg.new": "Nuovo"
+});
+Object.assign(I18N.zh, {
+  "wd.t": "放在主屏幕上的样子",
+  "wd.web": "在安卓应用中提供。",
+  "wd.today": "今天",
+  "wd.pause": "休息",
+  "wd.review": "快速复习",
+  "wd.words": "个词",
+  "wd.streak": "天连续",
+  "wd.start": "开始",
+  "wd.cards": "张卡片",
+  "wd.again": "再来",
+  "wd.hard": "较难",
+  "wd.good": "不错",
+  "wd.easy": "简单",
+  "news.sum": "短短几天，自 {d} 起：两门课程、11165 个词、106 课、22 首音乐和四个小组件。应用还在继续成长。",
+  "pg.unseen": "待阅读",
+  "pg.new": "新"
+});

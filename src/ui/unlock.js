@@ -1,20 +1,14 @@
-/* ===== màndarínō · rivelazione progressiva: le schede (e gli strumenti di Frasi) compaiono quando hanno senso.
-   docs/ux-architettura.md spiega il perché; qui stanno le soglie, in un solo punto (UNLOCK).
-   - Corso di cinese: all'inizio Percorso e Studia; Parole e Frasi arrivano con i punti E un minimo di giorni di studio.
-   - Corso di italiano: all'inizio 课程 e 复习; 单词, 变位 e 句子 con la stessa logica (变位 anche dopo la lezione sul presente).
-   - Dentro Frasi: Lezioni, Esercizi e Dialoghi subito; gli strumenti più avanzati dopo qualche lezione superata.
-   Chi aveva già progressi (o aveva già visto il benvenuto) ha tutto sbloccato. Uno sblocco non si perde mai, nemmeno
-   azzerando i progressi; tra dispositivi vale «basta uno» (cp-ux-v1.unl, regola d'unione in core/store.js).
-   ⚙️ → Studio → «Mostra tutto» apre tutto subito. CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca
-   ovunque», ?go= e il corso di italiano prima di portare l'utente da qualche parte. ===== */
+/* ===== màndarínō · rivelazione progressiva: le schede (e gli strumenti di Frasi) compaiono quando hanno senso; le soglie stanno in UNLOCK.
+   Perché, regole, pop-up: docs/ux-architettura.md. Chi aveva già progressi ha tutto aperto; uno sblocco non si perde mai (cp-ux-v1.unl).
+   ⚙️ → Studio → «Mostra tutto» apre tutto; CP.unlock.ok(scheda) è la domanda che si fanno core.js, i gesti, «Cerca ovunque» e ?go=. ===== */
 (function () {
   var CP = window.CP, T = CP.t;
   var UNLOCK = {
-    words: 200, build: 300, minDays: { words: 2, build: 3 },   /* punti (XP) e giorni attivi per le schede del corso di cinese */
+    words: 200, build: 300, minDays: { words: 1, build: 2 },   /* punti (XP) e giorni attivi per le schede del corso di cinese; i primi 300 punti valgono il doppio (core/game.js) */
     advancedXp: 1500,                                          /* da qui (grado «Mercante di Seta») tutto è aperto */
     frasi: { pat: 3, thought: 3, lab: 6, slot: 6, reader: 6, rad: 6 }, /* lezioni superate per gli strumenti di Frasi */
     frasiXp: 1000,                                             /* ...oppure questi punti */
-    it: { words: [200, 2], conj: [300, 3], phrases: [300, 3], conjLesson: "presente" }
+    it: { words: [200, 1], conj: [300, 2], phrases: [300, 2], conjLesson: "presente" }
   };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function jget(k) { try { return JSON.parse(lsGet(k) || "null"); } catch (e) { return null; } }
@@ -51,7 +45,7 @@
   function due() {
     var xd = xpDays(), xp = xd[0], days = xd[1], u = unl(), out = [], pl = CP.ux.get("pl") || {};
     var adv = xp >= UNLOCK.advancedXp || (pl.adv && !pl.undone);
-    function want(k, cond) { if (!u[k] && (cond || adv)) out.push(k); }
+    function want(k, cond, no) { if (!u[k] && (cond || (adv && !no))) out.push(k); }
     if (IT) {
       Object.keys(UNLOCK.it).forEach(function (t) { var c = UNLOCK.it[t]; if (!Array.isArray(c)) return; want("it:" + t, (xp >= c[0] && days >= c[1]) || (t === "conj" && itLessonDone(UNLOCK.it.conjLesson))); });
     } else {
@@ -60,18 +54,29 @@
       var ld = lessonsDone();
       Object.keys(UNLOCK.frasi).forEach(function (t) { want("fr:" + t, ld >= UNLOCK.frasi[t] || xp >= UNLOCK.frasiXp); });
     }
+    want("x:pleco", !IT && CP.pleco && CP.pleco.available() && xp >= 500 && days >= 2, 1);
+    want("x:anki", CP.anki && CP.anki.allowed(), 1);
     return out;
   }
-  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "fr:rad": "sub.rad", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases" };
-  var queue = [], noteEl = null;
+  var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "fr:rad": "sub.rad", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases", "x:pleco": "plc.title", "x:anki": "anki.title" };
+  var queue = [], noteEl = null, popOpen = false, soloKey = "";
   /* il messaggio dello sblocco: una riga dentro la pagina, sopra la barra in basso; una novità alla volta, mai un pop-up */
   function announce() {
-    if (noteEl || !queue.length || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return;
+    if (queue.length && document.querySelector("[data-itr-grade]")) { setTimeout(announce, 4000); return; }
+    if (noteEl || popOpen || !queue.length || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return;
     var k = queue.shift(), tabK = k === "words" || k === "build" ? k : /^it:/.test(k) ? k.slice(3) : /^fr:/.test(k) ? "build" : null;
+    /* pop-up (ui/grow.js) solo per UNA scheda guadagnata studiando e mai sopra un'altra finestra; altrimenti la riga in basso */
+    if (k === soloKey || /^x:/.test(k)) {
+      if (CP.topSheet && CP.topSheet()) { queue.unshift(k); setTimeout(announce, 5000); return; }
+      try { var xd = xpDays(); popOpen = !!(CP.unlockPop && CP.unlockPop(k, { tab: tabK, xp: xd[0], days: xd[1], next: next() }, function () { popOpen = false; setTimeout(announce, 400); })); } catch (e) { popOpen = false; }
+      if (popOpen) return;
+      if (/^x:/.test(k)) { var u2 = unl(); delete u2[k]; delete u2["new:" + k]; setUnl(u2); return; }
+    }
     noteEl = document.createElement("div"); noteEl.className = "unl-note"; noteEl.setAttribute("role", "status");
     noteEl.innerHTML = '<span class="unl-ico" aria-hidden="true">✨</span><span class="unl-tx">' + CP.esc(T("unl.new", { n: T(NAME[k]) })) + "<small>" + CP.esc(T("unl." + k.replace(":", "_"))) + "</small></span>" +
       (tabK ? '<button type="button" class="btn-s" data-unl-go="' + tabK + '">' + CP.esc(T("unl.go")) + "</button>" : "") + '<button type="button" class="btn-s unl-x" data-unl-x aria-label="' + CP.attr(T("common.close")) + '">✕</button>';
     document.body.appendChild(noteEl);
+    var me = noteEl; setTimeout(function () { if (noteEl === me) closeNote(); }, 9000);   /* la riga si toglie da sola */
   }
   function closeNote() { if (noteEl && noteEl.parentNode) noteEl.parentNode.removeChild(noteEl); noteEl = null; setTimeout(announce, 400); }
   document.addEventListener("click", function (e) {
@@ -79,6 +84,13 @@
     var g = t.getAttribute("data-unl-go"); closeNote(); CP.sfx("tap");
     if (g) { if (IT && CP.itShow) CP.itShow(g); else CP.show(g); }
   });
+  /* la prossima scheda da aprire e a che punto sei (per il pop-up, ui/grow.js) */
+  function next() {
+    var xp = xpDays()[0], u = unl(), seq = IT ? ["it:words", "it:conj", "it:phrases"] : ["words", "build"], i, k, c, t, ld = lessonsDone(), pc = function (a, b) { return Math.max(4, Math.min(100, Math.round(a * 100 / b))); };
+    for (i = 0; i < seq.length; i++) if (!u[k = seq[i]]) { c = IT ? UNLOCK.it[k.slice(3)][0] : UNLOCK[k]; return { k: k, xp: c, have: xp, pct: pc(xp, c) }; }
+    t = IT ? 0 : Object.keys(UNLOCK.frasi).filter(function (x) { return !u["fr:" + x]; })[0];
+    return t ? { k: "fr:" + t, ls: UNLOCK.frasi[t], haveLs: ld, pct: pc(ld, UNLOCK.frasi[t]) } : null;
+  }
   /* la barra in basso: solo le schede aperte, con le colonne giuste */
   function paintDock() {
     var dock = IT ? document.querySelector(".dock-it") : document.querySelector("nav.dock:not(.dock-it)"); if (!dock) return;
@@ -92,6 +104,7 @@
   }
   function check(silent) {
     var add = due(); if (!add.length) { paintDock(); return; }
+    soloKey = add.length === 1 ? add[0] : "";
     var u = unl(); add.forEach(function (k) { u[k] = 1; if (!silent && !/^fr:/.test(k)) u["new:" + k] = 1; }); setUnl(u);
     /* molte novità insieme (un test di livello, un dispositivo unito): si annunciano solo le schede, non ogni strumento */
     if (!silent) { add.filter(function (k) { return add.length <= 2 || !/^fr:/.test(k); }).forEach(function (k) { if (queue.indexOf(k) < 0) queue.push(k); }); setTimeout(announce, 600); }
@@ -110,7 +123,7 @@
     setTimeout(run, 60);
   }
   CP.unlock = {
-    UNLOCK: UNLOCK, ok: ok, toolOk: toolOk, why: why, check: check, seen: seen, peek: peek, paint: paintDock,
+    UNLOCK: UNLOCK, ok: ok, toolOk: toolOk, why: why, check: check, seen: seen, peek: peek, paint: paintDock, next: next, name: function (k) { return NAME[k] ? T(NAME[k]) : k; },
     tabs: function () { return (IT ? ["lessons", "review", "words", "conj", "phrases"] : ["path", "study", "words", "build"]).filter(ok); },
     /* la scheda più vicina che si può aprire (per ?go=, cp-tab, gesti) */
     nearest: function (tab) { if (ok(tab)) return tab; return IT ? (tab === "conj" || tab === "phrases" ? "lessons" : "review") : (tab === "words" ? "study" : "path"); },
