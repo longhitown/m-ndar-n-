@@ -24,6 +24,7 @@
 import fs from "fs";
 import path from "path";
 import { assets, load as loadData, sectionFile, dialogFile, phrasesFile, verifiedFile } from "./lib/data.mjs";
+import { goodNick, newNicks as freshNicks, addNicks } from "./lib/credits.mjs";   /* le regole dei Crediti sono condivise con tools/voice-import.mjs */
 
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : def; };
@@ -39,7 +40,6 @@ const vocabFiles = list.filter((f) => f.startsWith("data/vocab/")), dialogFiles 
 const SEC = { data: DATA.SECTIONS }, PHR = { data: DATA.PHRASES }, DLG = { data: DATA.DIALOGS }, VER = { data: DATA.VERIFIED || [] };
 const stripZh = (z) => String(z || "").replace(/[\s，。？！、,.!?;；:：“”"'‘’…]/g, "");
 const touched = new Set();
-const goodNick = (n) => typeof n === "string" && n.trim().length >= 1 && n.trim().length <= 40 && !/[<>@\u0000-\u001f]|https?:|www\./i.test(n);
 function store() {
   for (const t of touched) {
     const [kind, i] = t.split(":"), n = +i;
@@ -157,10 +157,7 @@ if (dup.length) md += "\n## Doppioni (ignorati)\n\n" + dup.map((x) => `- ${show(
 if (rejected.length) md += "\n## Scartati\n\n" + rejected.map((x) => `- ${x.it ? show(x.it) : x.src}: ${x.why.join("; ")} _(${x.src})_`).join("\n") + "\n";
 
 /* chi ha chiesto di comparire nei Crediti, tra le voci da applicare; senza chi c'è già */
-const CONTRIB_JS = path.join(srcDir, "data/contributors.js"), CONTRIB_MD = path.resolve(srcDir, "..", "CONTRIBUTORS.md");
-const known = (() => { try { const t = fs.readFileSync(CONTRIB_JS, "utf8"); return JSON.parse(t.slice(t.indexOf("[", t.indexOf("CONTRIBUTORS")), t.lastIndexOf("]") + 1)); } catch (e) { return []; } })();
-const lc = (x) => x.toLowerCase();
-const newNicks = [...new Set(ok.filter((x) => x.nick).map((x) => x.nick))].filter((n) => !known.some((k) => lc(k) === lc(n)));
+const newNicks = freshNicks(srcDir, ok.filter((x) => x.nick).map((x) => x.nick));
 if (newNicks.length) md += "\n## Nei Crediti (lo hanno chiesto)\n\n" + newNicks.map((n) => `- ${n}`).join("\n") + "\n";
 
 /* ---------- applicazione ---------- */
@@ -180,12 +177,7 @@ if (apply && ok.length) {
   }
   store();
   if (newNicks.length) {
-    const L = known.concat(newNicks), t = fs.readFileSync(CONTRIB_JS, "utf8");
-    fs.writeFileSync(CONTRIB_JS, t.replace(/var CONTRIBUTORS = \[[\s\S]*?\];/, "var CONTRIBUTORS = " + JSON.stringify(L, null, 1).replace(/\n\s*/g, " ").replace("[ ", "[").replace(" ]", "]") + ";"));
-    if (fs.existsSync(CONTRIB_MD)) {
-      const m = fs.readFileSync(CONTRIB_MD, "utf8"), body = L.map((n) => "- " + n).join("\n") || "_(ancora nessuno)_";
-      fs.writeFileSync(CONTRIB_MD, m.replace(/<!-- elenco -->[\s\S]*?<!-- \/elenco -->/, "<!-- elenco -->\n" + body + "\n<!-- /elenco -->"));
-    }
+    addNicks(srcDir, newNicks);
     md += `\nNei Crediti: ${newNicks.join(", ")} (src/data/contributors.js, CONTRIBUTORS.md).\n`;
   }
   md += `\n**Applicati ${n} contributi in src/data/ (${[...touched].length} file).** Poi: node tools/build.mjs. Le parole aggiunte cambiano il conteggio atteso: aggiorna VOCAB_EXPECT in src/data/path-hsk.js (la build lo controlla).` +
