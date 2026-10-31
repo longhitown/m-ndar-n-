@@ -1,20 +1,26 @@
 plugins { id "com.android.application" }
 
-/* versione: il numero di commit (sempre crescente: gli aggiornamenti si installano sopra) e la versione dell'app */
-def gitCount = { ->
-    try { return "git rev-list --count HEAD".execute(null, rootDir).text.trim().toInteger() } catch (ignored) { return 1 }
-}
-def vCode = (System.getenv("MD_VERSION_CODE") ?: gitCount().toString()).toInteger()
+/* versione. Due casi:
+   - build per ogni push (CI, workflow «APK Android»): MD_VERSION_CODE è il numero di commit, la versione è 6.7.<codice>;
+   - release stabili (workflow «release», F-Droid, build in locale): versionCode e versionName stanno in android/version.properties,
+     righe semplici chiave=valore (F-Droid le legge con un'espressione regolare; le scrive tools/release.mjs). */
+def versionFile = new Properties()
+file("${rootDir}/version.properties").withReader("UTF-8") { versionFile.load(it) }
+def envCode = System.getenv("MD_VERSION_CODE")
+def vCode = (envCode ?: versionFile.getProperty("versionCode")).trim().toInteger()
+def vName = envCode ? "6.7." + vCode : versionFile.getProperty("versionName").trim()
 
 android {
     namespace "it.mandarino.app"
+    /* build riproducibili (F-Droid): il blocco di firma con i metadati delle dipendenze, cifrato con una chiave di Google, non è deterministico */
+    dependenciesInfo { includeInApk = false; includeInBundle = false }
     compileSdk 36
     defaultConfig {
         applicationId "it.mandarino.app"
         minSdk 26
         targetSdk 36
         versionCode vCode
-        versionName "6.7." + vCode
+        versionName vName
     }
     /* firma: con le variabili MD_KEYSTORE… (GitHub Actions, segreti del repository) la chiave è sempre la stessa e
        ogni nuova versione si installa sopra la vecchia senza perdere i progressi. Senza: chiave di debug. */
@@ -25,7 +31,10 @@ android {
     flavorDimensions = ["dist"]
     productFlavors {
         direct { dimension "dist" }
-        store { dimension "dist"; versionNameSuffix "-store" }
+        /* «-store» solo nelle build per push (MD_VERSION_CODE impostato), per distinguerle dalle altre. Nelle release stabili la
+           versione è quella di version.properties, senza suffisso: F-Droid confronta il versionName dell'APK con quello della
+           ricetta (che legge lo stesso file) e le build riproducibili devono dare lo stesso APK dell'APK store pubblicato. */
+        store { dimension "dist"; if (envCode) versionNameSuffix "-store" }
     }
     signingConfigs {
         release {

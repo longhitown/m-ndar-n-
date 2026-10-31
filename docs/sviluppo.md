@@ -59,8 +59,9 @@ dist/                      ← generato da tools/build.mjs (non è nel repositor
   it/course.js             il corso di italiano per chi parla cinese; data/it/lessons/ = le sue lezioni (in cinese)
 android/                   l'app Android: una WebView che apre dist/index.html dal pacchetto + un ponte nativo (Java, solo SDK)
 .github/workflows/web.yml  a ogni push: build, grammatica, prove unitarie, e2e e ux-audit con Playwright
-.github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release
-tools/                     build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
+.github/workflows/apk.yml  costruisce l'APK su GitHub, lo prova su un emulatore e lo pubblica come Release (una per push; con la variabile MD_NIGHTLY una sola prerelease)
+.github/workflows/release.yml  release stabile sul tag r<x.y.z>: APK diretto, APK store e .aab con la stessa firma (docs/store/rilascio.md)
+tools/                     release.mjs (prepara una release stabile: versione, versionCode e note di versione; docs/store/rilascio.md), build.mjs, grammar.mjs, anatomy.mjs, site.mjs, store-assets.mjs, anki-check.py (solo sviluppo), ux-audit.mjs, e2e.mjs, merge-contrib.mjs, cedict-check.mjs, morphit-check.mjs,
                            freq.mjs (rigenera freq.js), strokes.mjs (rigenera strokes.js da Make Me a Hanzi), radicali.mjs (rigenera lab-recipes.js, le ricette del Laboratorio dei radicali), android-smoke.mjs,
                            unit.mjs (taglio in parole, unione dei backup, peso dell'avvio), misura-avvio.mjs (tempo di apertura), wikidict.mjs, levels.mjs, itlex.mjs,
                            review-sample.mjs e review-import.mjs (rilettura da madrelingua, docs/rilettura.md),
@@ -267,13 +268,19 @@ F-Droid, tester. Niente viene pubblicato automaticamente.
   Il CI prova l'APK in emulatori Android 14 e 16.
 - **`.aab`**: la corsa «APK Android» allega `mandarino-store.aab` (circa 84 MB, sotto il limite di 200 MB del modulo
   base), l'APK store e le note di versione di quel `versionCode`. Sono solo artefatti, mai pubblicati.
+- **Release stabili**: la versione sta in `android/version.properties` (`versionCode` e `versionName`, righe semplici: le legge anche
+  F-Droid). `node tools/release.mjs <x.y.z>` la aggiorna e prepara le note di versione; il tag `r<x.y.z>` fa partire il workflow
+  `release`, che pubblica APK diretto, APK store e `.aab` con la stessa firma. Le build per push (`apk.yml`) hanno `MD_VERSION_CODE`
+  = numero di commit e versione `6.7.<commit>`. Flusso, canali, rollback e firma: **[docs/store/rilascio.md](store/rilascio.md)**;
+  F-Droid e build riproducibili: [docs/store/f-droid.md](store/f-droid.md).
 - **Testi e immagini**: `fastlane/metadata/android/{it-IT,zh-CN}/` è la fonte unica. `node tools/store-assets.mjs`
   rigenera icona, immagine di presentazione 1024×500, quattro schermate per lingua e le schede `docs/store/*.md`.
 
 ## L'APK per Android (gratis, senza Play Store)
 
 Ogni push che cambia l'app fa partire **GitHub Actions** (`.github/workflows/apk.yml`): costruisce `dist/`, controlla la grammatica,
-costruisce l'APK, lo verifica con Android lint e `apksigner` e, sul ramo principale, lo pubblica come Release.
+costruisce l'APK, lo verifica con Android lint e `apksigner` e, sul ramo principale, lo pubblica come Release (con la variabile del
+repository `MD_NIGHTLY` = `prerelease`, invece, aggiorna una sola prerelease `nightly`: vedi [docs/store/rilascio.md](store/rilascio.md)).
 Il link da mandare a chi vuole l'app non cambia mai:
 
 `https://github.com/longhitown/mandarino/releases/latest/download/mandarino.apk`
@@ -292,7 +299,7 @@ viene pubblicato. **Conserva una copia della chiave fuori da GitHub**: se si per
 più sopra le vecchie (bisognerebbe disinstallare, dopo aver fatto il backup dei progressi).
 Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype PKCS12 -alias mandarino -keyalg RSA -keysize 4096 -validity 18250`.
 
-**In locale** (serve l'Android SDK): `node tools/build.mjs` e poi `gradle -p android assembleDirectRelease lintDirectRelease` (versione per gli store: `bundleStoreRelease`).
+**In locale** (serve l'Android SDK; senza `MD_VERSION_CODE` la versione è quella di `android/version.properties`): `node tools/build.mjs` e poi `gradle -p android assembleDirectRelease lintDirectRelease` (versione per gli store: `bundleStoreRelease`).
 
 **Cosa c'è in più nell'APK** (tutto calcolato sul telefono, nessun server):
 - **scorciatoie** (pressione lunga sull'icona): Studia ora, Orecchio ai toni, Jukebox; aprono `?go=study|ear|music`;
