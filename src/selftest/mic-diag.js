@@ -127,4 +127,27 @@
       return rows;
     });
   };
+
+  /* Prova del riconoscimento vocale (quello delle carte): chi lo fa su questo telefono e cosa succede con due percorsi, uno dopo l'altro.
+     «sistema»: il servizio apre il suo microfono. «audio nostro»: gli si dà l'audio della nostra cattura (Android 13+). Si dice «你好» due volte. */
+  CP.srDiag = function () {
+    var A = window.MandarinoAndroid, rows = [];
+    function row(n, ok, t) { rows.push([n, ok, String(t == null ? "" : t)]); }
+    if (!A || !CP.srTest) return Promise.resolve([["Riconoscimento vocale", true, "la prova esiste solo nell'APK"]]);
+    var info = null; try { info = JSON.parse(A.srInfo()); } catch (e) { row("Servizio vocale", false, "srInfo non disponibile: " + e); }
+    if (info) {
+      row("Servizio vocale predefinito", !!info.available, (info.default || "(non impostato)") + " · riconoscimento disponibile " + !!info.available + (info.onDevice !== undefined ? " · sul telefono " + !!info.onDevice : ""));
+      row("Servizi di riconoscimento installati", (info.services || []).length > 0, (info.services || []).join(" ; ") || "nessuno");
+      row("Versioni app vocali", true, Object.keys(info.versions || {}).map(function (k) { return k + " " + info.versions[k]; }).join(" · ") || "nessuna visibile");
+    }
+    function show(r, label) {
+      var ev = r.events.map(function (x) { return x.type.replace("sr-", "") + "@" + x.t + (x.data ? "(" + x.data + ")" : ""); }).join(" ");
+      var res = r.events.filter(function (x) { return x.type === "sr-result"; })[0], err = r.events.filter(function (x) { return x.type === "sr-error"; })[0];
+      row(label, !!res, (res ? "HA SENTITO: " + res.data : err ? "errore " + err.data : "nessuna risposta") + " · " + r.ms + " ms · " + ev);
+    }
+    function pause(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+    return CP.srTest("classic", "zh-CN").then(function (r) { show(r, "Riconoscimento: microfono del sistema"); return pause(900); })
+      .then(function () { return CP.srTest("piped", "zh-CN"); }).then(function (r) { show(r, "Riconoscimento: audio nostro (Android 13+)"); })
+      .then(function () { return rows; }, function (e) { row("Prova interrotta", false, String(e)); return rows; });
+  };
 })();

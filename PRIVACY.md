@@ -24,6 +24,7 @@ L'app funziona tutta offline. La rete si usa solo in questi casi, che decidi tu:
 | **Controllo degli aggiornamenti** (solo app Android) | al massimo una volta al giorno; si spegne in ⚙️ | una richiesta senza dati personali | GitHub (`api.github.com`) |
 | **Voce online** | solo se la accendi in ⚙️ → Suoni e musica → Voce (spenta di base) | il testo cinese da leggere | un servizio di sintesi vocale di Google, non ufficiale |
 | **Riconoscimento della voce** negli esercizi di pronuncia | solo quando tocchi il microfono | l'audio di quello che dici | nel browser Chrome lo elabora il fornitore del browser (Google); nell'app Android il riconoscitore del telefono, che può funzionare anche offline |
+| **Controllo del pacchetto voci** (⚙️ → Comunità e voci → «Controlla aggiornamenti») | solo quando tocchi il pulsante, mai da sola | una richiesta `GET` senza cookie e senza intestazione Referer a `https://mandarinoapp.org/voci/index.json`, un piccolo elenco pubblico (versione, data, numero di voci, dimensione, file). Non parte nessun dato tuo: la richiesta è uguale per tutti | `mandarinoapp.org` (GitHub Pages: come per ogni visita al sito può registrare l'indirizzo IP, vedi sotto). Nell'app resta solo l'ultimo esito (data, numero, dimensione, quando hai controllato), in `localStorage` alla chiave `md-voicepack`, fuori dai backup. Per ora non scarica nulla |
 | **Link esterni** (sostegno, GitHub, e-mail) | solo quando li tocchi | quello che apri tu | il sito che apri |
 | **Musica e dizionario dei nomi** (versione web) | al primo ascolto di un brano, al primo uso dei «nomi e termini» del Lettore | la richiesta del file | lo stesso sito dell'app |
 | **Aggiornamenti dell'app** (versione web) | all'apertura, se c'è rete | la richiesta della versione nuova | lo stesso sito dell'app |
@@ -125,6 +126,7 @@ dati dal mio registro. Il codice del sigillo non contiene dati personali.
 | **检查更新**（仅安卓应用） | 每天最多一次；可在 ⚙️ 中关闭 | 一个不含个人数据的请求 | GitHub（`api.github.com`） |
 | **在线语音** | 只有在 ⚙️ → 声音和音乐 → 语音 中打开后（默认关闭） | 要朗读的文字 | 谷歌的一个非官方语音合成服务 |
 | **语音识别**（发音练习） | 只有点麦克风时 | 你说话的音频 | 在 Chrome 浏览器中由浏览器提供方（谷歌）处理；在安卓应用中由手机的识别器处理，可能离线 |
+| **检查语音包**（⚙️ → 社区与声音 → “检查更新”） | 只有点按钮时，绝不会自动进行 | 向 `https://mandarinoapp.org/voci/index.json` 发出一个不带 Cookie、不带 Referer 的 `GET` 请求，取回一份公开的小清单（版本、日期、录音数量、大小、文件）。不会发送任何你的数据：这个请求对所有人都一样 | `mandarinoapp.org`（GitHub Pages：和访问网站一样，可能记录 IP 地址，见下文）。应用里只保留最近一次的结果（日期、数量、大小、检查时间），存在 `localStorage` 的 `md-voicepack` 键里，不进入备份。目前不下载任何内容 |
 | **外部链接**（支持、GitHub、电子邮件） | 只有点击时 | 你打开的内容 | 你打开的网站 |
 | **音乐和人名地名词典**（网页版） | 第一次播放某首曲子、第一次使用阅读器的“人名和术语”时 | 文件请求 | 应用所在的同一网站 |
 | **应用更新**（网页版） | 打开应用且有网络时 | 新版本请求 | 应用所在的同一网站 |

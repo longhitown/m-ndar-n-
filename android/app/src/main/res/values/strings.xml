@@ -16,6 +16,22 @@
     <string name="w_large_name">Oggi</string>
     <string name="w_small_desc">Serie di giorni e ripassi in scadenza</string>
     <string name="w_large_desc">Serie, ripassi in scadenza e parola del giorno</string>
+    <!-- widget «Ripasso rapido»: quante carte ci sono da ripassare adesso -->
+    <string name="r_name">Ripasso rapido</string>
+    <string name="r_desc">Quante carte hai da ripassare adesso; un tocco apre il ripasso</string>
+    <string name="r_empty">Apri l\'app</string>
+    <string name="r_done">Tutto ripassato</string>
+    <string name="r_cd_empty">Ripasso rapido. Apri l\'app per cominciare</string>
+    <string name="r_cd_done">Tutto ripassato. Tocca per aprire l\'app</string>
+    <string name="r_sample_label">carte da ripassare</string>
+    <plurals name="r_cards">
+        <item quantity="one">carta da ripassare</item>
+        <item quantity="other">carte da ripassare</item>
+    </plurals>
+    <plurals name="r_cd_cards">
+        <item quantity="one">%d carta da ripassare. Tocca per aprire il ripasso</item>
+        <item quantity="other">%d carte da ripassare. Tocca per aprire il ripasso</item>
+    </plurals>
     <string name="m_play">Riprendi</string>
     <string name="m_pause">Pausa</string>
     <string name="m_prev">Precedente</string>

@@ -14,7 +14,10 @@ var CHANGELOG = [
       "La card di oggi del cinese ha formato, colore e firma, come quella di italiano.",
       "Cambiare la lingua dei menu non ripete l'animazione e riapre la stessa pagina delle impostazioni.",
       "Più ordine: niente menu «Copia» di Android sul tocco lungo, Stampa funzionante nell'app, mappa del Taccuino visibile intera.",
-      "Su Android: widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora (mattina, pomeriggio, sera, notte)."
+      "Su Android: widget «Oggi» e «Pausa» in stile Giada, che cambiano con l'ora (mattina, pomeriggio, sera, notte).",
+      "Su Android i widget sono quattro: il nuovo «Ripasso rapido» mostra quante carte sono da ripassare e un tocco apre il ripasso. Si aggiungono da ⚙️ → Comunità e voci, solo se lo vuoi.",
+      "Il microfono ora funziona anche su telefoni dove prima falliva.",
+      "Nuova pagina ⚙️ → Comunità e voci: lo Scambio linguistico, quante frasi hai registrato (numeri che restano sul telefono), un messaggio da copiare per consigliare l'app a un amico e il controllo manuale del pacchetto voci."
     ],
     zh: [
       "语言交换（可选）：用你的母语录下句子，帮助学习的人。随机句子和词语，在你决定之前一切都只保存在手机上：一个按钮就会准备好文件并打开电子邮件。录音前有同意书，需年满 18 岁。",
@@ -25,7 +28,10 @@ var CHANGELOG = [
       "中文课程的今日卡片也能选择比例、颜色和署名，与意大利语课程一致。",
       "切换菜单语言不再重复动画，并回到刚才的设置页面。",
       "更整洁：长按不再弹出安卓的“复制”菜单，应用内可以打印，旅行手账的地图完整可见。",
-      "安卓桌面小组件：“今天”和“休息”换成翡翠风格，随时间（早晨、下午、傍晚、夜晚）变化。"
+      "安卓桌面小组件：“今天”和“休息”换成翡翠风格，随时间（早晨、下午、傍晚、夜晚）变化。",
+      "安卓上的小组件增加到四个：新的“快速复习”显示有多少卡片要复习，点一下就打开复习。你愿意的话，可在 ⚙️ → 社区与声音 中添加。",
+      "麦克风现在也能在以前出问题的手机上使用。",
+      "新页面 ⚙️ → 社区与声音：语言交换、你录了多少句子（数字只留在手机上）、可复制的推荐消息，以及手动检查语音包。"
     ] },
   { v: "6.0–6.6", d: "2026-10",
     it: [

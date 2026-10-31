@@ -39,7 +39,7 @@ studia la frase nella propria lingua accanto alla traduzione, quindi l'esercizio
 
 ## Il foglio del consenso
 
-Nell'app: ⚙️ → Suoni e musica → **Scambio linguistico: la tua voce** → *Partecipa*. Otto punti (che cosa si registra e dove resta,
+Nell'app: ⚙️ → Comunità e voci → **Scambio linguistico: la tua voce** → *Partecipa*. Otto punti (che cosa si registra e dove resta,
 CC BY 4.0, la voce si riconosce, chi ascolta, nome e regione, come chiedere di togliere una registrazione, solo maggiorenni, lingua
 madre), nome o nickname e regione facoltativi, tre caselle non spuntate di base («Ho letto e capito», «Ho almeno 18 anni», «Autorizzo la pubblicazione con licenza CC BY 4.0 se le invio») e il
 pulsante «Accetto e continuo», spento finché non sono spuntate tutte. Il consenso resta sul telefono in `md-voice-consent`

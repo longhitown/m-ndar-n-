@@ -57,7 +57,7 @@
           CP.micLog("ripiego-vincoli", e);
           var steps = [["grezzo", function () { return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }],
             ["semplice", function () { return navigator.mediaDevices.getUserMedia({ audio: true }); }],
-            ["nativo", function () { if (!window.__mdNativeMic) return Promise.reject(e); return window.__mdNativeMic(); }]];
+            ["nativo", function () { if (!CP.nativeMic) return Promise.reject(e); return CP.nativeMic(); }]];
           return steps.reduce(function (p, st) {
             return p.catch(function () { return st[1]().then(function (s) { CP.micLog("ripiego-riuscito", st[0] + (s && s._mdNative ? " · " + s._mdNative.source : "")); return s; }); });
           }, Promise.reject(e)).catch(function () { throw e; });

@@ -640,6 +640,32 @@ function sandbox() {
   }
   fs.rmSync(tmp, { recursive: true, force: true });
 }
+/* ⚙️ → Comunità e voci: testi nelle due lingue, novità con due lingue, e l'unica richiesta di rete dell'app dopo il caricamento (solo al tocco) */
+{
+  const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc);
+  for (const f of ["i18n/settings.js", "i18n/community.js"]) vm.runInContext(fs.readFileSync(path.join(SRC, f), "utf8"), tc);
+  const TI = vm.runInContext("I18N", tc), keys = (o) => Object.keys(o).filter((k) => /^(cm\.|set\.p\.community|set\.kwComm)/.test(k)).sort();
+  const code = fs.readFileSync(path.join(SRC, "ui/community.js"), "utf8");
+  const used = new Set([...code.matchAll(/T\(\s*"(cm\.[\w.]*\w)"/g)].map((m) => m[1]));
+  ["today_large", "today_small", "pause", "review"].forEach((k) => { used.add("cm.w." + k); used.add("cm.w." + k + "D"); });
+  const lack = [...used].filter((k) => !TI.it[k] || !TI.zh[k]);
+  check("Comunità e voci: stessi testi in italiano e in cinese (" + keys(TI.it).length + ") e nessun testo usato che manchi", keys(TI.it).join() === keys(TI.zh).join() && !lack.length, lack.join(", "));
+  const msg = TI.it["cm.inv.msgIt"] + TI.it["cm.inv.msgZh"];
+  check("Comunità e voci: il messaggio d'invito dice mandarinoapp.org, senza parametri di tracciamento (niente «?» né utm)", /mandarinoapp\.org/.test(msg) && !/\?|utm_|=/i.test(msg), msg);
+  const ctx = {}; vm.runInNewContext(fs.readFileSync(path.join(SRC, "data/changelog.js"), "utf8") + ";this.C=CHANGELOG;", ctx);
+  const bad = (ctx.C || []).filter((e) => !(e.v && e.d && Array.isArray(e.it) && Array.isArray(e.zh) && e.it.length > 0 && e.it.length === e.zh.length && e.it.concat(e.zh).every((r) => typeof r === "string" && r.length > 5))).map((e) => e.v);
+  check("Novità (data/changelog.js): ogni versione ha versione, data e le righe in italiano e in cinese, in pari numero", (ctx.C || []).length > 0 && !bad.length, bad.join(", "));
+  const top = ctx.C[0], topTxt = top.it.join(" ");
+  check("Novità: la versione in cima parla di scambio linguistico, widget (Ripasso rapido) e microfono", /[Ss]cambio linguistico/.test(topTxt) && /Ripasso rapido/.test(topTxt) && /[Mm]icrofono/.test(topTxt) && /小组件/.test(top.zh.join(" ")), top.v);
+  /* la richiesta di rete: una sola fetch verso l'esterno in tutta l'app (ui/community.js), dentro checkPack, che parte solo dal click sul pulsante */
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (e.name === "data" ? [] : walk(path.join(d, e.name))) : e.name.endsWith(".js") ? [path.join(d, e.name)] : []);
+  const ext = walk(SRC).filter((f) => /fetch\(\s*["'`]https?:\/\//.test(fs.readFileSync(f, "utf8")) || /PACK_URL/.test(fs.readFileSync(f, "utf8")) && /fetch\(\s*PACK_URL/.test(fs.readFileSync(f, "utf8"))).map((f) => path.relative(SRC, f).split(path.sep).join("/"));
+  const iFn = code.indexOf("function checkPack"), iFetch = code.indexOf("fetch(PACK_URL"), iClick = code.indexOf('hasAttribute("data-cm-check")');
+  /* NB: prima di questo modulo l'app non faceva richieste di rete che partissero da un tocco della persona su un pulsante dedicato; adesso c'è anche questa (PRIVACY.md), mai da sola, sempre dietro un tocco su «Controlla aggiornamenti» */
+  check("Rete: le sole fetch assolute dell'app sono il controllo aggiornamenti dell'APK (pwa/pwa.js, già in PRIVACY.md) e «Controlla aggiornamenti» (ui/community.js), questa dentro checkPack, richiamata solo dal click; verso mandarinoapp.org/voci/index.json, senza cookie né Referer", ext.join() === "pwa/pwa.js,ui/community.js" && iFn > 0 && iFetch > iFn && iClick > iFetch && /PACK_URL = "https:\/\/mandarinoapp\.org\/voci\/index\.json"/.test(code) && /credentials: "omit"/.test(code) && /referrerPolicy: "no-referrer"/.test(code) && (code.match(/checkPack\(/g) || []).length === 2, ext.join());
+  const pv = fs.readFileSync(path.join(ROOT, "PRIVACY.md"), "utf8");
+  check("PRIVACY.md: il controllo del pacchetto voci è nella tabella della rete, in italiano e in cinese", /Controllo del pacchetto voci[^\n]*voci\/index\.json/.test(pv) && /检查语音包[^\n]*voci\/index\.json/.test(pv) && /md-voicepack/.test(pv));
+}
 
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);

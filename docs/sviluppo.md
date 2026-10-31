@@ -175,7 +175,7 @@ uno» (`cp-ux-v1.unl`). Una scheda chiusa non si apre mai per sbaglio:
 - lezioni e dialoghi della tappa si aprono in immersione;
 - widget e scorciatoie di Android portano solo a Studia, ripasso e musica.
 
-**Impostazioni** in una pagina con cinque riquadri (Aspetto, Suoni e musica, Studio, Dati e sincronizzazione, Informazioni) e la ricerca; ogni riquadro apre una pagina. Vedi
+**Impostazioni** in una pagina con sei riquadri (Aspetto, Suoni e musica, Comunità e voci, Studio, Dati e sincronizzazione, Informazioni) e la ricerca; ogni riquadro apre una pagina. Vedi
 `docs/ux-architettura.md`.
 
 ## La grammatica del laboratorio: come si migliora
@@ -306,6 +306,7 @@ Per crearne una nuova: `keytool -genkeypair -keystore mandarino.jks -storetype P
   secondo, quindi il conto alla rovescia è un `Chronometer` in sola discesa (`setChronometerCountDown`) che Android fa scorrere da solo;
   un allarme (`AlarmManager`, preciso solo se il telefono lo consente senza permessi speciali) ai cambi di fase aggiorna il widget e
   manda un avviso. Fermo, mostra uno stato scelto dall'ora: «Riposo» di notte (22–6), «Pausa caffè a Xi'an» dalle 14 alle 18;
+- **widget «Ripasso rapido»** 2×1 (`ReviewWidget.java`): il numero di carte scadute adesso, calcolato da `WidgetState` (scadute + istogramma delle 168 ore); un tocco apre `mandarino://go/study`. Lo ridisegna `TodayWidget.updateAll`, cioè a ogni `setWidgetState`. Per aggiungere i widget dalle Impostazioni, `Bridge.widgetPinSupported()` e `Bridge.pinWidget(kind)` usano `WidgetPin.java` (`requestPinAppWidget`, Android 8+; nessun permesso, nessun dato inviato);
 - **promemoria** facoltativo, spento finché non lo accendi da ⚙️ → Studio → 🔔 (il permesso delle notifiche si chiede solo allora;
   `AlarmManager`, nessuna libreria); si riprogramma dopo un riavvio;
 - **musica in secondo piano** con notifica (pausa, avanti, stop) se la scegli nel pannello 🎵;
