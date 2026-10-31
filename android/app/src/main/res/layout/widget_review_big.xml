@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- widget «Ripasso rapido» 4×4, stile «Giada»: in alto il titolo e «3 di 10», al centro la carta (fronte: il carattere e «Tocca per vedere la risposta»;
+     retro: pinyin e significato), in basso i quattro voti. A fine ripasso (o senza carte) al posto dei voti ci sono i pulsanti «Ancora un po'» e «Apri màndarínō».
+     Quello che si vede lo decide ReviewBigWidget.java con setViewVisibility; il disegno di partenza (anche anteprima) è il retro di una carta. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="12dp" android:background="@drawable/w_giada_afternoon">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/rb_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:ellipsize="end"
+            android:text="@string/rb_name" android:textColor="@color/w_g_mute" android:textSize="12sp" android:textStyle="bold" />
+        <TextView android:id="@+id/rb_count" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:maxLines="1"
+            android:text="@string/rb_sample_count" android:textColor="@color/w_g_mute" android:textSize="12sp" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/rb_body" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="vertical" android:gravity="center" android:paddingTop="4dp" android:paddingBottom="4dp">
+        <TextView android:id="@+id/rb_front" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="2" android:ellipsize="end"
+            android:text="@string/w_sample_hz" android:textColor="@color/w_g_text" android:textSize="42sp" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/rb_a" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:ellipsize="end"
+            android:text="@string/w_sample_py" android:textColor="@color/w_g_mint" android:textSize="20sp" android:textStyle="bold" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/rb_b" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="2" android:ellipsize="end"
+            android:text="@string/w_sample_it" android:textColor="@color/w_g_text" android:textSize="16sp" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/rb_hint" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="6dp" android:maxLines="2" android:ellipsize="end"
+            android:visibility="gone" android:text="@string/rb_hint" android:textColor="@color/w_g_mute" android:textSize="13sp" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/rb_msg" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="5" android:ellipsize="end"
+            android:visibility="gone" android:text="@string/rb_nothing" android:textColor="@color/w_g_text" android:textSize="17sp" android:importantForAccessibility="no" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/rb_grades" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:baselineAligned="false">
+        <TextView android:id="@+id/rb_g0" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="6dp"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="4dp" android:paddingEnd="4dp" android:background="@drawable/w_btn_grade_0"
+            android:text="@string/rb_grade_0" android:textColor="@color/w_g_text" android:textSize="12sp" android:textStyle="bold" />
+        <TextView android:id="@+id/rb_g1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="6dp"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="4dp" android:paddingEnd="4dp" android:background="@drawable/w_btn_grade_1"
+            android:text="@string/rb_grade_1" android:textColor="@color/w_g_on_orange" android:textSize="12sp" android:textStyle="bold" />
+        <TextView android:id="@+id/rb_g2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="6dp"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="4dp" android:paddingEnd="4dp" android:background="@drawable/w_btn_grade_2"
+            android:text="@string/rb_grade_2" android:textColor="@color/w_g_on_orange" android:textSize="12sp" android:textStyle="bold" />
+        <TextView android:id="@+id/rb_g3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="4dp" android:paddingEnd="4dp" android:background="@drawable/w_btn_grade_3"
+            android:text="@string/rb_grade_3" android:textColor="@color/w_g_on_orange" android:textSize="12sp" android:textStyle="bold" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/rb_actions" android:layout_width="match_parent" android:layout_height="52dp" android:orientation="horizontal" android:visibility="gone" android:baselineAligned="false">
+        <TextView android:id="@+id/rb_more" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="6dp"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="8dp" android:paddingEnd="8dp" android:background="@drawable/w_btn_glass"
+            android:text="@string/rb_more" android:textColor="@color/w_g_text" android:textSize="14sp" android:textStyle="bold" />
+        <TextView android:id="@+id/rb_open" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:gravity="center" android:maxLines="2" android:ellipsize="end" android:paddingStart="8dp" android:paddingEnd="8dp" android:background="@drawable/w_btn_giada"
+            android:text="@string/rb_open" android:textColor="@color/w_g_on_orange" android:textSize="14sp" android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

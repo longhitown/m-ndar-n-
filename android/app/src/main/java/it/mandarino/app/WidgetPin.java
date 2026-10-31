@@ -12,14 +12,15 @@ import android.content.Context;
 final class WidgetPin {
     private WidgetPin() { }
 
-    /** i nomi dei widget: "today_large", "today_small", "pause", "review"; null se il nome non è uno di questi */
+    /** i nomi dei widget: "today_large", "today_small", "pause", "review" (il 4×4), "review_small" (il 2×1); null se il nome non è uno di questi */
     static ComponentName component(Context c, String kind) {
         if (kind == null) return null;
         switch (kind) {
             case "today_large": return new ComponentName(c, TodayWidget.class);
             case "today_small": return new ComponentName(c, TodayWidgetSmall.class);
             case "pause": return new ComponentName(c, PauseWidget.class);
-            case "review": return new ComponentName(c, ReviewWidget.class);
+            case "review": return new ComponentName(c, ReviewBigWidget.class);
+            case "review_small": return new ComponentName(c, ReviewWidget.class);
             default: return null;
         }
     }

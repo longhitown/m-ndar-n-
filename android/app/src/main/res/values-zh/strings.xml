@@ -16,7 +16,7 @@
     <string name="w_large_name">今天</string>
     <string name="w_small_desc">连续天数和待复习数量</string>
     <string name="w_large_desc">连续天数、待复习数量和今日一词</string>
-    <string name="r_name">快速复习</string>
+    <string name="r_name">快速复习（小）</string>
     <string name="r_desc">现在有多少张卡片要复习；点一下开始复习</string>
     <string name="r_empty">打开应用</string>
     <string name="r_done">都复习完了</string>
@@ -28,6 +28,28 @@
     </plurals>
     <plurals name="r_cd_cards">
         <item quantity="other">%d 张卡片待复习，点一下开始复习</item>
+    </plurals>
+    <!-- 「快速复习」4×4 小组件：不打开应用，一张一张复习卡片（ReviewBigWidget） -->
+    <string name="rb_name">快速复习</string>
+    <string name="rb_desc">直接在主屏幕上一张一张复习卡片</string>
+    <string name="rb_count">%1$d / %2$d</string>
+    <string name="rb_sample_count">3 / 10</string>
+    <string name="rb_hint">点一下看答案</string>
+    <string name="rb_grade_0">不会</string>
+    <string name="rb_grade_1">差一点</string>
+    <string name="rb_grade_2">会</string>
+    <string name="rb_grade_3">简单</string>
+    <string name="rb_start">打开 màndarínō 开始学习</string>
+    <string name="rb_nothing">暂时都复习完了</string>
+    <string name="rb_open">打开 màndarínō</string>
+    <string name="rb_more">再来一点</string>
+    <string name="rb_cd_front">第 %1$d 张，共 %2$d 张：%3$s。点一下看答案</string>
+    <string name="rb_cd_back">第 %1$d 张，共 %2$d 张：%3$s，%4$s。请选择记得怎么样</string>
+    <plurals name="rb_done">
+        <item quantity="other">复习完成，共 %d 张卡片。做得不错。</item>
+    </plurals>
+    <plurals name="rb_due">
+        <item quantity="other">还有 %d 张卡片要复习。打开应用继续。</item>
     </plurals>
     <string name="m_play">继续</string>
     <string name="m_pause">暂停</string>

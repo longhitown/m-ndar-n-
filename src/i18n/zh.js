@@ -32,7 +32,7 @@ I18N.zh = {
   "sub.ex": "练习", "sub.lab": "实验室", "sub.rad": "部件", "sub.slot": "老虎机", "sub.dlg": "对话", "sub.thought": "语序", "sub.reader": "阅读器", "sub.pat": "句型",
   "path.stage": "第 {n} 站", "path.continue": "继续 · 约 {min} 分钟", "path.explore": "看看第 {n} 站", "path.counts": "待复习 {due} · 新词 {nw}",
   "path.doneToday": "今天的复习做完了：可以看看这一站的词，或者练练句子。", "path.goto": "📍 在地图上找第 {n} 站",
-  "tab.studyDue": "学习，{n} 个待复习",
+  "tab.studyDue": "学习，{n} 个待复习", "wq.done": "已记入小组件里的复习：{n}",
   "sess.kbd": "键盘：<kbd>空格</kbd> 显示或朗读 · <kbd>1</kbd>–<kbd>4</kbd> 评分 · <kbd>回车</kbd> 下一个",
   "wel.title": "欢迎使用 màndarínō", "wel.intro": "{n} 个常用词，按需要的顺序排列。每个词分三步学：怎么读，怎么写，是什么意思。",
   "wel.read": "1 · 读音", "wel.write": "2 · 写法", "wel.mean": "3 · 意思", "wel.tones": "颜色代表声调：红色高平，绿色上升，蓝色降升，紫色下降。",

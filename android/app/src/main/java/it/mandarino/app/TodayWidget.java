@@ -158,5 +158,6 @@ public class TodayWidget extends AppWidgetProvider {
         }
         PauseWidget.updateAll(c);
         ReviewWidget.updateAll(c);
+        ReviewBigWidget.updateAll(c);
     }
 }

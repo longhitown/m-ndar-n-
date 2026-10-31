@@ -667,5 +667,157 @@ function sandbox() {
   check("PRIVACY.md: il controllo del pacchetto voci è nella tabella della rete, in italiano e in cinese", /Controllo del pacchetto voci[^\n]*voci\/index\.json/.test(pv) && /检查语音包[^\n]*voci\/index\.json/.test(pv) && /md-voicepack/.test(pv));
 }
 
+/* ---- widget «Ripasso rapido» 4×4: la coda dei voti (pwa/wq.js), il mazzo (pwa/widget.js) e le parti Android che devono combaciare ---- */
+{
+  /* il motore vero: da core/core.js si prende il tratto dei progressi (CP.S, CP.grade, CP.dueList…) e lo si esegue con FSRS vero */
+  const coreSrc = fs.readFileSync(path.join(SRC, "core/core.js"), "utf8");
+  const a0 = coreSrc.indexOf('  var KEY = "cp-srs-v1"'), a1 = coreSrc.indexOf("  CP.mark = function () {");
+  const slice = coreSrc.slice(a0, a1);
+  const H = 3600000, T0 = Date.UTC(2026, 9, 1, 8, 0, 0);
+  function world(opts = {}) {
+    const mem = {}, logs = [], toasts = [], adds = [], acks = [];
+    const LS = { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: (k) => { delete mem[k]; } };
+    const words = {}; ["好", "你", "我", "他", "她"].forEach((k, i) => { words[k] = { key: k, hz: k, py: "p" + i + ".x", it: "senso " + i + "; altro", sec: "s" }; });
+    const queue = { list: opts.queue || [] }, out = {};
+    const A = { widgetPending: () => (queue.list.length ? JSON.stringify(queue.list) : ""), widgetAck: (j) => { acks.push(JSON.parse(j)); if (!opts.noAck) { const g = new Set(JSON.parse(j)); queue.list = queue.list.filter((v) => !g.has(v.id)); } }, setWidgetState: (j) => { out.lastState = j; } };
+    const ctx = vm.createContext({ console, setTimeout: (f) => { (ctx.__timers = ctx.__timers || []).push(f); return 1; }, clearTimeout() {}, JSON, Date, Math, Object, Array, String, Number, localStorage: LS, document: { addEventListener() {}, querySelectorAll: () => [], getElementById: () => null }, LANG: "it" });
+    ctx.window = ctx; ctx.MandarinoAndroid = A;
+    ctx.Store = { log: (e) => logs.push(e) };
+    vm.runInContext(fs.readFileSync(path.join(SRC, "core/fsrs.js"), "utf8"), ctx);
+    const CP = { WORDS: words, ORDER: Object.keys(words), mark() {}, toast: (m) => toasts.push(m), t: (k, o) => k + ":" + (o && o.n), course: () => opts.course || "zh", game: { addWord: (k) => adds.push(k), streak: () => 0, goal: () => 10 }, gloss: (w) => String(w.it).split(/[;,(:]/)[0].trim(), itLexicon: () => opts.lex || [] };
+    CP.onGrade = (k, g) => { if (g >= 1) adds.push(k); };   /* come core/game.js */
+    ctx.CP = CP;
+    vm.runInContext("(function () { var CP = window.CP, WORDS = CP.WORDS, ORDER = CP.ORDER;\n" + slice + "\n})();", ctx, { filename: "core/core.js (progressi)" });
+    CP.srs.scheduler.fuzz = false;
+    vm.runInContext(fs.readFileSync(path.join(SRC, "pwa/wq.js"), "utf8"), ctx, { filename: "pwa/wq.js" });
+    Object.assign(out, { ctx, CP, A, LS, mem, logs, toasts, adds, acks, queue }); return out;
+  }
+  const vote = (id, k, g, t, c) => ({ id, k, g, t, c: c || "zh" });
+  const fresh = (w, k, t) => { w.CP.grade(k, 2, false, { at: t }); return JSON.parse(JSON.stringify(w.CP.S()[k])); };
+
+  /* applicare un voto: stesso risultato del motore dell'app con l'ora originale, intervallo compreso */
+  {
+    const w = world(); const before = fresh(w, "好", T0), t = before.d + 2 * H;
+    const ref = new w.ctx.FSRS.Scheduler({ retention: 0.9, fuzz: false, dayOf: w.ctx.FSRS.studyDay }).review({ state: before.sd, step: before.sp, st: before.st, df: before.df, due: before.d, last: before.lr }, 3, t);
+    w.queue.list = [vote("a1", "好", 2, t)];
+    const n = w.CP.wq.run(), r = w.CP.S()["好"];
+    check("Widget ripasso: un voto in coda si applica con l'ora del voto (stessa scheda del motore FSRS, scadenza calcolata da quell'ora)", n === 1 && r.lr === t && r.d === ref.due && r.st === ref.st && r.n === before.n + 1, JSON.stringify([n, r, ref]));
+    check("Widget ripasso: dopo l'applicazione la coda è confermata (widgetAck con l'id) e il registro dei ripassi ha il voto con l'ora originale e il tipo «widget»", w.acks.length === 1 && w.acks[0][0] === "a1" && w.logs.some((e) => e[0] === t && e[1] === "好" && e[2] === 3 && e[4] === "widget"), JSON.stringify([w.acks, w.logs]));
+    w.CP.wq.run();
+    check("Widget ripasso: la coda confermata non si applica una seconda volta", w.CP.S()["好"].n === before.n + 1 && w.acks.length === 1);
+  }
+  /* esattamente una volta anche se l'ack va perso (app chiusa a metà): l'id è già scritto in md-wq-done */
+  {
+    const w = world({ noAck: true }); const b = fresh(w, "好", T0), t = b.d + H;
+    w.queue.list = [vote("b1", "好", 1, t)];
+    w.CP.wq.run(); const afterFirst = JSON.stringify(w.CP.S()["好"]); w.CP.wq.run(); w.CP.wq.run();
+    check("Widget ripasso: se l'ack non arriva (app chiusa a metà) il voto non si riapplica: una volta sola", JSON.stringify(w.CP.S()["好"]) === afterFirst && w.CP.S()["好"].n === b.n + 1 && w.acks.length === 3, w.CP.S()["好"].n + " / ack " + w.acks.length);
+    check("Widget ripasso: gli id applicati stanno in md-wq-done, una chiave che non finisce nei backup (non inizia con cp-)", JSON.parse(w.mem["md-wq-done"]).includes("b1") && !/^cp-/.test("md-wq-done"));
+  }
+  /* scarto: la carta è stata ripassata nell'app DOPO il voto del widget; carta inesistente; carta mai vista */
+  {
+    const w = world(); const inApp = fresh(w, "你", T0 + 5 * H), old = JSON.stringify(inApp);
+    fresh(w, "我", T0); const mine = w.CP.S()["我"].n;
+    w.queue.list = [vote("c1", "你", 0, T0 + 2 * H), vote("c2", "不-esiste", 2, T0 + 6 * H), vote("c3", "他", 2, T0 + 6 * H)];
+    const n = w.CP.wq.run();
+    check("Widget ripasso: il voto si scarta se la carta è stata ripassata nell'app dopo (non peggiora né duplica); una carta che non esiste o mai vista si ignora; gli id si confermano comunque", n === 0 && JSON.stringify(w.CP.S()["你"]) === old && !w.CP.S()["不-esiste"] && !w.CP.S()["他"] && w.acks[0].join() === "c1,c2,c3" && w.CP.S()["我"].n === mine && !w.toasts.length, JSON.stringify([n, w.acks, w.toasts]));
+  }
+  /* ordine e più voti sulla stessa carta; la riga discreta una volta sola con il numero giusto */
+  {
+    const w = world(); const b = fresh(w, "好", T0), t1 = b.d + H, t2 = t1 + 3 * H;
+    fresh(w, "你", T0);
+    w.queue.list = [vote("d2", "好", 2, t2), vote("d1", "好", 0, t1), vote("d3", "你", 3, t1)];
+    const n = w.CP.wq.run(); w.ctx.__timers.forEach((f) => f());
+    check("Widget ripasso: i voti si applicano in ordine di ora (anche se la coda è in disordine) e contano tutti: due voti sulla stessa carta → due ripassi, ultima ora = quella del secondo", n === 3 && w.CP.S()["好"].lr === t2 && w.CP.S()["好"].n === b.n + 2 && w.logs.filter((e) => e[1] === "好").map((e) => e[0]).join() === [T0, t1, t2].join(), JSON.stringify(w.logs));
+    check("Widget ripasso: la riga «Ripassi fatti dal widget: N» compare una volta, senza finestre, con il numero dei voti applicati", w.toasts.length === 1 && w.toasts[0] === "wq.done:3", JSON.stringify(w.toasts));
+    w.ctx.__timers.length = 0; w.CP.wq.run(); w.ctx.__timers.forEach((f) => f());
+    check("Widget ripasso: a coda vuota non compare niente", w.toasts.length === 1);
+  }
+  /* i punti del giorno solo per i voti di oggi */
+  {
+    const w = world(); const b = fresh(w, "好", T0 - 3 * 86400000); fresh(w, "你", T0 - 3 * 86400000);
+    const now = Date.now(), tOld = now - 2 * 86400000;
+    w.queue.list = [vote("e1", "好", 2, tOld), vote("e2", "你", 2, now - 1000)]; w.adds.length = 0;
+    w.CP.wq.run();
+    check("Widget ripasso: i punti del giorno (CP.onGrade) solo per i voti dati oggi; ieri conta lo studio ma non l'obiettivo di oggi", w.adds.join() === "你" && w.CP.S()["好"].lr === tOld, JSON.stringify(w.adds));
+  }
+  /* corso di italiano: cp-it-srs-v1, formato { c, n, lr } di it/course.js */
+  {
+    const w = world({ course: "it" }); const sch = new w.ctx.FSRS.Scheduler({ retention: 0.9, fuzz: false, dayOf: w.ctx.FSRS.studyDay });
+    const T1 = Date.now() - 40 * 86400000, c0 = sch.review(sch.newCard(T1), 3, T1);
+    const t = Date.now() - 1000;
+    w.LS.setItem("cp-it-srs-v1", JSON.stringify({ __meta: { d: "x", nw: 3 }, "it:n:gatto": { c: c0, n: 1, lr: T1 }, "it:n:cane": { c: c0, n: 1, lr: t + 500 } }));
+
+    w.queue.list = [vote("f1", "it:n:gatto", 2, t, "it"), vote("f2", "it:n:cane", 2, t, "it"), vote("f3", "it:n:non-c-e", 2, t, "it"), vote("f4", "__meta", 2, t, "it")];
+    const n = w.CP.wq.run(), S = JSON.parse(w.LS.getItem("cp-it-srs-v1")), ref = sch.review(c0, 3, t);
+    check("Widget ripasso (corso di italiano): stesso formato di it/course.js, scadenza dall'ora del voto; scarta la carta ripassata dopo, quella inesistente e __meta; i punti solo nel corso in uso", n === 1 && S["it:n:gatto"].lr === t && S["it:n:gatto"].n === 2 && S["it:n:gatto"].c.st === ref.st && S["it:n:gatto"].c.due > t + 20 * 86400000 && S["it:n:cane"].lr === t + 500 && S.__meta.nw === 3 && !S["it:n:non-c-e"] && w.adds.join() === "it:n:gatto", JSON.stringify([n, S, w.adds]));
+  }
+  /* il mazzo che l'app manda al widget (pwa/widget.js) */
+  {
+    const w = world(); const ctx = w.ctx;
+    ctx.CP.game.rank = () => ({ ch: "游" });
+    vm.runInContext(fs.readFileSync(path.join(SRC, "pwa/widget.js"), "utf8"), ctx, { filename: "pwa/widget.js" });
+    ["好", "你", "我"].forEach((k, i) => fresh(w, k, T0 + i * H));
+    const S = w.CP.S(); S["好"].d = T0 + 2 * H; S["你"].d = T0 + 9 * H; S["我"].d = Date.now() + 5 * 86400000;   /* 好 e 你 scadute, 我 fra 5 giorni */
+    w.CP.save(); w.queue.list = [vote("g1", "好", 2, T0)];
+    ctx.__mdWidget();
+    const st = JSON.parse(w.lastState || "null");
+    check("Widget ripasso: prima di mandare lo stato l'app applica la coda (così il mazzo non riporta carte già votate)", st && w.acks.length === 1, String(w.lastState).slice(0, 80));
+    const hasKeys = st && Array.isArray(st.deck) && st.deck.every((c) => c.k && c.hz && typeof c.py === "string" && c.py.indexOf(".") < 0 && c.it && !/;/.test(c.it));
+    check("Widget ripasso: lo stato ha il mazzo di carte scadute (k, hz, py senza punti, it breve) e il corso; over e hist restano come prima", st && hasKeys && st.dc === "zh" && st.deck.every((c) => ["好", "你"].includes(c.k) || c.k === "好") && !st.deck.some((c) => c.k === "我") && typeof st.over === "number" && st.hist.length === 168 && st.v === 1, JSON.stringify(st && st.deck));
+    const big = world(); const sB = big.CP.S();
+    const bigW = {}; for (let i = 0; i < 40; i++) { const k = "k" + i; big.CP.WORDS[k] = { key: k, hz: k, py: "p", it: "x" + i, sec: "s" }; big.CP.ORDER.push(k); sB[k] = { n: 1, d: T0 + i * H, st: 1, df: 5, sd: 2, lr: T0 - H }; }
+    vm.runInContext(fs.readFileSync(path.join(SRC, "pwa/widget.js"), "utf8"), big.ctx, { filename: "pwa/widget.js" });
+    big.ctx.CP.game.rank = () => ({ ch: "游" }); big.ctx.__mdWidget();
+    const sb = JSON.parse(big.lastState), dl = JSON.stringify(sb.deck).length;
+    check("Widget ripasso: il mazzo ha al massimo 20 carte e pesa poco (" + dl + " byte per 20)", sb.deck.length === 20 && dl < 2500 && sb.over === 40, JSON.stringify([sb.deck.length, dl, sb.over]));
+  }
+  /* corso di italiano nello stato: mazzo dal lessico, scadenze del corso giusto */
+  {
+    const lex = [{ id: "it:n:gatto", it: "il gatto", zh: "猫", py: "māo" }, { id: "it:n:cane", it: "il cane", zh: "狗", py: "gǒu" }, { id: "it:n:casa", it: "la casa", zh: "家", py: "jiā" }];
+    const w = world({ course: "it", lex }), ctx = w.ctx;
+    ctx.CP.game.rank = () => ({ ch: "意" });
+    const now = Date.now(), card = (due) => ({ state: 2, step: null, st: 3, df: 5, due, last: due - 86400000 });
+    w.LS.setItem("cp-it-srs-v1", JSON.stringify({ __meta: { d: "x", nw: 1 }, "it:n:gatto": { c: card(now - 5 * H), n: 1, lr: 1 }, "it:n:cane": { c: card(now - 9 * H), n: 1, lr: 1 }, "it:n:casa": { c: card(now + 3 * 86400000), n: 1, lr: 1 } }));
+    vm.runInContext(fs.readFileSync(path.join(SRC, "pwa/widget.js"), "utf8"), ctx, { filename: "pwa/widget.js" });
+    ctx.__mdWidget(); const st = JSON.parse(w.lastState);
+    check("Widget ripasso (corso di italiano): dc = it, mazzo dalle voci scadute di cp-it-srs-v1 (la più in ritardo prima), over conta quelle del corso di italiano", st.dc === "it" && st.deck.map((c) => c.k).join() === "it:n:cane,it:n:gatto" && st.deck[0].it === "il cane" && st.deck[0].hz === "狗" && st.deck[0].py === "gǒu" && st.over === 2, JSON.stringify(st.deck) + " over " + st.over);
+  }
+
+  /* le parti Android: non si compila qui, ma almeno che ogni pezzo combaci */
+  {
+    const RES = path.join(ROOT, "android/app/src/main/res"), MAIN = path.join(ROOT, "android/app/src/main"), JAVA = path.join(MAIN, "java/it/mandarino/app");
+    const rd = (f) => fs.readFileSync(path.join(RES, f), "utf8"), rj = (f) => fs.readFileSync(path.join(JAVA, f), "utf8");
+    const rb = (f) => [...rd(f).matchAll(/<(string|plurals) name="(rb_[a-z_0-9]+)"/g)].map((m) => m[2] + ":" + m[1]).sort();
+    const kit = rb("values/strings.xml"), kzh = rb("values-zh/strings.xml");
+    check("widget Ripasso 4×4: ogni testo c'è in italiano e in cinese, con lo stesso tipo (testo o plurale)", kit.length >= 17 && kit.join() === kzh.join(), kit.filter((x) => !kzh.includes(x)).concat(kzh.filter((x) => !kit.includes(x))).join(", "));
+    const fmt = (f) => Object.fromEntries([...rd(f).matchAll(/<string name="(rb_[a-z_0-9]+)">([^<]*)<\/string>/g)].map((m) => [m[1], (m[2].match(/%\d\$[sd]|%d/g) || []).sort().join("")]));
+    const fi = fmt("values/strings.xml"), fz = fmt("values-zh/strings.xml");
+    check("widget Ripasso 4×4: i segnaposto (%1$d, %3$s…) sono gli stessi in italiano e in cinese", Object.keys(fi).every((k) => fi[k] === fz[k]), Object.keys(fi).filter((k) => fi[k] !== fz[k]).join(", "));
+    const pl = (f, n) => (rd(f).match(new RegExp('<plurals name="' + n + '">([\\s\\S]*?)</plurals>')) || ["", ""])[1];
+    check("widget Ripasso 4×4: i plurali italiani hanno uno e altri (con il numero), quelli cinesi altri", ["rb_done", "rb_due"].every((n) => /quantity="one">[^<]*%d/.test(pl("values/strings.xml", n)) && /quantity="other">[^<]*%d/.test(pl("values/strings.xml", n)) && /quantity="other">[^<]*%d/.test(pl("values-zh/strings.xml", n)) && !/quantity="one"/.test(pl("values-zh/strings.xml", n))));
+    const lay = rd("layout/widget_review_big.xml"), java = rj("ReviewBigWidget.java") + rj("ReviewQueue.java");
+    const refs = (kind) => [...new Set([...java.matchAll(new RegExp("R\\." + kind + "\\.([a-z_0-9]+)", "g"))].map((m) => m[1]))];
+    const sres = rd("values/strings.xml"), cres = rd("values/colors_giada.xml");
+    const lack = refs("id").filter((i) => i !== "w_root" ? !new RegExp('@\\+id/' + i + '"').test(lay) : false)
+      .concat(refs("string").filter((x) => !new RegExp('name="' + x + '"').test(sres)), refs("plurals").filter((x) => !new RegExp('<plurals name="' + x + '"').test(sres)),
+        refs("color").filter((x) => !new RegExp('name="' + x + '"').test(cres)), refs("layout").filter((x) => !fs.existsSync(path.join(RES, "layout", x + ".xml"))), refs("drawable").filter((x) => !fs.existsSync(path.join(RES, "drawable", x + ".xml"))));
+    check("widget Ripasso 4×4: ogni id, testo, plurale, colore e disegno usato dal codice Java esiste nelle risorse", refs("id").length >= 14 && !lack.length, lack.join(", "));
+    const noHard = [...lay.matchAll(/android:text="([^"]*)"/g)].filter((m) => !/^@string\//.test(m[1])).map((m) => m[1]);
+    const unusedStr = [...sres.matchAll(/name="(rb_[a-z_0-9]+)"/g)].map((m) => m[1]).filter((n) => !new RegExp("R\\.(string|plurals)\\." + n + "\\b").test(java) && !new RegExp("@string/" + n + "\\b").test(lay + rd("xml/widget_review_big_info.xml")));
+    check("widget Ripasso 4×4: nessun testo scritto nel disegno e nessuna risorsa rb_* inutilizzata (il lint le segnala)", !noHard.length && !unusedStr.length, noHard.concat(unusedStr).join(", "));
+    const bc = (s) => (s.match(/\{/g) || []).length === (s.match(/\}/g) || []).length && (s.match(/\(/g) || []).length === (s.match(/\)/g) || []).length;
+    check("widget Ripasso 4×4: graffe e parentesi bilanciate nei file Java toccati", ["ReviewBigWidget.java", "ReviewQueue.java", "WidgetState.java", "Bridge.java", "TodayWidget.java", "WidgetPin.java"].every((f) => bc(rj(f))));
+    const pi = (java.match(/PendingIntent\.get(?:Broadcast|Activity)\(/g) || []).length, imm = (java.match(/FLAG_IMMUTABLE/g) || []).length;
+    check("widget Ripasso 4×4: ogni PendingIntent è immutabile e il tocco passa da un'intent esplicita verso il widget", pi >= 1 && imm >= pi && /new Intent\(c, ReviewBigWidget\.class\)/.test(java) && !/\bnew Intent\(\)/.test(java));
+    const man = fs.readFileSync(path.join(MAIN, "AndroidManifest.xml"), "utf8"), blk = (man.match(/<receiver android:name="\.ReviewBigWidget"[\s\S]*?<\/receiver>/) || [""])[0];
+    check("widget Ripasso 4×4: dichiarato nel manifesto (non esportato) con la sua scheda, e il piccolo 2×1 resta dov'era; nessun permesso nuovo", /exported="false"/.test(blk) && /widget_review_big_info/.test(blk) && fs.existsSync(path.join(RES, "xml/widget_review_big_info.xml")) && /<receiver android:name="\.ReviewWidget"[^>]*>/.test(man) && !/ReviewBigWidget[\s\S]*uses-permission/.test(blk) && (man.match(/<uses-permission /g) || []).length === 9, "permessi " + (man.match(/<uses-permission /g) || []).length);
+    const br = rj("Bridge.java");
+    check("widget Ripasso 4×4: il ponte ha widgetPending() e widgetAck(String), esposti a JavaScript, e WidgetPin conosce review e review_small", /@JavascriptInterface\s+public String widgetPending\(\)/.test(br) && /@JavascriptInterface\s+public void widgetAck\(String/.test(br) && /case "review": return new ComponentName\(c, ReviewBigWidget\.class\)/.test(rj("WidgetPin.java")) && /case "review_small": return new ComponentName\(c, ReviewWidget\.class\)/.test(rj("WidgetPin.java")) && /ReviewBigWidget\.updateAll\(c\)/.test(rj("TodayWidget.java")));
+    const html = fs.readFileSync(path.join(ROOT, "dist/index.html"), "utf8");
+    check("widget Ripasso 4×4: il modulo pwa/wq.js è testo caricato al primo uso (CP.wq), non JavaScript compilato all'avvio", /<script type="text\/plain" id="lazy-mod-wq">/.test(html) && !/<script>\s*\/\* ---- pwa\/wq\.js ----/.test(html));
+  }
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);

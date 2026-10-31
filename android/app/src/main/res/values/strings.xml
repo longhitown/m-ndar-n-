@@ -17,7 +17,7 @@
     <string name="w_small_desc">Serie di giorni e ripassi in scadenza</string>
     <string name="w_large_desc">Serie, ripassi in scadenza e parola del giorno</string>
     <!-- widget «Ripasso rapido»: quante carte ci sono da ripassare adesso -->
-    <string name="r_name">Ripasso rapido</string>
+    <string name="r_name">Ripasso rapido (piccolo)</string>
     <string name="r_desc">Quante carte hai da ripassare adesso; un tocco apre il ripasso</string>
     <string name="r_empty">Apri l\'app</string>
     <string name="r_done">Tutto ripassato</string>
@@ -31,6 +31,30 @@
     <plurals name="r_cd_cards">
         <item quantity="one">%d carta da ripassare. Tocca per aprire il ripasso</item>
         <item quantity="other">%d carte da ripassare. Tocca per aprire il ripasso</item>
+    </plurals>
+    <!-- widget «Ripasso rapido» 4×4: le carte da ripassare, una alla volta, senza aprire l'app (ReviewBigWidget) -->
+    <string name="rb_name">Ripasso rapido</string>
+    <string name="rb_desc">Ripassa le carte una alla volta, direttamente dalla schermata Home</string>
+    <string name="rb_count">%1$d di %2$d</string>
+    <string name="rb_sample_count">3 di 10</string>
+    <string name="rb_hint">Tocca per vedere la risposta</string>
+    <string name="rb_grade_0">Non la so</string>
+    <string name="rb_grade_1">Quasi</string>
+    <string name="rb_grade_2">La so</string>
+    <string name="rb_grade_3">Facile</string>
+    <string name="rb_start">Apri màndarínō per cominciare</string>
+    <string name="rb_nothing">Tutto ripassato per ora</string>
+    <string name="rb_open">Apri màndarínō</string>
+    <string name="rb_more">Ancora un po\'</string>
+    <string name="rb_cd_front">Carta %1$d di %2$d: %3$s. Tocca per vedere la risposta</string>
+    <string name="rb_cd_back">Carta %1$d di %2$d: %3$s, %4$s. Scegli come è andata</string>
+    <plurals name="rb_done">
+        <item quantity="one">Ripasso finito: %d carta. Bel lavoro.</item>
+        <item quantity="other">Ripasso finito: %d carte. Bel lavoro.</item>
+    </plurals>
+    <plurals name="rb_due">
+        <item quantity="one">C\'è %d carta da ripassare. Apri l\'app per continuare.</item>
+        <item quantity="other">Ci sono %d carte da ripassare. Apri l\'app per continuare.</item>
     </plurals>
     <string name="m_play">Riprendi</string>
     <string name="m_pause">Pausa</string>

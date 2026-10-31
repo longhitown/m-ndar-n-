@@ -32,7 +32,7 @@ I18N.it = {
   "sub.ex": "Esercizi", "sub.lab": "Laboratorio", "sub.rad": "Radicali", "sub.slot": "Slot", "sub.dlg": "Dialoghi", "sub.thought": "Pensiero", "sub.reader": "Lettore", "sub.pat": "Modelli",
   "path.stage": "Tappa {n}", "path.continue": "Continua · ≈ {min} min", "path.explore": "Esplora la tappa {n}", "path.counts": "{due} da ripassare · {nw} {new}",
   "path.doneToday": "Per oggi hai finito i ripassi: apri le parole della tappa o fai pratica con le frasi.", "path.goto": "📍 Vai alla tappa {n} sulla mappa",
-  "tab.studyDue": "Studia, {n} da ripassare",
+  "tab.studyDue": "Studia, {n} da ripassare", "wq.done": "Ripassi fatti dal widget: {n}",
   "sess.kbd": "Tastiera: <kbd>Spazio</kbd> mostra o ascolta · <kbd>1</kbd>–<kbd>4</kbd> voto · <kbd>Invio</kbd> avanti",
   "wel.title": "Benvenuto in màndarínō", "wel.intro": "{n} parole per parlare, nell'ordine in cui servono. Ogni parola si impara in tre passi: come si legge, come si scrive, cosa vuol dire.",
   "wel.read": "1 · si legge", "wel.write": "2 · si scrive", "wel.mean": "3 · significa", "wel.tones": "I colori sono i toni: rosso alto e piatto, verde sale, blu scende e risale, viola cade.",
