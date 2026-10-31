@@ -39,7 +39,8 @@
   CP.micStream = function () {
     clearTimeout(M.idle); M.at = Date.now();
     if (live(M.stream)) { M.users++; return Promise.resolve(M.stream); }
-    if (M.pending) { M.users++; return M.pending; }
+    /* chi si accoda a un'apertura che fallisce restituisce anche il suo conto */
+    if (M.pending) { M.users++; return M.pending.catch(function (e) { M.users = Math.max(0, M.users - 1); throw e; }); }
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return Promise.reject({ name: "NotSupportedError" });
     M.users++;
     /* su Android il riconoscimento vocale e l'oscilloscopio non possono usare il microfono insieme: si chiude prima il primo,
@@ -75,6 +76,7 @@
         t.addEventListener("unmute", function () { CP.micLog("traccia-torna", (Date.now() - born) + " ms dopo l'apertura"); });
       });
       paintLive();
+      if (!M.users) armIdle();   /* chi aspettava ha già rinunciato: il flusso non resta aperto */
       return s;
     }, function (e) { M.pending = null; M.users = Math.max(0, M.users - 1); CP.micLog("apertura-fallita", e); throw e; });
     return M.pending;
