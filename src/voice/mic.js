@@ -31,7 +31,6 @@
     if (M.stream) CP.micLog("chiuso", "utenti " + M.users);
     clearTimeout(M.idle); M.idle = 0; M.users = 0;
     var s = M.stream; M.stream = null; CP._micStream = null;
-    try { if (s && s._mdNative) s._mdNative.stop(); } catch (e) {}   /* flusso nativo (APK): ferma anche la registrazione di Android */
     try { if (s) s.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
     paintLive();
   }
@@ -52,14 +51,11 @@
         if (busy && n < 4) return wait(260).then(function () { return open(n + 1); });
         /* ultimo ripiego: alcuni telefoni rifiutano i vincoli audio personalizzati; col microfono «semplice» si apre */
         if (busy && n === 4) {
-          /* ripiego a catena, dal meno al più invasivo: tutto spento (flusso «grezzo»), microfono semplice, e infine la cattura nativa di
-             Android (APK): se la WebView non riesce ad aprire la sorgente audio, la apre Android e la pagina riceve i campioni */
+          /* ultimo ripiego: alcuni telefoni rifiutano i vincoli audio personalizzati; si prova prima «grezzo» (tutto spento), poi il microfono semplice */
           CP.micLog("ripiego-vincoli", e);
-          var steps = [["grezzo", function () { return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }],
-            ["semplice", function () { return navigator.mediaDevices.getUserMedia({ audio: true }); }],
-            ["nativo", function () { if (!CP.nativeMic) return Promise.reject(e); return CP.nativeMic(); }]];
+          var steps = [["grezzo", { audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }], ["semplice", { audio: true }]];
           return steps.reduce(function (p, st) {
-            return p.catch(function () { return st[1]().then(function (s) { CP.micLog("ripiego-riuscito", st[0] + (s && s._mdNative ? " · " + s._mdNative.source : "")); return s; }); });
+            return p.catch(function () { return navigator.mediaDevices.getUserMedia(st[1]).then(function (s) { CP.micLog("ripiego-riuscito", st[0]); return s; }); });
           }, Promise.reject(e)).catch(function () { throw e; });
         }
         throw e;

@@ -92,39 +92,21 @@
     };
     Rec.prototype.start = function () {
       if (this._id) throw new Error("InvalidStateError: già in ascolto");
-      var self = this, lang = this.lang || "zh-CN", max = Math.max(1, this.maxAlternatives | 0), started = false, got = false, retried = false;
-      function log(m) { if (window.CP && window.CP.micLog) window.CP.micLog("carte-riconoscimento", m); }
-      function canPipe() { try { return !!A.srPipedSupported && A.srPipedSupported() && !!A.srStartPiped; } catch (e) { return false; } }
-      /* Il riconoscimento di sistema apre un microfono suo. Su alcuni telefoni non sente niente («no-speech» subito) anche se l'audio c'è: allora si
-         riprova UNA volta dandogli l'audio della nostra cattura (Android 13+), e se così funziona si ricorda (md-sr-piped) per le volte dopo. */
-      var prefer = false; try { prefer = localStorage.getItem("md-sr-piped") === "1" && canPipe(); } catch (e) {}
-      function begin(piped) {
-        var id = nid("r"), ended = false, swallow = false; self._id = id;
-        wait[id] = function (type, data) {
-          if (ended) return;
-          if (type === "sr-start") { if (!started) { started = true; fire(self, "start"); fire(self, "audiostart"); } }
-          else if (type === "sr-result") {
-            got = true;
-            if (piped && !prefer) { try { localStorage.setItem("md-sr-piped", "1"); } catch (e) {} log("audio nativo: ha funzionato, lo userò le prossime volte"); }
-            var alts = []; try { alts = JSON.parse(data); } catch (e) {}
-            var res = alts.map(function (a) { return { transcript: a.t, confidence: a.c }; });
-            res.isFinal = true; res.item = function (i) { return res[i]; };
-            var list = [res]; list.item = function (i) { return list[i]; };
-            fire(self, "result", { results: list, resultIndex: 0 });
-          } else if (type === "sr-error") {
-            if (!got && !retried && !piped && data === "no-speech" && canPipe()) { retried = true; swallow = true; return; }                        /* poi sr-end: riparte con l'audio nostro */
-            if (!got && !retried && piped && prefer && /^(service-not-allowed|audio-capture|language-not-supported)$/.test(data || "")) { retried = true; swallow = true; try { localStorage.removeItem("md-sr-piped"); } catch (e) {} return; }   /* con l'audio nostro non va: si torna al percorso di sistema */
-            fire(self, "error", { error: data || "error", message: "" });
-          } else if (type === "sr-end") {
-            ended = true; delete wait[id];
-            if (swallow) { swallow = false; log(piped ? "audio nativo non va: torno al sistema" : "il sistema non sente: riprovo con l'audio nativo"); begin(!piped); return; }
-            self._id = null; fire(self, "end");
-          }
-        };
-        log(piped ? "audio nativo" : "audio di sistema");
-        if (piped) A.srStartPiped(id, lang, max); else A.srStart(id, lang, max);
-      }
-      begin(prefer);
+      var self = this, id = nid("r"), ended = false; this._id = id;
+      wait[id] = function (type, data) {
+        if (ended) return;
+        if (type === "sr-start") { fire(self, "start"); fire(self, "audiostart"); }
+        else if (type === "sr-result") {
+          var alts = []; try { alts = JSON.parse(data); } catch (e) {}
+          var res = alts.map(function (a) { return { transcript: a.t, confidence: a.c }; });
+          res.isFinal = true; res.item = function (i) { return res[i]; };
+          var list = [res]; list.item = function (i) { return list[i]; };
+          fire(self, "result", { results: list, resultIndex: 0 });
+        } else if (type === "sr-code") { if (window.CP && window.CP.micLog) window.CP.micLog("carte-riconoscimento-codice", "Android " + data); }   /* 6 = silenzio, 7 = sentito ma non capito */
+        else if (type === "sr-error") fire(self, "error", { error: data || "error", message: "" });
+        else if (type === "sr-end") { ended = true; delete wait[id]; self._id = null; fire(self, "end"); }
+      };
+      A.srStart(id, this.lang || "zh-CN", Math.max(1, this.maxAlternatives | 0));
     };
     Rec.prototype.stop = function () { if (this._id) A.srStop(this._id); };
     Rec.prototype.abort = function () { if (this._id) A.srAbort(this._id); };
