@@ -16,7 +16,7 @@
   function micHtml() {
     var h = '<h3>Microfono</h3><ul>';
     MICROWS.forEach(function (r) { h += '<li class="' + (r[1] ? "ok" : "wa") + '"><b>' + (r[1] ? "✓" : "!") + "</b> " + esc(r[0]) + ' <span class="muted small">— ' + esc(r[2]) + "</span></li>"; });
-    return h + '</ul><div class="acts"><button type="button" class="btn-s" id="st-mic">Prova il microfono (parla per 3 secondi)</button><button type="button" class="btn-s" id="st-sr">Prova il riconoscimento vocale (di\' «你好» due volte)</button></div>';
+    return h + '</ul><div class="acts"><button type="button" class="btn-s" id="st-mic">Prova il microfono (parla per 3 secondi)</button><button type="button" class="btn-s" id="st-sr">Prova il riconoscimento vocale (di\' una parola, due volte)</button></div>';
   }
   function run() {
     R = [];
@@ -157,7 +157,7 @@
         function (er) { MICROWS = MICROWS.concat([["Prova", false, String(er)]]); var mb = document.getElementById("st-micbox"); if (mb) mb.innerHTML = micHtml(); });
     }
     if (e.target.id === "st-sr") {
-      var b2 = e.target; b2.disabled = true; b2.textContent = "Sto ascoltando… di' 你好 (due prove di seguito)";
+      var b2 = e.target; b2.disabled = true; b2.textContent = "Sto ascoltando… di' una parola (due prove di seguito)";
       CP.srDiag().then(function (rows) { MICROWS = MICROWS.concat(rows); var mb = document.getElementById("st-micbox"); if (mb) mb.innerHTML = micHtml(); },
         function (er) { MICROWS = MICROWS.concat([["Prova riconoscimento", false, String(er)]]); var mb = document.getElementById("st-micbox"); if (mb) mb.innerHTML = micHtml(); });
     }

@@ -52,22 +52,11 @@
           return p.then(function () {
             return nav.mediaDevices.getUserMedia(v[1]).then(function (s) { s.getTracks().forEach(function (t) { t.stop(); }); row("WebView diretta, " + v[0], true, "SI APRE"); }, function (er) { row("WebView diretta, " + v[0], false, errTxt(er)); });
           });
-        }, Promise.resolve()).then(function () {
-          /* prova nativa: se qui il microfono funziona e nella WebView no, il guasto è della WebView; se fallisce anche qui, è del telefono */
-          if (!A || typeof A.micProbe !== "function") return;
-          var pr; try { pr = JSON.parse(A.micProbe()); } catch (er) { row("Prova nativa (AudioRecord)", false, errTxt(er)); return; }
-          pr.forEach(function (x) {
-            if (x.info) { row("Effetti hardware del telefono", true, "eco " + !!x.echoCanceler + " · rumore " + !!x.noiseSuppressor + " · guadagno " + !!x.autoGain); return; }
-            if (x.error) { row("Nativo " + (x.source || ""), false, x.error); return; }
-            var good = x.initialized && x.recording && x.samples > 0 && !x.readError;
-            row("Nativo " + x.source, !!good && x.peak > 0, "avviato " + !!x.initialized + " · in registrazione " + !!x.recording + " · campioni " + (x.samples || 0) + " · picco " + (x.peak || 0) + (x.readError ? " · errore di lettura " + x.readError : "") + (good && x.peak === 0 ? " · TUTTO A ZERO (silenziato dal sistema)" : ""));
-          });
-        });
+        }, Promise.resolve());
       }
       return CP.micStream().then(function (stream) {
         held = true;
         row("Apertura del microfono (via di toni e scambio)", true, (Date.now() - t0) + " ms");
-        row("Origine del flusso", true, stream._mdNative ? "NATIVO (AudioRecord " + stream._mdNative.source + "): la WebView non apre il microfono, lo apre Android" : "WebView (getUserMedia)");
         var tr = stream.getAudioTracks()[0], born = Date.now(), endedAt = 0, muteAt = 0;
         if (!tr) { row("Traccia audio", false, "il flusso non ha tracce audio"); return; }
         tr.addEventListener("ended", function () { if (!endedAt) endedAt = Date.now() - born; });
@@ -129,11 +118,25 @@
   };
 
   /* Prova del riconoscimento vocale (quello delle carte): chi lo fa su questo telefono e cosa succede con due percorsi, uno dopo l'altro.
-     «sistema»: il servizio apre il suo microfono. «audio nostro»: gli si dà l'audio della nostra cattura (Android 13+). Si dice «你好» due volte. */
+     Si dice «你好» (poi una parola a scelta) a ogni prova. Il codice di errore grezzo di Android distingue il silenzio (6) dal «sentito ma non capito» (7). */
+  /* una sessione di riconoscimento sul ponte: restituisce tutti gli eventi con i tempi (compreso sr-code, il codice grezzo di Android). Non decide niente: racconta. */
+  CP.srTest = function (route, lang) {
+    var A = window.MandarinoAndroid, AND = window.__mdAnd;
+    return new Promise(function (ok) {
+      var id = AND.nid("t"), t0 = Date.now(), ev = [], done = false;
+      function fin(why) { if (done) return; done = true; delete AND.wait[id]; ok({ route: route, ms: Date.now() - t0, events: ev, why: why }); }
+      AND.wait[id] = function (type, data) {
+        ev.push({ t: Date.now() - t0, type: type, data: type === "sr-result" ? (function () { try { return JSON.parse(data).map(function (a) { return a.t; }).join(" | "); } catch (e) { return data; } })() : data });
+        if (type === "sr-end") fin("fine");
+      };
+      try { A.srStart(id, lang || "zh-CN", 5); } catch (e) { ev.push({ t: 0, type: "eccezione", data: String(e) }); fin("eccezione"); return; }
+      setTimeout(function () { try { A.srAbort(id); } catch (e) {} fin("tempo scaduto"); }, 14000);
+    });
+  };
   CP.srDiag = function () {
     var A = window.MandarinoAndroid, rows = [];
     function row(n, ok, t) { rows.push([n, ok, String(t == null ? "" : t)]); }
-    if (!A || !CP.srTest) return Promise.resolve([["Riconoscimento vocale", true, "la prova esiste solo nell'APK"]]);
+    if (!A || !window.__mdAnd) return Promise.resolve([["Riconoscimento vocale", true, "la prova esiste solo nell'APK"]]);
     var info = null; try { info = JSON.parse(A.srInfo()); } catch (e) { row("Servizio vocale", false, "srInfo non disponibile: " + e); }
     if (info) {
       row("Servizio vocale predefinito", !!info.available, (info.default || "(non impostato)") + " · riconoscimento disponibile " + !!info.available + (info.onDevice !== undefined ? " · sul telefono " + !!info.onDevice : ""));
@@ -146,8 +149,8 @@
       row(label, !!res, (res ? "HA SENTITO: " + res.data : err ? "errore " + err.data : "nessuna risposta") + " · " + r.ms + " ms · " + ev);
     }
     function pause(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
-    return CP.srTest("classic", "zh-CN").then(function (r) { show(r, "Riconoscimento: microfono del sistema"); return pause(900); })
-      .then(function () { return CP.srTest("piped", "zh-CN"); }).then(function (r) { show(r, "Riconoscimento: audio nostro (Android 13+)"); })
+    return CP.srTest("classic", "zh-CN").then(function (r) { show(r, "Riconoscimento: prova 1"); return pause(900); })
+      .then(function () { return CP.srTest("classic", "zh-CN"); }).then(function (r) { show(r, "Riconoscimento: prova 2"); })
       .then(function () { return rows; }, function (e) { row("Prova interrotta", false, String(e)); return rows; });
   };
 })();
