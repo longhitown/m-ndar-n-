@@ -95,9 +95,10 @@
     var src = null, an = null, sink = null, raf = 0, iv = 0, buf, rec = null, chunks = [], held = false;
     var pts = [], noise = [], gate = 0.004, floor = 0, started = 0, lastV = 0, runV = 0, tStart = 0, prev = 0, hist = [], state = "wait";
     if (CP.musicHold) CP.musicHold(true);
+    var holdM = true;   /* la pausa della musica si toglie una sola volta */
     function release() {
       if (held) { held = false; if (CP.micRelease) CP.micRelease(); }
-      if (CP.musicHold) CP.musicHold(false);
+      if (holdM) { holdM = false; if (CP.musicHold) CP.musicHold(false); }
     }
     function cleanup() {
       S.stopped = true; cancelAnimationFrame(raf); clearInterval(iv);
@@ -160,17 +161,19 @@
       if (S.stopped) { release(); return; }
       if (!c) { if (CP.micLog) CP.micLog("toni-senza-audiocontext", ""); cleanup(); release(); o.onEnd({ pts: [], error: "NotSupportedError" }); return; }
       if (c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
-      src = c.createMediaStreamSource(stream); an = c.createAnalyser(); an.fftSize = 2048;
-      sink = c.createGain(); sink.gain.value = 0;   /* il grafo resta «vivo» anche nei browser che non elaborano i nodi senza uscita */
-      src.connect(an); an.connect(sink); sink.connect(c.destination);
-      buf = new Float32Array(an.fftSize);
-      if (window.MediaRecorder) { try { rec = new MediaRecorder(stream); rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); }; rec.start(); } catch (e) { if (CP.micLog) CP.micLog("toni-registratore", e); rec = null; } }
-      tStart = performance.now() / 1000;
-      raf = requestAnimationFrame(loop);
-      iv = setInterval(function () { if (document.hidden) step(); }, 50);   /* rAF si ferma a schermo spento: si continua comunque */
+      try {   /* un flusso già chiuso fa fallire createMediaStreamSource: la sessione restava in «calibrazione» */
+        src = c.createMediaStreamSource(stream); an = c.createAnalyser(); an.fftSize = 2048;
+        sink = c.createGain(); sink.gain.value = 0;   /* il grafo resta «vivo» anche nei browser che non elaborano i nodi senza uscita */
+        src.connect(an); an.connect(sink); sink.connect(c.destination);
+        buf = new Float32Array(an.fftSize);
+        if (window.MediaRecorder) { try { rec = new MediaRecorder(stream); rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); }; rec.start(); } catch (e) { if (CP.micLog) CP.micLog("toni-registratore", e); rec = null; } }
+        tStart = performance.now() / 1000;
+        raf = requestAnimationFrame(loop);
+        iv = setInterval(function () { if (document.hidden) step(); }, 50);   /* rAF si ferma a schermo spento: si continua comunque */
+      } catch (e) { if (CP.micLog) CP.micLog("toni-avvio-fallito", e); cleanup(); release(); o.onEnd({ pts: [], error: "error" }); }
     }, function (err) {
       if (CP.micLog) CP.micLog("toni-microfono-negato", err);
-      held = false; cleanup(); if (CP.musicHold) CP.musicHold(false);
+      held = false; cleanup(); release();
       o.onEnd({ pts: [], error: (err && err.name) || "error" });
     });
     S.stop = function (discard) { if (S.stopped) return; if (discard) { cleanup(); try { if (rec && rec.state !== "inactive") { rec.onstop = null; rec.stop(); } } catch (e) {} release(); return; } end(pts.length >= 6 ? null : "silence"); };

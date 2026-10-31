@@ -91,7 +91,7 @@
   function start() {
     var c = CP.getCtx(); if (!c || J.run) return;
     CP.audioUnlock().then(function () {
-      if (J.run || !J.want) return;
+      if (J.run || !wanted()) return;   /* lo sblocco può arrivare tardi: nel frattempo può esserci un ascolto */
       J.run = true;
       /* iOS 17+: la musica suona anche col tasto silenzioso (gli effetti no) */
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
@@ -134,10 +134,10 @@
     }
   } catch (e) {}
   function modeNow() { return !CP.pref.sfx ? "mute" : "on"; }
+  function wanted() { return J.want && modeNow() !== "mute" && !J.hold && (J.bg || !document.hidden); }
   CP.musicApply = function () {
     /* in secondo piano la musica si ferma, a meno che non si sia scelto di lasciarla suonare (⚙️ nel pannello 🎵) */
-    var on = J.want && modeNow() !== "mute" && !J.hold && (J.bg || !document.hidden);
-    if (on) start(); else stop();
+    if (wanted()) start(); else stop();
     if (mus) {
       mus.textContent = "🎵"; mus.classList.toggle("on", J.want && modeNow() !== "mute"); mus.setAttribute("aria-pressed", J.want ? "true" : "false");
       mus.setAttribute("aria-label", CP.t("jk.aria", { s: CP.t(J.want ? "jk.on" : "jk.off") })); mus.title = CP.t("jk.title").replace(/^\S+\s/, "");
@@ -324,11 +324,14 @@
   };
   document.addEventListener("visibilitychange", CP.musicApply);
   if (J.want) document.addEventListener("pointerdown", function () { setTimeout(CP.musicApply, 50); }, { once: true, capture: true, passive: true });
-  var L = CP.listen;
+  var L = CP.listen, lastRel = null;
   if (L) CP.listen = function (t, cb) {
     CP.musicHold(true); var done = false;
-    var r = L.call(CP, t, function (o) { if (!done) { done = true; CP.musicHold(false); } cb(o); });
-    if (!r && !done) { done = true; CP.musicHold(false); }
+    var rel = function () { if (!done) { done = true; CP.musicHold(false); } };
+    if (lastRel) lastRel(); lastRel = rel;   /* un nuovo ascolto manda in pensione il precedente (nell'APK non riceve più nessuna risposta) */
+    var r = L.call(CP, t, function (o) { rel(); cb(o); });
+    if (!r) rel();
+    else { var ab = r.abort; r.abort = function () { rel(); return ab.apply(r, arguments); }; }   /* abort() non chiama la risposta: la pausa restava per sempre */
     return r;
   };
   CP.musicApply();

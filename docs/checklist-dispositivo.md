@@ -34,6 +34,10 @@ telefono vero. Dieci minuti, prima di ogni release importante. Segna data, telef
 | **Stampa** (Parole → Stampa) | si apre il servizio di stampa di Android; «Salva come PDF» produce la tabella |
 | **Tocco lungo** su un componente in «Di che cosa è fatto» | non compare il menu «Copia / Cerca sul web»; con Pleco acceso, dopo 2 s compare «Apri in Pleco» |
 | **Notifica musicale** | nessuna barra «00:00 – 00:00» (su HyperOS e sugli altri sistemi) |
+| **Volume dopo gli ascolti** (APK): volume dei media a metà, tocca due microfoni di fila (il secondo entro un secondo dal primo, anche lasciando finire il primo da solo), poi una parola in 🔊 e la musica | parola e musica si sentono sempre; se restano mute il ripristino del volume in `Bridge.java` non basta (vedi docs/audit-audio-2026-10.md, difetto A). Ripeti con il volume dei media silenziato con «muto» prima dell'ascolto: dopo deve restare muto |
+| **Voce registrata interrotta**: musica accesa, tocca una parola con la voce reale e, mentre parla, un'altra | la musica resta bassa mentre parla la seconda e risale subito quando finisce; toccando l'icona per fermare la voce risale subito |
+| **Musica e chiamata**: musica accesa (anche in secondo piano), fatti chiamare e rifiuta o chiudi; poi stacca le cuffie con la musica accesa | dopo la chiamata la musica e la notifica dicono la stessa cosa (suona, o è in pausa); staccando le cuffie la musica si ferma e la notifica mostra «play» |
+| **Blocco schermo con la musica**: lascia partire un brano, blocca lo schermo (senza il secondo piano), sblocca | la musica riparte da sola al ritorno; con il secondo piano scelto non si ferma mai |
 | **Apertura**: le quattro note nel momento in cui i toni si disegnano | si sentono (se gli effetti sono accesi e l'audio è sbloccato), una per tono, senza scatti |
 | **Cambio lingua dei menu** | niente animazione e si resta nella stessa pagina delle impostazioni |
 

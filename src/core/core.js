@@ -293,7 +293,7 @@
         var o2 = {}; Object.keys(o).forEach(function (k) { o2[k] = o[k]; }); o2.noClip = true; CP.speak(text, o2);
       };
       curAudio = ca; if (rate < 1) { ca.playbackRate = 0.85; ca.preservesPitch = true; }
-      ca.onended = function () { ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null; finish(); };
+      ca.onended = function () { ca.onended = ca.onerror = null; if (curAudio === ca) curAudio = null; var mi = token === mine; finish(); if (mi) try { CP.voiceTag.show(text, zh ? "zh" : "it"); } catch (e) {} };
       ca.onerror = back;
       try { var cp = ca.play(); if (cp && cp.catch) cp.catch(back); } catch (e) { back(); }
       return;
@@ -462,21 +462,27 @@
   /* tre bus sotto il master. sfx (volume regolabile, cp-sfxvol), music (il jukebox ci si collega),
      e il ducking: quando parla la voce la musica scende di 10 dB e poi risale. */
   CP.bus = (function () {
-    var B = {}, duckN = 0;
+    var B = {}, duckN = 0, stale = 0, staleAt = 0;
+    /* Una voce alla volta: duckN vale 0 o 1. Se ne parte una nuova mentre l'altra non ha ancora detto «finita», la fine della
+       vecchia (arriva dopo, a volte di molto) non deve far risalire la musica: stale conta quelle fini, valide solo per 400 ms */
     function mk(name, v) { var c = getCtx(); if (!c) return null; if (!B[name]) { B[name] = c.createGain(); B[name].gain.value = v; B[name].connect(CP.master()); } return B[name]; }
     function sfxVol() { var v = parseFloat(lsGet("cp-sfxvol")); return v >= 0 && v <= 1 ? v : 0.7; }
+    function apply() { var m = B.music, c = getCtx(); if (!m || !c) return; m.gain.cancelScheduledValues(c.currentTime); m.gain.setTargetAtTime(duckN ? 0.3 : 1, c.currentTime, duckN ? 0.05 : 0.4); }
+    function supersede() { if (duckN) { stale++; staleAt = Date.now(); } }
     return {
       sfx: function () { return mk("sfx", sfxVol()); },
       music: function () { return mk("music", duckN ? 0.3 : 1); },
       sfxVol: sfxVol,
       setSfxVol: function (v) { v = Math.max(0, Math.min(1, +v || 0)); lsSet("cp-sfxvol", v); var c = getCtx(); if (B.sfx && c) B.sfx.gain.setTargetAtTime(v, c.currentTime, 0.02); },
       duck: function (on) {
-        duckN = on ? 1 : 0;
-        var m = B.music, c = getCtx(); if (!m || !c) return;
-        m.gain.cancelScheduledValues(c.currentTime); m.gain.setTargetAtTime(on ? 0.3 : 1, c.currentTime, on ? 0.05 : 0.4);
-      }
+        if (stale && Date.now() - staleAt >= 400) stale = 0;
+        if (on) { supersede(); duckN = 1; } else if (stale) { stale--; return; } else duckN = 0;
+        apply();
+      },
+      cut: function () { supersede(); duckN = 0; apply(); }   /* stopSpeak: la voce è fermata, la musica risale subito */
     };
   })();
+  var ssp = CP.stopSpeak; CP.stopSpeak = function () { ssp.apply(this, arguments); CP.bus.cut(); };
   /* scala pentatonica (do re mi sol la) per la "vittoria": sale con la serie di risposte giuste */
   var PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.5];
   var NOISE = null;

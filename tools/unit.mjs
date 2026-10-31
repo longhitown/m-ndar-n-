@@ -818,6 +818,171 @@ function sandbox() {
     check("widget Ripasso 4×4: il modulo pwa/wq.js è testo caricato al primo uso (CP.wq), non JavaScript compilato all'avvio", /<script type="text\/plain" id="lazy-mod-wq">/.test(html) && !/<script>\s*\/\* ---- pwa\/wq\.js ----/.test(html));
   }
 }
+/* ---- audio: abbassamento della musica, pausa durante l'ascolto, rilascio del microfono (src/core/core.js, audio/player.js, voice/pitch.js, voice/mic.js) ----
+   Senza browser: ogni file gira in una sandbox con finti AudioContext, DOM e microfono. Sono le correzioni di docs/audit-audio-2026-10.md. */
+{
+  const flush = () => new Promise((r) => setImmediate(r));
+  const read = (f) => fs.readFileSync(path.join(SRC, f), "utf8");
+  const deferred = () => { let ok, no; const p = new Promise((a, b) => { ok = a; no = b; }); return { p, ok, no }; };
+  const gainNode = () => ({ gain: { value: 1, target: null, cancelScheduledValues() {}, setTargetAtTime(v) { this.target = v; }, setValueAtTime() {}, linearRampToValueAtTime() {} }, connect() {}, disconnect() {} });
+  const fakeCtx = () => ({ currentTime: 0, state: "running", sampleRate: 48000, destination: {}, createGain: gainNode, resume: () => Promise.resolve() });
+  const stubEl = () => ({ hidden: false, classList: { toggle() {}, add() {}, remove() {} }, style: { setProperty() {} }, addEventListener() {}, setAttribute() {}, appendChild(x) { return x; }, insertBefore(x) { return x; }, querySelectorAll: () => [], querySelector: () => null, innerHTML: "", textContent: "" });
+
+  /* 1. abbassamento della musica (CP.bus.duck): una voce alla volta, la fine di una voce sostituita non fa risalire la musica sotto la nuova */
+  {
+    const code = read("core/core.js"), a = code.indexOf("CP.bus = (function () {"), e = code.indexOf("CP.bus.cut(); };", a), busCode = code.slice(a, e + 16);
+    const make = () => {
+      const clock = { t: 1000 }, stops = [];
+      const c = vm.createContext({ CP: { master: () => gainNode(), stopSpeak: () => stops.push(1) }, getCtx: () => c.__c, lsGet: () => null, lsSet() {}, parseFloat, Date: { now: () => clock.t }, Math });
+      c.__c = fakeCtx(); vm.runInContext(busCode, c); return { bus: c.CP.bus, CP: c.CP, clock, stops };
+    };
+    let { bus, clock } = make(), m = bus.music();
+    bus.duck(true); bus.duck(true);          /* la voce A, poi la B che la sostituisce */
+    bus.duck(false);                          /* la fine di A arriva subito dopo la partenza di B (evento di annullamento) */
+    check("duck: la fine di una voce sostituita non fa risalire la musica sotto la nuova", m.gain.target === 0.3, String(m.gain.target));
+    bus.duck(false);
+    check("duck: finita la voce nuova la musica risale", m.gain.target === 1, String(m.gain.target));
+    bus.duck(false); bus.duck(false); bus.duck(true);
+    check("duck: una fine in più non lascia il conto sbilanciato (la voce dopo abbassa di nuovo)", m.gain.target === 0.3, String(m.gain.target));
+    bus.duck(false);
+    ({ bus, clock } = make()); m = bus.music();
+    bus.duck(true); bus.duck(true); clock.t += 1000;   /* voce registrata sostituita: la sua fine arriva solo al timer di sicurezza, molti secondi dopo */
+    bus.duck(false);
+    check("duck: se la fine della voce sostituita non arriva subito, la fine della nuova fa risalire la musica (non resta bassa fino al timer)", m.gain.target === 1, String(m.gain.target));
+    clock.t += 7000; bus.duck(false);
+    check("duck: la fine tardiva della voce vecchia, a musica già risalita, non cambia nulla", m.gain.target === 1, String(m.gain.target));
+    ({ bus, clock } = make()); m = bus.music();
+    bus.duck(true); bus.cut();
+    check("duck: stopSpeak (cut) fa risalire subito la musica", m.gain.target === 1, String(m.gain.target));
+    bus.duck(false);
+    bus.duck(true);
+    check("duck: dopo uno stop, l'evento di fine della voce fermata non tocca la voce successiva", (bus.duck(false), m.gain.target === 1) && (bus.duck(true), m.gain.target === 0.3), String(m.gain.target));
+    const t2 = make(); t2.bus.music(); t2.bus.duck(true); t2.CP.stopSpeak();
+    check("duck: CP.stopSpeak chiama anche il ripristino della musica", t2.stops.length === 1 && t2.bus.music().gain.target === 1, String(t2.bus.music().gain.target));
+    const b2 = make().bus; b2.duck(true);
+    check("duck: il bus musica creato mentre parla la voce nasce già abbassato", b2.music().gain.value === 0.3, String(b2.music().gain.value));
+  }
+
+  /* 2. jukebox: la pausa per l'ascolto si toglie anche con abort(), e lo sblocco tardivo non fa partire la musica durante un ascolto */
+  {
+    const store = { "cp-music": "1" }, unlock = [];
+    const tr = (id) => ({ id, ico: "x", name: id, desc: "", mood: "calm", make: () => ({ step() {}, stop() {} }) });
+    const CP = { esc: (x) => String(x), t: (k) => k, attr: (x) => String(x), pref: { sfx: true, auto: true, rate: 1 }, setPref() {}, sfx() {}, toast() {}, trap() {}, untrap() {},
+      audioTracks: { list: [tr("uno"), tr("due")] },
+      synth: { groove() {}, reset() {}, live: () => 0 }, master: () => gainNode(), bus: { music: () => gainNode(), sfxVol: () => 0.7 },
+      audioUnlock: () => { const d = deferred(); unlock.push(d); return d.p; } };
+    const c = fakeCtx(); CP.getCtx = () => c;
+    const handles = []; CP.listen = (t, cb) => { const h = { abort() {}, stop() {}, cb }; handles.push(h); return h; };
+    const doc = Object.assign(stubEl(), { body: stubEl(), createElement: stubEl, getElementById: (id) => (id === "music-btn" || id === "vset-body" ? stubEl() : null) });
+    const ctx = vm.createContext({ CP, document: doc, navigator: {}, localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem(k, v) { store[k] = String(v); } },
+      setInterval: () => 1, clearInterval() {}, setTimeout, clearTimeout, Date, Math, JSON, Promise, parseFloat, console });
+    ctx.window = ctx; ctx.CP = CP;
+    vm.runInContext(read("audio/player.js"), ctx, { filename: "audio/player.js" });
+    const hold = () => CP.musicState().hold;
+    const h1 = CP.listen("你", () => {});
+    check("jukebox: durante l'ascolto la musica è in pausa (un solo conteggio)", hold() === 1 && handles.length === 1, String(hold()));
+    h1.abort();
+    check("jukebox: abort() dell'ascolto toglie la pausa (prima la musica restava ferma fino al riavvio)", hold() === 0, String(hold()));
+    CP.musicHold(true); h1.abort();
+    check("jukebox: un secondo abort() non porta il conto sotto quello di un altro ascolto", hold() === 1, String(hold()));
+    CP.musicHold(false);
+    let got = 0; const h2 = CP.listen("你", () => { got++; });
+    handles[1].cb({ ok: true }); h2.abort();
+    check("jukebox: ascolto finito e poi abort(): la pausa si toglie una volta sola e la risposta arriva", hold() === 0 && got === 1, hold() + " / " + got);
+    const h3 = CP.listen("你", () => {}), h4 = CP.listen("好", () => {});
+    check("jukebox: un secondo ascolto avviato mentre il primo è in corso non lascia la musica ferma per sempre (nell'APK il primo non riceve più risposte)", hold() === 1, String(hold()));
+    h4.abort(); h3.abort();
+    check("jukebox: finiti gli ascolti la pausa è tolta del tutto", hold() === 0, String(hold()));
+    /* sblocco tardivo */
+    const before = unlock.length; CP.musicApply();   /* musica voluta: parte dopo lo sblocco */
+    check("jukebox: con la musica voluta parte la richiesta di sblocco", unlock.length === before + 1);
+    CP.musicHold(true);                               /* arriva un ascolto mentre lo sblocco è in attesa */
+    unlock[unlock.length - 1].ok("running"); await flush();
+    check("jukebox: lo sblocco arrivato durante un ascolto non fa partire la musica", CP.musicState().running === false, JSON.stringify(CP.musicState()));
+    CP.musicHold(false); unlock[unlock.length - 1].ok("running"); await flush();
+    check("jukebox: finito l'ascolto la musica riparte", CP.musicState().running === true, JSON.stringify(CP.musicState()));
+  }
+
+  /* 3. toni (pitch.js): pausa della musica e microfono si rilasciano una volta sola in ogni uscita */
+  {
+    const mk = (opts) => {
+      const log = { hold: 0, rel: 0, ends: [], mic: null };
+      const c = fakeCtx(); c.createMediaStreamSource = () => { if (opts.srcThrows) throw new Error("InvalidStateError"); return { connect() {}, disconnect() {} }; };
+      c.createAnalyser = () => ({ fftSize: 2048, connect() {}, getFloatTimeDomainData() {} });
+      const CP = { getCtx: () => c, musicHold: (on) => { log.hold += on ? 1 : -1; }, micRelease: () => { log.rel++; }, micLog() {}, micStream: () => (log.mic = deferred()).p };
+      const ctx = vm.createContext({ CP, window: {}, navigator: {}, document: { hidden: false }, performance: { now: () => 0 }, requestAnimationFrame: () => 1, cancelAnimationFrame() {}, setInterval: () => 1, clearInterval() {}, setTimeout, clearTimeout, Math, Float32Array, Promise });
+      ctx.window = ctx; vm.runInContext(read("voice/pitch.js"), ctx, { filename: "voice/pitch.js" });
+      const S = CP.pitchSession({ onFrame() {}, onEnd: (e) => log.ends.push(e.error || "ok") });
+      return { S, log, stream: { getAudioTracks: () => [] } };
+    };
+    let t = mk({}); t.S.stop(true); t.log.mic.ok(t.stream); await flush();
+    check("toni: chiusa prima che il microfono si apra (scarta): pausa musica e microfono rilasciati una volta sola", t.log.hold === 0 && t.log.rel === 1, JSON.stringify({ hold: t.log.hold, rel: t.log.rel }));
+    t = mk({}); t.S.stop(false); t.log.mic.ok(t.stream); await flush();
+    check("toni: fermata prima che il microfono si apra: la pausa non si toglie due volte (toglierebbe quella di un altro ascolto)", t.log.hold === 0 && t.log.rel === 1 && t.log.ends.length === 1, JSON.stringify({ hold: t.log.hold, rel: t.log.rel, ends: t.log.ends }));
+    t = mk({ srcThrows: true }); t.log.mic.ok(t.stream); await flush();
+    check("toni: se il flusso non si può collegare la sessione finisce con un errore e rilascia tutto (non resta in calibrazione)", t.log.ends.join() === "error" && t.log.hold === 0 && t.log.rel === 1, JSON.stringify({ hold: t.log.hold, rel: t.log.rel, ends: t.log.ends }));
+    t = mk({}); t.log.mic.no({ name: "NotAllowedError" }); await flush();
+    check("toni: microfono negato: errore alla pagina, musica ripresa, nessun rilascio del microfono (il conto lo restituisce micStream)", t.log.ends.join() === "NotAllowedError" && t.log.hold === 0 && t.log.rel === 0, JSON.stringify({ hold: t.log.hold, rel: t.log.rel, ends: t.log.ends }));
+  }
+
+  /* 4. microfono (mic.js): il conto degli utenti torna a zero, anche con aperture concorrenti che falliscono o con chi rinuncia prima */
+  {
+    const timers = [], md = { calls: 0, next: null };
+    const track = { readyState: "live", addEventListener() {}, stop() { this.readyState = "ended"; } }, stream = { getAudioTracks: () => [track], getTracks: () => [track] };
+    const CP = { esc: (x) => x, toast() {} };
+    const doc = Object.assign(stubEl(), { createElement: stubEl, querySelector: () => null });
+    const ctx = vm.createContext({ CP, document: doc, navigator: { mediaDevices: { getUserMedia: () => { md.calls++; md.next = deferred(); return md.next.p; } } },
+      setTimeout: (f, ms) => { timers.push({ f, ms }); return timers.length; }, clearTimeout: (i) => { if (timers[i - 1]) timers[i - 1].dead = true; }, Date, Math, Promise });
+    ctx.window = ctx; ctx.addEventListener = () => {};
+    vm.runInContext(read("voice/mic.js"), ctx, { filename: "voice/mic.js" });
+    const a = CP.micStream(), b = CP.micStream(); await flush();
+    check("microfono: due richieste insieme aprono un solo flusso e contano due utenti", md.calls === 1 && CP.micInfo().users === 2, JSON.stringify(CP.micInfo()));
+    md.next.no({ name: "NotAllowedError" });
+    await Promise.allSettled([a, b]); await flush();
+    check("microfono: se l'apertura fallisce ogni richiesta restituisce il suo conto (prima restava 1 e il microfono non si chiudeva da solo)", CP.micInfo().users === 0, JSON.stringify(CP.micInfo()));
+    const c = CP.micStream(); await flush(); CP.micRelease();   /* chi l'aveva chiesto rinuncia prima che il permesso arrivi */
+    md.next.ok(stream); await c; await flush();
+    check("microfono: se chi aspettava ha già rinunciato, il flusso aperto dopo si chiude da solo (parte il timer di inattività)", CP.micInfo().live && CP.micInfo().idle === true, JSON.stringify(CP.micInfo()));
+    timers.filter((x) => !x.dead).pop().f();
+    check("microfono: scaduto il timer il flusso è rilasciato e le tracce fermate", !CP.micInfo().live && track.readyState === "ended", JSON.stringify(CP.micInfo()));
+  }
+
+  /* 5. catalogo del jukebox: ogni id ha il suo modulo e il suo file registrato, e viceversa */
+  {
+    const cat = JSON.parse(/CATALOG = (\[[^\]]*\])/.exec(read("audio/tracks/index.js"))[1]);
+    const mods = fs.readdirSync(path.join(SRC, "audio/tracks")).filter((f) => f !== "index.js").map((f) => f.replace(/\.js$/, ""));
+    const oggs = fs.readdirSync(path.join(SRC, "audio/music")).filter((f) => f.endsWith(".ogg")).map((f) => f.replace(/\.ogg$/, ""));
+    const diff = (x, y) => x.filter((i) => !y.includes(i));
+    const bad = mods.filter((id) => { const s = read("audio/tracks/" + id + ".js"); return !/file:\s*true/.test(s) || !/sec:\s*\d+/.test(s) || !s.includes('player(c, bus, "' + id + '")'); });
+    check("jukebox: catalogo, moduli (audio/tracks) e file (audio/music) coincidono, e ogni modulo suona il proprio file con la sua durata", !diff(cat, mods).length && !diff(mods, cat).length && !diff(cat, oggs).length && !diff(oggs, cat).length && !bad.length && new Set(cat).size === cat.length, JSON.stringify({ senzaModulo: diff(cat, mods), senzaCatalogo: diff(mods, cat), senzaFile: diff(cat, oggs), fileInPiu: diff(oggs, cat), moduliStrani: bad }));
+  }
+}
+/* ---- 6. etichetta «Voce reale» (src/ui/voice-tag.js): solo con la clip vera, testi uguali ai Crediti, interruttore ---- */
+{
+  const tc = vm.createContext({}); vm.runInContext("var I18N = { it: {}, zh: {} };", tc); vm.runInContext(fs.readFileSync(path.join(SRC, "i18n/voice-tag.js"), "utf8"), tc);
+  const TI = vm.runInContext("I18N", tc), ki = Object.keys(TI.it).sort().join(), kz = Object.keys(TI.zh).sort().join();
+  const code = fs.readFileSync(path.join(SRC, "ui/voice-tag.js"), "utf8"), used = new Set([...code.matchAll(/"(vt\.[A-Za-z]+)"/g)].map((x) => x[1]));
+  const lack = [...used].filter((k) => !TI.it[k] || !TI.zh[k]);
+  check("Voce reale (etichetta): stessi testi in italiano e in cinese e nessun testo usato che manchi (" + Object.keys(TI.it).length + ")", ki === kz && !lack.length, lack.join(", "));
+  const mk = (store, lang) => {
+    const st = { n: 0, html: "" }, box = { id: "", setAttribute() {}, set innerHTML(v) { st.html = v; }, get innerHTML() { return st.html; }, contains() { return false; }, querySelector() { return null; } };
+    const doc = { addEventListener() {}, createElement() { st.n++; return box; }, body: { appendChild() {} }, getElementById() { return null; } };
+    const CP = { t: (k, v) => String(TI[lang][k] ?? k).replace(/\{(\w+)\}/g, (m, x) => v && v[x] != null ? v[x] : m), attr: (x) => String(x), voiceClip: { url: (t, l) => (l === "it" && t === "Ciao come stai") || (l === "zh" && t === "你好") ? "audio/voce/" + l + "/1.ab12cd34.ogg" : "" } };
+    const ctx = vm.createContext({ window: { CP }, document: doc, localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; } }, setTimeout: () => 1, clearTimeout() {}, Object, String });
+    vm.runInContext(code, ctx); return { VT: CP.voiceTag, st };
+  };
+  const a = mk({}, "it");
+  check("Voce reale (etichetta): senza clip (voce sintetica, frase senza registrazione, lingua sbagliata) non compare e non crea nulla", a.VT.info("frase mai registrata", "it") === null && a.VT.info("Ciao come stai", "zh") === null && a.VT.info("你好", "fr") === null && (a.VT.show("frase mai registrata", "it"), a.st.n === 0 && a.st.html === ""));
+  a.VT.show("Ciao come stai", "it");
+  check("Voce reale (etichetta): con la clip italiana dice «Voce reale · Tatoeba», di chi è la voce (NM1, CC BY 4.0) e invita allo Scambio linguistico", a.st.n === 1 && /Voce reale · Tatoeba/.test(a.st.html) && /NM1/.test(a.st.html) && /CC BY 4\.0/.test(a.st.html) && /data-vt-go/.test(a.st.html) && /Scambio linguistico/.test(a.st.html) && /hidden/.test(a.st.html) && /aria-expanded="false"/.test(a.st.html), a.st.html.slice(0, 200));
+  const b = mk({}, "zh"); b.VT.show("你好", "zh");
+  check("Voce reale (etichetta): con la clip cinese dice «Common Voice», CC0 e nessun dato di chi parla; in cinese tutto il testo è cinese", /Common Voice/.test(b.st.html) && /CC0/.test(b.st.html) && /真人录音/.test(b.st.html) && /语言交换/.test(b.st.html) && !/Voce reale/.test(b.st.html));
+  const c = mk({ "cp-voicetag": "0" }, "it"); c.VT.show("Ciao come stai", "it");
+  check("Voce reale (etichetta): con l'interruttore spento (cp-voicetag = 0) non compare mai", !c.VT.on() && c.st.n === 0 && c.st.html === "");
+  const cr = fs.readFileSync(path.join(SRC, "i18n/credits-t12.js"), "utf8"), co = fs.readFileSync(path.join(SRC, "core/core.js"), "utf8"), vcss = (fs.readFileSync(path.join(SRC, "styles/voice.css"), "utf8").split("l'etichetta «Voce reale»")[1] || "");
+  check("Voce reale (etichetta): stesse parole dei Crediti (NM1 · Tatoeba · CC BY 4.0; Mozilla Common Voice · CC0)", /NM1, Tatoeba, CC BY 4\.0/.test(cr) && /Mozilla Common Voice, CC0/.test(cr) && /NM1/.test(TI.it["vt.byIt"]) && /Tatoeba/.test(TI.it["vt.byIt"]) && /CC BY 4\.0/.test(TI.it["vt.byIt"]) && /Mozilla Common Voice/.test(TI.it["vt.byZh"]) && /CC0/.test(TI.it["vt.byZh"]));
+  check("Voce reale (etichetta): CP.speak la chiama una sola volta, alla fine della clip vera (mai per la voce sintetica); il modulo non fa rete né suoni e il CSS non ha animazioni", (co.match(/CP\.voiceTag\./g) || []).length === 1 && /ca\.onended = function[^\n]*CP\.voiceTag\.show/.test(co) && !/fetch\(|XMLHttpRequest|sendBeacon|Audio\(/.test(code) && vcss.length > 100 && !/animation|transition/.test(vcss));
+}
 
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);
