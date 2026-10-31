@@ -22,61 +22,11 @@
     return o;
   }
   /* eventi dal lato nativo */
+  window.__mdAnd = { wait: wait, nid: nid };   /* per src/pwa/android-mic.js (modulo caricato al primo uso) */
   window.__mdEvt = function (type, id, data) {
     if (type === "voices") { loadVoices(); fire(synth, "voiceschanged"); return; }
     var w = wait[id]; if (w) w(type, data);
   };
-
-  /* ---------------- microfono nativo (piano B di getUserMedia) ----------------
-     Se la WebView non riesce ad aprire il microfono (NotReadableError «Could not start audio source»), src/voice/mic.js chiede qui un
-     MediaStream: Android registra con AudioRecord e manda i campioni PCM (16 kHz, mono, blocchi da 20 ms, base64) come eventi «mic-pcm»;
-     qui diventano un MediaStream (AudioContext → MediaStreamDestination), quindi toni, scambio e oscilloscopio non cambiano. */
-  if (typeof A.nativeMicStart === "function") {
-    window.__mdNativeMic = function () {
-      return new Promise(function (ok, no) {
-        var Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) { no({ name: "NotSupportedError" }); return; }
-        var c = (window.CP && window.CP.getCtx && window.CP.getCtx()) || new Ctx();
-        if (c.state !== "running" && c.resume) { try { c.resume(); } catch (e) {} }
-        var dest = c.createMediaStreamDestination(), id = nid("m"), next = 0, stopped = false, srWait = null, srPre = null;
-        function stop() {
-          if (stopped) return; stopped = true; delete wait[id];
-          try { A.nativeMicStop(); } catch (e) {}
-          dest.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
-        }
-        wait[id] = function (type, data) {
-          if (stopped) return;
-          if (type === "mic-pcm") {
-            var bin = atob(data), n = bin.length >> 1, buf = c.createBuffer(1, n, 16000), ch = buf.getChannelData(0);
-            for (var i = 0; i < n; i++) { var v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); if (v & 0x8000) v -= 0x10000; ch[i] = v / 32768; }
-            var s = c.createBufferSource(); s.buffer = buf; s.connect(dest);
-            var t = c.currentTime; if (next < t + 0.02) next = t + 0.06;   /* un piccolo anticipo assorbe i ritardi dei messaggi */
-            s.start(next); next += buf.duration;
-          } else if (type === "sr-result" || type === "sr-error") {
-            /* testo riconosciuto dalla STESSA voce che si sta registrando (vedi nativeSrAttach in Bridge.java) */
-            var alts = []; if (type === "sr-result") { try { alts = JSON.parse(data).map(function (a) { return a.t; }); } catch (e) {} }
-            var res = type === "sr-result" ? { alts: alts } : { error: data || "error" };
-            if (srWait) { var w = srWait; srWait = null; w(res); } else srPre = res;
-          } else if (type === "mic-end") { stopped = true; delete wait[id]; dest.stream.getTracks().forEach(function (t) { try { t.stop(); t.dispatchEvent(new Event("ended")); } catch (e) {} }); }
-        };
-        var used = ""; try { used = A.nativeMicStart(id); } catch (e) { used = ""; }
-        if (!used) { delete wait[id]; no({ name: "NotReadableError", message: "cattura nativa non avviata" }); return; }
-        var piped = false; try { piped = !!(A.srPipedSupported && A.srPipedSupported() && A.nativeSrAttach); } catch (e) {}
-        dest.stream._mdNative = { id: id, source: used, stop: stop, sr: !piped ? null : {
-          /* attach(lang): il riconoscimento vocale di sistema ascolta la cattura in corso. finish(): chiude e restituisce {alts:[testi]} o {error} */
-          attach: function (lang) { srWait = null; srPre = null; try { return !!A.nativeSrAttach(lang, 3); } catch (e) { return false; } },
-          finish: function () {
-            return new Promise(function (ok) {
-              if (srPre) { var r = srPre; srPre = null; ok(r); return; }
-              srWait = ok; try { A.nativeSrFinish(); } catch (e) {}
-              setTimeout(function () { if (srWait === ok) { srWait = null; ok({ error: "timeout" }); } }, 6000);
-            });
-          } } };
-        try { localStorage.setItem("md-native-mic", "1"); } catch (e) {}   /* su questo telefono la WebView non apre il microfono: anche il riconoscimento delle carte userà l'audio nostro */
-        ok(dest.stream);
-      });
-    };
-  }
 
   /* ---------------- speechSynthesis ---------------- */
   var voices = [];
@@ -142,25 +92,39 @@
     };
     Rec.prototype.start = function () {
       if (this._id) throw new Error("InvalidStateError: già in ascolto");
-      var self = this, id = nid("r"), ended = false; this._id = id;
-      wait[id] = function (type, data) {
-        if (ended) return;
-        if (type === "sr-start") { fire(self, "start"); fire(self, "audiostart"); }
-        else if (type === "sr-result") {
-          var alts = []; try { alts = JSON.parse(data); } catch (e) {}
-          var res = alts.map(function (a) { return { transcript: a.t, confidence: a.c }; });
-          res.isFinal = true; res.item = function (i) { return res[i]; };
-          var list = [res]; list.item = function (i) { return list[i]; };
-          fire(self, "result", { results: list, resultIndex: 0 });
-        } else if (type === "sr-error") fire(self, "error", { error: data || "error", message: "" });
-        else if (type === "sr-end") { ended = true; delete wait[id]; self._id = null; fire(self, "end"); }
-      };
-      /* su un telefono dove la WebView non apre il microfono (cattura nativa in uso) anche il riconoscimento di sistema può non sentire niente:
-         gli si dà l'audio della nostra cattura (Android 13+). Altrove resta il percorso di sempre. */
-      var piped = false; try { piped = localStorage.getItem("md-native-mic") === "1" && !!A.srPipedSupported && A.srPipedSupported() && !!A.srStartPiped; } catch (e) {}
-      if (window.CP && window.CP.micLog) window.CP.micLog("carte-riconoscimento", piped ? "audio nativo" : "audio di sistema");
-      if (piped) A.srStartPiped(id, this.lang || "zh-CN", Math.max(1, this.maxAlternatives | 0));
-      else A.srStart(id, this.lang || "zh-CN", Math.max(1, this.maxAlternatives | 0));
+      var self = this, lang = this.lang || "zh-CN", max = Math.max(1, this.maxAlternatives | 0), started = false, got = false, retried = false;
+      function log(m) { if (window.CP && window.CP.micLog) window.CP.micLog("carte-riconoscimento", m); }
+      function canPipe() { try { return !!A.srPipedSupported && A.srPipedSupported() && !!A.srStartPiped; } catch (e) { return false; } }
+      /* Il riconoscimento di sistema apre un microfono suo. Su alcuni telefoni non sente niente («no-speech» subito) anche se l'audio c'è: allora si
+         riprova UNA volta dandogli l'audio della nostra cattura (Android 13+), e se così funziona si ricorda (md-sr-piped) per le volte dopo. */
+      var prefer = false; try { prefer = localStorage.getItem("md-sr-piped") === "1" && canPipe(); } catch (e) {}
+      function begin(piped) {
+        var id = nid("r"), ended = false, swallow = false; self._id = id;
+        wait[id] = function (type, data) {
+          if (ended) return;
+          if (type === "sr-start") { if (!started) { started = true; fire(self, "start"); fire(self, "audiostart"); } }
+          else if (type === "sr-result") {
+            got = true;
+            if (piped && !prefer) { try { localStorage.setItem("md-sr-piped", "1"); } catch (e) {} log("audio nativo: ha funzionato, lo userò le prossime volte"); }
+            var alts = []; try { alts = JSON.parse(data); } catch (e) {}
+            var res = alts.map(function (a) { return { transcript: a.t, confidence: a.c }; });
+            res.isFinal = true; res.item = function (i) { return res[i]; };
+            var list = [res]; list.item = function (i) { return list[i]; };
+            fire(self, "result", { results: list, resultIndex: 0 });
+          } else if (type === "sr-error") {
+            if (!got && !retried && !piped && data === "no-speech" && canPipe()) { retried = true; swallow = true; return; }                        /* poi sr-end: riparte con l'audio nostro */
+            if (!got && !retried && piped && prefer && /^(service-not-allowed|audio-capture|language-not-supported)$/.test(data || "")) { retried = true; swallow = true; try { localStorage.removeItem("md-sr-piped"); } catch (e) {} return; }   /* con l'audio nostro non va: si torna al percorso di sistema */
+            fire(self, "error", { error: data || "error", message: "" });
+          } else if (type === "sr-end") {
+            ended = true; delete wait[id];
+            if (swallow) { swallow = false; log(piped ? "audio nativo non va: torno al sistema" : "il sistema non sente: riprovo con l'audio nativo"); begin(!piped); return; }
+            self._id = null; fire(self, "end");
+          }
+        };
+        log(piped ? "audio nativo" : "audio di sistema");
+        if (piped) A.srStartPiped(id, lang, max); else A.srStart(id, lang, max);
+      }
+      begin(prefer);
     };
     Rec.prototype.stop = function () { if (this._id) A.srStop(this._id); };
     Rec.prototype.abort = function () { if (this._id) A.srAbort(this._id); };
