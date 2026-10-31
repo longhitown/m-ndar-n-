@@ -599,6 +599,23 @@ public class Bridge {
         TodayWidget.updateAll(act.getApplicationContext());
     }
 
+    /**
+     * Contratto con pwa/widget.js e pwa/wq.js: i voti dati nel widget «Ripasso rapido» (4×4) e non ancora applicati, come testo
+     * JSON [{ id, k, g, t, c }, …] (carta, voto 0-3, ora in millisecondi, corso); stringa vuota se la coda è vuota.
+     * Solo lettura: la coda si svuota con widgetAck.
+     */
+    @JavascriptInterface
+    public String widgetPending() {
+        try { return ReviewQueue.pending(act.getApplicationContext()); } catch (RuntimeException e) { return ""; }
+    }
+
+    /** Contratto con pwa/wq.js: l'app ha applicato questi voti (testo JSON ["id", …]); il widget li toglie dalla coda */
+    @JavascriptInterface
+    public void widgetAck(String idsJson) {
+        if (idsJson == null || idsJson.length() > 200000) return;
+        try { ReviewQueue.ack(act.getApplicationContext(), idsJson); } catch (RuntimeException ignored) { }
+    }
+
     /* ---------------- musica in secondo piano ---------------- */
 
     /** stato del jukebox: con il secondo piano scelto, la notifica del brano tiene viva la musica a schermo spento */
@@ -699,7 +716,7 @@ public class Bridge {
     }
 
     /**
-     * Contratto con le Impostazioni: kind = "today_large", "today_small", "pause" o "review". Mostra la richiesta di sistema
+     * Contratto con le Impostazioni: kind = "today_large", "today_small", "pause", "review" (il 4×4) o "review_small" (il 2×1). Mostra la richiesta di sistema
      * (la esegue sul thread dell'interfaccia) e ritorna true se è stata mostrata; false se non è supportata o il nome è sconosciuto.
      * Non invia dati e non parte mai da sola: solo da un tocco dell'utente.
      */

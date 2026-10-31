@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- pulsante del voto 3 nel widget «Ripasso rapido» (4×4): colore pieno, angoli a 16 dp, onda al tocco -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/w_g_ripple">
+    <item><shape android:shape="rectangle"><solid android:color="@color/w_g_mint" /><corners android:radius="16dp" /></shape></item>
+</ripple>

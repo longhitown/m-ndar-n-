@@ -72,10 +72,17 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_pause_info" />
         </receiver>
 
-        <!-- widget «Ripasso rapido» (2×1): il numero di carte da ripassare adesso; un tocco apre il ripasso -->
+        <!-- widget «Ripasso rapido (piccolo)» (2×1): il numero di carte da ripassare adesso; un tocco apre il ripasso -->
         <receiver android:name=".ReviewWidget" android:exported="true" android:label="@string/r_name">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_review_info" />
+        </receiver>
+
+        <!-- widget «Ripasso rapido» (4×4): le carte da ripassare una alla volta, senza aprire l'app; i voti vanno in coda e li applica l'app.
+             Non esportato: i tocchi arrivano solo dai PendingIntent del widget -->
+        <receiver android:name=".ReviewBigWidget" android:exported="false" android:label="@string/rb_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_review_big_info" />
         </receiver>
 
         <service android:name=".MusicService" android:exported="false" android:foregroundServiceType="mediaPlayback" />

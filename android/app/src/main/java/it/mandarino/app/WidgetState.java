@@ -22,6 +22,10 @@ final class WidgetState {
 
     int due, fresh, streak, goal, wt;
     boolean activeToday, empty = true;
+    /** il mazzo del widget «Ripasso rapido» 4×4 (null se l'app non lo ha mandato), il corso a cui appartiene ("zh" o "it") e l'ora in cui l'app ha mandato lo stato */
+    JSONArray deck;
+    String dc = "zh";
+    long stateT;
     String lang = "it", hz = "", py = "", it = "", rank = "";
     /** i testi stanno in res/values (it) e res/values-zh: nella lingua del corso scelta nell'app, non in quella del telefono */
     Resources r;
@@ -37,6 +41,9 @@ final class WidgetState {
             long now = System.currentTimeMillis(), t0 = o.optLong("t0"), t = o.optLong("t");
             w.empty = false;
             w.lang = o.optString("lang", "it");
+            w.dc = "it".equals(o.optString("dc")) ? "it" : "zh";
+            w.deck = o.optJSONArray("deck");
+            w.stateT = t;
             w.fresh = o.optInt("nw");
             w.goal = o.optInt("goal", 10);
             int due = o.optInt("over");

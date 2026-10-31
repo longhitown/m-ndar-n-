@@ -95,7 +95,7 @@
   };
   /* g: 0 non la so, 1 quasi, 2 la so, 3 facile (come V4) -> voto FSRS 1-4. retry = la carta e' stata richiesta di nuovo nella stessa sessione. */
   CP.grade = function (k, g, retry, meta) {
-    var r = S[k] || { n: 0, d: 0, b: 0 }, now = Date.now(), pred = null, wasReview = false;
+    var r = S[k] || { n: 0, d: 0, b: 0 }, now = (meta && meta.at) || Date.now(), pred = null, wasReview = false;
     migrate(r);
     if (r.st != null) pred = CP.retr(k, now);
     r.n = (r.n || 0) + 1;
@@ -113,7 +113,7 @@
     S[k] = r;
     CP.save(); CP.mark();
     if (window.Store) Store.log([now, k, g + 1, (meta && meta.ms) || 0, (meta && meta.type) || "", pred == null ? null : Math.round(pred * 1000) / 1000, retry ? 1 : 0]);
-    if (CP.onGrade) CP.onGrade(k, g, !!retry);
+    if (CP.onGrade && !(meta && meta.quiet)) CP.onGrade(k, g, !!retry);
   };
   CP.mark = function () {
     Array.prototype.forEach.call(document.querySelectorAll("#sections tbody tr"), function (tr) {
