@@ -577,7 +577,13 @@ function sandbox() {
     const [a, b, c, d] = r.review.items;
     check("voci: la trascrizione uguale al testo → da-ascoltare, punteggio 1, mai approvata", a.status === "da-ascoltare" && a.score === 1 && a.heard === Z0 && a.approved === false && a.priorita === "normale" && r.review.items.every((x) => x.approved === false), JSON.stringify(a));
     check("voci: trascrizione diversa dal testo (frase sostituita) → scartata per punteggio", b.status === "scartata" && b.score < 0.6 && /punteggio/.test(b.reason), JSON.stringify(b));
-    check("voci: parola vietata (termine finto «parolaccia») → scartata anche se il resto somiglia", c.status === "scartata" && /elenco vietato.*riga 2/.test(c.reason) && !/parolaccia/.test(r.md), JSON.stringify(c));
+    {
+      /* soglie: sotto --scarta-sotto (0,35) si scarta da sole; tra 0,35 e --min (0,6) si ascolta con priorità alta e un avviso, per non perdere in silenzio voci buone ma imperfette */
+      const q = prep([itm({ ref: "phr:0:1", lang: "it-IT", text: "Come ti chiami?", file: "e.ogg" }), itm({ ref: "phr:0:1", lang: "it-IT", text: "Come ti chiami?", file: "f.ogg" })], [OGG("5"), OGG("6")], ["come sta", "ti chiamo domani"]);
+      const [m, n] = q.review.items;
+      check("voci: somiglianza tra 0,35 e 0,6 → da ascoltare con priorità alta e un avviso; sotto 0,35 → scartata", m.status === "da-ascoltare" && m.priorita === "alta" && m.score > 0.35 && m.score < 0.6 && /somiglianza bassa/.test(m.reason) && n.status === "scartata" && n.score < 0.35 && q.review.discard === 0.35, JSON.stringify([m, n]));
+    }
+    check("voci: parola vietata (termine finto «parolaccia») → scartata anche se il resto somiglia",c.status === "scartata" && /elenco vietato.*riga 2/.test(c.reason) && !/parolaccia/.test(r.md), JSON.stringify(c));
     check("voci: non madrelingua → da-ascoltare con priorità alta, ordinata prima nel riepilogo", d.status === "da-ascoltare" && d.priorita === "alta" && r.md.indexOf("| alta |") < r.md.indexOf("| normale |"), r.md.slice(0, 300));
     check("voci: file estratti con nomi generati («indice-impronta8.ext»), link relativi nel riepilogo, cartella di lavoro temporanea tolta", /^0-[0-9a-f]{8}\.ogg$/.test(a.file) && fs.existsSync(path.join(r.reviewDir, a.file)) && a.sha256.startsWith(a.file.slice(2, 10)) && r.md.includes("](" + a.file + ")") && !fs.existsSync(path.join(r.reviewDir, ".stt")));
     const rs = prep([itm()], [OGG("1")], [Z0], { stt: undefined });

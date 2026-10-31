@@ -18,7 +18,7 @@ import { readZip, ZipError, LIMITS } from "./zip.mjs";
 import { score as scoreOf, readingsFrom } from "./voice-score.mjs";
 import { goodNick, addNicks } from "./credits.mjs";
 
-export const MAX_MS = 8500, MAX_ITEMS = 200, LOW = 0.8, MIN_DEFAULT = 0.6, STT_TIMEOUT = 60000;
+export const MAX_MS = 8500, MAX_ITEMS = 200, LOW = 0.8, MIN_DEFAULT = 0.6, DISCARD_DEFAULT = 0.35, STT_TIMEOUT = 60000;
 export const LANGS = { "zh-CN": { lang: "zh", locale: "zh-CN" }, "it-IT": { lang: "it", locale: "it-IT" } };
 /* estensione → firma dei primi byte (e dove) */
 export const MAGIC = { ".ogg": { at: 0, hex: "4f676753" }, ".webm": { at: 0, hex: "1a45dfa3" }, ".m4a": { at: 4, hex: "66747970" }, ".mp4": { at: 4, hex: "66747970" } };
@@ -187,9 +187,10 @@ export function blockedBy(text, terms) {
 
 /* ---------- fase 1: prepara ---------- */
 export function prepare(opt) {
-  const o = { ...opt, min: opt.min === undefined ? MIN_DEFAULT : opt.min }, reviewDir = path.resolve(o.reviewDir), notes = [];
+  const o = { ...opt, min: opt.min === undefined ? MIN_DEFAULT : opt.min, discard: opt.discard === undefined ? DISCARD_DEFAULT : opt.discard }, reviewDir = path.resolve(o.reviewDir), notes = [];
   if (!o.zips || !o.zips.length) throw new Error("serve almeno un pacchetto .zip");
   if (!(o.min >= 0 && o.min <= 1)) throw new Error("--min deve essere un numero tra 0 e 1");
+  if (!(o.discard >= 0 && o.discard <= o.min)) throw new Error("--scarta-sotto deve essere un numero tra 0 e --min");
   const outMd = path.resolve(o.out || path.join(reviewDir, "riepilogo.md")), rel = path.relative(reviewDir, outMd);
   if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error("--out deve stare dentro --review-dir: lo strumento non scrive fuori da lì");
   if (fs.existsSync(path.join(reviewDir, "review.json"))) throw new Error("in " + reviewDir + " c'è già un review.json (con le approvazioni a mano): usa un'altra cartella o toglilo tu");
@@ -226,15 +227,18 @@ export function prepare(opt) {
       if (rec.heard !== null) rec.score = Math.round(scoreOf(it.text, rec.heard, it.lang, refs.readings) * 1000) / 1000;
       const line = terms && rec.heard !== null ? blockedBy(rec.heard, terms) : 0;
       if (line) { rec.reason = "contiene una parola dell'elenco vietato (riga " + line + ")"; continue; }
-      if (rec.score !== null && rec.score < o.min) { rec.reason = "la trascrizione non somiglia al testo (punteggio " + rec.score.toFixed(2) + " < " + o.min + ")"; continue; }
+      /* si scarta da sole solo ciò che non somiglia per niente (o contiene parole vietate): una pronuncia imperfetta ma riconoscibile (tra --scarta-sotto e --min)
+         arriva all'ascolto con priorità alta, perché scartarla in silenzio farebbe perdere voci buone senza che la persona lo sappia */
+      if (rec.score !== null && rec.score < o.discard) { rec.reason = "la trascrizione non somiglia al testo (punteggio " + rec.score.toFixed(2) + " < " + o.discard + ")"; continue; }
       rec.status = "da-ascoltare";
+      if (rec.score !== null && rec.score < o.min) rec.reason = "somiglianza bassa (punteggio " + rec.score.toFixed(2) + ", sotto " + o.min + "): ascolta con attenzione che dica proprio la frase";
       rec.priorita = rec.heard === null || rec.score < LOW || !rec.native ? "alta" : "normale";
       if (!rec.reason && rec.heard === null) rec.reason = doStt ? "non trascritta" : "senza trascrizione";
       if (!rec.native && !rec.reason) rec.reason = "non madrelingua";
     }
   }
   fs.rmSync(tmpDir, { recursive: true, force: true });
-  const review = { schema: "mandarino-voice-review/1", created: (o.now ? o.now() : new Date()).toISOString(), min: o.min, stt: doStt, blocklist: !!terms, packages, items };
+  const review = { schema: "mandarino-voice-review/1", created: (o.now ? o.now() : new Date()).toISOString(), min: o.min, discard: o.discard, stt: doStt, blocklist: !!terms, packages, items };
   fs.writeFileSync(path.join(reviewDir, "review.json"), JSON.stringify(review, null, 1) + "\n");
   const md = summary(review, { outMd, reviewDir, recognizers: doStt ? [] : (o.recognizers || findRecognizers()), nStt: ffmpeg });
   fs.writeFileSync(outMd, md);
