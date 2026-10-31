@@ -10,7 +10,8 @@
     "test": "node tools/unit.mjs && node tools/check-docs.mjs --strict && node tools/build.mjs && node tools/e2e.mjs && node tools/ux-audit.mjs",
     "unit": "node tools/unit.mjs",
     "e2e": "node tools/e2e.mjs",
-    "audit": "node tools/ux-audit.mjs"
+    "audit": "node tools/ux-audit.mjs",
+    "icone": "node tools/icone.mjs"
   },
   "devDependencies": {
     "playwright": "1.63.0"

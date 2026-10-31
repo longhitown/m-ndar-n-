@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import { lab } from "./lib/lab.mjs";
 import { recipes, recipesFile } from "./lib/radicali.mjs";
 import * as REL from "./release.mjs";
+import * as IC from "./icone.mjs";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), ".."), SRC = path.join(ROOT, "src");
 const results = [];
@@ -1038,6 +1039,21 @@ function sandbox() {
   const pgs = (sp.match(/var PAGES = \[([^\]]*)\]/) || [])[1] || "", cpg = (cm.match(/var PAGES = \[([^\]]*)\]/) || [])[1] || "";
   check("Pallino «Nuovo»: c'è su tutte le pagine delle Impostazioni e si toglie solo a pagina scorsa fino in fondo e con il tempo di vederla",
     pgs && pgs.replace(/\s/g, "") === cpg.replace(/\s/g, "") && /function readStart/.test(cm) && /Math\.round\(card\.scrollTop \/ max \* \(n - 1\)\)/.test(cm) && /SEG_MS = 500/.test(cm) && !/md-seen-community/.test(cm) && /md-seen-p-/.test(rd("ui/settings.js")));
+}
+
+/* ---- icone (D2): fonte unica icone/, sprite, somme SHA-256, emoji mappate, marchio ---- */
+{
+  const p = IC.problems(), ep = IC.emojiProblems(), m = JSON.parse(fs.readFileSync(path.join(ROOT, "icone/manifest.json"), "utf8"));
+  check("icone: manifest, file SVG (griglia 24, tratto 1,8, solo variabili di colore), sprite e somme SHA-256 sono in regola", p.length === 0, p.slice(0, 3).join(" | "));
+  check("icone: ogni emoji dell'app ha la sua icona nel manifest (e, con la sostituzione attiva, nessuna resta nel codice)", ep.length === 0, ep.slice(0, 3).join(" | "));
+  check("icone: la fase 1 è di 150 voci, con nomi in italiano e in cinese, e le disegnate sono almeno 24", m.icone.length >= 150 && m.icone.every((i) => i.it && i.zh) && m.icone.filter((i) => i.stato === "disegnata").length >= 24, m.icone.length + " voci");
+  const fig = ["01-dal-carattere-al-segno", "02-evoluzione", "03-sottrazione", "04-nove-quadri", "05-dove-ci-siamo-fermati", "06-tre-colori-tre-fondi"];
+  const dm = fs.readFileSync(path.join(ROOT, "icone/DESIGN.md"), "utf8");
+  check("icone: DESIGN.md racconta l'evoluzione con le sei figure, tutte presenti e richiamate", fig.every((n) => fs.existsSync(path.join(ROOT, "icone/design", n + ".svg")) && dm.includes("design/" + n + ".svg")), "");
+  const mk = fs.readFileSync(path.join(ROOT, "MARCHIO.md"), "utf8"), rec = fs.readFileSync(path.join(ROOT, "docs/store/fdroiddata/it.mandarino.app.yml"), "utf8");
+  const fp = (rec.match(/AllowedAPKSigningKeys:\s*([0-9a-f]{64})/) || [])[1] || "";
+  check("marchio: MARCHIO.md dà l'impronta del certificato di firma, uguale a quella della ricetta F-Droid, ed è richiamato da NOTICE, README e LEGGIMI",
+    fp.length === 64 && mk.includes(fp.toUpperCase().match(/../g).join(":")) && ["NOTICE.md", "README.md", "LEGGIMI.md"].every((n) => fs.readFileSync(path.join(ROOT, n), "utf8").includes("MARCHIO.md")), fp);
 }
 
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");

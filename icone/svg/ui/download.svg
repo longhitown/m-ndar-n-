@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t">
+  <title id="t">Scarica</title>
+  <path d="M4.8 14.4V18.2Q4.8 19.4 6 19.4H18Q19.2 19.4 19.2 18.2V14.4" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12 4.6V14.6" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.1 11L12 14.9L15.9 11" style="stroke:var(--im,#DB5F00)"/>
+</svg>

@@ -18,6 +18,8 @@ tracciamento, e funziona anche senza connessione.
 - Dare una mano, anche senza programmare: [CONTRIBUTING.md](CONTRIBUTING.md) · 不会编程也能参与
 - Chi ha già dato una mano: [CONTRIBUTORS.md](CONTRIBUTORS.md)
 - Licenze: [NOTICE.md](NOTICE.md) e [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
+- Il nome e il logo (come usarli, come riconoscere la versione vera): [MARCHIO.md](MARCHIO.md)
+- Le icone (CC BY 4.0), il loro disegno e come riusarle: [icone/ICONE.md](icone/ICONE.md) · [icone/DESIGN.md](icone/DESIGN.md)
 
 ## Per chi sviluppa
 
@@ -35,8 +37,8 @@ un sigillo di gratitudine, che assegno a mano: è un codice firmato, solo esteti
 
 ## Licenze
 
-Il codice è sotto licenza MIT ([LICENSE](LICENSE)); i contenuti didattici e la musica sono CC BY 4.0; le parti di altri
-sono elencate in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Che cosa vale per che cosa lo trovi in
+Il codice è sotto licenza MIT ([LICENSE](LICENSE)); i contenuti didattici, la musica e le icone sono CC BY 4.0; il nome e il logo
+non sono compresi nelle licenze ([MARCHIO.md](MARCHIO.md)); le parti di altri sono elencate in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Che cosa vale per che cosa lo trovi in
 [NOTICE.md](NOTICE.md).
 
 L'ho costruita io, con l'aiuto di Claude, un'intelligenza artificiale: ne parlo, con la dovuta trasparenza, sempre in
