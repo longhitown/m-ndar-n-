@@ -252,11 +252,11 @@ async function auditView(browser, file, vw, vh, theme) {
 }
 
 /* il corso di italiano per chi parla cinese: carta «今天» e percorso, le altre schede, «我的进步», la carta */
-/* ⚙️: la pagina iniziale con la ricerca attiva e ognuna delle cinque pagine (chiamata con il foglio già aperto) */
+/* ⚙️: la pagina iniziale con la ricerca attiva e ognuna delle sei pagine (chiamata con il foglio già aperto) */
 async function settingsPages(page, screen, lbl) {
   await page.fill("#set-q", "a"); await page.waitForTimeout(80); await page.evaluate(PAGE_LIB); await screen("Foglio " + lbl + " · ricerca");
   await page.fill("#set-q", ""); await page.waitForTimeout(60);
-  for (const p of ["look", "sound", "study", "data", "info"]) {
+  for (const p of ["look", "sound", "community", "study", "data", "info"]) {
     await page.click(`[data-set-open="${p}"]`); await page.waitForTimeout(220); await page.evaluate(PAGE_LIB);
     await screen("Foglio " + lbl + " · " + p);
     await page.click("[data-set-back]"); await page.waitForTimeout(80);
