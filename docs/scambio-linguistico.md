@@ -95,7 +95,7 @@ fase; per la trascrizione serve un riconoscitore locale a scelta (per esempio Wh
 **1. Prepara** (non scrive nulla in `src/`, solo nella cartella di revisione):
 
 ```
-node tools/voice-import.mjs pacchetto1.zip [pacchetto2.zip …] --review-dir revisione/ [--stt "<comando>"] [--blocklist elenco.txt] [--min 0.6] [--out riepilogo.md]
+node tools/voice-import.mjs pacchetto1.zip [pacchetto2.zip …] --review-dir revisione/ [--stt "<comando>"] [--blocklist elenco.txt] [--min 0.6] [--scarta-sotto 0.35] [--out riepilogo.md]
 ```
 
 - **Pacchetto**: lo `.zip` si legge con un lettore proprio (nessun `unzip`) e si rifiuta intero alla prima anomalia: nomi con `..`, `/` iniziale, barra
@@ -111,7 +111,7 @@ node tools/voice-import.mjs pacchetto1.zip [pacchetto2.zip …] --review-dir rev
   16 kHz mono. Senza `--stt` ogni voce resta «da ascoltare» (priorità alta) e il riepilogo lo scrive in cima, con il comando proposto se nel PATH c'è
   `faster-whisper`, `whisper-ctranslate2` o `whisper` (proposto, mai eseguito). Su Windows il comando deve essere un eseguibile vero (`.exe`) o `node script.mjs`,
   non un file `.cmd`.
-- **Punteggio**: la stessa logica del filtro dell'app (`tools/lib/voice-score.mjs`, con la prova di parità in `tools/unit.mjs`). Sotto `--min` la voce è scartata.
+- **Punteggio**: la stessa logica del filtro dell'app (`tools/lib/voice-score.mjs`, con la prova di parità in `tools/unit.mjs`). Sotto `--scarta-sotto` (0,35) la voce è scartata da sola; tra `--scarta-sotto` e `--min` (0,6) arriva all'ascolto con priorità alta e un avviso. Scartare in silenzio una pronuncia imperfetta farebbe perdere voci buone senza che la persona lo sappia.
 - **Parole vietate** (`--blocklist`): una voce per riga, `#` per i commenti, confronto su testo minuscolo senza accenti (sottostringa; per il cinese sui
   soli caratteri). **Il file sta fuori dal repository** (contiene insulti): lo strumento rifiuta un elenco dentro il repository. Senza, il riepilogo avverte che il controllo non è stato fatto.
 - **Esito**: ogni voce è `scartata` (con il motivo) oppure `da-ascoltare`, con priorità `alta` se non trascritta, con punteggio sotto 0,8 o non madrelingua.
