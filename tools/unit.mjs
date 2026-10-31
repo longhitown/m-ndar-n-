@@ -492,5 +492,154 @@ function sandbox() {
   check("Scambio linguistico: il modulo non fa richieste di rete e tiene il consenso fuori dalle chiavi cp-", !/fetch\(|XMLHttpRequest|sendBeacon/.test(code) && /md-voice-consent/.test(code) && !/"cp-voice/.test(code));
 }
 
+/* ---- voci di madrelingua: importazione sicura (tools/voice-import.mjs, tools/lib/{zip,voice-score,voice-import}.mjs) ----
+   Tutto in memoria o in cartelle temporanee, senza ffmpeg, senza whisper e senza rete: gli .zip si costruiscono qui con lo scrittore
+   «store» di tools/lib/zip.mjs, il riconoscitore è tools/fixtures/fake-stt.mjs e la conversione audio è una funzione finta che copia il file.
+   Il principio da provare: l'automazione scarta e ordina, ma una voce entra in src/ solo se una persona l'ha approvata a mano. */
+{
+  const os = await import("os"), { spawnSync } = await import("child_process"), crypto = (await import("crypto")).default;
+  const Z = await import("./lib/zip.mjs"), VS = await import("./lib/voice-score.mjs"), VI = await import("./lib/voice-import.mjs");
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "md-vimp-")), refs = VI.loadRefs(SRC);
+  const sha = (b) => crypto.createHash("sha256").update(b).digest("hex");
+
+  /* parità del punteggio con l'app: le funzioni si estraggono dai sorgenti e si fanno girare in una sandbox */
+  {
+    const rd = (f) => fs.readFileSync(path.join(SRC, f), "utf8"), cut = (t, a, b) => t.slice(t.indexOf(a), t.indexOf(b));
+    const ctx = vm.createContext({ CP: { WORDS: L.W, ORDER: Object.keys(L.W) } });
+    vm.runInContext("var CJK = /[㐀-鿿]/; CP.syllables = (function () {" + cut(rd("words/table.js"), "function syllables(py)", "function pinyinHTML") + " return syllables; })();", ctx);
+    vm.runInContext(cut(rd("voice/voice-panel.js"), "var RD = null;", "function bare(s)"), ctx);
+    vm.runInContext(cut(rd("ui/scambio.js"), "var CJKR", "function bestScore"), ctx);
+    const app = vm.runInContext("score", ctx), mine = (e, h, l) => VS.score(e, h, l, refs.readings);
+    const Z1 = "你好！很高兴认识你。", cases = [[Z1, Z1, "zh-CN"], ["他是老师", "她是老师", "zh-CN"], ["他是老师", "它是老师", "zh-CN"], [Z1, "我不知道今天天气怎么样", "zh-CN"], ["你好", "你好你是坏人", "zh-CN"], ["你好", "", "zh-CN"], ["你们好", "你好", "zh-CN"],
+      ["Perché è così?", "perche e cosi", "it-IT"], ["Buongiorno, dove andiamo?", "Buon giorno dove andiamo", "it-IT"], ["Ciao a tutti!", "arrivederci", "it-IT"], ["Come ti chiami?", "", "it-IT"], ["Come ti chiami?", "Come ti chiami? Mi chiamo Luca", "it-IT"]];
+    const diff = cases.filter(([e, h, l]) => app(e, h, l) !== mine(e, h, l)).map((c) => c.join("/") + " app " + app(c[0], c[1], c[2]) + " strumento " + mine(c[0], c[1], c[2]));
+    check("voci: il punteggio dello strumento è identico a CP.scambio.score dell'app su " + cases.length + " esempi", !diff.length, diff.join("; "));
+    check("voci: punteggio, frase uguale 1; omofoni 他/她 1; frase sostituita < 0,3; aggiunta estranea ≈ 0,33; italiano senza accenti 1 (e uguali all'app)",
+      mine(Z1, Z1, "zh-CN") === 1 && mine("他是老师", "她是老师", "zh-CN") === 1 && app("他是老师", "她是老师", "zh-CN") === 1 && mine(Z1, "我不知道今天天气怎么样", "zh-CN") < 0.3 && Math.abs(mine("你好", "你好你是坏人", "zh-CN") - 1 / 3) < 0.01 && mine("Perché è così?", "perche e cosi", "it-IT") === 1,
+      [mine("他是老师", "她是老师", "zh-CN"), mine("你好", "你好你是坏人", "zh-CN")].join(" "));
+  }
+
+  /* lo zip: scrittore e lettore, store e deflate; il lettore non si fida di niente */
+  {
+    const back = Z.readZip(Z.writeZip([{ name: "a.txt", data: "uno" }, { name: "b/c.bin", data: Buffer.from(JSON.stringify(Array.from({ length: 150 }, (_, i) => ["k" + i * 7, i * i]))), method: 8 }]));
+    check("zip: andata e ritorno con «store» e «deflate», CRC verificati", back.length === 2 && back[0].data.toString() === "uno" && back[1].data.length > 1000 && back[1].method === 8);
+    const bad = (files) => { try { Z.readZip(Z.writeZip(files)); return ""; } catch (e) { return e instanceof Z.ZipError ? e.message : "ECCEZIONE " + e.message; } };
+    const w = ["../x.ogg", "/x.ogg", "a\\b.ogg", "C:x.ogg", "a\u0000b.ogg", "a/../b.ogg"].map((n) => [n, /non ammesso/.test(bad([{ name: n, data: "x" }]))]);
+    check("zip: rifiuta nomi con «..», «/» iniziale, «\\», lettera di unità, byte nulli", w.every((x) => x[1]), JSON.stringify(w.filter((x) => !x[1])));
+    check("zip: rifiuta nomi doppi (anche per maiuscole), CRC errato e dimensione dichiarata falsa", /doppio/.test(bad([{ name: "a.ogg", data: "1" }, { name: "A.OGG", data: "2" }])) && /CRC32/.test(bad([{ name: "a.ogg", data: "abc", crc: 123 }])) && /dichiarata/.test(bad([{ name: "a.ogg", data: "abc", method: 8, usize: 5 }])));
+    check("zip: rifiuta un file oltre 300 KB, più di 201 file e una zip bomb (rapporto di compressione e dimensione dichiarata)", /oltre il limite/.test(bad([{ name: "a.ogg", data: Buffer.alloc(300 * 1024 + 1, 1) }])) && /troppi file/.test(bad(Array.from({ length: 202 }, (_, i) => ({ name: "f" + i, data: "x" })))) && /sospetto/.test(bad([{ name: "bomba.ogg", data: Buffer.alloc(250000), method: 8 }])) && /oltre il limite/.test(bad([{ name: "bomba.ogg", data: Buffer.alloc(5 << 20), method: 8 }])));
+    const tryZip = (b) => { try { Z.readZip(b); return ""; } catch (e) { return e.message; } };
+    check("zip: rifiuta ciò che non è uno zip (byte a caso, file troncato)", /non è un file/.test(tryZip(Buffer.from("PK\u0003\u0004 non sono uno zip ma ci somiglio abbastanza"))) && /non è un file/.test(tryZip(Z.writeZip([{ name: "a", data: "1" }]).subarray(0, 40))));
+  }
+
+  /* pacchetti: ogni difetto ha il suo motivo */
+  const Z0 = "你好！很高兴认识你。", Z1 = "你叫什么？", ZD = "再见再见再见";
+  const OGG = (t) => Buffer.concat([Buffer.from("OggS\u0000\u0002"), Buffer.from("................" + t)]), WEBM = (t) => Buffer.concat([Buffer.from([0x1a, 0x45, 0xdf, 0xa3]), Buffer.from("................" + t)]);
+  const man = (items, extra) => JSON.stringify({ schema: "mandarino-voice/1", license: "CC-BY-4.0", app: "prova", created: 0, speaker: "", region: "", adult: true, items, ...extra });
+  const itm = (o) => ({ ref: "phr:0:0", lang: "zh-CN", native: true, text: Z0, ms: 3000, created: 0, file: "a.ogg", checked: false, heard: "", match: -1, ...o });
+  let nz = 0;
+  const pkg = (files, name) => { const f = path.join(tmp, (name || "p" + ++nz) + ".zip"); fs.writeFileSync(f, Z.writeZip(files)); return f; };
+  const one = (item, audio, extra, extraFiles) => VI.readPackage(pkg([{ name: "manifest.json", data: man([item], extra) }, { name: item.file, data: audio === undefined ? OGG("x") : audio }, ...(extraFiles || [])]), refs);
+  const why = (r) => r.status !== "ok" ? "PACCHETTO: " + r.reason : r.items[0].data ? "" : r.items[0].why;
+  check("voci: un pacchetto buono passa (frase, parola, battuta, esempio; checked/heard/match del manifest non contano)", !!one(itm({ checked: true, heard: "altro", match: 1 })).items[0].data && !why(one(itm({ ref: "w:你", lang: "it-IT", text: "tu", file: "b.ogg" }))) && !why(one(itm({ ref: "dlg:taxi:0", text: "你好，去哪里？" }))) && !why(one(itm({ ref: "ex:咱们", text: "咱们一起去吧。" }))));
+  const cases = [
+    ["percorso con «..»", one(itm({ file: "../a.ogg" })), /zip non sicuro.*non ammesso/],
+    ["nome duplicato", VI.readPackage(pkg([{ name: "manifest.json", data: man([itm()]) }, { name: "a.ogg", data: OGG("1") }, { name: "a.ogg", data: OGG("2") }]), refs), /doppio/],
+    ["file elencato ma mancante", VI.readPackage(pkg([{ name: "manifest.json", data: man([itm()]) }]), refs), /mancante/],
+    ["file in più non elencato", one(itm(), undefined, undefined, [{ name: "extra.ogg", data: OGG("e") }]), /non elencati/],
+    ["CRC errato", VI.readPackage(pkg([{ name: "manifest.json", data: man([itm()]) }, { name: "a.ogg", data: OGG("1"), crc: 1 }]), refs), /CRC32/],
+    ["file oltre il limite", one(itm(), Buffer.concat([OGG("1"), Buffer.alloc(300 * 1024)])), /oltre il limite/],
+    ["zip bomb (deflate, rapporto 1:1000)", VI.readPackage(pkg([{ name: "manifest.json", data: man([itm()]) }, { name: "a.ogg", data: Buffer.alloc(250000), method: 8 }]), refs), /sospetto/],
+    ["riferimento inesistente", one(itm({ ref: "phr:999:0" })), /non esiste/],
+    ["testo cambiato", one(itm({ text: "你好！很高兴认识你们。" })), /testo cambiato/],
+    ["ms oltre 8500", one(itm({ ms: 9000 })), /durata/],
+    ["magic bytes sbagliati (webm dentro un .ogg)", one(itm(), WEBM("x")), /formato non coerente/],
+    ["adult: false", one(itm(), undefined, { adult: false }), /maggiore età/],
+    ["licenza diversa", one(itm(), undefined, { license: "CC0-1.0" }), /licenza/],
+    ["schema sconosciuto", one(itm(), undefined, { schema: "mandarino-voice/2" }), /schema/],
+    ["lingua non ammessa", one(itm({ lang: "fr-FR" })), /lingua/],
+    ["estensione non ammessa", one(itm({ file: "a.exe" }), OGG("x")), /estensione/]
+  ];
+  for (const [nm, r, re] of cases) { const m = why(r); check("voci: scartato — " + nm, m && re.test(m), m || "è passato"); }
+  check("voci: nickname sanificato (via «@», indirizzi web, troppo lungo); il deflate dei file legittimi è accettato", one(itm(), undefined, { speaker: "a@b.it" }).speaker === "" && one(itm(), undefined, { speaker: "http://x.it" }).speaker === "" && one(itm(), undefined, { speaker: "x".repeat(41) }).speaker === "" && one(itm(), undefined, { speaker: " Lucia_88 " }).speaker === "Lucia_88" && VI.readPackage(pkg([{ name: "manifest.json", data: man([itm()]), method: 8 }, { name: "a.ogg", data: OGG("zz"), method: 8 }]), refs).items[0].data !== null);
+
+  /* trascrizione, punteggio, elenco di parole vietate: il «riconoscitore» è tools/fixtures/fake-stt.mjs, che stampa un testo prefissato secondo il nome del file */
+  const STT = '"' + process.execPath + '" "' + path.join(ROOT, "tools/fixtures/fake-stt.mjs") + '" "{file}"';
+  const prep = (items, audio, say, o) => {
+    const z = pkg([{ name: "manifest.json", data: man(items, o && o.man) }, ...audio.map((a, i) => ({ name: items[i].file, data: a }))]), dir = path.join(tmp, "rev" + ++nz);
+    process.env.FAKE_STT_SAY = JSON.stringify(say);
+    return VI.prepare({ zips: [z], reviewDir: dir, refs, stt: STT, hasFfmpeg: false, recognizers: [], ...(o || {}) });
+  };
+  const bl = path.join(tmp, "vietate.txt"); fs.writeFileSync(bl, "# elenco di prova: solo un termine finto\nparolaccia\n");
+  {
+    const r = prep([itm(), itm({ ref: "phr:0:1", text: Z1, file: "b.ogg" }), itm({ ref: "phr:0:1", lang: "it-IT", text: "Come ti chiami?", file: "c.ogg" }), itm({ ref: "dlg:taxi:0", text: "你好，去哪里？", file: "d.ogg", native: false })],
+      [OGG("1"), OGG("2"), OGG("3"), OGG("4")], [Z0, ZD, "Come ti chiami parolaccia", "你好，去哪里"], { blocklist: bl });
+    const [a, b, c, d] = r.review.items;
+    check("voci: la trascrizione uguale al testo → da-ascoltare, punteggio 1, mai approvata", a.status === "da-ascoltare" && a.score === 1 && a.heard === Z0 && a.approved === false && a.priorita === "normale" && r.review.items.every((x) => x.approved === false), JSON.stringify(a));
+    check("voci: trascrizione diversa dal testo (frase sostituita) → scartata per punteggio", b.status === "scartata" && b.score < 0.6 && /punteggio/.test(b.reason), JSON.stringify(b));
+    check("voci: parola vietata (termine finto «parolaccia») → scartata anche se il resto somiglia", c.status === "scartata" && /elenco vietato.*riga 2/.test(c.reason) && !/parolaccia/.test(r.md), JSON.stringify(c));
+    check("voci: non madrelingua → da-ascoltare con priorità alta, ordinata prima nel riepilogo", d.status === "da-ascoltare" && d.priorita === "alta" && r.md.indexOf("| alta |") < r.md.indexOf("| normale |"), r.md.slice(0, 300));
+    check("voci: file estratti con nomi generati («indice-impronta8.ext»), link relativi nel riepilogo, cartella di lavoro temporanea tolta", /^0-[0-9a-f]{8}\.ogg$/.test(a.file) && fs.existsSync(path.join(r.reviewDir, a.file)) && a.sha256.startsWith(a.file.slice(2, 10)) && r.md.includes("](" + a.file + ")") && !fs.existsSync(path.join(r.reviewDir, ".stt")));
+    const rs = prep([itm()], [OGG("1")], [Z0], { stt: undefined });
+    check("voci: senza --stt tutte le voci restano da ascoltare (priorità alta) e il riepilogo lo dice in cima; senza elenco avvisa che le parole vietate non sono state controllate", rs.review.items[0].status === "da-ascoltare" && rs.review.items[0].priorita === "alta" && rs.review.items[0].heard === null && /nessuna trascrizione/.test(rs.md.split("\n").slice(0, 8).join("\n")) && /NON è stato fatto/.test(rs.md));
+    const rf = prep([itm()], [OGG("1")], [], {});
+    check("voci: un riconoscitore che non sente nulla non scarta (non si può dire che sia sbagliata): da ascoltare, priorità alta", rf.review.items[0].status === "da-ascoltare" && rf.review.items[0].priorita === "alta" && rf.review.items[0].heard === null && /nessun testo/.test(rf.review.items[0].reason));
+    let e1 = "", e2 = "", e3 = "";
+    const z9 = pkg([{ name: "manifest.json", data: man([itm()]) }, { name: "a.ogg", data: OGG("1") }]);
+    try { VI.prepare({ zips: [z9], reviewDir: path.join(tmp, "rv-x"), refs, out: path.join(tmp, "fuori.md") }); } catch (e) { e1 = e.message; }
+    try { VI.prepare({ zips: [z9], reviewDir: r.reviewDir, refs }); } catch (e) { e2 = e.message; }
+    try { VI.loadBlocklist(path.join(ROOT, "tools/fixtures/fake-stt.mjs"), ROOT); } catch (e) { e3 = e.message; }
+    check("voci: nessuna scrittura fuori da --review-dir, review.json esistente non sovrascritto, elenco di parole vietate rifiutato se sta nel repository", /dentro --review-dir/.test(e1) && /già un review\.json/.test(e2) && /FUORI dal repository/.test(e3) && !fs.existsSync(path.join(tmp, "fuori.md")), [e1, e2, e3].join(" | "));
+    const cli = (...a) => spawnSync(process.execPath, [path.join(ROOT, "tools/voice-import.mjs"), ...a], { encoding: "utf8", cwd: ROOT });
+    const c1 = cli("--apply", path.join(r.reviewDir, "review.json"), "--yes"), c2 = cli(), c3 = cli("x.zip", "--review-dir", path.join(tmp, "cli1"), "--min", "boh");
+    check("voci: da riga di comando non esiste un flag per approvare da soli (--yes è sconosciuto); uso sbagliato → codice 2", c1.status === 2 && /sconosciuta/.test(c1.stderr) && c2.status === 2 && c3.status === 2, c1.stderr + c3.stderr);
+    const c4 = cli(z9, "--review-dir", path.join(tmp, "cli2"));
+    check("voci: da riga di comando la preparazione scrive review.json e riepilogo.md nella cartella indicata e avverte (nessuna trascrizione, nessun elenco)", c4.status === 0 && fs.existsSync(path.join(tmp, "cli2/review.json")) && fs.existsSync(path.join(tmp, "cli2/riepilogo.md")) && /nessuna trascrizione/.test(c4.stdout) && /parole vietate NON/.test(c4.stdout), c4.stdout + c4.stderr);
+  }
+
+  /* flusso completo: prepara → una persona approva UNA voce a mano → applica (ffmpeg sostituito da una copia) */
+  {
+    const mkSrc = (dir) => { const s = path.join(tmp, dir, "src"); fs.mkdirSync(s, { recursive: true }); fs.copyFileSync(path.join(SRC, "index.html"), path.join(s, "index.html")); fs.cpSync(path.join(SRC, "data"), path.join(s, "data"), { recursive: true }); fs.copyFileSync(path.join(ROOT, "CONTRIBUTORS.md"), path.join(tmp, dir, "CONTRIBUTORS.md")); return s; };
+    const asrc = mkSrc("app"), copy = (a, b) => fs.copyFileSync(a, b), jsn = (f) => JSON.parse(fs.readFileSync(f, "utf8")), rd = (f) => fs.readFileSync(f, "utf8");
+    const items = [itm(), itm({ ref: "phr:0:1", text: Z1, file: "b.ogg" }), itm({ ref: "dlg:taxi:0", text: "你好，去哪里？", file: "c.ogg" })];
+    const r = prep(items, [OGG("uno"), OGG("due"), OGG("tre")], [Z0, Z1, ZD], { man: { speaker: "Lucia_88" } });
+    const rj = path.join(r.reviewDir, "review.json"), R = jsn(rj);
+    check("voci: prima dell'approvazione apply non applica niente e non crea nulla in src/", (() => { const x = VI.apply({ review: rj, src: asrc, convert: copy }); return !x.applied.length && !fs.existsSync(path.join(asrc, "audio")); })());
+    R.items[0].approved = true; R.items[1].approved = false; R.items[2].approved = true;   /* la #2 è scartata (dice altro): approvarla a mano non basta */
+    fs.writeFileSync(rj, JSON.stringify(R, null, 1));
+    let noff = ""; try { VI.apply({ review: rj, src: asrc, hasFfmpeg: false }); } catch (e) { noff = e.message; }
+    check("voci: senza ffmpeg errore chiaro e nessuna scrittura", /ffmpeg/.test(noff) && /nulla/.test(noff) && !fs.existsSync(path.join(asrc, "audio")) && rd(path.join(asrc, "data/contributors.js")).includes("= [];"), noff);
+    const pack = path.join(tmp, "pack"), a1 = VI.apply({ review: rj, src: asrc, convert: copy, packOut: pack, now: () => new Date("2026-11-01T10:00:00Z") });
+    const idx = jsn(path.join(asrc, "audio/voices/index.json")), e0 = idx[0];
+    check("voci: dopo l'approvazione a mano di UNA voce, index.json contiene esattamente quella voce (non le altre, non la scartata approvata a mano)", a1.applied.length === 1 && idx.length === 1 && e0.ref === "phr:0:0" && e0.lang === "zh-CN" && e0.native === true && e0.ms === 3000 && /^zh-CN\/phr_0_0-[0-9a-f]+\.[0-9a-f]{8}\.ogg$/.test(e0.file) && Object.keys(e0).sort().join() === "bytes,file,lang,ms,native,ref,sha256" && a1.skipped.length === 1 && /scartata/.test(a1.skipped[0]), JSON.stringify(a1.skipped) + JSON.stringify(idx));
+    const vf = path.join(asrc, "audio/voices", e0.file);
+    check("voci: il file in src/audio/voices ha byte e impronta dichiarati; il nickname con permesso è nei Crediti (contributors.js e CONTRIBUTORS.md)", fs.existsSync(vf) && fs.statSync(vf).size === e0.bytes && sha(fs.readFileSync(vf)) === e0.sha256 && /var CONTRIBUTORS = \["Lucia_88"\];/.test(rd(path.join(asrc, "data/contributors.js"))) && /<!-- elenco -->\n- Lucia_88\n<!-- \/elenco -->/.test(rd(path.join(tmp, "app/CONTRIBUTORS.md"))));
+    const pj = jsn(path.join(pack, "index.json"));
+    check("voci: --pack-out scrive il contratto ESATTO {v, updated, count, bytes, files:[{ref, lang, file, bytes, sha256}]} e i file .ogg", Object.keys(pj).join() === "v,updated,count,bytes,files" && pj.v === 1 && pj.updated === "2026-11-01" && pj.count === 1 && pj.bytes === e0.bytes && Object.keys(pj.files[0]).join() === "ref,lang,file,bytes,sha256" && pj.files[0].file === e0.file && fs.existsSync(path.join(pack, pj.files[0].file)) && sha(fs.readFileSync(path.join(pack, pj.files[0].file))) === pj.files[0].sha256);
+    const snap = () => rd(path.join(asrc, "audio/voices/index.json")) + rd(path.join(asrc, "data/contributors.js")) + rd(path.join(tmp, "app/CONTRIBUTORS.md")) + rd(path.join(pack, "index.json")), before = snap();
+    const a2 = VI.apply({ review: rj, src: asrc, hasFfmpeg: false, packOut: pack, now: () => new Date("2026-11-01T18:00:00Z") });
+    check("voci: riapplicare lo stesso review.json è idempotente (niente doppioni, niente nuova conversione, nulla cambia)", !a2.applied.length && a2.already.length === 1 && before === snap() && fs.readdirSync(path.join(asrc, "audio/voices/zh-CN")).length === 1, JSON.stringify(a2.log));
+    /* l'impronta cambia dopo la preparazione: il file è stato toccato, la voce si rifiuta */
+    R.items[1].approved = true; fs.writeFileSync(rj, JSON.stringify(R, null, 1));
+    fs.appendFileSync(path.join(r.reviewDir, R.items[1].file), "x");
+    const a3 = VI.apply({ review: rj, src: asrc, convert: copy });
+    check("voci: se il file cambia dopo la preparazione (sha256 diverso) la voce approvata è rifiutata e lo dice", !a3.applied.length && a3.skipped.some((s) => /#1.*cambiato/.test(s)) && jsn(path.join(asrc, "audio/voices/index.json")).length === 1, JSON.stringify(a3.skipped));
+    /* un review.json ritoccato a mano su altri campi non inganna */
+    R.items[1].text = "altro"; R.items[0].approved = "true"; R.items[2].file = "../../x.ogg"; R.items[2].status = "da-ascoltare"; R.items[2].approved = true;
+    fs.writeFileSync(rj, JSON.stringify(R, null, 1));
+    const a4 = VI.apply({ review: rj, src: asrc, convert: copy });
+    check("voci: un review.json ritoccato a mano non inganna (testo cambiato, «approved» non booleano, nome del file con «..»)", !a4.applied.length && a4.skipped.length === 2 && jsn(path.join(asrc, "audio/voices/index.json")).length === 1, JSON.stringify(a4.skipped));
+    /* nickname: senza permesso (manifest senza speaker) o non valido non entra nei Crediti */
+    const asrc2 = mkSrc("app2");
+    for (const sp of [undefined, "bad@mail.it"]) {
+      const r2 = prep([itm()], [OGG("np" + sp)], [Z0], { man: sp === undefined ? {} : { speaker: sp } }), j2 = path.join(r2.reviewDir, "review.json"), R2 = jsn(j2);
+      R2.items[0].approved = true; fs.writeFileSync(j2, JSON.stringify(R2, null, 1));
+      check("voci: la voce senza permesso per il nickname (" + (sp || "nessuno") + ") entra, ma non nei Crediti", VI.apply({ review: j2, src: asrc2, convert: copy }).applied.length === 1 || jsn(path.join(asrc2, "audio/voices/index.json")).length === 1);
+    }
+    check("voci: il nickname senza permesso non va nei Crediti (contributors.js e CONTRIBUTORS.md restano vuoti)", rd(path.join(asrc2, "data/contributors.js")).includes("= [];") && rd(path.join(tmp, "app2/CONTRIBUTORS.md")).includes("_(ancora nessuno)_"));
+  }
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
+
 console.log("\n" + results.filter(Boolean).length + "/" + results.length + " prove superate.");
 process.exit(results.every(Boolean) ? 0 : 1);
