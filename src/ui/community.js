@@ -125,7 +125,7 @@
     if (document.getElementById("wd-css")) return;
     var s = document.createElement("style"); s.id = "wd-css";
     s.textContent = ".wd-pv{display:grid;place-items:center;min-height:96px;padding:10px;border-radius:14px;background:var(--chip)}" +
-      ".wd{box-sizing:border-box;color:#FAF7EE;background:linear-gradient(145deg,#14594A,#1E7A63);border-radius:18px;padding:10px 12px;display:grid;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.18);font-size:13px;line-height:1.25}" +
+      ".wd{box-sizing:border-box;color:#FAF7EE;background-color:#14594A;background-image:linear-gradient(145deg,#14594A,#1E7A63);border-radius:18px;padding:10px 12px;display:grid;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.18);font-size:13px;line-height:1.25}" +
       ".wd b{font-size:13px}.wd .hz{font-size:30px;line-height:1;font-family:var(--f-han,serif)}.wd .mut{opacity:.8}" +
       ".wd-l{width:200px;grid-template-columns:auto 1fr;align-items:center;gap:10px}.wd-s{width:108px;text-align:center}.wd-p{width:150px;text-align:center}.wd-p .t{font-size:24px;font-weight:700}" +
       ".wd-p .go{justify-self:center;background:#FAF7EE;color:#14594A;border-radius:99px;padding:2px 12px;font-weight:700}.wd-r{width:184px}" +
