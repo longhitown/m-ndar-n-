@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t">
+  <title id="t">Frasi</title>
+  <path d="M5 5.2H19Q20.2 5.2 20.2 6.4V14Q20.2 15.2 19 15.2H11.2L7 18.9V15.2H5Q3.8 15.2 3.8 14V6.4Q3.8 5.2 5 5.2Z" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="8.6" cy="10.2" r="1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+  <circle cx="12" cy="10.2" r="1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+  <circle cx="15.4" cy="10.2" r="1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</svg>

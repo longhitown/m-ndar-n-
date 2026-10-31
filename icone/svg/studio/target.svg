@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t">
+  <title id="t">Obiettivo</title>
+  <path d="M20.08 9.06A8.6 8.6 0 1 1 14.94 3.92" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M7.40 13.68A4.9 4.9 0 1 1 10.32 16.60" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="12" r="1.8" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</svg>

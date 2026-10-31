@@ -1,0 +1,13 @@
+màndarínō · icone
+© 2026 Claudio Longhitano
+
+Le icone di màndarínō (la cartella icone/: file SVG, sprite, manifest e figure del disegno) sono rilasciate con la licenza Creative Commons
+Attribuzione 4.0 Internazionale (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/legalcode.it
+
+Puoi copiarle, ridistribuirle e modificarle, anche per usi commerciali, a condizione di citare la fonte, indicare se hai fatto modifiche e
+non suggerire che io approvi il tuo uso. Una riga basta:
+
+    Icone màndarínō, di Claudio Longhitano, CC BY 4.0 · https://mandarinoapp.org
+
+Questa licenza NON concede diritti sul nome «màndarínō» né sul logo (il mandarino con le foglie e gli accenti dei toni): per quelli vale
+MARCHIO.md. Il codice dell'app e degli strumenti è sotto licenza MIT (LICENSE).

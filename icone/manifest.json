@@ -1,0 +1,1477 @@
+{
+  "versione": "0.1.0",
+  "set": "D2 · Mandarino & Cinabro",
+  "licenza": "CC BY 4.0",
+  "autore": "Claudio Longhitano",
+  "griglia": 24,
+  "tratto": 1.8,
+  "fase": 1,
+  "obiettivoFase1": 150,
+  "sostituzioneAttiva": false,
+  "consentitiComeTesto": [
+    "©"
+  ],
+  "icone": [
+    {
+      "id": "gear",
+      "it": "Impostazioni",
+      "zh": "设置",
+      "categoria": "ui",
+      "emoji": [
+        "⚙"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/gear.svg"
+    },
+    {
+      "id": "speaker",
+      "it": "Ascolta",
+      "zh": "播放声音",
+      "categoria": "studio",
+      "emoji": [
+        "🔊"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/speaker.svg"
+    },
+    {
+      "id": "pencil",
+      "it": "Scrivi",
+      "zh": "书写",
+      "categoria": "studio",
+      "emoji": [
+        "✏"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/pencil.svg"
+    },
+    {
+      "id": "flame",
+      "it": "Serie",
+      "zh": "连续天数",
+      "categoria": "studio",
+      "emoji": [
+        "🔥"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/flame.svg"
+    },
+    {
+      "id": "target",
+      "it": "Obiettivo",
+      "zh": "目标",
+      "categoria": "studio",
+      "emoji": [
+        "🎯"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/target.svg"
+    },
+    {
+      "id": "share",
+      "it": "Condividi",
+      "zh": "分享",
+      "categoria": "ui",
+      "emoji": [
+        "📤"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/share.svg"
+    },
+    {
+      "id": "download",
+      "it": "Scarica",
+      "zh": "下载",
+      "categoria": "ui",
+      "emoji": [
+        "⬇"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/download.svg"
+    },
+    {
+      "id": "book",
+      "it": "Libro",
+      "zh": "书",
+      "categoria": "studio",
+      "emoji": [
+        "📘"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/book.svg"
+    },
+    {
+      "id": "chat",
+      "it": "Frasi",
+      "zh": "句子",
+      "categoria": "studio",
+      "emoji": [
+        "💬",
+        "🗨"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/chat.svg"
+    },
+    {
+      "id": "mic",
+      "it": "Pronuncia",
+      "zh": "发音",
+      "categoria": "studio",
+      "emoji": [
+        "🎤",
+        "🎙"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/mic.svg"
+    },
+    {
+      "id": "music",
+      "it": "Musica",
+      "zh": "音乐",
+      "categoria": "ui",
+      "emoji": [
+        "🎵"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/music.svg"
+    },
+    {
+      "id": "play",
+      "it": "Avvia",
+      "zh": "开始",
+      "categoria": "ui",
+      "emoji": [
+        "▶"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/play.svg"
+    },
+    {
+      "id": "bell",
+      "it": "Promemoria",
+      "zh": "提醒",
+      "categoria": "ui",
+      "emoji": [
+        "🔔"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/bell.svg"
+    },
+    {
+      "id": "bolt",
+      "it": "Scatto",
+      "zh": "冲刺",
+      "categoria": "studio",
+      "emoji": [
+        "⚡"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/bolt.svg"
+    },
+    {
+      "id": "lock",
+      "it": "Chiuso",
+      "zh": "锁定",
+      "categoria": "ui",
+      "emoji": [
+        "🔒"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/lock.svg"
+    },
+    {
+      "id": "search",
+      "it": "Cerca",
+      "zh": "搜索",
+      "categoria": "ui",
+      "emoji": [
+        "🔍",
+        "🔎"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/search.svg"
+    },
+    {
+      "id": "check",
+      "it": "Fatto",
+      "zh": "完成",
+      "categoria": "ui",
+      "emoji": [
+        "✅"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/check.svg"
+    },
+    {
+      "id": "star",
+      "it": "Preferita",
+      "zh": "收藏",
+      "categoria": "ui",
+      "emoji": [
+        "⭐"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/star.svg"
+    },
+    {
+      "id": "heart",
+      "it": "Sostegno",
+      "zh": "支持",
+      "categoria": "comunita",
+      "emoji": [
+        "❤"
+      ],
+      "stato": "disegnata",
+      "file": "svg/comunita/heart.svg"
+    },
+    {
+      "id": "camera",
+      "it": "Fotocamera",
+      "zh": "相机",
+      "categoria": "ui",
+      "emoji": [
+        "📷"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/camera.svg"
+    },
+    {
+      "id": "cloud",
+      "it": "Sincronizza",
+      "zh": "同步",
+      "categoria": "ui",
+      "emoji": [
+        "☁"
+      ],
+      "stato": "disegnata",
+      "file": "svg/ui/cloud.svg"
+    },
+    {
+      "id": "cards",
+      "it": "Mazzo",
+      "zh": "卡组",
+      "categoria": "studio",
+      "emoji": [
+        "🗂"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/cards.svg"
+    },
+    {
+      "id": "pin",
+      "it": "Tappa",
+      "zh": "站点",
+      "categoria": "studio",
+      "emoji": [
+        "📍"
+      ],
+      "stato": "disegnata",
+      "file": "svg/studio/pin.svg"
+    },
+    {
+      "id": "calendar",
+      "it": "Giorni",
+      "zh": "日期",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "disegnata",
+      "file": "svg/studio/calendar.svg"
+    },
+    {
+      "id": "upload",
+      "it": "Carica",
+      "zh": "上传",
+      "categoria": "ui",
+      "emoji": [
+        "⬆"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "undo",
+      "it": "Annulla",
+      "zh": "撤销",
+      "categoria": "ui",
+      "emoji": [
+        "↩"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "swap",
+      "it": "Scambia",
+      "zh": "互换",
+      "categoria": "ui",
+      "emoji": [
+        "↔"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "plus",
+      "it": "Aggiungi",
+      "zh": "添加",
+      "categoria": "ui",
+      "emoji": [
+        "➕"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "close",
+      "it": "Chiudi",
+      "zh": "关闭",
+      "categoria": "ui",
+      "emoji": [
+        "❌"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "warning",
+      "it": "Attenzione",
+      "zh": "注意",
+      "categoria": "ui",
+      "emoji": [
+        "⚠"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "bulb",
+      "it": "Suggerimento",
+      "zh": "提示",
+      "categoria": "ui",
+      "emoji": [
+        "💡"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "sparkle",
+      "it": "Novità",
+      "zh": "新内容",
+      "categoria": "ui",
+      "emoji": [
+        "✨"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "pause",
+      "it": "Pausa",
+      "zh": "暂停",
+      "categoria": "ui",
+      "emoji": [
+        "⏸"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "stop",
+      "it": "Ferma",
+      "zh": "停止",
+      "categoria": "ui",
+      "emoji": [
+        "⏹"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "next",
+      "it": "Avanti",
+      "zh": "下一个",
+      "categoria": "ui",
+      "emoji": [
+        "⏭"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "prev",
+      "it": "Indietro",
+      "zh": "上一个",
+      "categoria": "ui",
+      "emoji": [
+        "⏮"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "rewind",
+      "it": "Riavvolgi",
+      "zh": "倒退",
+      "categoria": "ui",
+      "emoji": [
+        "⏪"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "repeat",
+      "it": "Ripeti",
+      "zh": "重复",
+      "categoria": "ui",
+      "emoji": [
+        "🔁"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "shuffle",
+      "it": "Mescola",
+      "zh": "随机",
+      "categoria": "ui",
+      "emoji": [
+        "🔀"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "refresh",
+      "it": "Aggiorna",
+      "zh": "刷新",
+      "categoria": "ui",
+      "emoji": [
+        "🔄"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "volume-low",
+      "it": "Volume basso",
+      "zh": "低音量",
+      "categoria": "ui",
+      "emoji": [
+        "🔉"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "mute",
+      "it": "Muto",
+      "zh": "静音",
+      "categoria": "ui",
+      "emoji": [
+        "🔇"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "headphones",
+      "it": "Cuffie",
+      "zh": "耳机",
+      "categoria": "ui",
+      "emoji": [
+        "🎧"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "slow",
+      "it": "Lento",
+      "zh": "慢速",
+      "categoria": "studio",
+      "emoji": [
+        "🐢"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "fast",
+      "it": "Rapido",
+      "zh": "快速",
+      "categoria": "studio",
+      "emoji": [
+        "🐇"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "confetti",
+      "it": "Festa",
+      "zh": "庆祝",
+      "categoria": "comunita",
+      "emoji": [
+        "🎉"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "puzzle",
+      "it": "Pezzi",
+      "zh": "拼图",
+      "categoria": "studio",
+      "emoji": [
+        "🧩"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "scroll",
+      "it": "Rotolo",
+      "zh": "卷轴",
+      "categoria": "studio",
+      "emoji": [
+        "📜"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "notes",
+      "it": "Appunti",
+      "zh": "笔记",
+      "categoria": "studio",
+      "emoji": [
+        "📝"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "flag",
+      "it": "Bandierina",
+      "zh": "标记",
+      "categoria": "ui",
+      "emoji": [
+        "🚩"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "noodles",
+      "it": "Noodles",
+      "zh": "面条",
+      "categoria": "vita",
+      "emoji": [
+        "🍜"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "bag",
+      "it": "Acquisti",
+      "zh": "购物",
+      "categoria": "vita",
+      "emoji": [
+        "🛍"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "phone",
+      "it": "Telefono",
+      "zh": "手机",
+      "categoria": "ui",
+      "emoji": [
+        "📱"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "phone-share",
+      "it": "Passa al telefono",
+      "zh": "发送到手机",
+      "categoria": "ui",
+      "emoji": [
+        "📲"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "briefcase",
+      "it": "Lavoro",
+      "zh": "工作",
+      "categoria": "vita",
+      "emoji": [
+        "💼"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "plane",
+      "it": "Aereo",
+      "zh": "飞机",
+      "categoria": "vita",
+      "emoji": [
+        "✈"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "handshake",
+      "it": "Accordo",
+      "zh": "握手",
+      "categoria": "comunita",
+      "emoji": [
+        "🤝"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "coffee",
+      "it": "Caffè",
+      "zh": "咖啡",
+      "categoria": "vita",
+      "emoji": [
+        "☕"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "walk",
+      "it": "Camminare",
+      "zh": "步行",
+      "categoria": "vita",
+      "emoji": [
+        "🚶"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "calm",
+      "it": "Calma",
+      "zh": "冥想",
+      "categoria": "studio",
+      "emoji": [
+        "🧘"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "dice",
+      "it": "Caso",
+      "zh": "骰子",
+      "categoria": "studio",
+      "emoji": [
+        "🎲"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "mortarboard",
+      "it": "Studio",
+      "zh": "学业",
+      "categoria": "studio",
+      "emoji": [
+        "🎓"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "masks",
+      "it": "Teatro",
+      "zh": "戏剧",
+      "categoria": "vita",
+      "emoji": [
+        "🎭"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "eye",
+      "it": "Guarda",
+      "zh": "查看",
+      "categoria": "ui",
+      "emoji": [
+        "👁"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "eyes",
+      "it": "Occhio attento",
+      "zh": "留意",
+      "categoria": "ui",
+      "emoji": [
+        "👀"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "save",
+      "it": "Salva",
+      "zh": "保存",
+      "categoria": "ui",
+      "emoji": [
+        "💾"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "ruler",
+      "it": "Misura",
+      "zh": "尺子",
+      "categoria": "studio",
+      "emoji": [
+        "📐"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "flask",
+      "it": "Laboratorio",
+      "zh": "实验室",
+      "categoria": "studio",
+      "emoji": [
+        "⚗",
+        "🧪"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "slot",
+      "it": "Slot",
+      "zh": "拼块",
+      "categoria": "studio",
+      "emoji": [
+        "🎰"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "sprout",
+      "it": "Germoglio",
+      "zh": "新芽",
+      "categoria": "studio",
+      "emoji": [
+        "🌱"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "compass",
+      "it": "Orientamento",
+      "zh": "指南针",
+      "categoria": "studio",
+      "emoji": [
+        "🧭"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "dot",
+      "it": "Punto rosso",
+      "zh": "红点",
+      "categoria": "ui",
+      "emoji": [
+        "🔴"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "hanzi",
+      "it": "Carattere",
+      "zh": "汉字",
+      "categoria": "studio",
+      "emoji": [
+        "🈯"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "mail",
+      "it": "E-mail",
+      "zh": "邮件",
+      "categoria": "comunita",
+      "emoji": [
+        "✉",
+        "📧"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "octopus",
+      "it": "Perno",
+      "zh": "枢纽",
+      "categoria": "studio",
+      "emoji": [
+        "🐙"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "rocket",
+      "it": "Slancio",
+      "zh": "冲劲",
+      "categoria": "studio",
+      "emoji": [
+        "🚀"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "clock",
+      "it": "Orario",
+      "zh": "时间",
+      "categoria": "ui",
+      "emoji": [
+        "🕒"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "hospital",
+      "it": "Ospedale",
+      "zh": "医院",
+      "categoria": "vita",
+      "emoji": [
+        "🏥"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "dolls",
+      "it": "Bambole",
+      "zh": "人偶",
+      "categoria": "vita",
+      "emoji": [
+        "🎎"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "train",
+      "it": "Treno",
+      "zh": "火车",
+      "categoria": "vita",
+      "emoji": [
+        "🚆",
+        "🚇"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "bandage",
+      "it": "Cerotto",
+      "zh": "创可贴",
+      "categoria": "ui",
+      "emoji": [
+        "🩹"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "scales",
+      "it": "Bilancia",
+      "zh": "天平",
+      "categoria": "studio",
+      "emoji": [
+        "⚖"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "alarm",
+      "it": "Sveglia",
+      "zh": "闹钟",
+      "categoria": "ui",
+      "emoji": [
+        "⏰"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "clip",
+      "it": "Allegato",
+      "zh": "附件",
+      "categoria": "ui",
+      "emoji": [
+        "📎"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "hand",
+      "it": "Mano aperta",
+      "zh": "手",
+      "categoria": "ui",
+      "emoji": [
+        "🫳"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "hourglass",
+      "it": "Attesa",
+      "zh": "沙漏",
+      "categoria": "ui",
+      "emoji": [
+        "⏳"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "link",
+      "it": "Collegamento",
+      "zh": "链接",
+      "categoria": "ui",
+      "emoji": [
+        "🔗"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "palette",
+      "it": "Colori",
+      "zh": "调色板",
+      "categoria": "ui",
+      "emoji": [
+        "🎨"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "help",
+      "it": "Aiuto",
+      "zh": "帮助",
+      "categoria": "ui",
+      "emoji": [
+        "❓"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "trend",
+      "it": "Progressi",
+      "zh": "进步",
+      "categoria": "studio",
+      "emoji": [
+        "📈"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "chart",
+      "it": "Statistiche",
+      "zh": "统计",
+      "categoria": "studio",
+      "emoji": [
+        "📊"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "medal",
+      "it": "Traguardo",
+      "zh": "奖章",
+      "categoria": "studio",
+      "emoji": [
+        "🏅"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "clipboard",
+      "it": "Elenco",
+      "zh": "清单",
+      "categoria": "studio",
+      "emoji": [
+        "📋"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "bricks",
+      "it": "Mattoni",
+      "zh": "积木",
+      "categoria": "studio",
+      "emoji": [
+        "🧱"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "folder",
+      "it": "Cartella",
+      "zh": "文件夹",
+      "categoria": "ui",
+      "emoji": [
+        "📂"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "teacher",
+      "it": "Insegnante",
+      "zh": "老师",
+      "categoria": "comunita",
+      "emoji": [
+        "👩‍🏫"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "microscope",
+      "it": "Analisi",
+      "zh": "分析",
+      "categoria": "studio",
+      "emoji": [
+        "🔬"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "telescope",
+      "it": "Lontano",
+      "zh": "望远镜",
+      "categoria": "studio",
+      "emoji": [
+        "🔭"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "brain",
+      "it": "Memoria",
+      "zh": "记忆",
+      "categoria": "studio",
+      "emoji": [
+        "🧠"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "map",
+      "it": "Mappa",
+      "zh": "地图",
+      "categoria": "studio",
+      "emoji": [
+        "🗺"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "speaking",
+      "it": "Parla",
+      "zh": "说话",
+      "categoria": "studio",
+      "emoji": [
+        "🗣"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "new",
+      "it": "Nuovo",
+      "zh": "新",
+      "categoria": "ui",
+      "emoji": [
+        "🆕"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "leaf",
+      "it": "Foglia",
+      "zh": "叶子",
+      "categoria": "comunita",
+      "emoji": [
+        "🌿",
+        "🍃"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "tree",
+      "it": "Albero",
+      "zh": "树",
+      "categoria": "vita",
+      "emoji": [
+        "🌳"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "mountain",
+      "it": "Montagna",
+      "zh": "山",
+      "categoria": "vita",
+      "emoji": [
+        "🏔"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "signal",
+      "it": "Segnale",
+      "zh": "信号",
+      "categoria": "ui",
+      "emoji": [
+        "📶"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "sponge",
+      "it": "Pulisci",
+      "zh": "擦除",
+      "categoria": "ui",
+      "emoji": [
+        "🧽"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "thumbs",
+      "it": "Mi piace",
+      "zh": "赞",
+      "categoria": "comunita",
+      "emoji": [
+        "👍"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "sun",
+      "it": "Giorno",
+      "zh": "白天",
+      "categoria": "ui",
+      "emoji": [
+        "☀"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "moon",
+      "it": "Notte",
+      "zh": "夜晚",
+      "categoria": "ui",
+      "emoji": [
+        "🌙"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "hotel",
+      "it": "Albergo",
+      "zh": "旅馆",
+      "categoria": "vita",
+      "emoji": [
+        "🏨"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "wave",
+      "it": "Onda",
+      "zh": "波浪",
+      "categoria": "studio",
+      "emoji": [
+        "〰"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "book-open",
+      "it": "Lettura",
+      "zh": "阅读",
+      "categoria": "studio",
+      "emoji": [
+        "📖"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "books",
+      "it": "Biblioteca",
+      "zh": "书库",
+      "categoria": "studio",
+      "emoji": [
+        "📚"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "write",
+      "it": "Scrittura a mano",
+      "zh": "手写",
+      "categoria": "studio",
+      "emoji": [
+        "✍"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "tone-1",
+      "it": "Primo tono",
+      "zh": "第一声",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "tone-2",
+      "it": "Secondo tono",
+      "zh": "第二声",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "tone-3",
+      "it": "Terzo tono",
+      "zh": "第三声",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "tone-4",
+      "it": "Quarto tono",
+      "zh": "第四声",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "tone-0",
+      "it": "Tono neutro",
+      "zh": "轻声",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "radical",
+      "it": "Radicale",
+      "zh": "部首",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "stroke",
+      "it": "Tratto",
+      "zh": "笔画",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "pinyin",
+      "it": "Pinyin",
+      "zh": "拼音",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "lantern",
+      "it": "Lanterna",
+      "zh": "灯笼",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "fan",
+      "it": "Ventaglio",
+      "zh": "扇子",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "chopsticks",
+      "it": "Bacchette",
+      "zh": "筷子",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "teapot",
+      "it": "Teiera",
+      "zh": "茶壶",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "dumpling",
+      "it": "Ravioli",
+      "zh": "饺子",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "bowl",
+      "it": "Ciotola",
+      "zh": "碗",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "house",
+      "it": "Casa",
+      "zh": "家",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "family",
+      "it": "Famiglia",
+      "zh": "家人",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "school",
+      "it": "Scuola",
+      "zh": "学校",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "city",
+      "it": "Città",
+      "zh": "城市",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "sea",
+      "it": "Mare",
+      "zh": "海",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "flower",
+      "it": "Fiore",
+      "zh": "花",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "seal",
+      "it": "Sigillo",
+      "zh": "印章",
+      "categoria": "comunita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "jade",
+      "it": "Giada",
+      "zh": "玉",
+      "categoria": "comunita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "mandarin",
+      "it": "Mandarino",
+      "zh": "橘子",
+      "categoria": "comunita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "gift",
+      "it": "Regalo",
+      "zh": "礼物",
+      "categoria": "comunita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "qr",
+      "it": "Codice QR",
+      "zh": "二维码",
+      "categoria": "ui",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "friends",
+      "it": "Amici",
+      "zh": "朋友",
+      "categoria": "comunita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "dialogue",
+      "it": "Dialogo",
+      "zh": "对话",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "ear",
+      "it": "Orecchio",
+      "zh": "耳朵",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "train-ticket",
+      "it": "Biglietto",
+      "zh": "车票",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "flower-card",
+      "it": "Carta fiorita",
+      "zh": "花牌",
+      "categoria": "studio",
+      "emoji": [
+        "🎴"
+      ],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "teacup",
+      "it": "Tazza di tè",
+      "zh": "茶杯",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "bamboo",
+      "it": "Bambù",
+      "zh": "竹子",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "mooncake",
+      "it": "Dolce della luna",
+      "zh": "月饼",
+      "categoria": "vita",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "ink",
+      "it": "Inchiostro",
+      "zh": "墨",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    },
+    {
+      "id": "brush",
+      "it": "Pennello",
+      "zh": "毛笔",
+      "categoria": "studio",
+      "emoji": [],
+      "stato": "da-disegnare"
+    }
+  ]
+}

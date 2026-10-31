@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<!-- màndarínō · icone 0.1.0 (D2 · Mandarino & Cinabro) · © Claudio Longhitano, CC BY 4.0 · file generato da tools/icone.mjs, non si modifica a mano -->
+<symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M6.3 17V11.3A5.7 5.7 0 0 1 17.7 11.3V17L19.3 18.8H4.7Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12 3.4V5.1" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="21" r="1.5" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M13.4 3L6 13.4H11.2L10.2 21L18 10.6H12.8Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 6.1C6.8 5.1 9.6 5.5 11.3 7V18.3C9.6 16.9 6.8 16.6 4 17.6Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M20 6.1C17.2 5.1 14.4 5.5 12.7 7V18.3C14.4 16.9 17.2 16.6 20 17.6Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M16.4 5.5V10.3L17.7 9.2L19 10.3V5.8Z" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M6 6.6H18Q19.4 6.6 19.4 8V18.4Q19.4 19.799999999999997 18 19.799999999999997H6Q4.6 19.799999999999997 4.6 18.4V8Q4.6 6.6 6 6.6Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M4.6 10.9H19.4" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.4 3.4V5.4M15.6 3.4V5.4" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="15" cy="15.3" r="1.5" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4.2 8.3H7.2L8.7 6.1H15.3L16.8 8.3H19.8Q20.8 8.3 20.8 9.3V17.9Q20.8 18.9 19.8 18.9H4.2Q3.2 18.9 3.2 17.9V9.3Q3.2 8.3 4.2 8.3Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M14.77 15.00A3.2 3.2 0 1 1 14.45 11.34" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="13.4" r="1.3" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-cards" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5.8999999999999995 8.6H13.299999999999999Q14.6 8.6 14.6 9.9V18.7Q14.6 20 13.299999999999999 20H5.8999999999999995Q4.6 20 4.6 18.7V9.9Q4.6 8.6 5.8999999999999995 8.6Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.8 8.6V5.6Q8.8 4.2 10.2 4.2H18.2Q19.4 4.2 19.4 5.4V14.6Q19.4 15.8 18.2 15.8H15.6" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="9.6" cy="14.3" r="1.2" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5 5.2H19Q20.2 5.2 20.2 6.4V14Q20.2 15.2 19 15.2H11.2L7 18.9V15.2H5Q3.8 15.2 3.8 14V6.4Q3.8 5.2 5 5.2Z" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="8.6" cy="10.2" r="1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+  <circle cx="12" cy="10.2" r="1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+  <circle cx="15.4" cy="10.2" r="1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4.8 12.6C6.3 13.3 7.7 14.9 9.3 17.4C11.9 12.2 15.1 8.6 19.4 6.6" style="stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M8 18.4H17.3A4.1 4.1 0 0 0 17.4 10.2A5.6 5.6 0 0 0 6.6 10.6A3.9 3.9 0 0 0 8 18.4Z" style="stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4.8 14.4V18.2Q4.8 19.4 6 19.4H18Q19.2 19.4 19.2 18.2V14.4" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12 4.6V14.6" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.1 11L12 14.9L15.9 11" style="stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3.2C12.7 6.5 17.3 8.3 17.3 13.1A5.3 5.3 0 0 1 6.7 13.1C6.7 11 7.7 9.6 9 8.7C9.3 9.9 9.9 10.6 10.7 10.9C10.3 8 10.9 5.5 12 3.2Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+  <path d="M12 19.1A2.4 2.4 0 0 1 9.6 16.7C9.6 15.3 10.8 14.6 12 13.4C13.2 14.6 14.4 15.3 14.4 16.7A2.4 2.4 0 0 1 12 19.1Z" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M17.79 13.13A5.9 5.9 0 0 1 16.89 15.30M15.30 16.89A5.9 5.9 0 0 1 13.13 17.79M10.87 17.79A5.9 5.9 0 0 1 8.70 16.89M7.11 15.30A5.9 5.9 0 0 1 6.21 13.13M6.21 10.87A5.9 5.9 0 0 1 7.11 8.70M8.70 7.11A5.9 5.9 0 0 1 10.87 6.21M13.13 6.21A5.9 5.9 0 0 1 15.30 7.11M16.89 8.70A5.9 5.9 0 0 1 17.79 10.87M20.20 12.00L22.00 12.00M17.80 17.80L19.07 19.07M12.00 20.20L12.00 22.00M6.20 17.80L4.93 19.07M3.80 12.00L2.00 12.00M6.20 6.20L4.93 4.93M12.00 3.80L12.00 2.00M17.80 6.20L19.07 4.93" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="12" r="2.1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 19.6C12 19.6 4.4 15.2 4.4 9.9A4 4 0 0 1 12 8A4 4 0 0 1 19.6 9.9C19.6 15.2 12 19.6 12 19.6Z" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="1.6"/>
+</symbol>
+<symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M7.6 11H16.400000000000002Q17.8 11 17.8 12.4V18.200000000000003Q17.8 19.6 16.400000000000002 19.6H7.6Q6.2 19.6 6.2 18.200000000000003V12.4Q6.2 11 7.6 11Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.6 9.2V7.4A3.4 3.4 0 0 1 15.4 7.4V9.2" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="15.3" r="1.3" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9.5 11V5.6A2.5 2.5 0 0 1 14.5 5.6V11A2.5 2.5 0 0 1 9.5 11Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+  <path d="M6.3 11.2A5.7 5.7 0 0 0 17.7 11.2" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12 17V20.2M9 20.2H15" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="7.6" r="0.9" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="7.2" cy="17.6" r="2.3" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+  <circle cx="17.2" cy="15.6" r="2.3" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+  <path d="M9.5 17.6V6.4L19.5 4.4V15.6" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M9.5 9.8L19.5 7.8" style="stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5.4 14.4L15.2 4.6Q17.3 2.9 19.1 4.7L19.3 4.9Q21 6.8 19.4 8.8L9.6 18.6" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12.4 7.4L16.6 11.6" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M4.6 19.4L5.4 15.4L8.6 18.6Z" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="1.6"/>
+</symbol>
+<symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 21C12 21 5.8 15.6 5.8 10.6A6.2 6.2 0 0 1 18.2 10.6C18.2 15.6 12 21 12 21Z" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="10.5" r="2.1" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M8 5.7V18.3L18.9 12Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12.95 15.76A5.8 5.8 0 1 1 15.76 12.95" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M16.9 16.9L20.6 20.6" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="8.5" cy="8.6" r="0.9" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4.8 14.4V18.2Q4.8 19.4 6 19.4H18Q19.2 19.4 19.2 18.2V14.4" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12 15V5" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.1 8.5L12 4.6L15.9 8.5" style="stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-speaker" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4.6 9.9H8L12.6 6.2V17.8L8 14.1H4.6Q3.8 14.1 3.8 13.3V10.7Q3.8 9.9 4.6 9.9Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+  <path d="M15.7 9.3C17 10.5 17 13.5 15.7 14.7" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M18.5 6.7C21.1 9.5 21.1 14.5 18.5 17.3" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="6.3" cy="12" r="0.9" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+<symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3.6L14.6 9L20.5 9.8L16.2 13.9L17.2 19.8L12 17L6.8 19.8L7.8 13.9L3.5 9.8L9.4 9Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+</symbol>
+<symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20.08 9.06A8.6 8.6 0 1 1 14.94 3.92" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M7.40 13.68A4.9 4.9 0 1 1 10.32 16.60" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="12" r="1.8" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</symbol>
+</svg>

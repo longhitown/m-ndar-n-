@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t">
+  <title id="t">Giorni</title>
+  <path d="M6 6.6H18Q19.4 6.6 19.4 8V18.4Q19.4 19.799999999999997 18 19.799999999999997H6Q4.6 19.799999999999997 4.6 18.4V8Q4.6 6.6 6 6.6Z" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M4.6 10.9H19.4" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M8.4 3.4V5.4M15.6 3.4V5.4" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="15" cy="15.3" r="1.5" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</svg>

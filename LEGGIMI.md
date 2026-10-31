@@ -105,7 +105,7 @@ Se hai il dizionario Pleco sul telefono, ⚙️ → Studio → «Mostra il colle
 
 Nessun account, nessuna statistica, nessun tracciamento: tutto resta sul tuo dispositivo. I dettagli, anche in cinese, sono in [PRIVACY.md](PRIVACY.md) e nell'app, in ⚙️ → Informazioni → Privacy.
 
-Il codice è MIT, i contenuti didattici e la musica CC BY 4.0, le parti di altri hanno la loro licenza: [NOTICE.md](NOTICE.md) e [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Il codice è MIT, i contenuti didattici, la musica e le icone CC BY 4.0, le parti di altri hanno la loro licenza: [NOTICE.md](NOTICE.md) e [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Il nome «màndarínō» e il logo non sono compresi nelle licenze: [MARCHIO.md](MARCHIO.md). Le icone, e come sono nate, sono in [icone/ICONE.md](icone/ICONE.md) e [icone/DESIGN.md](icone/DESIGN.md).
 
 ## Limiti noti
 

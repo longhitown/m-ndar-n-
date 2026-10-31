@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t">
+  <title id="t">Pronuncia</title>
+  <path d="M9.5 11V5.6A2.5 2.5 0 0 1 14.5 5.6V11A2.5 2.5 0 0 1 9.5 11Z" style="fill:var(--iv,#DB5F00);fill-opacity:.16;stroke:var(--im,#DB5F00)"/>
+  <path d="M6.3 11.2A5.7 5.7 0 0 0 17.7 11.2" style="stroke:var(--im,#DB5F00)"/>
+  <path d="M12 17V20.2M9 20.2H15" style="stroke:var(--im,#DB5F00)"/>
+  <circle cx="12" cy="7.6" r="0.9" style="fill:var(--ia,#C0281D);stroke:var(--ia,#C0281D)" stroke-width="0.8"/>
+</svg>

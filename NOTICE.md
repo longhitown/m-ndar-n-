@@ -5,10 +5,16 @@
 | Codice dell'app e degli strumenti | `src/` (escluso `src/data/` e `src/audio/music/`), `tools/`, `android/` | MIT | [LICENSE](LICENSE) |
 | Contenuti didattici: vocabolario curato (pinyin e significati italiani), frasi d'esempio, lezioni, dialoghi, esercizi, corso di italiano | `src/data/` (salvo le eccezioni sotto) | CC BY 4.0 | [LICENZE/CONTENUTI.txt](LICENZE/CONTENUTI.txt) |
 | Musica: 22 brani originali | `src/audio/music/` | CC BY 4.0 | [LICENZE/MUSICA.txt](LICENZE/MUSICA.txt) |
+| Icone: il set «D2 · Mandarino & Cinabro» (SVG, sprite, manifest, figure del disegno) | `icone/` | CC BY 4.0 | [LICENZE/ICONE.txt](LICENZE/ICONE.txt), [icone/ICONE.md](icone/ICONE.md) |
+| Nome «màndarínō» e logo (il mandarino con le foglie e gli accenti dei toni) | dappertutto | **nessuna licenza**: sono un segno distintivo | [MARCHIO.md](MARCHIO.md) |
 | Parti di altri | elencate una per una | la loro | [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md), `LICENZE/` |
 
 © 2026 Claudio Longhitano. Per citare l'app basta scrivere «màndarínō, di Claudio Longhitano», con un link al
 repository.
+
+**Il nome e il logo non sono compresi nelle licenze.** Il codice (MIT) e le grafiche (CC BY 4.0) si possono riusare, anche in prodotti
+commerciali, ma il nome «màndarínō» e il logo non si possono usare per un prodotto che si possa confondere con questo: le regole, e come
+riconoscere la versione ufficiale, sono in [MARCHIO.md](MARCHIO.md). Il testo della licenza MIT in [LICENSE](LICENSE) resta quello standard, senza aggiunte.
 
 ## Gli strumenti che ho usato
 
