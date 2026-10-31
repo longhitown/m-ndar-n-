@@ -63,14 +63,17 @@
     return out;
   }
   var NAME = { words: "nav.words", build: "nav.build", "fr:pat": "sub.pat", "fr:thought": "sub.thought", "fr:lab": "sub.lab", "fr:slot": "sub.slot", "fr:reader": "sub.reader", "fr:rad": "sub.rad", "it:words": "unl.itWords", "it:conj": "unl.itConj", "it:phrases": "unl.itPhrases" };
-  var queue = [], noteEl = null, popOpen = false;
+  var queue = [], noteEl = null, popOpen = false, soloKey = "";
   /* il messaggio dello sblocco: una riga dentro la pagina, sopra la barra in basso; una novità alla volta, mai un pop-up */
   function announce() {
     if (noteEl || popOpen || !queue.length || document.body.classList.contains("in-session") || document.body.classList.contains("in-focus")) return;
     var k = queue.shift(), tabK = k === "words" || k === "build" ? k : /^it:/.test(k) ? k.slice(3) : /^fr:/.test(k) ? "build" : null;
-    /* il pop-up di festa (ui/grow.js, si carica qui); se non si può mostrare, resta la riga in basso */
-    try { var xd = xpDays(); popOpen = !!(CP.unlockPop && CP.unlockPop(k, { tab: tabK, xp: xd[0], days: xd[1], next: next() }, function () { popOpen = false; setTimeout(announce, 400); })); } catch (e) { popOpen = false; }
-    if (popOpen) return;
+    /* pop-up (ui/grow.js) solo per UNA scheda guadagnata studiando e mai sopra un'altra finestra; altrimenti la riga in basso */
+    if (k === soloKey) {
+      if (CP.topSheet && CP.topSheet()) { queue.unshift(k); setTimeout(announce, 5000); return; }
+      try { var xd = xpDays(); popOpen = !!(CP.unlockPop && CP.unlockPop(k, { tab: tabK, xp: xd[0], days: xd[1], next: next() }, function () { popOpen = false; setTimeout(announce, 400); })); } catch (e) { popOpen = false; }
+      if (popOpen) return;
+    }
     noteEl = document.createElement("div"); noteEl.className = "unl-note"; noteEl.setAttribute("role", "status");
     noteEl.innerHTML = '<span class="unl-ico" aria-hidden="true">✨</span><span class="unl-tx">' + CP.esc(T("unl.new", { n: T(NAME[k]) })) + "<small>" + CP.esc(T("unl." + k.replace(":", "_"))) + "</small></span>" +
       (tabK ? '<button type="button" class="btn-s" data-unl-go="' + tabK + '">' + CP.esc(T("unl.go")) + "</button>" : "") + '<button type="button" class="btn-s unl-x" data-unl-x aria-label="' + CP.attr(T("common.close")) + '">✕</button>';
@@ -82,19 +85,12 @@
     var g = t.getAttribute("data-unl-go"); closeNote(); CP.sfx("tap");
     if (g) { if (IT && CP.itShow) CP.itShow(g); else CP.show(g); }
   });
-  /* la prossima scheda da aprire e a che punto sei (serve al pop-up e alla scheda «Il tuo studio cresce», ui/grow.js) */
+  /* la prossima scheda da aprire e a che punto sei (per il pop-up, ui/grow.js) */
   function next() {
-    var xd = xpDays(), xp = xd[0], u = unl(), seq = IT ? ["it:words", "it:conj", "it:phrases"] : ["words", "build"], i, k, c;
-    for (i = 0; i < seq.length; i++) {
-      k = seq[i]; if (u[k]) continue;
-      c = IT ? UNLOCK.it[k.slice(3)][0] : UNLOCK[k];
-      return { k: k, xp: c, have: xp, pct: Math.max(4, Math.min(100, Math.round(xp * 100 / c))) };
-    }
-    if (!IT) {
-      var t = Object.keys(UNLOCK.frasi).filter(function (x) { return !u["fr:" + x]; })[0], ld = lessonsDone();
-      if (t) return { k: "fr:" + t, ls: UNLOCK.frasi[t], haveLs: ld, pct: Math.max(4, Math.min(100, Math.round(ld * 100 / UNLOCK.frasi[t]))) };
-    }
-    return null;
+    var xp = xpDays()[0], u = unl(), seq = IT ? ["it:words", "it:conj", "it:phrases"] : ["words", "build"], i, k, c, t, ld = lessonsDone(), pc = function (a, b) { return Math.max(4, Math.min(100, Math.round(a * 100 / b))); };
+    for (i = 0; i < seq.length; i++) if (!u[k = seq[i]]) { c = IT ? UNLOCK.it[k.slice(3)][0] : UNLOCK[k]; return { k: k, xp: c, have: xp, pct: pc(xp, c) }; }
+    t = IT ? 0 : Object.keys(UNLOCK.frasi).filter(function (x) { return !u["fr:" + x]; })[0];
+    return t ? { k: "fr:" + t, ls: UNLOCK.frasi[t], haveLs: ld, pct: pc(ld, UNLOCK.frasi[t]) } : null;
   }
   /* la barra in basso: solo le schede aperte, con le colonne giuste */
   function paintDock() {
@@ -109,6 +105,7 @@
   }
   function check(silent) {
     var add = due(); if (!add.length) { paintDock(); return; }
+    soloKey = add.length === 1 ? add[0] : "";
     var u = unl(); add.forEach(function (k) { u[k] = 1; if (!silent && !/^fr:/.test(k)) u["new:" + k] = 1; }); setUnl(u);
     /* molte novità insieme (un test di livello, un dispositivo unito): si annunciano solo le schede, non ogni strumento */
     if (!silent) { add.filter(function (k) { return add.length <= 2 || !/^fr:/.test(k); }).forEach(function (k) { if (queue.indexOf(k) < 0) queue.push(k); }); setTimeout(announce, 600); }

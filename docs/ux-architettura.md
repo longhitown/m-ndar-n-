@@ -227,12 +227,18 @@ Che cosa corrisponde a che cosa (cinese → italiano):
 
 Ancora aperti (anche in [roadmap.md](roadmap.md)): la rilettura dei testi cinesi da parte di un madrelingua (corso, carta e pagina `zh/`) e i «vuoti curati» (oggi la carta «今天» mostra sempre la prossima lezione, anche quando non ce n'è ancora nessuna).
 
-## L'app cresce con chi la usa (pop-up, scheda, pallini)
+## L'app cresce con chi la usa (pop-up, pallini, Novità)
 
-Chi comincia vede poco di proposito; deve però capire che è l'inizio. Tre pezzi, tutti in `ui/grow.js` e `ui/unlock.js`:
+Chi comincia vede poco di proposito; deve però capire che è l'inizio, **senza aggiungere niente alla schermata principale** (una scheda
+«il tuo studio cresce» in cima al Percorso è stata provata e tolta: troppo affollata). La ricerca consultata (NN/g sulle finestre modali,
+sulla rivelazione progressiva e sull'onboarding: aiuto «a richiesta», non tour iniziali) porta a questo schema:
 
-- **I primi 300 punti valgono il doppio** (`EARLY` in `core/game.js`): Parole (200) e Frasi (300) arrivano nei primi giorni, non dopo settimane. I giorni minimi sono 1 e 2.
-- **Pop-up di sblocco** (`CP.unlockPop`): riconosce quello che la persona ha fatto, dice a che cosa serve la scheda nuova e mostra la prossima sorpresa con la strada già fatta. Nessuna colpa, nessuna scadenza, un tocco per chiudere e la riga su dove rivedere tutto. Se non si può mostrare resta la riga in basso.
-- **Scheda «Il tuo studio cresce con te»** (`CP.growCard`) in cima al Percorso e alle Lezioni: le tappe, la prossima con la sua barra e, a parte, Pleco, Anki e i widget, perché chi non apre le impostazioni sappia che ci sono. Si nasconde con ✕.
-- **Pallino «Nuovo»** su ⚙️ e su ogni pagina delle Impostazioni (`ui/community.js`): si toglie solo a pagina letta davvero, cioè ogni «schermata» in vista per mezzo secondo (due secondi e mezzo se la pagina è corta). Chi scorre di corsa vede il pallino restare. Informazioni torna «nuova» a ogni versione.
+- **I primi 300 punti valgono il doppio** (`EARLY` in `core/game.js`): Parole (200) e Frasi (300) arrivano nei primi giorni. Giorni minimi: 1 e 2.
+- **Pop-up di sblocco** (`CP.unlockPop`, `ui/grow.js`): rarissimo e sobrio. Solo per UNA scheda guadagnata studiando (non dopo il test di
+  livello né quando si uniscono due dispositivi: lì resta la riga in basso), al massimo uno al giorno, mai durante una sessione di studio
+  e mai sopra un'altra finestra. Riconosce il lavoro fatto, dice a che cosa serve la scheda e mostra la prossima con la strada già fatta
+  (progresso reale). Solo l'ultimo della serie nomina Pleco, Anki e i widget. Nessuna colpa, nessuna scadenza.
+- **Canale permanente: ⚙️ → Informazioni → Novità** (con il pallino). Tutto resta ritrovabile lì, senza interrompere nessuno.
+- **Pallino «Nuovo»** su ⚙️ e su ogni pagina delle Impostazioni (`ui/community.js`): si toglie solo a pagina letta davvero, cioè ogni
+  «schermata» in vista per mezzo secondo (due secondi e mezzo se la pagina è corta). Chi scorre di corsa lo vede restare.
 - I **widget** stanno in ⚙️ → Aspetto, con l'anteprima dei quattro, visibile anche fuori da Android.

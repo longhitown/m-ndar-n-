@@ -1,5 +1,5 @@
-/* ===== màndarínō · testi del pop-up di sblocco e della scheda «Il tuo studio cresce» (ui/grow.js), nelle due lingue dell'interfaccia.
-   Si caricano al primo uso di CP.unlockPop o CP.growCard (tools/build.mjs, LAZYMOD). Le chiavi it e zh devono essere le stesse (tools/unit.mjs). ===== */
+/* ===== màndarínō · testi del pop-up di sblocco (ui/grow.js), nelle due lingue dell'interfaccia.
+   Si caricano al primo uso di CP.unlockPop (tools/build.mjs, LAZYMOD). Le chiavi it e zh devono essere le stesse (tools/unit.mjs). ===== */
 Object.assign(I18N.it, {
   "grow.popT": "Hai sbloccato «{n}»!",
   "grow.popSub": "Con {xp} punti guadagnati studiando, l'app si apre un po' di più. Questo lo hai fatto tu.",
@@ -9,23 +9,7 @@ Object.assign(I18N.it, {
   "grow.popMore": "E c'è altro: puoi collegare Pleco e Anki, e mettere un widget sulla Home. Lo trovi in ⚙️.",
   "grow.popGo": "Provala adesso",
   "grow.popLater": "Più tardi",
-  "grow.popWhere": "Puoi rivedere tutto in ⚙️ → Studio → Livello e schede.",
-  "grow.t": "Il tuo studio cresce con te",
-  "grow.lede": "Più studi, più l'app si apre. Non devi cercare niente: ti avviso io quando c'è una novità.",
-  "grow.boost": "Bonus d'inizio: i primi 300 punti valgono il doppio.",
-  "grow.next": "Prossima tappa: {n}",
-  "grow.pts": "{have} / {xp} punti",
-  "grow.ls": "{have} / {ls} lezioni",
-  "grow.open": "aperto",
-  "grow.locked": "da aprire",
-  "grow.hide": "Nascondi questa scheda",
-  "grow.x": "Quando vuoi, puoi collegare anche:",
-  "grow.pleco": "Pleco",
-  "grow.plecoD": "il dizionario",
-  "grow.anki": "Anki",
-  "grow.ankiD": "esporta le parole",
-  "grow.widget": "Widget",
-  "grow.widgetD": "ripasso dalla Home"
+  "grow.popWhere": "Puoi rivedere tutto in ⚙️ → Studio → Livello e schede."
 });
 Object.assign(I18N.zh, {
   "grow.popT": "已开放“{n}”！",
@@ -36,21 +20,5 @@ Object.assign(I18N.zh, {
   "grow.popMore": "还有更多：可以连接 Pleco 和 Anki，也可以在主屏幕放一个小组件。在 ⚙️ 里找。",
   "grow.popGo": "马上试试",
   "grow.popLater": "稍后",
-  "grow.popWhere": "可在 ⚙️ → 学习 → 水平与栏目 里随时查看。",
-  "grow.t": "你的学习，会和你一起成长",
-  "grow.lede": "学得越多，应用开放得越多。不用到处找：有新内容我会告诉你。",
-  "grow.boost": "起步奖励：前 300 积分按双倍计算。",
-  "grow.next": "下一站：{n}",
-  "grow.pts": "{have} / {xp} 积分",
-  "grow.ls": "{have} / {ls} 课",
-  "grow.open": "已开放",
-  "grow.locked": "待开放",
-  "grow.hide": "隐藏这张卡片",
-  "grow.x": "需要时，还可以连接：",
-  "grow.pleco": "Pleco",
-  "grow.plecoD": "词典",
-  "grow.anki": "Anki",
-  "grow.ankiD": "导出词语",
-  "grow.widget": "小组件",
-  "grow.widgetD": "主屏幕上复习"
+  "grow.popWhere": "可在 ⚙️ → 学习 → 水平与栏目 里随时查看。"
 });

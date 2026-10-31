@@ -122,7 +122,7 @@
       CHAPTERS[k].idx.forEach(function (i) { if (isList(SECTIONS[i])) lists.push(i); else list += stopHTML(SECTIONS[i], i, cur); });
       if (lists.length) list += listHTML(k, lists, cur);
     });
-    root.innerHTML = (CP.classBanner ? CP.classBanner() : "") + resumeHTML(cur) + heroHTML(cur) + (CP.growCard ? CP.growCard() : "") +
+    root.innerHTML = (CP.classBanner ? CP.classBanner() : "") + resumeHTML(cur) + heroHTML(cur) +
       '<div class="path-head"><h2>' + T("path.title") + '</h2><span class="muted small">' + done + " / " + SECTIONS.length + " " + T("path.stops") + "</span></div>" +
       '<p class="muted" style="margin:0">' + T("path.lede", { n: SECTIONS.length, c: CHAPTERS.length }) + "</p>" +
       chapNav(sel) + '<div class="path">' + list + "</div>";

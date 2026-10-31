@@ -241,7 +241,7 @@
           esc(tt("itd.revTitle", { a: rv.from, b: rv.to })) + "</b>" + (rp.best != null ? '<small class="muted">' + esc(tt("itd.best", { p: rp.best })) + "</small>" : "") + "</span></button></li>";
       })();
     }).join("");
-    return (CP.classBanner ? CP.classBanner() : "") + (CP.itToday ? CP.itToday.html() : "") + (CP.growCard ? CP.growCard() : "") +
+    return (CP.classBanner ? CP.classBanner() : "") + (CP.itToday ? CP.itToday.html() : "") +
       '<h2 class="itp-h">' + esc(tt("itd.pathT")) + '</h2><p class="small muted" style="margin:0 0 10px">' + esc(tt("itd.pathSub", { d: done, n: L.length, p: PASS })) + "</p>" +
       '<ol class="itp" aria-label="' + CP.attr(tt("itd.pathT")) + '">' + nodes + "</ol>";
   }

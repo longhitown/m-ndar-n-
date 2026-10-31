@@ -97,7 +97,7 @@
     return out;
   }
   function wordsToday() { var r = rec(false); return r && r.w ? r.w.length : 0; }
-  /* la prima fase corre il doppio: a 200 e 300 punti si aprono Parole e Costruisci (ui/unlock.js) e chi comincia deve vederlo presto */
+  /* i primi 300 punti valgono il doppio: Parole e Frasi (ui/unlock.js) si aprono presto */
   var EARLY = 300;
   function award(n) {
     if (G.xp < EARLY) n *= 2;
