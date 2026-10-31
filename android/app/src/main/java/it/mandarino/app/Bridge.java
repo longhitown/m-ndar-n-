@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.speech.RecognitionListener;
@@ -59,6 +58,9 @@ public class Bridge {
     private SpeechRecognizer recognizer;
     private String recId = null, recPending = null;
     private boolean musicWasMuted = false;
+    /* musicWasMuted vale per tutta la serie di ascolti ravvicinati: si fissa al primo e si azzera solo quando il volume è stato ripristinato.
+       Se un secondo ascolto partisse prima del ripristino leggerebbe il silenzio messo dal riconoscitore e lo scambierebbe per una scelta della persona. */
+    private boolean muteBaseSet = false;
 
     Bridge(MainActivity act) {
         this.act = act;
@@ -223,257 +225,6 @@ public class Bridge {
         return o.toString();
     }
 
-    /**
-     * Prova nativa del microfono, senza passare dalla WebView: apre un AudioRecord per ogni sorgente e legge ~250 ms.
-     * Dice se è il telefono (fallisce anche qui) o la WebView (qui funziona, getUserMedia no). Dura circa 1,5 s: la pagina la chiama
-     * solo dall'autodiagnosi, quando l'apertura normale è già fallita.
-     */
-    @JavascriptInterface
-    @android.annotation.SuppressLint("MissingPermission")   /* il permesso si controlla qui sotto con hasMic(), che lint non riconosce */
-    public String micProbe() {
-        JSONArray out = new JSONArray();
-        if (!act.hasMic()) return "[{\"error\":\"permesso mancante\"}]";
-        int[] src = {1, 6, 9, 7, 5};
-        String[] nm = {"MIC", "VOICE_RECOGNITION", "UNPROCESSED", "VOICE_COMMUNICATION", "CAMCORDER"};
-        for (int k = 0; k < src.length; k++) out.put(probeSource(src[k], nm[k]));
-        /* Chromium apre la cattura in «modalità comunicazione» quando il telefono ha l'eco cancellation hardware: si riprova la sorgente
-           delle chiamate con la modalità audio di Android portata a MODE_IN_COMMUNICATION (poi ripristinata) e si dice cosa offre il telefono */
-        AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
-        if (am != null) {
-            int old = am.getMode();
-            try {
-                am.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                out.put(probeSource(7, "VOICE_COMMUNICATION in MODE_IN_COMMUNICATION"));
-            } catch (Throwable e) {
-                JSONObject o = new JSONObject();
-                try { o.put("source", "VOICE_COMMUNICATION in MODE_IN_COMMUNICATION"); o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
-                out.put(o);
-            } finally {
-                try { am.setMode(old); } catch (Throwable ignore) {}
-            }
-        }
-        JSONObject fx = new JSONObject();
-        try {
-            fx.put("source", "EFFETTI HARDWARE");
-            fx.put("echoCanceler", android.media.audiofx.AcousticEchoCanceler.isAvailable());
-            fx.put("noiseSuppressor", android.media.audiofx.NoiseSuppressor.isAvailable());
-            fx.put("autoGain", android.media.audiofx.AutomaticGainControl.isAvailable());
-            fx.put("info", true);
-        } catch (Throwable e) {
-            try { fx.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
-        }
-        out.put(fx);
-        return out.toString();
-    }
-
-    /** Apre un AudioRecord con la sorgente data, legge ~250 ms e riporta stato, campioni e picco. */
-    @android.annotation.SuppressLint("MissingPermission")
-    private JSONObject probeSource(int source, String name) {
-        JSONObject o = new JSONObject();
-        android.media.AudioRecord ar = null;
-        try {
-            o.put("source", name);
-            int min = android.media.AudioRecord.getMinBufferSize(16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT);
-            o.put("minBuffer", min);
-            if (min <= 0) { o.put("error", "getMinBufferSize=" + min); return o; }
-            ar = new android.media.AudioRecord(source, 16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT, min * 2);
-            o.put("initialized", ar.getState() == android.media.AudioRecord.STATE_INITIALIZED);
-            if (ar.getState() == android.media.AudioRecord.STATE_INITIALIZED) {
-                ar.startRecording();
-                o.put("recording", ar.getRecordingState() == android.media.AudioRecord.RECORDSTATE_RECORDING);
-                short[] b = new short[1600];
-                long end = System.currentTimeMillis() + 250;
-                int total = 0, peak = 0, last = 0;
-                while (System.currentTimeMillis() < end) {
-                    int n = ar.read(b, 0, b.length);
-                    if (n < 0) { last = n; break; }
-                    total += n;
-                    for (int i = 0; i < n; i++) peak = Math.max(peak, Math.abs((int) b[i]));
-                }
-                o.put("samples", total);
-                o.put("peak", peak);
-                if (last < 0) o.put("readError", last);
-            }
-        } catch (Throwable e) {
-            try { o.put("error", String.valueOf(e)); } catch (JSONException ignore) {}
-        } finally {
-            if (ar != null) { try { ar.stop(); } catch (Throwable ignore) {} try { ar.release(); } catch (Throwable ignore) {} }
-        }
-        return o;
-    }
-
-    /* ---------------- cattura nativa (piano B di getUserMedia) ----------------
-       Se la WebView non riesce ad aprire il microfono (NotReadableError), la pagina chiede ad Android di registrare con AudioRecord
-       (sorgenti che funzionano: MIC, VOICE_RECOGNITION, CAMCORDER, UNPROCESSED) e riceve i campioni PCM 16 bit mono a 16 kHz come
-       eventi «mic-pcm» (base64, blocchi da 20 ms). src/voice/mic.js li trasforma in un MediaStream: il resto dell'app non cambia.
-       La stessa cattura può alimentare anche il riconoscimento vocale di sistema (Android 13+, RecognizerIntent.EXTRA_AUDIO_SOURCE):
-       così il testo riconosciuto e l'audio registrato vengono dalla STESSA voce (filtro dello scambio linguistico) e il riconoscimento
-       non usa un microfono suo, che su alcuni telefoni non sente niente (microfono delle carte). */
-    private volatile boolean capRun = false;
-    private Thread capThread;
-    private volatile String capId = "";
-    private volatile boolean capEndpoint = false;
-    /* i campioni per il riconoscimento passano da una coda e da un filo a parte: se il riconoscimento non legge (non supporta l'audio nostro),
-       la registrazione non si blocca; la coda piena scarta i campioni nuovi */
-    private volatile java.util.concurrent.LinkedBlockingQueue<byte[]> pipeQ;
-    private ParcelFileDescriptor pipeRead;
-
-    /** Apre un AudioRecord a 16 kHz mono con la prima sorgente che parte; riporta il nome in used[0]. */
-    @android.annotation.SuppressLint("MissingPermission")   /* il permesso si controlla in chi lo chiama (hasMic) */
-    private android.media.AudioRecord openRecord(String[] used) {
-        int[] src = {1, 6, 5, 9};
-        String[] nm = {"MIC", "VOICE_RECOGNITION", "CAMCORDER", "UNPROCESSED"};
-        int min = android.media.AudioRecord.getMinBufferSize(16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT);
-        if (min <= 0) return null;
-        for (int k = 0; k < src.length; k++) {
-            android.media.AudioRecord t = null;
-            try {
-                t = new android.media.AudioRecord(src[k], 16000, android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT, Math.max(min * 2, 6400));
-                if (t.getState() == android.media.AudioRecord.STATE_INITIALIZED) {
-                    t.startRecording();
-                    if (t.getRecordingState() == android.media.AudioRecord.RECORDSTATE_RECORDING) { used[0] = nm[k]; return t; }
-                }
-            } catch (Throwable ignore) { }
-            if (t != null) { try { t.release(); } catch (Throwable ignore) { } }
-        }
-        return null;
-    }
-
-    /** Avvia il filo di cattura. emitPcm: manda i campioni alla pagina; endpoint: decide da sé quando la persona ha finito di parlare. */
-    private synchronized String startCapture(final String id, final boolean emitPcm, final boolean endpoint) {
-        stopCapture();
-        if (!act.hasMic()) return "";
-        String[] used = {""};
-        final android.media.AudioRecord rec = openRecord(used);
-        if (rec == null) return "";
-        capRun = true; capId = id; capEndpoint = endpoint;
-        capThread = new Thread(() -> {
-            short[] b = new short[320];
-            byte[] by = new byte[640];
-            long t0 = System.currentTimeMillis(), lastVoice = 0;
-            double floor = 1e9;
-            boolean spoke = false;
-            try {
-                while (capRun) {
-                    int n = rec.read(b, 0, b.length);
-                    if (n < 0) break;
-                    if (n == 0) continue;
-                    double sum = 0;
-                    for (int i = 0; i < n; i++) { by[2 * i] = (byte) b[i]; by[2 * i + 1] = (byte) (b[i] >> 8); sum += (double) b[i] * b[i]; }
-                    if (emitPcm) emit("mic-pcm", id, Base64.encodeToString(by, 0, n * 2, Base64.NO_WRAP));
-                    java.util.concurrent.LinkedBlockingQueue<byte[]> q = pipeQ;
-                    if (q != null) q.offer(java.util.Arrays.copyOf(by, n * 2));
-                    if (endpoint) {
-                        double rms = Math.sqrt(sum / n), now = System.currentTimeMillis();
-                        floor = Math.min(floor, Math.max(rms, 1));
-                        if (rms > Math.max(250, floor * 3.5)) { spoke = true; lastVoice = (long) now; }
-                        if (spoke && now - lastVoice > 900) break;      /* ha parlato e poi tace */
-                        if (!spoke && now - t0 > 5000) break;           /* non ha parlato */
-                        if (now - t0 > 10000) break;                    /* tetto massimo */
-                    }
-                }
-            } catch (Throwable ignore) {
-            } finally {
-                try { rec.stop(); } catch (Throwable ignore) { }
-                try { rec.release(); } catch (Throwable ignore) { }
-                if (endpoint) closePipe();            /* fine del flusso: il riconoscimento chiude e risponde */
-                if (emitPcm) emit("mic-end", id, "");
-            }
-        }, "md-mic");
-        capThread.start();
-        return used[0];
-    }
-
-    private void closePipe() {
-        java.util.concurrent.LinkedBlockingQueue<byte[]> q = pipeQ; pipeQ = null;
-        if (q != null) { q.clear(); q.offer(new byte[0]); }   /* segnale di fine: il filo chiude il flusso e il riconoscimento risponde */
-    }
-
-    private void stopCapture() {
-        capRun = false;
-        Thread t = capThread;
-        if (t != null && t != Thread.currentThread()) {
-            try { t.join(400); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        }
-        closePipe();
-    }
-
-    @JavascriptInterface
-    public String nativeMicStart(final String id) { return startCapture(id, true, false); }
-
-    /** Ferma la cattura e aspetta (al massimo 0,4 s) che AudioRecord sia rilasciato: chi parte subito dopo trova il microfono libero. */
-    @JavascriptInterface
-    public void nativeMicStop() { stopCapture(); }
-
-    @JavascriptInterface
-    public boolean nativeMicRunning() { return capRun; }
-
-    /** true se il telefono può dare al riconoscimento un audio già pronto (Android 13+). */
-    @JavascriptInterface
-    public boolean srPipedSupported() { return Build.VERSION.SDK_INT >= 33 && SpeechRecognizer.isRecognitionAvailable(act); }
-
-    /** Collega il riconoscimento vocale alla cattura NATIVA già in corso (stesso audio che si sta registrando). Risponde con eventi sr-* con lo stesso id. */
-    @JavascriptInterface
-    public boolean nativeSrAttach(final String lang, final int maxResults) {
-        if (!capRun || !srPipedSupported()) return false;
-        final String id = capId;
-        act.runOnUiThread(() -> beginPipedRecognizer(id, lang, maxResults));
-        return true;
-    }
-
-    /** La registrazione è finita: chiude il flusso verso il riconoscimento, che risponde con il testo. */
-    @JavascriptInterface
-    public void nativeSrFinish() { closePipe(); }
-
-    /** Riconoscimento vocale con audio nostro: cattura propria (senza mandare campioni alla pagina) e fine parlato deciso qui. */
-    @JavascriptInterface
-    public void srStartPiped(final String id, final String lang, final int maxResults) {
-        if (!srPipedSupported()) { emit("sr-error", id, "service-not-allowed"); emit("sr-end", id, ""); return; }
-        act.runOnUiThread(() -> {
-            stopRecognizer();
-            beginPipedRecognizerThenCapture(id, lang, maxResults);
-        });
-    }
-
-    private void beginPipedRecognizerThenCapture(String id, String lang, int maxResults) {
-        if (startCapture(id, false, true).isEmpty()) { emit("sr-error", id, "audio-capture"); emit("sr-end", id, ""); return; }
-        beginPipedRecognizer(id, lang, maxResults);
-    }
-
-    private void beginPipedRecognizer(String id, String lang, int maxResults) {
-        try {
-            ParcelFileDescriptor[] p = ParcelFileDescriptor.createPipe();
-            closePipe();
-            pipeRead = p[0];
-            final java.io.OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(p[1]);
-            final java.util.concurrent.LinkedBlockingQueue<byte[]> q = new java.util.concurrent.LinkedBlockingQueue<>(250);
-            new Thread(() -> {
-                try { while (true) { byte[] d = q.take(); if (d.length == 0) break; os.write(d); } } catch (Exception ignore) { }
-                finally { try { os.close(); } catch (java.io.IOException ignore) { } }
-            }, "md-pipe").start();
-            recId = id;
-            recognizer = SpeechRecognizer.createSpeechRecognizer(act);
-            recognizer.setRecognitionListener(new Listener(id));
-            Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang == null || lang.isEmpty() ? "zh-CN" : lang);
-            i.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, Math.max(1, maxResults));
-            i.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false);
-            i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, act.getPackageName());
-            i.putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE, p[0]);
-            i.putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_CHANNEL_COUNT, 1);
-            i.putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_ENCODING, android.media.AudioFormat.ENCODING_PCM_16BIT);
-            i.putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_SAMPLING_RATE, 16000);
-            pipeQ = q;
-            recognizer.startListening(i);
-        } catch (Throwable e) {
-            emit("sr-error", id, "service-not-allowed");
-            emit("sr-end", id, "");
-            closePipe();
-            stopRecognizer();
-        }
-    }
-
     /** Stato del microfono lato Android, per l'autodiagnosi: JSON con permesso, modalità audio, registrazioni già in corso e diario dei permessi. */
     @JavascriptInterface
     public String micDiag() {
@@ -527,11 +278,11 @@ public class Bridge {
     private void beginRecognizer(String id, String lang, int maxResults) {
         try {
             AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
-            musicWasMuted = am != null && am.isStreamMute(AudioManager.STREAM_MUSIC);
+            if (!muteBaseSet) { musicWasMuted = am != null && am.isStreamMute(AudioManager.STREAM_MUSIC); muteBaseSet = true; }
             recognizer = SpeechRecognizer.createSpeechRecognizer(act);
             recognizer.setRecognitionListener(new Listener(id));
             Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);   /* parole e frasi brevi: meglio di FREE_FORM, pensato per il dettato lungo */
             i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang == null || lang.isEmpty() ? "zh-CN" : lang);
             i.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, Math.max(1, maxResults));
             i.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false);
@@ -566,13 +317,14 @@ public class Bridge {
         if (recognizer != null) {
             try { recognizer.cancel(); recognizer.destroy(); } catch (RuntimeException ignored) { }
             recognizer = null;
-            if (pipeRead != null) { try { pipeRead.close(); } catch (java.io.IOException ignored) { } pipeRead = null; }
             /* su alcuni telefoni il riconoscitore silenzia il volume dei media durante l'ascolto e, se lo si chiude in fretta, non lo
                ripristina: parole, toni e musica restano muti finché non si riavvia l'app. Se prima non era muto, lo si riaccende. */
             act.getWindow().getDecorView().postDelayed(() -> {
                 try {
                     AudioManager am = (AudioManager) act.getSystemService(Context.AUDIO_SERVICE);
-                    if (recognizer == null && !musicWasMuted && am != null && am.isStreamMute(AudioManager.STREAM_MUSIC)) am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                    if (recognizer != null) return;   /* un nuovo ascolto è già partito: il ripristino spetta all'ultimo */
+                    if (!musicWasMuted && am != null && am.isStreamMute(AudioManager.STREAM_MUSIC)) am.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                    muteBaseSet = false;
                 } catch (RuntimeException ignored) { }
             }, 800);
         }
@@ -594,7 +346,6 @@ public class Bridge {
         private void end() {
             if (ended) return;
             ended = true;
-            if (capEndpoint && id.equals(capId)) capRun = false;   /* riconoscimento finito: la cattura nata per lui si ferma */
             emit("sr-end", id, "");
             /* si ricontrolla l'id sul thread dell'interfaccia: nel frattempo può essere partito un nuovo ascolto, che non va chiuso */
             act.runOnUiThread(() -> { if (id.equals(recId)) stopRecognizer(); });
@@ -635,6 +386,7 @@ public class Bridge {
                 case SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED: case SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE: e = "language-not-supported"; break;   /* Android 12+; costanti copiate nel codice, sicure anche prima */
                 default: e = "service-not-allowed";
             }
+            emit("sr-code", id, String.valueOf(code));   /* il codice grezzo di Android: «no-speech» raccoglie ERROR_NO_MATCH (7, ha sentito ma non ha capito) e ERROR_SPEECH_TIMEOUT (6, silenzio) */
             emit("sr-error", id, e);
             end();
         }
